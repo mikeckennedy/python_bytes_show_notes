@@ -1,7 +1,7 @@
 # Python Bytes Show Notes
 Show notes from the [Python Bytes podcast](https://pythonbytes.fm/).
 
-![Python Bytes Logo](https://raw.githubusercontent.com/mikeckennedy/python_bytes_show_notes/master/readme_resources/logo.png)
+[![Python Bytes Logo](https://raw.githubusercontent.com/mikeckennedy/python_bytes_show_notes/master/readme_resources/logo.png)](https://pythonbytes.fm/)
 
 If you see any mistakes, we're happy to accept pull requests and update the show pages.
 
