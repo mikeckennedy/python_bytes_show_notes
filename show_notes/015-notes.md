@@ -1,6 +1,6 @@
 # Python Bytes 15
 
-This is Python Bytes, Python headlines and news deliver directly to your earbuds: episode 15, recorded on February 27, 2017.  [more]
+This is Python Bytes, Python headlines and news delivered directly to your earbuds: episode 15, recorded on February 27, 2017. [more]
 
 **#1 Brian:**  **Packaging**
 [**A Simple Guide for Python Packaging**](https://medium.com/small-things-about-python/lets-talk-about-python-packaging-6d84b81f1bb5#.b9ww4h4xt) ****by ****Jie Feng, [@flyfengjie](https://twitter.com/flyfengjie)
@@ -28,18 +28,18 @@ This is Python Bytes, Python headlines and news deliver directly to your earbuds
 
 - [PythonBytes.fm](https://pythonbytes.fm), of course
 * Twitter: 
-	* Brian: [https://twitter.com/brianokken](https://paper.dropbox.com/doc/Python-Bytes-16-5K4HDCHfQnVLqOKkhXg6Z)
-	* Michael: [https://twitter.com/mkennedy](https://paper.dropbox.com/doc/Python-Bytes-16-5K4HDCHfQnVLqOKkhXg6Z)
-	* Talk Python: [https://twitter.com/TalkPython](https://paper.dropbox.com/doc/Python-Bytes-16-5K4HDCHfQnVLqOKkhXg6Z)
-	* Python Bytes: [https://twitter.com/PythonBytes](https://paper.dropbox.com/doc/Python-Bytes-16-5K4HDCHfQnVLqOKkhXg6Z)
-- [http://planetpython.org/](https://paper.dropbox.com/doc/Python-Bytes-16-5K4HDCHfQnVLqOKkhXg6Z), check out the titles only link, as well as reading this feed with feedly or some other feed reader
+	* Brian: [https://twitter.com/brianokken](https://twitter.com/brianokken)
+	* Michael: [https://twitter.com/mkennedy](https://twitter.com/mkennedy)
+	* Talk Python: [https://twitter.com/TalkPython](https://twitter.com/TalkPython)
+	* Python Bytes: [https://twitter.com/PythonBytes](https://twitter.com/PythonBytes)
+- [http://planetpython.org/](http://planetpython.org/), check out the titles only link, as well as reading this feed with Feedly or some other feed reader
 - Newsletters:
-	- Awesome Python: [https://python.libhunt.com/newsletter](https://paper.dropbox.com/doc/Python-Bytes-16-5K4HDCHfQnVLqOKkhXg6Z)
-	- Python Weekly: [http://www.PythonWeekly.com](https://paper.dropbox.com/doc/Python-Bytes-16-5K4HDCHfQnVLqOKkhXg6Z)
+	- Awesome Python: [https://python.libhunt.com/newsletter](https://python.libhunt.com/newsletter)
+	- Python Weekly: [http://www.PythonWeekly.com](http://www.PythonWeekly.com)
 	- Pycoders Weekly: [http://www.pycoders.com](http://www.pycoders.com/)
-	- Import Python: [http://importpython.com/newsletter/](https://paper.dropbox.com/doc/Python-Bytes-16-5K4HDCHfQnVLqOKkhXg6Z)
-- Reddit: [https://www.reddit.com/r/Python/](https://paper.dropbox.com/doc/Python-Bytes-16-5K4HDCHfQnVLqOKkhXg6Z)
-- Python Trending on GitHub: [https://github.com/trending?l=python](https://paper.dropbox.com/doc/Python-Bytes-16-5K4HDCHfQnVLqOKkhXg6Z)
+	- Import Python: [http://importpython.com/newsletter/](http://importpython.com/newsletter/)
+- Reddit: [https://www.reddit.com/r/Python/](https://www.reddit.com/r/Python/)
+- Python Trending on GitHub: [https://github.com/trending?l=python](https://github.com/trending?l=python)
 
 **#4 Michael:** [**Curio - The coroutine concurrency library**](https://github.com/dabeaz/curio)**, by** **David Beazley,** [**@dabeaz**](https://twitter.com/dabeaz)
 
@@ -67,9 +67,9 @@ This is Python Bytes, Python headlines and news deliver directly to your earbuds
 	- Why Python succeeded
 	- How are we doing with: Diversity and moving to Python 3?
 	- His favorite features of Python 3
-	- Converting legacy code via mypy: [http://mypy-lang.org/](https://paper.dropbox.com/doc/Python-Bytes-16-5K4HDCHfQnVLqOKkhXg6Z)
+	- Converting legacy code via mypy: [http://mypy-lang.org/](https://github.com/trending?l=python)
 
-**In o****ther** **n****ews** **(as in our news)**
+**In other news (as in our news)**
 
 - [Test & Code 27 is out, a great talk with Mahmoud Hashemi](http://testandcode.com/27) on different levels of testing, the role of testing in SW development, TDD, and what he’s been up to lately. Test & Code migrating to [testandcode.com](http://testandcode.com), to separate writing and podcast into two sites. When it gets cleaned up a little, I’ll forward podcast related links from [pythontesting](http://pythontesting.net) to [testandcode](http://testandcode.com).
 
