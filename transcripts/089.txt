@@ -1,0 +1,182 @@
+00:00:00 KENNEDY: Hello and welcome to Python Bytes, where we deliver Python news and headlines directly to your ear buds. This is Episode 89, recorded August 2nd, 2018. I am Michael Kennedy.
+ 
+00:00:10 OKKEN: And I am Brian Okken.
+ 
+00:00:11 KENNEDY: Hey, Brian. How are you doing?
+ 
+00:00:12 OKKEN: I'm doing great. It's good to talk to you again.
+ 
+00:00:14 KENNEDY: Yeah, you as well. Man, we got some cool stuff lined up this week. We always say that, but there's really so much happening in the Python space. It's more exciting every week.
+ 
+00:00:22 OKKEN: Yeah, I think it's because we're here and people are excited about Python and then they do more and it builds on itself.
+ 
+00:00:29 KENNEDY: It's this awesome feedback loop, I can totally feel it. What also is awesome is Data Dog for sponsoring the show, so if you need infrastructure monitoring or monitoring of your apps, check them out at pythonbytes.fm/datadog, I'll tell you more about them later. Brian, you found some code that's pretty tenacious out there, didn't ya? It just won't quit.
+ 
+00:00:47 OKKEN: Tenacious is a fun word, and there's a project called Tenacity that is pretty cool. We'll of course have a link in the show notes. Tenacity is a general purpose retrying library to simplify the task of adding retry behavior to just about anything, and there's a little code snippet, but the gist of it is that you import retry, and it can have a lot of options, but you can, the defaults just sort of work also. You can just put this around a function and if your function raises an exception, it just tries it again and eats the exception. So for a lot of stuff, this is terrible. This is a terrible idea in a lot of places. But in a few places, this might be reasonably good, especially, for instance, if you're going to, I guess, I'm not even going to come up with "for instance", you guys know in places where retrying is a good idea, like maybe saving something to a file system, or connecting to a service that sometimes has contention.
+ 
+00:01:54 KENNEDY: Yeah, or even a database. Like what if you have to restart the database server? Or something to that effect, right? Or you need to really quickly apply a migration, right? You could say, "just keep retrying the database" until you get there.
+ 
+00:02:09 OKKEN: Yeah, and then there's a whole bunch of extra conditions you could put on it. You could say try so many times, or a wait time for... If it doesn't work after a while, then give up. Then you can customize which exceptions it catches or doesn't catch. It even has retry on coroutines, which is kind of fun. Haven't tried that, but I've tried the simple case. I'm going to use it right away. We've got several conditions where we're testing devices where sometimes takes a device we're doing like, little Wi-Fi devices, for example. It might be asleep, so it might take a while for the thing to wake up and respond. So a number of retries is good, and we have retry code all over our code base, and so having a decorator do that for us is just pretty slick, I like it.
+ 
+00:02:58 KENNEDY: Yeah, its really cool, and you know, like I said, the database thing, you wouldn't just put retry and continue to hammer the database indefinitely if you run into any problems. But you know, like try five times with an exponential falloff just so you could basically handle five second down times. Things like that. Would be nice.
+ 
+00:03:16 OKKEN: Yeah, that should definitely be parts of, like you said, a distributed system where you got things that sometimes are not available for a little while, so.
+ 
+00:03:25 KENNEDY: Yeah, especially stuff that you don't control everything. Like other services you depend upon.
+ 
+00:03:30 OKKEN: Yeah.
+ 
+00:03:31 KENNEDY: Pretty cool. So I'm going to bring a theme into this show here for the next couple of topics that I'm going to bring in, and I think it's actually going to touch on every one of the things that I'm bringing. So, let's start with Anthony Shaw, of course. We got to cover an article by Anthony Shaw, right?
+ 
+00:03:48 OKKEN: Yeah, he writes a lot of good stuff.
+ 
+00:03:50 KENNEDY: Yeah, he does. In one of the ones that I came across here is called, "Why is Python so Slow?" So I think it's interesting to even ask the question. Like, is Python slow and explain how that is. So Anthony looks at some benchmarks comparing, say, Python to Java, to C#, to C++, and things like that, and talks about, well, in some cases, it is slower and why might that be? So basically, answering the question, Python completes a comparable operation like, two to ten times slower than say, Java or C#. Why, and why can't we make it faster? So he has three main hypotheses, which are pretty interesting. One is, it's the GIL, the Global Interpreter Lock. The other is, it's because interpreted rather than compiled. And the final one is it's a dynamic language. So, those three ones are pretty interesting. What do you think?
+ 
+00:04:49 OKKEN: Okay, so he's not saying that these are the reasons, but these are theories?
+ 
+00:04:53 KENNEDY: These are theories, and then he goes through each one of them and like pretty deeply looks at how they work and then compares them. So for example, it's interpreted, not compiled. Well, what does that mean in terms of trade off? Let's compare that to say, the way C# does things, the way C++ works, what are the trade offs there? So let's go, we'll go through some of them. One is, it's the GIL, right. Now, modern computers, modern processors, have multiple cores. And if you actually look at Moore's law, Moore's law is still alive and well, right? The number of transistors in a chip. But people sort of correlated that indirectly to, "Well, that means computers are getting faster and faster and faster." But it turns out that a number of years ago, four, five, I don't know how many years ago, not too long ago, the actual clock speed no longer kept doubling along with Moore's law. It sort of went flat, more or less, and what started happening was we got two core machines, and then four core machines. I just got a new MacBook, it has six hyper-thread cores. It's crazy, right? But on Python, if I want to take advantage of that computationally, it's super hard within one process because of the GIL. So, he says, "If you want to take advantage of modern hardware, maybe the GIL is the problem." So he talks about some of the trade offs there: when it matters, when it doesn't matter. So, for example, if what you're doing is IO bound, it basically doesn't much matter, right? The GIL is released when you're waiting on, like, network calls and stuff like that. So in some sense, the GIL is not the problem. If you created a bunch of threads and they all started reading and writing files, talking over the network, it should just automatically handle that. But if, on the other hand, you tried to create six threads and do computational stuff, you'll still probably get 12% CPU usage on my machine because you know, you only get to run one at a time. So that's one of the theories, and I think this theory applies more in some places and less in others, and I kind of touch on that a little bit. If your goal is to do computational mathematical things, the GIL can really, really matter. Makes a big difference, right? Because you're trying to execute your Python code, it doesn't let go of the GIL. But if say, you're building a web app, it probably doesn't matter, right? There are some ways you could do some things that would be better, but it doesn't really matter. So for example, if I looked at the previous servers before we came on today, the training.talkpython.fm site has 16 worker processes all running parallel versions of the website handling requests. talkpython itself has eight. I think maybe pythonbytes has eight as well. So anyway, there's these eight processes and sure, one of them may like, lock up something with the GIL, but there's a whole bunch of others that can leverage those other CPU cores and just keep on rockin'. So if you're doing web stuff, it matters less in a sense, I think.
+ 
+00:07:49 OKKEN: I mean, even if you are, there's ways to get around it.
+ 
+00:07:53 KENNEDY: Yeah, if you can break up your algorithm into sub-process type parallelism. Okay, so that's the GIL. The other is it could be it's an interpretive language. I think this one is the most interesting, probably. So it is an interpretive language, but actually it does compile code to byte code, but it doesn't JIT compile it, right? And so one of the main considerations around JIT compiled languages versus not is startup time. So if our Python code's going to start and run for a while, then doin' a whole bunch of JIT optimization would be maybe a little slower to start, but then faster to run. But if we want to just do some CLI stuff that starts really quick, does a tiny thing, goes away, a whole bunch of JIT stuff might be, you know, sort of counter productive. So there's a pretty interesting comparison against C# and Java and CPython here. The other thing I think is worth throwing in here is because of C extensions and things like that, it's an interpretive language. I think that's a simplistic view. That's like, well, if you just take straight Python code and just run it on Python, you don't interact with any libraries, but if you work with NumPy or if you work with SQLAlchemy, or a whole bunch of stuff that has C extensions to make certain parts fast, well all of a sudden it's not interpretive, right? So there's these weird blends. Alright, last one. It's because it's dynamically typed. So this is also, I think this is really interesting. I think actually this is probably why, and I'm going to throw in another one unless I get distracted and forget it. So I think this is really why it's probably the slowest, is that it's a dynamic language. And it's not that you can't make a dynamic language fast, but that because it's so flexible, it's hard to know how to optimize it. You might want to inline a function, but somebody could monkey patch that function, and then you wouldn't be inline for the right thing, for example. They monkey patch it only sometimes. What do you do then, right? So things like method inlining, which can really make things faster, is super hard because that could actually change. Whereas say, in C# or C++ or whatever, the method won't change.
+ 
+00:10:01 OKKEN: Yeah, okay.
+ 
+00:10:02 KENNEDY: Alright, final one. This is mine, I'm adding this to his, and it sort of has to do with his dynamic typing thing. It's everything is a reference type allocated on the heap in Python, right? Some of the stuff that makes C++ and C# really, really fast is things like numbers and other stuff are allocated on the stack, and when you work with them, you never do pointer dereferencing, you never do reference counting, you never do garbage collection or memory management. You just work with little bits on the stack. And because that little thing on the stack could become a full blown list or something just by changing what it points at, I think probably that also makes a big difference.
+ 
+00:10:39 OKKEN: Okay. There's also like, function calls are slower than they need to be, and I think that's one of the things that Python Core Team is working on.
+ 
+00:10:49 KENNEDY: And luckily, there have been some advances there in the latest version of Python. I think 20% or something they got was at 3.7, I think, that they got that much faster. So, work is being done, but yeah, it could be more, I guess. But what's really interesting is the trade offs or sort of comparisons of the article.
+ 
+00:11:07 OKKEN: The thing that I want to, there's a forest in the trees sort of issue I have here is that I don't think Python is slow.
+ 
+00:11:15 KENNEDY: Yeah, I'm with you.
+ 
+00:11:16 OKKEN: And my people time is way more expensive than computer time for like, 98% of the applications in the world, as far like, probably.
+ 
+00:11:27 KENNEDY: Well, and somebody made that comment below in the comments section of this article that said, "Well, if you're optimizing milliseconds versus nanoseconds, yes maybe. If you're optimizing weeks versus month from idea to shipped, Python's not slow at all, it's really fast."
+ 
+00:11:42 OKKEN: Yeah, I mean that's what I see is the maintenance, development time, the maintenance time, all of those extra people time things, Python is way faster. And a lot of these things that we say, like the GIL is a problem, or multi-processing is difficult, well multi-processing isn't easy. Maybe it's easy in some languages. I mean, Go is sort of designed to do that from the start, but getting in the complex algorithm in C++ to utilize multi-cores, that's not a trivial task either.
+ 
+00:12:13 KENNEDY: No, it's not. It's definitely not. And I would say, on the web frameworks side, actually Python is really quite fast. I've compared it against other, like, C# based, JIT-compiled things like ASP.NET and stuff for some conference talk I did comparing Python to the .NET stuff, and actually Python was not just as fast, but faster than the JIT-complied C# stuff.
+ 
+00:12:37 OKKEN: Yeah, and also just for people that do think that maybe that Python's speeds' the problem, really measure it and you can optimize, there's ways in Python to optimize the parts that are slow, so.
+ 
+00:12:47 KENNEDY: Yeah, in my next item we'll come back to this and show you some ways to make it faster.
+ 
+00:12:51 OKKEN: Okay. Alright.
+ 
+00:12:53 KENNEDY: So, what's this Mu thing all about? You talked about Mu before, right? It's like a simplified IDE type thing, is that right?
+ 
+00:13:01 OKKEN: Right, so I'm going to highlight Mu again, partly because I think it's a neat project that's going on and there's a lot of cool people working on it, but there's an article called Keynoting in Mu, and Mu being M U, and in the EuroPython 2018, David Beazley did a talk and a demo called Die Threads and what amused me is my first thought was, "Is this a German joke?" And he actually addressed it early on. It's not a German joke, but it's a good demo. But he used Mu during his Python talk and this article talks about, and also asked him about it, why he did that. It's just a simple thing. It's the same experience for everybody. For instance, I use PyCharm, but my environment in PyCharm, all the different colors I like or the plugins I use, it's going to be different than everybody else. It's one of those customizable things. And so having a very simple interface like Mu, that works as a learning tool but also shows people exactly what you're doing. One of the features of it is if you've got a little script that you want to run, you can just push Run at the top and then automatically a little window pops up at the bottom and shows you the output of the thing you're running, and that's just really handy. So it's kind of fun to watch that in a talk and being used. I used to do little demos for people at work, and I think I might try this also to not have to answer questions like, "What plugin are you using?" Or whatever.
+ 
+00:14:37 KENNEDY: Yeah, just sort of keep the distractions to a minimum, huh?
+ 
+00:14:40 OKKEN: Yeah, and it's a real clean interface and looks like you can change the font size. It looks fun. Plus, Mu is, if you haven't played around with it yet, it's also something that it automatically has hooks into things like running Micro:bit and Raspberry Pi and stuff, so.
+ 
+00:15:00 KENNEDY: A micropy thaw and embedded IoT things.
+ 
+00:15:03 OKKEN: Yeah.
+ 
+00:15:04 KENNEDY: Yeah, very cool. Yeah, I like it. That's a nice one. So before we get on to my other, my next performance thing, let me tell you guys about Datadog. So Datadog is sponsoring this episode like they have many, thank you to them for that, of course. So they have infrastructure monitoring, distributive tracing, and they've adding logging. They provide end to end visibility for requests across different parts of your infrastructure, as well as health and performance monitoring of your Python apps. So get started with them today for a 14-day free trial and of course, they'll send you a cool Datadog t-shirt. Just go to pythonbytes.fm/datadog and check it out. So, yeah, very cool stuff from Datadog. Brian, I told you about a performance thing and whether Python is slow. I agree with you. I generally find for what I do, it's like, actually blazing. So not a problem, but it sort of depends on choosing the right infrastructure.
+ 
+00:15:54 OKKEN: Yeah.
+ 
+00:15:55 KENNEDY: So there's this interesting proof of concept done by, ooh, I forgot the name, it's a European open source consortium, and the basic theme of this article is sort of exploring a response to the question of, "So I've heard Python is slow. Is it?" And I think it depends. So what they've done is they've created a multi-core, talked about how that could be hard to take advantage of, but here it is. Multi-core Python HTTP server that is much faster than Go. So you've heard a lot of people say, "Well, we're going to go to Go because its parallelism is so much better than Python and it's fast, so we can, y'know, do things fast." And of course, there's that big trade off with sort of the functionality and speed to market or speed to idea completion and so on, but this thing is like hey, and we can even go as fast or faster. So they compare it against actually two Go web servers, and it's faster than both of them. So what it is is these guys have gone and said, we've talked about this idea before, they said, "We want to go look at all the various C based, not Python, C based sort of coroutine libraries that'll let us write low level HTTP servers." And it turned out that there were not that many good options and the best option that they found was still slower than Go. So they're like, "Well, maybe this isn't going to work." But then it turned out they found this thing called LWAN, L-W-A-N, which is a C library, and they used Cython to create a Cython based web server that wraps it up and exposes it to Python.
+ 
+00:17:33 OKKEN: Dude, neat!
+ 
+00:17:34 KENNEDY: Cool, right? So basically, it's not really ready to ship or anything, it just validates the concept of creating a high performance thing with Cython and I think that's a big part of the article. So it says, "Here's some interesting things about Cython." It's both an optimizing static compiler and a hybrid language that gives you the ability to write Python code that can call back and forth with C and C++ really easy. It has static type declarations that make Python code faster because it can do, like, it doesn't have to treat everything like a reference type, it can, y'know, put integers as integers on the stack, and whatnot. And the other thing is, it releases the GIL by just having like, a keyword in Cython. So you can say this part, actually, don't need the GIL, I'm doing this in C, leave me alone.
+ 
+00:18:18 OKKEN: Hm, okay.
+ 
+00:18:18 KENNEDY: Isn't it interesting how that actually hit so many of the things that Anthony brought up, right?
+ 
+00:18:21 OKKEN: Yeah.
+ 
+00:18:22 KENNEDY: The typing, optimizations, and the GIL stuff is all right there. So it generates super efficient C code that is then compiled into a Python module, so it's really great for wrapping up C libraries and exposing them to Python.
+ 
+00:18:37 OKKEN: Hope they continue on with work on this.
+ 
+00:18:39 KENNEDY: Yeah, it looks pretty awesome. Yeah, anyway, I think if you're interested in sort of checking out performance, definitely have a look, it's pretty cool. So, are you going to cover something on testing this episode?
+ 
+00:18:50 OKKEN: Oh, yeah! It's my turn again!
+ 
+00:18:52 KENNEDY: It's your turn for a theme!
+ 
+00:18:54 OKKEN: Where am I at? I've been tryin' to get on here. Oh! Yes, I am very excited about some news that came out last week. So I've been playing with, I started PyCharm, using PyCharm a while ago. You've been using it off and on, I think you use lots of stuff now.
+ 
+00:19:10 KENNEDY: Yeah, yeah. I have for quite a while, yeah.
+ 
+00:19:12 OKKEN: PyTest support has been getting better and better in the last year or so, and PyCharm released 2018.2, I think it was last week, and it totally beefs up support for PyTest fixtures. And I just wanted to mention that, because anybody that's using both PyCharm and PyTest definitely needs to update to 2018.2 because a few things that used to not work but do now. If you have a fixture that you're, so, a fixture, for anybody who's not familiar, a fixture is just a little piece of code, a little function, that you declare as a fixture, that you put it as the parameter to your test, and it gets run before your test gets run at various levels. That's a simplification, but that works. It shows up as a parameter, but you don't actually have to use it in your function. It just tells PyTest to run that code. Well, PyCharm used to flag that as a variable that isn't referenced, so it would give you a warning. And you also couldn't do code completion with it, if it was an object that had methods on it, and you also couldn't use it to look up where is that fixture defined, because it's often defined at a different file, an encompass file or something. But now you can! All those things now work! So, big thank you to the PyCharm team for getting that out so quickly. And, yeah. Just that. I just wanted to let people know about that.
+ 
+00:20:39 KENNEDY: Yeah, that's really awesome. PyCharm just keeps gettin' better and better. Alright, so speaking of getting better, let's go back to Python performance.
+ 
+00:20:48 OKKEN: You got like, this bone that you won't let go of, man! No, it's good.
+ 
+00:20:53 KENNEDY: So this one actually hits on two themes that I think we've touched a lot on. One is this performance kick that I'm on today, but the other is packaging. We've talked about how it's not super easy to package up Python. So, for example, Go compiles to a single executable binary with zero dependencies. You take that, you give it to somebody, they run it. That's not how it works for complicated apps that have packaged dependencies and stuff in Python. You can't just easily go, "Here, double-click this!" You're like, "Yeah, good luck!" Hold on, first pip install requirements, now what else? Oh, you got the wrong version of Python, hold on. So the whole packaging thing, there are some attempts to deal with it, like CX_Freeze and stuff like that, and it's somewhat working. But here's a interesting thing from Facebook called XAR. So XAR is an executable archive, and basically what it is is you can package up some bunch of code into a single executable file that you can then mount as like, a separate file system that's read only. Like, a CD or something, I guess. So you can mount this and then execute it, but because it came as a whole block, basically it's sort of a native file system that you can read files that are next to your Python files, and you just package up your dependencies and run it.
+ 
+00:22:14 OKKEN: Interesting.
+ 
+00:22:15 KENNEDY: Yeah. So it's a read only file system, which when you mount it, it looks like a regular directory to user space. The one drawback, when is saw this article, I was like, "Oh my gosh, is this it?! Is this the thing that is going to make it that we can just go 'Here, double-click this,' in Python?" It turned out there's a minor little step here. This requires a one-time installation of a system-level device driver for the file system. So, maybe not so much just double-click. But if you're willing to install this, you know, maybe like as your organization you install it, or on your servers for whatever reason you're willing to install this thing called SquashFS, then XARs become these things you can just patch around and run. So that's pretty cool. So that's a big caveat, but think of Facebook. Their goal is to make it super easy to deploy these applications onto servers and run them. So they must preconfigure their servers with SquashFS, and then just make this part of their deploy mechanism. So there's basically two primary use cases for these XARs. One is simply collecting number files for automatic atomic mounting somewhere in the file system. Cool. You can use this thing called XARExecHelper. It becomes a self-contained package of executable code and its data. So an example might be a Python app that archives all of its source code and it's native libraries and configuration and all that kind of stuff. I still think that's pretty cool.
+ 
+00:23:41 OKKEN: Yeah!
+ 
+00:23:42 KENNEDY: It's kind of a focused use, but still pretty cool.
+ 
+00:23:45 OKKEN: Yeah, but then it's a rabbit hole. Now I got to go and read about Squash and what that is.
+ 
+00:23:49 KENNEDY: Yes, it's true. Actually on this, it seems like it's generally... It could be a general mechanism for, I don't know, Ruby or JavaScript or Node or something like that, but they particularly call out Python on the GitHub page from the Facebook incubator and it says, "Some of the advantages for using Python are: It looks like regular files on disk to Python, so that means you could just run CPython and it doesn't know any better." Same thing, looks like regular files. You don't need to use weird package import package tricks or anything like that to pass stuff around. Standard in compression. It doesn't require unpacking .so files, apparently, which if you try to use one of the PEC's mechanisms that was the problem. So more or less, it just like CPython just works basically there.
+ 
+00:24:41 OKKEN: You're idea of like, "Okay, so there's this dependency, but if you're using it within an organization that totally makes sense, that's fine." Yeah, that sort of use case, or within your own servers or whatever. You know, there's a lot of use cases where I think this would be very useful for people.
+ 
+00:24:55 KENNEDY: Yeah, I mean, those places you described, that's where a lot of Python is used. So it also has some interesting performance benefits, which is coming back to that. Because the way SquashFS works, you're actually reading off a disk a smaller set of binaries because it's compressed, a smaller set of data, so there's less disk activity and it's still really fast. The start up time can actually be faster for your app than even native Python, which is pretty cool. It's pretty cool, there's some statistics in there that show it's either as fast or sometimes, like, the second time you've interacted with that, that XAR, because the file system actually decompresses and caches that stuff in memory, it can actually run a little bit quicker. So there's a lot of interesting things around performance there.
+ 
+00:25:44 OKKEN: Yeah.
+ 
+00:25:45 KENNEDY: And finally, these file system things, these XARs, right? They're read only, which means the integrity of your app is guaranteed, as opposed to say, a virtual environment or a folder where people could mess with it or change the Python system. It's read only, so what you gave 'em is what they're running.
+ 
+00:26:01 OKKEN: That's a cool thing, too.
+ 
+00:26:02 KENNEDY: Yeah. There's a lot of neat stuff here. I don't think it fits my use case, but maybe some listeners', so it'll work well for them.
+ 
+00:26:08 OKKEN: Definitely.
+ 
+00:26:08 KENNEDY: A lot of people seemed excited about it on the Twitter.
+ 
+00:26:10 OKKEN: On the Twitters.
+ 
+00:26:11 KENNEDY: Exactly. Alright, well that's it for all of our items. You got some extras you want to throw out there?
+ 
+00:26:15 OKKEN: Somebody mentioned to me on Twitter that NumPy 1.15 just released recently, that NumPy 1.15 just released recently, and they completely overhauled their testing to use PyTest.
+ 
+00:26:30 KENNEDY: Yay! Another win for PyTest, that's awesome.
+ 
+00:26:33 OKKEN: Yeah. And then you've got a couple lists of some videos that are out.
+ 
+00:26:37 KENNEDY: Yeah, I have a couple events. I have two in the future and two in the past. Maybe, depending on when you listen to this, actually all of them in the past, but right now, two future and two in the past. So SciPy 2018, the data science Python world conference, the videos for that are now out on YouTube. If you couldn't make it to SciPy and you want to catch a bunch of presentations there, here's a link to the videos. Also, PyOhio. We have a lot of these regional Python conferences, and somehow PyOhio has actually gained quite a bit of momentum, which is interesting with PyCon being there last year and next. Anyway, the videos for that are also out, so a bunch of good YouTube watching comin' up here over the weekend.
+ 
+00:27:17 OKKEN: Yeah, I've already started a couple of these, so. And then in the future, we've got...
+ 
+00:27:22 KENNEDY: In the future, Python Canada is coming, so the call for papers on that is open for about a month. In the future PyBay 2018, so the regional San Francisco Python conference is happening in a couple of weeks, and I would love to go to that, but I can't.
+ 
+00:27:43 OKKEN: Yeah, I still haven't decided.
+ 
+00:27:44 KENNEDY: Are you thinking about going?
+ 
+00:27:44 OKKEN: I was thinking about going to PyBay, but there's a lot of stuff goin' on in the fall, so we'll see.
+ 
+00:27:49 KENNEDY: Yeah, I have daughters' going to college right around then, so it would probably be better if I helped them do that instead of just go hang out in San Francisco. Alright, so the last thing is, I just want to let people know that I have another course out. Building Data Driven Web Apps with Pyramid and SQLAlchemy. It's super fun, 9 hours of awesomeness, so there's a link in there, check that out as well, if people are interested.
+ 
+00:28:09 OKKEN: That looks fun.
+ 
+00:28:11 KENNEDY: Yeah, it's definitely a good one. Covers some things that I've wanted to cover for a while, like ORM migrations and managing stuff over time with databases and stuff. Pretty cool.
+ 
+00:28:20 OKKEN: Cool.
+ 
+00:28:20 KENNEDY: Alright, well, Brian thanks as always! It's been fun!
+ 
+00:28:23 OKKEN: Thank you.
+ 
+00:28:24 KENNEDY: Yep, bye. Thank you for listening to Python Bytes. Folow the show on Twitter via @pythonbytes. That's pythonbytes as in B-Y-T-E-S. And get the full show notes at pythonbytes.fm If you have a news item you want featured, just visit pythonbytes.fm and send it our way. We're always on the lookout for sharing something cool. On behalf of myself and Brian Okken, this is Michael Kennedy. Thank you for listening and sharing this podcast with your friends and colleagues.
+ 
