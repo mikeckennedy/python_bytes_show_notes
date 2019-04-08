@@ -1,0 +1,214 @@
+00:00:00 KENNEDY: Hello and welcome to Python Bytes, where we deliver Python news and headlines directly to your earbuds. This is Episode 124 recorded April 3rd, 2019. I'm Michael Kennedy.
+ 
+00:00:09 OKKEN: And I'm Brian Okken.
+ 
+00:00:11 KENNEDY: And this episode is brought to you by Digital Ocean. Check them out at pythonbytes.fm/digitalocean. Get $100 credit for new users. Tell you more about why that's awesome later. Right now, Brian, I feel like we're going to go to your happy place.
+ 
+00:00:23 OKKEN: Yes, I'm definitely one of the testing nerds that's around and I'm excited about the pytest 4.4.0 release. There's a lot of stuff in the 4.4 release and that's pretty cool. There's a lot of actually really neat things, like one of the things, I'm going to save the big one for last, but one of the cool things is there's a test paths variable that you can put in your configuration ini file. It tells the pytest where to look for tests and it kind of short-circuits some of the searching everything under the current directory.
+ 
+00:01:00 KENNEDY: Just what like two subdirectories or something, but not everything?
+ 
+00:01:02 OKKEN: Yeah like for instance this is very common if you've got like a structure where you had tests in one directory, your source in another directory, and then maybe some documents or something, and it's a large project. If you just launch pytest from the top, it'll look at everything, and it really should just look in the test directory for instance.
+ 
+00:01:22 KENNEDY: Right, exactly. That makes sense.
+ 
+00:01:22 OKKEN: So that's pretty cool. It's been around for a while but it's kind of hidden, like it just worked that way. And what they've done now is they've added in the output it tells you which test paths have been set so that's nice.
+ 
+00:01:37 KENNEDY: Yeah, that's cool.
+ 
+00:01:38 OKKEN: And then there's a whole bunch of stuff that's relevant to, especially to plug-in writers, and a little bit for test writers. There's actually quite a few things. I'd encourage people if they're nerdy about pytest to check out the changed list. The thing that I'm super excited about is there are a couple internal changes that made it so that there's a new plugin called the pytest-subtests that works.
+ 
+00:02:01 KENNEDY: Ooh, nice.
+ 
+00:02:01 OKKEN: Ish. So pytest has always been able to run unittest code, but one of the things that happened is if unittest had subtests in them and subtests are a way to have kind of multiple checks within a test, if you had those in there and one of them failed, it's supposed to keep going and check all of them, but pytest would stop at the first failure. Now it doesn't. Now it continues on with running all of them.
+ 
+00:02:30 KENNEDY: That's cool like so if I've got say a list of five things and I want to loop over those and test each one of them without some kind of parametrized test or something, I just want to loop over of them all and write one test and do that, like I would do that with a subtests?
+ 
+00:02:43 OKKEN: Yeah or at least you can. And it works pretty good. So it really was to the plug-in, and the changes were really to fix this little corner case of the unittest support, and so I'm really glad that they did that, but they also threw in a new fixture called subtests. So even if you're not using unittest, you can use this new fixture and it has a subtests that tests for test manager that works just like the unittest version, but you can use it in pytest tests.
+ 
+00:03:12 KENNEDY: Yeah, that's cool.
+ 
+00:03:12 OKKEN: That's neat.
+ 
+00:03:12 KENNEDY: Another one that I think is nice is the async. So you have the async, mark as async decorator you can use. But previously if you did that, but for some reason like the right plugin to run the async, say like pytest-asyncio or pytest-trio wasn't there, they would just not run but they were still marked as passed. And now at least you get a warning that they're not run or something like this. That's cool.
+ 
+00:03:37 OKKEN: Yeah that's, that's a oops.
+ 
+00:03:40 KENNEDY: That's one way to make your test pass, like let's just not install that async runner, we'll be cool. Well, keeping with the async theme, I want to roll right into Requests. So I literally just hung up a recording or stopped recording with Kenneth Reitz. We're doing an episode on Talk Python and we're talking to him about Requests a little bit but mostly other things. Anyway this next item follows right onto that is requests-async. So currently without this library or something like it, if I want to use async and await and I'm doing web requests like microservices, or calling like a Stripe API or something, I either do it synchronously with Requests or I can do it asynchronally but I have to switch out my calling package, I have to use like aiohttp.ClientSession or something totally different, rewrite my code. There's a package called requests-async, which is pretty cool, and it's actually a different thing you import, but if you import it as requests, then you can do await request.get or await request.post and all of that. So it seamlessly fits into your async and await methods. Maybe your testing it with that pytesting I was talking about. And it's basically the same API but now it's async-friendly which is cool.
+ 
+00:04:58 OKKEN: That's very neat, yeah.
+ 
+00:05:00 KENNEDY: And like I said, there's other stuff you could use. You could use aiohttp which is nice, but it means you rewrite your stuff, right, and a lot of people depend on like changing DNS resolvers and all sorts of crazy stuff deep down inside of Requests, so this will let you that theoretically at least. I haven't tried all the edge cases, but let you do that without rewriting your code which I think is pretty cool. Now I did say I was just talking to Kenneth, and one of the things he said is they are working on native async and await support for Requests, so that's pretty cool, which would make this unnecessary, so why do I bring it up? Well he said it's probably like not done for a while. It's probably like a year away 'cause they're doing like major rework inside of Requests. And think how many libraries and people depend upon Requests, so and how hard that must make it to change at all, right?
+ 
+00:05:44 OKKEN: Yeah, it needs to not break backwards compatibility. It's not even just breaking it. It can't slow things down either.
+ 
+00:05:50 KENNEDY: Yeah, exactly. So they're talking about making a new package called Requests3. So you import requests3 and it has a slightly different API just barely. So anyway here's an interim way to get async and await working with Requests. And another thing, there's a cool bit of testing going on here Brian, I thought you might like.
+ 
+00:06:08 OKKEN: Nice.
+ 
+00:06:08 KENNEDY: So I can mock out my end point, like let's suppose I'm trying to call an API or something, and I don't really want it to go to the real server, I want to give it a test one. I can create a Flask app or Core or Starlet or whatever, and create a mock like connection pool or something to that effect, and give it my real website, implemented it in Python, and that's the mock behavior of this thing.
+ 
+00:06:32 OKKEN: Okay now that's neat. Is there more information about that somewhere or?
+ 
+00:06:35 KENNEDY: It's covered in the GitHub repo that I linked to, and if you go to the bottom down there, it talks about it. I don't totally know what's going on exactly, but for example, like you want to call, I don't know, your API, and you could have like a little local one running on SQL, SQLite, or something, and you could like literally give it the app. It won't even go to the network. It'll just like directly interact with the app as if it was the web server.
+ 
+00:06:57 OKKEN: Oh, that's really cool.
+ 
+00:06:58 KENNEDY: Yeah, it's pretty wild. So, anyway this is...
+ 
+00:06:59 OKKEN: I'd like to play with that.
+ 
+00:07:02 KENNEDY: Yeah, yeah, it's a pretty cool thing to be playing with, and it has some other cool async testing support, so it's got a cool testing angle as well.
+ 
+00:07:07 OKKEN: Nice, cool.
+ 
+00:07:07 KENNEDY: Speaking of services, well, what do you got next?
+ 
+00:07:10 OKKEN: I did notice that there was an article in The Register about a bunch, I don't know how a bunch, but some layoffs at NPM.
+ 
+00:07:18 KENNEDY: Right, NPM is the commercial equivalent of pip sort of and PyPA or Python Package Authority, like mushed into one, right?
+ 
+00:07:26 OKKEN: Yeah. I didn't know that it was a for-profit like company, but apparently it is.
+ 
+00:07:31 KENNEDY: Yeah, that's interesting all by itself right there, isn't it?
+ 
+00:07:34 OKKEN: Yeah so Dustin Ingram wrote an article talking about, and he, Dustin is one of the people that works with PyPI and the Packaging Authority, and he wrote an article called PyPI as a Service. And essentially there's a couple interesting comparisons between NPM and PyPI. Firstly NPM has been around for longer I guess since 2014, PyPI in 2002. Oh, no, we're older. So PyPI's older. Math is easy. Anyway they have like 10 million dollars in funding and whereas around 60 people working there. And the PyPI has like less than half a million in grants. And then just like there's only half of, a fraction of a singular employee and then some volunteers. So there's a lot less people running PyPI and a lot less money. But what if they changed it? Apparently they've had a lot of people asked for an as a service version so they could have like a private thing so you could have your, you could use something like PyPI but with your own stuff that's internal or whatever. And generally just talked about some of the problems with that. One of the problems is it might jeopardize the nonprofit aspect of the Python Software Foundation. That would be bad. Also there's a whole bunch of people that, companies that donate services and infrastructure to make PyPI run at the tune of about a million dollars a year. And I don't know if, and Dave mentions that. They might not be thrilled about donating that service to a for-profit company.
+ 
+00:09:12 KENNEDY: I'm sure they wouldn't.
+ 
+00:09:13 OKKEN: I agree. There's also some of the ecosystem. There's other options out there. However I've kind of looked into these and I'm not really thrilled with the other options available. And so I actually think there's room for somebody else to create something like PyPI for private use that might, as a service, that might be an opportunity for somebody.
+ 
+00:09:33 KENNEDY: Yeah for sure. One of them that comes to mind is pydist.com. That's in the air right now but it's basically that. It's basically the service that people are asking for. Honestly I totally see the problem here, right? We've got this careful balance of this actually really expensive thing to run, PyPI and especially the traffic and the website and whatnot, and then we've got these donations taking care of that. There probably is a business model to be had here, but there's going to be like a wicked dip to zero, near zero, and it has to, somehow you have to build and climb back high enough to cover just the expenses, right? Like that's pretty risky to do that.
+ 
+00:10:12 OKKEN: Right and also what do you do with the people that are now volunteering? Do you start paying them? What if they only volunteer for a couple hours a week or a couple hours a month? Do you pay them for that? And then also they support some of these alternate services, right now PyPA does, and if they had an incentive to not support the other services and only support their own profit, that's not good. So anyway it's an interesting topic.
+ 
+00:10:37 KENNEDY: I honestly think that there's actually a huge potential. I've talked to people in the community about this, but I don't know that I've talked about it in the podcast before around pypi.org. Right, if you look at how much traffic is there, there's a huge opportunity for like noninvasive ethical ads, and other types of promoted stuff to be put on there, and I'm sure they could do more than a million dollars with the amount of traffic they have. But there would be that bad dip and they might not make it through and so on. But I certainly see this as totally possible that it could go that way and it may be, given that they're basically saying hey, we need to receive a donation of 40,000, $45,000 a month of bandwidth, and if we don't, we're done. Right, that's a really scary situation to be in as well. They're dependent on one company so I don't know, it's super interesting. The layouts at NPM, that doesn't make me sound, make me really want to encourage PyPI to go that way.
+ 
+00:11:35 OKKEN: Right. It was interesting at the end, the conclusion wasn't that it's never going to happen. It's just right now it looks like it's not worth it. It would be a kind of a pain and it might backfire. And so right now they're not looking into it but... It's not a never thing.
+ 
+00:11:51 KENNEDY: Yeah, it makes sense. Alright before we go on to the next one, let me just tell you all about some cool features at Digital Ocean. Something they just announced is the Digital Ocean Marketplace. So it's like one-click apps and server configuration for all sorts of tools and whatnot. So maybe you want a Disqus server or a GitLab Enterprise server, a ModDB server, or even Django, you can go up to there, create an account, go into their marketplace, and just click the button and boom, you have a infrastructure all set up, pre-configured to run whatever app it is that you want there. So there's a bunch there, and I think you can even create more and add them if you want your project in there. So check them out pythonbytes.fm/digitalocean. Get $100 free credit for new users. And you definitely got to play with that marketplace. It's quite cool. Brian, if I was looking to run, say, some data science Python in the cloud, and I maybe wanted to do that without paying any money, maybe I was a college professor and I wanted to have my students do it, or even high school, or I just didn't want to pay money or whatever, there's a bunch of these services now that'll run basically Jupyter in the cloud, right? So, there's a couple big ones. We have like Azure and we have Google, but there's some smaller ones as well. And a friend of ours, Kevin Markham, put together a cool article called Six Easy Ways to Run Your Jupyter Notebook in the Cloud. So basically he went through and compared six different services, assuming they all, they got into this list if they had all the characteristics in that, and they don't require you to install anything in your machine, they're either completely free or they have a completely free plan. They give you access to something like a Jupyter Notebook environment. You could import and export real Jupyter Notebooks through the IPYNB format, and they support Python language, maybe others as well. Out of all the ones he looked through, there's six that were decent that matched those criteria. So we have Binder. Maybe you've gone to GitHub and you've seen like a GitHub repo that has some IPython Notebooks in it, and a little Binder like a run in Binder button. So if you click that, you can basically use the Binder service and run any Jupyter Notebook that lives in a public GitHub repo on Binder. So you can just click a button and say run this repo. That's kind of cool, right?
+ 
+00:14:02 OKKEN: Yeah, very cool.
+ 
+00:14:03 KENNEDY: So, that's nice. What I like about Kevin's article is he goes through and says, these are the pros, these are the cons. So like pros, obviously this is free and easy. If you already work on GitHub, it's just right there. If you don't or what you have is a private repo, then Binder is not such a big help. Another thing that's big in data science is Kaggle, right, so they have these Kaggle competitions which are like here's a bunch of data, try to solve a problem by getting the data to tell you, or training a neural network or something like that. So Kaggle is known for that, but they also have this thing called Kernels, like a free service called Kernel, so Kaggle Kernels. And these are kind of like Jupyter Notebooks, like super simplified ones. So you can run your stuff there, that's cool. Maybe one of the bigger ones is Google Colaboratory or Google Colab, and as long as you have a Google account, it's like Googles Docs but for Jupyter Notebooks. You just log in, go. What I really like about this one is it's like Google Docs in that, like you and I could be working on a problem and we could just both be typing at the same time and working right alongside each other. So the Colaboratory bit is like super big there.
+ 
+00:15:02 OKKEN: Yeah, that's nice.
+ 
+00:15:02 KENNEDY: So, that's pretty good. And then also you can run your code regular on a server through Google Colab, but you can also run it on a GPU or a TPU, TensorFlow unit, processing unit, which is pretty awesome for something. I don't know if you have to pay for the GPU option, but still pretty cool. 'Cause a lot of people don't have, certainly don't have TensorFlow chips laying around probably. Maybe comparable to the Google one is the Azure Notebooks. So this is a big part of what Python and Microsoft are doing. Python is sort of showing up in in the Microsoft space is over on Azure and Azure Notebooks. So they've got simply, it's more of like a project, right? It's not just a notebook but it's like multiple notebooks, marked down files, datasets, so you kind of create these like project folder type things that you can run on Azure Notebooks, and that's cool, also free, all of them are free. Here's something I had not heard of, CoCalc for Collaborative Calculation, also super collaboratory like the Google Colaboratory one. And yeah it's pretty cool. It lets you do all sorts of stuff like Jupyter Notebooks, but also Sage worksheets and other things which is good. And finally from JetBrains we have Datalore, and it's not exactly Jupyter Notebooks, but it's like a reimagining of a Jupyter Notebook, which is cool but you can import and export Jupyter Notebooks from it. So that's pretty cool. Like all the features and autocomplete and cool stuff that you get in PyCharm, but like in a notebook, Jupyter-like notebook, that is sort of Datalore, also realtime collaboration there. Yeah those are all pretty cool. So if people are out there thinking like hey I want to do some Jupyter in a cloud maybe for a course or for collaboration or something, these are all good options.
+ 
+00:16:43 OKKEN: Yeah, very cool.
+ 
+00:16:44 KENNEDY: Yeah, nice article, Kevin. And hopefully it helps some folks out there. Speaking of Jupyter, what do you got next?
+ 
+00:16:50 OKKEN: Yeah, did you have this down or I just didn't see it beforehand, or did we just, coincidence?
+ 
+00:16:55 KENNEDY: Just a coincidence.
+ 
+00:16:56 OKKEN: Okay, so my next item is Jupyter Notebook tutorials. So let's say you have some people you're trying to collaborate or not, and you have some people that aren't quite familiar with Jupyter Notebooks and you want to get them up to speed really fast, I'm actually in this situation right now, not for me but some people I'm trying to ramp up, and I found there's a ton of tutorials about Jupyter Notebooks of course out there, but I really liked, there's two tutorials from Dataquest. The first is Jupyter Notebook for Beginners: A Tutorial, and the second is Tutorial: Advanced Jupyter Notebooks, and it's by the same author which I should've written down but I didn't. It starts out incredibly gentle, but it's also useful and concise and quick. You can get through quite a bit right away. And so it even starts with like if you want to install Jupyter on your computer, how to install it, how to get started up. You don't even, if you aren't even familiar with how these work, how to get going, a little bit of a discussion about the file type, the IPYNB, and then a run through of the interface and how it works to work with a notebook. And then even into data so like loading data and some important things like plotting data right off the bat, and then even how to share. And then using save and checkpoint frequently to make sure that you save parts of your notebook. It's like this saving often is something we take for granted with an editor, but it's kind of nice to have this within Jupyter Notebooks also.
+ 
+00:18:31 KENNEDY: Yeah, for sure.
+ 
+00:18:31 OKKEN: And I kind of like that he stops at the beginning one. It's long enough to get people started right at there, but then the advanced one, once people play with it a little bit, getting into some advanced things, which like the Magic's keywords, debugging, shell commands, logging, using Seaborn, using macros, and all sorts of stuff in the advanced one which it's nice. But it's not, they're not too long. You could probably take an hour or so and go through it, and learn what you need and skip what you don't need yet.
+ 
+00:19:02 KENNEDY: Yeah, that's cool.
+ 
+00:19:03 OKKEN: I've also been playing with using PyCharm to edit IPython Notebooks. It works really good. I would recommend if people are debugging notebooks, maybe not use right in Jupyter, I would probably use PyCharm for debugging.
+ 
+00:19:17 KENNEDY: Yeah, PyCharm is pretty sweet for debugging.
+ 
+00:19:19 OKKEN: So, that's what I got.
+ 
+00:19:20 KENNEDY: Yeah, that's nice. I think those definitely go well together, so people can check out those articles and then try them online. They don't even have to install anything. Alright, final one, Brian. It comes from a friend of the show, Trey Hunter, and it's called unique sentinel values, identity checks, and when to use object instead of none. And I think this is just a really nice reminder, maybe something a lot of folks don't know, or haven't really thought about often. We have to clear a variable and it may or may not have a value, right, think of like computing the minimum of something. So you're going to, the algorithm is you have the minimum value and you got to set that to something, and then you loop through all the items and you're going to set it to the lowest, but how do you kind of initialize that, right? Do you set it to None? Do you set it to maybe negative one? But well what if the values could be negative? Like what is that value, right? So often None becomes this thing, that is, it's not yet set value. But if None is a valid value, or maybe in this minimum example, like None could actually be a value that was passed to you in the list that you're trying to find the minimum of, but you need to treat it differently than actually the not having, like it gets really weird, right? So Trey makes the case for this, for something different in this article, and I really like this. It's like instead of setting a value to None, you can set it to object(). And that allocates an object, much like None is an object ironically, Singleton and things like that. But object is going to be allocated on the heap, no one will ever pass that thing to you, right? There's no other use case for allocating an object object, right? You always have something derived from object, right? I don't know, a string, a number, a customer, but not object itself, like the base class. So just allocating one of those is like the perfect sentinel value. And there's all kinds of examples he goes through. Default values for function, like default parameters for functions, how you deal with that, how do you deal with like with this minimum example, what is the first value before you've looked at the list? And so you end up with really nice checks like that. It's that minimum equals to object and then if minimum is not initial, right, or is not this, you set the initial to like this new object, right, then you go work with it. So super simple adaptation that solves a certain class of bugs and makes it really nice.
+ 
+00:21:36 OKKEN: That's interesting.
+ 
+00:21:36 KENNEDY: Yeah, it's super simple but it's kind of of a good reminder. And there's the example, he re-impliments the min function that's a builtin but in Python, and goes through all the cases to make it work and shows how this pattern is much better than using None.
+ 
+00:21:51 OKKEN: I'll have to hit up Trey and ask him how to deal with that with the type hints. Because I'm used to...
+ 
+00:21:56 KENNEDY: Oh, yeah, I know, I know. You can't just say optional. I guess you got to do like union of object, but that's also not a good answer.
+ 
+00:22:02 OKKEN: 'Cause that would be everything.
+ 
+00:22:07 KENNEDY: Yeah, alright. Yeah, it's not so good.
+ 
+00:22:09 OKKEN: Anyway, interesting, but it's a cool idea.
+ 
+00:22:10 KENNEDY: Yeah, it's a great idea. It is a little bizarre with the, I don't know, with the type hints, you're right, but that's okay. I think you can get around it or just put like a ignore this one line type of thing.
+ 
+00:22:21 OKKEN: Yeah, well, I mean, and it only really will come into place if it's part of your interface to something, so.
+ 
+00:22:27 KENNEDY: I mean you probably do have to be careful with like MyPy and MyPyC and those tools though. They'll probably freak out if you don't take it into account, so. But yeah I love the pattern in general, how it fits with type hints, that's like a different, different aside. That whole picture is...
+ 
+00:22:40 OKKEN: Sorry, Trey, but yeah.
+ 
+00:22:41 KENNEDY: Yeah, Trey, there's your follow-up article, man. Brian, that's it for our official six topics. As usual you got anything extra you want to share with anyone?
+ 
+00:22:50 OKKEN: I do, I forgot to write it down but you reminded me 'cause you're talking about sentinel values. And sentinels were part of The Matrix, right?
+ 
+00:22:58 KENNEDY: Oh, yeah, they were scary. Those are the big metal things that went through like the underground tubes and they would like grab onto the spaceship with the good guys in it, yeah.
+ 
+00:23:07 OKKEN: Yeah, yeah, but there's something that's not scary is the cool computer screens that would like go downwards, right?
+ 
+00:23:13 KENNEDY: Right
+ 
+00:23:14 OKKEN: So, one of the things I found which is, I brought it up because I brought up PyTest earlier, was a plugin called pytest-neo, and it runs all your, like normally if you just run pytest by default, it'll print out like the test filename and then a whole bunch of dots, and the dots means everything passed or like an F for fail. The pytest-neo plugin, if you have that installed, that happens but it goes downwards, and it looks like the screen, like a Matrix screen, but actually it looks cool. But it's actually informative. It has all the same information just in the wrong, a different direction.
+ 
+00:23:51 KENNEDY: Whoa, I need to learn unit testing, chunk. Yeah, that's awesome, I love it. Takes me back to the '90s. That's cool, very, very cool.
+ 
+00:23:58 OKKEN: How about you?
+ 
+00:23:58 KENNEDY: I've got a couple of things. Let's start with this one. So I recently released a free course, so people can check that out over at training.talkpython.fm or just click the link. I think we've talked about Kenneth Reitz' new web framework called Responder, right?
+ 
+00:24:12 OKKEN: I think so.
+ 
+00:24:12 KENNEDY: Think so, yeah, I'm pretty sure we have. So I decided to create a super short little mini course on it. So I created a almost one hour long course on Responder and a framework and it actually uses, it goes and builds that we go and build out like a cool API using Responder, and then actually consume it with Vue.js as well, so there's a cool little Vue.js front-end on top of that. So if people want to get some quick exposure to Responder, maybe see some of the cool features that it can do, kind of like Flask-like, but it does a bunch of other awesome stuff as well and it's not just Flask, check that out. So check out the Responder course. Like I said it's free so no problem, go check that out. And the other one is really cool but I have to really remind myself to use it. So imagine this, I'm working in an editor, this was for PyCharm or any of the IntelliJ platforms like WebStorm or whatever, and I've got like a big monitor up, a whole bunch of code on the screen, and I have my fingers on the keyboard, and I want to go up to that section where I'm doing like open something something as fin or whatever, right? But I don't want to take my mouse and go over that, I don't want to arrow up like 17 lines and then go to the right control whatever. So there's this thing called AceJump. Have you heard of this?
+ 
+00:25:22 OKKEN: No.
+ 
+00:25:22 KENNEDY: AceJump lets you hit a hotkey. I think it's on Windows, sorry, Mac. It's Command + Semicolon. And then if you type, let's say, FI, it'll go and put like a single character on every space that FI is a substring of on the screen. Maybe the one I'm looking for has like a J by it, so I just hit FI and hit J and it'll take you straight to it. So like basically it turns your screen, your code into like you do a little bit of a search and then like one character keystroke to jump to that section of code.
+ 
+00:25:55 OKKEN: Oh that's cool.
+ 
+00:25:55 KENNEDY: It's super cool. It's super hard to remember to do that, not just arrow arrow arrow arrow or mouse or whatever, right? But if I can remind myself to do this, it's going to be great.
+ 
+00:26:05 OKKEN: Okay, well, I mean I don't know, you use arrows, man?
+ 
+00:26:08 KENNEDY: Sometimes.
+ 
+00:26:09 OKKEN: There's a Vi mode.
+ 
+00:26:12 KENNEDY: True, true, true.
+ 
+00:26:13 OKKEN: Anyway so, no, that's cool. I'm going to have to try that out.
+ 
+00:26:16 KENNEDY: Yeah so you just basically like type as you search and the whole thing becomes like sort of quick jump around your editor. Alright are you ready for a pyjoke?
+ 
+00:26:25 OKKEN: I am.
+ 
+00:26:26 KENNEDY: Yeah I got to hit it a few times. What's the object oriented way to become wealthy?
+ 
+00:26:31 OKKEN: I don't know, how?
+ 
+00:26:32 KENNEDY: Inheritance. That's bad, right? A good programmer is someone who always looks both ways before crossing a one-way street. Child, Dad, why does the sun rise in the east and set in the west? Dad, son it's working, don't touch it. Alright I'll do one more for you because it's about Python 2.7. Triumphantly Beth removed Python 2.7 from her server in 2020. Finally she said with glee, "Only to see the announcement for Python 4.4!"
+ 
+00:27:06 OKKEN: Yeah that's funny.
+ 
+00:27:06 KENNEDY: Alright.
+ 
+00:27:09 OKKEN: Okay cool.
+ 
+00:27:10 KENNEDY: I guess we'll leave it there?
+ 
+00:27:11 OKKEN: Yep, that's good.
+ 
+00:27:12 KENNEDY: Alright Brian, thanks for being here. Thanks for finding these items.
+ 
+00:27:15 OKKEN: Thanks.
+ 
+00:27:15 KENNEDY: Yep.
+ 
+00:27:15 OKKEN: Bye.
+ 
+00:27:16 KENNEDY: Thank you for listening to Python Bytes. Follow the show on Twitter via @pythonbytes, that's Python Bytes as in B-Y-T-E-S, and get the full show notes at pythonbytes.fm. If you have a news item you want featured, just visit pythonbytes.fm and send it our way. We're always on the lookout for sharing something cool. On behalf of myself and Brian Okken, this is Michael Kennedy. Thank you for listening and sharing this podcast with your friends and colleagues.
+ 
