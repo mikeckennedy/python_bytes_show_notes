@@ -1,0 +1,222 @@
+00:00:00 KENNEDY: Hello and welcome to Python Bytes where we deliver Python news and headlines directly to your ear buds. This is Episode 142, recorded July 31st. I'm Michael Kennedy.
+ 
+00:00:10 OKKEN: And I'm Brian Okken.
+ 
+00:00:11 THOMAS: And I'm Brett Thomas.
+ 
+00:00:12 KENNEDY: And yes, we have a special guest this time, third co-host, Brett Thomas. Brett, welcome to the show.
+ 
+00:00:17 THOMAS: Thank you very much.
+ 
+00:00:18 KENNEDY: Yeah, it's great to have you here. I also want to say, thank you to Datadog for sponsoring the show. Check them out at pythonbytes.fm/datadog. More on that later. Brett, you want to just quickly tell everyone a little bit about yourself before we get into the topics?
+ 
+00:00:29 THOMAS: Yeah, sure. I'm the Chief Technology Officer of a company called fasterthanlight.dev. We do static code analysis tooling for the SaaS model to help you analyze your code, and I'll Talk a little bit about that later.
+ 
+00:00:40 KENNEDY: Alright, awesome, sounds good. Well, happy to have you here. Brian, you want to kick us off? Sure, it's great to have sustainability. It's almost like Earth Day for code. You always want to just have that in mind.
+ 
+00:00:51 OKKEN: Earth Day for code?
+ 
+00:00:52 KENNEDY: Sustainability, come on. You got to roll me with me here.
+ 
+00:00:56 THOMAS: Yeah, I'm really worried about what climate change is going to do to my code, but.
+ 
+00:00:59 OKKEN: I ran across this article called Writing Sustainable Python Scripts by Vincent Bernat. And, most of my time I'm not, I mean I don't really think about it too much for little scripts or little helper utilities, I've got lots of 'em around work, but there is an issue that, I think this is a reasonable thing to talk about is if it's only going to be a short-lived script, yeah, we don't really care about it too much. But if it's going to be around for a while, or it's running from a cron job or something, it is, there's a few things you can do to make it a little bit more maintainable. And I like the things he put down. The most obvious ones, which some people forget, is throwing a docstring at the top of the file to let people in the future know what problem you're trying to solve and kind of describe what it is. Instead of doing like hard-coded stuff you can easily add some command line arguments. The defaults can be sort of hard-coded defaults, but having some way to make the script useful. And then he goes into adding logging and I think it's kind of neat. He includes how to do debug logging and hook that in to the command line argument system, which is kind of a cool trick. And then also for unattended scripts being able to log to system logging. And then finally finishing it off with adding some simple tests to make sure that your code does what you think it does. It's just a nice little article.
+ 
+00:02:23 KENNEDY: Yeah, it's easy to forget about maintaining these little scripts because they're kind of throwaway, but actually they're throwaway 'til they're not. Go ahead, Brett.
+ 
+00:02:32 THOMAS: And the more throwaway you think it's going to be, the more it's going to be the longest-lived part of your system, of course.
+ 
+00:02:38 KENNEDY: Of course. Yeah, I have a bunch of these and I find that I even forget that they exist. I'll be doing something super painful and I'm like, wow, this is really not fun. I've got to like rename all these files based on like certain stuff out of the database or something. I should automate this. Like, wait a minute, I think I did automate this. And I'll go back and look, and like, yeah, like I can just run this thing in the command line and like 100 files are properly renamed, why did I spend the last five minutes, why do my hands hurt now, you know. And so, the way I got around solving that problem, often that involves like setting up a virtual environment, activating it, then running that script 'cause it has dependencies, I mentioned the database, or whatever, all the models and so on. So what I'll do is I'll create an alias in my shell and then I just run the alias. And so, if I go and just, like if I forget, I'll go and look at my aliases. I only got like 50 or something. I'm like, it's got to be one of these, which one, there it is. And then I run it again. And that's my system until my computer gets formatted then I have to start from scratch.
+ 
+00:03:35 THOMAS: That's the great thing. I was actually went through and audited my like .profile I don't know, six months ago, and I swear I've called around the same .profile for I think two decades, right. You know when it's like there's aliases to do things on systems that I haven't had access to for 20 years. I'm like, okay, maybe it's time to clean that up.
+ 
+00:03:51 KENNEDY: A little pruning. Yeah, but no, this is a great article, Brian, to remind people just to do these little, simple things. I don't know, maybe there's some threshold, right, you just like play around, you do it once. But like if you use it a third time then you should go back and like refactor and clean up a little. I don't know.
+ 
+00:04:06 OKKEN: Sometimes logging doesn't really make sense, and sometimes testing, I mean I'm shocked that I'm the person to say this, but sometimes manually testing stuff is fine. If you're going to notice when it breaks, it works.
+ 
+00:04:19 KENNEDY: Yeah, it definitely depends.
+ 
+00:04:20 OKKEN: Well, what do we have next?
+ 
+00:04:21 THOMAS: Well, so the first thing I would like to talk about is static code analysis using Bandit. And for anyone who's not aware of what static code analysis is, static code analysis is basically running a computer program on your computer program. I've actually recently heard somebody analogize it, it's like spell-check for a computer program. The reason it's called static code analysis, it's that separate from what we usually do in testing, which is dynamic, right, we run the program, we give it various inputs, we see if it does what we think it should, but static code analysis is about the idea of examining either the source code or the object code and saying, okay, we're going to look for patterns that look troublesome. And so, for example, one thing static code analysis might help you look for might be SQL injection attacks where you've got unbound SQL variables, which is just an absolutely perennial security problem that's always in the OWASP top three.
+ 
+00:05:14 KENNEDY: Select star from quote plus input name.
+ 
+00:05:17 THOMAS: Exactly, right. I mean, and there's actually all kinds of great database performance reasons you want to bind your variables anyhow, but if you don't know, definitely when you're doing SQL statements you should be using placeholder variables and binding them instead of actually interpolating strings, especially if those strings come from some random person on the internet, as in the famous XKCD, Little Bobby Tables cartoon. And, so anyway, so Bandit is an opensource tool that you can just grab, in fact, I believe you can just pip install it, and you run it on your code and it tells you things that are problematic. Now, of course, it doesn't know what your code's doing. One of the rubs on static code analysis tools is that they tend to false positive a lot because they don't understand the context. They say, okay, well this kind of pattern tends to be kind of dangerous, but they don't know that the way that you're using it is absolutely fine. Another just kind of hard example that I got out of it one time is Flask. You know, if you're making a Flask app and you turn debugging on when you create the Flask object, which seems like a reasonable thing to do, it actually enables a debug console if you know the right place to go to on your web app that allows you to execute arbitrary Python code unauthenticated. You probably don't want to do that on the internet.
+ 
+00:06:29 KENNEDY: That is super bad, and Django has the same problem. There's tools that search for that. It's a big deal, you don't want to publish it.
+ 
+00:06:36 THOMAS: Yeah, exactly. I mean, and that's just one of literally dozens or scores of things that Bandit can help you find, you know, those kinds of errors in your code.
+ 
+00:06:43 KENNEDY: Does Bandit do like pythonic code? Will it say, this numeric four should be just like an enumerate loop, or something like that?
+ 
+00:06:52 THOMAS: Yeah, there's a number of different things that you can do that kind of like range from, oh, hey, this is not a best practice, or this doesn't go with the correct coding style, for example. And certainly, if you are super into that, I think that can be a great resource for you. You know, my personal focus on it, I think, tends to be more from the security side of things, as somebody who has been running sensitive web apps on the internet now for 20 years, that really is just in my DNA. At my prior position, actually, I was responsible for keeping several hundred million credit cards safe at a PCI DSS level 1 service provider called Vindicia.
+ 
+00:07:27 KENNEDY: That will make you a little bit paranoid.
+ 
+00:07:30 THOMAS: Yeah, I mean, I don't know if you see the gray hairs there but yeah, I sleep a lot better now that I don't have that weight on my shoulders, I have to admit.
+ 
+00:07:39 KENNEDY: I can imagine. Now, one of the most stressful bit of codes I wrote was a credit card processing system for this company where the individual purchases would be like $3000 or $4,000, and I'm like yeah, better not mess it up. What you're talking about is a whole nother level. So static code analysis, and Bandit can help find those types of problems as well there, huh?
+ 
+00:07:57 THOMAS: Absolutely.
+ 
+00:07:58 KENNEDY: I'm a fan of these things, you know. The problem is you kind of got to, sometimes at least on large projects, you got to start using them early enough...
+ 
+00:08:05 THOMAS: Yeah, absolutely, you've just got a huge thing to go through, and actually I got to make, my company, what we're doing is, my new company, Faster Than Light, we're working on packaging this stuff up as software as a service and definitely helping you manage that like, oh hey, you know, I've already looked at this and it's not a problem kind of thing for large projects is one of the things that we're really trying to work on fixing for people.
+ 
+00:08:28 KENNEDY: Right, if you can put the little code comment or whatever that says, please suppress this warning here because we've reviewed it.
+ 
+00:08:34 THOMAS: Actually a customer I was talking to, you know, it's like they've got an Android app they're shipping. You know, well, the Android scanner, and this is obviously not Python, but the Android scanner is like, Whoa, you've got an API key in your code, ahh. Right, you know, and it's like, well, yeah, but it's an API key that has been carefully restricted so that it can only make one read-only call, and so it's okay. It's kind of like having, you know, kind of like that extra nervous person who occasionally freaks out, and you're like, no, no, no, really, it's okay, this isn't a problem, so.
+ 
+00:09:05 KENNEDY: Cool, yeah. Alright, so Bandit, pretty awesome. I know it does a lot of good stuff for Python. And, they actually list out all the stuff they check on their site, right?
+ 
+00:09:11 THOMAS: Yeah, there's definitely a big document you can get with all their tests, so.
+ 
+00:09:14 KENNEDY: Super. Alright, so the next one I want to talk about is Black. And, Brian, you're a fan of Black, right?
+ 
+00:09:20 OKKEN: Yep.
+ 
+00:09:20 KENNEDY: Brett, do you use Black? Do you know the code formatter?
+ 
+00:09:22 THOMAS: No, I'm not familiar with it myself. I'd love to hear.
+ 
+00:09:24 KENNEDY: It basically takes, what, like Flake8 does, and some of these other linting tools, a little bit like you were talking about, instead of saying, this file's too long, you should change it, this variable name is unused, or this indentation is not right, or whatever, instead of just giving you a bunch of warnings it just rewrites your code to conform to its standard. And long as you are willing to live with the standard, a lot of people put it as like a GitHub, a pre-commit hook, or something like that, and then just the whole team is just straight up on this type. So, it's really, really popular these days, over the last year or so. However, one of the things that's super annoying is there's a lot of places where you write code where you cannot apply these kind of tooling, and a lot of it is in places like Jupyter Notebooks, or online editors, and then you're like, well, you can type your code in here but it's like, well, but I can't format my code in here, and I'm doing space a lot to line up stuff, and it's making me crazy, like that kind of stuff, right. So, if you use Jupyter, there's a thing that came out called Jupyter-Black, Jupyter-Black, and it's a super simple Jupyter Notebook plugin that gives you a hotkey to apply Black formatting to your Jupyter Notebooks online.
+ 
+00:10:35 THOMAS: Does that work with the Flask debug console?
+ 
+00:10:37 KENNEDY: No, I don't think so. I don't think so. But yeah, I think this is super helpful for the data scientists who are out there writing code, or maybe even if you're a teacher and you're getting other people's code, and you're like, I can't look at this, what is this, like, these freshmen. You know, Ctrl + b, okay, freshman-itis is gone, I can read this, it's properly formatted like a professional, now let's review it, things like that. I just think it really brings a cool tool to a new place, and I'm sure it'll be really welcome.
+ 
+00:11:05 OKKEN: You answered my question that I had right away, is does it format just the current cell or the whole thing, and yeah, there's two different keyboard options, Ctrl + b and Ctrl + Shift + b that do both of those.
+ 
+00:11:17 KENNEDY: Yeah, Ctrl + Shift + b is probably the one you want. But, there's also a little toolbar button if you are not a hotkey person. So yeah, it's super simple, it just plugs in like a standard Jupyter Notebook extension, which I don't really do a ton with, but it sounds really easy to install it. And then, the only other requirement is that you have Black installed on the system or the virtual environment 'cause it has to basically shell out to Black to figure out what's happening. Alright, before we get on to the next topic though, let me just quickly tell you about Datadog. So, this episode, like many of ours, is sponsored by Datadog. They're a cloud monitoring platform built by engineers for engineers like all of us, right. And so, what it does is it auto-instruments Django, Flask, Postgres, I believe MongoDB, asyncio, all these different things, and will allow you to trace your request across servers, across processes, and bring you basically a wholistic view of like what is the request doing, 'cause it's great to profile your Python code, but there's a whole lot of other stuff happening, that's maybe where most the stuff is happening, right, in the database, or in the framework, or whatever. And so, this brings it all together and it integrates with over 350 technologies, Hadoop, Redis, all the good stuff. So, check them out, they got a free trial. pythonbytes.fm/datadog, and you also get a sweet Datadog T-shirt, so, like that alone makes it worth it, I think. Alright, Brian, what's this next one you got here?
+ 
+00:12:40 OKKEN: Well, I'm glad that we checked ahead of time and make sure that we had two Jupyter articles.
+ 
+00:12:45 KENNEDY: Yeah, right next to each other, it's perfect, so.
+ 
+00:12:46 OKKEN: Yeah. This is involving Papermill, and I think I'm pretty sure we've talked about Papermill before, at least briefly.
+ 
+00:12:53 KENNEDY: We covered Papermill live at PyCon.
+ 
+00:12:55 OKKEN: Oh yeah, right. So I included this because it's a two-part article series that talks about the entire workflow, which that's where it looked pretty interesting to me. So, this Chris Moffitt wrote part one and part two of Automated Report Generation With Papermill. So, it's taking Jupyter Notebooks that use Pandas and Matplotlib to create a report, and then using nbconvert to take that and create an HTML report, and then go through and use Papermill to parameterize the input of this entire process and to set up execute blocks. And then he completed the process, talked about the rest of the workflow about using a new tool that I've never hard of before, which his called Rclone, to clone different cloud directory services and keep the same directory on lots of different cloud services. Then how to, if you're in a Linux box, using cron to set up a regular process for this whole thing. I mean, the example's a simple thing like a monthly sales report that you want to have just go out, somebody can pop in the data in a spreadsheet or something like that, but then all the reporting, and the data analysis, and everything can happen afterwards. Just going through from the top to the bottom, the whole workflow, I thought, was a real nice touch.
+ 
+00:14:13 KENNEDY: I love this because it takes the boring stuff that you don't want to do and it just hands it over to the computers in like a beautiful way, taking some of the really new and nice tools, Papermill, Jupyter, and so on, and it just automates it all. So, instead of like every Friday you're like, ah, there's that two hours of like copying data from system to system for the report, it's like it just shows up in the email. It's just on internet, or whatever, right. This is really cool, and just to summarize Papermill, basically it turns Jupyter Notebooks into like functions or command line-style applications that can be called. You provide data to it, inputs, it runs, and then output comes out. So, you have the general analysis report, you feed like, hey, it's from July 1st to July 31st, drop the files here, go.
+ 
+00:15:00 OKKEN: Yep, it's nice.
+ 
+00:15:01 KENNEDY: Yeah, very cool. Brett, you got any things like this that you guys got to do at Faster Than Light?
+ 
+00:15:04 THOMAS: We are still new enough, I've got to admit I was literally was just thinking to myself this morning about how I really need to start writing some nightly reports that tell me what all everybody was doing in the system yesterday. So, we actually still haven't completely fully launched, so thankfully there isn't too much yet that I need to know about that's, you know, it's like oh yeah, how many tests did I run yesterday, you know, is kind of what I would be getting here. But yeah, that's definitely something that I'll be looking at as we start to do our release.
+ 
+00:15:34 KENNEDY: Yeah, you're in that beautiful place where the molasses of real life day-to-day business operations hasn't hit you yet. You can go quick and build things.
+ 
+00:15:41 THOMAS: Absolutely, and I got to say it is so strange having run four nines plus environment for, you know, a decade and a half to all the sudden be like, oh yeah, you know, production's down, nobody noticed, right, you know, because you haven't actually done anything yet, so.
+ 
+00:15:55 KENNEDY: It's a different world.
+ 
+00:15:55 THOMAS: It's a different world.
+ 
+00:15:57 KENNEDY: Cool, Alright, well, you got the next item. Tell us about it.
+ 
+00:16:00 THOMAS: Actually it's a little bit of a rant for me because it was something that was just kind of surprising to me given how much is in the Python Standard Library and how much, you know, just, you know, one of the things that's really great about Python is this, hey, how do I do this thing, and it's like, oh wow, it's in the Standard Library and you just call a function and it works. And that is that quite a while ago I ported an application from a Postgres database to an Oracle database, which I knew was a ridiculously stupid thing to do, but a customer was paying us a lot of money to do it, and I discovered that Postgres is interval types, which, you know, is just, you know when you're doing a timestamp and you go, okay, I want to add a week to this, or a day, or whatever, there's an SQL type that's called an interval where you can just have arbitrary amounts of time that you can add to a timestamp. Well, so Postgres lets you do anything completely arbitrary, well it turned out Oracle didn't, and it took me a little while to kind of understand why, and I actually ended up having to write my own interval parser, so I really had to like understand how all this stuff works. And it turns out that all date intervals, really at the end of the day, boil down to a number of seconds or a number of months. It's one of those two things. Because, if you think about it, a week is a number of days, and a day is a number of hours, and an hour is a number of minutes, and a minute is a number of seconds, you know. And if you've been a developer for any length of time you probably know off the top of your head that there are 86,400 seconds in a day because it just comes up all the time and you remember it. But, the other two is months and years. And a month is not a constant number of seconds. It's anywhere from 28 to 31 days, and depending upon how many that is, that actually varies by what year it is, and it's actually really kind of difficult to tease all that apart. And so, it actually turns out if you use the datetime library that comes with Python and you use the timedelta object that comes with it, and you try to set an offset of months or years, it just says, sorry, can't do that, right. I can't tell you what a month from now is. So, that was just really surprising to me and really kind of frustrating because actually the reason why I needed this is actually I was setting up our subscription service, although I will say, of course, I'm not actually hanging on to the credit cards now, but I wanted to be able to test it, right. And so, I want to say, okay, we'll start your subscription, let's go a month and a day out and see if your subscription is still active, 'cause it shouldn't be, then said, oh wow, okay, you can't do that. So, there is another package out there that you can just get off of pip. It's the dateutil package, and it has a timedelta replacement called relativedelta that just supports months and years, and works very similar to the timedelta thing. So, if you've got the problem of, oh hey, I want to know what it is a month from now, or 10 years from now, that'll let you calculate those timestamps because, of course, the problem is that parsing that stuff, like when you write the library, when you're advancing months, I mean, it's got to be text-based, right. You got to go, okay, I'm going to turn this thing into a date string, and then I'm going to increase the number of months and see if I've overflowed the number of years, increase the number of years, and then turn it back into a timestamp. So, it's a much slower process from a calculation perspective, and I suspect that's probably why the original Python library doesn't just support it out of the box.
+ 
+00:19:08 KENNEDY: Yeah, but that is frustrating, right, 'cause a totally reasonable thing. And actually, the hardest of all things to compute is how many months from now is it. Close to that is how many years, right.
+ 
+00:19:16 THOMAS: Yeah, it can be just, and, of course, actually we're going to run up against the Unix 2037 thing right now, which by the way I saw someone point out, I hadn't actually thought about this, there are places, businesses that are trying to do things like generate a certificate that expires in 20 years. Like, you can actually run into that problem in your code now if you're not running on 64-bit native code, which is actually, as I understand, a bit of a problem still in Linux. A Linux kernel is not doing a good job of handling all of that. That's going to be an increasing problem as we get closer to that barrier.
+ 
+00:19:47 KENNEDY: Sounds like a great opportunity for consultants.
+ 
+00:19:49 THOMAS: Oh yeah, I'm sure. I mean, it would not surprise me if in my career as a year 2037 consultant, right, as one of the last people who still knows how to program those old systems.
+ 
+00:20:00 KENNEDY: Yeah, this is a good recommendation. I like the dateutil library. I love the parsing for it, right. Parsing datetime's annoying in Python. Parse s-t, I can't remember it even because I stopped using it 'cause I just import parse from dateutil and I'm good, right. It seems to be able to guess the format that you're going for really, really well.
+ 
+00:20:22 THOMAS: I was doing a bunch of coding recently with DynamoDB, and it was just like the timestamps you get back out of the Boto 3 library is just like one character off of what you can natively parse, and it was just like, ugh, why does this have to be so painful.
+ 
+00:20:37 KENNEDY: The dateutil take it?
+ 
+00:20:38 THOMAS: Yeah, you know, the date that I was getting out of Boto 3, I don't remember the exact details, but the date I was getting out of Boto 3 had like one, it was like and so I had literally, I'm doing like a, you know, a text substitution on a particular character to turn it in to something else so that it'll then parse it.
+ 
+00:20:51 KENNEDY: Cool, I do that on XML to get rid of the namespaces all the time. Alright, so Brian, before we've spoken about understanding the language, and some of the core language features, and I just want to come back to this topic a little bit and focus on Python generators. So, there was a cool article recommended to us by one of the listeners. It's not super new, but we haven't covered it so I think it's totally relevant. It's a article by Radu Raicea, hopefully I'm getting that roughly right, And it's called How And Why You Should Use Python Generators. So, basically it talks about what are generators, how you should use them, and I wanted to cover this 'cause I feel like there's a lot of people that come from other languages, and it's both a blessing and a curse of Python that people can come from C, or Java, or JavaScript, or other languages, and just go, ah, this is simple, I learned it in a weekend. Let me write my code now, right. And they're doing numerical for loops, and they're doing, you know, like tons of stuff that is not really pythonic, right.
+ 
+00:21:49 THOMAS: Right, and they've got 27 stack overflow tabs open for like, oh, how do I open a file again.
+ 
+00:21:55 KENNEDY: Yes, exactly. And so, a lot of language don't have this idea of generators or coroutines, which are just amazing, right. Like, you've got a function, it's going to process some huge amount of data, maybe it needs to read a 10-gigabyte file and parse it line-by-line. Well, if you write that as a generator, if you only pull 10 lines from it, it only reads 10 lines. Or, even if you got to go through all of it, it only loads one line into memory at a time. And often, the implementation of the generator using the yield keyword is actually simpler, shorter, cleaner than if you were to try to build it up into a list and then return that list, and all those kinds of things.
+ 
+00:22:29 THOMAS: And code that doesn't exist doesn't have bugs in it.
+ 
+00:22:32 KENNEDY: That's a good point. Yes, code that doesn't exist does definitely not have bugs in it. So, this article's good if these generator ideas are new to you. It talks about the lazy evaluation, which is really important to understand, and gives you a couple of simple examples. This is not super deep, so, if you're new, read through it. If you really know it pretty well, you probably won't gain a whole lot about it, but it's something you could shoot over to your coworkers, you're like, why did you write this code? Please don't do that again, use this.
+ 
+00:22:57 OKKEN: Yeah, this is good, even to myself, an experienced Python person. There's certain times where I'm like, why didn't I think of using a generator earlier.
+ 
+00:23:04 KENNEDY: Yeah, absolutely. I mean, you don't always know that that's really the best path. You just start writing the code, you're like, ah, I'm going to have a list, I'm going to put stuff in the list, I'm going to do this, I'll get a dictionary, whatever. Like, wait a minute, actually I didn't need any of that, I could do it way better, right. So you kind of got to have it in mind. I would love it if tools like PyCharm and VSCode had a button to like refactor to generator, right. Convert this list and return the list into like a generator. It probably doesn't exist because, you know, like way you process the results has some kind of effect. You can't like go through a generator twice, but you can go through a list twice, you know, or things like that. But, it still would be really cool if you could kind of like automate that a little bit.
+ 
+00:23:41 OKKEN: Yeah, I was thinking more along the lines of when I have my custom data structure that is essentially a container structure, and I forget to add __iter__ or a __next__ to it so that generators can be used with it.
+ 
+00:23:53 KENNEDY: Yeah, exactly, you can fit it into that whole pipeline. Cool, well, that's it for our main items this week. You got anything else you want to quickly give a shout out to, Brian?
+ 
+00:24:01 OKKEN: Well, I just saw that we've got a link to PyPI now supporting API tokens. There's been a lot of recent changes to the PyPI interface to make it more secure, and this is just one of the latest, and I think it's a good way. They're doing well about making sure that these changes are supported on the test server as well so that you can test out the changes first.
+ 
+00:24:26 KENNEDY: Yeah, that's pretty good, so you don't have to just do it on the immutable write-only, or I meant write-once. Real version. Yeah, yeah, super cool. So, I think this is like evidence, you know, there was a big push and that funding, that grant from Mozilla, to basically modernize PyPI, right, and the work that the PyPA did to move that along. It was like now you can start seeing these new features coming in because previously it was like, no one wants to touch that. There's no way we're adding new features. Like, we're just trying to keep it from breaking. Now it can grow, it's cool.
+ 
+00:24:56 OKKEN: Yeah, it's nice.
+ 
+00:24:57 KENNEDY: I got a couple I want to give a quick shout-out to. Last week we covered possibility or this exploration of moving to PEG parsers as opposed to the original sort of one-off version of the parser that Guido van Rossum had written for Python 30 years ago. And so, now he's written another article talking about building a PEG parser, and moving towards it, and so on. So, if that was interesting to you, you can check out that follow up that he wrote. And then, finally, we've talked a lot about Homebrew, and obviously people know about apt, and other package managers on Linux, but I don't think we've really talked that much about Windows, right. You don't have Homebrew on Windows, or many other things like that. So, Prayson Daniel sent us over a quick message, said, hey, if you guys get a chance you should give a shout-out to the Chocolatey package manager on Windows. Are you familiar with this, Brian?
+ 
+00:25:48 OKKEN: No, I've never used it.
+ 
+00:25:49 THOMAS: No, I've never used it, actually I do a lot of my Python development actually under Windows when I'm using WSL, so I don't actually do anything natively in Windows.
+ 
+00:25:59 KENNEDY: Yeah, yeah, so in a sense you have the Windows UI but it's kind of Linux-ey in some of the tooling.
+ 
+00:26:04 THOMAS: WSL is just kind of magic. I mean, it definitely is in that, you know, the thing that's amazing here is not how well the bear dances, but that it dances at all. But yeah, I have a Windows gaming laptop I bought years ago, and now that I'm in a startup, of course, I'm using whatever hardware I had lying around in order to not spend any money, right. And so, like yeah, that's my development laptop is my old gaming laptop, and so, yeah, it's all WSL.
+ 
+00:26:25 KENNEDY: That's cool.
+ 
+00:26:27 THOMAS: And like, I'm like simulating AWS services on it so that I can develop offline and stuff. It boggles me that you can actually do all of this stuff at all.
+ 
+00:26:36 KENNEDY: Yeah, that's super cool, that's super cool. Yeah, so Chocolatey is like Homebrew basically, but for Windows. So, you can say, choco install such and such, and I link to Python, right. So, actually on Chocolatey you can now install Python 3.7.4, which is kind of impressive, right. That came out like a couple weeks ago. But if you actually look at the versions, you can install Python 3.8 beta 3, which came out yesterday, right. Like, it's right on top, and they even do like limited virus scanning, and like validation a little bit. So, yeah, it's a pretty cool little system. People should definitely check it out if they're doing work natively on Windows.
+ 
+00:27:12 OKKEN: Yeah, nice.
+ 
+00:27:13 KENNEDY: Brett, anything else you want to throw out there while you're here?
+ 
+00:27:15 THOMAS: That's probably all the great Python ideas that I have at the moment, so.
+ 
+00:27:19 KENNEDY: Alright, super.
+ 
+00:27:20 OKKEN: How about a joke?
+ 
+00:27:21 KENNEDY: Yeah, how about a joke? I actually have a couple of jokes for you. A programming joke and then just an adulting joke following up on that. So, it's more of a, I guess more of an assessment. A good programmer is someone who always looks both ways before crossing a one-way street. Does that connect with you, Brian, as a tester?
+ 
+00:27:38 OKKEN: Yes, definitely.
+ 
+00:27:39 THOMAS: Having just gotten back from wandering around in London and always looking the wrong way when crossing a one-way street, that resonates with me.
+ 
+00:27:47 KENNEDY: That's awesome. Yeah, I'm always paranoid when I'm in London, or in Australia. Like, I'm like double-checking both directions. They're like, you just got to look that way. I'm like, no, that's what you say now, then there's going to be the time I look the wrong way and one of those big, red buses is going to crush me, and I'm just, you know, so I'm just like a paranoid squirrel trying to cross the street in the UK. It's great. Yeah, so then related to that, not quite programming, but adulthood is like looking both ways before crossing the street, and then getting hit by an airplane. I want to throw one more in there though. Oh, go ahead, Brian.
+ 
+00:28:17 OKKEN: Nah, I think that's good, that's funny.
+ 
+00:28:19 KENNEDY: It's a little too real to be funny though, like we aren't laughing like yeah, that hurt. Alright, so Brett, you started this one. So, I'm going to throw it out here for everyone. Little Bobby Tables. Brian, do you know about Little Bobby Tables?
+ 
+00:28:33 OKKEN: Well, I remember it, but I probably couldn't explain it.
+ 
+00:28:35 KENNEDY: Yeah, so it's XKCD, and here, I'll just read it. We'll just leave it out there for folks. It's a mom answering the phone, says, hi, this is your son's school. We're having some computer trouble. Oh dear, did he break something. In a way. Did you really name your son Robert quote parentheses semicolon drop table students quote semicolon dash dash? Oh yes, Little Bobby Tables we call him. Well, we've lost years of student records. I hope you're happy. And I hope you've learned to sanitize your database inputs.
+ 
+00:29:06 THOMAS: The thing I really love about this idea is that she has saddled this child with this terrible name for this one opportunity, right. I mean, and when he gets to be 24, it's never going to work again, right. I mean, I guess unless he goes on to be a teacher, then he can just cause havoc wherever he goes for the rest of his life.
+ 
+00:29:22 KENNEDY: It sounds crazy, but there is this pen tester, penetration tester, who has a Tesla, and in the app you can change the name of your Tesla. He changed it to a JavaScript injection string, and it went off when his car had to go get some service.
+ 
+00:29:39 THOMAS: Yep, I believe it. I just have to say as a general aside about anything as somebody who ran, you know, a PCI DSS compliant thing for a long time, get pen-tested. Like, every time I got pen-tested, those people came up with something creative and I learned something. You know, that's, like take the first dollar that you have to spend on security and hire a pen tester.
+ 
+00:29:57 KENNEDY: Yeah, that sounds like good advice, for sure. Alright, well, that looks like that's it for us, you guys. Brian, thanks as always. And Brett, thank you for coming this time.
+ 
+00:30:04 THOMAS: My pleasure.
+ 
+00:30:05 OKKEN: Yeah, thank you.
+ 
+00:30:06 KENNEDY: Yeah, bye everyone.
+ 
+00:30:07 THOMAS: Bye bye.
+ 
+00:30:08 KENNEDY: Thank you for listening to Python Bytes. Follow the show on Twitter via @pythonbytes. That's pythonbytes as in B-Y-T-E-S. And, get the full show notes at pythonbytes.fm. If you have a news item you want featured, just visit pythonbytes.fm and send it our way. We're always on the lookout for sharing something cool. On behalf of myself and Brian Okken, this is Michael Kennedy. Thank you for listening and sharing this podcast with your friends and colleagues.
+ 
