@@ -1,0 +1,170 @@
+00:00:00 OKKEN: Hello, and welcome to Python Bytes where we deliver Python news and headlines directly to your earbuds. This is Episode 157, recorded November 14 2019. I'm Brian Okken,
+ 
+00:00:11 KENNEDY: And I'm Michael Kennedy.
+ 
+00:00:12 OKKEN: And this episode is brought to you by Digital Ocean. So Michael, we're going to cover a topic that we've covered a little bit before, I think. We covered Cerebrus, right, or Cerberus?
+ 
+00:00:23 KENNEDY: Cerberus. Yeah, we covered Cerberus, which is like a validation layer for unstructured data. So this is as built as part of the Eve framework by Nicola who runs both of those projects. And it's really nice, right? So I get like some JSON posts back to my REST. It's a REST framework. I get a JSON post for some data and I have some models to find. It can tell you whether they're a fit or not. It can tell you what's required. I do think the way you set it up is a little bit of outer band. So Colin Sullivan shot us a note after that said, "Hey, that's really cool. You should also talk about Pydantic." have you heard of Pydantic?
+ 
+00:01:01 OKKEN: I think so, but yeah, tell me more. And it's got a great name. Sounds like pedantic.
+ 
+00:01:04 KENNEDY: Yeah, it has a great, it definitely has it. Yeah, yeah, it's got a super name. I didn't believe I've heard of it, but I didn't do anything with it. So, on Colin's suggestion I checked it out. And yeah, this is a sweet, simple framework that solves some really nice problems. And a lot of times with these frameworks, I'm like, yeah, I would love to use this, but at the same time, like, it's not that helpful. And so I'm not sure I'm actually going to use it. I could just put a little test in my class to make sure this file, like this thing parses an int or this name is here, whatever. But this one, like Mike convinced me to do it, because yeah, this is super, super cool. Alright, let me tell you what it is. So it's data validations and settings managements for using Python type annotations, and it's the type annotations that make me really extra happy.
+ 
+00:01:46 OKKEN: Oh, really? Okay.
+ 
+00:01:47 KENNEDY: Yeah. So, you know how we've got dataclasses and you can have like, annotated values there and you get a little validation or whatnot? But this is super cool. So I can just take a class and say it has things like an ID, which is integer, a name, which equals a default string, a datetime, which has a default of none, things like that, right? So you basically, either you have type annotations, or the thing has a default value, which implies the type, okay? And this probably represents some data that's exchanged over REST or something like that, right, some sort of dictionary. So if I get a dictionary back, then what I can do is I can just ** and unpack that dictionary into the object, the class that I've defined, right? So basically, keyword arguments, id equals whatever the value is, name equals whatever the name and the dictionary is, and so on. And it will validate all that using some really simple rules that you follow along. So we've got a class and it has an id, which is an integer, but has no default value has no none. That means the id has to, obviously, be an integer, but it's also required. If it's not there, an error will be raised. The name is a string, so it has to be a string, but because it has a default value, it's optional to pass it.
+ 
+00:03:01 OKKEN: Oh, okay.
+ 
+00:03:01 KENNEDY: That's cool, right? The datetime, which is a datetime field is not required, because it has None as a value. But if nothing's passed, it's going to be None. So it's an optional datetime. That's pretty cool. So some of the reasons that I think this is cool, and they call that in their web page is that it works automatically with all the IDEs that you already have, right? There's no like special, Oh, yeah, there's a YAML file that tells me what this schema looks like for this, or there's a JSON schema that comes back and like, no, it's standard Python with type annotations. So your IDE knows already what all those things are, and you don't have to like backfill that, right? So the the validation also works for just working with the classes. That's pretty cool, right?
+ 
+00:03:44 OKKEN: Yeah, that's cool.
+ 
+00:03:46 KENNEDY: Yeah, it's supposed to be faster than all the other libraries they tested and they have a link to the ones that they did. It also supports really rich recursive validation. So, if you've got like a list or a tuple and maybe like stuff is inside there, right, or something like that, right? You've got some nested types to, it'll actually recursively traverse the stuff that you're looking for, right? So it doesn't just test the top level things it tests like the entire object graph. And by default, the way it works is you derive from the Pydantic base model, which is cool. But you can also use a decorator on a dataclass, which we talked about. It's very similar because of type annotations, and it'll actually put parsing and validation on there for you.
+ 
+00:04:28 OKKEN: Wow, that's neat.
+ 
+00:04:30 KENNEDY: Yeah, so if you really want to use dataclasses, you can make them better with Pydantic as well. Yeah, simple, right?
+ 
+00:04:35 OKKEN: Yeah, so where do you put it in your, so do you get it like when you get data and you validate the data with Pydantic then?
+ 
+00:04:40 KENNEDY: That's the thing is, you don't even validate it. That's what's so sweet about it. There's not even a validation step. You have the class. And in the notes, I'm putting a User class so I'll maybe reference that. And then you've got some external data, which is a dictionary. And then you just create the user object, say, User(**external_data), and it will unpack its keyword file. The validation happens in the fact that you don't have __init__  on your class and it derives from the Pydantic base models. So it uses its __init__, which theoretically does the validation.
+ 
+00:05:09 OKKEN: Oh, okay, so you can't not validate then?
+ 
+00:05:11 KENNEDY: Yes, exactly. Yeah, you just basically, I tried to create the class and either that worked really well or not so much.
+ 
+00:05:16 OKKEN: Oh, that's actually pretty cool.
+ 
+00:05:17 KENNEDY: You get like a JSON response of all the things that were wrong with the validation as part of the exception, I believe. So you can actually go, "No, there's actually three things wrong here, not just Well, the first thing that hit me to crash."
+ 
+00:05:28 OKKEN: So this is obviously useful for like REST API's and stuff like that or using, grabbing external data. But there's a lot of times where we're passing dictionaries around between components, and it'd be good to have some, if there's less trusted components, to have some, some sort of validation. So this is pretty cool.
+ 
+00:05:43 KENNEDY: Yeah, even web forms they get posted back a lot of times, those come back in Pyramid or Flask as dictionaries, right? If you wanted to map that to a class, right, you can get validation. There's a lot of places, yeah. Even settings files, right?
+ 
+00:05:53 OKKEN: Yeah. Yeah, there's a lot of people that just throw the stuff that gets from a JSON or something that gets thrown in a file and it's user editable also, so. So you have to validate it, because who knows what somebody edited it too, so.
+ 
+00:06:10 KENNEDY: Yeah, absolutely. Alright, what you got next for us?
+ 
+00:06:12 OKKEN: I am doing, hopefully doing a favor, adding work to Ned Batchelder. So he posted on Twitter recently that there is changes afoot in Coverage.py. So Coverage is, hopefully everybody knows, Coverage is great for using to tell you how much, how much of your code base your test suites are covering. I mean, that's how it's usually used. You could potentially do anything to try to measure coverage, but usually it's around a test suite or something. Anyway, so the change is they've added measurement contexts. So, allowing you while it's collecting data for coverage, it collects what was the context of what it was doing while it was covering certain bits of code. Now that seems a little the obvious use model of that. There's lots of use models, the obvious use model is which test covered which line of code? And to have that, and that's a lot of data. So it's a, he's changed the way the data for Coverage is being stored and it's pretty cool. So I'm going to jump to the conclude, there's this cool feature, the context feature is very cool, I want to talk about that. But first of all, it is a little bit of a break in the coverage use of Coverage. I think the reason is just because there's a, the way the data is stored, there's a little local database stored. So there's another dependency that isn't an external dependency, it's a built in dependency, but it's something that some versions of Python don't always have, I guess. So for that reason, he's asking everybody, please try out the beta 1, Coverage 5, 5.0 beta 1 and try it out and let him know if there's any issues.
+ 
+00:07:51 KENNEDY: Right, so basically, the idea is go try it and see if what you're doing before still works. If not, let them know real quick before it becomes permanent, right?
+ 
+00:07:59 OKKEN: Right, exactly. And I really want this to become permanent because measurement contexts is so cool. I tried it out this morning. I'm going to put in show notes. I wasn't really clear on how to download, how to install a beta version of something. So you just do the, like for this it's pip install coverage==5.0b1. So we'll put that in the show notes. It's not too bad to to install it. And then also, I didn't put this in the show notes, but one of the other tricks I found out is, if you want to know what versions are available to pip install, you can just do the coverage==, and then don't list a version. And you'll get an error message that says, I don't know what you're talking about, but here's all of the versions that are available.
+ 
+00:08:42 KENNEDY: That's pretty awesome. I didn't know that.
+ 
+00:08:43 OKKEN: Yeah, that's pretty cool. So I tried it out, a few lines of code to, or a few lines of command line stuff to run Coverage on a little dummy file. And sure enough, if I generate the HTML report, on the right hand side of the window, or the screen, I've got little drop downs on every line of code that tell me which test covered which line of code.
+ 
+00:09:03 KENNEDY: I like that a lot. That's cool. Yeah, that's cool.
+ 
+00:09:05 OKKEN: Very neat.
+ 
+00:09:06 KENNEDY: Yeah, super nice, I look forward to it.
+ 
+00:09:07 OKKEN: Okay, I don't know why I think this is funny. My brain's just not working man, would you dom the ad read?
+ 
+00:09:11 KENNEDY: Got it. Now this episode is brought to us by Digital Ocean. And I just want to tell you about something brand new that's gone from beta to general availability, Memory Optimized Droplets. Droplets are Digital Oceans words for virtual machines, right? Because cloud, the cloud's full of rain, rain droplets, that sort of thing. And if you have some sort of workload that requires a lot of memory, well then these things are going to like super optimize that. So it has 8 gigs of RAM for each dedicated virtual CPU. You can get them with, you know, two or many, many more, right, multi-core systems. So, basically, you can go all the way from 16 gigs to 256 gigs of RAM, which is like a ridiculous amount of RAM. One thing you do to make your app run faster is to make sure like, it never touches the disk, right? So if it could just cache, everything, that would be great. So they're really good for things like high performance SQL or NOSQL databases, large memory caches and indices, indexes, things like that, and just lots of, you know, big data and stuff running like with large runtime requirements. So you need between 16 to 256 gigs of RAM, and you want to just pay, you know, mostly for the memory, right? The pricing is optimized around that use case, then check them out at pythonbytes.fm/digitalocean, a big supporter of the show. Speaking of cool stuff, the PSF, the Python Software Foundation Packaging Working Group, actually, that group of the PSF, they're looking to hire some folks. They're looking for I think three developers and maybe a project manager. I can't remember exactly all the details, but quite a few number of people to make pip better. Like you just said, if you said you know, pip install coverage==, it'll help you right? So this is supposed to be a much better setup. So the idea is that one of the things that could be improved in pip is its dependency resolver, right? So it's, you know, this package depends on this thing. But other packages also maybe depends on that, but a different version or you know, I don't know how often it's happened to you, but I've had the order in which I list stuff in the requirements causing issues because one requires, I don't know, docopt of this version, the other one requires docopt of another version, and how can you possibly install them both at the same time, right, weird stuff like that.
+ 
+00:11:36 OKKEN: Poetry is, noticed this problem in it, and it has a solution to it, but it's around Poetry, and it'd be really cool if that sort of dependency resolution was built in to pip that'd be great.
+ 
+00:11:47 KENNEDY: Yeah, the underlying idea is to make distributing and installing Python software just more reliable and easier. So funding has been allocated to two contractors, a senior developer, an intermediate to end and intermediate develop, that's what it is, to work on developing, testing and building this feature, the test infrastructure, code review, bug triage, all that kind of stuff. And this is a non trivial offering. So I believe the senior developer will end up getting $116,000 out of this, based on the time they're estimating and the rate, and then the either senior developer or the contractors, I can't remember, get $103,000 each. This is quite...
+ 
+00:12:27 OKKEN: Ooh, not too shabby.
+ 
+00:12:29 KENNEDY: Yeah, that's like a, not just a, "Hey, I need somebody to work on this for a couple of weeks." That's like a legit thing. So if you'd like to contribute to Python, work on pip, things like that, just you know, go check out this link. It shows you how to apply.
+ 
+00:12:39 OKKEN: Very cool.
+ 
+00:12:41 KENNEDY: Yeah. So when I work on Pandas, Brian, I kind of feel a little bit lost. There's all these operations and I don't use Pandas enough to kind of actually know what I should be doing. Often it's in the context of Jupyter Notebooks where the autocomplete's slightly less good than PyCharm or VS Code. I could always use some help when I'm working on Pandas. How about you?
+ 
+00:13:00 OKKEN: Yeah, I could and I know people that there's a lot of people that work in it all the time. But I usually just jump on in for some particular use. And I, I know, I don't know the best way to do things. There's a thing called the dovpanda. I think I'm saying that right, D-O-V panda. And this was submitted by Dean Langsam, Langsam, sorry. I think that it's his project. But essentially, it's a overlay on, I'm just going to read his thing. It says "Directions. So dovpanda has directions, and our hints and tips for using Pandas in an analysis environment. Dovpanda is an overlay for working with Pandas." And so the idea is you, like if you have this installed also, you're working in a Jupyter Notebook, and you start typing stuff, you start doing Pandas operations, it looks at what you did and provides hints and it pops up in little windows in your Notebook to give you hints on, I think you're doing this, but there's a better way to do it, or giving you tips.
+ 
+00:14:01 KENNEDY: So it's like Clippy, for Pandas and Jupyter.
+ 
+00:14:05 OKKEN: Yeah, but it's a definitely sort of, but instead of having just one Clippy that pops down, they're in your Notebook, so you don't have to deal with them right away. But you can go back and improve your use of Pandas within the Notebook. It's pretty cool.
+ 
+00:14:20 KENNEDY: Yeah, it actually looks really helpful. So the example they have, they've got a bunch of pictures on the GitHub repo, you go and check out. But like, for example, there's one where someone's calling pd.concat and taking two data frames and specifying that axis equals one. And then the little Panda pops up and says, "All dataframes have the same columns", which hints for a concat on axis zero. You specified axis one which may result in unwanted behavior, and it will show you the code or after concatenation, you're going to have duplicate call column names, pay attention, and things like that. It's got a bunch of great little tricks and then, you how you had mentioned Kevin Markham from dataschool.io. And his tips. You can type dovpanda.tip and it'll pull up a Kevin Markham tweet.
+ 
+00:15:07 OKKEN: That's pretty cool.
+ 
+00:15:08 KENNEDY: Like inside your Notebook, it'll pull up like some random tip.
+ 
+00:15:11 OKKEN: Yeah, that's pretty cool.
+ 
+00:15:13 KENNEDY: Yeah, circle there.
+ 
+00:15:13 OKKEN: And if you like, you can use it, apparently you can use it even, not even just in Notebooks. So there's a command line mode, where you can set the output to be, you know, there's no inline output to go to. So you can tell it to print the output to just standard out, or to a display, or to somewhere else. That's nice, so if you're using, you want to have these sorts of tips, but you're not using Notebooks, you can still get them, so.
+ 
+00:15:36 KENNEDY: Yeah, very cool. This next one is really simple, but I think some folks will find it super useful. You know, maybe you picked up that project from someone else at work, and they're not following all the best Python practices. You see a bunch of import stars all over the place. And you're like, man, didn't somebody tell these people that import star is not worth it, right, that there's all these potential drawbacks. So enter removestar. Removestar is a command line app you can run or command you can run. And you point it at either a module, a file, a directory, something like that, it will go through, and by default, it'll just find the issues where import star is done. And then it will look at the actual files and say, well, you said import star, but you're actually just, you know, like, from collections import *, maybe you're actually just using named collections and counter or something like that. Maybe that's itertools. Anyway, you're just using one or two things, and it'll say, you know what, you could replace that line with from collections import namedtuple, right? And it could just adjust that or you could actually give it a command to say, no, just change all my files, fix it.
+ 
+00:16:50 OKKEN: Yeah. This is very cool.
+ 
+00:16:52 KENNEDY: Yeah, it's great. So it's not that it just says import star is bad. It actually figures out what of that star is being used and what you should actually write and then it will write it for you.
+ 
+00:17:01 OKKEN: Yeah, so my normal operation when I see something like this is just to comment out the import statement and see what breaks. And that's not the best way to do things. So this is way better. I like it.
+ 
+00:17:13 KENNEDY: Yeah, yeah. Tt reminds me a little bit of flynt, F-L-Y-N-T, which will take all your strings and rewrite them, as f-strings. This will take all your import stars and rewrite them as proper specific imports.
+ 
+00:17:26 OKKEN: OMG I totally forgot about flynt. We've got a whole bunch of code that we wrote for 3.5, that still has all the old stuff in it so, yeah I got to use it.
+ 
+00:17:35 KENNEDY: Well, it's about to get a whole lot better. Hit it with flynt, so good.
+ 
+00:17:38 OKKEN: Yeah, definitely.
+ 
+00:17:41 KENNEDY: Awesome. Alright, well, that's it removestar, not a whole lot to it. It's just a great little command line tool you can use to make your Python code better.
+ 
+00:17:47 OKKEN: Yeah. So the last thing I want to talk about today, actually, oddly enough, we didn't plan this, is another it came from Brian Rutledge too. So the PSF thing that we talked about the hiring developers came from him too. So we got two stories from Brian. So thanks, Brian for helping us out.
+ 
+00:18:04 KENNEDY: Yeah, yeah, absolutely. Thanks, Brian, double thanks.
+ 
+00:18:07 OKKEN: Well, so one of the things that Brian's working on is a pytest plugin called pytest-quarantine, and this is so cool. Hopefully all your tests pass. But let's say you've got a, you just implemented tech, you got really fantastic. You got into testing and you started it, writing a bunch of tests and you put it on a code base, and you got a bunch of failures. You know you're going to fix 'em, but you're not going to fix 'em right away. So what do you do? And the idea with pytest-quarantine is it saves a list. So you run it once and you tell it to save a list of all the failing tests, and it saves it somewhere and you can throw it in, in Git or something, store it. And then you run it again with that test or that list and it automatically marks all of the tests that have failed in the past as xfails. Now this is something you can do manually to say I know this is going to fail. Just run it as an xfail instead of, it separates it from a failure. You know, there's arguments to whether that's good or bad, but it's very useful so that you can still use your suite to find new failures while you're working on the old ones. Anyway, this is a nice little extra tool. I think it's super cool. I also wanted to bring this up because he sent me this really nice email. So apparently, I met Brian a couple times at PyCon in Cleveland. And he said he started out as a complete pytest newbie, and bought my book, started working through it, loved pytest, and then helped his company to adopt pytest and then wrote this plugin. And he wrote it at work and convinced his company to be able to release it as open source. So that's super cool.
+ 
+00:19:46 KENNEDY: Yeah, that's really great. Yeah, good work. Brian. This sounds like super useful. You know, you've got to make some huge change if it breaks 50 tests. You can't start solving all 50 at one try. You got to like, chop your way out of them. So yeah,
+ 
+00:19:57 OKKEN: Chop away at it.
+ 
+00:19:59 KENNEDY: Yeah, exactly, quarantine 'em, and then just, you know, take 'em one at a time, though, yeah, I like it. I mean, there are ways in which you could deal with this, like in PyCharm, you could say run only this test or run certain ones. But, you know, like, it doesn't help you on continuous integration or something like that, right? So yeah, I think this is great.
+ 
+00:20:17 OKKEN: And one of the things I wanted to bring up also is I've dealt with this in the past on a temporary basis, of course, where you've got for some reason a breaking change that fails some things, you're working through 'em. And we have occasionally, if there's like a known failure, that the fix is scheduled, right? It's, we know about it, we're going to fix it, but it's not going to be fixed for like three weeks, that you can add xfail to the test itself. But one of the issues with that is to add the xfail mark, you edit the test file. So one of the benefits of this is you're not actually editing the test file, you're editing a different file that marks those. So that's good.
+ 
+00:20:53 KENNEDY: Right, you don't want those changes to show up and Git, say, "Well, we made all these changes these tests, but actually no, we're just trying to fix something else and get them out of our way." Yeah, I like it. All right, well, that's it for all of our main items. Brian, you got anything else you want to throw out there?
+ 
+00:21:05 OKKEN: I do not. How about you?
+ 
+00:21:08 KENNEDY: I've got some pretty cool news. So I recently decided to go through the effort of figuring out how much energy all of our services and servers use, right? So for like delivering PythonBytes and Talk Python and Talk Python Training courses and all that stuff, and I figured out how much that that was, and I went out and bought renewable energy credits to offset all the carbon from all of our infrastructure.
+ 
+00:21:32 OKKEN: Wow, that's neat.
+ 
+00:21:33 KENNEDY: Yeah, yeah. So I'm going to keep doing that going forward. So not a huge, huge amount, but it's, you know, I think a good signal for all the other companies out there as well to say, look, if this podcast, or these podcasts can be carbon neutral for their server structure, why can't we, right?
+ 
+00:21:51 OKKEN: Yeah, cool.
+ 
+00:21:51 KENNEDY: Yeah. So anyway, small but hopefully, can trigger some good change. All right, get ready for a joke.
+ 
+00:21:56 OKKEN: I am so ready for a joke. I need it this week.
+ 
+00:21:59 KENNEDY: Well, it's It sounds more science than it is programming. But I think our audience will generally, generally like it. So I'm going to tell the joke and then explain the joke, because I'm not sure everyone will know. But I think a lot of us will get it.
+ 
+00:22:13 OKKEN: And jokes are so much more funny if you explain them.
+ 
+00:22:15 KENNEDY: I know. Absolutely they are. So imagine a time not too long ago, Dr. Heisenberg from quantum mechanics fame, he's driving down the highway and he gets pulled over for speeding. The policeman comes over, the officer says, "Excuse me, sir, do you know how fast you're going?" Heisenberg pauses for a moment? Then answers, "No, but I do know where I am."
+ 
+00:22:39 OKKEN: I love that. That's so funny.
+ 
+00:22:40 KENNEDY: Thanks. Yeah, so, the Heisenberg uncertainty principle basically says that the position and velocity of an object cannot both be measured exactly at the same time. Not even theoretically, you can know one or the other, but not both. So yeah, he knows where he is.
+ 
+00:22:55 OKKEN: Oh man, funny.
+ 
+00:22:55 KENNEDY: Pretty good. All right, well, thanks for being here.
+ 
+00:22:59 OKKEN: So cool, thanks. 
+ 
+00:23:00 KENNEDY: So good to be back together after taking off and hiding in Florida for a while, now we're back on the usual track. Yep, right, have a good one.
+ 
+00:23:06 OKKEN: You too, bye.
+ 
+00:23:06 KENNEDY: Bye.
+ 
+00:23:07 OKKEN: Thank you for listening to Python Bytes. Follow the show on Twitter at Python Bytes. That's PythonBytes as in B-Y-T-E-S, and get the full show notes at pythonbytes.fm. If you have a news item you want featured just visit pythonbytes.fm and send it our way. We're always on the lookout for sharing something cool. This is Brian Okken and on behalf of myself and Michael Kennedy, thank you for listening and sharing this podcast with your friends and colleagues.
+ 
