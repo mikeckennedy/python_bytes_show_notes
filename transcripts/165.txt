@@ -1,0 +1,218 @@
+00:00:00 KENNEDY: Hello and welcome to Python Bytes where we deliver Python news and headlines directly to your ear buds. This is Episode 165, recorded January 16th 2020. I'm Michael Kennedy.
+ 
+00:00:12 OKKEN: And I'm Brian Okken.
+ 
+00:00:13 KENNEDY: And this episode is brought to you by DigitalOcean. They're a great supporter of the show. Check them out at pythonbytes.fm/digitalocean. Get $100 credit for new users. More on that later. Brian, we got a lot of stuff to get through. And I want to just let's start iterating through it, man.
+ 
+00:00:27 OKKEN: Okay, let's iterate through it. Also, I can't believe that it's halfway through January, whatever. Okay. So first off, let's talk about iterators. Iterators, generators, and coroutines. So I'm linking to an article. That's pretty much what it's called, by Mark McDonnell. And when I Googled this relationship between coroutines and generators, apparently everybody else knows this is a thing, but I missed out somehow. But this article is a really good introduction to all of this concept and how they all work together. Okay, I've got to start with a beef. It starts out with talking, trying to do a gentle introduction to the iterator protocol with the __iter__ and __next__. I just want people to stop doing that. Okay, muscle through it, but skip that part. It should be an appendix, I think, because people don't do that anymore. Okay, next it talks about generators, which are the same thing as this iterator protocol, sort of, but using the yield function. I know there's differences, but this is how I do it. I use yield for generators.
+ 
+00:01:33 KENNEDY: It's so beautiful because you take the code that's not generator style and then you just throw in yield instead of list append, or set.add, or whatever you're going to do to gather up the results, just replace that with yield. Boom, you're done. It's usually less code. I love it. It's great. I'm a big fan.
+ 
+00:01:50 OKKEN: Like for instance, you just throw things into a loop and put yield in there, or yield the things you have, whatever works. Unbounded generators, it talks about, which means don't convert these to lists, because they don't stop. So it is possible to write a for loop that doesn't stop, and therefore, there's a way to do a generator that doesn't stop.
+ 
+00:02:09 KENNEDY: Right, if you're working on an infinite series, some kind of series, you use a generator for it, it might not stop.
+ 
+00:02:14 OKKEN: Yeah, I mean, there's legitimate reasons to do this. Or maybe it does have an end, but it doesn't fit in memory and stuff like that, so beware. Generator expressions, for some reason I just forget about. They're like list comprehensions, but you put parenthesis instead of brackets, and then it's a generator expression?
+ 
+00:02:33 KENNEDY: They're smooth, right? They don't have the sharp edges of those square braces.
+ 
+00:02:38 OKKEN: Smooth. Oh, wow. That was bad. Okay. The reason why I highlighted this article, really, isn't for this stuff so far. It's a couple things. It talks about the generators can use other generators or nesting generators with a yield from. And this is cool. I didn't know this was a thing. So let's say bar and baz are generators. You can define a new function, foo, that yields from each of these. And it just goes through one and then when it's exhausted, it goes through the other. Really slick. Did you know this was a thing?
+ 
+00:03:11 KENNEDY: Yeah, this was added after the yield keyword was added. So yield was there for a while and then what you would have to do before, if you wanted one of these, you'd have to write a for loop that goes through every item in the sub generator. And then just yield that out. But now you can just say yield from that thing. It's been few versions that it came in. I can't remember exactly when, but yeah, it's a bit of a new feature. Maybe 3.5, maybe 3.4, I can't remember. But yeah, this is great. The place that I've used this most is recursive generators. Right? Your writing a generator and it's going through some data structure, but then you get to the point where you're like, "Well, I need to call it again, but with a different node in a tree." or something like that. Instead of having to loop over that yield, just say yield from, basically, the recursive call. It's beautiful.
+ 
+00:03:56 OKKEN: Oh and break yield from the recursive call, nice. That hurts my head thinking about it.
+ 
+00:04:00 KENNEDY: Yeah, man, think about you know how painful it was to learn recursion? And how funky it is to learn about generators? You mash them together and then the brain explodes. Yeah, it's great.
+ 
+00:04:11 OKKEN: Okay, the article goes on and talks about the relationship between coroutines and generators. Because yield, it's just a thing. It ends up returning a value out of your function. But you can do an assignment, a variable assignment, from a yield. And that's one of the syntax things that works with coroutines. And I got to admit, I got lost at this point. So this is kind of a call-to-action to everybody. I'd really like to have a coroutine tutorial that could show me how to use coroutines for stuff that I really actually might use that isn't async related. And can we skip the iterator protocol?
+ 
+00:04:52 KENNEDY: Or make it an appendix. Like you said.
+ 
+00:04:55 OKKEN: Do you use coroutines? I mean, they look neat. I just don't know how to use 'em.
+ 
+00:04:57 KENNEDY: I use generators all the time and I use async methods, which ultimately are fancy wrappers around coroutines. But I don't use coroutines directly. Not knowingly anyway.
+ 
+00:05:10 OKKEN: Okay, cool. Yeah, I'll have to play with it a little bit.
+ 
+00:05:12 KENNEDY: Yeah, nice. Something that I use a lot is requests. You probably use requests a lot as well.
+ 
+00:05:17 OKKEN: Yeah, lots of people do.
+ 
+00:05:19 KENNEDY: Yeah, and requests is one of these things, you know, last time you spoke about PyPI stats. What's it, pipistats.org or something like that. And requests was certainly right near the top. It was not number one on the list of things being used, but it was near the top. That means it can't take too much change, right? There can't be too many features or changes made to it. So it would be nice to have something that makes working with requests nicer that can change more quickly. So there's this thing that I came across called requests-toolbelt. Yeah, so requests-toolbelt is a tool belt of useful classes and functions to make working with requests easier. And it really does, at the moment, four things. But I think if people are out there and they're like, "I always have to do this with requests." it's these five lines, "I got to make sure I remember to do this right." It would be awesome to just extend this. So this is a small project by someone. I can't remember. I don't think it says really a meaningful name on it. Yeah, no, it's just under request actually. This is not the small project I thinking of, but I think it would be cool to take those ideas, if you see patterns that you're doing with the request library, and fold them in here. So let me give you the run-down on the four things it does. First of all, if you're going to do multi-part form data in coding like, "I have an image file and I want to upload it to the server or to the API." that's annoying, right? It's not super easy. But with this thing it's really easy to go and just basically say, "Here's a file steam." That is field two. It's whatever it is. It's binary, image data, or it's text. And then you just say, "Here's my data, this multi-part form and coder." And boom. It's just uploading files and doing all this stuff it has to do.
+ 
+00:07:02 OKKEN: That's incredible. Just three lines of code.
+ 
+00:07:03 KENNEDY: Yeah, it's really, really nice and you don't have to think about, "How do I do multi-part encoding again?" Just give it a file stream, you're good. The next one is the user agent constructor. So you have to set a header user-agent, but then how do you construct that in a meaningful way? There's a class or a method, I think it's just a method, take some arguments and it will generate the string that is a guess compliant user-agent like your API app or whatever. So that's cool, user-agent instructor? Sometimes you have to, when you're working with other systems, conform to certain SSL protocols, right? We have TLS version 1, 1.2, we have 2, I think, coming a long, but there's different versions of TLS, which is the foundation of SSL, right? So they have an SSL adapter that lets you explicitly set "I want to use TLS 1.2, or 1.0," or something like that if you need to.
+ 
+00:07:56 OKKEN: Oh wow, okay.
+ 
+00:07:56 KENNEDY: That's cool. And then one thing that you can do with requests is you can create a session and then it'll start talking over it probably reuses the connection. I'm not entirely sure of all the things it does, but one of the things the session does is it'll remember cookies and things like that. Well, maybe you want to make a series of requests using a request session that doesn't actually carry the cookies from time, from request one, to two, to three, and so on. So one of the classes in here is a forgetful cookie jar. So if you set the requests session cookies container to the forgetful cookie jar, it implements the protocol, but it always forgets its cookies, obviously. So it's a cool way to clear out, still use sessions, but clear out cookie persistence across calls.
+ 
+00:08:42 OKKEN: Is there a reason to use sessions without cookies?
+ 
+00:08:45 KENNEDY: Well, some websites behave differently if they think they've already seen you or things like that, right?
+ 
+00:08:50 OKKEN: Oh yeah, right.
+ 
+00:08:51 KENNEDY: Maybe I want to test the login function both working and not working and then I want to try it of I forgot my password, but I don't want it to know that I've already actually logged in that sequence. It could be some series that you're testing for or playing with.
+ 
+00:09:08 OKKEN: Okay, so if you're going to log into your session, login is still valid, but you have to go, yeah.
+ 
+00:09:13 KENNEDY: Yeah, or maybe you're going to a place like some sort of pay-walled ad place. And it's like, "Well, you can come here three times, but if you come here more than three times this month, we're going to show you the paywall, you know what I mean? You're like, wow, you're using cookies for that and my cookie jar is forgetful. I don't know. I don't personally have a reason for it, but I can imagine reasons that people might use that for automation or whatnot.
+ 
+00:09:35 OKKEN: I predict that we will hear other people telling us the reasons now.
+ 
+00:09:39 KENNEDY: Yeah, absolutely. They definitely might. So people can visit pythonbytes.fm/165 and down at the bottom they can tell us why do in the comments section. Alright. Speaking of cool, let me tell you about DigitalOcean. They're doing all sorts of good stuff. They're offering $100 credit for new users. So it was $50, it's back to $100, yay. That's great. All of our infrastructure and stuff runs on DigitalOcean and it's been just perfect for years. So that's great. One of the things they recently released is memory-heavy workload droplets. So memory-focused droplets. So you can get up to 8G of RAM for each dedicated CPU and it goes from two CPUs all the way up to, 32. 256G of RAM available on your VM, which is kind of ridiculous if you really need that. But maybe you got a workload that does. So it's really good for high-memory apps like High Performance SQL or NoSQL databases, and memory caches like Reddit's. Maybe some data analysis of lots of data, stuff like that. So check 'em out at pythonbytes.fm/digitalocean. Get $100 credit for new users and support the show. Speaking of data science, what do you got, Brian? What's next?
+ 
+00:10:47 OKKEN: Yeah, speaking of data science, pandas is used by lotS of folks. Not just data science, but I know the data analysis people use pandas quite a bit. And in episode 162, you weren't with us for that, but we covered a project called Bulwark...
+ 
+00:11:03 KENNEDY: Yeah, I listened into that episode as well. And you and Aly did a great job. That was fun.
+ 
+00:11:06 OKKEN: And we had a listener suggestion about another package called pandas-validation. And then I was just looking around to see if there's other projects. One of the others I found was Pandera. So I'll try to briefly talk about these, but pandas-validation, Lance tells us that it lets you create a template for your dataframe, how it should look, and then it validates your entire dataframe against the template. So if you have a dataframe with the first column being string, and second column being dates, and then an address, you can use a mixture built in, validate types to ensure that your data conforms to that. So that looks pretty cool.
+ 
+00:11:46 KENNEDY: Yeah, this is really nice. It's a little bit like, tiny bit like, JSON Schema or something. So you've got these pandas dataframes or time series that it's just full of whatever and then you can throw on top of it cool validation and just it's all at once against the whole collection, right?
+ 
+00:12:00 OKKEN: Yeah. And then Pandera is, I think, a similar project that let you set up types from properties for different columns of a dataframe. And perform validation to make sure, sort of, a schema validation sort of thing also. So they're all kind of solving a similar problem. But I was looking at it and the API and how you use it, between Bulwark, pandas-validation, and Pandera are all very different.
+ 
+00:12:24 KENNEDY: Yeah, they are.
+ 
+00:12:25 OKKEN: I'd really like to hear if there is a common approach or if pandas-validation, dataframe validation, is just not something that's catching on yet, or what people are using. I'd love to hear that.
+ 
+00:12:37 KENNEDY: Yeah, and I just noticed at the bottom of Pandera, they have other data validation libraries and other panda-specific ones like opulent pandas, and panda schema, and pandas validator, and table enforcer, and so on. So apparently, this is a hole you can go down into that I was not even aware of. But I got to say, the Pandera API, where you basically define a column, a data type, and then a lambda function that you give it that does the validation. That's super cool I love that.
+ 
+00:13:04 OKKEN: Yeah, it looks pretty clean.
+ 
+00:13:06 KENNEDY: Yeah, it look incredibly flexible without getting out of control. Speaking of out of control, you know what's a little bit out of control? GUIs for Python.
+ 
+00:13:12 OKKEN: I don't.
+ 
+00:13:14 KENNEDY: Yeah, they're a little bit... And I'm not actually, this time, complaining about their absence or something like that, but one of the best libraries for building GUIs in Python has got to be QT, right? And I was in inspired at the Python Meetup that you're running out in West Portland when we saw Oggy Moore give a presentation. How he used FBS, Fman Build System plus PyInstaller, plus QT, to build nice packaged apps that are GUI apps that he could distribute around. And that was really cool. So one of the things, though, that drives me crazy is we've got PyQt5 we've got PySide2, PyQt4, we have PySide, we have Python4Qt. We have all these different things, right? I think Python4Qt might be the next version of PyQt5 and so on. And I just don't know where to start, right? I'm looking at it going, "Oh, my goodness." You see different examples doing different things. And so I ran across something called QtPy. Q-T-P-Y, QtPy.
+ 
+00:14:22 OKKEN: Yeah, or cutie pie.
+ 
+00:14:24 KENNEDY: I didn't want to say cutie Py, but I don't know. Cutie Py. Cutie Py. So cutie Py, QtPy, actually, one of the things about a lot of these libraries is they're really cool little proof of concepts, but in practice, how real are they? How supportive are they and so on? One thing that seems real and supported is anaconda, the anaconda distribution. And with that comes the Spyder IDE, the whole anaconda continuum data science IDE thing, right? And this QtPy is the foundation of what they're doing to write that. At least it's in their Github repo. So it provides a uniform layer to support all those different libraries that I complained about, with a single uniform API. So it's like an adaptive layer on top of all those things and it figures out what version you're actually running against. And then it just adapts. So you write a code once and then you can run it in all these different ways or against these different examples.
+ 
+00:15:20 OKKEN: Yeah, it's nice.
+ 
+00:15:21 KENNEDY: Yeah, it's cool, right? So this is created by the Spyder development team. And there's not a whole lot to it. Basically, it's like, "Well, here's a simpler way to work with these different libraries because maybe you want a different license or you want to go from PyQt4 to PyQt5." or something like that. 'Cause there's all these different examples built with all these different libraries and they're not exactly compatible. So quite cool I think.
+ 
+00:15:43 OKKEN: Yeah and also, during the presentation at the Meetup, is it Oggy? Mentioned that just he uses that and then if there's a problem with one of these packages, just uninstall it and install one of the other ones. And you don't have to change your code at all.
+ 
+00:15:59 KENNEDY: Yeah, it's cool.
+ 
+00:16:00 OKKEN: This one works. One of the other things that I thought was neat is at the bottom of the ReadMe, they've got sponsors, different sponsors at the bottom. And become a sponsor. I've not seen an opensource project do that before. It's a interesting idea.
+ 
+00:16:13 KENNEDY: Yeah. It is definitely an interesting idea. I haven't seen that either. But quite cool.
+ 
+00:16:18 OKKEN: Maybe I'll try that on my little opensource project.
+ 
+00:16:21 KENNEDY: Well, they also have the GitHub sponsor at the top. Are you using the GitHub sponsor?
+ 
+00:16:25 OKKEN: No.
+ 
+00:16:25 KENNEDY: That's something people can turn on. I think that's really cool that GitHub did that, that people can now sponsor projects through GitHub instead of negotiating some deal separately with everyone.
+ 
+00:16:35 OKKEN: Yeah. Wonder if they're tied together. I'll have to look into it. Anyway.
+ 
+00:16:38 KENNEDY: Yeah, check it out. Alright. So yeah, what's next?
+ 
+00:16:42 OKKEN: Well, I want to shed some light on spreadsheets.
+ 
+00:16:47 KENNEDY: They can be a dark place if you bet sucked down into VBA or too far down there.
+ 
+00:16:52 OKKEN: Yeah. So actually we got a email from Victor Kis, I think it's Victor Kis, K-I-S. He said that he's got his very first opensource project, but it looks darn cool. It's called PyLiteXL and it's on .xls spreadsheet thing that you can read an write spreadsheets with it. So it's a lightweight, zero-dependency, minimal functionality, read, write, or has, other than the standard library, there's no outside dependencies. And you can read and write on modern .xlsx and .xlsm files, and with a very simple interface for getting access to the different sheets inside there and rows and columns and stuff. Actually, it looks pretty cool.
+ 
+00:17:36 KENNEDY: Yeah, it looks totally useful if all you got to do is get in there and get the data. I don't know if it does things like lets you change, say, conditional formatting or other weirdness, but if you just want to open up an Excel worksheet, not a .csv, but a full-on .xls and get the data or the rows or whatever it is you're after, it's quite neat. Well, if you go to the link that you're linking to and just scroll down bit, there's a little animated GIF. And I think it tells you pretty much all you need to know. You just watch it for a second and it's like, "Here's the few steps to go work with this Excel file." It's cool.
+ 
+00:18:09 OKKEN: He's already got documentation up with the API, but I found the most, on the docs, the best way also to get up to speed really quick, is to look at his... He's got a handful of examples for how to do different things and it's like, oh my gosh. If I needed to read Excel from Python, I could get started in a few minutes with this. So it looks pretty cool.
+ 
+00:18:30 KENNEDY: That's very cool. Yep. And no dependencies. That's kind of nice as well.
+ 
+00:18:34 OKKEN: Yeah, I never really thought about why that would be important, but he lists one of the reasons is that if you're going to, a few things, if you're going to compile it into another installer or something using PyInstaller, not having any DLL or other dependencies makes this easier. And then he even says that the library's just a few source files. So if you don't even want to install this as a package, if you just want to copy this stuff into your own source, that that's a option.
+ 
+00:19:04 KENNEDY: Right, yeah, just vendor it and then you don't have dependency either.
+ 
+00:19:07 OKKEN: Yeah. Then you don't get updates, but you know.
+ 
+00:19:09 KENNEDY: Yeah. It's the trade off. Alright, I'm going to tell you about this other thing and at first, it might not sound very exciting, but I'm actually pretty excited about it. I think this is quite cool it's a clever little library. And this suggestion comes to us from Aiden Price. And he told us about some project he's working on using something called Python-Ranges. Okay. So we have range, like the built-in range, and say start equals whatever, end equals whatever, and it goes from the start integer wise up to, but not including the upper bound. But you can't use that range in more meaningful ways. So, for example, if I had a range of 0 to 100, I can't easily ask is x in there, right, if x is a number. Or if I have two ranges and I want to intersect them, how do I do that? But this library takes that kind of basic idea, sort of like series, but with a lot of set operations. You can ask for the intersection of ranges. You can ask for whether or not they're mutually exclusive, things like that. So all the set operations you can do on it. But then it also extends that so you can have a range set, which is a bunch of different ranges or even a range dictionary. So why would you care about that? So what you can do with a range dictionary is you can use ranges as keys. So they example they give, if you have...
+ 
+00:20:34 OKKEN: That's crazy!
+ 
+00:20:35 KENNEDY: I know, but here's the example they give. It's probably abusing the concept of a dictionary, but it's really useful. So if you had an if statement that said if, they use tax or something like that, so let's just say if your income is 0 to 10,000, you're in bracket A. If you're in 10,001 to 20,000, you're in bracket B. And so on. And you have a huge if else, if else, if else, if to test for that condition, you can create a range dictionary where the key is a range 0-10,000. 10,001 to 20,000 and so on. And then some information about it is in the value. And then you can just take a number like 37,215 and get it from the dictionary. Say I want to get that from the dictionary and it'll return. So it'll basically do the test. Is this item in this range as part of the key match of a dictionary?
+ 
+00:21:27 OKKEN: That's brilliant. That's cool.
+ 
+00:21:28 KENNEDY: Isn't that cool? It's got to be abusing the idea of the dictionary, really. But it's pretty cool. Yeah, so it's almost like a switch statement, in a sense. You can take those things, that if else, and replace it with this flat statement of these ranges and then it'll do the comparison in the data structure.
+ 
+00:21:45 OKKEN: Yeah, sweet.
+ 
+00:21:46 KENNEDY: Yes. So there's a bunch of stuff that you can do with these ideas. They got some good examples, but that little example I gave you, I think is probably the simplest one to tell you about because it gives you a good sense of why you might actually use this, right? A lot of times you look for these blocks or these ranges and it's really cool to be able to sort of test in here. You could even do really interesting stuff. I want to know is this thing in any of these five ranges. You could just create one of these range sets or these range dictionaries and just ask is this number in this set. If it is, it's in one of the five ranges that are in there. Right? There's really cool ways to layer these together.
+ 
+00:22:25 OKKEN: Yeah, and especially if you've got that all over the place. For instance, I'm thinking hardware stuff, but...
+ 
+00:22:31 KENNEDY: Yeah, it's got to be in there, a bunch of numbers, and frequencies, and whatnot, right?
+ 
+00:22:34 OKKEN: Right, so if I've got different power levels, for instance, they'll have different attenuators that'll kick in at different power levels, but I don't want those power level numbers to be hard-coded all over my code. So having some central place where I put those in place so that I can just throw in a number and it gets based on that I know what the attenuation is, or something, that'd be great. It's cool.
+ 
+00:22:55 KENNEDY: Yeah, that's cool. It also occurs to me this might be useful for testing, right? Because then your assert statement could have a little bit of ambiguity, right? If there's like, well, long as it's in this range, it's okay, but if it's not it's not. And so maybe that's also an interesting way to simplify testing.
+ 
+00:23:11 OKKEN: Yeah, yeah. Okay, cool.
+ 
+00:23:13 KENNEDY: Cool, well anyway. I think that's a much more interesting project than it just sort of sounds like. 'Cause you're like, well, Python has range built in. Whatever, but it's cool. Yeah, that's it for our main items. What else do you want to tell folks about?
+ 
+00:23:24 OKKEN: Well, I spent some time last night, I think I brought this up, I don't know, last time or the time before, that I have a few opensource projects. Not many, but one of them was lacking some work 'cause it had a bunch of support requests or whatever you call 'em, issues. So pytest-check, I went in last night. I went and cleaned all those up and solved a couple of my inner problems. But one of the things that I ran into that was interesting. I mean, I just kind of wanted to highlight it, is plugin for PyTest. There were other plugins for PyTest. Some of them don't work together very well because of the way they abuse and use PyTest, I'm definitely abusing PyTest hook functions with PyTest check. Intentionally, what it does is it allows you to check certain things within your test, but not fail right away so that you can continue on. And then if any of the checks fail, it actually fails the entire test and tells you all of the failures.
+ 
+00:24:23 KENNEDY: But it fails them at then end, not as it hits the first one, right?
+ 
+00:24:26 OKKEN: Yes, but to get away with that, the only way I could figure out is to hook into the report function, which happens much later after the test completes. Well, so there's a whole bunch of other plugins that allow you to rerun tests if they fail. There's rerun failures, there's flaky, there's retry and there's a handful of others. Most of them are not compatible with pytest-check because of the way, at the time that they're checking to see if something fails, and the time I'm checking. So I guess I just want to point out that if you want that to happen, rerun failures works. Flaky and retry don't.
+ 
+00:25:02 KENNEDY: Nice. That's really cool. I wonder if you could monkey patch flaky or retry to force it to check later or something like that.
+ 
+00:25:10 OKKEN: Maybe, but also I actually commented in the defect report that it doesn't work with flaky. And I said, "Well, I think it should try." And I had a comment from somebody that said, "You're just going to kill yourself off if you think that you're going to try to make it compatible with all the plugins out there." So as long as there is a workaround, it's fine to say, "If you need this to work with something like this, use this other plugin and not my problem." It seems cold, but opensource is a side project, so...
+ 
+00:25:38 KENNEDY: Yeah, absolutely. Cool, well I've got a couple short ones here. Jeremy Shindle sent in just a quick message that pandas is now 1.0. It had been living on the zero ver branch for a long time, but it has migrated over to semantic versioning. It has a couple new cool features. So we were already speaking about pandas earlier. If you're using pandas, or whatever, hey, pandas 1.0 is out. That's a big deal. Probably also means a lot for the stability of the API.
+ 
+00:26:04 OKKEN: Yeah, it's good.
+ 
+00:26:05 KENNEDY: For the PyCharm fans out there, myself included, friend of the show, Anthony Shaw, has created a PyCharm plugin called Python Security. And we'll link to that. And basically, what it does it it goes through, much like when you're working with PyCharm, it automatically tells you, "Oh, you're doing a type mismatch. You're passing an int and it expects a string." Or, "You're calling this function that takes two arguments, but you're giving it three." It does all that checking in realtime. This one is for security. So it checks for unsafe loading of yaml files, remote code execution and flask, man in the middle with a requests or httpx and debug configs and Flask and Django, so that's kind of cool. You want that? Get that and install it.
+ 
+00:26:46 OKKEN: Nice.
+ 
+00:26:48 KENNEDY: Yeah, and then finally, I have my Python for Decision Makers course that talks about whether or not you should and how to position adopting Python at your organization. So I did a webcast on that and that's already passed. It went really well, but the recording of it is out. So I'll link to the recording and if people want to sign up, you got to register for the thing, but then you just watch the recording.
+ 
+00:27:08 OKKEN: Oh, I'll have to check that out, nice.
+ 
+00:27:10 KENNEDY: Yeah, that was fun. Lot of fun. Lot of good conversations there. Alright, I don't know about his joke, but I'm going to do it anyway. You ready? You've heard about optimists and pessimists and a glass, right? A glass is either half full or half empty, depending on which side of that divide you land on, right?
+ 
+00:27:26 OKKEN: Yep.
+ 
+00:27:27 KENNEDY: Well, there's a third angle here. And for the engineer, you don't see the glass as half full or half empty. No, the glass is twice as large as it needs to be.
+ 
+00:27:37 OKKEN: Exactly.
+ 
+00:27:40 KENNEDY: It's all about capacity planning. Come on.
+ 
+00:27:42 OKKEN: Yeah, okay. So I don't have a joke, but I came up with a little bit of a brain teaser this morning.
+ 
+00:27:47 KENNEDY: Okay, nice. Let's have it.
+ 
+00:27:49 OKKEN: So when is 90 greater than 100? Well, there's a couple places. One, which I was informed on Twitter is when you're comparing string literals.
+ 
+00:28:01 KENNEDY: True, yeah, yeah. You're going to say quote 90 less than quote 100, it's false. Yeah, okay.
+ 
+00:28:07 OKKEN: The other one is microwave times. So 100.
+ 
+00:28:12 KENNEDY: Nice.
+ 
+00:28:13 OKKEN: Anyway.
+ 
+00:28:14 KENNEDY: Very good.
+ 
+00:28:15 OKKEN: That's it.
+ 
+00:28:16 KENNEDY: Alright, well, you've left people with something to think about. And yeah, thanks for being here.
+ 
+00:28:20 OKKEN: Thanks, bye.
+ 
+00:28:21 KENNEDY: Yeah, bye. Thank you for listening to PythonBytes. Follow the show on Twitter via @pythonbytes. That's PythonBytes as in B-Y-T-E-S. And get the full show notes at pythonbytes.fm. If you have a news item you want featured, just visit pythonbytes.fm and send it our way. We're always on the lookout for sharing something cool. On behalf of myself and Brian Okken, this is Michael Kennedy. Thank you for listening and sharing this podcast with your friends and colleagues.
+ 
