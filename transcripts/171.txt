@@ -1,0 +1,341 @@
+0:00:00 KENNEDY: Hello and welcome to Python Bytes, where we deliver Python news and headlines directly to your earbuds. This is Episode 171 Recorded February 26 2020. I'm Michael Kennedy,
+
+0:00:12 OKKEN: and I'm Brian Okken.
+
+0:00:13 KENNEDY: And Brian. We have a special guest. Yeah. Hey, David. How you doing? Welcome to the show. Thanks. Yeah. It's great to have you here. Always nice to have a different fresh voice too. Come join me and Brian. Or sometimes to replace us, depending. What? We're up there. Yeah. So great to have you here Also. The show is sponsored by Data Dog. Check them out at Pythonbytes.fm/datadog.
+
+0:00:35 KENNEDY: Tell you more about that later. David, let's start off with you. Let's let's talk about decorators. Do you feel like decorators are one of the more mysterious things that people work with a Python?
+
+0:00:45 AMOS: I think so. You know, it's something that I think a lot of people either, don't brush up against too much or they just sort of mysteriously appear in a framework they're using.
+
+0:00:53 KENNEDY: right. I type `@app.route`, and it works, so I'm gonna type that I don't
+
+0:00:57 AMOS: exactly okay, did you know that there's actually a grammar restriction on what you can actually put in it the decorator you can actually call it
+
+0:01:06 KENNEDY: It's Basically, I remember it was, like, dotted. I could have names that are dotted. So, like flask dot ap got route or something like that. Not quite right. But you know that syntax and then parentheses. I can put stuff in there or not?
+
+0:01:20 AMOS: Correct. Yeah, I didn't know that there was actually so much of a restriction on this. So right now it requires that a decorator consists of a dotted name optionally followed by a single function call or method call (right,) and there's a new PEP out that proposes relaxing these grammar restrictions a little bit. It's a PEP 614. It's still in draft. It was submitted, I think, February 11. So it's pretty recent.
+
+0:01:45 KENNEDY: Yeah, that's like 14 days old or something like that. It’s brand new.
+
+0:01:48 AMOS: And so the issue goes back way back to 2000 for where, I guess Guido proposed these limitations and the use case highlighted by the PEP that they think we should change this is actually comes from the pyKeepfive library where I'd say you've got a list of buttons list, button zero, button one, etc. And do you want it? They've got a decorator that's called is a method on the class attributes on those buttons. right now what you can't you is, say the decorators call `button.click.connect`. What you can't do is say I want to do `button[0].click.connect.` So what you have to do is first extract one of the list items into a variable name and then access the method that way. And what I thought was actually a strong argument for changing this was that the other points out that there's kind of a hacky way you can get around this by you can define a function that takes a single parameter and then just returns that parameter. And then you can wrap your object that has the decorator in it. With that function to access it however you want.
+
+0:02:53 KENNEDY: I see. So basically you make like a decorator decorator that returns the decorater you hoped you could write directly. But here we go. Right?
+
+0:03:01 AMOS: Exactly. And so you start getting into things that way less, readable. Then if you could just subscript that get what you want out of that. So the PEP proposes relaxing the grammar to any valid expression. That's kind of in quotation marks, because it's really anything that you could use in a test. Like an `if` or `elif` or a `while` block, as opposed to say something like any valid input like an `eval` function,
+
+0:03:25 KENNEDY: right? Right. You can't put a program there.
+
+0:03:28 KENNEDY: Yeah,
+
+0:03:29 AMOS: so not everything would be allowed. Like if you have a tuple you couldn't with two objects x and y, and that you couldn't be like `@x, y`, although I'm not really sure why you would be using it to pull as a decorator in the first place. But anyways, that the other went ahead and did it like an implementation draft on CPython has got a fork of CPython. Where we can actually pull this down and check it out and see how it works.
+
+0:03:50 KENNEDY: It makes sense to me, you know, it's moving their complexity around. It does make it more complex. But you know, these decorators that take function or take parameters that then generate other decorators that then wrap the real thing. Those are also not super simple or obvious. So yeah, it seems it seems reasonable to me, Brian. What do you think?
+
+0:04:06 OKKEN: Sure, why not. Just throw some more stuff in the syntax.
+
+0:04:08 KENNEDY: Yeah, maybe we could use the walrus operator on it.
+
+0:04:12 KENNEDY: Actually, I had a ah ah, funny run-in with the walrus operator. I was so excited. I started using my all this is the perfect case for it. And I put it all together, and then I rolled it out onto the server. And I'm like, Oh,
+
+0:04:24 KENNEDY: the server. The website won't start anymore because, well, it's on Ubuntu LTS, which is running Python 3.69 or something like that. I guess I can't use the walrus operator after all. (Oh No), not without, you know, changing more than I really cared. It was like three lines of code. It’s fine I’ll put them back, you know, But I was, like, so happy anyway. Yes. Let's not put those in decorators. Yeah.
+
+0:04:46 KENNEDY: All right. Well, the next thing that I found that I thought was pretty interesting. This is an article from six months ago or something like that. It's not super brand new and fresh, but I know we haven't talked about it, and it
+
+0:04:58 KENNEDY: seems really, really useful to me. So let's start by just talking real quick about the Mac menu. Bar that thing across the top. I know it's sort of loved and hated. It's very different than some other operating systems, like in Windows, your menus air stuck to your window. Where is in Mac? There's just stuff to the top, for whatever active app you have
+
+0:05:19 KENNEDY: that used to bug me Now. I really love it, actually. But I have all these little widgets in my menu bar. I mean, I have a ridiculous number of widgets. It probably spans the entire screen on, a like 1600 resolution monitor.
+
+0:05:31 KENNEDY: So I had to get this app called Bartender
+
+0:05:33 KENNEDY: for the Menu Bar
+
+0:05:35 KENNEDY: bartender, which I can hide away most of them, but I don't care to see unless I want to access them. But I've got stuff that shows, like current band with usage, total usage, VPN, resolution control, like all these cool things, right? So at least for me, this is I got an exciting part of the OS and it seems like to add an app. There is not too hard, but it would be nice if we could do this with Python, right? Guys
+
+0:05:57 AMOS: It would Yeah,
+
+0:05:57 KENNEDY: Yeah. So there's Ah, a guy named Camillo Visini. hopefully I got that close. Close enough There. He wrote an article called Create a Mac OS Menu Bar App with Python.
+
+0:06:11 KENNEDY: And the biggest takeaway, I would say from this is Wow, it is not a lot of work.
+
+0:06:15 KENNEDY: And this is not just like, hey, you can get something to appear in the menu bar. But here's something that controls the icons that are up there, as it, you know, is like enabled or disabled. It actually compiles to a .app file that you can ship and run. You try to happen stuff. So anyway, it's a really cool little app. It uses some stuff that we've talked about before. Uses Rumps. Rumps is ah, funny project name ridiculously uncomplicated. macOS Python status Bar apps. That's rumps. 
+
+0:06:48 AMOS: That was a complicated name.
+
+0:06:48 KENNEDY: Yeah, but if you look at what it does, it is uncomplicated except for its name and then py2app obviously takes a Python app. You tell it the source code and the packages you need and you basically create a custom setup file and a custom setup action. So you just say `python setup py2app` and boom, you have a thing you can just distribute around.
+
+0:07:06 OKKEN: Yeah, and both of those dependencies pip-installable to
+
+0:07:10 KENNEDY: guess exactly. Yeah, it's really good. So basically, in order to get something to show up on the menu bar with RUMPS, you have to say, create an instance of an app so, like `rumps.app`, give it a name. The example that they used was a Pomodoro timer. Do you say the name of the App Pomodoro? And then you could even use an emoji as the icon that will show up there. So they put a tomato emoji.
+0:07:34 KENNEDY: and then you call app.run and then you have your thing running up there. Obviously, you gotta add some functionality and whatnot, but it's it's really quite simple. And I'm starting to think like right, what could I put up there? That would be really fun.
+0:07:45 OKKEN: You could do the pomodoro.
+
+0:07:46 KENNEDY: Yeah, I already have a Pomodoro app and it like syncs stuff and has a history. And, you know, I could definitely do a Pomodoro app. That would be fun. What I've been thinking about actually is ah, something that Bryan and David, David and I were actually talking about at
+
+0:08:02 KENNEDY: PyCascades was continuous deployment. Remember that, David? (Yeah.) Yeah. So I have servers and stuff. It's like almost continuous deployment. Gotta log in, run a command, and then it kicks off like a whole process of a bunch of stuff that's happening. So I finally broke down after that and wrote the last mile or whatever you will too. Like So now if I just when I'm working and by charm and I'm ready to put something in production, I just go to the terminal in PyCharm so I’m in the right place and just type, `prod`, hit, enter. And then, you know, 30-60 seconds later, hoping stuff happened on the server and the new versions working, which is awesome. But it would be kind of cool to see, like, a status of that stuff, like a little server thing, and show me the status and the last deploys of like all the different perhapps would be fun.
+
+0:08:49 AMOS: would be cool.
+
+0:08:50 KENNEDY: That's what I'm thinking.
+
+0:08:51 OKKEN: You ever roll-back for your production script as well?
+
+0:08:53 KENNEDY: Yeah, OK, yeah. Well, the rollback. So the way it works is you just commit to a certain branch
+
+0:08:59 KENNEDY: and the rollback has just changed What's on that branch, right? So So somehow I want to do something. Then
+
+0:09:06 KENNEDY: I go “Oh crap!” roll that, you know, somehow roll and undo that, commit and then just triggered again or something like that. It's all based on, like, GitHub webhooks and push actions and whatnot.
+
+0:09:16 KENNEDY: Anyway, that's what I'm thinking about building. What I would love to see is to see people build interesting things with Python and with RUMPS and this example here and see if somebody can get it into the Mac app store. (Oh, yeah), I've gone on a rant before. I hate them The app store so much, I used to love them, but now I'm really mad at them because I’ve taken a lot of abuse and I still in when I don't want to go too far down because they don't make me upset. But I would love to see someone else try to get it to the Mac App Store.
+
+0:09:46 KENNEDY: Anyway. What do you guys think? This is fun, right?
+
+0:09:48 AMOS: Yeah, it's very fun. Yeah.
+
+0:09:50 KENNEDY: Yeah. Cool.
+
+0:09:51 KENNEDY: So, Brian, this next one that you have this pretty cool one about testing and code coverage. I really like. It helped me think about it.
+
+0:09:58 OKKEN: it just came out, like, last week. So blurb about this. I think it was gonna hopefully say this name. Right, Nikita Sobolev.
+
+0:10:08 OKKEN: He’s the CTO of wemake.service's. And we we've heard of wemake.service's before because they do the what was it? The design..
+
+0:10:16 KENNEDY: The Linter...
+
+0:10:16 OKKEN: Python code style guide? (Yes. exactly!) Which is pretty cool.
+
+0:10:22 OKKEN: I think they from I think, one of their sponsored Twitter threads that announced it to us and let us know. So thank you. But it's kind of exciting. So the idea is with code coverage. There are times where you have to. I kind of have if-statements around certain blocks of code that only run like, let's say, mean for we used to have a lot of, ah, two versus three stuff. So Python 2 vs 3 some people might still have those things. They need to deal with?
+
+0:10:51 KENNEDY: I don't know Why isn't it 2020?
+
+0:10:53 OKKEN: Yeah, exactly. But still, there might be like, maybe you want to use the walrus operator on something you need, like the 3.6 verses. 3.8 (Yeah), but then also, maybe you've got direct calls that you need, Ah, different things on different operating system, like Mac versus Windows vs Linux or something? Or different versions of third party packages? That just happens sometimes, but it's usually sort of isolated, but it it is a thing that makes it so that when you do a test run with test coverage, those things aren't getting counted and they count against your coverage numbers,
+
+0:11:26 KENNEDY: right? It's a lot of times is trying to, like, import something, and you're not sure if it's there or not, right?
+
+0:11:31 OKKEN: Yeah. So you might, you might say, try important if it works. Great. If it doesn't, then you import a different thing. Like, uh, the only thing I think of right now is that `mock` is part of `unittest`, but it didn't used to be something like that, but ah, one of the ways that we dealt with. It's in the past was to have your coverage numbers. You do the testing on all the different platforms you need to, or the testing on all the different versions of Python you need to or whatever, and then collect all that coverage and then just report on that because coverage has a combined way you can combined reports. There are downsides to that, though, because, like for instance, just during development, you have to run all the tests multiple times, or you might not have access to the other operating system. So this new plug-in for coverage allows you to write rules some pretty cool rules and pragmas to skip verse, different versions or different parts. Your code for excluded from coverage based on different, you know, just a little bit of code. And it's really pretty cool.
+
+0:12:33 KENNEDY: Yeah, I love it. He's just put a comment around that area and say `# -pragma` and you put a little conditional, right? Like you could define the rules for code coverage. You say this rule means this thing, and I don't know whether or not I should check that right
+
+0:12:46 OKKEN: has a wayto within your coverage set up or wherever you're putting that set up to put rules in place and have those rules there. And then those rules specify a different pragma, and then the pragma show up in your code. But it's really pretty clean. And I can't think of a cleaner way to do this. That's pretty pretty cool, like,
+
+0:13:07 KENNEDY: Yeah,
+
+0:13:07 AMOS: yeah, it looks nice. Yeah.
+
+0:13:08 KENNEDY: Yeah, for sure. I mean, maybe you could put some, like, plug-in extension stuff into coverage itself or something that's running coverage and say, if you see this pattern ignore this or are somehow report on it differently. But yeah, barring something like that, this is great.
+
+0:13:25 OKKEN: I do wanna add a couple notes on this. I think it's, I'm a complete coverage or complete testing sort of person. So this will sort of hiding parts of your code that you don't know we're being. It could potentially hide some bugs, so make sure that you are really covered, testing everything. If you have this sort of stuff in place, really test everything, probably on your CI.
+
+0:13:46 KENNEDY: Well, what if you find a part of your code that's hard to test and you don't want the code coverage to bug you about it. Just cover that up.
+
+0:13:53 AMOS: That’s a great idea.
+
+0:13:55 KENNEDY: like it's 100% code coverage. This is good. Yeah, we're good.
+
+0:14:00 OKKEN: I dont’ think...
+0:14:00 KENNEDY: I think that’s the the opposite of what You're saying.
+
+0:14:03 KENNEDY: okay. Great.
+
+0:14:05 KENNEDY: Yeah, that's not the intent. Although if that's what you are evaluated on it work. This may be effective. You never know.
+
+0:14:14 OKKEN: 100% code coverage. Boss,
+
+0:14:17 KENNEDY: right? I don't know where this bug came from. Speaking of good stuff as well, really quickly. Want to tell you all about Data Dog? They've sponsored this episode as they have so many. So be sure to support them because they support us.
+
+0:14:28 KENNEDY: So they're cloud-scale monitoring platform that unifies metrics, logs and traces across all the different service boundaries. You get to monitor your Python apps in real time. Find bottlenecks with detailed flame graphs, and trace request is a cross service boundaries. Plus, they have tracing client auto instruments. Many of the frameworks that you care about like Django, async.io, flask. You can quickly get started managing the performance of your Python apps Check them out. Get started with a 14 day free trial, and they'll send you a cute little T shirt, so check him out. A pythonbytes.fm/datadog.
+
+0:15:04 KENNEDY: David, I've been thinking about excel a lot lately And how people are moving from excel to some of the data science libraries. But that could be really tricky if they've written a bunch of, like formulas and a lot of work, right?
+
+0:15:17 KENNEDY: Yeah. And a lot of logic on excel file.
+
+0:15:19 AMOS: Yeah, definitely. I found this library called PyCell. Describes a library for compiling Excel spreadsheets to Python Code and visualizing them as a graph. So I thought this is a really interesting library that this this guy open sourced that it comes from a problem. Actually, I guess this guy had back in 2011. He wrote a blog post about it Describing the motivation for this. But what this does is if you have an Excel file that has a whole bunch of formulas in it. So you're using it to, this guy was using it was to design a civilian airplanes like search and rescue missions, airplane designs. We've got a whole bunch of formulas. They all kind of interact with each other, and it's just lots of complicated logic. One of the big issues they had was the Excel file was getting really slow and so, he decided, investigated what it would take to do something in Python. But he didn't wanna have to rewrite all of those formulas and go through all that logic again. So this will actually parse out and Excel file with It will compile it to executable Python code, and then you can actually set, like, cell values and see what the output in other values will be. So you can kind of do this all on the fly, and it's all happening within Python. It’s not touching Excel anymore.
+
+0:16:32 KENNEDY: It's not like one of those automation libraries or something like that, right? It's
+
+0:16:36 AMOS: no
+
+0:16:37 KENNEDY: converted it a Python, and then it runs that
+
+0:16:40 AMOS: exactly. Yeah, there's some parser built into that will take all the formulas and actually write Python functions that replace those formulas and can execute it. It's it's using numpy and scypy and a whole bunch of the data science and scientific stack there to do that. But one of things I thought was really cool about it was one step further. And once you've got all before me was compiled, there was this big optimization problem. They had to do that. Okay, we've got all over formula in here. We've got some based parameters we've said We want to know we want the airplane to actually fly. So how do we optimize the output to get what we need to design the aircraft properly. So there's a big optimization process, and he was actually able to write that in python and have it take care of that for them and reduce the number of cases, increased the number of cases that they could actually optimize from about 65% of all cases to about 98% and reused the computation time down from about 10 minutes to 30 seconds to a minute with it, which was, I thought, really, really cool. And then you can generate these graphs of like all the formulas and how they interact with each other and kind of explore that visually to see how one change in the variable is gonna propagate through the rest of the system and everything. So I thought it was a really interesting example of taking Excel and doing something with Python with it.
+
+0:17:59 KENNEDY: We've covered a lot of stuff about. Here's a cool library, too. From the outside with Python like sort of marionette pull the strings of excel and make it do stuff. But this is like, how do I hit escape velocity and get past excel without starting from scratch? Yeah, it's really cool, Brian. What do you think?
+
+0:18:19 OKKEN: this is cool. I tried to avoid excel as much like an But,
+
+0:18:22 OKKEN: you know, if you can't, this is good.
+
+0:18:24 KENNEDY: Well, if someone gives you excel, you just hit it with this and you're like, all right, we're done with Excel.
+
+0:18:28 KENNEDY: It's right, Kif.
+
+0:18:30 KENNEDY: Now, I think this is actually super super cool. So I saw this come by as well. I'm glad you picked it, David, because it seems like it for the right group of people. This is gonna be very helpful.
+
+0:18:39 AMOS: Yeah, I think it could also serve as an example for other other use cases as well. That kind of see how they how they did this and how you might be able to apply that same methodology to problem.
+
+0:18:49 KENNEDY: There's got to be stuff that's not excel that has like similar type of issue, right? 
+0:18:55 KENNEDY: Speaking of taking and applying something to your won and solving your own problems, this next one that I want to talk about is something that I actually recently released. But I think a lot of people will find helpful. So let me just tell you all the problem and that you could give me your thoughts and I'll tell you what I tried to do to fix it. So I feel like a lot of times when you're thinking about the websites you're building or how you're gonna maintain them, how have other people working on them? It's almost like this either-or story. Either. We're gonna build an app that's like powered by the database, where it has, like, structured routes, say, like a bookstore has catalog, which has categories. And then in those categories, there's books. Do you have pages that represent those things by putting in details about books and pack it in both categories and whatnot?
+
+0:19:41 KENNEDY: You guys want to sort of like the data driven side, or you could be more free form. I just want to create landing pages in arbitrary like content that I write and what not and just structure stuff more arbitrarily. In which case, maybe you need to CMS like WordPress or you want to stay in Python. You might use WagTail, which is built on DJANGO right? Do you do one or the other? But there's not a lot of conversations about, like, I'm gonna build that cool, data driven flask app, and this part is gonna be like WordPress and I could just write in it
+
+0:20:11 KENNEDY: and the challenges you know, a lot of times that html of those the way you structure those pages lot is, um, with Jinja2 or chameleon or DJango templates or something like that, right? So you don't want to write that, And a lot of times you got to restart the app to make those sort of pick up. So what I decided was I'm gonna build a sub template because it's not like it's not stand alone. It requires when something like jinja.
+
+0:20:34 KENNEDY: to sort of orchestrated, but something that lets me right mark down for part of the Web site so it can act like a CMS and leave the other part in place so it acts like that data driven app that I described what you guys think?
+
+0:20:46 AMOS: Oh yeah,
+
+0:20:47 KENNEDY: common problem, right? Like it's rarely all one or all the other. And yet how do you, you know, how do you deal with that? Do you write like custom html on the app and just restart the app? That's not great, because well, now you're now you're writing like way more just html, and you want to write content. So what I do is I came with this thing I named markdown-subtemplate, and it's like a templating engine for markdown.
+
+0:21:11 KENNEDY: And what it lets you do is you write, mark down files.
+
+0:21:14 KENNEDY: And importantly, you can take other markdown files and import them. So, for example, if I had a Contact Us instruction, I always wanted to say, Here's our Twitter years are good hub. Here's our whatever. Here's how you can find us, like in different market on file that just say import, contact us, and then it just drops in. So there's like one place. You maintain that segment of your content and it drops in and builds up like a tree object. Graph of markdown files, then also does variable replacement and it lets you put arbitrary html for little bits of like, I need this thing. Have this CSS class on it or is just not gonna work and markdown’s not enough So, you know, a div with a class and then just go back to mark out or something to that effect, like very, very limited. Html.
+
+0:22:02 KENNEDY: I built this.
+
+0:22:03 OKKEN: Yeah, I'm interested in this and I'm curious to play with it a bit. It is not something I can use. Standalone or can it run it?
+
+0:22:11 KENNEDY: You could use it. Standalone. But you couldn't. I don't know that you would necessarily be able to build the website that you dreamed of standalone. The reason is it doesn't do like you can't really like a navbar. And like you, you sort of couldn't write. You could sort of get, but it would be just pure markdown. And that's not usually enough, right? There's usually like I wanna have these CSS files included, and I wanna have this stuff included,
+
+0:22:35 KENNEDY: but then the core of the page I just want to write markdown files and drop them in there and have that be the content, But I want to build a show whether the users logged in or not. So, yeah, you technically could. But it's not intended for that.
+
+0:22:49 OKKEN: I'm thinking of non-Web based stuff.
+
+0:22:51 KENNEDY: Sure, for non blood based off. Yeah. You could definitely take a whole bunch of mark down and convert it thio html with, like, reused elements and whatnot. No problem.
+
+0:23:00 AMOS: And this interacts with, like, the data driven part of a website saying like if you had
+
+0:23:05 KENNEDY: so imagine, you've got, like, a whole bunch of different pages. You want to be like landing pages or articles or something like that. You want to let people just write the markdown, but then you want to be ableto have them import the other markdown and do variable replacement stuff. They do all of that. But then, in the data-driven part, you would just say the contents of this page are boom the output of this template
+
+0:23:24 KENNEDY: just saying, like, get HTML and just plunk it in in between like your head with all the CSS and
+
+0:23:30 KENNEDY: and maybe the bottom with the javascript in the footer. Right? But then everything else just comes from is driven from this.
+
+0:23:37 KENNEDY: It has, ah, logging to tell you what's happening. It has cashing, and those things are extensible. So, for example, it has an in-memory cache. But it also has a mongoDB-backed cash that you could set up because parsing mark down turns out to be a little bit slow
+
+0:23:52 KENNEDY: so you can take things from, like, 200ms or so for a decent sized page down to like 1ms automatically, they get automatically supports that you have to do anything and then also working on storage. So if you don't release files, but you want to store in the database that you'll be like change the storage, injured and stuff. So anyway, people like this, they can play with it. It's It's really early, but PRs and contributions are welcome.
+
+0:24:14 AMOS: Very cool.
+
+0:24:14 KENNEDY: Thanks.
+
+0:24:16 KENNEDY: All right, Brian,
+
+0:24:18 KENNEDY: I think this is like a, uh dystopian continuation of your last one. What is this?
+
+0:24:23 OKKEN: Definitely it's a continuation. So I was actually when I was researching the previous things, what was the previous thing? That conditional coverage article and conditional coverage? Plug in. I was remembering that the wemake.services does that wemake Python style guide, which is not just a style guide, but kind of some cool tools around it.
+
+0:24:43 OKKEN: It said. “We recommend using flake hell“ And I’m like “what’s Flake Hell?“
+
+0:24:48 KENNEDY: A. Where you like “What the hell?“
+
+0:24:50 OKKEN: Yeah, exactly. So I wanted to check this out and luckily, oddly enough, on the flake Hell Main ReadMe doesn't highlight some of the main benefits, but there's, a little Blurb page that I'm gonna link to on from though we make service's site that why they use it is for legacy first. So, like flake Hell is, ah, thing that that wraps around Flake8. But Flake8 also has lots of plug ins and stuff. So but flake hell will do is helps you specify which plug-ins are configured in which plug-ins will run normally. Flake8. We'll just run any plug in that sense, any flake, a plug-in that's installed so you can control that a little bit. So there's that. But then there's also they've made improvements on how you specify configuring it so you can ah, configure it now within your `pyproject.toml` file. And then there's, ah, you know, shortcuts like wild cards and such that make it a lot easier to specify which which rules you want to. You follow in which rules you don't, and that makes a little bit cleaner. But the part that I'm really excited about is they have a thing called Flake Hell, Baseline. And so the idea is, let's say you've got you've decided as a team you're gonna or on a project. You're going to start using some linting tools From now on. Yes, you'll have to go back and change some stuff. But you don't really want to do that right now. You want to make sure that the style guide applies to new code and gradually, as you got time, go back and fix the old stuff. Well, the baseline will allow you to save a baseline file and then specify that in your .toml file. And then now you, when you run a flake hell in't, it runs all of your Flake8 tools and doesn't show you any of the old stuff. So if you haven't changed your code running it right after you've done a baseline will not show you anything. But as you start writing new code, it'll into the new stuff it lets the old stuff to. It just doesn't catch the same errors again. I'm sure there's a way you can go back and, like, take out your baseline to try to fix up some old stuff. But this is a way to move forward on a project with linting styles without having to kind of take a break and fix everything first.
+
+0:27:05 AMOS: That's really cool. That's I mean, I'm on large code base with lots of history. Everything that could be super annoying introduce this new tool and thousands of errors. Flag that We've got a fix. Before, we could even move on with life. So I think It’s fantastic.
+
+0:27:20 AMOS: Yeah,
+
+0:27:21 KENNEDY: well, often it doesn't mean we're gonna fix him. It's like, Yeah, we're not going to use this because this is gonna take us four weeks, all of us, and we're not doing that. So we forget that I do think the name is a little bit off, though. It should be like “flake utopia” or something, because it's meant to get better.
+
+0:27:37 OKKEN: It's
+
+0:27:37 KENNEDY: It's like your inflate hell
+0:27:39 OKKEN: its flake heaven.
+
+0:27:40 KENNEDY: Yes. How do we get you out of flake? Hell, like, I don't know. Anyway,
+
+0:27:44 AMOS: I like that. They got a little snowflake inside the flame on their logo there, too.
+
+0:27:52 KENNEDY: Yeah, I actually didn't catch that. Yes, it's Yeah, it's very, um,
+
+0:27:58 KENNEDY: contradictory. You don't really know. But I do think, Brian, that this legacy thing is super important. It doesn't let you say we're going to start using Flake8
+
+0:28:05 KENNEDY: now. And we're not going to go and stop the assembly line and stop working and everything and wreck that. It just lets us from now on,
+
+0:28:15 KENNEDY: you know, you kind of get a pass and what you did before, now on, we're gonna work things right. Way I like that. That's cool. Well, guys, I guess that wrapps it up for a main topics this week. Either of you got stuff you'd like to throw out their extra thing.
+
+0:28:29 AMOS: Yeah. Hi, Texas 2020 is coming up. Registration opens sometime. Well, next week it'll be the time that listeners are actually hearing this. It's gonna be
+
+0:28:41 KENNEDY: time travel and all. It'll be about the time this show comes out.
+
+0:28:44 AMOS: about the time. Yeah. So you just go to PyTexas.org, if you live in the Texas area and are interested in that in that conference, it's a It's a lot of fun that's going May 16th and 17th in Austin actual conference days there.
+
+0:28:58 AMOS: Yeah. So register when you hear this, if you're interested.
+
+0:29:01 KENNEDY: Yeah, yeah, Super cool, Brian. You got anything?
+
+0:29:03 OKKEN: I do not.
+
+0:29:04 KENNEDY: All right, Well, I have just two quick things for you to throw out there. One
+
+0:29:10 KENNEDY: you know, thanks to our listeners, as always, I went on a rant about licensing. Didn't I write about gui framework? Yes, and I think it is well deserved.
+
+0:29:19 KENNEDY: However, some folks should point out my interpretation of the dual license mode of cute wasn't quite right. So let me see. Maybe
+
+0:29:30 KENNEDY: I'll get it right this time. Maybe. And it drives me crazy because I'm not 100% sure I know where I could go on point where this is the case. There's, like, all these little different paragraphs and random pages that talk about it. So cute is licensed under a dual license and LGPL license and a commercial license and my reading of their website was. If you're doing commercial stuff, you have to have the commercial license, and if you're doing open source stuff, you have to have the LGPL license. What folks are saying, I think it's probably true is you can decide which license you decided to take it under. You can have the LGPL or you can have the commercial if you pay for it.
+
+0:30:11 KENNEDY: and then you just have to follow the rules of those. And if that's the right reading, which probably it is, then you can ship stuff.
+
+0:30:19 KENNEDY: commercially under LGPL. Anyway, that's not my final verdict. People can continue to look and get maybe an official word. What would be nice if you people are listening and they're like, frustrated like, Well, why doesn't this guy get my licensing? What if they had a page that said,
+
+0:30:34 KENNEDY: Here's a comparison side by side, like a lot of SaaS apps do like if I get this plan, can I do X? Could I do Y? Can I do Z, little check box, right? You know, there's none of that. So it's really vague and a lot of like frustration with users around licensing from their block, post and whatnot.
+
+0:30:50 KENNEDY: That said, I think you probably can use LGPL commercially, but
+
+0:30:54 KENNEDY: don't do it.
+
+0:30:55 OKKEN: I still have questions about like, let's say I work for a big company.
+
+0:30:59 OKKEN: Can I use cute to write a tool that I'm not selling? That it was just using internally?
+
+0:31:04 KENNEDY: I believe so, Yeah, I believe already. They called it out that you can distribute internally. You just can't distribute it externally. But there's weird rules. Like if I'm a developer and I work on a commercial project,
+
+0:31:16 KENNEDY: someone else is using the LGPL license
+
+0:31:19 KENNEDY: like they can't even look at or, interact with the code that has to do with the commercial license. It's like there's a lot of weird knock on effects that go farther than I would think they should. Anyway, this is way more than a quick follow, but it's a bit of a correction. I wanted to throw it out there. 
+
+The other one, This will be quick is I just interviewed Richard Campbell on Talk Python on something that many many people would be interested in that has not that much to do with programming. Actually, on what we're calling a “moon base geek out”. So Richard Campbell does all these, like super deep dives, like
+
+0:31:51 KENNEDY: in the popular science stuff. He's also developer and a podcaster. But
+
+0:31:56 KENNEDY: there's time she'll go into these dives and various just science popular science projects. And this is just a modern space travel where we are and
+
+0:32:06 KENNEDY: whole Moonbase story stuff. So if that sounds interesting to people, check it out. Very little, like programs, skill required to know about it.
+
+0:32:12 OKKEN: I guess I did have one extra thing I was gonna tell people about.
+
+0:32:15 KENNEDY: Yeah, throw it out there.
+
+0:32:16 OKKEN: So over the holidays over December and January, I did slow down testing code down, too. A pretty slow dribble, but I'm back up to weekly episodes. So if you haven't checked out Test and Code could lately be sure to check it out.
+
+0:32:30 KENNEDY: Yeah, I've seen you released a bunch of stuff. That's great. You said Anthony, Shaw, right about is his plug-in?
+
+0:32:35 OKKEN: Yeah, and also just app security. And we're trying to release weekly. So lots of good stuff coming up.
+
+0:32:41 KENNEDY: Very good. All right, You ready for Ah, a joke.
+
+0:32:44 OKKEN: Yeah, I've got actually one too after you're done with this one.
+
+0:32:47 KENNEDY: All right, super. So this one is visual, but it doesn't need very much. And I think a lot of people can appreciate this. So you guys just open up that link real quick. Uh, tell the choke. So there's a programmer, a guy looking at his screen, which is furrowed brow, clearly frustrated, just thinking “Why!”, right?
+
+0:33:07 KENNEDY: He says it doesn't work. Why?
+
+0:33:10 KENNEDY: And then there's another picture
+
+0:33:12 KENNEDY: somewhere else in time. Exactly. The exam expression imposed. “It works. Why!?” Don't know. How often do you all have that feeling? Like, “Why does this work?” I just don't understand why this works in directly. Why will this not work, right? It's so funny of Ah, I think it's just it's It's a little too true.
+
+0:33:30 OKKEN: So a question about this Is he leaning on his elbows? Or is that a mustache
+
+0:33:35 KENNEDY: he’s leaning on his moustache
+
+0:33:37 AMOS: Yes. Yeah, they're connected. Obviously.
+
+0:33:41 KENNEDY: Yeah, obviously. Why? Okay,
+
+0:33:45 KENNEDY: what's your joke? Right.
+
+0:33:46 OKKEN: Okay, So this is not a nerd joke. Just a dad joke. So I went to the doctor after ingesting too much food coloring. The doctor said I'll be okay, but I feel like I dyed a little inside.
+
+0:33:58 KENNEDY: Very good. I love it.
+
+0:34:01 KENNEDY: All right. Well, thanks for the jokes and the feedback and everything, Brian. It's always and David. Thanks for being here. Thank you for listening to Python Bytes. Follow the show on Twitter via @PythonBytes. That's Python Bytes as in B Y T E S and get the full show notes at PythonBytes.FM If you have a news item you want featured, just visit Python by side of him and send it our way. We're always on the lookout for sharing something cool on behalf of myself and Brian Okken. This is Michael Kennedy. Thank you for listening and sharing this podcast with your friends and colleagues.
+
