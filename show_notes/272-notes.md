@@ -1,8 +1,8 @@
 # Python Bytes 272
 
-
 **Sponsor**: Brought to you by [**FusionAuth**](http://pythonbytes.fm/fusionauth) - check them out at [**pythonbytes.fm/fusionauth**](https://pythonbytes.fm/fusionauth)
 
+Special guest: **[Calvin Hendryx-Parker](https://twitter.com/calvinhp)**
 
 **Brian #1:** [**Why your mock still doesn’t work**](https://nedbatchelder.com/blog/202202/why_your_mock_still_doesnt_work.html)
 
@@ -19,10 +19,12 @@
     - you can change the return value or an attribute or whatever. normal mock stuff.
     - But…. the punchline…. be careful about the order of patches.
 - It needs to be
+```
     @patch("foo.thing2")
     @patch("foo.thing1")
     def test_(mock_thing1, mock_thing2):
       ...
+```
 - Further reading:
     - https://docs.python.org/3/library/unittest.mock.html#patch
     - https://docs.python.org/3/library/unittest.mock.html#patch-object
@@ -43,9 +45,6 @@
 - Super fast rendering
 - Has a rich set of plugins available for things like searching the buffer with fzf
 
-
-
-
 **Brian #4:** [**Futures and easy parallelisation**](https://wrongsideofmemphis.com/2022/02/17/futures-and-easy-parallelisation/)
 
 - Jaime Buelta
@@ -57,6 +56,8 @@
     - The call to `futures.result()`  on each future within the list is where the blocking happens. Since we want to wait for all results, it’s ok to block on the first, second, etc.
 - Nice small snippet for easy parallel work.
 - Example:
+  
+```    
     from concurrent.futures import ThreadPoolExecutor
     import time
     import requests
@@ -77,6 +78,7 @@
     futures_array = [executor.submit(retrieve, *arg) for arg in arguments]
     result = [future.result() for future in futures_array]
     print(result)
+```
 
 **Michael #5:** [**pgMustard**](https://www.pgmustard.com/)
 
@@ -86,7 +88,7 @@
 - If you’re using postgres, check out pgMustard: A simple yet powerful tool to help you speed up queries
 - This is a paid product but might be worthwhile if you live deeply in postgres.
 
-Calvin #6: [bpytop](https://github.com/aristocratos/bpytop)
+Calvin #6: [**bpytop**](https://github.com/aristocratos/bpytop)
 
 - Great way to see what is going on in your system/server
 - Shows nice graphs in the terminal for system performance such as CPU and Network traffic
