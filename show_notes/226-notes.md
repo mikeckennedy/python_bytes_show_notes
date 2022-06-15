@@ -101,7 +101,7 @@ I am always trying to find time to practice Python and learn more ways to teach 
 
 **Michael #5: Extra x8, hear all about it**
 
-1. We on [**amazon**](https://music.amazon.com/podcasts/7dc269ab-93df-4a32-b382-9e3e8c41d016/Python-Bytes) and [**audible**](https://www.audible.com/pd/Python-Bytes-Podcast/B08JJRD7D9?qid=1616362521&sr=1-3&ref=a_search_c3_lProduct_1_3&pf_rd_p=83218cca-c308-412f-bfcf-90198b687a2f&pf_rd_r=HCG8XTQVENWMJWPNVSH2) **(so is** [**Teaching Python**](https://music.amazon.com/podcasts/search/python)**)**
+1. We are on [**amazon**](https://music.amazon.com/podcasts/7dc269ab-93df-4a32-b382-9e3e8c41d016/Python-Bytes) and [**audible**](https://www.audible.com/pd/Python-Bytes-Podcast/B08JJRD7D9?qid=1616362521&sr=1-3&ref=a_search_c3_lProduct_1_3&pf_rd_p=83218cca-c308-412f-bfcf-90198b687a2f&pf_rd_r=HCG8XTQVENWMJWPNVSH2) **(so is** [**Teaching Python**](https://music.amazon.com/podcasts/search/python)**)**
 2. Sourcery added [**skip refactorings**](https://github.com/sourcery-ai/sourcery/wiki/Skipping-refactorings). I did major refactoring since, favorite:
 	1. `url = request.url if request.url else ''` to
 	2. `url = request.url or '``'`
