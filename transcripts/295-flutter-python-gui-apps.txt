@@ -1,166 +1,962 @@
-00:00:00 Hello, and welcome to python bytes where we deliver Python news and headlines directly to your earbuds. This is Episode 295, recorded August 4 2022. And I am Brian rockin.
+00:00:00 Hello and welcome to Python Bytes where we deliver Python news and headlines directly to your earbuds. This is episode 295 Recorded August 4th 2022 and I am Brian Okken. I'm Michael Kennedy. It's good to have you back Good to be back for people out there listening We kind of batch some stuff up so that you have vacation for a couple weeks But now our news items will be more closely related in time to the release of the episode. Oh, we didn't do that >> It was live.
 
-00:00:11 I'm Michael Kennedy,
+00:00:28 >> No, it was always live.
 
-00:00:12 it's good to have you back.
+00:00:30 >> I'm glad you got back quickly.
 
-00:00:13 Good to be back. And for people out there listening, we kind of batch some stuff up so that you have vacation for a couple of weeks. But now our news items will be more closely related in time to the release of the episode. Oh, gosh,
+00:00:34 Speaking of fast, you've got a fast story for us.
 
-00:00:25 we didn't do that. It was live all over the app always live always live. Yeah,
+00:00:37 >> Yeah. How about we make things faster?
 
-00:00:31 I'm glad you got back quickly. And speaking of fast, and you've got a fast story for us.
+00:00:40 I want to talk about Flask and Cort.
 
-00:00:37 Yeah, how about we make things faster. So I want to talk about flask and court, the flask is flask is one of the most popular web frameworks out there. Court is the API compatible async version of flask originally done by Philip Jones. But I think that Philip has joined David Lord in at least in support of the palace organization, I feel like flask and cord are working much closer together these days. So I don't know exactly what the relationship is. But flask and core are very closely tied together. Right now, what I want to talk about is routing or for those UK friends routing, if you prefer, but the idea of taking a URL and figuring out what function to call, right. So what you do is you you set up in flask, you say at app dot get app dot post, and you give it your URL pattern. Sometimes that's just like slash about other times, it's like slash categories, bracket, category name, or even more general stuff, like what do you might say, its category, maybe a category ID, and it has to be an integer. So convert that for me, or I want to just capture arbitrary path, arbitrary URLs slash edit whatever that happens to be. So that's the idea of routing. And the whole article here something the big news is that Philip Jones has worked on Vekselberg, the HTTP router, that is the foundation of doing the routing and flask and cord. And it's something like five times faster than it was before, think five times the number, wow, much faster. So we're very small, little toy apps, if you have a couple of routes, whatever, it's no big deal. However, if you've got a production app likes a talk by then training or you've got hundreds, at least hundreds of routes. When a URL comes in, you could spend a decent amount of time checking Is it is it get or is it post? Is it this URL and actually this thing here? Can we convert it to an integer? Because if not, that's a 404. It's a different route. And you're like all the stuff that goes on there. Yeah. So the way that it worked previously, is it just when you would specify these routes like app dot get slash API and API slash angle bracket, ID, those types of things, it would just come up with a table that just says, Okay, here's the get verb, here's the path. And here's the function that it goes to. And it was using regular expressions, so slash API, or slash API, and then backslash D plus, right, the regular expression for a number, okay? And the way it works is it just says, Okay, we're going to run the verb test, the reg X test all those things one at a time, top to bottom? Well, Brian, I know you've studied a lot of computer stuff. This is not not something that's good that grows with time, right? As you add more of these, it's its complexity, what is it something like O of n, or maybe even a little bit? O of n squared? Maybe I'm not sure something like that, where you because you're testing the verbs, and you're testing the things, right. So as you get larger and larger, you're like, running through them every single request. And the world is full of interesting data structures and algorithms that you might consider. So the idea was, this is gonna get rewritten into something that's not just the sort of brute force test at top to bottom and the order that is defined here. Yeah. And I think one thing, it's interesting the news that routing and flask and CT is five times faster. That's fantastic. But also just thinking about the algorithms, I think it's a cool problem solver, problem solving eggs, thing to go look at right and example. So Philip thought about different ways in which you might do this and how it works. So the first algorithm that he looked at was a radix tree. And this is an interesting tree structure that gets defined where instead of having a table, you have all the verbs, and then under each verb, you've got the API or the path pattern. Okay. And one of the things that's interesting here is they have a path type. So if you were building a CMS or something that would handle arbitrary URLs, right, so you could build say, a database thing that says, here's the URL, and here's the content to show for that URL. How do you express all the variations of that in the routing of flask or other frameworks? As you just say, it's a path type instead of an integer or something along those lines, right. So there's kind of this wildcard thing that makes it a little bit harder. So you've got this get and you've got this post. You've got API. Remember, we had slash API, and we had slash API slash ID. So what gets created as there's a get node in the tree than an API, note that if it matches exactly terminates, but at the back call, but if not, then also has the ball, keep going and match the next part of the path as a number. And if that matches, then you're gonna get this this next segment. Otherwise, you'll go to the next part of the tree and cruise through it. What do you think of that? That looks cool, right?
+00:00:43 Flask is Flask.
 
-00:05:39 Yeah. And also, I mean, yeah, it looks good. And also faster, because you don't look at everything.
+00:00:45 It's one of the most popular web frameworks out there.
 
-00:05:45 Right? Exactly. You say is it GET or POST boom, you've like, you're down to like one segment that you like, well, what's this next path, and you really quickly cruise through cruise through the various possibilities. And this looks really great until you get down to this wildcard thing. And it turns out with all the variations and whatnot, of like the wildcard matching and the sub wildcard match, it didn't really work that well. So but one benefit is the performance is now described as Oh of n, which is pretty good. Better than n squared, or something like that.
+00:00:47 Cort is the API compatible async version of Flask, originally done by Philip Jones.
 
-00:06:20 Yeah. Or Yeah. And in is the depth now not the right. And
+00:00:55 But I think that Philip has joined David Lord in, at least in support of the pallets organization.
 
-00:06:25 it's that's very important, the depth rather than just the the number, which is even better, right? Because I think
+00:01:02 I feel like Flask and Cort are working much closer together these days.
 
-00:06:31 we're still confused if, if like, if they're all gets, for instance, if you like most of your API is retrieval it, are they all going to be falling into that wildcard thing, then? Yeah,
+00:01:05 So I don't know exactly what the relationship is, but Flask and Cort are very closely tied together right now.
 
-00:06:42 I think they would, but then they would just be one, I think it'd be one more step like that two splits pretty quick on the second part, but still, it's not that relevant, because that's that turned out to not work. What Works is something I would have never, never thought should apply to this pathfinding path determining algorithm. And that's a state machine. Awesome. Are you a fan of state machines?
+00:01:10 What I want to talk about is routing, or for those UK friends, rooting if you prefer.
 
-00:07:07 Yes, I am. I love them.
+00:01:17 But the idea of taking a URL and figuring out what function to call.
 
-00:07:09 Yeah, yeah, state machines are pretty wild. You know, I'm, I'm in the current editing state. Now, what are my options? Where could I go from here, things like that. So you define the same set of routes, but what you get as a state machine that has these transitions. And for example, state one says, if you go to API will go to state two? Or if you do some wildcard slash Edit, then the answer is you just do the edit, or you just do the true wildcard thing. And then you do some other other step that right, really interesting. And then say for this API, it says go to state to state to says, If there's nothing else, you already gone through API, then you call the function Create API you're looking for otherwise, if it's a number of go to state three, and state three says, Well, if that's it, then you're done. Otherwise, you're in this wildcard state, and so on, and the way that you kind of bounce between these states. It's pretty fascinating.
+00:01:21 Right, so what you do is you set up in Flask, you say @app.get, app.post, and you give it URL pattern.
 
-00:07:58 Yeah. And also, like, how is this faster? But
+00:01:29 Sometimes that's just like /about, other times it's like /categories, bracket, category name, or even more general stuff, like where you might say, it's category, maybe a category ID and it has to be an integer, so convert that for me.
 
-00:08:03 exactly, yes, it doesn't, that's I, like I said, I would have never thought about it, because it, it also doesn't seem faster. However, you get to the benchmarking section. And it says, I think by having 20 routes here or something, it came out to be quite a bit faster. Let's see, a mambo ratio of this one says 50%, better, as I said, five times, and maybe it's not that much faster. But wait, I know, there's a five, there's got to be yeah, here we go with factor up to five times speed increase. And the more routes you have, the faster the bigger the increase is, the more complicated and big your application is, the more it's going to benefit from this, right? I think it says that, if you're looking at just like a toy example, you can run the benchmarks, all you want is not going to make any difference. But for realistic ones, it'll be quite a bit faster. So pretty cool. If you're using fast record, be sure to use the latest version, because the version that's coming up with this, this is going to make a lot faster for you. And just an interesting example of how you might have a non obvious solution to a problem like state machine for finding the URL matches. Yeah. Yeah, Brandon, I'll be honest. I agree. I don't see how this is faster. I hear you. Yeah. But the cool thing about computers is you push the button, and then it does a thing and then you know, right. It's not like, you got to have a theory and then you debate the theory. And I guess it's measurable. One of
+00:01:44 Or I want to just capture arbitrary path, arbitrary URLs, /edit, whatever that happens to be.
 
-00:09:30 the interesting things around this also is that you can't assume much for flask or court because it there are frameworks that other people build up websites with. So some people are going to have like big, thick forest D trees that have lots of branching and everything for their for the routes. And some people are gonna have like, oh, let's just throw half the stuff in one in one directory or one bucket or something like that.
+00:01:52 So that's the idea of routing.
 
-00:09:55 Right. So that's true. These a lot of people have different variations of how they construct The URLs that map into your site. And that also affects the short trip. So you kind
+00:01:54 And the whole article here, something, the big news is that Philip Jones has worked on Vexoig, the HTTP router that is the foundation of doing the routing in Flask and Quart.
 
-00:10:04 of have to have both be like, like one, you know, faster or not. So you just have to not be slower. And it really any case, so interesting. Yeah.
+00:02:07 And it's something like five times faster than it was before.
 
-00:10:14 Also looking at the state machine, there's only four states. Most most things terminate in one or two steps. Instead of testing, or five, six different regular expressions, doing one or two. Yeah, but yeah, it's it is interesting. All right, what do you got next for us?
+00:02:11 I think five times the number.
 
-00:10:30 Well, speaking of court, we've got court Oh, or Korto. And actually, it's funny, I have no idea if this is built on cord or not, probably not. But I don't know. So Korto. This was oh, somebody six suggested that Paul McKenzie, this is a this is a thing to build documents and stuff. But it's, it's open source. And it's, it's, it's they say Open Source scientific and technical publishing system built on Pandoc. So with a Pandoc, I least I do, it's it converts markdown to really anything else, or rest to other stuff. Like a whole bunch of stuff, you can convert things to like PDFs, or even ebooks and HTML documents, all sorts of things. So this is and then Jupiter, of course, Jupiter is great for a lot of scientific Python research and data science and even just learning Python and playing and stuff. And, and I've kind of liked to see lately, some people doing presentations, even with with just right within Jupyter Notebooks, just kind of fun. And I know people are teaching that way with tutorials. But anyway, so corto is a system where you can do you can have documents, be either Markdown documents, or Jupyter notebooks and have a combination of these things around and then build up stuff. So you can so you know, you've got like a Jupyter, notebook and a demo, and some some Markdown and stuff. And then you can convert the whole thing to a website or a a journal entry or you know, a publication ready for a journal, or a website or an ebook, or really anything. So this is pretty exciting.
+00:02:12 Wow.
 
-00:12:12 I think it's, I think it's very neat. The idea, you can take a notebook, put a little extra metadata into it, and then publish it to all these different sources. Have you seen how much you can? Do? You know, this is based on Pan doc, have you seen how much you can do with Pan doc? Have you seen the conversion? Like, here, I'll pull up their homepage here. You just go to pan doc.org. See on the right, that thing that looks like gray shading? Yeah, those are the different formats that it can convert from or to Yeah, it's incredible. It's like, unbelievable. Yeah. So when you say okay, well, if I could take my notebook and then power it through Pandoc to do these things, like the output possibilities are insane.
+00:02:12 Much faster.
 
-00:12:53 Yeah. And it even does, like one of the things I was unexpected for me is the presentation. So you can convert one of these two to like, point Yeah, even to PowerPoint, or I was excited about reveal js I reveal. But and then Beamer, I don't know what beamer is, but
+00:02:13 So for very small little toy apps, if you have a couple of routes, whatever, it's no big deal.
 
-00:13:14 I never heard of beamer either. It's gonna be our new favorite way to present Oh, I see you can create beamer law tech. I see. So it's beamer maybe is a little more like scientific mathematical, where you, you know, here's the integral of this or like, where you've got really specific things possibly, I don't know, specific formulas.
+00:02:18 However, if you've got a production app like say, TalkByThon training where you've got hundreds, at least hundreds of routes, when a URL comes in, you could spend a decent amount of time checking.
 
-00:13:33 And then within each of these formats, there's things like so I use reveal js, for instance, but you can there's that the documentation is great. It talks about using using this to create, like, you know, code blocks and line highlighting, and we'll check this out. They've got line height line highlighting that goes incremental, so you could have stages, you can, instead of Step Creating three slides, for instance, that have just slightly different highlighted text, you can say what order you want things highlighted in as you step through. So I'm going to try this for a presentation.
+00:02:28 Is it get or is it post?
 
-00:14:10 I might try this as well, is it pretty neat, actually,
+00:02:31 Is it this URL and actually this thing here, can we convert it to an integer?
 
-00:14:13 I was excited also about the ebooks feature. You can even publish EPUB. I was talking to Matt, Matt Harrison about this. And Matt pointed out that he'd seen this but he was if you really care about like indexing or the front matter of the back matter. This doesn't quite get there for generating that stuff. But there's Crawford's cross references and all sorts of things that it does do. So if you're just starting out of a publication this would be kind of fun. So I'm excited about this. The reason one of the reasons why I brought up ePub is I read all my I read all my ebooks on a Kindle and whenever I used to see this I was like But do Moby also because I want to be able to read and I'm like Yes, exactly, but Um, I don't have the link here. But Kindle. Amazon is doing a conversion this year. So right now the mail to the last time I sent a mobi document to my Kindle through the email feature. It emailed me back and said we did this, but ePub is preferred now. So Oh, interesting. They're kind of moving away from the Mobi format and back into EPUB. So that's really cool.
+00:02:35 Because if not, that's a 404, it's a different route and all the stuff that goes on there.
 
-00:15:26 Cool. Yeah, I use the Send to Kindle app as some weird, old, archaic kind of app format. Really? Yeah, I can't it's some weird sort of install an app on off the web. That's not a progressive web app. I can't remember what it is. It's something okay. I think from Adobe, it's some bizarre format. But yeah, that's what I
+00:02:39 >> Yeah.
 
-00:15:46 just You get a free, you get like this email address that you can send stuff to, and it just goes right to your Kindle. Nice. So that's what I use usually. Anyway, I would probably
+00:02:40 >> So the way that it worked previously is it just when you would specify these routes like app.get/api, an API slash angle bracket ID, those types of things, it would just come up with a table that just says, "Okay, here's the get verb, here's the path, and here's the function that it goes to." It was using regular expressions.
 
-00:15:55 use that if I didn't have so many Kindles over the years. And I don't know, which is the real, which, exactly, I was like five Kindles over and I lost some of them.
+00:03:00 So slash API or slash API and then backslash D plus, the regular expression for a number.
 
-00:16:06 unregister a man? Oh, come
+00:03:08 The way it works is it just says, "Okay, we're going to run the verb test, the regex test, all those things, one at a time, top to bottom.
 
-00:16:09 on. Yes, I should do that.
+00:03:17 Well, Brian, I know you studied a lot of computer stuff.
 
-00:16:10 But the so for the website stuff is kind of fun, too. So this will generate websites for you. And there, and then it has, yeah, it has publishing input publishing in it, too. So you can you can hook this up to a GitHub action and just say quatrro publish and be using this to publish stuff, too. So this is really kind of cool. The whole the whole infrastructure around documentation and publishing around scientific computing. So I'm pretty excited about this.
+00:03:21 This is not something that's good that grows with time, right?
 
-00:16:40 Yeah. I love it. It's great. Now, before we move on, Brian,
+00:03:26 As you add more of these, it's complexity.
 
-00:16:44 yes, another thing I'm excited about is Microsoft for Microsoft for startups. It's the Microsoft for startups founders hub. So this episode of Python Bites is brought to you by Microsoft for startups. Starting a business is hard by by some estimates, over 90% of startups will go out of business in the first year. Ouch. With this in mind, Microsoft for startups set out to understand what startups need to be successful and create a digital platform to help overcome those challenges. Microsoft for startups founders hub, it provides all founders at any stage with free resources to help solve startup challenges. The platform provides technology benefits, access to expert guidance and skilled resources, mentorship and networking connections and so much more. Unlike others in the industry. Microsoft software startup founders hub doesn't require startups to be investor backed or third party validated to participate founders hub is truly open to all so what do you get speed up development with free access to GitHub and Microsoft Cloud with the ability to unlock credits over time to help your startup innovate founders hub is partnering with innovate innovative companies like open AI, a global leader in AI research and development to provide exclusive benefits and discounts to Microsoft for startups founders have become becoming a founder is no longer about who you know, you'll have access to mentors, their mentorship network, giving you access to a pool of hundreds of mentors across a range of disciplines, across areas like validation, fundraising, management, and coaching, sales and marketing, as well as specific technical stress points, you'll be able to book a one on one meeting with with mentors, many of whom are former founders themselves. Make your idea a reality today, with the critical support you'll get from Microsoft for startups founders up to join the program, visit Python bytes.fm/founders. Hub 2022. The link is in your show notes. Awesome.
+00:03:29 What is it?
 
-00:18:40 Yeah, thanks Microsoft for supporting the show. They're they're big backers of Python bytes and definitely help to amplify what we're doing here. I think the most awesome thing is the mentors and the advice and support you get.
+00:03:30 Something like O of N or maybe a little bit O of N squared, maybe?
 
-00:18:52 Yeah, well, this is one of the things I think is awesome is this when I when I read about this, I think about like the startup startup access that people get if they're in like Silicon Valley, or like wok Y Combinator or something like Yeah, something like that. But this is but that's out there. You only get a handful of those a year. And this is open to a way, way more people. So that's cool.
+00:03:35 I'm not sure.
 
-00:19:14 Awesome. Yeah. Pretty cool. All right. Can I take you on a diversion to show you something pretty cool? Yeah. All right. So Dart is a programming language that we don't usually talk about on Python bites. Right. And Dart is a language that that came out from Google have felt like it was trying to compete with JavaScript to a large degree and didn't really gain a lot of traction until flutter came along. And flutter is a really cool way to design mobile, and desktop native applications using Dart. It's think of it as an alternative to Cordova PhoneGap, Xamarin, Ionic, all these different sort of generic ways to build apps that run on different platforms. So with flutter, I can build an app that runs on iOS and Android. But I can also compile it as a target to Mac OS, Linux and Windows. And I can even compile it to a target for the web will run as a progressive web app. Okay. And you get some really cool apps like that, by far the most well, no one, no one is the BMW car. You have a BMW. This is like the app that is your car. But there's there's other ones as well. It's used a lot within Google, obviously, right? Now,
+00:03:35 Something like that, because you're testing the verbs and you're testing the things, right?
 
-00:20:28 you may be wondering about a car and all I got was an app. I know
+00:03:39 So as you get these larger and larger, you're like running through them every single request.
 
-00:20:31 I would be too. By the way, sidebar, BMW is doing all sorts of weird stuff like charging you subscriptions to use your seat heaters $18 A month subscription to turn on the seat heater that's already in your car. So I the least thing I'd be upset about as app. That's, that's something else. Now why in the world, am I talking about flutter and Dart? I'm actually looking into using flutter and Dart to rebuild the top Python training apps so that we can have Mac OS, Windows and Linux in addition to the iOS and Android version and give it like a refresh. And it's a really cool technology that I I'm pretty excited about. So let me introduce you to something called BLET. Have you heard of flat?
+00:03:44 And the world is full of interesting data structures and algorithms that you might consider.
 
-00:21:14 Well, just because Brandon just mentioned that? Yeah,
+00:03:49 So the idea was, this is going to get rewritten into something that's not just the sort of brute force test at top to bottom in the order that is defined here. And so I think one thing, it's interesting the news that routing in Flask and Qt is five times faster. That's fantastic.
 
-00:21:19 tell me about Flis. Yes, yes. very timely, Brandon. So flight comes I was sent over to us from Miko, Han, Kala, and flood is the fastest way to build flutter apps. But instead of using the Dart programming language, use Python. Oh, perfect. So let me see if I can go to the Getting Started up, pull up a little example here. So there's an app here, check out a calculator and look at it. It's got a nice little animated, animated GIFs show you how it works. And you know, this looks like a proper calculator app you'd see on a mobile phone or something, right?
+00:04:06 but also just thinking about the algorithms.
 
-00:21:53 Yeah, looks like my calculator. Yeah, exactly. You could even go see
+00:04:08 I think it's a cool problem solver, problem solving thing to go look at, an example.
 
-00:21:57 an interactive version that is running in your browser, because one of the six or seven compiled targets is your browser. And I don't know if you notice, but how quick did that load way faster than postscript, or any of these other things, it was like nearly instant. So if you go through and you look at how you build it, you just create a main method in Python. And it's provided a page and you say flat dot app, and you just give it the function to call and here you say, I'm just going to add some text called Hello world, right? So you get your hello world here, but you don't want that you want some controls. So an add a bunch of elevated buttons with like, the buttons that are on the calculator, like 123 star plus minus, and so on, and you end up with this column A that's that's kind of interesting. But you want these in rows and columns. So you would say, I'm creating a row, which has some controls for elevated buttons, another row, right? So these are the rows of the calculators and look at that already how cool it is to define that UI, just just fine. Yeah, right. It's pretty neat. And because it's flutter, all of these things have native representations on their platforms, right? in Mac OS, it looks like a Mac OS button on Windows looks like a Windows button, and so on, you got to put styles to make it look like you know, the calculator app type of thing. So yeah, that's, that's pretty much it, you just go and you put all these controls together like this. And you say go, and then somewhere in here, there's a place where it talks about handling the input. But yeah, so here, you just say I have create a class, and then unclick itself dot button, like or, or whatever it is, whatever you're interested in. And when it's going to pass over, is the actual button, the elevated button that was clicked the event source or whatever you call it, right? So you just, you just say, hook into these different button, click events, like you would with any sort of UI reactive framework. And now you have a calculator or you've got a what other kind of app you want to build. Isn't that cool? It's very
+00:04:14 Philip thought about different ways in which you might do this and how it works.
 
-00:23:59 neat. So you can build both. So I think some people would use this for iOS or Android, right? A mobile device. But you said there's other things too, like you can test it out. Would you realistically use this to develop a like a web app?
+00:04:20 The first algorithm that he looked at was a radix tree.
 
-00:24:14 Would you I think developing a web app seems like it would be totally reasonable. If one of the things if you look here, if you go to the roadmap, the the mobile store is not yet complete, actually. Okay. So right now, I would think of it as more of a desktop type of thing. But as you saw with that example, there's also a web. So desktop in sort of progressive web app story, right? The mobile story is not yet finished. But that's what's on the roadmap, and I would love to see it, see it come along and make good progress. There's also the possibility of other languages. That's not super interested. Interesting to me, but because I want to write Python anyway, but you would have like go and C sharp and stuff as possible other programming languages. Yeah, but things like having a bill database with a simple ORM it sounds way more. It's way more powerful than it sounds. Because if you're in the web, well, how do you do database stuff? You know, the web has local storage. And it has like a sequel, a wimpy sequel thing that's embedded in, like offline storage for your app. If you're on iOS, you've got SQL lite built in and stuff. But figuring out all those variations is a pain. But if you can just say create a database and do queries against it with an ORM, all of a sudden, that gives you a super cool offline data access story. Right? Yeah. And so on. So, anyway, yeah, and I think there's a lot of neat things that are coming here. This is created by, by Fedora Pfitzner. I'm actually having fedora on CPython next week to talk about this. So we're gonna be diving even more into it. Okay. Yeah, cool. But nice. I don't know how ready this is for producing actual finished applications. Flutter is absolutely ready to go. Right. It's been around for many years. And there's lots of things being put on production for it flat on top of flutter. don't totally know. I'll ask Thor later on next week. And we'll know a little bit more. But when I look at this, this is really exciting. Because it looks like it builds applications that I would really want to use using modern paradigms and all sorts of cool stuff. So and you should be able to integrate with all the flutter things, which is great. Neat. Yeah. Anyway, very cool. Thank you, Miguel, for sending that over.
+00:04:24 This is an interesting tree structure that gets defined where instead of having a table, you have all the verbs and then under each verb, you've got the path pattern.
 
-00:26:29 So that's a you I think I'd like to switch gears to the command line. So I tui to the CLI, the to E the text to user interface. Yeah, Text user interface. Yeah, that's, anyway, so like, with rich and textual and things like that. So I was really excited about this article, actually. And now I'm a little confused. So I'm glad I'm gonna talk it through. And you can let I'd like to hear what you think so. So this, I ran across this article, it's called Building an authenticated Python CLI. And it's from Nokia, Nokia nokia.ai, in OTA, anyway, blog post about building this. So here's the idea. So if you got a an ID for this application, you Twitter authentication. So if they're developed developing a command line application application that has to use the Twitter API, to get that we've got some secrets you've got, you've got a client ID and a secret that you've set up and you need to store the Twitter token somewhere.
+00:04:36 >> Okay.
 
-00:27:36 So to do that, oh, auth exchange where you say, we're going to connect to Twitter, and Twitter says this app was going to have you interact with your account in this way, and why not? Right,
+00:04:37 >> One of the things that's interesting here is, they have a path type.
 
-00:27:45 right. So I want to be able to list it. But I'd like to be able to have the application, keep that around and not have to do that not not really build it into the like, I don't want to compile it into the app or copy that token there, I want to be able to put that somewhere else. So the the idea around this article is to take that use the Twitter API, they talk about using click enrich a little bit. But for the command line stuff, and click is cool. We and we both love rich. And anyway, so the idea is to use a word once you have so use the OAuth and you come back and it's you've got a bear what they call it a bearer token, a bearer token, and then saving that in a file called a net rc file. And instead of instead of telling somebody to just go put it there, they're reading like asking the user for the client ID and the secret from from the Twitter API website stuff. So copy it and paste it here. And then they're storing that bearer, the bearer token in that in the the in the net rc file. And then the next time the application runs, it just reads that and it doesn't you don't have to do it every time. And then that stuff isn't stored with the with the client code, but it's, it's stored within the user. Net rc file or something. So at first, I thought this was something that you could use for like, like usually like, okay, so I don't know whether or not this is a good idea for for that even whether you want to store your barrier stuff. But But you probably don't want to store you don't want to ask the user for password, username and password and store that there because it's just a text file, I think. But maybe there's some other way around. Okay, I was kind of hoping that I'd rather
+00:04:42 If you were building a CMS or something that would handle arbitrary URLs, you could build a database thing that says, here's a URL and here's the content to show for that URL.
 
-00:29:35 lose an OAuth token than I would my actual username and password because at least you can revoke the tokens or expire them and stuff, you know.
+00:04:54 How do you express all the variations of that in the routing of Flask or other frameworks is you just say it's a path type instead of an integer or something along those lines.
 
-00:29:43 Okay, so for token stuff for saving tokens this is this a reasonable thing to do to keep that in the users directory or something?
+00:05:05 So there's kind of this wildcard thing that makes it a little bit harder.
 
-00:29:50 Seems like it's all right. I'm a little suspicious of storing straight plaintext even if it is just a an OAuth token. Okay, I might, you know, I don't know, because I haven't read the article all the way through, but I might, I might encrypt the token and then store it.
+00:05:09 So you've got this get and you've got this post, you've got API, remember we had /API and we had /API/ID.
 
-00:30:06 Yeah. You know, yeah. So actually, so I wanted to I start this conversation and then ask people because either for token, I know there's other password ways to like, store them locally, safely. But yeah. Is it something that you do that with anyway? Just, I'd love to hear people's thoughts on, on this on, on where, like, how, what's the best way to store people's secret information? So they don't have to enter it every time. But so storing in their user directory might not be terrible, but maybe there's a better way. So it's probably operating system specific to but I don't know,
+00:05:17 So what gets created is there's a get node in the tree, then an API node that if it matches exactly terminates at that column, but if not, then it also has the, well keep going and match the next part of the path as a number.
 
-00:30:46 right? Well, your, your, your user profile is protected in general, right? From other users, right. But is it protected? If you run an app that decides it's just gonna go cruising through your user profile, you know, something that you ran, and you shouldn't have trusted it? But you did. I mean, ssh, ssh keys, private keys are there, right in the dot SSH folder? Yeah, that's true. So that's probably worse than losing an OAuth token as well. So if you can
+00:05:31 And if that matches, then you're going to get this next segment.
 
-00:31:12 guess I'm thinking of I'm in the design process for a command line application that has to store user credentials. So
+00:05:34 Otherwise, you'll go to the next part of the tree and cruise through it.
 
-00:31:21 yeah, I mean, isn't that one of the benefits of doing this podcast? It's a byproduct of our natural just working on new projects, like flutter for me and the previous one, right? Yeah. Okay. Yeah, this is interesting. And I see where it goes. But yeah, I would probably at least encrypt the token at it. Okay, thanks. Doesn't matter. Yeah, well, awesome.
+00:05:37 What do you think of that? That looks cool, right?
 
-00:31:42 They're done with our normal items. I did. So the extra stuff that I had, that I was gonna let you go first, but I'm super excited that I'm getting a whole bunch done on the
+00:05:39 >> Yeah. It looks good and also faster because you don't look at everything.
 
-00:31:53 floor. You go really quick before you go on. Just Sam Marley either says, that's why you should encrypt your secret keys and system tool chain is probably the correct in quotes answer.
+00:05:45 >> Right. Exactly. You say, is it a get or post?
 
-00:32:03 Okay, system tool chain. Okay. I don't even know what that means. But I'll look it up.
+00:05:47 Boom, you're down to one segment.
 
-00:32:07 Yes, this is something that go taggie or DuckDuckGo. Or maybe Google like I am, I'm excited to hear about this pi test course. Because people have been asking and progress has been significantly made. Right. Awesome. Yeah,
+00:05:49 Then you're like, well, what's this next path?
 
-00:32:19 yeah, it's going great. So I've got it's a it's a it's really seven chapter is broken up into seven sections, or chapters. But it's you know, video, of course, so but I'm really excited about it. Because the the PI test book has received a lot of a lot of people love it, which is great. I love that I got great feedback. But it's, it's detailed, right? So we jump into a whole bunch of details in with a book, you can kind of get to some section that you're like, Yeah, I don't need that right now. And you can skip over it. And yes, you can do that with a course. But it's a little harder. So the goal for this is really, for people new to pi test or unfamiliar that are used to using a little piece of it and unfamiliar was some of the powers is to introduce people to like the full power of pi test, but quickly and not overwhelm them. So I think I've done a good job, but we'll see. We'll get it edited and get it available to people as soon as we can. And Dan,
+00:05:51 You really quickly cruise through the various possibilities.
 
-00:33:14 thanks. I'm excited. Yeah, I'm excited to check it out. That's
+00:05:57 This looks really great until you get down to this wild card thing.
 
-00:33:16 gonna be awesome. All right.
+00:06:01 and it turns out with all the variations and whatnot, of like the wildcard matching and the sub wildcard matching, it didn't really work that well.
 
-00:33:17 How about you? Do you have anything extra good lead.
+00:06:11 But one benefit is the performance is now described as O of N, which is pretty good, better than N squared or something like that.
 
-00:33:21 And so brand new course over at talk Python training, Django getting started, which is awesome. This is put together by Chris doe. And this is a six hour course on Django and right now people are hurry, there's an early bird discount the same 10% that you can get as well. So that just came out Wednesday, Wednesday. It's yesterday. So came out yesterday. I think that or the day before very recently. Anyway, if you've been wanting to do get started in June, if you want to get into Django, excuse our Django Of course, it's really good. It if you've been dabbling, you're like, I really need to see how the pieces fit together better. Also, check it out. It's definitely good stuff.
+00:06:20 >> Yeah. N is the depth now, not the.
 
-00:33:58 Guys.
+00:06:24 >> Right. That's very important.
 
-00:33:59 What are the top two frameworks these days still in Python? Yeah.
+00:06:26 It's the depth rather than just the number, which is even better, right?
 
-00:34:03 How do you know how many courses you've got on the platform now?
+00:06:30 because I think I'm still confused if, if like, if they're all gets, for instance, if you like most of your API is retrieval, are they all going to be falling into that wildcard thing?
 
-00:34:06 43 courses and about that platform tells me and 233 hours of content so there's more than that in there. But there are a couple that are not published yet. There's some exciting ones coming Cool. Nice. Yeah. All right. Well, those are all the extras I have for now. I do have a joke for you though. Oh good. Are you a fan of The Lion King? Do you ever watch that show? The Lion King the cartoon Disney it was a Disney I don't know if saw
+00:06:42 Yeah, I think they would. But then they would just be one. I think it'd be one more step.
 
-00:34:31 it I don't know if I call me a fan but sure how. Oh,
+00:06:47 I think that splits pretty quick on the second part. But still, it's not that relevant, because that's that turned out to not work. What works is something I would have never, never thought should apply to this path finding, path determining algorithm.
 
-00:34:35 did you enjoy watching it? I guess? Yeah, yeah. So I watched it with my kids. And yeah, we enjoyed it as well. And so I don't even remember the name of the Father. Remember the name of the Father though the actual Lion King know? Whatever. That Yeah, exactly. I don't either. But the little kid that was supposed to be the kid line who was supposed to be being groomed to be the king is talking to his father and They're looking over the vast kingdom that says, Look Simba, every language that light touches has a garbage collector and symbol. But what's that shadowy, shadowy place over there? That is C++ you must know. Yes, sorry, C++, but yeah, that was fun.
+00:07:02 Ooh.
 
-00:35:19 And Mufasa Mufasa. Yes, thank you. Yes,
+00:07:03 And that's a state machine.
 
-00:35:22 you got it. Mufasa says that's a C++ you must never go there.
+00:07:05 Awesome.
 
-00:35:27 No, you should.
+00:07:06 Are you a fan of state machines?
 
-00:35:29 Don't take it too seriously the joke, but it was fun.
+00:07:08 Yes, I am.
 
-00:35:34 As a garbage collector
+00:07:09 I love them.
 
-00:35:36 was that shadowy place over there? You must never go there. What about? What about rust? Nice. So
+00:07:10 Yeah.
 
-00:35:45 I don't even know enough about rust to make this part of the joke. Yeah, I busy learning Dart and flutter. Maybe I don't have to learn Dart though. Because I can do it in Python. I could just learn flutter. We'll see.
+00:07:11 Yeah.
 
-00:35:56 So that would be like that is rust. You can go there, but come back quickly.
+00:07:12 State machines are pretty wild.
 
-00:36:02 Just short visits, so. Yeah.
+00:07:13 You know, I'm in the current editing state.
 
-00:36:06 Awesome. Well, thanks for having this great episode. Yeah, it's great to be back with you. Yeah. So and I guess we'll talk next week. Yeah,
+00:07:14 Now what are my options?
 
-00:36:14 you bet. See ya. Bye.
+00:07:16 Where can I go from here?
+
+00:07:17 Things like that.
+
+00:07:18 So you define the same set of routes, but what you get is a state machine that has these transitions.
+
+00:07:23 For example, state one says, if you go to API, we'll go to state two.
+
+00:07:27 Or if you do some wildcard/edit, then the answer is you just do the edit, or you just do the true wildcard thing, and then you do some other step there.
+
+00:07:35 >> Pretty interesting.
+
+00:07:36 >> Then say for this API where it says go to state two, state two says, well, if there's nothing else, you've already gone through API, then you call the function create API you're looking for.
+
+00:07:46 Otherwise, if it's a number, go to state three, and state three says, well, if that's it, then you're done.
+
+00:07:51 Otherwise, you're in this wildcard state and so on.
+
+00:07:54 The way that you bounce between these states, it's pretty fascinating.
+
+00:07:58 >> Yeah, and also, how is this faster?
+
+00:08:02 >> Exactly. Yes, it doesn't.
+
+00:08:05 Like I said, I would have never thought about it because it also doesn't seem faster.
+
+00:08:10 However, you get to the benchmarking section and it says, I think by having 20 routes here or something, it came out to be quite a bit faster.
+
+00:08:21 Let's see.
+
+00:08:23 Ratio of, this one says 50% better. I said 5 times, maybe it's not that much faster, but somewhere I know there's a 5. There's gotta be, yeah, here we go.
+
+00:08:31 Factor up to 5 times speed increase. And the more routes you have, the faster, the bigger the increase is. The more complicated and big your application is, the more it's going to benefit from this, right?
+
+00:08:43 I think it says that if you're looking at just like a toy example, you can run the benchmarks all you want, and it's not going to make any difference, but for realistic ones, it'll be quite a bit faster.
+
+00:08:53 So pretty cool.
+
+00:08:55 If you're using Flask record, be sure to use the latest version because the version that's coming out with this, this is going to make it a lot faster for you.
+
+00:09:03 And just an interesting example of how you might have a non-obvious solution to a problem like a state machine for finding the URL matches.
+
+00:09:11 - Yeah.
+
+00:09:12 - Brandon, now the audience says, I agree, I don't see how this is faster.
+
+00:09:16 I hear you.
+
+00:09:18 But the cool thing about computers is you push the button and then it does a thing and then you know, right?
+
+00:09:24 It's not like you got to have a theory and then you debate the theory and it's measurable.
+
+00:09:29 One of the interesting things around this also is that you can't assume much for Flask or Cort because there are frameworks that other people build up websites with.
+
+00:09:39 So some people are going to have like big, thick foresty trees that have lots of branching and everything for their, for their routes.
+
+00:09:48 And some people are going to have like, oh, let's just throw half the stuff in one, in one directory or one bucket or something like that.
+
+00:09:54 Right. That's true. A lot of people have different variations of how they construct the URLs that map to your site.
+
+00:10:01 And that also affects it. That's true.
+
+00:10:03 >> That's true.
+
+00:10:04 >> You have to have both be faster or not.
+
+00:10:09 You just have to not be slower in really any case.
+
+00:10:13 Interesting.
+
+00:10:14 >> Yeah. Also looking at the state machine, there's only four states.
+
+00:10:17 Most things terminate in one or two steps.
+
+00:10:22 Instead of testing four, five, six different regular expressions, doing one or two.
+
+00:10:27 >> Yeah.
+
+00:10:27 >> But yeah, it is interesting.
+
+00:10:28 What do you got next for us?
+
+00:10:30 >> Well, speaking of court, We've got court. Oh, or corto. And actually, it's funny, I have no idea if this is built on court or not, probably not. But I don't know. So corto. This was Oh, somebody said, suggested it Paul McKenzie. This is a, this is a thing to build documents and stuff. But it's, it's open source. And it's, it's, it's, they say open source scientific and technical publishing system built on Pandoc. So we love Pandoc, at least I do. It converts Markdown to really anything else, or REST to other stuff. Like a whole bunch of stuff. You can convert things to like PDFs or even ebooks and HTML documents, all sorts of things. So this is, and then Jupyter, of course, Jupyter's great for a lot of scientific Python research and data science, and even just learning in Python and playing and stuff.
+
+00:11:27 And I've kind of liked to see lately some people doing presentations even with just right within Jupyter Notebooks, just kind of fun.
+
+00:11:38 And I know people are teaching that way with tutorials.
+
+00:11:40 But anyway, so Cordo is a system where you can do, you can have documents be either Markdown documents or Jupyter Notebooks and have a combination of these things around and then build up stuff.
+
+00:11:52 So you can, so you know, you've got like a Jupyter Notebook in a demo and some markdown and stuff.
+
+00:11:59 Then you can convert the whole thing to a website or a journal entry, a publication ready for a journal or a website or an e-book or really anything.
+
+00:12:11 This is pretty exciting.
+
+00:12:12 >> I think it's very neat.
+
+00:12:15 The idea you can take a notebook, put a little extra metadata into it, and then publish it to all these different sources.
+
+00:12:22 Have you seen how much you can do?
+
+00:12:24 This is based on Pandoc.
+
+00:12:25 Have you seen how much you can do with Pandoc?
+
+00:12:27 Have you seen the conversion?
+
+00:12:28 Like, here, I'll pull up their homepage here.
+
+00:12:31 You just go to pandoc.org.
+
+00:12:33 See on the right, that thing that looks like gray shading?
+
+00:12:37 - Yeah.
+
+00:12:38 - Those are the different formats that it can convert from or to.
+
+00:12:41 - Yeah, it's incredible.
+
+00:12:42 - It's just like, unbelievable, yeah, yeah.
+
+00:12:44 So when you say, okay, well, if I could take my notebook and then power it through Pandoc to do these things, like, the output possibilities are insane.
+
+00:12:53 >> Yeah. One of the things that was unexpected for me is the presentation.
+
+00:13:00 So you can convert one of these to-
+
+00:13:03 >> To PowerPoint?
+
+00:13:05 >> Yeah, even to PowerPoint.
+
+00:13:07 I was excited about Reveal.js.
+
+00:13:10 I like Reveal.
+
+00:13:11 But in Beamer, I don't know what Beamer is.
+
+00:13:14 >> I've never heard of Beamer either.
+
+00:13:16 It's going to be our new favorite way to present.
+
+00:13:18 You can create Beamer LaTeX.
+
+00:13:21 >> I see. So is Beamer maybe is a little more scientific, mathematical where you have to have, here's the integral of this or where you've got really specific things possibly, I don't know, specific formulas.
+
+00:13:33 >> Then within each of these formats, there's things like, so I use Reveal.js for instance, but the documentation is great.
+
+00:13:43 It talks about using this to create code blocks and line highlighting.
+
+00:13:48 Check this out, you've got line highlighting that goes incremental.
+
+00:13:54 So you could have stages, instead of creating three slides, for instance, that have just slightly different highlighted text, you can say what order you want things highlighted in as you step through them.
+
+00:14:07 So I'm going to try this for presentation.
+
+00:14:10 >> I might try this as well.
+
+00:14:11 This is pretty neat actually.
+
+00:14:13 >> I was excited also about the e-books feature.
+
+00:14:16 You can even publish EPUB.
+
+00:14:19 I was talking to Matt Harrison about this, and Matt pointed out that he'd seen this, but he was, if you really care about indexing or the front matter or the back matter, this doesn't quite get there for generating that stuff.
+
+00:14:34 But there's cross-references and all sorts of things that it does do.
+
+00:14:38 So if you're just starting out a publication, this would be kind of fun.
+
+00:14:43 So I'm excited about this.
+
+00:14:44 The reason, one of the reasons why I brought up EPUB is I read all my, I read all my eBooks on a Kindle.
+
+00:14:53 And whenever I used to see this, I was like, but do Mobi also, 'cause I wanna be able to read it on my Kindle.
+
+00:14:58 - Yes, exactly.
+
+00:14:59 - But I don't have the link here, but Kindle, Amazon is doing a conversion this year.
+
+00:15:05 So right now the mail to, the last time I sent a Mobi document to my Kindle through the email feature, it emailed me back and said, "We did this, but EPUB is preferred now." >> Oh, interesting.
+
+00:15:19 >> They're moving away from the Mobi format and back into EPUB.
+
+00:15:25 That's really cool.
+
+00:15:26 >> Cool. Yeah, I use the Send to Kendall app.
+
+00:15:29 It's some weird old archaic app format.
+
+00:15:32 [LAUGHTER]
+
+00:15:33 >> Really?
+
+00:15:34 >> Yeah. It's some weird install an app off the web.
+
+00:15:40 That's not a progressive web app.
+
+00:15:41 I can't remember what it is. It's something.
+
+00:15:42 >> Okay.
+
+00:15:43 >> I think from Adobe, it's some bizarre format, but yeah, that's what I use.
+
+00:15:47 >> You get this e-mail address that you can send stuff to and it just goes right to your Kindle.
+
+00:15:53 >> Yeah, nice.
+
+00:15:53 >> So that's what I use usually.
+
+00:15:55 >> Anyway, I would probably use that if I didn't have so many Kindles over the years, and I don't know which is the real e-mail for it.
+
+00:16:03 Because I have like five Kindles over and I lost some of them.
+
+00:16:06 >> You can unregister them, man.
+
+00:16:08 >> Oh, come on. Yes, I should do that.
+
+00:16:11 So for the website stuff, it's kind of fun too.
+
+00:16:14 So this will generate websites for you.
+
+00:16:16 And then it has publishing input, publishing in it too.
+
+00:16:21 So you can hook this up to a GitHub action and just say Quattro publish and be using this to publish stuff too.
+
+00:16:29 So this is really kind of cool, the whole infrastructure around documentation and publishing around scientific computing.
+
+00:16:39 So I'm pretty excited about this.
+
+00:16:40 - Yeah, I love it, it's great.
+
+00:16:42 Now, before we move on, Brian.
+
+00:16:45 - Yes, another thing I'm excited about is Microsoft for Startups.
+
+00:16:51 It's the Microsoft for Startups Founders Hub.
+
+00:16:55 So this episode of Python Bytes is brought to you by Microsoft for Startups.
+
+00:16:59 Starting a business is hard, but by some estimates, over 90% of startups will go out of business in the first year, ouch.
+
+00:17:05 With this in mind, Microsoft for Startups set out to understand what startups need to be successful and create a digital platform to help overcome those challenges.
+
+00:17:14 Microsoft for Startups Founders Hub.
+
+00:17:17 It provides all founders at any stage with free resources to help solve startup challenges.
+
+00:17:23 The platform provides technology benefits, access to expert guidance and skilled resources, mentorship and networking connections and so much more.
+
+00:17:31 Unlike others in the industry, Microsoft for Startups Founders Hub doesn't require startups to be investor backed or third-party validated to participate.
+
+00:17:41 Founders Hub is truly open to all.
+
+00:17:43 So what do you get?
+
+00:17:44 Speed up development with free access to GitHub and Microsoft Cloud with the ability to unlock credits over time.
+
+00:17:50 To help your startup innovate, Founders Hub is partnering with innovative companies like OpenAI, a global leader in AI research and development to provide exclusive benefits and discounts.
+
+00:18:00 Through Microsoft for Startups Founders Hub, becoming a founder is no longer about who you know.
+
+00:18:05 you'll have access to mentors, their mentorship network, giving you access to a pool of hundreds of mentors across a range of disciplines, across areas like validation, fundraising, management and coaching, sales and marketing, as well as specific technical stress points.
+
+00:18:20 You'll be able to book a one-on-one meeting with mentors, many of whom are former founders themselves.
+
+00:18:26 Make your idea a reality today with the critical support you'll get from Microsoft for Startups Founders Hub.
+
+00:18:33 To join the program, visit pythonbytes.fm/foundershub2022.
+
+00:18:38 The link is in your show notes.
+
+00:18:40 - Awesome, yeah, thanks Microsoft for supporting the show.
+
+00:18:42 They're big backers of Python Bytes and definitely help amplify what we're doing here.
+
+00:18:47 I think the most awesome thing is the mentors and the advice and the support you get.
+
+00:18:52 - Yeah, well, one of the things I think is awesome is when I read about this, I think about like the startup access that people get if they're in like Silicon Valley or--
+
+00:19:05 - Like Y Combinator or something like that.
+
+00:19:06 - Yeah, something like that.
+
+00:19:07 But this is, but that's, you only get a handful of those a year and this is open to way more people.
+
+00:19:13 So that's cool.
+
+00:19:14 - Awesome, yeah.
+
+00:19:15 Very cool.
+
+00:19:15 All right, can I take you on a diversion to show you something pretty cool?
+
+00:19:19 - Yeah.
+
+00:19:20 - All right, so Dart is a programming language that we don't usually talk about on Python Bytes, right?
+
+00:19:27 And Dart is a language that came out from Google And I felt like it was trying to compete with JavaScript to a large degree and didn't really gain a lot of traction until Flutter came along.
+
+00:19:41 And Flutter is a really cool way to design mobile and desktop native applications using Dart.
+
+00:19:49 Think of it as an alternative to Cordova, PhoneGap, Xamarin, Ionic, all these different sort of generic ways to build apps that run on different platforms.
+
+00:20:02 So with Flutter, I can build an app that runs on iOS and Android, but I can also compile it as a target to Mac OS, Linux, and Windows.
+
+00:20:10 And I can even compile it to a target for the web where it'll run as a progressive web app, okay?
+
+00:20:15 And you get some really cool apps.
+
+00:20:16 Like by far the most well known one is the BMW car.
+
+00:20:21 You have a BMW, this is like the app that is your car.
+
+00:20:24 But there's other ones as well.
+
+00:20:26 It's used a lot within Google, obviously, right?
+
+00:20:28 - Now you may be wondering-- - I would be ticked if I bought a car and all I got was an app.
+
+00:20:31 - I know, I would be too.
+
+00:20:33 By the way, sidebar, BMW's doing all sorts of weird stuff, like charging you subscriptions to use your seat heaters.
+
+00:20:38 $18 a month subscription to turn on the seat heater that's already in your car.
+
+00:20:42 So the least thing I'd be upset about is the app.
+
+00:20:46 - Okay. - But that's something else.
+
+00:20:49 Now why in the world am I talking about Flutter and Dart?
+
+00:20:52 I'm actually looking into using Flutter and Dart to rebuild the Talk Python Training apps so that we can have Mac OS, Windows, and Linux in addition to the iOS and Android version and give it like a refresh.
+
+00:21:05 And it's a really cool technology that I'm pretty excited about.
+
+00:21:09 So let me introduce you to something called Flet.
+
+00:21:13 Have you heard of Flet?
+
+00:21:14 - Well, just because Brandon just mentioned it.
+
+00:21:16 (laughing)
+
+00:21:18 Tell me about Flet.
+
+00:21:20 - Yes, yes, yes.
+
+00:21:22 Very timely, Brandon.
+
+00:21:24 So Flut was sent over to us from Mikhail Honkala.
+
+00:21:29 And Flut is the fastest way to build Flutter apps, but instead of using the Dart programming language, use Python.
+
+00:21:36 - Oh, perfect.
+
+00:21:37 - So let me see if I can, I'll go to the get started, I'll pull up a little example here.
+
+00:21:42 So there's an app here, check it out, it's a calculator.
+
+00:21:45 And look at it, it's got a nice little animated GIF showing how it works.
+
+00:21:49 And this looks like a proper calculator app you would see on a mobile phone or something, right?
+
+00:21:54 Yeah, it looks like my calculator.
+
+00:21:55 Yeah, exactly.
+
+00:21:56 And you could even go see a interactive version that is running in your browser because one of the six or seven compile targets is your browser.
+
+00:22:05 And I don't know if you noticed, but how quick did that load way faster than PyScript or any of these other things?
+
+00:22:11 It was like nearly instant.
+
+00:22:12 So if you go through and you look at how you build it, you just create a main method in Python and it's provided a page and you say flat dot app and you just give it the function to call and here you say, I'm just going to add some text called Hello World.
+
+00:22:26 You get your Hello World here, but you don't want that, you want some controls.
+
+00:22:30 I'm going to add a bunch of elevated buttons with the buttons that are on the calculator, like 1, 2, 3, star, plus, minus, and so on.
+
+00:22:38 You end up with this column of that.
+
+00:22:40 That's interesting, but you want these in rows and columns.
+
+00:22:44 You would say, I'm creating a row, which has some controls for elevated buttons.
+
+00:22:49 another row, right? So these are the rows of the calculators. And look at that already how cool it is to define that UI with just just that in Python.
+
+00:22:57 Yeah, right. It's pretty neat. And because it's Flutter, all of these things have native representations on their platforms, right? In Mac OS, it looks like a Mac OS button and Windows looks like a Windows button and so on. You got to put styles to make it look like, you know, the calculator app type of thing. So yeah, that's pretty much it. You just go and you put all these controls together like this and you say go and then somewhere in here there's a place where it talks about handling the input. But yeah, so here you just say I have created a class and then on click it self dot button clicked or whatever it is, whatever you're interested in. And what it's going to pass over is the actual button, the elevated button that was clicked, the event source or whatever you call it.
+
+00:23:45 >> Right.
+
+00:23:45 >> So you just say, "I'm hooking into these different button click events like you would with any UI reactive framework and now you have a calculator, or you've got what other app you want to build." Isn't that cool?
+
+00:23:58 >> It's very neat. So you can build both.
+
+00:24:02 I think some people would use this for iOS or Android, a mobile device, but you said there's other things too, like you can test it out.
+
+00:24:10 Would you realistically use this to develop a web app?
+
+00:24:14 >> I think developing a web app seems like it would be totally reasonable.
+
+00:24:18 If one of the things if you look here, if you go to the roadmap, the mobile story is not yet complete actually.
+
+00:24:25 >> Okay.
+
+00:24:26 >> So right now I would think of it as more of a desktop type of thing.
+
+00:24:30 But as you saw with that example, there's also a desktop and progressive web app story.
+
+00:24:36 The mobile story is not yet finished, but that's what's on the roadmap and I would love to see it come along and make good progress.
+
+00:24:44 There's also the possibility of other languages.
+
+00:24:47 That's not super interesting to me, but because I want to write Python.
+
+00:24:52 Anyway, but you have like Go and C# and stuff as possible other programming languages.
+
+00:24:58 >> Yeah.
+
+00:24:58 >> But things like having a built-in database with a simple ORM, it's way more powerful than it sounds.
+
+00:25:05 Because if you're in the web, well, how do you do database stuff?
+
+00:25:09 The web has local storage and it has like a SQL, a wimpy SQL thing that's embedded in offline storage for your app.
+
+00:25:18 If you're on iOS, you've got SQLite built in and stuff, but figuring out all those variations is a pain.
+
+00:25:24 But if you can just say, create a database and do queries against it with an ORM, all of a sudden, that gives you a super cool offline data access story.
+
+00:25:32 >> Yeah.
+
+00:25:33 and so on, so anyway, yeah, and I think there's a lot of neat things that are coming here.
+
+00:25:39 This is created by, let me see if I got the name, by Fedora, Fitzner.
+
+00:25:45 I'm actually having Fedora on Hock Python next week to talk about this, so we're gonna be diving even more into it.
+
+00:25:51 - Okay, cool, nice.
+
+00:25:53 - I don't know how ready this is for producing actual finished applications.
+
+00:25:58 Flutter is absolutely ready to go, right?
+
+00:26:00 It's been around for many years and there's lots of things being put out in production for it.
+
+00:26:04 Flutter on top of Flutter?
+
+00:26:06 Don't totally know.
+
+00:26:07 I'll ask for it later, next week, and we'll know a little bit more.
+
+00:26:11 But when I look at this, this is really exciting, because it looks like it builds applications that I would really want to use, using modern paradigms and all sorts of cool stuff.
+
+00:26:21 And you should be able to integrate with all the Flutter things, which is great.
+
+00:26:24 MARK MIRCHANDANI: Neat.
+
+00:26:25 MARK MANDEL: Yeah.
+
+00:26:25 Anyway, very cool.
+
+00:26:27 Thank you, Mikhail, for sending that over.
+
+00:26:29 So that's a UI thing.
+
+00:26:32 I'd like to switch gears to the command line.
+
+00:26:35 So I--
+
+00:26:36 - To the TUI.
+
+00:26:37 - To the, to the CLE?
+
+00:26:39 - The TUI, the text user interface.
+
+00:26:41 - Oh yeah, text user interface.
+
+00:26:43 Yeah, that's, anyway, so like with rich and textual and things like that.
+
+00:26:47 So I was really excited about this article actually, and now I'm a little confused.
+
+00:26:51 So I'm glad I'm gonna talk it through and you can let, I'd like to hear what you think.
+
+00:26:56 So I ran across this article, it's called "Building an Authenticated Python CLI" and it's from Notia, Notia?
+
+00:27:07 Notia.ai, N-O-T-I-A.
+
+00:27:09 Anyway, it's a blog post about building this.
+
+00:27:12 So here's the idea.
+
+00:27:13 So if you've got a, for this application you need Twitter authentication.
+
+00:27:19 So if they're developing a command line application that has to use the Twitter API.
+
+00:27:27 To get that, we've got some secrets.
+
+00:27:29 You've got a client ID and a secret that you've set up and you need to store the Twitter token somewhere.
+
+00:27:36 - You've gotta do that OAuth exchange where you say, "We're gonna connect to Twitter." And Twitter says, "This app is gonna interact "with your account this way," and whatnot, right?
+
+00:27:45 - Right, so I wanna be able to just, but I'd like to be able to have the application keep that around and not have to do that, not really build it into the app, like I don't want to compile it into the app or copy that token there.
+
+00:27:59 I want to be able to put that somewhere else.
+
+00:28:01 So the idea around this article is to take that, use the Twitter API.
+
+00:28:06 They talk about using click and rich a little bit, but for the command line stuff and click is cool.
+
+00:28:14 We, and we both love rich.
+
+00:28:16 And anyway, so the idea is to use, once you have, so use the OAuth and you come back and you've got a bear, what they call it?
+
+00:28:25 >> A bearer token.
+
+00:28:27 >> A bearer token.
+
+00:28:28 Then saving that in a file called a net RC file.
+
+00:28:32 Instead of telling somebody to just go put it there, they're reading, asking the user for the client ID and the secret from the Twitter API website stuff.
+
+00:28:44 Copy it and paste it here.
+
+00:28:46 Then they're storing the bearer token in that in the netRC file.
+
+00:28:54 Then the next time the application runs, it just reads that and you don't have to do it every time.
+
+00:29:00 Then that stuff isn't stored with the client code, but it's stored within the user netRC file or something.
+
+00:29:08 At first, I thought this was something that you could use for, I don't know whether or not this is a good idea for that even, whether you want to store your barrier stuff.
+
+00:29:21 But you probably don't want to store, you don't want to ask the user for username and password and store that there, because it's just a text file, I think.
+
+00:29:31 But maybe there's some other way around.
+
+00:29:34 I was hoping that-
+
+00:29:35 >> I'd rather lose an OAuth token than I would my actual username and password, because at least you can revoke the tokens or expire them and stuff.
+
+00:29:43 >> Okay. For token stuff, for saving tokens, is this a reasonable thing to do to keep that in the user's directory or something?
+
+00:29:50 >> Seems like it's all right.
+
+00:29:52 I'm a little suspicious of storing straight plaintext, even if it is just an OAuth token.
+
+00:29:59 >> Yeah. Okay.
+
+00:30:01 >> I don't know because I haven't read the article all the way through, but I might encrypt the token and then store it.
+
+00:30:07 >> Yeah.
+
+00:30:08 >> Yeah. Actually, so I wanted to start this conversation and then ask people because either for Tok--
+
+00:30:15 I know there's other password ways to store them locally safely, but is it something that you do that with--
+
+00:30:23 Anyway, I'd love to hear people's thoughts on this, on what's the best way to store people's secret information so they don't have to enter it every time.
+
+00:30:36 >> Yeah.
+
+00:30:37 >> Storing in their user directory might not be terrible, but maybe there's a better way.
+
+00:30:42 It's probably operating system specific too, but I don't know.
+
+00:30:46 >> Right. Well, your user profile is protected in general from other users.
+
+00:30:52 >> Right.
+
+00:30:53 >> But is it protected if you run an app that decides it's just going to go cruising through your user profile?
+
+00:30:59 Something that you ran and you should have trusted it, but you did.
+
+00:31:02 I mean, SSH keys, private keys are there in the .ssh folder.
+
+00:31:07 >> Yeah, that's true.
+
+00:31:09 >> That's probably worse than losing an OAuth token as well.
+
+00:31:12 So if you can guess, I'm thinking of, I'm in the design process for a command line application that has to store user credentials.
+
+00:31:19 So that's where I was running across stuff like this.
+
+00:31:22 I mean, isn't that one of the benefits of doing this podcast?
+
+00:31:25 It's a byproduct of our natural just working on new projects.
+
+00:31:31 Like Flutter for me on the previous one, right?
+
+00:31:33 Yeah.
+
+00:31:33 Yeah, this is interesting and I see where it goes.
+
+00:31:35 Yeah.
+
+00:31:36 But yeah, I would probably at least encrypt the token.
+
+00:31:38 I don't know.
+
+00:31:39 Okay, thanks.
+
+00:31:40 Maybe it doesn't matter.
+
+00:31:41 Yeah.
+
+00:31:41 - Well, they're done with our normal items.
+
+00:31:44 So the extra stuff that I had, I was gonna let you go first, but I'm super excited.
+
+00:31:52 I'm getting a whole bunch done on the PyTest course.
+
+00:31:54 - Really quick before you go on, just Sam Morley out there says, "That's why you should encrypt your secret keys." And system toolchain is probably the correct, in quotes, answer.
+
+00:32:03 - Okay, system toolchain.
+
+00:32:05 Okay, I don't even know what that means, but I'll look it up.
+
+00:32:07 - Yes, this is something that go, - Kagi or DuckDuckGo or maybe Google.
+
+00:32:11 - Okay.
+
+00:32:12 - I'm excited to hear about this PyTest course 'cause people have been asking and progress is being significantly made, right?
+
+00:32:18 Awesome.
+
+00:32:19 - Yeah, it's going great.
+
+00:32:20 So I've got, it's really seven chapters, broken up into seven sections or chapters, but it's a video course.
+
+00:32:29 But I'm really excited about it 'cause the PyTest book has received a lot of people of it, which is great, I love that.
+
+00:32:37 I got a lot of great feedback.
+
+00:32:38 But it's detailed, right?
+
+00:32:41 So we jump into a whole bunch of the details.
+
+00:32:44 And with a book, you can kind of get to some section that you're like, yeah, I don't need that right now.
+
+00:32:48 And you can skip over it.
+
+00:32:49 And yes, you can do that with a course, but it's a little harder.
+
+00:32:52 So the goal for this is really for people new to PyTest or that are just using a little piece of it and unfamiliar with some of the powers is to introduce people to like the full power of PyTest, but quickly and not overwhelm them.
+
+00:33:08 So I think I've done a good job, but we'll see.
+
+00:33:10 We'll get it edited and get it available to people as soon as we can.
+
+00:33:14 - Yeah, I'm excited.
+
+00:33:15 - Yeah.
+
+00:33:16 - Yeah, I'm excited to check it out.
+
+00:33:17 It's gonna be awesome.
+
+00:33:18 - All right, how about you?
+
+00:33:19 Do you have anything extra?
+
+00:33:20 - Good lead in.
+
+00:33:21 So brand new course over at Talk Python Training.
+
+00:33:25 Django getting started, which is awesome.
+
+00:33:27 This is put together by Chris Trudeau.
+
+00:33:29 And this is a six hour course on Django.
+
+00:33:33 And right now people, hurry, hurry, there's an early bird discount to save 10% that you can get as well.
+
+00:33:39 So that just came out Wednesday.
+
+00:33:41 Wednesday is yesterday.
+
+00:33:42 So it came out yesterday, I think.
+
+00:33:44 That or the day before, very recently.
+
+00:33:45 Anyway, if you've been wanting to do, getting started in Django, if you wanna get into Django, this gives our Django course is really good.
+
+00:33:52 If you've been dabbling, and you're like, ah, I really need to see how the pieces fit together better, also check it out.
+
+00:33:57 It's definitely good stuff.
+
+00:33:58 Django is one of the top two web frameworks these days still in Python.
+
+00:34:02 - Yeah.
+
+00:34:03 Do you know how many courses you've got on the platform now?
+
+00:34:07 43 courses and about, that platform tells me, and 233 hours of content.
+
+00:34:14 So there's more than that in there, but a couple are not published yet.
+
+00:34:17 There's some exciting ones coming.
+
+00:34:19 - Cool, nice, sweet.
+
+00:34:20 - Yeah, yeah, yeah.
+
+00:34:21 All right, well those are all the extras I have for now.
+
+00:34:23 I do have a joke for you though.
+
+00:34:24 - Oh, good.
+
+00:34:25 - Are you a fan of "The Lion King"?
+
+00:34:27 You ever watch that show, "The Lion King"?
+
+00:34:29 The cartoon, Disney, it was a Disney, I don't know.
+
+00:34:32 - I saw it, I don't know if I'd call me a fan, but sure.
+
+00:34:34 - No, oh, did you enjoy watching it, I guess, at all?
+
+00:34:37 >> Yeah.
+
+00:34:38 >> Yeah. I watched it with my kids and we enjoyed it as well.
+
+00:34:42 I don't even remember the name of the father.
+
+00:34:46 Remember the name of the father?
+
+00:34:47 The actual Lion King?
+
+00:34:49 >> No.
+
+00:34:50 >> Whatever. Yeah, exactly. I don't either.
+
+00:34:52 But the little kid that was supposed to be the kid lion, who was supposed to be being groomed to be the king, is talking to his father and they're looking over the vast kingdom.
+
+00:35:02 This is Luxembourg.
+
+00:35:04 Every language that light touches has a garbage collector and symbol.
+
+00:35:09 But what's that shadowy place over there?
+
+00:35:12 That's a C++, you must never go there.
+
+00:35:15 >> Yes.
+
+00:35:17 >> Sorry, C++, but that was fun.
+
+00:35:19 >> Mufasa.
+
+00:35:20 >> Mufasa, yes. Thank you.
+
+00:35:22 Yes, you got it. Mufasa says, that's a C++, you must never go there.
+
+00:35:26 >> No, but you should.
+
+00:35:28 >> Don't take it too seriously, the joke, but it was fun.
+
+00:35:33 >> As a garbage collector.
+
+00:35:35 >> Yeah, I know.
+
+00:35:36 >> What's that shadowy place over there?
+
+00:35:39 You must never go there.
+
+00:35:41 >> What about Rust?
+
+00:35:43 >> What about Rust?
+
+00:35:44 >> Nice.
+
+00:35:45 >> I don't even know enough about Rust to make this part of the joke.
+
+00:35:49 I'm busy learning Dart and Flutter.
+
+00:35:52 Maybe I don't have to learn Dart though, because I can do it in Python.
+
+00:35:55 I could just learn Flutter. We'll see.
+
+00:35:56 >> That would be like, that is Rust.
+
+00:35:59 You can go there, but come back quickly.
+
+00:36:01 >> Exactly. Just short visits.
+
+00:36:04 >> Short visits.
+
+00:36:05 >> Yeah.
+
+00:36:06 >> It's a fun show too.
+
+00:36:07 >> Well, thanks for having this great episode.
+
+00:36:09 >> Yeah. It's great to be back with you.
+
+00:36:11 >> Yeah. I guess we'll talk next week.
+
+00:36:14 >> Yeah. You bet. See you.
 

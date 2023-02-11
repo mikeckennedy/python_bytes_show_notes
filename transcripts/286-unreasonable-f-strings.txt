@@ -1,122 +1,766 @@
-00:00:00 Hello, and welcome to python bytes where we deliver Python news and headlines directly to your earbuds. This is episode 286. Recorded may 31 2022. I'm Michael Kennedy. And I'm Brian Aachen. And this episode is brought to you by us. If you're looking to learn Python, check out all the courses over at talk Python training. If you want to get better with testing, check out Brian's pi test book. Second Edition. Yes, yeah, yes, indeed. Indeed. All right. Well, let's jump right into it. Brian. Okay. The Gil.
+00:00:00 - Hello and welcome to Python Bytes, where we deliver Python news and headlines directly to your earbuds.
 
-00:00:31 I do want to talk about the Gil. But I was just realizing the 286 I just started watching Big Bang theory with my youngest kid. And, and there's 279 episodes of them. So we're we have more than it went on forever. And we have more episodes than that. So
+00:00:05 This is episode 286, recorded May 31st, 2022.
 
-00:00:46 that's, it's quite a milestone. I mean, you divide that by 52. That's a lot of years. We've been doing this for a while. Yeah.
+00:00:10 I'm Michael Kennedy.
 
-00:00:53 So Python in the Gil. So the GIL is a thing, right? It's like something everybody knows about, I think people know about, but not too much. So I mean, he kind of it's means we can't do multiprocessing. But we can, but we can't. So what is it? And so I really liked this article. So this is this is an article called The Python girl past, present and future because we have been talking about some of the no Gil options that are coming. And so this is really nice is Who is it Gary? Barry, Warsaw, and Pavel, follow Wix. I think, anyway, really great article on the Backblaze blog. And it starts out and goes through sort of what is the Gil? Why we have it, it's a lot around the way in some of the history is around a reference counting. And maybe you knew that off the top your head, but I forgot that reference counting is something that's how we do memory management and all sorts of stuff within within Python. But to make it an easy implementation, there's this global interpreter lock. And that just basically, instead of lock, like other code, you lock individual items shared memory that you're using, we just say the interpreter, let's just lock that and all of the variables that it uses. It's not just a reference counts, but other things, too. And in this is just it's a fairly quick read, but but enough detail that you really kind of understand what's going on, does talk through, you know, reference counting talks through that, that some of the advantages, why it's really kind of handy to have it around. But then attempts to remove it in including, like, I didn't know about this one. There was a free threading one. Oh, in 99, from
+00:00:12 - And I'm Brian Okken.
 
-00:02:44 1999. Yeah, that's, I didn't know about that one. Yeah, it actually
+00:00:13 - And this episode is brought to you by us.
 
-00:02:48 was successful. It just made your Python code really slow. So not good. And then Larry Hastings collected me that he's had a lot of PyCon talks, or a few PyCon talks around this. So that's, that's an interesting thing to read about was a little more. Oh, there's quite a few interesting bits in there. But it never really got back into main Python. But we're getting a little closer where with this no Gil stuff. So there's no Gil stuff going on with Sam gross from Sam. Gross. Yeah. And, and, and then also, and then also, we got Guido and others in, in Microsoft now working on this problem of speeding it up and in everything. So really great discussion, if you want to catch up on all the history of the of the Gil, and where, where it's going. And then a little prediction at the end of we're going to see speed ups because of these efforts. We're gonna see speed ups in the next few years. Just it's just gonna get faster. And then we, you know, if we get no Gil, it might be maybe five years from now ish. So yes, it's
+00:00:15 If you're looking to learn Python, check out all the courses over at Talk Python Training.
 
-00:04:01 pretty exciting. There's some very neat work. The stuff that Sam Gross is doing is is quite interesting. Yeah. What's really cool is it's not just theory or people playing right, the Python 311 is a lot faster than the previous pythons already, and it doesn't even really touch the GIL side of things. So there's actual progress being made. Yeah.
+00:00:18 If you want to get better with testing, check out Brian's PyTest book, second edition.
 
-00:04:22 It's actually it's pretty exciting, pretty exciting time to be part of Python. So like, it's never not been exciting, but you know,
+00:00:24 - Yes, yeah.
 
-00:04:30 yeah, it only gets more exciting. How's that? Yeah. So hey, let me ask you a meta question. So this is on the Backblaze. Log. So backblaze.com is a one of the I think better sort of backup my computer somewhere off site. Things. Yeah. And the fact that they're blogging about the Python Gil is kind of interesting. I wonder if they're a big python shop and we just didn't know it.
+00:00:25 - Yes, indeed, indeed.
 
-00:04:54 Well. There's like, I didn't know it's on their blog, but I mean, Got a very large site
+00:00:27 All right, well, let's jump right into it, Brian.
 
-00:05:02 is written by Barry Warsaw and Powell. Yeah.
+00:00:29 - Okay, actually-- - Tell me about the GIL.
 
-00:05:05 Are they is he? He's a he says he's currently a senior engineer at LinkedIn. So yeah, I'm not sure.
+00:00:32 - I do wanna talk about the GIL, but I was just realizing we're at 286.
 
-00:05:13 Sometimes life's confusing. Yeah.
+00:00:35 I just started watching Big Bang Theory with my youngest kid, and there's 279 episodes of them.
 
-00:05:14 Not sure how this ended up there. But ya
+00:00:42 So we have more than, it went on forever, and we have more episodes than them.
 
-00:05:17 know, but it's cool to see Backblaze support in the Python world with some some dives into
+00:00:47 - That's quite the milestone.
 
-00:05:22 that. Maybe somebody decided to reach out to us and tell us what's going on.
+00:00:48 I mean, you divide that by 52, that's a lot of years.
 
-00:05:26 Yeah, that'd be great. Also great. Wouldn't it be cool, right? If we could take our Python program, whether this is a CLI or some other app that we need to have for people to run. And instead of saying, well make sure you have this version of Python, at least to make sure you've set up a virtual environment, you've installed these things, and then you've got this in the path. And then you've got this environment variable, now you can try to run our thing I gave you, if you could just give them a single binary, that contained all the Python containing the standard library. And you said, you run this, and that's your app. That's not bad, right. So let me introduce you to pi oxy, the PI oxy Python runner. Now, a while ago, we spoke about this thing called PI ox, oxygen pi oxidizer, that's what it was by oxidiser. And this is kind of like an advanced version of PI to exe, or pi to app or PI installer. But what's really nice is that it bundles the stuff up just sort of all into one thing, and it runs out of memory, instead of creating like, a file structure of the files that you need. And then you know, sort of altering the path. So like a copy of Python will run that, and so on. So this pi oxy attempts to make the features of pi oxidizer more accessible and simpler for people. Okay, so here's the deal, it is an executable program for running Python interpreter. So you can just give somebody this one pi oxy file. And they can say in Python, this thing and say pi oxy, some Python file, right? You can say, like, run Python or run Python dash dash and give it a file or something along those lines, right. And it's just a thing you copied around, you don't have to worry about installing it or configuring your system or anything like that. So it's kind of a really easy way to pass around an executable that is Python and the standard library without all the overhead or setup of actually installing a Python runtime. Okay. Okay. Yeah, so let me go back up here. That's pretty cool. That's one of the it's a single file, it's in a single file that is a highly portable distribution of C, Python. So for example, on Mac OS, and Linux, it statically links in a lot of the files that are dependencies that you might find, you know, so if you try to run something in Python, it might go like, Oh, you have to install this other like C library in order for it to work correctly. So all those things are also like its dependencies are statically compiled into it, which is pretty cool. Another thing that's interesting is it gives you a lot more control over the interpreter and how it behaves like you can pass it configuration files and do all sorts of crazy stuff to really tweak the behavior of the runtime, the Python runtime that it comes with. Yeah, it's just sort of make pi oxidizer apps more accessible. Okay, so yeah, so it gives you It's built with PI oxidizer. And basically, it gives you its own standalone one, like I said, the, it has the whole interpreter, it has the stuff statically linked, it has the standard library. And I think you can link your own libraries into it as well, which is pretty awesome. And you could also give it, like I said, more control. So you can create a configuration Yamo file. And when you run it, you can say I want you to debug allocations, or I want you to, you know, run run this command to initialize the interpreter before it starts reading the code and things like that. So you give it this Yamo config file, and so on. So, anyway, it's a pretty new project. This is from Gregory sword. And he says, it's very young, I hacked it together to try to get better exposure for PI oxidizer, where people want to build things that they can distribute more easily, and so on. And for me, he's talking about, oh, there's some certain circumstances where maybe you want to have people run your script. So you can send the script and then this thing, and so on. It's supposed to be sort of on par with zip app, which lets you ship the zipped up thing of your app and then run it. But the benefit is, it already comes with Python, like a lot of these zip Schiff packs, etc. They all require that Python is installed on the system. And then you can run that right with its dependencies. But this is like, no, it even comes with Python. So all that is pretty good. What I would love to see out of this is Could I take this and build some sort of UI framework here that I don't know, maybe with Python scripts, and then get like a, a UI framework. I can ship to people and just go download this double click it. There's your app, who knows? Yeah, but anyway, if you're shipping Python On to people, this might be worth checking out. Yeah. Neat. Yeah. Came out the audience, as it says looks very handy. Does it make cross platform, a cross platform executable, I think you might have to run a build command or something or ship the right binary for each platform, but it does support Mac OS, Windows and Linux. So that's pretty cool.
+00:00:51 We've been doing this for a while.
 
-00:10:20 Now, maybe you covered this, and I just missed it. What does it does it deal with my dependencies? Like if I have third party dependencies,
+00:00:52 - Yeah, so Python and the GIL.
 
-00:10:29 that's what I'm not 100% sure how to do. And I looked through I was looking for that there's this oxidized importer, okay, which talks about like, this embeds a copy of the Python standard library and import from memory using the oxidized importer, I think that you could use that as well for your own dependencies. And I'm pretty sure that's the goal of this, this pi oxidizer project in the first place. So I would think so. But nothing from this article was really clear, like, and here's how you bring in a request or ACP X or whatever you're gonna bring along, you know, yeah,
+00:00:56 So the GIL is a thing, right?
 
-00:11:01 yeah. Okay. Or pi test. I was actually just thinking it'd be if I, you know, run these tests. Well, what what version are you using? Okay, just fine. Here. Just install this and run, run, run this test with this. And that will be
+00:00:57 It's like something everybody knows about, I think.
 
-00:11:17 Yeah, exactly. Yeah. And Alvaro is always talking about UI stuff. He says, What about pi oxy plus textual?
+00:01:00 People know about, but not too much.
 
-00:11:25 Be pretty neat as well. Yeah. Just around the corner.
+00:01:02 So, I mean, you kind of, it means we can't do multiprocessing, but we can, but we can't.
 
-00:11:28 Yeah. Cool. All right. Well, nice. That's pi oxy people can check it out.
+00:01:07 So what is it?
 
-00:11:32 All right. Well, how? How about regular expressions? Do you like those?
+00:01:09 And so I really like this article.
 
-00:11:41 When they work, I love them. When they don't, I'm like, What is What is this madness I've gotten myself in.
+00:01:11 So this is an article called the Python GIL Past, Present, and Future, because we have been talking about some of the no-GIL options that are coming.
 
-00:11:48 Okay, so I was almost afraid to like talk about this. But it's a really awesome article. Because, because sometimes you need regular expressions. And, and one of the things, there's lots of La log that I like about this article. So what I'm talking about is an article called The unreasonable effectiveness of F strings and verbose. So regular expressions in all languages, including I think, and including Python, have have a notion of verbose mode. And I've always been enticed by this, the verbose mode idea is that you can like instead of having this weird, you still have the hard to read regular expression stuff. But you can put comments you can put spaces and comments in it. And and then
+00:01:20 And so this is really nice.
 
-00:12:34 exactly multi line, right, what it can be
+00:01:22 It's, who is it?
 
-00:12:37 multi line, yeah, it can be multi line, and you can have a bunch of comments in there to say, Oh, this part of the regular expression, what it's doing is this, you know, and then so it makes it little little snippets of regular expression are easier to read, you're like, oh, yeah, I can see that. It's doing that great when it's when you clog it all together, which makes it really hard to read. So and then. And then, of course, you can build up strings in Python with F strings, and do string replacement, how awesome. So that's what this article is about is really talking about, using date, taking some of the complicated bits of your regular expression or duplicated bits, where you it needs shows up several times in your regular expression, and pulling that out that string out and even maybe commenting that and then dropping it in with F strings to build up a complex regular expression. It's, it's brilliant. And it also is one of the best explanations I've ever read on on verbose, regular expressions. So it's pretty cool.
+00:01:23 Gary, Barry Warsaw and Pavel Polowicz, I think.
 
-00:13:40 Yeah, I never really thought to refactor the pattern so that you have multiple strings. Yeah, we like here's the part that's repeated. So have a pattern that that's that thing, and then F string it into the other pieces. Yeah. It makes perfect sense. Of course, you should do it.
+00:01:28 Anyway, really great article on the Backblaze blog.
 
-00:13:56 Yeah, and now, I mean, I don't use it. I mean, actually, I kind of do I use regular expressions on a regular basis. But the, but not like every day it but but it's always something that I whenever I put it in there, I'm like, is anybody else gonna be able to read this? And so I put comments around it, but I've never, I haven't ever really embraced verbose mode. And I'm definitely going to use this now. Yeah, you're sure. So the
+00:01:33 And it starts out and goes through sort of what is the GIL, why we have it.
 
-00:14:22 the other thing real quick, is you can have F strings and you can have raw strings and you can have raw F strings apparently in Python. So the prefix is F our triple quote multi line like that's that's some serious string action happening right there. Yeah.
+00:01:39 It's a lot around the way in some of the history is around reference counting.
 
-00:14:36 Brah F strings. Nice. Yeah.
+00:01:45 And maybe you knew that off the top of your head, but I forgot that reference counting is something That's how we do memory management and all sorts of stuff within Python, but to make it an easy implementation, there's this global interpreter lock.
 
-00:14:42 And Neil out in the audience asks you, Brian, do you like your regular expressions greedy or non greedy?
+00:02:00 And that just basically, instead of lock like other code, you lock individual items, shared memory that you're using.
 
-00:14:47 Okay. It depends on what you're trying to do. So,
+00:02:08 We just say the interpreter, let's just lock that and all of the variables that it uses.
 
-00:14:54 yeah, I don't want mine to be greedy. Let's share. Sure. Sure. Kindly. All right. Are we ready for the next one? Yeah. is cool. All right, so this one I want to talk about, I'm gonna start off from a weird place from a tweet that I gave, because I can't find anywhere else to talk about it like, this is why this needs talking about. So I just wanted to sort of highlight some really cool stuff for people who are using PI charm, and doing open source stuff that involves pull requests. And these can be pull requests to your private repo, like one team member gave a PR back to the repo, it doesn't have to be open, open source. Okay. So if you're using PI charm, check this out. I mean, pull up this screen. I'm not logged in, oh, there we go. I thought it might not let me get the image up anyway. So check this out. So people are probably familiar with the get support and pi charm, you know, VS code, pi charm, they all have really good get support, you can see your changes, a lot of times you have this, sort of over this gray little overlay overlay that says who recently edited a file or a line, it's really cool to go back with like get lens turned on for C Python, because you'll see stuff from like 30 years ago, Guido made this commit. And here's the commitment. Like why this is crazy, right. But working with PRS is one of the things that doesn't normally seem to fit. And so I don't know when this got in there, but not too recently, there's now a Pull Request tab. So if you open a GitHub repository, if you're logged into GitHub, and that GitHub repository has a pull request, and you open up the section, it gives you a list of all the open. And I guess maybe you can toggle it close as well. But all the list of the open pull requests. If you click on one of them, it'll show you all the details of the pull request, the whole conversation, if you click on that, who's the reviewer you can change that? Who's honest, who's it assigned to whether there's labels, whether it's been merged, wow. And then like on the right, you have this whole conversation, you can see sort of the flow, this person commented this. And they made these few more changes, then they commented again, here, this is all really pretty neat. But the thing that is noteworthy, the reason I brought this up is there's a button that says checkout. So instead of trying to create a branch or a fork there repo and checking a you just, I don't know where this repo this PR came from, or what branch it was against, I just want to check it out and run it locally, run the tests against it, see what it looks like. Yeah, go in that awesome.
+00:02:13 It's not just reference counts, but other things too.
 
-00:17:17 Yeah, it was really, really awesome.
+00:02:19 And this is just, it's a fairly quick read, but enough detail that you really kind of understand what's going on.
 
-00:17:19 I like it. Yeah. Because normally, you're juggling a lot. Maybe you have CI, continuous integration that tells you like the linting paths, but other times you want to actually just get it and run it and play with it and decide, you know, did this make the code slower? Did it make it faster? Do I like how, like the result of this feature? Looks, you know, especially if it's like a UI thing or something, right? Yeah. So I think this is this is super cool. And the reason I bring it up is there's like nowhere in the documentation. Like if you go over to pi charm here, and you look for pull requests, there's they don't even mention this right? So I don't think people necessarily know about this, like, it seems Delta feature, it's a stealth feature, it seems totally worth highlighting, because dealing with PRs in that way is actually kind of janky. Right? It's like it takes a little bit of understanding get maybe more than GitHub more than a lot of people would off the bat. So if you just go click Checkout, play with it. Nope. I don't want it or Yes, I love it. That's I think that's great. I would still actually manage the PR and GitHub, but the ability to explore it super quick and easy. With a new project, I think is super cool. Yeah.
+00:02:27 It does talk through reference counting, talks through some of the advantages, why it's really kind of handy to have it around, but then attempts to remove it, including, like, I didn't know about this one.
 
-00:18:22 And quickly grabbed the code, because I mean, I know and GitHub, you you can get it, you can clone their branch and
+00:02:41 There was a free-threading one in '99.
 
-00:18:30 Yeah, exactly. But it's hard. It's like not super.
+00:02:44 - From 1999, yeah, that's, I didn't know about that one.
 
-00:18:32 It's it's several clicks, at least to find it.
+00:02:48 - Yeah, it actually was successful.
 
-00:18:36 Yeah, right. And do you actually want to clone to your your account, maybe not, I just want to check out the code, you know, like so grab the right commit, hash shot, whatever. Also really quick, while we're on this topic, I just want to give a quick shout out to this. So if you go to just the jetbrains.com/pi charm right now across the top, there's this oh, here, there's this cool, upcoming webinar 10 things 10 Good things you wish you knew and pi charm. very oddly, that that is me. So anyway, if you want to, I'm going to do a webcast. Next week on June 7, a whole bunch of get fun things in PI charm and UI tools and whatnot. So if you want to check that out, they definitely can. Cool. Yeah. All right. So that's it. For my thing. The Checkout, if you're using PI charm, use, check out this poor request thing. It's even in the free version of PI charm. So it's worth noting, nice. Let's see a really, really quick, real time follow up Roman, right. Hey, Roman says yes, it helps me sort out PRs so much. I totally agree. And then Wolff says, Is it available in IntelliJ? And does it work with GitLab? I don't know if it works with GitLab I'm quite sure it's available, intelligent IntelliJ because like pi charm is just basically specialized. IntelliJ. So I'd be very surprised if it weren't available in IntelliJ. But I can't say for sure. GitLab. I would check the documentation, but it also can't find that so anyway,
+00:02:50 It just made your Python code really slow.
 
-00:19:57 so on the pi term side, there's there's more This is like a new some UI changes that happened recently or, you know,
+00:02:52 So, not good.
 
-00:20:04 anyway, possibly. One of the things that changed recently that was I actually kept stumbling into, like on the good stuff is they have little overlays of who made changes when kind of like that get lens from VS code I described. They started adding that and I kept clicking it by accident trying to click on the line. So that's like, why is it keep popping up a diff? Oh, I see. Okay. I kind of crashed into it. But yeah, okay. Anyway, if you're doing PRs, check this out. If you're doing PRs, and using PI charm, check this out. It's definitely useful.
+00:02:54 And then Larry Hastings' Galectomy, he's had a lot of PyCon talks, or a few PyCon talks around this.
 
-00:20:32 All right. Well, so we have no guests. So that's our items for today. Right?
+00:03:01 So, that's an interesting thing to read about.
 
-00:20:37 It is. It is. Well, we would be remiss to not have extras though.
+00:03:05 There's a little more, there's quite a few interesting bits in there, but it never really got back into main Python, but we're getting a little closer where with this no-gill stuff.
 
-00:20:42 Of course. So. Yeah.
+00:03:19 So there's no-gill stuff going on with Sam Gross.
 
-00:20:44 You want to do the extras. First. Your extras first serve.
+00:03:24 - From Sam Gross.
 
-00:20:47 I just got one. So the was a couple weeks ago, we I think we talked about about pandas tutor. Switching to pi iodide, I think. Yep. So there's a there's an article that came out on the PI iodide blog. That is pandas about pandas, tutors, switching to pi, iodine iodide, either. And so one of the reasons why I bring it up is because there's some cool stuff in here. It's, it's not just hey, we did this, but it's also why did we do it? And kind of walking through some of the stuff how they did a self self contained pandas, tutor, we'll, you know, dealing with JavaScript and imports, and all that sort of stuff and the fine tuning and what work has to go further. So other people that are like, hey, this pile died, actually, proof of concept. It's starting to look cool. I want to do this too. This might be a nice thing for people to check out.
+00:03:24 - Yeah.
 
-00:21:48 So yeah, this is super nice. And I I definitely think though, what are the rough edges? And what worked really well, those types of lessons for now are going to be really valuable for people trying to adopt this? Yeah, that's all my extra is awesome. All right. Well, let's just make it a straight run for by iodide and py script right out. So last week, I did two videos on py script, which is based on PI iodine paradigm, as well. So first one is a 30 Minutes video, I sort of hinted that I was working on this. But remember I said it wasn't quite released yet. Right? Last episode, so now it's out. So now you can check out our link to it. You can check out my 30 minute Python, postscript, web assembly, Python web app is running locally, which is super fun. It's all about not just, you know, let's like take some Python and put it in the browser. But how can you use some like Pydantic config settings to override where py script actually comes from? The Pio died, the runtime comes from so you can like put that locally in your app and then download it offline and all sorts of fun stuff there. Cool. So basically, building an offline progressive web app that is like can be almost 100%. offline, this one calls an API. So it still needs this API. Anyway, that was really fun. And then the next day after releasing that it occurred to me, do you know what supports progressive web apps, iOS and Android, so I created a second video called Python, iOS web apps with py script and offline PW A's. And so here is, if you're looking at a screen, there's a on my iPad, there is a web app that runs py script, talking to flask based API over the internet. And it is basically you can go up and basically say, install this as an app on my iPad. And when you launch it, that install process already down downloads, the web assembly and the run the standard library and all the web assembly stuff that makes it large. So you just boom, and it opens up within like, less than two seconds. running Python client side on iOS
+00:03:25 And then also, and then also we've got Guido and others in Microsoft now working on this problem of speeding it up and everything.
 
-00:23:49 does so cool. I'm seeing lots of uses for this. I mean, people could do, like dashboards of pipelines and all sorts of stuff and have them be on tablets. Now. So
+00:03:37 So really great discussion if you wanna catch up on all the history of the gill and where it's going.
 
-00:24:00 yeah, absolutely. Yeah. It's mean, once you've already made it a progressive web app. It's like a few button clicks, like this whole video about this iOS thing with like, setting the stage and everything is it's three minutes. So I mean, it's not a hard process to make it happen. But it's just not obvious. And it's really cool that it works that way. Cool. Yeah. All right. Well, um, that's it for my items. I do have a joke. Nice. I know. You might have a joke as well. Yeah. Awesome. Okay. I'll go with my first because mine's easy. And then I have a bonus joke for you based on your topic that I didn't didn't see coming. Okay. So this one comes from Brian skin. Thanks, Brian. I just sort of pointed out a joke from Seth and it says people are out here just dangerously throwing around sequel abstraction layers. And if we aren't careful, someone's going to lose an arm. And oh, RM it's pretty good. Yeah,
+00:03:44 And then a little prediction at the end of we're going to see speedups because of these efforts.
 
-00:24:50 it's really good. Yeah, actually, if you are careful, you can lose your arm for good.
+00:03:50 We're going to see speedups in the next few years.
 
-00:24:55 Yes. Still be still be alright. Alright, so here here's the here's the real time joke follow up that based on your okay reg x one asked me why I'm looking like this. Why? Well that's just my regular expression
+00:03:52 Just it's just going to get faster.
 
-00:25:12 it's terrible isn't really bad alright, I wish I had somebody in my life I could share that with other than you.
+00:03:54 Then if we get no Gill, it might be maybe five years from now.
 
-00:25:19 Okay if other people listened to the show we could share anything okay,
+00:04:00 >> Yeah. It's pretty exciting.
 
-00:25:22 so the there's like all sorts of AI and stuff going into code editors now that make them like do all sorts of stuff to help you out right? So Kermit the Frog looking at a out of rainy window when you've barely started writing a line of code, and your ID already let you know about the recent tax errors, two runtime errors, a grammar mistake, five misdemeanors contempt of court and treason.
+00:04:02 There's some very neat work.
 
-00:25:54 Let's get started. Why is it so hard? I love it. That's really good. Anyway, yeah, I kind of felt that way. Today. I was I was playing around with some stuff. I'm just like, What is this is over the top this?
+00:04:04 The stuff that Sam Gross is doing is quite interesting.
 
-00:26:05 Yeah. So but no, good. I'm glad the editors can help us out. But sometimes I feel like an idiot.
+00:04:07 >> Yeah.
 
-00:26:11 Yes, indeed. Well, great to be here with you. Good being
+00:04:08 >> What's really cool is it's not just theory or people playing.
 
-00:26:15 here with you, Andy. Thanks, everybody, for coming. by everyone.
+00:04:12 The Python 3.11 is a lot faster than the previous Pythons already.
 
-00:26:19 Thanks for being here. See you next time.
+00:04:16 It doesn't even really touch the GIL side of things.
+
+00:04:19 There's actual progress being made.
+
+00:04:21 >> Yeah. It's pretty exciting time to be part of Python.
+
+00:04:27 It's never not been exciting.
+
+00:04:30 >> It only gets more exciting. How's that?
+
+00:04:32 >> Yeah.
+
+00:04:34 >> Hey, let me ask you a meta question.
+
+00:04:36 This is on the Backblaze blog.
+
+00:04:39 Backblaze.com is one of the, I think better sort of back up my computer somewhere off site sort of things.
+
+00:04:46 Yeah.
+
+00:04:47 And the fact that they're blogging about the Python gill is kind of interesting.
+
+00:04:52 I wonder if they're a big Python shop and we just didn't know it.
+
+00:04:54 Well, there's like, I didn't know it's on their blog, but I mean, we've got, very Warsaw is written by Barry Warsaw Powell.
+
+00:05:04 Yeah.
+
+00:05:04 So are they, is he, he's, he says he's currently is the senior engineer at LinkedIn.
+
+00:05:10 >> Yeah.
+
+00:05:11 >> I'm not sure.
+
+00:05:12 >> Sometimes life's confusing.
+
+00:05:14 >> Yeah. Not sure how this ended up there.
+
+00:05:17 >> But it's cool to see Backblaze support in the Python world with some dives into that.
+
+00:05:22 >> Yeah. Maybe somebody from Backblaze can reach out to us and tell us what's going on.
+
+00:05:26 >> Yeah, that'd be great. Also great, wouldn't it be cool, Brian, if we could take our Python program, whether this is a CLI or some other app that we need to have for people to run, and instead of saying, "Well, make sure you have this version of Python at least, and make sure you've set up a virtual environment, you've installed these things, and then you've got this in the path, and then you've got this environment variable, now you can try to run our thing I gave you." >> Yeah.
+
+00:05:50 >> If you could just give them a single binary that contained all of Python, contained the standard library, and you said you run this, and that's your app.
+
+00:05:59 That's not bad, right?
+
+00:06:01 >> Yeah.
+
+00:06:01 >> So let me introduce you to PyOxi, the PyOxi Python runner.
+
+00:06:05 Now, a while ago, we spoke about this thing called PyOxygen, no, PyOxidizer, that's what it was, PyOxidizer.
+
+00:06:16 And this is kind of like an advanced version of Py2EXE or Py2App or PyInstaller.
+
+00:06:24 But what's really nice is that it bundles the stuff up just sort of all into one thing and it runs out of memory instead of creating like a file structure of the files that you need and then sort of altering the path.
+
+00:06:35 So like a copy of Python will run that and so on.
+
+00:06:39 So this PyOxi attempts to make the features of PyOxidizer more accessible and simpler for people.
+
+00:06:46 So here's the deal.
+
+00:06:47 It is an executable program for running Python interpreters.
+
+00:06:51 So you can just give somebody this one PyOxi file and they can, instead of saying Python this, they can say PyOxi some Python file, right?
+
+00:07:00 You can say like run Python or run Python dash dash and give it a file or something along those lines, right?
+
+00:07:06 And it's just a thing you copy around.
+
+00:07:09 You don't have to worry about installing it or configuring your system or anything like that.
+
+00:07:13 So it's kind of a really easy way to pass around an executable that is Python in the standard library without all the overhead or setup of actually installing a Python runtime.
+
+00:07:23 - Okay.
+
+00:07:24 - Okay? - Yeah.
+
+00:07:25 - Yeah, so let me go back up here.
+
+00:07:27 That's pretty cool.
+
+00:07:28 That's one of, it's a single file.
+
+00:07:29 it's a single file that is a highly portable distribution of CPython.
+
+00:07:34 So for example, on Mac OS and Linux, it statically links in a lot of the files that are dependencies that you might find.
+
+00:07:42 So if you try to run something in Python, it might go like, oh, you have to install this other like C library in order for it to work correctly.
+
+00:07:49 So all those things are also like its dependencies are statically compiled into it, which is pretty cool.
+
+00:07:54 Another thing that's interesting is it gives you a lot more control over the interpreter and how it behaves.
+
+00:08:00 Like you can pass it configuration files and do all sorts of crazy stuff to really tweak the behavior of the runtime, the Python runtime that it comes with.
+
+00:08:09 >> Yeah.
+
+00:08:09 >> It's just to make PyOxidizer apps more accessible.
+
+00:08:13 Okay. So it's built with PyOxidizer, and basically it gives you its own standalone one.
+
+00:08:20 Like I said, it has the whole interpreter, it has the stuff statically linked, It has the standard library, and I think you can link your own libraries into it as well, which is pretty awesome.
+
+00:08:32 And you could also give it, like I said, more control.
+
+00:08:34 So you can create a configuration YAML file, and when you run it, you can say, "I want you to debug allocations," or "I want you to run this command to initialize the interpreter before it starts to run any code," and things like that.
+
+00:08:48 So you can give it this YAML config file and so on.
+
+00:08:52 So anyway, it's a pretty new project.
+
+00:08:55 This is from Gregory Sork, and he says, "It's very young, I hacked it together to try to get better exposure for PyOxidizer, for people who want to build things that they can distribute more easily and so on." For me, he's talking about, oh, there's some certain circumstances where maybe you want to have people run your script, so you can send the script and then this thing and so on.
+
+00:09:17 It's supposed to be on par with Zip app, which lets you ship the zipped up thing of your app and then run it.
+
+00:09:25 But the benefit is it already comes with Python.
+
+00:09:28 Like a lot of these zip, shiv, pex, etc.
+
+00:09:31 They all require that Python is installed on the system.
+
+00:09:34 And then you can run that with its dependencies.
+
+00:09:37 But this is like, no, it even comes with Python.
+
+00:09:39 So all that is pretty good.
+
+00:09:40 What I would love to see out of this is, could I take this and build some sort of UI framework?
+
+00:09:46 Here that, I don't know, maybe with PyScript, and then get like a UI framework I can ship to people and just go, Download this, double click it, there's your app.
+
+00:09:56 Who knows?
+
+00:09:57 >> Yeah.
+
+00:09:58 >> But anyway, if you're shipping Python to people, this might be worth checking out.
+
+00:10:03 >> Yeah. Neat.
+
+00:10:04 >> Yeah. Kim out in the audience asks, it looks very handy, does it make cross-platform executable?
+
+00:10:11 I think you might have to run a build command or something, or ship the right binary for each platform, but it does support Mac OS, Windows, and Linux.
+
+00:10:19 That's pretty cool.
+
+00:10:20 Now, maybe you covered this and I just missed it.
+
+00:10:24 What does it deal with my dependencies?
+
+00:10:27 Like if I have third-party dependencies?
+
+00:10:29 >> That's what I'm not 100 percent sure how to do.
+
+00:10:31 When I looked through it, I was looking for that.
+
+00:10:33 There's this oxidized importer, which it talks about like this embeds a copy of the Python standard library and it imports from memory using the oxidized importer.
+
+00:10:43 I think that you could use that as well for your own dependencies.
+
+00:10:47 I'm pretty sure that's the goal of this PyOxidizer project in the first place.
+
+00:10:51 So I would think so, but nothing from this article was really clear, like, and here's how you bring in a request or HTTPX or whatever you're gonna bring along.
+
+00:11:00 - Yeah.
+
+00:11:01 - Yeah, so. - Okay.
+
+00:11:02 Or PyTest.
+
+00:11:04 I was actually just thinking, if I run these tests, well, what version are you using?
+
+00:11:11 Okay, just fine, here, just install this and run this test with this, and that would be great.
+
+00:11:17 >> Yeah, exactly. Yeah, Alvaro, when I was talking about UI stuff, he says, "What about PyOxi plus Textual?" That'd be pretty neat as well, yeah.
+
+00:11:27 >> Just around the corner.
+
+00:11:28 >> Yeah. Cool. All right.
+
+00:11:29 >> Nice.
+
+00:11:30 >> That's PyOxi, people can check it out.
+
+00:11:32 >> All right. Well, how about regular expressions?
+
+00:11:39 Do you like those?
+
+00:11:41 >> When they work, I love them.
+
+00:11:44 When they don't, I'm like, What is this madness I've gotten myself into?
+
+00:11:48 - Okay, so I was almost afraid to talk about this, but it's a really awesome article, because sometimes you need regular expressions.
+
+00:11:55 And one of the things, there's lots that I like about this article.
+
+00:12:01 What I'm talking about is an article called the unreasonable effectiveness of F-strings and verbose.
+
+00:12:08 So regular expressions in all languages, including, I think, including Python, have a notion of verbose mode.
+
+00:12:18 I've always been enticed by this.
+
+00:12:20 The verbose mode idea is that you can, instead of having this weird, you still have the hard to read regular expression stuff, but you can put comment, you can put spaces and comments in it.
+
+00:12:34 >> It can be multi-line, right?
+
+00:12:36 >> What?
+
+00:12:37 >> It can be multi-line.
+
+00:12:38 >> Yeah, it can be multi-line and you can have a bunch of comments in there to say, oh, this part of the regular expression, what it's doing is this, you know, and then, so it makes it, little snippets of regular expression are easier to read.
+
+00:12:51 You're like, oh yeah, I can see that it's doing that.
+
+00:12:54 Great.
+
+00:12:54 It's when you clog it all together, which makes it really hard to read.
+
+00:12:57 So, and then, of course, you can build up strings in Python with fstrings and do string replacement.
+
+00:13:06 How awesome.
+
+00:13:07 So that's what this article's about, is really talking about using, taking some of the complicated bits of your regular expression or duplicated bits where it shows up several times in your regular expression and pulling that string out and even maybe commenting that and then dropping it in with F strings to build up a complex regular expression.
+
+00:13:32 It's brilliant and it also is one of the best explanations I've ever read on verbose regular expressions.
+
+00:13:40 So it's pretty cool.
+
+00:13:41 >> Yeah, I never really thought to refactor the pattern so that you have multiple strings.
+
+00:13:46 >> Yeah. >> Be like, here's the part that's repeated, so I'll have a pattern that that's that thing, and then F string it into the other pieces.
+
+00:13:52 >> Yeah.
+
+00:13:53 >> But it makes perfect sense.
+
+00:13:54 Of course you should do it.
+
+00:13:55 >> [LAUGH] Yeah, and now, I mean, I don't use it, I mean, actually I kind of do.
+
+00:14:00 I use regular expressions on a regular basis.
+
+00:14:03 But not like every day, but it's always something that I, whenever I put it in there, I'm like, is anybody else gonna be able to read this?
+
+00:14:13 And so I put comments around it, but I've never, I haven't ever really embraced verbose mode, and I'm definitely gonna use this now.
+
+00:14:20 - Yeah, for sure.
+
+00:14:22 The other thing real quick is you can have F strings and you can have raw strings and you can have raw F strings, apparently in Python.
+
+00:14:29 So the prefix is fr, triple quote, multi-line.
+
+00:14:33 Like that's some serious string action happening right there, man.
+
+00:14:36 - Yeah, raw F strings, nice.
+
+00:14:39 Yeah. - Yeah.
+
+00:14:42 And Neil out in the audience asks you, Brian, do you like your regular expressions, greedy or non-greedy?
+
+00:14:47 - Okay, it depends on what you're trained to do.
+
+00:14:52 - Yeah, I don't want mine to be greedy.
+
+00:14:56 Let's share, share kindly.
+
+00:14:58 All right, are we ready for the next one?
+
+00:15:00 - Yes. - Cool.
+
+00:15:01 All right, so this one I wanna talk about, and I'm gonna start off from a weird place, from a tweet that I gave because I can't find anywhere else to talk about it.
+
+00:15:10 Like this is why this needs talking about.
+
+00:15:12 So I just wanna sort of highlight some really cool stuff for people who are using PyCharm and doing open source stuff that involves pull requests.
+
+00:15:21 And these could be pull requests to your private repo, like one team member gave a PR back to the repo.
+
+00:15:25 It doesn't have to be open, open source.
+
+00:15:28 - Okay.
+
+00:15:29 - So if you're using PyCharm, check this out.
+
+00:15:32 Let me pull up this screen.
+
+00:15:34 Come on.
+
+00:15:36 Oh, I'm not logged in.
+
+00:15:37 Oh, there we go.
+
+00:15:38 I thought it might not.
+
+00:15:39 Let me get the image up.
+
+00:15:39 Anyway, so check this out.
+
+00:15:40 So people are probably familiar with the Git support in PyCharm.
+
+00:15:44 You know, VS Code, PyCharm, they all have really good Git support.
+
+00:15:48 You can see your changes.
+
+00:15:49 A lot of times you have this sort of, this gray little overlay that says who recently edited a file or a line.
+
+00:15:57 And it's really cool to go back with like get lens turned on for C Python because you'll see stuff from like 30 years ago, Guido made this commit and here was the commit message.
+
+00:16:07 Like what, this is crazy, right?
+
+00:16:09 But working with PRs is one of the things that doesn't normally seem to fit.
+
+00:16:13 And so I don't know when this got in there, but not too recently, there's now a pull request tab.
+
+00:16:19 So if you open a GitHub repository, if you're logged into GitHub and that GitHub repository has a pull request and you open up the section, it gives you a list of all the open, and I guess maybe you can toggle it closed as well, but all the lists of the open pull requests.
+
+00:16:34 If you click on one of them, it'll show you all the details of the pull request, the whole conversation if you click on that, who's the reviewer, you can change that, who's it assigned to, whether there's labels, whether it's been merged.
+
+00:16:47 - Wow.
+
+00:16:48 - And then like on the right, you have this whole conversation, you can see sort of the flow, this person commented this and they made these few more changes, then they commented again here.
+
+00:16:56 This is all really pretty neat, But the thing that is noteworthy, the reason I brought this up is there's a button that says check out.
+
+00:17:03 So instead of trying to create a branch or fork their repo and checking, like you just, I don't know where this repo, or this PR came from or what branch it was against.
+
+00:17:11 I just want to check it out and run it locally, run the test against it, see what it looks like, go.
+
+00:17:16 Isn't that awesome?
+
+00:17:17 - Yeah, that is really, really awesome.
+
+00:17:20 I like it.
+
+00:17:20 - Yeah, 'cause normally you're juggling a lot.
+
+00:17:22 Maybe you have CI, continuous integration that tells you like the linting pass.
+
+00:17:26 but other times you want to actually just get it and run it and play with it and decide did this make the code slower, did it make it faster, do I like how the result of this feature looks, especially if it's like a UI thing or something.
+
+00:17:40 So I think this is super cool.
+
+00:17:42 The reason I bring it up is there's nowhere in the documentations, if you go over to PyCharm here and you look for pull requests, they don't even mention this.
+
+00:17:51 So I don't think people necessarily know about this.
+
+00:17:53 >> It's a stealth feature.
+
+00:17:56 It's a stealth feature, it seems totally worth highlighting because dealing with PRs in that way is actually kind of janky, right?
+
+00:18:03 It's like it takes a little bit of understanding Git maybe more than, and GitHub more than a lot of people would off the bat.
+
+00:18:09 So if you just go click, check out, play with it, nope, I don't want it, or yes, I love it, I think that's great.
+
+00:18:15 I would still actually manage the PR in GitHub, but the ability to explore it super quick and easy within your project I think is super cool.
+
+00:18:22 - Yeah, and quickly grab the code, because I know in GitHub you can get it, you can clone their branch.
+
+00:18:29 >> Yeah, exactly. But it's hard.
+
+00:18:31 It's not too easy.
+
+00:18:32 >> It's several clicks at least to find it.
+
+00:18:36 >> Do you actually want it cloned to your account?
+
+00:18:40 Maybe not. I just want to check out the code.
+
+00:18:42 So grab the right commit, hash, SHA, whatever. Also really quick, while we're on this topic, I just want to give a quick shout out to this.
+
+00:18:50 If you go to just the JetBrains.com/pycharm right now across the top, there's this, oh here, there's this cool upcoming webinar, 10 Get Things You Wish You Knew in PyCharm.
+
+00:19:01 Very oddly, that is me.
+
+00:19:04 So anyway, I'm gonna do a webcast next week on June 7th about a whole bunch of get fun things in PyCharm and UI tools and whatnot.
+
+00:19:13 So if you wanna check that out, they definitely can.
+
+00:19:16 - Cool.
+
+00:19:16 - Yeah, all right, so that's it for my thing.
+
+00:19:18 Check out, if you're using PyCharm, check out this pull request thing.
+
+00:19:21 It's even in the free version of PyCharm.
+
+00:19:23 So it's worth noting.
+
+00:19:25 - Nice.
+
+00:19:25 - Let's see, a really, really quick real-time follow-up.
+
+00:19:30 Roman Wright, hey Roman, says, "Yes, it helps me sort out PRs so much." I totally agree.
+
+00:19:35 And then Wolf says, "Is it available in IntelliJ "and does it work with GitLab?" I don't know if it works with GitLab.
+
+00:19:41 I'm quite sure it's available in IntelliJ 'cause PyCharm is just basically specialized IntelliJ.
+
+00:19:48 So I'd be very surprised if it weren't available in IntelliJ, but I can't say for sure in GitLab.
+
+00:19:53 I would check the documentation, but I also can't find that, so.
+
+00:19:56 Anyway.
+
+00:19:57 - So on the PyCharm side, isn't there supposed to be some UI changes that happened recently, or do you know?
+
+00:20:04 Anyway.
+
+00:20:05 - Possibly.
+
+00:20:06 One of the things that changed recently that I actually kept stumbling into is on the Git stuff, is they have little overlays of who made changes when, kind of like that Git lens from VS Code I described.
+
+00:20:16 They started adding that, and I kept clicking it by accident, trying to click on the line.
+
+00:20:20 So that's like, why does it keep popping up a diff?
+
+00:20:22 Oh, I see.
+
+00:20:23 Okay.
+
+00:20:24 (laughing)
+
+00:20:25 So I kind of crashed into it, but yeah.
+
+00:20:27 Anyway, if you're doing PRs, check this out.
+
+00:20:29 If you're doing PRs and using PyJarm, check this out.
+
+00:20:31 It's definitely useful.
+
+00:20:32 - All right.
+
+00:20:33 Well, so we have no guests, so that's our items for today, right?
+
+00:20:37 - It is, it is.
+
+00:20:39 Well, we would be remiss to not have extras, though.
+
+00:20:42 - Of course.
+
+00:20:43 So, yeah.
+
+00:20:44 - You want to do the extras first?
+
+00:20:46 Your extras first?
+
+00:20:46 - Sure.
+
+00:20:47 I just got one.
+
+00:20:49 So it was a couple of weeks ago, I think we talked about Panda's tutor switching to Piedide, I think.
+
+00:21:01 >> Mm-hm, yep.
+
+00:21:02 >> So there's an article that came out on the Piedide blog that is about Panda's tutor switching to Piedide.
+
+00:21:15 And so, the reason why I bring it up is because there's some cool stuff in here.
+
+00:21:20 It's not just, "Hey, we did this," but it's also, "Why did we do it?" And kind of walking through some of the stuff, how they did a self-contained Pandas tutor wheel, dealing with JavaScript and imports and all that sort of stuff, and the fine-tuning and what work has to go further.
+
+00:21:39 So other people that are like, "Hey, this Pyodite, actually, proof of concept, it's starting to look cool, I want to do this too.
+
+00:21:46 This might be a nice thing for people to check out.
+
+00:21:49 - Yeah, this is super nice.
+
+00:21:50 And I definitely think the, what are the rough edges and what worked really well, those types of lessons for now are gonna be really valuable for people trying to adopt this.
+
+00:22:00 - That's all my extras.
+
+00:22:01 - Awesome.
+
+00:22:01 All right, well, let's just make it a straight run for PyIodine, PyScript right out.
+
+00:22:08 So last week I did two videos on PyScript, which is based on PyIodide as well.
+
+00:22:16 So first one is a 30 minutes video.
+
+00:22:20 I sort of hinted that I was working on this, but remember I said it wasn't quite released yet, Brian?
+
+00:22:24 - Yeah. - Last episode.
+
+00:22:25 So now it's out.
+
+00:22:26 So now you can check out, I'll link to it.
+
+00:22:28 You can check out my 30 minute Python, PyScript, WebAssembly, Python web apps running locally, which is super fun.
+
+00:22:34 It's all about not just, you know, let's like take some Python and put it in the browser, but how can you use some like PyDash config settings to override where PyScript actually comes from.
+
+00:22:46 The PyOdied, the runtime comes from, so you can put that locally in your app and then download it offline and all sorts of fun stuff there.
+
+00:22:52 - Cool.
+
+00:22:53 - So basically building an offline progressive web app that is like, can be almost 100% offline.
+
+00:22:58 This one calls an API, so it still needs its API.
+
+00:23:01 Anyway, that was really fun.
+
+00:23:02 And then the next day after releasing that, it occurred to me, do you know what supports progressive web apps?
+
+00:23:08 iOS and Android.
+
+00:23:09 So I created a second video called Python iOS Web Apps with PyScript and Offline PWAs.
+
+00:23:15 And so here is, if you look on the screen, there's a, on my iPad, there is a web app that runs PyScript talking to a Flask-based API over the internet.
+
+00:23:29 And it is basically, you can go up and basically say, install this as an app on my iPad.
+
+00:23:34 And when you launch it, that install process already down downloads the WebAssembly and the run the standard library and all the WebAssembly stuff that makes it large.
+
+00:23:43 So you just boom and it opens up within like less than two seconds running Python client side on iOS.
+
+00:23:49 That is so cool.
+
+00:23:50 I'm seeing lots of uses for this.
+
+00:23:53 I mean, people could do, like dashboards of, pipelines and all sorts of stuff and have them be on tablets now.
+
+00:24:00 So yeah, absolutely.
+
+00:24:01 Yeah.
+
+00:24:01 It's, it's, I mean, once you've already made it a progressive web app, it's like a few button clicks, like this whole video about this iOS thing with like setting the stage and everything is it's three minutes.
+
+00:24:11 So, I mean, it's not a hard process to make it happen, but it's just not obvious.
+
+00:24:15 And it's really cool that it works that way.
+
+00:24:16 Cool.
+
+00:24:17 Yeah.
+
+00:24:17 All right.
+
+00:24:18 Well, that's it for my items.
+
+00:24:21 I do have a joke.
+
+00:24:22 Nice.
+
+00:24:23 And I know you might have a joke as well.
+
+00:24:25 Yeah.
+
+00:24:26 Awesome.
+
+00:24:26 Okay.
+
+00:24:27 I'll go with mine first.
+
+00:24:28 Cause mine's easy.
+
+00:24:28 And then I have a bonus joke for you based on your topic that I didn't, didn't see coming.
+
+00:24:32 Okay.
+
+00:24:33 So this one comes from Brian skin.
+
+00:24:35 Thanks, Brian.
+
+00:24:36 I just sort of pointed out a joke from Seth, and it says, "People around here just dangerously throwing around SQL abstraction layers, and if we aren't careful, someone's gonna lose an arm." (Brian laughs)
+
+00:24:47 And ORM.
+
+00:24:48 It's pretty good, isn't it?
+
+00:24:50 - Yeah, it's really good.
+
+00:24:52 Yeah.
+
+00:24:53 Actually, if you are careful, you can lose your arm for good.
+
+00:24:56 - Yes, and still be all right.
+
+00:24:58 - Yeah.
+
+00:24:59 - All right, so here's the real-time joke follow-up that based on your reg X1.
+
+00:25:05 Ask me why I'm looking like this.
+
+00:25:07 - Why?
+
+00:25:07 - Well, that's just my regular expression.
+
+00:25:09 (laughing)
+
+00:25:11 - That's terrible.
+
+00:25:13 - It's really bad, all right.
+
+00:25:14 - I wish I had somebody in my life I could share that with other than you.
+
+00:25:18 - Okay, if other people listen to the show, we could share it with them.
+
+00:25:22 - Okay, so there's like all sorts of AI and stuff going into code editors now.
+
+00:25:29 They make them like do all sorts of stuff to help you out, right?
+
+00:25:32 So this is Kermit the Frog looking out of a rainy window.
+
+00:25:37 It's when you've barely started writing a line of code and your IDE already lets you know about three syntax errors, two runtime errors, a grammar mistake, five misdemeanors, contempt of court, and treason.
+
+00:25:51 (laughing)
+
+00:25:53 - Just getting started, why is it so hard?
+
+00:25:56 I love it, that's really good.
+
+00:25:59 - Anyway.
+
+00:26:00 - Yeah, I kind of felt that way today.
+
+00:26:01 I was playing around with some stuff.
+
+00:26:02 I'm just like, what is--
+
+00:26:03 this is over the top, this thing.
+
+00:26:05 Yeah.
+
+00:26:06 But no, good.
+
+00:26:07 I'm glad the editors can help us out.
+
+00:26:09 But sometimes I feel like an idiot.
+
+00:26:11 Yes.
+
+00:26:12 Indeed.
+
+00:26:13 Well, great being here with you.
+
+00:26:15 Good being here with you.
+
+00:26:17 Indeed.
+
+00:26:17 Thanks, everybody, for coming.
+
+00:26:19 Bye, everyone.
+
+00:26:20 Thanks for being here.
 

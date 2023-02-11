@@ -1,36 +1,628 @@
-00:00:00 Hello, and welcome to python bytes where we deliver Python news and headlines directly to your earbuds. This is Episode 297, recorded August 16 2022. And I am Brian nock. And I'm Michael Kennedy. It's good to get to be back and be with you, Michael. Yeah, it's great to be back. Not in the usual location today, you may hear some nature sound from I apologize if animals go crazy. But there's construction, which is guaranteed to be a problem in my office. So I'm sitting in the backyard. We'll see how it goes. Yeah, for anyone
+00:00:00 Hello and welcome to Python Bytes where we deliver Python news and headlines directly to your earbuds.
 
-00:00:30 listening on the podcast, the livestream, people get to see his lovely view from his backyard. Some nice trees. Yeah, same big trees. It's all it's all Oregon backyard here. Nice. But also, I also want to say this episode is brought to you by IRL podcast from Mozilla. So we'll tell you more about that later. But thanks to Mozilla and the IRL podcast for supporting the show. Thank you. Let's talk about writing code. By not writing code. Does that sound like a good idea? Well, okay. Not in the low code, no code sense. There's actually some pretty cool tools in that space. But that's not what I'm talking about. Imagine, Brian, somebody says, we used to be a dotnet sharp, and we have this huge database. And all of our code to talk to it isn't some other language or it's Ruby, or it's Java or whatever. It's not Python. And you decide the best way to talk to this database is with some flavor of SQL, Alchemy, SQL alchemy straight, or if you prefer, you could have it with data classes. Or you could even mix in a little sprinkling of sequel model, if you're doing async and fast API and Pydantic. And whatever choice you want to make from that perspective, if you're looking at a database with 150, tables, and all sorts of gnarly relationships, you might say, Well, I'm gonna have to spend the next week planning out how to model those out so I get them to exactly match the database. Is it a VAR char is that a VAR char with a limit? Like var Char 10? Or, you know what? That doesn't sound fun, does it? No, no, not it. I mean, at least for me, maybe some people that's a special kind of fun for them. But Josh Thurston sent over this project called sequel, a sequel alchemy code Gen. So I'm taking it he doesn't think it sounds like fun. I certainly don't think that it does, either. So people can check this out. It's, it's looks really cool. And what you do is it's an automatic model generator for SQL alchemy, this, what is it generated from? So what you do is you go through, and you pointed at some database, okay, just a sequel, a code Gen, and you give it your connection string, for example, Postgres SQL colon, triple slash, some database, connection string. And then magic happens. And you have a whole bunch of Python classes that are attempted to look handwritten. Yeah. So instead of taking all your time, like a week, to model out the database, and the relationships and all that stuff in Python, you run this one command line thing. And then you have all the classes and then you can tweak them a tiny bit if you see fit. Okay, so this is okay. You probably said this, and I missed it. But so you're already have data in a database, and you're trying to hook up an application to yours. Yeah. Which is why I went to my theoretical theoretical example, I've have a database, I have code that talks to it, but it's not Python. And so there's not really something to work from. But I've got a really complicated database that's been around for a while. It doesn't have to be complicated, but the more gnarly the database, the more you will appreciate this tool making doing it for you. I think I have this situation. Okay. Anyone use this? Yeah, yeah. Yeah. So it does a bunch of neat things. It's written to read the structure of an existing database and generate the appropriate SQL alchemy model code, using the declarative style, if possible, so deriving from SQL alchemy declarative base. It's also there was some other tool called SQL Autocode, which apparently has some limitations, such as, for example, it doesn't support python three, or recent versions of SQL alchemy. That seems like a pretty large limitation, but whatever.
+00:00:04 This is episode 297 recorded August 16, 2022 and I am Brian Okken.
 
-00:04:05 So this supports the newest version, it produces Pepe compliant code tries to make it look like you're writing code by hand so it doesn't look auto generated, it automatically automatically detects join table inheritance and all kinds of things. So by scroll down here, it's got these different generators, so you can generate table objects for people who don't want to use the ORM. Because sequel alchemy has these two flavors, like a low level, slightly above just raw SQL, and then the ORM, which is the one that I use all the time. By default, it uses the RM one, but you can also use, like I said, data classes, which is pretty excellent. Instead of, you know, case, that's what you want your code to look like. Or even better than that. You can use SQL model models for using SQL model, which is the project I'm sure we've discussed it before by Sebastian. It's based on Pydantic and async. But then it's built really on top
+00:00:11 I'm Michael Kennedy.
 
-00:05:00 of SQL alchemy. So you're looking to do the newer version of that, you get this, by the way, just thinking about it. While I'm looking at this, maybe I have actually a sequel alchemy generated database. But it's written in the older style of SQL alchemy. And it's not using SQL model, and I want to just upgrade to SQL model, you might be able to use the database, just go rewrite it for me again, but in this in this flavor, you know, or use it to generate the data class version that actually looks pretty cool. Or do all of them and look at it and see which one he looks looks like. It's more fun to maintain. Yeah, exactly. So there's a whole bunch of options and stuff that you can use. But you can basically pass a pass a bunch of command line arguments and stuff to change how it works, like, change how it names objects, or change out names fields, that are etc. People they really want to look into it and use it. I think they all got the idea from this. Okay, cool. Cool. Yeah, looks really cool. Yeah. Anytime you've got a database, they're so hard to model because you've got to get the sequel alchemy code to match it just right, or it won't work at all. And yet, you know, you do really want to do that behind by hand. No, I don't. And so, Sequel A kojin. Thanks, Josh. Well, I'm going to talk about package. I mean, my headspace is in packaging lately, because I'm preparing a talk for next month, and it is going to have some packaging stuff in it. So this is really exciting. With I heard from Juan Luis canto Rodriguez, Rodriguez, sorry, setup tool. 660 4.00 is out. and it ships with PEP 660 editable installs. So this the the big headline is not that although that's really cool. It's that most projects don't need to setup.pi or setup dot CFG anymore. Those Those can be gone. So and not that setup.pi was evil, but it kind of was evil. Because what it does is it runs Python runs Python while you install something like when used normally, it's fine. When but it has this tremendous gaping hole for abusing things at different levels. Yeah, and the the Okay, so the the caveat on this is, the reason why it has that is sometimes it goes out and compile stuff if it's not just pure Python stuff. But you don't need that for that you use a lot of product. Most projects don't need that anymore, because they're not really compiling stuff they're on during pip install. They're they're compiling stuff ahead of time, and they have their separate wheels for different architectures. So I like that model better. So anyway, the I'm like, pretty excited about that. So there's a so yeah, congrats to the pipe VA for getting that done. We've got, there's an article called development mode, editable installs. So here you've got pip install editable, that works with setup tools without a setup.pi used to have to have a shim. So everything can be in pipe Project dot Tamil now, and, and so one of the cool things, and I actually discovered this also at the same time I was researching packaging stuff, the pipe EA has this really cool guide packaging Python projects. And they, what's neat is they keep it up to date fairly well. And this whole tutorial, it's simple. So you got a simple Python project and you want to try to learn how to package they have this this page here. It's nice. There's no mention of setup.pi or setup dot cfg. It's all Pi project at home. Oh, wow. That's awesome. Here's how you do it. And you don't even talk about the older more. You have trouble some way. Yeah. And since setup tools and PIP are not part of Python proper, they're separate things. Well, I mean, you get Python, Pip when you when you download Python, but you get a version you and you usually upgrade anyway. But sub tools is separate. So they can move at a faster pace than Python itself. So Oh, right. Okay, excellent. Well, this is great news. Anything that makes the supply chain side of Python stronger? Is it? Yep, indeed. Well, before we move on to the next thing, brain, let me tell you about our sponsor. All right. So this episode of Python bytes is brought to you by the IRL podcast in original podcast from Mozilla. If you're like me, and Brian, we care about ideas behind technology, not just the tech itself. So we know that Tech has an enormous influence on society. Many of these effects are hugely beneficial. Just think about carrying all of the world's information in our pocket sort of thing. But other tech influences can have negative effects. And I really appreciate that Mozilla is always on the lookout for and working to mitigate negative influences of tech on all of us all the tracking stuff they're doing, but a bunch of awareness things as well. And so if these ideas resonate with you, you should definitely check out the RL podcast. It's hosted by Bridget Todd and this season is very much in the focus of Python. It's AI in real life.
+00:00:12 It's good to be back and be with you, Michael.
 
-00:10:00 So who can add? Who can AI help? Who can it harm? The show features fascinating conversations with people are working on building more trustworthy AI, for example, there's an episode about how our world is mapped with AI. And it's the data that's missing from those maps that tells as much of the story as the maps himself or another one's about gig workers and how they're pushing back on algorithms to create better working style. And for political junkies. There's an episode about how that the role of AI plays when it comes to spreading disinformation about elections, obviously, huge concern as just across the world for all the democracies, I also just listened to the tech we won't build which will, which explores, when developers and data scientists should consider pushing back on projects that can be harmful to society, even though the machine learning can easily be turned on them. If this sounds interesting, and train upset for yourself, just check out just search for RL and your podcast player or visit Python bytes FM slash IRL. The link is in your podcast player show notes. Thank you so much to IRL, on Zillow for supporting the show. I've been listening to it. It's really great show. Yeah, yeah, I enjoy it as well. It's it's not super, super technical, where it's all about API's and stuff. You can kind of just kick back and enjoy. Not like this podcast where we assume non technical. Exactly. Yeah, we talk about a bunch of technical things sometimes not too deeply, huh? No, I like I like our level. Yeah, I do too. I do too. Before we get on to the next topic. I just want to do a quick audience. Comment from Anna here says hello from London UK SQL. cogent sounds like it could save a lot of headaches. Yeah, I think it's gonna be great. Yeah. And feedback for the tutorial that you highlighted Brian on python.org. Yep. Henry Shriner says it took around six months for my rewrite of that page to get accepted. Well, thank you for all the hard work. And that's awesome. It great job. That's it looks great. So yeah, very, very cool. Previously, I had talked about async cash, remember that where it's like the func tools, LRU cache, but a little bit more. However, you can apply to async methods. Oh, and Lamont said, you may also be interested in a IO cache. What this one does is this lets you use proper distributed backends for caching. So, for example, if you're on a web app, you might have five 610, a many more worker processes, either on one machine using the supervisor mode of like G unicorn, or it could be even across different computers. If you're using that in memory version of cash, every time the request goes to a different part of your site, or different run time different process running your site, you've got to recompute it right? Well, this one also supports Redis and memcached. Oh, sweet, or memcache D. And it has a common API across all of them, which is pretty fantastic. And they're all async and await a bowl, which is cool. So it aims for simplicity, rather than trying to highlight all the nuances of that's particular say to Redis versus the others. So it has an add a get a set multi gate if you need to say give me the values corresponding to these four IDs, or does this thing exist or not delete, clear, even incremented value, like how many people viewed this page, increment that in the cache, and it's shared across, like I said, 10 Worker processes across machines instantly. Of course, that's pretty cool. Yeah, so super easy to work with, you can install it, but then you should also reference probably the specialization that you're using or the back end that you're using. So for example, you can say pip install aIIow cache, but if you want to use Redis, it's bracket Redis. If you want to use Redis, and Memcache, D might say, you know, bracket, Redis, Memcache D, they have message pack in different formatting. So depending on how you're using it, you might have to install some dependencies. Okay, the optional install mechanism of PEP is pretty cool, though, like it is, it's pretty cool. So you just import async IO easy. And then import EO cash, and you got to just basically run, run your loop somewhere or using something like fast API, just bad things generated or managing the loop race, you don't have to worry about it. So you can just say await cash dot Set Key comma, value await cash dot get key pounds, pretty straightforward, right? You can even use it as a decorator. So if you put apt cache on a function, and give it time to live the target, which is Redis, the key to use for that particular thing and so on, and then off, it goes to serializer pickles, or you have message pack or JSON, and then you go pretty cool, huh? So does okay. So for a function does it cache the input and output of that function then think it caches the output? Okay.
+00:00:16 Yeah, it's great to be back.
 
-00:14:37 But it doesn't Ness, it doesn't look like it varies, okay, by
+00:00:17 Not in the usual location today.
 
-00:14:42 using this example is not very big. Yeah. And I don't see how you would like this key is the lookup value, right? So you might call that Cashcall key result or something. I don't see how you dynamically do that. It's got to be like a void but you know, a lot of times that's just like show me all the product
+00:00:19 You may hear some nature sounds from my end.
 
-00:15:00 Send this right database or whatever. So yeah, yeah. Cool. Yeah. Pretty neat.
+00:00:21 I apologize if animals go crazy, but there's construction which is guaranteed to be a problem in my office.
 
-00:15:05 Very neat. Yeah. And then your different three basic ideas to think about, you have these back end. So you have Redis, backed by aIIow Redis, you have Memcache, backed by aIIow, Memcache. And then serializers. Like you can serialize to string pickle JSON message pack, but you can also build your own. And you can also plug in, there's a bunch of examples and documentation people can check out. So this looks really neat to me. Yeah, it's nice. Not quite something that I need. But if I did need it, I would definitely go. I know, I I'd be all over it. Yeah. Regarding the level of level of detail we have in our podcast, as he Steve says, I only listened to podcasts about API's.
+00:00:27 So I'm sitting in the backyard.
 
-00:15:48 So nice. What's your last one, Brian? My last one is? Well, the Python packaging project packaging Python project. Same thing. No, ever new one. But I got it from this. So when I was reading this article, or this tutorial again, I came across something I wasn't familiar with. So I had to go check it out. So down with creating a Pi project tamo. One of the options is hatchling. Have you heard? Yeah. Have you heard of hatch? Is this somehow related to hatch? Yeah, it is hatch. So have we already covered? Actually, no, I don't think we have here but I love the idea of it. Okay, so. So hatch is a modern extensible Python project manager with a whole bunch of cool features like a standardized build systems, build system and reproducible builds by default. And environment match management, which, you know, okay, so with so I'm not sure if this is similar to poetries, environment manager or not, I haven't played with it much. But but you don't actually have to care, which is nice. Because poetry, you have to care about it, because that's part of the whole thing. Anyway, publishing is easy to pi pi and other sources, version management, project generation with sane defaults, which I haven't tried that. So I want to try that. And supposedly a responsive CLI that's two to three times faster than equivalent tools. So this I definitely need to try. So this is ISE. I would think it's similar on line of flit, I think, but with some extra things thrown in, because and one of the reasons why I love for lit now is because even though setup tools does now support pipe project tamo properly completely flips, like twice as fast for building stuff. But but so I definitely want to try out hatch and try this. I did try one little small project, just converting a flip project to hatch. And it took me like five minutes, just using the documentation here is great. So the excellent documentation here about how to use the different pieces of it. So it's pretty neat. Have you tried it? I have not tried it. I've looked at it. And it it looks neat to me. I don't make many packages, I more build applications and web apps and stuff. So I I'm less in the what's the right tool to build packages properly. You know, and I know you're doing that a little bit more. So yeah, yeah. So we're in from you. I guess good mix, I do more packages and less applications and you do more applications. So yeah, some live feedback. Henry Shriner says, you can use any PEP 61 back end hatchling PDM, blitt core and so on with hatch or with PDM? Two, one of the fantastic results of standardization. And that actually does a much better job of getting source files, right than flit core. Okay. Interesting. Yeah, there's, there's, there was a lot of cool options with the hatch that you could specify exactly which modules and packages to pick up if you need to. That's one of the things that's a little bit mysterious with let him how to figure it out. Because it, it just sort of knows, somehow, I think it's the the stuff that's in Git, but it's interesting. So the main thing is, is I really like with the standardization, that hatches possible, the Flitz possible that PDM is possible that we can do new things. And they're not that different. Like the it's kind of the back end of packaging. The front end is the pipe project at Tom. That's a better world to be in. So yeah, that separation, let's let there be a lot more exploration a lot more variation. Alright, well, that's it for our items. I think so yeah. You got any extras?
+00:00:28 We'll see how that goes.
 
-00:19:28 No, but hopefully I will soon. So I've got something on Wow. Right on. Yes, I know. I think I know what you're alluding to very exciting stuff coming quite soon. Yeah, I bet you have. I have one extra. This one's quick, but quite cool. So I'm sitting here on my MacBook Pro with the M one MacBook Pro, the and one max. And until recently, I wasn't able to use pi pi. Now, high pi is the JIT compiled, often faster version of Python. Sometimes you'll hear people say pi pi
+00:00:29 >> Yeah, for people that are listening at the podcast, the live stream people get to see his lovely view from his backyard, some nice trees.
 
-00:20:00 When they are referring to pi pi, but all the people who work on pi pi, pronounce it that way. And it leaves space for pi pi to be pronounced like it should. So pi pi is the fast JIT compiled version of Python. And the big news is it couple weeks ago, they announced support for M one spirit. Cool. So if you're on Apple silicon, you can now use pi pi. That's very cool natively. Yeah, it was done by Fidel and supported by contributions from the open collective, which is pretty cool. And it's based on support for a Arch 64, which is arm 64, and Linux with some variations on how this works. So they've got three and three, nine working on macOS arm 64 platform, which is pretty cool. So if you're using that, and you've been waiting for this, it should make your code run faster, maybe use less memory, that kind of thing. Very cool. And people interested in pi pi, testing code on episode 190. I interviewed Carl Friedrich Bowles, about testing pipelines, so Oh, cool. Yeah, there's a lot of testing. I mean, it's the entire Python runtime. Basically, it's like in much of the standard library. That's a lot of work. Yeah. It's interesting story. So
+00:00:37 >> Yeah. Big trees.
 
-00:21:14 would you say that testing and documentation are often really good things to add to your project that go along together? In some ways? Well, hopefully, you're doing it at the same time. But yes, yes. You know, we've all worked with different types of team dynamics, the sort of flat hierarchy, people will just take over the projects and parts of the project that they seem best suited for. And there might be more hierarchical
+00:00:39 It's all Oregon backyard here.
 
-00:21:38 version. So our joke this week is about a somewhat dominate dominate.
+00:00:41 >> Nice.
 
-00:21:45 Senior Developer here. And there's a junior developer just hired onto the scene team that, you know, this is a picture people can check it out. Just follow the link in the show notes. The junior ask, Where's the documentation in a very stern face? The team this is I am the documentation.
+00:00:42 >> But I also want to say this episode is brought to you by IRL Podcast from Mozilla.
 
-00:22:01 Yes.
+00:00:49 We'll tell you more about that later, but thanks to Mozilla and the IRL Podcast for supporting the show.
 
-00:22:03 Hopefully, you're not currently working in this situation. But it's pretty funny.
+00:00:53 >> Thank you.
 
-00:22:08 You know, there's always bits. There's always pieces of the system that like, well, well, how does this work? Oh, you've got to ask that guy. He's not even on our team before anymore. Yeah. But he's the one that wrote it. And luckily, he's still with the company. So go talk to him. Exactly. No one understands that we don't touch it anymore. It seems to still work. Yeah, exactly. All right. Well, what seems to still be working as our podcast, Brian, it does. Yeah. Thanks for your thank you. Yeah. Thanks for everyone who listen to y'all later. Bye.
+00:00:53 >> Let's talk about writing code by not writing code.
+
+00:00:58 Does that sound like a good idea?
+
+00:00:59 - Well, okay.
+
+00:01:02 - Not in the low code, no code sense.
+
+00:01:04 There's actually some pretty cool tools in that space, but that's not what I'm talking about.
+
+00:01:07 Imagine, Brian, somebody says, "We used to be a .NET shop, "and we have this huge database, "and all of our code to talk to it "is in some other language, "or it's Ruby, or it's Java, or whatever.
+
+00:01:20 "It's not Python." And you decide the best way to talk to this database is with some flavor of SQLAlchemy.
+
+00:01:26 SQL alchemy straight, or if you prefer, you could have it with data classes, or you could even mix in a little sprinkling of SQL model if you're doing async and fast API and pydantic.
+
+00:01:38 Whatever choice you wanna make from that perspective.
+
+00:01:41 If you're looking at a database with 150 tables and all sorts of gnarly relationships, you might say, well, I'm gonna have to spend the next week planning out how to model those out so I get them to exactly match the database.
+
+00:01:54 Is it a VAR char?
+
+00:01:55 Is that a Varchar with a limit like Varchar 10 or, you know, what?
+
+00:01:59 That doesn't sound fun.
+
+00:02:00 Does it?
+
+00:02:00 No, no, not, not, I mean, at least for me, maybe some people that's a special kind of fun for them.
+
+00:02:05 But Josh Thurston sent over this project called SQL A or SQL alchemy code gen.
+
+00:02:13 So I'm taking that.
+
+00:02:14 He doesn't think it sounds like fun.
+
+00:02:15 I certainly don't think that it does either.
+
+00:02:18 So people should check this out.
+
+00:02:19 It's it's looks really cool.
+
+00:02:21 And what you do is it's an automatic model generator for SQLAlchemy.
+
+00:02:27 >> What does it generate it from?
+
+00:02:29 >> So what you do is you go through and you point it at some database.
+
+00:02:33 >> Okay.
+
+00:02:34 >> Just say SQL A CodeGen and you give it your connection string.
+
+00:02:38 For example, Postgres SQL colon triple slash some database connection string.
+
+00:02:43 And then magic happens and you have a whole bunch of Python classes that are attempted to look handwritten.
+
+00:02:49 >> Yeah.
+
+00:02:50 So instead of taking all your time, like a week, to model out the database and the relationships and all that stuff in Python, you run this one command line thing, and then you have all the classes, and then you can tweak them a tiny bit if you see fit.
+
+00:03:05 - Okay, so this is, okay, you probably said this and I missed it, but so you already have data in a database and you're trying to hook up an application to it or something.
+
+00:03:13 - Yeah, yeah, which is why one of my theoretical example.
+
+00:03:16 I have a database, I have code that talks to it, but it's not Python, and so there's not really something to work from, but I've got a really complicated database that's been around for a while.
+
+00:03:24 It doesn't have to be complicated, but the more gnarly the database, the more you will appreciate this tool doing it for you.
+
+00:03:31 >> I think I have this situation.
+
+00:03:33 I only want to use this.
+
+00:03:35 >> Yeah. It does a bunch of neat things.
+
+00:03:39 It's written to read the structure of an existing database and generate the appropriate SQLAlchemy model code using the declarative style if possible.
+
+00:03:48 derived from SQLAlchemy declarative base.
+
+00:03:50 It's also there was some other tool called SQL AutoCode, which apparently has some limitations, such as, for example, it doesn't support Python 3 or recent versions of SQLAlchemy.
+
+00:04:01 That seems like a pretty large limitation, but whatever.
+
+00:04:04 This supports the newest version.
+
+00:04:07 It produces PEP8 compliant code, tries to make it look like you're writing code by hand, so it doesn't look auto-generated.
+
+00:04:14 it automatically detects join table inheritance and all kinds of things.
+
+00:04:20 So if I scroll down here, it's got these different generators.
+
+00:04:23 So you can generate table objects for people who don't want to use the ORM, because SQLAlchemy has these two flavors, like a low level slightly above just raw SQL, and then the ORM, which is the one that I use all the time.
+
+00:04:34 By default, it uses the ORM one, but you can also use, like I said, data classes, which is pretty excellent.
+
+00:04:40 >> Yeah.
+
+00:04:40 >> Instead of, in case that's what you want your code to look like, Or even better than that, you can use SQL model models for using SQL model, which is the project, I'm sure we've discussed it before, by Sebastian.
+
+00:04:53 It's based on Pydantic and Async, but then it's built really on top of SQLAlchemy.
+
+00:05:01 So if you're looking to do the newer version of that, you'll get this.
+
+00:05:05 By the way, just thinking about it while I'm looking at this, maybe I have actually a SQLAlchemy generated database.
+
+00:05:11 but it's written in the older style of SQL Alchemy.
+
+00:05:15 It's not using SQL model and I want to just upgrade to SQL model.
+
+00:05:18 You might be able to use the database.
+
+00:05:20 Just go rewrite it for me again, but in this flavor or use it to generate the data class version.
+
+00:05:25 That actually looks pretty cool.
+
+00:05:27 >> Or do all of them and look at it and see which one looks like it's more fun to maintain.
+
+00:05:31 >> Yeah, exactly.
+
+00:05:33 There's a whole bunch of options and stuff that you can use, but you can basically pass a bunch of command line arguments and stuff to change how it works.
+
+00:05:40 >> Cool.
+
+00:05:41 >> Like change how it names objects, change how it names fields, etc.
+
+00:05:46 People, they really want to look into it and use it.
+
+00:05:48 I think they all got the idea from this.
+
+00:05:51 >> Okay. Cool.
+
+00:05:52 >> What do you think? Sound cool?
+
+00:05:52 >> Yeah. Looks really cool.
+
+00:05:54 >> Yeah. Anytime you've got a database, they're so hard to model because you've got to get the SQL Alchemy code to match it just right or it won't work at all.
+
+00:06:01 Yet, do you really want to do that by hand?
+
+00:06:05 No, I don't. So SQL A Code Gen. Thanks, Josh.
+
+00:06:09 Well, I'm going to talk about package. I've been my head spaces in packaging lately because I'm I'm preparing a talk for next month and it's going to have some packaging stuff in it. So this is really exciting with I heard from Juan Luis Cano Rodriguez Rodriguez, sorry, setup tools 664.00 is out and it ships with PEP 660 editable installs. So this the big headline is not that, although that's really cool.
+
+00:06:40 It's that most projects don't need a setup.py or a setup.cfg anymore.
+
+00:06:46 Those can be gone.
+
+00:06:49 Not that setup.py was evil, but it was evil because what it does is it runs Python while you install something.
+
+00:06:57 >> When used normally, it's fine.
+
+00:07:00 But it has this tremendous gaping hole for abusing things at different levels.
+
+00:07:06 Yeah, and the the OK, so the caveat on this is the reason why it has that is sometimes it goes out and compile stuff if it's not just pure Python stuff, but you don't need that for that you.
+
+00:07:20 A lot of pride. Most projects don't need that anymore because they're not really compiling stuff there on during pip install their their compiling stuff ahead of time and they have their separate wheels for different architectures.
+
+00:07:32 I like that model better.
+
+00:07:34 Anyway, I'm pretty excited about this.
+
+00:07:38 Congrats to the PyPA for getting that done.
+
+00:07:42 We've got, there's an article called Development Mode Editable Installs.
+
+00:07:47 Here you've got pip install editable that works with setup tools.
+
+00:07:52 Without a setup.py, used to have a shim.
+
+00:07:56 Everything can be in pyproject.toml now.
+
+00:08:00 And so one of the cool things, and I actually discovered this also at the same time I was researching packaging stuff, the PyPA has this really cool guide packaging Python projects.
+
+00:08:12 And what's neat is they keep it up to date fairly well.
+
+00:08:16 And this whole tutorial, it's a simple, so you got a simple Python project and you wanna try to learn how to package.
+
+00:08:23 They have this page here.
+
+00:08:25 It's nice.
+
+00:08:26 There's no mention of setup.py or setup.cfg.
+
+00:08:29 It's all pyproject.toml.
+
+00:08:31 - Oh wow, that's awesome.
+
+00:08:33 Here's how you do it, and you don't even talk about the older, more troublesome way.
+
+00:08:38 - Yeah, and since setup tools and pip are not part of Python proper, they're separate things.
+
+00:08:44 Well, I mean, you get pip when you download Python, but you get a version, and you usually upgrade anyway.
+
+00:08:51 But setup tools is separate, so they can move at a faster pace than Python itself.
+
+00:08:57 - Oh, right, okay, excellent.
+
+00:08:59 - Well, this is great news.
+
+00:09:01 Anything that makes the supply chain side of Python stronger is good.
+
+00:09:06 - Yep. - Indeed.
+
+00:09:08 Well, before we move on to the next thing, Brian, let me tell you about our sponsor.
+
+00:09:13 - All right.
+
+00:09:13 - So this episode of Python Bytes is brought to you by the IRL podcast, an original podcast from Mozilla.
+
+00:09:19 If you're like me and Brian, we care about ideas behind technology, not just the tech itself.
+
+00:09:25 So we know that tech has an enormous influence on society.
+
+00:09:28 Many of these effects are hugely beneficial.
+
+00:09:30 Just think about carrying all of the world's information in our pockets sort of thing.
+
+00:09:35 But other tech influences can have negative effects.
+
+00:09:38 And I really appreciate that Mozilla's always on the lookout for and working to mitigate negative influences of tech on all of us.
+
+00:09:45 All the tracking stuff they're doing, but a bunch of awareness things as well.
+
+00:09:49 And so if these ideas resonate with you, you should definitely check out the IRL podcast.
+
+00:09:52 It's hosted by Bridget Todd, And this season is very much in the focus of Python.
+
+00:09:58 It's AI in real life.
+
+00:10:00 So who can AI help?
+
+00:10:03 Who can it harm?
+
+00:10:04 The show features fascinating conversations with people who are working and building more trustworthy AI.
+
+00:10:08 For example, there's an episode about how our world is mapped with AI.
+
+00:10:13 And it's the data that's missing from those maps that tells as much of the story as the maps themselves.
+
+00:10:17 Another one's about gig workers and how they're pushing back on algorithms to create better working style.
+
+00:10:22 And for political junkies, there's an episode about how that, the role of AI plays when it comes to spreading disinformation about elections.
+
+00:10:30 Obviously, huge concern as just across the world for all the democracies.
+
+00:10:36 I also just listened to the tech we won't build, which explores when developers and data scientists should consider pushing back on projects that can be harmful to society, even though the machine learning can easily be turned on them.
+
+00:10:49 If this sounds interesting, try an episode for yourself.
+
+00:10:51 Just check out, just search for RL on your podcast player or visit pythonbytes.fm/irl.
+
+00:10:56 The link is in your podcast player show notes.
+
+00:10:58 Thank you so much to IRL and Mozilla for supporting the show.
+
+00:11:01 - I've been listening to it.
+
+00:11:02 It's really great show too.
+
+00:11:03 - Yeah, yeah, I enjoy it as well.
+
+00:11:05 It's not super, super technical where it's all about APIs and stuff.
+
+00:11:09 You can kind of just kick back and enjoy it.
+
+00:11:11 - Not like this podcast where we're super technical.
+
+00:11:15 - Exactly.
+
+00:11:16 Yeah, we talk about a bunch of technical things, sometimes not too deeply, huh?
+
+00:11:20 - Oh, I like our level.
+
+00:11:22 - Yeah, I do too, I do too.
+
+00:11:23 Before we get on to the next topic, I just want to do a quick audience comment from Anna here.
+
+00:11:29 It says, "Hello from London, UK.
+
+00:11:30 "SQL Code Gen sounds like it could save a lot of headaches." Yeah, I think it's gonna be great.
+
+00:11:36 And feedback for the tutorial that you highlighted, Brian, on python.org.
+
+00:11:41 Henry Schreiner says, "It took around six months "for my rewrite of that page to get accepted." Well, thank you for all the hard work, Henry.
+
+00:11:47 That's awesome.
+
+00:11:48 - Great job.
+
+00:11:49 It looks great.
+
+00:11:50 - Yeah, very, very cool.
+
+00:11:52 Previously, I had talked about async cache.
+
+00:11:55 Remember that?
+
+00:11:56 Where it's like the FuncTools LRU cache, but a little bit more.
+
+00:12:01 However, you can apply it to async methods.
+
+00:12:03 Owen Lamont said, "You may also be interested "in a IO cache." What this one does is this lets you use proper distributed backends for caching.
+
+00:12:12 So, for example, if you're on a web app, you might have five, six, 10, maybe many more worker processes, either on one machine using the supervisor mode of like G-Unicorn, or it could be even across different computers.
+
+00:12:26 If you're using that in-memory version of cache, every time the request goes to a different part of your site or different runtime, different process running your site, you've got to recompute it, right?
+
+00:12:37 Well, this one also supports Redis and Memcached.
+
+00:12:40 - Oh, sweet. - Or Memcached.
+
+00:12:42 And it has a common API across all of them, which is pretty fantastic.
+
+00:12:46 And they're all async and awaitable, which is cool.
+
+00:12:48 So it aims for simplicity rather than trying to highlight all the nuances of that particular site to Redis versus the others.
+
+00:12:56 So it has an add, a get, a set, a multi-get, if you need to say, give me the values corresponding to these four IDs, or does this thing exist or not, delete, clear, even increment a value, like how many people viewed this page, increment that in the cache, and it's shared across, like I said, 10 worker processes across machines instantly.
+
+00:13:15 How cool is that? - That's pretty cool.
+
+00:13:16 - Yeah, so super easy to work with.
+
+00:13:18 You can install it, but then you should also reference probably the specialization that you're using or the backend that you're using.
+
+00:13:26 So for example, you can say pip install aio-cache, but if you wanna use Redis, it's bracket Redis.
+
+00:13:31 If you wanna use Redis and memcached, you might say bracket Redis memcached.
+
+00:13:36 They have message pack and different formatting.
+
+00:13:38 So depending on how you're using it, you might have to install some dependencies, okay?
+
+00:13:42 - The optional install mechanism of pip is pretty cool though, I like that.
+
+00:13:46 - It is, it is pretty cool.
+
+00:13:48 So you just import async I/O, easy.
+
+00:13:51 And then you import I/O cache, and you kind of just basically run your loop somewhere, or if you're using something like FastAPI, just that thing's generating or managing the loop for you, so you don't have to worry about it.
+
+00:14:03 So you can just say await cache.set, key, comma, value, await cache.getKey.
+
+00:14:08 Sounds pretty straightforward, right?
+
+00:14:10 You can even use it as a decorator.
+
+00:14:12 So if you put @cache on a function, you can give it time to live, the target, which is Redis, the key to use for that particular thing and so on.
+
+00:14:21 Then off it goes to Serializer, you have Pickles or you have MessagePack or JSON, and then there you go. Pretty cool.
+
+00:14:29 >> Okay. For a function, does it cache the input and output of that function then?
+
+00:14:34 >> I think it caches the output.
+
+00:14:36 >> Okay.
+
+00:14:37 >> But it doesn't look like it varies by argument.
+
+00:14:43 >> At least in this example, it's not very high.
+
+00:14:45 >> Yeah, and I don't see how you would, like this key is the lookup value, right?
+
+00:14:49 So you might call that cache call key result or something.
+
+00:14:53 I don't see how you dynamically do that.
+
+00:14:56 It's got to be like a void.
+
+00:14:57 But a lot of times that's, you just like show me all the products in this database or whatever.
+
+00:15:02 >> Right.
+
+00:15:02 >> Yeah.
+
+00:15:03 >> Cool.
+
+00:15:03 >> Cool. Yeah, pretty neat.
+
+00:15:05 >> Very neat.
+
+00:15:06 >> Yeah. Then you have different three basic ideas to think about you have these backends.
+
+00:15:11 So you have Redis backed by AI or Redis.
+
+00:15:13 You have memcache backed by AIO memcache.
+
+00:15:16 Then serializers, like you can serialize just string, pickle, JSON, message pack, but you can also build your own and you can also plug in.
+
+00:15:24 There's a bunch of examples and documentation people can check out.
+
+00:15:28 This looks really neat to me.
+
+00:15:29 >> Yeah. Nice.
+
+00:15:30 >> It's not quite something that I need, but if I did need it, I would definitely go and I'd be all over it.
+
+00:15:37 >> Yeah. Regarding the level of detail we have in our podcast, As Steve says, I only listen to podcasts about APIs.
+
+00:15:46 >> Nice.
+
+00:15:48 Nice, nice.
+
+00:15:50 What's your last one, Brian?
+
+00:15:51 >> My last one is, well, the Python packaging project.
+
+00:15:56 Packaging Python project, same thing.
+
+00:15:58 No, I have a new one, but I got it from this.
+
+00:16:00 So when I was reading this article, or this tutorial again, I came across something I wasn't familiar with, so I had to go check it out.
+
+00:16:07 So down with creating a pyproject.toml, One of the options is hatchling.
+
+00:16:14 Have you heard of that?
+
+00:16:16 >> Hatchling? I've heard of hatch.
+
+00:16:17 Is this somehow related to hatch?
+
+00:16:19 >> Yeah, it is hatch. Have we already covered hatch?
+
+00:16:22 >> No, I don't think we have here, but I love the idea of it.
+
+00:16:25 >> Okay. Hatch is a modern extensible Python project manager with a whole bunch of cool features like a standardized build system and reproducible builds by default, and environment management.
+
+00:16:40 Okay, so I'm not sure if this is similar to Poetry's environment manager or not.
+
+00:16:45 I haven't played with it much.
+
+00:16:46 But you don't actually have to care, which is nice.
+
+00:16:50 Because Poetry, you have to care about it.
+
+00:16:52 Because that's part of the whole thing.
+
+00:16:53 Anyway, publishing is easy to PyPI and other sources.
+
+00:16:58 Version management, project generation with sane defaults, which I haven't tried that, so I want to try that.
+
+00:17:04 And supposedly a responsive CLI that's two to three times faster than equivalent tools.
+
+00:17:10 So this I definitely need to try.
+
+00:17:12 So this is--
+
+00:17:13 I would think it's similar on the line of Flit, I think, but with some extra things thrown in.
+
+00:17:20 And one of the reasons why I love Flit now is because even though Setup Tools does now support PyProject, Tomo properly, completely, Flit's like twice as fast for building stuff.
+
+00:17:32 But so I definitely want to try out Hatch and try this.
+
+00:17:34 I did try one little small project, just converting a Flit project to Hatch.
+
+00:17:38 and it took me like five minutes just using.
+
+00:17:41 The documentation here is great.
+
+00:17:43 So the excellent documentation here about how to use the different pieces of it.
+
+00:17:48 It's pretty neat. Have you tried it?
+
+00:17:49 >> I have not tried it. I've looked at it and it looks neat to me.
+
+00:17:53 I don't make many packages.
+
+00:17:55 I more build applications and web apps and stuff.
+
+00:17:58 >> Oh, yeah.
+
+00:17:58 >> So I'm less in the, what's the right tool to build packages properly?
+
+00:18:03 I know you're doing that a little bit more.
+
+00:18:06 >> Yeah.
+
+00:18:07 >> I'm just learning from you.
+
+00:18:08 I guess good mix, I do more packages and less applications, and you do more applications.
+
+00:18:12 >> Yeah. Some live feedback.
+
+00:18:16 Henry Schreiner says, "You can use any PEP 621 back-end, Hatchling, PDM, Flickr, and so on with Hatch or with PDM2, one of the fantastic results of standardization." That Hatchling does a much better job of getting source files right than Flickr.
+
+00:18:32 >> Okay. Interesting.
+
+00:18:33 >> Yeah.
+
+00:18:33 >> Yeah. There was a lot of cool options with the hatch that you could specify exactly which modules and packages to pick up if you need to.
+
+00:18:42 That's one of the things that's a little bit mysterious with Flit, how to figure it out, because it just sort of knows somehow. I think it's the stuff that's in Git, but it's interesting.
+
+00:18:54 The main thing is I really like, with the standardization, that hatch is possible, the flits possible, that PDM is possible, that we can do new things, and they're not that different.
+
+00:19:07 It's the back end of packaging, the front end is the pyproject.toml.
+
+00:19:13 That's the better world to be in.
+
+00:19:15 >> Yeah, that separation lets there be a lot more exploration, a lot more variation.
+
+00:19:20 All right. Well, that's it for our items, isn't it?
+
+00:19:23 >> I think so, yeah.
+
+00:19:24 >> You got any extras?
+
+00:19:27 >> No, but hopefully I will soon.
+
+00:19:30 I've got something I'm working on.
+
+00:19:31 >> Right on.
+
+00:19:32 >> Yeah.
+
+00:19:32 >> Yes, I think I know what you're alluding to, very exciting stuff coming quite soon.
+
+00:19:37 >> Yeah. How about you?
+
+00:19:38 >> I have one extra. This one's quick, but quite cool.
+
+00:19:41 I'm sitting here on my MacBook Pro with the M1, MacBook Pro with the M1 Max.
+
+00:19:48 Until recently, I wasn't able to use PyPy.
+
+00:19:51 Now, PyPy is the JIT compiled, often faster version of Python.
+
+00:19:57 Sometimes you'll hear people say PyPy when they are referring to PyPI, but all the people who work on PyPI pronounce it that way.
+
+00:20:05 And it leaves space for PyPy to be pronounced like it should.
+
+00:20:08 So PyPy is the fast JIT compiled version of Python.
+
+00:20:14 And the big news is a couple of weeks ago, they announced support for M1, which is pretty cool.
+
+00:20:19 So if you're on Apple Silicon, you can now use PyPy.
+
+00:20:22 >> That's very cool. >> Natively.
+
+00:20:23 >> Yeah. It was done by Fajal and supported by contributions from the Open Collective, which is pretty cool, and it's based on support for Aarch64 which is ARM64 and Linux with some variations on how this works.
+
+00:20:40 They've got 38 and 39 working on Mac OS, ARM64 platform which is pretty cool.
+
+00:20:46 If you're using that and you've been waiting for this, it should make your code run faster, maybe use less memory, that kind of thing.
+
+00:20:51 >> Very cool. If people are interested in PyPy, testing code on episode 190, I interviewed Carl Frederick Bowles about testing PyPy.
+
+00:21:02 >> Oh, cool. Yeah, there's a lot of testing.
+
+00:21:05 I mean, it's the entire Python runtime basically.
+
+00:21:08 It's like in much of the standard library. That's a lot of work.
+
+00:21:11 >> Yeah. It's an interesting story.
+
+00:21:13 >> Would you say that testing and documentation are often really good things to add to your project that go along together in some ways.
+
+00:21:21 >> Well, hopefully you're doing it at the same time, but yes.
+
+00:21:24 >> Yes. We've all worked with different types of team dynamics, the flat hierarchy, people would just take over the projects, the parts of the projects that they seem best suited for, and there might be more hierarchical version.
+
+00:21:39 So our joke this week is about a somewhat dominating senior developer here, And there's a junior developer just hired onto the same team that, you know, this is a picture.
+
+00:21:51 People can check it out. Just follow the link in the show notes. The junior asked, where's the documentation in a very stern face? The team is, I am the documentation.
+
+00:22:00 Yes.
+
+00:22:02 Hopefully you're not currently working in this situation, but it's pretty funny.
+
+00:22:06 You know, there's always bits. There's always pieces of the system that like, >> Well, how does this work?
+
+00:22:14 You've got to ask that guy.
+
+00:22:15 He's not even on our team anymore.
+
+00:22:18 Yeah, but he's the one that wrote it, and luckily, he's still with the company. Go talk to him.
+
+00:22:22 >> Exactly. No one understands that we don't touch it anymore.
+
+00:22:24 It seems to still work.
+
+00:22:25 >> Yeah.
+
+00:22:26 >> Exactly. All right.
+
+00:22:27 Well, what seems to still be working is our podcast, Brian.
+
+00:22:30 >> It does.
+
+00:22:30 >> Thanks for being here.
+
+00:22:31 >> Yeah. Thank you.
+
+00:22:32 >> Yeah. Thanks for everyone to listen. See you all later.
 

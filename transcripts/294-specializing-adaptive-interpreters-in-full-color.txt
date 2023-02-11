@@ -1,126 +1,1024 @@
-00:00:00 I am pulling off a very, very cool trick I just want to point out before we get started, okay, on the talk Python channel, I'm doing a podcast with Anthony Shaw and Shane from Microsoft, about Azure and Python and some CLI stuff they built and fast API at the exact same time. I'm doing this one here. They're both streaming live.
+00:00:00 I am pulling off a very, very cool trick.
 
-00:00:20 I don't know how that how that's happening. The other one was
+00:00:03 I just want to point out before we get started.
 
-00:00:23 recorded two months ago, and we couldn't release it because some of the things weren't finished yet. So I just I hit go on that the real one if you're if you're bouncing around, the real one is here. Okay. So join us here. Anyway, with that you're ready to start a podcast? Yeah, definitely. Hello, and welcome to python bytes, where we deliver Python news and headlines directly to your earbuds. This is episode 294. Recorded July 12 2022. I'm Michael Kennedy.
+00:00:05 >> Okay.
 
-00:00:48 And I am Brian knockin. That's just us this weekend, or this is just us.
+00:00:05 >> On the Talk Python channel, I'm doing a podcast with Anthony Shaw and Shane from Microsoft about Azure and Python and some CLI stuff they built in FastAPI.
 
-00:00:52 Yeah, yeah, it's I don't know D. Now the audience asked, Is this a daily podcast show now? I'm a little bit torn about I feel like we almost could do a daily show. But then I think what it might take to do a daily show, knowing how much work a weekly show is. And I know it's not a date. It's not a daily puck.
+00:00:15 At the exact same time, I'm doing this one here and they're both streaming live.
 
-00:01:10 I know what would be fun to do sometime. Just do like a full week or something just
+00:00:19 >> I don't know how that's happening.
 
-00:01:14 right. Exactly. Just super this. There's so much news we're seeing every day for the week,
+00:00:22 >> The other one was recorded two months ago and we couldn't release it because some of the things weren't finished yet.
 
-00:01:20 just like the same topics like six days.
+00:00:27 So I hit go on that.
 
-00:01:24 Yeah. Exactly. All right. Am I first this week? You are? Yes. Right on? Well, let me tell you about something special specialist. Okay. Just last week, I believe it was I interviewed Alex waygood, who did the write up for the Python language Summit. And as part of the topics we were discovering, you know, the Python language summit and Python this year is focusing a lot on performance, and what's called the Shannon plan. So this is Mark Shannon's plan to make Python five times faster over five releases. It's got a ton of support at Microsoft, Guido van Rossum is they're working on it, but they've hired like five or six other people who are full time working on making Python faster now. So awesome, awesome. Thank you for that. However, one of the things that made Python 311 fast is some of the early work they did. And it's, it comes down to PEP 5659. I specialize in adaptive interpreter. So let me tell you about the this feature this performance improvement first, and then we'll see what specialist is about because it's about understanding of visualizing behavior. Okay. So one of the things that is a problem with Python, because it's dynamic, and its types can change. And what can be passed could vary. I mean, you could have type hints, but you can violate the type hints all day long, and it's fine. So what the interpreter has to do is say, Well, we're going to do all of our operations, Super General. So if I have a function, and it's called Add, and it takes x and y and returns x plus y, seems easy. But is that string addition? Is that numerical addition, is that some custom operator overloading with a Dunder add, or whatever it is, in some type, it fails in one way, you kind of got to reverse it. Like there's all this unknown, right? What if you knew what if you knew those were integers and not classes or not strings, you could run different code, you wouldn't have to first figure out what they are. Are they compatible? Do you do the ad in the low level C Python internals? Or do you go to like some Python class and do it right, you could be much more focused. Yeah. Additionally, if it was adding for list, you could say, well, if I know their list, what we just do is go List dot extend, and we give it the other list, right? We don't hunt around and figure out all this other stuff, too. That's the general idea of the specialising interpreter is it goes through and it says, Look, we don't know for sure what could be passed here. But if it looks like over and over, we're running the same code, and it's always the same types. Is there a way we could specialize those types? Right, is there a way that we could put specific code for adding numbers or specific code for combining lists? And this is called adaptive and speculative specialization? Okay. Okay. And my favorite part of it when it's performed, it's called the quickening. quickening is the process of replacing slow instructions with faster variants. So kind of like I said, it has some advantages over immutable bytecode. It can be changed at runtime, like you see, we're always adding integers, it can use super instructions that span lines or take multiple operands and it does not need to handle tracing as it can fall back to the original bytecode for that, okay. Okay. So there's a whole bunch of stuff going on here. Like the example they give is, you might want to specialize load adder. So load adder is a way to say, give me the value that this thing contains And but what is the thing, one of the things you might do is you might realize it's an instance class. And then you would call load attr instance value. Okay, you might realize it's a module. And you might call load adder module or slot or so on, right. But if you knew you don't have to go through first the abstract step and then figure out which of these it is you just do the thing that it is. Okay. So that's the idea of this PEP. This is one of the things that's making Python 311 faster. Awesome. So to the main topic,
+00:00:29 The real one, if you're bouncing around, the real one is here.
 
-00:05:30 okay, I'll just just as a note, I'm saying, okay, as if I understand what you just said, but most of us,
+00:00:32 >> Okay.
 
-00:05:36 so it's alright, I think, well, let's, let's look at pictures. Okay. All right. So this thing by Brant Bucha. It's called specialist and it's about visualizing this specializing adaptive interpreter. Okay, good. Okay. So it's a specialist uses fine grained location information to create visual representations of exactly where and how see Python, three elevens, new specializing adaptive interpreter optimizes your code. And it's not just interesting, it has actionable information. Okay. So for example, see here, and if you gotta pull up this website, if you're just listening, if you see in that website, you'll see some colors, you'll see green, less green, yellow, orange, all the way to red. So there's two aspects are sort of a darkness as well as a color. So the most, like where Python can take advantage of this feature, you see green, where it can't you see red, and imagine the spectrum it goes like, green, yellow, orange, red, so it's not on or off. It's how much could it specialize. Okay. Okay. So what you see here, for example, is it's able to take some numbers, and index, an integer and a string, and then use the fact that it knows what those are to make certain things like appending, an output and doing some character operations on it. Yeah, right, it was able to replace that with a different runtime behavior, because of this quickly. Alright, so let's skip down here, give you the bit of the background. So it says let's look at this example. We have F to C, which converts Fahrenheit to Celsius. And what it does is okay, we're going to take an F, and it has type int to say, float, float. Okay, so, but those don't matter. So it says we take an F and subtract 32 from it. And then we're going to do simple math, we're going to take that result that range that size of temperature there based on zero and then multiply it by five divided by nine, we all learn this in chemistry class or somewhere or we talked about diverting different measurement. Yeah, of course. Yeah. Right. So these are straightforward. But there's actually problems in here that make it slower, and prohibit Python from quickening it as much as it can be quickened. Okay? So if we take this code, it just runs F to C, and C to F. And that gives us some test values and says, Just do it and tell us what happened. We can run specialist on it, and it says, Okay, this x here, the green areas indicate regions of code that were successfully specialized, where red areas are unsuccessful, like it tried and it failed. So it says one of the problems is start out the X equals F minus 32. It says, well, we can Quicken operations on numerical types that are the same. But for now, there's not a float int and float variant of this. It's got to be float, float. All right, it says, right, you, you could have gotten a faster operation there. But because the types didn't match, you won't. But then what it did get out as an X. And that was great. An X, which is a float, and it's going to do some stuff. And it could sort of make it better. But it said, look, here's some multiplication, again, by an integer and a float. So that's not quickened. And this division division is apparently never quickened. The what can we do? Well, with that information, is it well, what's the problem was subtracting 32? Well, it wasn't a float. Well, what if I said 32.00? Yes. All right, that gets replaced by faster code.
+00:00:33 >> So, Jonah's here. Anyway, with that, you're ready to start a podcast?
 
-00:09:03 Oh, nice right now.
+00:00:36 >> Yeah, definitely.
 
-00:09:04 So that's pretty nice. And if you want to return, it was adding like x plus 32 For the other direction. And now it's 32.0. That's faster. Okay. Well, what else? What if we, now you can see, when we did that part of the conversion, X times five divided by nine, if we put a 5.0, that gets faster still, but the divide is never quickened, okay? Well, what if we put the divide in parentheses, doesn't really matter if it's X times five divided by nine, or X times five divided by nine, right? It's these are mathematically equivalent, but they're not equivalent to Python, because that that operation results in it leverages constant folding, right? Five divided by nine is pre computed in Python to be a float. Right at parse time, right? That's just how it works with constants. If it says it can do math with constants ahead of time it doesn't do that becomes a float and then float times float is now quickened, right? Isn't this cool? The way you can apply this and actually make your code faster, not just go oh, it's interest. See, that must be quick. And if there are, but it Yeah,
+00:00:37 >> Hello, and welcome to Python Bytes, where we deliver Python news and headlines directly to your earbuds. This is episode 294, recorded July 12th, 2022. I'm Michael Kennedy.
 
-00:10:02 it is really pretty cool. And I'd really like to see this incorporated into an editor or something to say, your code will be faster if you just add a point zero here or something like that.
+00:00:48 >> And I am Brian Okken. It's just us this weekend, or this-
 
-00:10:13 And it's gonna become a float anyway, it doesn't matter, it just, why would you write 32.0? When you just meant 32? seems more precise to say 32?
+00:00:51 >> It's just us.
 
-00:10:22 Cuz I'm used to doing that to thinking if it's okay, me personally, I, if I know it's going to be a float math, I usually do point zero. But maybe, maybe that's not a normal thing,
+00:00:52 >> Yeah.
 
-00:10:32 if you're such a C programmer. So all right, well, I think this is really cool. This is pretty fabulous. And, you know, I don't know if I have any code that does math at that final grade level that I really care. But maybe, you know, if you're in charge of a library, where you've got a tight loop, or you do a lot of math, science stuff where it matters, this can be really useful. And what's cool is it's not like and switch to rust, or switch to C or switch to scythe on and it'll take effect like no, this this is like straight Python code. This is just how do I take most advantage of what is already happening for performance boosts in 311, that we haven't had before. I think
+00:00:52 >> Yeah, it's, I don't know. Dean of the audience asks, is this a daily podcast show now?
 
-00:11:13 and I think it's going to be just one more workflow step. So you've got your profile or your code, your whole thing is a little bit slower than you'd like it to be. You throw a profiler on it, you see the bottleneck areas that you could improve, and you think, should I like rewrite some of this in rust? Or C? or, you know, what should I do? Well, first off, let's try doing this like, throw through, throw this at it. And, and, and have the optimizer from 311 help you out. And and yeah, so I think that's, I can definitely see that this is going to be part of people's workflow. But yeah,
+00:00:58 I'm a little bit torn about I feel like we almost could do a daily show, but then I think what it might take to do a daily show knowing how much work a weekly show is.
 
-00:11:51 agree that you want to. Yes, exactly. Because while it's fun to do this, yeah, yeah, only focus where it's gonna matter. Don't don't optimize bunch of stuff that doesn't. So Brian, on the audience says, different brain, is there a plan to do lossless type conversion? Or maybe flake eight can make this kind of suggestion? Yeah, exactly. I'm not really sure. If you don't want to write the code where you get different outputs, probably. Right. But everything that was happening in here, you were you ended up with the same outcome. Anyway, it's just like, well, do I do the division first or the multiplication? Or do I start with an ant that results after some addition subtraction with a float? Or is I just make them all floats? Right? I feel like it's, in most cases, it shouldn't be changing the outcome. So okay. Yeah, yep. Cool. Anyway, that's, that's what I got. For the first one. How about you?
+00:01:08 I know it's not a day.
 
-00:12:44 Well, we'll kind of sticking with a 311 theme so far. Well, we can use Tom well now. But the in 311 we are going to have a Tom will that be part of part of Python 311 with PEP 680 And we covered that in episode 273. But I one of the things we didn't mention was that was the the the tamo lib is is and I think we did mention it is based on Tom Lee but Tom Lee you can use right now. So a lot of projects are switching to use Tom Lee as a as their Tom, Tom will parser to read, read, like pipe project atomic or read their own config file. And, um, and so I just wanted to highlight it, it's a Tom Lee is the little tomo parser. So cute little thing, and the project is cute. But, but I was reminded of it because real the real Python people put out actually looks like gear, Arne. Sorry, I'm not going to try to pronounce that name. Real Python, wrote an article called Python and tamo new, new best friends. And I really love it's it's a very comprehensive article. But I really love at least the first three parts of it. Using Tom was a config format, getting to know key value pairs, and load Tama with Python, because this is kind of what you're gonna do with it, you're gonna write config files for something. And I just kind of it's, this is a great introduction of Tommo for Python. And that's kind of what we care about. Right? So it goes through, like just getting getting used to what Tama looks like what a config file looks like talking about how all the keys even if you it's like key value stuff. And even if you put a number there or something, it's going to be a string. All the keys get converted to strings, even if they don't look like and they are there. They're UTF eight, so you can use Unicode in there as well. Which is kind of neat.
+00:01:09 It's not a daily pocket.
 
-00:14:51 Put your emojis in there. Yeah,
+00:01:10 No, might be fun to do sometime.
 
-00:14:53 well, can you is are emojis UTF eight,
+00:01:12 Just do like a full week or something.
 
-00:14:57 I think mostly. Many of them are
+00:01:14 Just right.
 
-00:15:00 Interesting. That'd be fun to put put emojis in your.
+00:01:15 Exactly.
 
-00:15:04 I don't know what Marta, we were in a cow mode or lizard mode. Lizard. Yeah. Okay, well, if you run into Alicia
+00:01:15 Just a super this.
 
-00:15:12 Okay, I gotta try that to see. Should have done that for
+00:01:17 There's so much news.
 
-00:15:16 my gosh, I think almost it's both horrible and amazing. Imagine writing like config files to like, put it in, put it in lizard mode, do it?
+00:01:18 We're seeing every day for the week.
 
-00:15:23 Yeah. What are the things that I didn't before reading this article, one of the things I didn't know you could do in Tommo, because I just sort of cursory I use it with pipe project at Tom and that's about it. But you can do. So talks about normal how to read stuff, but one of the things is Jose gonna talk about arrays. And you can do arrays of things which are neat, and tables and arrays of tables, which is like, so you have arrays of tables where these bracket bracket things. And, and then you can do dot stuff. So if you have like, was a user and user dot player, these will show up as as like, you know, sub dictionary key things. And so one of the things that I and I played with it this morning, and it really should have something to show, but the thing I like to do is to just read it, just like this article talks about reading it, just read the Tamil file into Python and print it. And then you can, it'll print out as a dictionary, and then you can create whatever format you want for your tomo file, and then you could just see what it's gonna look like and then you know how to access it. Because it's one of the best ways to do that.
+00:01:20 Cool.
 
-00:16:41 That's awesome. Yeah, what an interesting format. That's pretty, it's pretty in depth. And a blast from last week passed. Ashley? Hey, Ashley says UTF eight can encode any Unicode character emoji your heart emoji?
+00:01:20 Just like the same topics like six days in a row.
 
-00:16:54 I heard out? Oh, yeah, you could do like, you know, is it in hard mode and hard equals true hurt equals false for that? Oh, for optimizer optimizer, you could do a flame emoji equals true
+00:01:23 Over.
 
-00:17:07 Bakley. So I love it. I think look, we have not leveraged the configuration as emoji sufficiently. Oh,
+00:01:24 Yeah.
 
-00:17:13 yeah, I think I think pi test should rewrite all of its configs as emoji items. So let's
+00:01:25 Exactly.
 
-00:17:19 do a PR I'm sure we'll take it bigger. All right. Yeah. All right. Let me tell you about our sponsor this week before we move on. So this week is brought to you by Microsoft founders hub. In fact, they are supporting a whole bunch of upcoming episodes. So thank you a whole bunch to Microsoft for startups here. starting businesses hard by some estimates, over 90% of startups go out of business within their first year. With that in mind, Microsoft for startups set out to understand what startups need to be successful. And to create a digital platform to help overcome those challenges. Microsoft are startups founders hub, their hub provides all founders at any stage with a bunch of free resources to help solve challenges. And you get technology benefits, but also really importantly, access to experts guidance and skilled resources, mentorship and networking connections and a bunch more. So unlike a bunch of other similar projects in the industry, Microsoft for startup founders hub does not require startups to be investor backed or third party validated to participate, it's free to apply. And if you apply, get in, then it's going to open to all so what do you get if you join or apply and then get accepted to you can speed up your development with access to GitHub, Microsoft Cloud with the ability to unlock credits over time as in, it gets over $100,000 worth of credits over time over the first year if you meet a bunch of milestones, which is fantastic. But help your startup innovate vendor hubs is partnering with companies like open AI, a global leader in AI research and development to provide benefits and discounts to neat Yeah, through Microsoft startup founders hub becoming a founder is no longer about who you know, you'll have access to the mentorship network, giving up access to a pool of hundreds of mentors across a range of disciplines. Areas like idea validation, fundraising, management, coaching, sales, marketing, as well as specific technical technical stress points. To me that that's actually the the biggest value is the networking. Mentor side. So book A, you'll be able to book a one on one meeting with these mentors, many of whom are founders themselves. Make your idea a reality today with the critical support you'll get from Microsoft for startups to under sub join the program at Python bytes.fm/founders. Hub link will be in your players show notes. Nice. Yeah. Cool. Indeed. All right. I guess I'm up next with this order we got and oh my goodness, Samuel Colvin take a bow. Because he put out a plan for what's happening with Pydantic version two. But the reason I say take a bow is this is one detailed plan that is really, really thought through, bought out backed up with a bunch of GitHub discussions and so on. Wow. So the idea is Pydantic started out as an interesting idea and surprise, surprise a bunch of people go glommed on to it, probably more than it was originally envisioned to be so. So for example, SQL model from Sebastian Ramirez is like Pydantic models are now our ORM to the database with all the interesting stuff that RMS have. And Roman right said, Guess what we could do that for MongoDB as well. Same with the Pydantic thing We recently spoke about. And then Sebastian Ramirez is like, also, like, hey, fast API, this can be both our data exchange, as well as our documentation. Cersei was like, Oh, my goodness, what's going on here? So there's a bunch of stuff on the insides, that could be better, let's say are your maybe time to rethink this? So in this plan, it talks about what they'll add what the remove what will change some of the ideas for how long it will take, and so on. Interesting. Yeah, here's, here's a pretty significant thing. I'm currently taking a kind of sabbatical after leaving my last job to work on this, which goes until October. So that's a big commitment to I'm gonna help make Pydantic better. So it sounds familiar. It sounds a bit like rich, and textural, and those types of things as well. But this is a big, big commitment from Samuel. And he's really doing a ton of work, says people seem to care about my project. It's downloaded 26 million times a month. Wow, insane. Yeah, that's awesome.
+00:01:27 Exactly.
 
-00:21:20 That's kind of incredible. It is.
+00:01:28 >> All right. Am I up first this week?
 
-00:21:22 And so it says, here's the basic roadmap, implement a few features in what's now called the Pydantic. Core. We just had Ashley, who, as we saw is out in the audience, Hey, Ashley, who give a bit of a shout out to this feature. And also, I do want to also credit a couple other people's because Douglas Nichols and John Fagan, also let me know that this was big news coming. So thank you all for for that the Pydantic core is being rewritten in Rust, which doesn't mean you have to know or do anything, it just means you have to pip install something, you get a binary compiled thing that runs a lot faster. Okay, so more on that in a second. First of all, working to get 110 out and basically merge every open PR that makes sense and close every PR that doesn't make sense. And then profusely apologize to why your PR that you spent a long time making was closed without merging some other bookkeeping things, start tearing the Pydantic code apart and see how many existing tests can still be made to pass and then release eventually Pydantic. The goal is to have this done by October, probably by the end of year, for sure. Couple of things were painted into, there are a bunch of breaking changes in here, a lot of things are being cleaned up, reorganize, renamed, some removed, like from ORM, people might be using that with SQL alchemy that's been removed, for example, and so on. So there's, if you depend heavily on Pydantic, especially if you build a project like beanie that depends heavily on Pydantic, you are going to need to look at this because some of the stuff won't work anymore. But let's highlight a couple things here performance. This one is really important, because this is the data exchange level at professed API. This is the data base transformation level, when I do a query from the database, what comes back comes back in some raw form and then just turned into a Pydantic model. And those are computationally expensive things that happen often. And in general Pydantic. Version two is about 17 times 1,700% Faster than v1 when validate models, in a standard scenario says between four to 50 times faster than Pydantic. One. Wow, that's cool, right? Yeah, that alone should make your ears perk up and go, excuse me, my REM just gotten 17 times faster. Wait a minute, I'm liking this. I know that this is not the only thing that happens at Arlin level. But the ones that the ones I called out that depend heavily on it like that's in the transformation path. So this is important.
+00:01:30 >> You are. Yes.
+
+00:01:32 >> Right on. Well, let me tell you about something special, specialist.
+
+00:01:37 >> Okay.
+
+00:01:37 >> Just last week, I believe it was, I interviewed Alex Waygood who did the write-up for the Python Language Summit.
+
+00:01:45 As part of the topics we were discovering, the Python Language Summit and Python this year is focusing a lot on performance and what's called the Shannon plan.
+
+00:01:54 So this is Mark Shannon's plan to make Python five times faster over five releases.
+
+00:01:59 It's got a ton of support at Microsoft.
+
+00:02:02 Hito van Rossum's there working on it, but they've hired like five or six other people who are full-time working on making Python faster now.
+
+00:02:08 So awesome, awesome.
+
+00:02:10 Thank you for that.
+
+00:02:11 However, one of the things that made Python 3.11 fast is some of the early work they did.
+
+00:02:18 And it comes down to PEP 659, a specializing adaptive interpreter.
+
+00:02:24 So let me tell you about this feature, this performance improvement first, and then we'll see what specialist is about, 'cause it's about understanding and visualizing this behavior.
+
+00:02:35 So one of the things that is a problem with Python, because it's dynamic and its types can change and what can be passed could vary.
+
+00:02:44 I mean, you could have type hints, but you can violate the type hints all day long and it's fine.
+
+00:02:49 So what the interpreter has to do is say, well, we're going to do all of our operations super general.
+
+00:02:55 So if I have a function and it's called add and it takes X and Y and it returns X plus Y, seems easy, but is that string addition?
+
+00:03:03 Is that numerical addition?
+
+00:03:05 Is that some custom operator overloading with a dunder add or whatever it is in some type?
+
+00:03:12 If it fails in one way, you kind of got to reverse it.
+
+00:03:14 Like there's all this unknown, right?
+
+00:03:15 >> Yeah.
+
+00:03:16 >> What if you knew?
+
+00:03:17 What if you knew those were integers and not classes or not strings?
+
+00:03:22 You could run different code.
+
+00:03:24 You wouldn't have to first figure out what they are.
+
+00:03:26 Are they compatible?
+
+00:03:27 Do you do the add in low level CPython internals or do you go to like some Python class and do it?
+
+00:03:34 You could be much more focused.
+
+00:03:37 Additionally, if it was adding for a list, you could say, well, if I know their list, what we just do is go list.extend and we give it the other list.
+
+00:03:46 we don't hunt around and figure out all this other stuff.
+
+00:03:48 So that's the general idea of the specializing interpreter is it goes through and it says, look, we don't know for sure what could be passed here, but if it looks like over and over, we're running the same code and it's always the same types, is there a way we could specialize those types?
+
+00:04:07 Is there a way that we could put specific code for adding numbers or specific code for combining lists?
+
+00:04:14 And this is called adaptive and speculative specialization.
+
+00:04:19 Okay?
+
+00:04:20 - Okay.
+
+00:04:21 - And my favorite part of it when it's performed, it's called the quickening.
+
+00:04:25 Quickening is the process of replacing slow instructions with faster variants.
+
+00:04:31 So kind of like I said, it has some advantages over immutable bytecode.
+
+00:04:35 It can be changed at runtime.
+
+00:04:36 Like you see, we're always adding integers.
+
+00:04:39 It can use super instructions that span lines or take multiple operands.
+
+00:04:43 and it does not need to handle tracing as it can fall back to the original byte code for that.
+
+00:04:49 So there's a whole bunch of stuff going on here.
+
+00:04:51 Like the example they give is you might wanna specialize load adder.
+
+00:04:56 So load adder is a way to say, give me the value that this thing contains, but what is the thing?
+
+00:05:02 One of the things you might do is you might realize it's a instance class and then you would call load adder instance value.
+
+00:05:09 You might realize it's a module and you might call load adder module or slot or so on, right?
+
+00:05:14 But if you knew, you don't have to go through first the abstract step and then figure out which of these it is.
+
+00:05:20 You just do the thing that it is.
+
+00:05:21 Okay, so that's the idea of this pep.
+
+00:05:24 This is one of the things that's making Python 3.11 faster.
+
+00:05:28 Awesome, so to the main topic.
+
+00:05:30 - Okay, and I'll just as a note, I'm saying okay as if I understand what you just said, but most of it just went.
+
+00:05:37 - It's all right, I think we'll, let's look at pictures.
+
+00:05:40 - Okay.
+
+00:05:40 So this thing by Brant Boucher, it's called Specialist, and it's about visualizing this specializing adaptive interpreter.
+
+00:05:50 Oh, okay, good.
+
+00:05:51 Okay.
+
+00:05:52 So, it says Specialist uses fine-grained location information to create visual representations of exactly where and how CPython 3.11's new specializing adaptive interpreter optimizes your code.
+
+00:06:04 And it's not just interesting, it has actionable information.
+
+00:06:08 Okay.
+
+00:06:09 So for example, see here, and if you got to pull up this, the website, if you're just listening, if you see in that website, you'll see some color.
+
+00:06:18 You'll see green, less green, yellow, orange, and all the way to red.
+
+00:06:23 So there's two aspects, there's sort of a darkness as well as a color.
+
+00:06:27 So the most, like where Python could take advantage of this feature, you see green, where it can't, you see red.
+
+00:06:35 and imagine a spectrum it goes like green, yellow, orange, red.
+
+00:06:40 So it's not on or off, it's how much could it specialize.
+
+00:06:44 So what you see here, for example, is it's able to take some numbers, an integer and a string, and then use the fact that it knows what those are to make certain things like appending an output and doing some character operations on it.
+
+00:07:02 Right. It was able to replace that with a different runtime behavior because of this quickening.
+
+00:07:07 So let's skip down here, give you a bit of the background.
+
+00:07:10 So let's look at this example. We have F to C, which converts Fahrenheit to Celsius.
+
+00:07:16 And what it does is, okay, we're going to take an F, and it has type hints that say float, float.
+
+00:07:21 Okay, so, but those don't matter.
+
+00:07:23 So it says, we're going to take an F and subtract 32 from it.
+
+00:07:26 And then we're going to do simple math.
+
+00:07:28 We're going to take that result, that range, to that size of temperature there based on zero and then multiply it by five and divide it by nine.
+
+00:07:36 We all learned this in chemistry class or somewhere or we talked about converting different measurement.
+
+00:07:43 - Yeah, of course.
+
+00:07:44 - Right, so these are straightforward but there's actually problems in here that make it slower and prohibit Python from quickening it as much as it can be quickened, okay?
+
+00:07:55 So if we take this code, it just runs F to C and C to F and it gives us some test values and says just do it and tell us what happened.
+
+00:08:02 We can run specialists on it and it says, okay, this X here, the green areas indicate regions of code that were successfully specialized where red areas are unsuccessful.
+
+00:08:13 Like it tried and it failed.
+
+00:08:14 So it says one of the problems is, start out the X equals F minus 32.
+
+00:08:20 It says, well, we can quicken operations on numerical types that are the same, but for now there's not a float int and float variant of this.
+
+00:08:29 It's gotta be float float.
+
+00:08:30 Oh right.
+
+00:08:31 So it says, right, you could have gotten a faster operation there.
+
+00:08:34 But because the types didn't match, you won't.
+
+00:08:37 But then what it did get out is an x, and that's great.
+
+00:08:39 An x which is a float, and it's gonna do some stuff, and it could sort of make it better, but it said, look, here's some multiplication again by an integer and a float.
+
+00:08:47 So that's not quickened.
+
+00:08:48 And this division, division is apparently never quickened.
+
+00:08:52 So what can we do?
+
+00:08:53 Well, with that information, you can say, well, what's the problem with subtracting 32?
+
+00:08:57 Well, it wasn't a float. What if I said 32.0?
+
+00:09:00 Oh, yes. All right. That gets replaced by faster code.
+
+00:09:03 - Oh, nice. - Right?
+
+00:09:04 So that's pretty nice. And if you want to return, it was adding like x plus 32 for the other direction.
+
+00:09:09 And now it's 32.0. That's faster.
+
+00:09:11 Okay. Well, what else?
+
+00:09:12 What if we...
+
+00:09:13 Now you can see when we did that part of the conversion x times 5 divided by 9, if we put a 5.0, that gets faster still, but the divide is never quickened.
+
+00:09:24 Okay. Well, what if we put the divide in parentheses?
+
+00:09:27 It doesn't really matter if it's X times five divided by nine or X times five divided by nine, right?
+
+00:09:32 It's these are mathematically equivalent, but they're not equivalent to Python because that that operation results in It leverages constant folding right five divided by nine is pre-computed in Python to be a float Okay, right at parse time, right?
+
+00:09:48 That's just how it works with constants if it says that can do math with constants ahead of time It does it so that becomes a float and then float times float is now quickened, right?
+
+00:09:55 Isn't this cool the way you can apply this and actually make your code faster, not just go, "Oh, it's interesting.
+
+00:10:00 It must be quick in it there." >> Yeah.
+
+00:10:02 >> But it's actionable.
+
+00:10:03 >> It is really pretty cool and I'd really like to see this incorporated into an editor or something to say, "Your code will be faster if you just add a 0.0 here," or something like that.
+
+00:10:13 >> It's going to become a float anyway. It doesn't matter.
+
+00:10:16 Why would you write 32.0 when you just meant 32?
+
+00:10:19 Seems more precise to say 32.
+
+00:10:22 >> Because I'm used to doing that, to thinking if it's, okay.
+
+00:10:26 Well, me personally, if I know it's going to be a float math, I usually do 0.0, but maybe that's not a normal thing.
+
+00:10:32 >> You're such a C programmer.
+
+00:10:35 All right. Well, I think this is really cool, this specialist.
+
+00:10:42 >> It is pretty cool.
+
+00:10:42 >> I don't know if I have any code that does math at that fine or greater level that I really care, but maybe if you're in charge of a library where you've got a tight loop or you do a lot of math science stuff where it matters, then this can be really useful.
+
+00:10:56 And what's cool is it's not like, and switch to Rust or switch to C or switch to Cython and it'll take effect.
+
+00:11:03 Like no, this is like straight Python code.
+
+00:11:06 This is just how do I take most advantage of what is already happening for performance boosts in 3.11 that we haven't had before.
+
+00:11:13 - And I think it's gonna be just one more workflow step.
+
+00:11:16 So you've got, you profile your code, your whole thing is a little bit slower than you'd like it to be.
+
+00:11:23 You throw a profiler on it, you see the bottleneck areas that you could improve, and you think, should I like rewrite some of this in Rust or C or, you know, what should I do?
+
+00:11:33 Well, first off, let's try doing this, like throw this at it and have the optimizer from 3.11 help you out.
+
+00:11:42 And yeah, so I think this, I can definitely see that this is gonna be part of people's workflow.
+
+00:11:50 But yeah, profile first.
+
+00:11:51 - I agree that you want a profile first.
+
+00:11:52 Yes, exactly.
+
+00:11:54 'Cause while it's fun to do this, only focus where it's gonna matter.
+
+00:11:58 Don't optimize a bunch of stuff that doesn't.
+
+00:12:01 So Brian out in the audience says, different Brian, "Is there a plan to do lossless type conversion "or maybe Flake 8 can make this kind of suggestion?" - Yeah, exactly.
+
+00:12:11 That'd be cool.
+
+00:12:12 - Yeah, I'm not really sure if, you don't want to write the code where you get different outputs, probably, right?
+
+00:12:18 But everything that was happening here, you ended up with the same outcome anyway.
+
+00:12:24 It's just like, well, do I do the division first or the multiplication?
+
+00:12:26 Or do I start with an int that results after some addition, subtraction with a float, or as I just make them all floats?
+
+00:12:34 I feel like it's, in most cases, it shouldn't be changing the outcome.
+
+00:12:38 Yep, cool, anyway.
+
+00:12:42 That's what I got for the first one.
+
+00:12:43 How about you?
+
+00:12:44 - Well, kind of sticking with a 3.11 theme so far.
+
+00:12:49 Well, we can use Toml now, but in 3.11, we are gonna have a Tomlib be part of Python 3.11 with PEP 680.
+
+00:13:00 And we covered that in episode 273.
+
+00:13:03 But one of the things we didn't mention was that the Tomlib is, and I think we did mention it, is based on Tomly, But Tomli, you can use right now.
+
+00:13:15 So a lot of projects are switching to use Tomli as their Toml parser to read like pyproject.toml or read their own config file.
+
+00:13:29 And so I just wanted to highlight it.
+
+00:13:32 It's Tomli is the, a little Toml parser.
+
+00:13:36 It's a cute little thing on the project.
+
+00:13:39 - That is cute.
+
+00:13:40 - But I was reminded of it because The real Python people put out actually, looks like gear, Arne, sorry, I'm not gonna try to pronounce that name.
+
+00:13:52 Real Python wrote an article called Python and Toml New Best Friends.
+
+00:13:59 And I really love, it's a very comprehensive article, but I really love at least the first three parts of it.
+
+00:14:06 Using Toml as a config format, getting to know key value pairs, and load Toml with Python, because this is kind of what you're gonna do with it.
+
+00:14:15 You're gonna write config files for something.
+
+00:14:17 And I just kind of, this is a great introduction of Toml for Python, and that's kind of what we care about, right?
+
+00:14:23 So it goes through, like just getting used to what Toml looks like, what a config file looks like, talking about how all the keys, even if you, it's like key value stuff.
+
+00:14:35 And even if you put a number there or something, it's gonna be a string.
+
+00:14:40 All the keys get converted to strings, even if they don't look like them.
+
+00:14:43 And they are, they're UTF-8, so you can use Unicode in there as well, which is kind of neat.
+
+00:14:51 - Put your emojis in there.
+
+00:14:52 - Yeah, well, can you, is, are emojis UTF-8?
+
+00:14:56 - I think mostly, many of them are.
+
+00:15:00 - Interesting, that'd be fun to put emojis in there.
+
+00:15:03 (laughing)
+
+00:15:05 I don't know.
+
+00:15:05 - What mode are we running?
+
+00:15:06 Are we running in cow mode or lizard mode?
+
+00:15:08 I'll do lizard.
+
+00:15:09 Okay, well, if you're running in Lizard--
+
+00:15:11 - Lizard is true.
+
+00:15:12 Okay, I gotta try that to see.
+
+00:15:15 I should have done that before.
+
+00:15:16 - Oh my gosh, I think I almost, it's both horrible and amazing to imagine writing like config files to like put it in Lizard mode, do it.
+
+00:15:24 - Yeah, one of the things that I didn't, before reading this article, one of the things I didn't know you could do in Toml because I just started cursory, I use it with pyproject.toml and that's about it.
+
+00:15:34 But you can do, So talks about normal how to read stuff.
+
+00:15:41 But one of the things is, oh, what was I gonna talk about?
+
+00:15:44 Arrays.
+
+00:15:45 And you can do arrays of things, which are neat, and tables and arrays of tables, which is like, so you have arrays of tables or these bracket bracket things.
+
+00:15:56 And then you can do dot stuff.
+
+00:15:59 So if you have like, what was it?
+
+00:16:02 User and user.player, these will show up as like, you know, sub dictionary key things.
+
+00:16:10 And so one of the things that I, and I played with it this morning, and it really, I should have had something to show, but the thing I like to do is to just read it, just like this article talks about reading it, just read the tomo file into Python and print it.
+
+00:16:28 And then you can, and it'll print out as a dictionary, and then you can create whatever format you want for your Tomo file and then you can just see what it's going to look like and then you know how to access it.
+
+00:16:39 It's one of the best ways to do that.
+
+00:16:41 That's awesome.
+
+00:16:42 Yeah.
+
+00:16:43 What an interesting format.
+
+00:16:44 That's pretty, that's pretty in depth.
+
+00:16:45 And a blast from last week passed.
+
+00:16:48 Actually, hey, actually says UTF-8 can encode any Unicode character.
+
+00:16:53 Emoji your heart emoji.
+
+00:16:55 Heart of it.
+
+00:16:56 Oh yeah.
+
+00:16:57 You could do like, you know, is it in heart mode?
+
+00:16:59 Heart equals true, heart equals false.
+
+00:17:02 >> For optimizer, you could do a flame emoji equals true.
+
+00:17:07 >> Exactly. I love it.
+
+00:17:09 >> Yeah.
+
+00:17:09 >> I think we have not leveraged the configuration as emoji sufficiently.
+
+00:17:13 >> No. Yeah. I think PyTest should rewrite all of its configs as emoji items.
+
+00:17:19 >> Just do a PR. I'm sure they'll take it.
+
+00:17:20 >> Yeah.
+
+00:17:21 >> Yeah. It'll be good.
+
+00:17:23 >> All right. Yeah. All right.
+
+00:17:25 Let me tell you about our sponsor for this week before we move on.
+
+00:17:28 This week is brought to you by Microsoft Founders Hub.
+
+00:17:31 In fact, they are supporting a whole bunch of upcoming episodes.
+
+00:17:34 So thank you a whole bunch to Microsoft for Startups here.
+
+00:17:37 Starting business is hard by some estimates, over 90% of startups go out of business within their first year.
+
+00:17:43 With that in mind, Microsoft for Startups set out to understand what startups need to be successful and to create a digital platform to help overcome those challenges.
+
+00:17:51 Microsoft for Startups Founders Hub.
+
+00:17:53 Their hub provides all founders at any stage with a bunch of free resources to help solve challenges.
+
+00:17:59 and you get technology benefits, but also really importantly, access to expert guidance and skilled resources, mentorship and networking connections and a bunch more.
+
+00:18:08 So unlike a bunch of other similar projects in the industry, Microsoft for Startup Founders Hub does not require startups to be investor backed or third party validated to participate.
+
+00:18:20 It's free to apply, and if you apply, get in, then you're in, it's open to all.
+
+00:18:25 So what do you get if you join or apply and then get accepted?
+
+00:18:28 So you can speed up your development with access to GitHub, Microsoft Cloud, the ability to unlock credits over time, as in it gets over $100,000 worth of credits over time over the first year if you meet a bunch of milestones, which is fantastic.
+
+00:18:41 It'll help your startup innovate.
+
+00:18:42 FounderHub is partnering with companies like OpenAI, the global leader in AI research and development to provide benefits and discounts too.
+
+00:18:50 - Neat.
+
+00:18:50 - Yeah, through Microsoft Startup Founders Hub, becoming a founder is no longer about who you know.
+
+00:18:55 You'll have access to the mentorship network, giving you access to a pool of hundreds of mentors across a range of disciplines, areas like idea validation, fundraising, management coaching, sales marketing, as well as specific technical stress points.
+
+00:19:08 To me, that's actually the biggest value is the networking and mentor side.
+
+00:19:12 So you'll be able to book a one-on-one meeting with these mentors, many of whom are founders themselves.
+
+00:19:17 Make your idea a reality today with the critical support you'll get from Microsoft for Startups Founders Hub.
+
+00:19:22 Join the program at pythonbites.fm/foundershub.
+
+00:19:25 link will be in your player show notes.
+
+00:19:27 - Nice, yeah, cool.
+
+00:19:29 - Indeed.
+
+00:19:30 All right, I guess I'm up next with this order we got.
+
+00:19:32 And oh my goodness, Samuel Colvin, take a bow.
+
+00:19:35 (Samuel laughs)
+
+00:19:36 Because he put out a plan for what's happening with Hidantic version two.
+
+00:19:42 But the reason I say take a bow is this is one detailed plan that is really, really thought through, thought out, backed up with a bunch of GitHub discussions and so on.
+
+00:19:53 - Wow.
+
+00:19:53 So the idea is, Hydantic started out as an interesting idea and surprise, surprise, a bunch of people glommed onto it probably more than it was originally envisioned to be so.
+
+00:20:04 So for example, SQL model from Sebastian Ramirez is like, Hydantic models are now our ORM to the database with all the interesting stuff that ORMs have.
+
+00:20:14 And Roman Wright said, guess what?
+
+00:20:16 We could do that for MongoDB as well.
+
+00:20:19 Same with the Pydastic thing we recently spoke about.
+
+00:20:21 And then Sebastian Ramirez is like, also like, hey, fast API, this can be both our data exchange as well as our documentation.
+
+00:20:29 Sure, so I was like, oh my goodness, what's going on here?
+
+00:20:31 So, so there's a bunch of stuff on the insides that could be better, let's say, or, you know, maybe time to rethink this.
+
+00:20:40 So in this plan, it talks about what they'll add, what they'll remove, what will change, some of the ideas for how long it will take and so on.
+
+00:20:46 - Interesting.
+
+00:20:47 - Yeah, here's a pretty significant thing.
+
+00:20:49 I'm currently taking a kind of sabbatical after leaving my last job to work on this, which goes until October.
+
+00:20:56 So that's a big commitment to I'm going to help make Pydantic better.
+
+00:21:01 So it sounds familiar.
+
+00:21:03 It sounds a bit like a rich and textual and those types of things as well.
+
+00:21:07 But this is a big, big commitment from Samuel and he's really doing a ton of work.
+
+00:21:12 It says people seem to care about my project.
+
+00:21:14 It's downloaded 26 million times a month.
+
+00:21:17 >> Wow.
+
+00:21:18 >> It's insane. Yeah, it's awesome.
+
+00:21:20 >> That's incredible.
+
+00:21:22 >> It is. It says, "Here's the basic roadmap.
+
+00:21:25 Implement a few features in what's now called the Pydantic Core." We just had Ashley, who as we saw is out in the audience.
+
+00:21:31 Hey, Ashley, who gave a bit of a shout out to this feature.
+
+00:21:34 Also, I do want to also credit a couple of other people because Douglas Nichols and John Thagen also let me know that this was big news coming.
+
+00:21:42 So thank you all for that.
+
+00:21:43 The Pydantic Core is being rewritten in Rust, which doesn't mean you have to know or do anything, it just means you have to pip install something, you get a binary compiled thing that runs a lot faster.
+
+00:21:54 Okay, so more on that in a second.
+
+00:21:56 First, they're working to get 1.10 out and basically merge every open PR that makes sense and close every PR that doesn't make sense and then profusely apologize to why your PR that you spent a long time making was closed without merging.
+
+00:22:10 Some other bookkeeping things, start tearing the pedantic code apart and see how many existing tests can still be made to pass and then release eventually Pydantic.
+
+00:22:19 The goal is to have this done by October, probably by the end of year for sure.
+
+00:22:22 A couple of things worth paying attention to, there are a bunch of breaking changes in here.
+
+00:22:26 A lot of things are being cleaned up, reorganized, renamed, some removed, like from ORM, people might be using that with SQLAlchemy, that's being removed for example and so on.
+
+00:22:37 So there's, if you depend heavily on Pydantic, especially if you build a project like Beanie that depends heavily on Pydantic, you're going to need to look at this because some of the stuff won't work anymore.
+
+00:22:47 But let's highlight a couple things here.
+
+00:22:49 Performance. This one is really important because this is the data exchange level at for fast API.
+
+00:22:57 This is the data base transformation level.
+
+00:23:00 When I do a query from the database, what comes back comes back in some raw form and then is turned into a PyDantic model.
+
+00:23:05 And those are computationally expensive things that happen often.
+
+00:23:09 And in general, PyDandic version 2 is about 17 times 1700% faster than v1 when validating models in a standard scenario.
+
+00:23:19 Says between 4 to 50 times faster than PyDandic 1.
+
+00:23:22 >> Wow.
+
+00:23:23 >> That's cool, right?
+
+00:23:24 >> Yeah.
+
+00:23:25 >> That alone should make your ears perk up and go, excuse me, my ORM just got 17 times faster?
+
+00:23:30 Wait a minute, I'm liking this.
+
+00:23:32 I know that this is not the only thing that happens at ORLM level, But the ones that the ones I called out that depend heavily on it, like that's in the transformation path. So this is important.
 
 00:23:42 Yeah, this is actually I'm super impressed. I have not I normally don't even see this sort of advanced planning in commercial projects.
 
-00:23:51 Yeah. Oh, yeah. You could do a whole business startup that doesn't have the amount of thought that went into like, what's happening. The next version of Pydantic is regrettable. Yeah. It's incredible. I was serious. When I said take a bow. It really lays out open to discussion about certain things, and so on. So like, another one is strict mode. I think I even saw a comment in the chat about it. So one of the things I actually like about Pydantic, but under certain circumstances, I can see why you would not want it is if you have something, say it's an integer field. And then you pass 123 The number. Great. But if you also pass, quote, 123 Pydantic will magically parse that for you like this happens all the time on the internet, like a query string has a number, but query strings are always strings. There's no way to have anything but strings. So you got to convert them, right. So this automatically does that. But if you don't want that to happen, you say you gave me a string, it's invalid. You can turn on strict mode, which is off by default, I believe. So a bunch of plan
+00:23:51 Yes. Oh, yeah. You could do a whole business startup that doesn't have the amount of thought that went into like what's happening in the next version of it. It's ridiculous.
 
-00:24:49 God. So strict mode, does the conversion or strict.
+00:24:00 Incredible. Yeah.
 
-00:24:53 Won't do the conversion. It says, You said isn't it you gave me a string? Nope. Rather than could it be an integer Yeah, let's try that first. Yeah, you know, maybe one of the things you do is in the ORM level one of those things, you might put it in strict mode. So it doesn't do as much work trying to convert stuff. I don't know if it actually would matter. But normalize is a bunch of conversions it has built in JSON support and different things. Another big thing is this Pydantic core will be able to be used outside of Pydantic classes now. So you can do a significant performance improve to improve stuff like adding validation to data classes, or validating arguments and query strings, or a type Dec or a function argument or whatever. Yeah, yeah. Let's see. Next up. And let's see, this one strict mode, we talked about strict mode. Another one is required versus nullable, I was a little bit of ambiguity of, you know, if you said something to string, that means it's required, and it can't be done. If you say it's a string, type none, or it's an optional string or something like that, then the basically the behaviors were a little bit different. So originally, I think this is when typing was pretty new, said Pydantic. Previously at a confused idea of required versus nullable is mostly resulted from Sam's misgivings about marking a field is optional, but requiring a value to be provided to it, but allowing it to be set to note or something, something along those lines, like, anyway, there's minor changes around that. Let's see, final one that I want to cover is namespace stuff. And this is like, a whole bunch of things are now getting renamed. So for example, if you override, if you implemented or overrode validate JSON, it's now model underscore, validate JSON, if you had is instance it's now model is essence. Okay, there's a bunch of these changes all over the place. Yeah, that looks like they're gonna cause breaking changes, they're easy to fix, just change the name, but you know, it's not nothing. Also parse file. So love his handler here. Parse file, this was a mistake, it should have never been in Pydantic. We're removing it occurs raw, partial, partially replaced by this other thing, anything else he did was a mistake from RM, this has been moved somewhere else, schema and so on. So you just like there's a lot of stuff that people were using here. So just have a look, try it out. Don't just go Oh, then a version two is out is this gonna work like this is going to have some significant changes. But and
+00:24:01 It's incredible. I was serious when I said take a bow.
 
-00:27:22 another reason why it's really awesome that he goes through so much detail is because there's gonna be stuff that breaks. So it's a breaking interface change. And so yeah, it's, it's cool that it's this detailed, and a couple of things to notice. Let's see somebody else in the chat mentioned, Richard mentioned. And he has emojis in the headers. Yeah, there's emojis in the headers. And I gotta say, like, the, the diet, the navigation and the table of contents. Very cool it like, it goes to like, light gray for areas you've already seen. And then
+00:24:04 It really lays out, opens a discussion about certain things and so on.
 
-00:27:59 that's interesting. That's a cool thing. So yeah, it's quite cool. I think it went on and on. But two real quick things. One, there'll be no pure pirate Python implementation of the core, it's always rust, but they list out the platforms where it'll be compiled to including WebAssembly. Oh, nice. They previously had some scythe on and what was supposed to be pure pythons. Pydantic. And so now, a kind of bonus is the Pydantic model, the Pydantic package becomes a pure Python package. Whereas previously, it wasn't. So they've taken like all of that behavior and put it into this core thing that ships as a rust binary. And now, instead of doing some Python middle ground, it's pure Python again. So that's interesting refactoring, I think, yeah, yeah. And finally, documentation. When you get a validation error, it gives you a link to the documentation in the JSON error message.
+00:24:09 So like another one is strict mode.
 
-00:28:52 That's pretty cool. That's nice.
+00:24:11 I think I even saw a comment in the chat about it.
 
-00:28:55 All right. Yeah. Anyway, that's quite a plan isn't a brain. Yeah. Quite a plan. All right. Well, I'm excited for it.
+00:24:14 So one of the things I actually like about Pydantic, but under certain circumstances, I can see why you would not want it, is if you have something you say is an integer field, and then you pass 1, 2, 3, the number, great.
 
-00:29:02 Okay. Well, next topic is a little more lighthearted. It's about fish. Pike, to be specific. Now, it's about PDFs. So there's, it's just a cool project I saw, I noticed. Pike PDF. It's a Python library for reading and writing PDF files. What's the big deal we've had these before. But this is it's based on CutePDF, which is a C++ based library. And it's, it's presently keep continued being maintained. So it's kind of pretty fast. Well, actually, I'm assuming it's fast if is C++ in the background, but the it's it's also pretty just nice and elegant to do things. And the documentation has this nice fish, which is good. I was like, Cool diagram Cool, cool logos Uh, but some of the neat things that you can do with it. So it's recommending that you not use it if you're just writing PDF files, so that there's, there's, there's other things that you can use, what was it like report lab to write PDFs. But if you're having to read or modify PDFs, then this is where it shines. You can do things like copy pages from one PDF to another, split and merge PDFs, extract content out of PDFs, like if if, like, if you're using it for data stuff, you get a report in PDF, and you're trying to pull it pull the information out, you can use you can use it for that, or images, you can pull all the images out of a PDF file, or this is kind of cool. You can replace images in a PDF file and generate a new one without changing anything else about the file. It's kind of neat. So just kind of a neat if people are working with reading or modifying PDF files, maybe check this one out. Yeah,
+00:24:26 But if you also pass "1, 2, 3", Pydantic will magically parse that for you.
 
-00:30:57 this looks great. The fact that it's in C++, I'm guessing it's probably standalone. I remember I've done some PDF things before. And I felt like I had to install some OS level thing that it shelled out to. So this is cool.
+00:24:31 Like this happens all the time on the internet.
 
-00:31:09 Yeah. And the some nice on the readme, it has a comparison of some of the different PDF doc or PDF libraries that you could use. And some of the reasons why you might want this one like it supports more versions, I didn't realize that, like, one of these libraries I've heard of before PDF RW doesn't support the newer versions. So bummer. And then also password protected files. It supports that except for but not public key ones, but just normal passwords.
+00:24:32 Like a query string has a number, but query strings are always strings.
 
-00:31:42 Straight passwords. Yeah, yeah, that's great. So it's kind of so like the measure of actively maintained a commit activity per year over the years. Oh, right. That's kind of interesting. Yeah. It's an interesting metric. It seems good. I haven't really thought about it lately. But yeah. Nice. All right. Yeah. This is a great one.
+00:24:35 There's no way to have anything but strings.
 
-00:32:01 Well, so that's it. For our main it is items.
+00:24:37 Yeah.
 
-00:32:05 Yeah. What else you got? any extras?
+00:24:38 So you got to convert them.
 
-00:32:07 Well, last week, last week, we talked about the the critical packages, curriculum, or at some recent. Yeah, last week, we talked about
+00:24:39 Right.
 
-00:32:19 critical packages yesterday or last week, depending on how you consume this.
+00:24:39 And so this automatically does that.
 
-00:32:23 Yeah. So we I was surprised to find out that pi test check with the plugin I wrote was part was one of those I'm like, really, because it's like the top 1%. So I, if anybody's curious, I wanted to just highlight that a little bit. So pi test check is a plugin that allows multiple failures per test. And in one of the best ways I it's a secondary way that one of the contributors added is you can use it as a context manager, you can say like with check, and then do an assert and then get a multiple of those within a
+00:24:41 But if you don't want that to happen, you say you gave me a string.
 
-00:32:56 I like the one liner. Yeah, that's yeah, nice.
+00:24:44 It's invalid.
 
-00:32:58 And this is totally like Black will totally reformat this for you ran it through black, but it's nice. You'd have to block it out. Anyway. I was like, how could it be? What? Well, I'm curious what, what on the list it was. So there's, there's a place called what? You go BK has a top pipe bi packages list. And it's updated. I think it's just updated once a month or something. But you can do the top five. You can do the top 5000. Yes, the top 5000 or 1000 or 100. And so I'm curious was curious about what on the list were in the list. I was. I'm number 1677. So kind of far down the list. But
+00:24:45 You can turn on strict mode, which is off by default.
 
-00:33:43 hey, just talk. It's still it's still in the top third of the top 1%. That's pretty awesome.
+00:24:47 I believe.
 
-00:33:49 The pie test is number 72. That was pretty neat. And Pydantic, which we covered was was I just checked 117. But there are there are 57 pi test plugins that show up in the top 3500. So that's pretty well. Pretty neat. Anyway, that's all I got for extras.
+00:24:47 So there's a bunch of play.
 
-00:34:08 All right. Well, I have zero extras. So minor finishes. Well, how about a joke? Yeah. Great. All right. I told you, we're coming back to it. So this one comes from meta meta coder, code girl at meta, and eta.mk. And let me just pull this one up here. Right. So this one is there's this colleague here. Can I make this there we go, Miko burger. There's the two women who are developers net to end her unnamed brand who always has gotten in trouble with the elevator last time basically. And there's this sort of weird manager looking guy that comes in says I tested your chatbot but some of his replies are really messed up. Well, that's that's what testing is all about. I'll go through the logs later says one of the girls. No, no, no, no, no, no, no, no, no need to check out the faces. There's like excuse me, I might even Sure I want to open the logs now.
+00:24:49 Good.
 
-00:35:02 Oh yeah, don't look at that.
+00:24:49 So strict mode does the conversion or strict mode won't do the conversion.
 
-00:35:04 That's what testing is for.
+00:24:54 It says you said it's an ant.
 
-00:35:07 Oh, good yeah, she's she's got some good ones in her list there. So, love it. Yeah,
+00:24:56 You gave me a string.
 
-00:35:15 I like the art too. Nice or added to this to.
+00:24:57 Nope.
 
-00:35:19 Also nice was our podcast. Thanks for being here.
+00:24:58 Rather than could it be an integer?
 
-00:35:22 Thank you. Yeah, you bet. See you next week. See you next time.
+00:25:00 Let's try that first.
+
+00:25:01 You know what I mean?
+
+00:25:02 >> Yeah.
+
+00:25:03 >> Maybe one of the things you do is, in the ORM level, one of those things you might put it in strict mode so it doesn't do as much work trying to convert stuff.
+
+00:25:11 I don't know if that actually would matter, but formalizes a bunch of conversions.
+
+00:25:15 It has built-in JSON support and different things.
+
+00:25:19 Another big thing is this PyDantic core will be able to be used outside of PyDantic classes now.
+
+00:25:27 So you can do a significant performance to improve stuff like adding validation to data classes or validating arguments in query strings or a type DIC or a function argument or whatever.
+
+00:25:39 - Yeah. - Yeah.
+
+00:25:41 Let's see, next up.
+
+00:25:43 And let's see, this one, strict mode.
+
+00:25:46 We talked about strict mode.
+
+00:25:47 Another one is required versus nullable.
+
+00:25:50 It was a little bit of ambiguity of, if you said something's a string, that means it's required and it can't be none.
+
+00:25:56 If you say it's a string type none, or it's an optional string or something like that, then basically the behaviors were a little bit different.
+
+00:26:06 So originally, I think this is when typing was pretty new, said, "Pydenic previously had a confused idea "of required versus nullable.
+
+00:26:14 "This is mostly resulted from Sam's misgivings "about marking a field as optional, "but requiring a value to be provided to it, "but allowing it to be set to none." Or something along those lines.
+
+00:26:24 Anyway, there's minor changes around that.
+
+00:26:28 Let's see, final one that I want to cover is namespace stuff.
+
+00:26:32 This is like a whole bunch of things are now getting renamed.
+
+00:26:36 For example, if you implemented or overrode validateJSON, it's now model_validateJSON.
+
+00:26:43 If you had isInstance, it's now model isInstance.
+
+00:26:46 There's a bunch of these changes all over the place that look like they're going to cause breaking changes.
+
+00:26:51 They're easy to fix, just change the name, but it's not nothing.
+
+00:26:54 Also parse file.
+
+00:26:56 I still love his hander here.
+
+00:26:59 Parse file. This was a mistake.
+
+00:27:01 It should have never been in PyTantic or removing it.
+
+00:27:03 >> Okay.
+
+00:27:04 >> Parse raw, partially replaced by this other thing.
+
+00:27:07 Anything else it did was a mistake.
+
+00:27:09 From ORM, this has been moved somewhere else.
+
+00:27:11 Schema and so on.
+
+00:27:13 There's a lot of stuff that people were using here.
+
+00:27:15 So just have a look, try it out.
+
+00:27:17 Don't just go, "Oh, then version 2 is out.
+
+00:27:19 Is this going to work?" This is going to have some significant changes.
+
+00:27:22 >> Another reason why it's really awesome that he goes through so much detail is because there's going to be stuff that breaks.
+
+00:27:30 It's a breaking interface change.
+
+00:27:33 Yeah, it's cool that it's this detailed.
+
+00:27:36 A couple of things to notice.
+
+00:27:39 Let's see, somebody else in the chat mentioned, Richard mentioned, and he has emojis in the headers.
+
+00:27:46 Yeah, there's emojis in the headers.
+
+00:27:48 I gotta say like the navigation in the table of contents, very cool, it goes to like light gray for areas you've already seen and then--
+
+00:27:59 >> That's interesting.
+
+00:28:00 >> It's a cool thing.
+
+00:28:02 >> Yeah, it's quite cool. I think going on and on, but two real quick things.
+
+00:28:06 One, there'll be no pure Python implementation of the core.
+
+00:28:10 It's always Rust, but they list out the platforms where it'll be compiled to, including WebAssembly.
+
+00:28:15 >> Nice.
+
+00:28:16 they previously had some Cython in what was supposed to be pure Python's Pydantic.
+
+00:28:22 So now, a bonus is the Pydantic model, the Pydantic package becomes a pure Python package, whereas previously it wasn't.
+
+00:28:30 So they've taken all of that behavior and put it under this core thing that ships as a Rust binary and now, instead of doing some Cython middle ground, it's pure Python again.
+
+00:28:40 So that's interesting refactoring, I think.
+
+00:28:42 >> Yeah.
+
+00:28:43 >> Yeah. Finally, documentation.
+
+00:28:45 When you get a validation error, it gives you a link to the documentation in the JSON error message.
+
+00:28:52 That's pretty cool.
+
+00:28:53 Yeah.
+
+00:28:54 That's nice.
+
+00:28:55 All right.
+
+00:28:56 Yeah.
+
+00:28:57 Anyway, that's quite a plan, isn't it, Brian?
+
+00:28:58 Yeah, quite a plan.
+
+00:28:59 All right.
+
+00:29:00 Well, I'm excited for it.
+
+00:29:02 Okay.
+
+00:29:03 Well, next topic is a little more lighthearted.
+
+00:29:08 It's about fish.
+
+00:29:09 Pike, to be specific.
+
+00:29:12 No, it's about PDFs.
+
+00:29:15 So it's just a cool project I saw, I noticed, PycPDF.
+
+00:29:20 It's a Python library for reading and writing PDF files.
+
+00:29:24 What's the big deal?
+
+00:29:25 We've had these before.
+
+00:29:26 But this is, it's based on QPDF, which is a C++ based library, and it's presently continued being maintained.
+
+00:29:38 So it's kind of pretty fast.
+
+00:29:41 Well, actually, I'm assuming it's fast if it's C++ in the background.
+
+00:29:44 But it's also pretty just nice and elegant to do things.
+
+00:29:52 The documentation has this nice fish, which is good. I always like cool diagrams, cool logos.
+
+00:30:00 But some of the neat things that you can do with it, so it's recommending that you not use it if you're just writing PDF files.
+
+00:30:08 That there's other things that you can use, what was it, like Report Lab to write PDFs.
+
+00:30:14 But if you're having to read or modify PDFs, then this is where it shines.
+
+00:30:19 You can do things like copy pages from one PDF to another, split and merge PDFs, extract content out of PDFs.
+
+00:30:27 Like if you're using it for data stuff, you get a report in PDF and you're trying to pull that information out, you can use it for that.
+
+00:30:37 Or images, you can pull all the images out of a PDF file.
+
+00:30:39 Or, this is kind of cool, you can replace images in a PDF file and generate a new one without changing anything else about the file.
+
+00:30:47 It's neat. Just a neat, if people are working with reading or modifying PDF files, maybe check this one out.
+
+00:30:56 >> Yeah, this looks great. The fact that it's in C++, I'm guessing it's probably standalone.
+
+00:31:02 I remember I've done some PDF things before and it felt like I had to install some OS level thing that it shelled out to, so this is cool.
+
+00:31:09 Yeah, and the some nice on the readme.
+
+00:31:13 It has a comparison of some of the different PDF doc or PDF libraries that you could use.
+
+00:31:20 And some of the reasons why you might want this one, like it supports more versions.
+
+00:31:24 I didn't realize that like one of these libraries I've heard of before.
+
+00:31:28 PDFRW doesn't support the newer versions.
+
+00:31:31 So bummer.
+
+00:31:33 And then also password protected files.
+
+00:31:38 It supports that except for but not public key ones, but just normal passwords.
+
+00:31:43 >> Straight passwords. Yeah, that's great.
+
+00:31:45 >> It's going to be.
+
+00:31:45 >> Also like the measure of actively maintained, the commit activity per year over the years.
+
+00:31:52 >> All right. That's interesting.
+
+00:31:54 >> Yeah, it's an interesting metric.
+
+00:31:55 It seems good. I haven't really thought about it lately, but yeah.
+
+00:31:59 >> Okay.
+
+00:32:00 >> Yeah, this is a great one.
+
+00:32:01 >> Well, so that's it for our main items.
+
+00:32:05 >> Yeah. What else you got? Any extras?
+
+00:32:07 >> Well, last week we talked about the critical packages.
+
+00:32:13 >> Critical packages.
+
+00:32:14 >> Or at some recent.
+
+00:32:16 Yeah, last week we talked about the critical packages.
+
+00:32:20 >> Either yesterday or last week, depending on how you consume this.
+
+00:32:23 >> Exactly.
+
+00:32:23 >> I'm sure it really is.
+
+00:32:24 >> Yeah. I was surprised to find out that PyTest Check, the plugin I wrote, was one of those.
+
+00:32:31 I'm like, "Really?" Because it's like the top 1 percent.
+
+00:32:35 If anybody's curious, I wanted to just highlight that a little bit.
+
+00:32:39 PyTest Check is a plugin that allows multiple failures per test.
+
+00:32:44 One of the best ways, it's a secondary way that one of the contributors added, is you can use it as a context manager.
+
+00:32:51 You can say like with check and then do an assert, then you're going to have multiple of those within a test.
+
+00:32:56 >> I like the one-liner, that's pretty nice.
+
+00:32:59 >> This is totally like black, we'll totally reformat this if you ran it through black.
+
+00:33:03 but it's nice, you'd have to block it out.
+
+00:33:06 Anyway, I was like, how could it be?
+
+00:33:10 I'm curious what on the list it was.
+
+00:33:13 There's a place called HugoVK, has a top PyPI packages list and it's updated.
+
+00:33:23 I think it's just updated once a month or something.
+
+00:33:25 But you can do the top 5,000.
+
+00:33:29 It's the top 5,000 or 1,000 or 100.
+
+00:33:33 I was curious about where on the list I was.
+
+00:33:38 I'm number 1,677, so far down the list, but hey.
+
+00:33:44 >> It's still in the top third of the top 1 percent.
+
+00:33:48 That's pretty awesome.
+
+00:33:49 >> The PyTest is number 72.
+
+00:33:51 That was pretty neat. Pydantic, which we covered, I just checked, 117.
+
+00:33:58 But there are 57 PyTest plugins that show up in the top 3,500.
+
+00:34:03 So that's pretty neat.
+
+00:34:05 - That is pretty neat.
+
+00:34:06 - That's all I got for extras.
+
+00:34:08 - All right, well, I have zero extras.
+
+00:34:10 So mine are finished as well.
+
+00:34:11 How about a joke?
+
+00:34:12 - Yeah, great.
+
+00:34:13 - All right, I told you we're coming back to it.
+
+00:34:15 So this one comes from Netta, Netta, code girl @netta.mk.
+
+00:34:22 And let me just pull this one up here, right?
+
+00:34:24 So this one is, there's this colleague here.
+
+00:34:28 Can I make this, there we go, make it a little bigger.
+
+00:34:30 There's the two women who are developers, Netta and her unnamed friend who always has gotten in trouble with the elevator last time, basically.
+
+00:34:39 And there's this sort of weird manager looking guy that comes in and says, "I tested your chatbot, but some of its replies are really messed up." "Well, that's what testing's all about.
+
+00:34:50 I'll go through the logs later," says one of the girls.
+
+00:34:52 "No, no, no, no, no, no, no, no, no need." (both laughing)
+
+00:34:56 Right, check out the faces.
+
+00:34:58 She was like, "Excuse me, I'm not even sure I want to open the logs now.
+
+00:35:02 >> Yeah, don't look at the logs.
+
+00:35:04 >> That's what testing is for.
+
+00:35:06 >> I'll go through the logs later.
+
+00:35:09 >> She's got some good ones in her list there. Love it.
+
+00:35:14 >> Yeah. I like the art too. Nice art.
+
+00:35:17 >> I do too.
+
+00:35:18 >> Me too.
+
+00:35:19 >> Also nice was our podcast. Thanks for being here.
+
+00:35:22 >> Thank you.
+
+00:35:23 >> Yeah, you bet.
+
+00:35:23 >> See you next week.
 
