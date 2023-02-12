@@ -1,0 +1,5508 @@
+
+00:00:00.000 --> 00:00:01.940
+Hey there, thanks for listening.
+
+
+00:00:01.940 --> 00:00:05.200
+Before we jump into this episode, I just want to remind you that this episode is brought
+
+
+00:00:05.200 --> 00:00:10.340
+to you by us over at TalkBython Training and Brian through his PyTest book.
+
+
+00:00:10.340 --> 00:00:15.440
+So if you want to get hands on and learn something with Python, be sure to consider our courses
+
+
+00:00:15.440 --> 00:00:17.260
+over at TalkBython Training.
+
+
+00:00:17.260 --> 00:00:21.000
+Visit them via pythonbytes.fm/courses.
+
+
+00:00:21.000 --> 00:00:25.360
+And if you're looking to do testing and get better with PyTest, check out Brian's book
+
+
+00:00:25.360 --> 00:00:28.360
+at pythonbytes.fm/pytest.
+
+
+00:00:28.360 --> 00:00:29.360
+Enjoy the episode.
+
+
+00:00:29.360 --> 00:00:33.140
+Hello and welcome to Python Bytes, where we deliver Python news and headlines directly
+
+
+00:00:33.140 --> 00:00:34.240
+to your earbuds.
+
+
+00:00:34.240 --> 00:00:40.080
+This is episode 251, recorded September 22nd, 2021.
+
+
+00:00:40.080 --> 00:00:41.360
+I am Brian Okken.
+
+
+00:00:41.360 --> 00:00:42.360
+I'm Michael Kennedy.
+
+
+00:00:42.360 --> 00:00:43.820
+And I'm Brett Cannon.
+
+
+00:00:43.820 --> 00:00:45.640
+So do we need to introduce Brett?
+
+
+00:00:45.640 --> 00:00:48.720
+I mean, thanks for being on the show, Brett.
+
+
+00:00:48.720 --> 00:00:49.720
+Welcome back.
+
+
+00:00:49.720 --> 00:00:51.760
+I'm going to introduce my cat, Gidget, for all those on the live stream, because she's
+
+
+00:00:51.760 --> 00:00:56.280
+in frame at the moment, just lounging around on a nice comfy blanket.
+
+
+00:00:56.280 --> 00:01:00.640
+from Google from when I won an open source peer bonus.
+
+
+00:01:00.640 --> 00:01:05.000
+You won your way more information than anyone probably cared, but there you go.
+
+
+00:01:05.000 --> 00:01:08.940
+Nice. Yeah, my dog is around here somewhere, but probably won't show up in screen.
+
+
+00:01:08.940 --> 00:01:11.640
+Well, let's just get started.
+
+
+00:01:11.640 --> 00:01:15.280
+I think if people don't know, Brad, they need to get out from under a rock.
+
+
+00:01:15.280 --> 00:01:18.080
+So, yeah, absolutely.
+
+
+00:01:18.080 --> 00:01:20.840
+Live chat real quick.
+
+
+00:01:20.840 --> 00:01:22.480
+Brandon Branner. Thanks.
+
+
+00:01:22.480 --> 00:01:23.800
+They give you a cat.
+
+
+00:01:23.800 --> 00:01:28.200
+No, the, yeah, there's a long story about how we got Gidget, but no,
+
+
+00:01:28.200 --> 00:01:29.460
+cat did not come with the blanket.
+
+
+00:01:29.460 --> 00:01:36.800
+So the first thing that I want to talk about comes to us from, this is both
+
+
+00:01:36.800 --> 00:01:38.960
+recommended and created by Dan Lutic.
+
+
+00:01:38.960 --> 00:01:40.560
+So Dan, nice work.
+
+
+00:01:40.560 --> 00:01:44.460
+I love these little tools that you can run against your code that will
+
+
+00:01:44.460 --> 00:01:46.540
+just reformat them to be better.
+
+
+00:01:46.540 --> 00:01:50.380
+You know, one of the, probably the most popular and well-known one is black, right?
+
+
+00:01:50.380 --> 00:01:53.280
+We've all heard of black, which is great.
+
+
+00:01:53.560 --> 00:01:55.720
+But there's other ones like Flint,
+
+
+00:01:55.720 --> 00:01:58.720
+F-L-Y-N-T is one of my favorites that converts
+
+
+00:01:58.720 --> 00:02:02.440
+all the various string formattings to F-strings, which is great.
+
+
+00:02:02.440 --> 00:02:06.520
+Here's another one around typing called auto-optional.
+
+
+00:02:06.520 --> 00:02:09.640
+Brett, I think people maybe are using optional a little bit
+
+
+00:02:09.640 --> 00:02:12.520
+wrong in the typing space in Python. What do you think?
+
+
+00:02:12.520 --> 00:02:14.640
+Or just not using it when they should be.
+
+
+00:02:14.640 --> 00:02:18.280
+>> Yeah, that's definitely a thing that was actually I think
+
+
+00:02:18.280 --> 00:02:21.760
+discussed early on about do we even need to have
+
+
+00:02:21.760 --> 00:02:23.920
+the concept of optional to represent,
+
+
+00:02:23.920 --> 00:02:27.280
+hey, this thing can be whatever the type is or none.
+
+
+00:02:27.280 --> 00:02:28.560
+>> Yeah, what was the thinking there?
+
+
+00:02:28.560 --> 00:02:32.080
+Because languages like C#, Java, C++,
+
+
+00:02:32.080 --> 00:02:34.500
+you can have a thing and then it can be null.
+
+
+00:02:34.500 --> 00:02:35.740
+In C#, there's value types,
+
+
+00:02:35.740 --> 00:02:37.020
+but generally most things are
+
+
+00:02:37.020 --> 00:02:39.040
+pointers and they can be set to null.
+
+
+00:02:39.040 --> 00:02:41.480
+You don't have to have some special type to say
+
+
+00:02:41.480 --> 00:02:43.320
+it's either a user or it's null.
+
+
+00:02:43.320 --> 00:02:45.720
+You just say it's a user because it could be a reference type,
+
+
+00:02:45.720 --> 00:02:47.940
+but also could be null or nil or whatever.
+
+
+00:02:47.940 --> 00:02:50.680
+But Swift and Python have this concept of you
+
+
+00:02:50.680 --> 00:02:54.960
+must explicitly say that it could not have a value.
+
+
+00:02:54.960 --> 00:02:58.800
+- So explicit is better than implicit, as we all know.
+
+
+00:02:58.800 --> 00:03:02.040
+The other thing is obviously having none
+
+
+00:03:02.040 --> 00:03:03.800
+accidentally sneak in when you don't want it.
+
+
+00:03:03.800 --> 00:03:06.560
+As you mentioned, Michael, Swift specifically
+
+
+00:03:06.560 --> 00:03:08.680
+does not let you have null.
+
+
+00:03:08.680 --> 00:03:10.280
+You can't have null references.
+
+
+00:03:10.280 --> 00:03:13.000
+You have to either declare that it will accept null
+
+
+00:03:13.000 --> 00:03:14.960
+and you have to check or it won't take it at all.
+
+
+00:03:14.960 --> 00:03:16.320
+And it's a similar thing here.
+
+
+00:03:16.320 --> 00:03:18.200
+No one likes it when they actually find out,
+
+
+00:03:18.200 --> 00:03:19.640
+oh, the null type's not callable
+
+
+00:03:19.640 --> 00:03:21.200
+'cause you accidentally passed none.
+
+
+00:03:21.200 --> 00:03:23.920
+- What's the most common exception type
+
+
+00:03:23.920 --> 00:03:26.820
+is attribute or type attribute.
+
+
+00:03:26.820 --> 00:03:28.840
+None has no attribute, whatever the thing is
+
+
+00:03:28.840 --> 00:03:29.840
+you're trying to access, right?
+
+
+00:03:29.840 --> 00:03:30.680
+That thing?
+
+
+00:03:30.680 --> 00:03:31.500
+- Yeah, I'm willing to bet, yeah,
+
+
+00:03:31.500 --> 00:03:32.440
+that attribute error alone,
+
+
+00:03:32.440 --> 00:03:34.200
+it probably makes up like a huge portion
+
+
+00:03:34.200 --> 00:03:35.380
+of people's exceptions.
+
+
+00:03:35.380 --> 00:03:37.400
+So that's why you have to be explicit.
+
+
+00:03:37.400 --> 00:03:38.520
+It's like, you need,
+
+
+00:03:38.520 --> 00:03:40.000
+if you're gonna be running a type checker,
+
+
+00:03:40.000 --> 00:03:42.640
+let's be very explicit about what you do and don't expect.
+
+
+00:03:42.640 --> 00:03:43.640
+- Yeah, cool.
+
+
+00:03:43.640 --> 00:03:44.480
+I agree with that.
+
+
+00:03:44.480 --> 00:03:45.320
+I think it's nice.
+
+
+00:03:45.320 --> 00:03:46.360
+It did surprise me at first,
+
+
+00:03:46.360 --> 00:03:47.320
+but then I'm like, oh, okay,
+
+
+00:03:47.320 --> 00:03:49.320
+well, that's an interesting choice,
+
+
+00:03:49.320 --> 00:03:52.020
+but now that I know, I should use optional.
+
+
+00:03:52.020 --> 00:03:53.740
+So here's a case of a function,
+
+
+00:03:53.740 --> 00:03:55.920
+and it's just some foobar example,
+
+
+00:03:55.920 --> 00:03:58.520
+but they have a bar parameter,
+
+
+00:03:58.520 --> 00:04:00.980
+and they say colon str equals none,
+
+
+00:04:00.980 --> 00:04:02.940
+so they're giving it a default value,
+
+
+00:04:02.940 --> 00:04:04.580
+and saying it can be a string.
+
+
+00:04:04.580 --> 00:04:07.100
+Well, obviously, that is, like,
+
+
+00:04:07.100 --> 00:04:09.860
+in three words, patently wrong, right?
+
+
+00:04:09.860 --> 00:04:12.300
+It can't both be a string and be set to be none,
+
+
+00:04:12.300 --> 00:04:15.380
+because strings and type system can't be none.
+
+
+00:04:15.380 --> 00:04:17.460
+They have to, that has to be optional, right?
+
+
+00:04:17.460 --> 00:04:18.300
+And so--
+
+
+00:04:18.300 --> 00:04:20.100
+All of us know what that means.
+
+
+00:04:20.100 --> 00:04:21.020
+- I know, we all know what that means.
+
+
+00:04:21.020 --> 00:04:23.740
+- Well, so funny enough, you know what it means,
+
+
+00:04:23.740 --> 00:04:25.200
+but if you didn't write that,
+
+
+00:04:25.200 --> 00:04:27.340
+do you know what they actually meant, right?
+
+
+00:04:27.340 --> 00:04:29.180
+Like if Michael typed that and you saw it,
+
+
+00:04:29.180 --> 00:04:31.060
+would you go, "Michael meant for that
+
+
+00:04:31.060 --> 00:04:33.900
+"to actually be optional and thus nullable
+
+
+00:04:33.900 --> 00:04:35.820
+"in terms of how other languages write it?"
+
+
+00:04:35.820 --> 00:04:37.900
+Or was that on purpose?
+
+
+00:04:37.900 --> 00:04:39.740
+And that's why that's not allowed,
+
+
+00:04:39.740 --> 00:04:43.460
+is 'cause you don't know who screwed up, if anyone.
+
+
+00:04:43.460 --> 00:04:45.180
+Was that accidentally written that way
+
+
+00:04:45.180 --> 00:04:47.700
+and it really was meant to be optional?
+
+
+00:04:47.700 --> 00:04:50.800
+or was it on purpose and thus it's listed that way?
+
+
+00:04:50.800 --> 00:04:53.440
+Because you don't know intent of someone else who wrote it,
+
+
+00:04:53.440 --> 00:04:55.560
+this is why we went with the explicit
+
+
+00:04:55.560 --> 00:04:57.360
+where you have to label something as optional.
+
+
+00:04:57.360 --> 00:04:58.360
+- And this is why it's awesome
+
+
+00:04:58.360 --> 00:05:00.160
+to have core developers on the show.
+
+
+00:05:00.160 --> 00:05:05.080
+So the idea of this is it's a thing you install,
+
+
+00:05:05.080 --> 00:05:06.440
+but then you pip install it,
+
+
+00:05:06.440 --> 00:05:09.280
+but then you just run it on the CLI like Flint
+
+
+00:05:09.280 --> 00:05:10.720
+and you just point it at a directory
+
+
+00:05:10.720 --> 00:05:12.000
+and it will go through and it'll find
+
+
+00:05:12.000 --> 00:05:13.880
+all of these default values that are none,
+
+
+00:05:13.880 --> 00:05:16.320
+but don't have optional in their type information
+
+
+00:05:16.320 --> 00:05:18.360
+and then it'll just add optional,
+
+
+00:05:18.360 --> 00:05:19.800
+which is pretty straightforward,
+
+
+00:05:19.800 --> 00:05:22.160
+but it's so easy to use, right?
+
+
+00:05:22.160 --> 00:05:25.280
+It's like, oh, I have this 20,000 lines of Python code
+
+
+00:05:25.280 --> 00:05:26.540
+and I really wish they were F strings,
+
+
+00:05:26.540 --> 00:05:28.800
+like flint that folder, it's done.
+
+
+00:05:28.800 --> 00:05:30.000
+So same thing here, right?
+
+
+00:05:30.000 --> 00:05:32.880
+It's I've got this huge bunch of code
+
+
+00:05:32.880 --> 00:05:34.320
+and nobody really thought about optional,
+
+
+00:05:34.320 --> 00:05:36.000
+let's just quick fix that.
+
+
+00:05:36.000 --> 00:05:37.760
+It doesn't fix it everywhere, right?
+
+
+00:05:37.760 --> 00:05:40.120
+Like I could say a thing takes a string
+
+
+00:05:40.120 --> 00:05:42.960
+without a default value for the parameter
+
+
+00:05:42.960 --> 00:05:45.320
+and then maybe somewhere else it's getting a none
+
+
+00:05:45.320 --> 00:05:46.760
+And it's not like that advanced.
+
+
+00:05:46.760 --> 00:05:50.400
+It just looks, if you're having default values that don't match the type, make them match.
+
+
+00:05:50.400 --> 00:05:50.940
+Yeah.
+
+
+00:05:50.940 --> 00:05:52.840
+Um, so I like it.
+
+
+00:05:52.840 --> 00:06:02.600
+Uh, one of the questions I have is, so if I do optional string equals none, does that mean I still can pass none to the, to the function?
+
+
+00:06:02.600 --> 00:06:03.280
+Yes.
+
+
+00:06:03.280 --> 00:06:04.520
+Cause it wouldn't be different.
+
+
+00:06:04.520 --> 00:06:05.440
+That is normal.
+
+
+00:06:05.440 --> 00:06:06.600
+Okay.
+
+
+00:06:06.600 --> 00:06:09.960
+But it wouldn't that be the same as saying that I can pass stir or none?
+
+
+00:06:09.960 --> 00:06:10.560
+Yes.
+
+
+00:06:10.560 --> 00:06:11.160
+Yes.
+
+
+00:06:11.160 --> 00:06:15.000
+And also that's what, on the live stream, Will McGugan.
+
+
+00:06:15.000 --> 00:06:17.800
+Hey, Will says, do you need optional now
+
+
+00:06:17.800 --> 00:06:20.160
+that we can have foo pipe none
+
+
+00:06:20.160 --> 00:06:23.520
+as an alternative to optional of foo?
+
+
+00:06:23.520 --> 00:06:26.680
+No, but this is sort of more backwards compatible, right?
+
+
+00:06:26.680 --> 00:06:27.580
+Brett, when did that come out?
+
+
+00:06:27.580 --> 00:06:29.000
+Is that three nine?
+
+
+00:06:29.000 --> 00:06:30.000
+- Three 10, I think.
+
+
+00:06:30.000 --> 00:06:31.000
+- Three 10, yeah.
+
+
+00:06:31.000 --> 00:06:32.400
+- So it's not even out yet officially.
+
+
+00:06:32.400 --> 00:06:33.360
+Next month.
+
+
+00:06:33.360 --> 00:06:34.200
+- Yeah, so.
+
+
+00:06:34.200 --> 00:06:36.760
+- Give it a little over a week.
+
+
+00:06:36.760 --> 00:06:37.580
+- Right on.
+
+
+00:06:37.580 --> 00:06:38.600
+That's exciting.
+
+
+00:06:38.600 --> 00:06:40.720
+But you know, how much backwards compatibility
+
+
+00:06:40.720 --> 00:06:41.560
+do you want, right?
+
+
+00:06:41.560 --> 00:06:44.700
+So I think soon, but maybe, I don't know if I would go yet.
+
+
+00:06:44.700 --> 00:06:47.040
+And then Chris May says, "Oops, opening PyCharm
+
+
+00:06:47.040 --> 00:06:49.320
+"to add optional to my last project."
+
+
+00:06:49.320 --> 00:06:51.080
+Before you go to the work to write it,
+
+
+00:06:51.080 --> 00:06:53.440
+just run this against it on the CLI,
+
+
+00:06:53.440 --> 00:06:56.320
+on the command line, and just see how it works, right?
+
+
+00:06:56.320 --> 00:06:57.360
+So, yeah.
+
+
+00:06:57.360 --> 00:06:59.000
+- Should also work in VS Code.
+
+
+00:06:59.000 --> 00:07:01.680
+- Although ZDocs does say, back in 3.7,
+
+
+00:07:01.680 --> 00:07:04.480
+you can use from dunder future import annotations,
+
+
+00:07:04.480 --> 00:07:05.600
+and then get that to work.
+
+
+00:07:05.600 --> 00:07:08.080
+I don't know about that personally, Brett?
+
+
+00:07:08.080 --> 00:07:10.840
+- So, what ZDocs is suggesting here is,
+
+
+00:07:10.840 --> 00:07:13.440
+if you use the from dunder future import annotations,
+
+
+00:07:13.440 --> 00:07:16.400
+What that does is it turns all your annotations technically
+
+
+00:07:16.400 --> 00:07:18.200
+into strings to Python.
+
+
+00:07:18.200 --> 00:07:19.920
+And so it's actually not executed.
+
+
+00:07:19.920 --> 00:07:21.840
+Because before that, what actually happened was
+
+
+00:07:21.840 --> 00:07:25.400
+that code in your annotation actually got run
+
+
+00:07:25.400 --> 00:07:29.560
+and the resulting object got bound to the code object.
+
+
+00:07:29.560 --> 00:07:31.800
+What that future import does is just says, no, no,
+
+
+00:07:31.800 --> 00:07:35.000
+we don't want to pay that overhead on your import.
+
+
+00:07:35.000 --> 00:07:36.800
+You might have performance reasons.
+
+
+00:07:36.800 --> 00:07:37.640
+Don't do that.
+
+
+00:07:37.640 --> 00:07:39.240
+And it'll actually just become a string.
+
+
+00:07:39.240 --> 00:07:42.960
+And then we have some stuff to try to resolve that
+
+
+00:07:42.960 --> 00:07:46.520
+This is the whole thing that came up at Python 310
+
+
+00:07:46.520 --> 00:07:49.340
+that you all covered in a previous episode.
+
+
+00:07:49.340 --> 00:07:51.960
+Pydantic going, oh God, there's a change coming in 310
+
+
+00:07:51.960 --> 00:07:53.760
+that might break us, and there's a whole kerfuffle,
+
+
+00:07:53.760 --> 00:07:56.280
+and anyway, that's what that's all resolving.
+
+
+00:07:56.280 --> 00:08:01.080
+So technically, you're right that you could write it back,
+
+
+00:08:01.080 --> 00:08:03.720
+but it would break complete expectations
+
+
+00:08:03.720 --> 00:08:05.920
+of everyone who ever tried to use your code
+
+
+00:08:05.920 --> 00:08:07.960
+when you tried to run that somewhere else.
+
+
+00:08:07.960 --> 00:08:10.120
+So I would advise against it,
+
+
+00:08:10.120 --> 00:08:11.880
+unless you know you're gonna be working against 310,
+
+
+00:08:11.880 --> 00:08:14.480
+because for instance, someone might write code
+
+
+00:08:14.480 --> 00:08:18.480
+for Python 3.7 or 3.8, tell my Py is Python 3.9,
+
+
+00:08:18.480 --> 00:08:19.800
+and then it would error out saying,
+
+
+00:08:19.800 --> 00:08:21.920
+well, that syntax makes no sense.
+
+
+00:08:21.920 --> 00:08:23.840
+- Right, okay, interesting.
+
+
+00:08:23.840 --> 00:08:25.400
+Well, yeah, pretty good one.
+
+
+00:08:25.400 --> 00:08:28.100
+Super easy to use, not a whole lot to it,
+
+
+00:08:28.100 --> 00:08:30.680
+but I think it's because it's so easy to adopt,
+
+
+00:08:30.680 --> 00:08:32.640
+it's kind of a nice one.
+
+
+00:08:32.640 --> 00:08:35.800
+- Yeah, well, I wanna talk about something that's not easy.
+
+
+00:08:35.800 --> 00:08:38.360
+It's not easy to write good documentation.
+
+
+00:08:38.360 --> 00:08:39.200
+- Definitely not.
+
+
+00:08:39.200 --> 00:08:42.640
+There's an article from Daniel Stenberg,
+
+
+00:08:42.640 --> 00:08:45.180
+and this doesn't apply to just Python stuff,
+
+
+00:08:45.180 --> 00:08:48.040
+this applies to every software, all software stuff.
+
+
+00:08:48.040 --> 00:08:49.600
+There's an article called "Making
+
+
+00:08:49.600 --> 00:08:52.200
+world-class docs takes effort."
+
+
+00:08:52.200 --> 00:08:54.120
+I think it's an understatement.
+
+
+00:08:54.120 --> 00:08:55.720
+It takes a lot of effort.
+
+
+00:08:55.720 --> 00:09:01.360
+But this is a nice little project or article.
+
+
+00:09:01.360 --> 00:09:05.520
+Talks about he's got some gold things that he looks for.
+
+
+00:09:05.520 --> 00:09:07.000
+To get a gold star, you must have
+
+
+00:09:07.000 --> 00:09:09.720
+these six items in your documentation.
+
+
+00:09:09.720 --> 00:09:12.680
+Let's just talk about what he's looking for.
+
+
+00:09:12.680 --> 00:09:14.480
+First of all, the documentation should
+
+
+00:09:14.480 --> 00:09:16.460
+be in the repositories of the code.
+
+
+00:09:16.460 --> 00:09:18.340
+I've got mixed feelings about this,
+
+
+00:09:18.340 --> 00:09:20.440
+but in general, I'm on the side of this is
+
+
+00:09:20.440 --> 00:09:23.240
+a good idea just to keep the code and the docs together.
+
+
+00:09:23.240 --> 00:09:26.680
+The only reason why I sometimes find it difficult is
+
+
+00:09:26.680 --> 00:09:29.640
+when I'm updating my documentation,
+
+
+00:09:29.640 --> 00:09:32.640
+possibly way more than I'm updating my code,
+
+
+00:09:32.640 --> 00:09:34.000
+and it looks like there's a lot of
+
+
+00:09:34.000 --> 00:09:36.160
+turn on the code when there's not.
+
+
+00:09:36.160 --> 00:09:39.240
+But generally, I think that's a good idea.
+
+
+00:09:39.240 --> 00:09:41.660
+>> Most projects have the reverse.
+
+
+00:09:41.660 --> 00:09:44.880
+The documentations that was edited two years ago,
+
+
+00:09:44.880 --> 00:09:46.720
+but there's been changes continuously.
+
+
+00:09:46.720 --> 00:09:48.920
+I don't even know if they still apply.
+
+
+00:09:48.920 --> 00:09:51.440
+>> Yeah. But it is good to try to keep these together.
+
+
+00:09:51.440 --> 00:09:54.240
+Also, you can make a pull request or
+
+
+00:09:54.240 --> 00:09:58.200
+a merge request with both the documentation and the code together.
+
+
+00:09:58.200 --> 00:10:00.020
+That's a good reason for that.
+
+
+00:10:00.020 --> 00:10:03.280
+Next step is that your docs are not extracted from code.
+
+
+00:10:03.280 --> 00:10:06.080
+I know there's a lot of tools out there that can try to
+
+
+00:10:06.080 --> 00:10:10.080
+to do this, but the comment is just think about your favorite
+
+
+00:10:10.080 --> 00:10:14.320
+project documentation. Is any of it generated from code and
+
+
+00:10:14.320 --> 00:10:18.880
+odds are not so yeah, I agree with this. Yeah, you can
+
+
+00:10:18.880 --> 00:10:22.320
+usually spot it because it'll be like method login user and
+
+
+00:10:22.320 --> 00:10:27.680
+then the method the comment will be logs in user and you're
+
+
+00:10:27.680 --> 00:10:31.280
+like on it. Honestly, I've seen the reverse too where people
+
+
+00:10:31.280 --> 00:10:34.800
+have doc strings that are extremely verbose and take up
+
+
+00:10:34.800 --> 00:10:37.880
+pages in your terminal just to scroll through
+
+
+00:10:37.880 --> 00:10:39.920
+because they just use that to spit out your docs.
+
+
+00:10:39.920 --> 00:10:41.480
+In which case, it's not as convenient
+
+
+00:10:41.480 --> 00:10:43.040
+as when you just run help from a REPL
+
+
+00:10:43.040 --> 00:10:45.040
+to just go like, what does this do again?
+
+
+00:10:45.040 --> 00:10:46.460
+What are the arguments?
+
+
+00:10:46.460 --> 00:10:48.880
+I need a really clear pointed thing
+
+
+00:10:48.880 --> 00:10:50.360
+directly at a developer who's just trying
+
+
+00:10:50.360 --> 00:10:53.560
+to double check something versus a whole exposition
+
+
+00:10:53.560 --> 00:10:55.320
+of here are all the examples of how to use this thing.
+
+
+00:10:55.320 --> 00:10:56.840
+It's like, I don't need that level of detail.
+
+
+00:10:56.840 --> 00:10:58.080
+I just need to remember one little thing.
+
+
+00:10:58.080 --> 00:10:58.920
+- Right, right.
+
+
+00:10:58.920 --> 00:10:59.920
+It's a range.
+
+
+00:10:59.920 --> 00:11:02.320
+Is it inclusive or exclusive of the bound?
+
+
+00:11:02.320 --> 00:11:03.600
+Something like that, right?
+
+
+00:11:03.600 --> 00:11:06.060
+>> One place where I'm working on,
+
+
+00:11:06.060 --> 00:11:08.040
+I've got a project to try to use
+
+
+00:11:08.040 --> 00:11:10.740
+auto-generated documentation is I've got
+
+
+00:11:10.740 --> 00:11:13.620
+a really large test suite on a project.
+
+
+00:11:13.620 --> 00:11:16.400
+>> I'm shocked. I'm shocked, Brian.
+
+
+00:11:16.400 --> 00:11:19.400
+>> That I would really like to have docstrings.
+
+
+00:11:19.400 --> 00:11:22.360
+They encouraged developers to put docstrings in there for
+
+
+00:11:22.360 --> 00:11:23.480
+the reason why the test
+
+
+00:11:23.480 --> 00:11:25.800
+exists and what feature it's really testing.
+
+
+00:11:25.800 --> 00:11:29.860
+To be able to have an auto-generated website
+
+
+00:11:29.860 --> 00:11:32.440
+with just all of our tests, that'd be cool.
+
+
+00:11:32.440 --> 00:11:33.700
+but I'm not there yet.
+
+
+00:11:33.700 --> 00:11:34.700
+>> That makes sense.
+
+
+00:11:34.700 --> 00:11:38.940
+>> The next thing is your docs feature examples.
+
+
+00:11:38.940 --> 00:11:42.320
+I love this because that's what people want to know.
+
+
+00:11:42.320 --> 00:11:45.160
+If I want to do this, how do I do it?
+
+
+00:11:45.160 --> 00:11:48.360
+The comment is really just use examples.
+
+
+00:11:48.360 --> 00:11:50.140
+If you already have examples, add more.
+
+
+00:11:50.140 --> 00:11:52.720
+You probably can't have too many examples.
+
+
+00:11:52.720 --> 00:11:54.440
+>> Test them.
+
+
+00:11:54.440 --> 00:11:56.580
+>> Oh, yeah. Test the examples.
+
+
+00:11:56.580 --> 00:12:00.880
+We covered a tool called MakeDocTest that you could use to
+
+
+00:12:00.880 --> 00:12:04.580
+test your code within your documentation, use that.
+
+
+00:12:04.580 --> 00:12:09.920
+Next is, "Do you document every API call you provide?"
+
+
+00:12:09.920 --> 00:12:11.960
+This one's a tough one to keep up on,
+
+
+00:12:11.960 --> 00:12:13.220
+but it's really important.
+
+
+00:12:13.220 --> 00:12:18.400
+Even some great projects like Typer and stuff that I've used,
+
+
+00:12:18.400 --> 00:12:20.140
+not to bash Typer,
+
+
+00:12:20.140 --> 00:12:22.060
+but I think all projects have this problem.
+
+
+00:12:22.060 --> 00:12:23.660
+They'll add a new cool feature and it's cool,
+
+
+00:12:23.660 --> 00:12:26.620
+I want to use it, and it's not in the docs yet.
+
+
+00:12:26.620 --> 00:12:30.060
+That's a tough one to keep up on, but please do.
+
+
+00:12:30.060 --> 00:12:32.940
+One thing I'll say that is actually hard for Python
+
+
+00:12:32.940 --> 00:12:35.260
+is because it's so dynamic, it's hard to actually get a static
+
+
+00:12:35.260 --> 00:12:37.220
+list of all the API points.
+
+
+00:12:37.220 --> 00:12:41.100
+But one thing I will say, because Paul Everett says
+
+
+00:12:41.100 --> 00:12:43.420
+I have to bring more Rust to this podcast,
+
+
+00:12:43.420 --> 00:12:46.620
+docs.rs, which is auto-generated documentation for anything
+
+
+00:12:46.620 --> 00:12:48.820
+uploaded to crates.io for Rust tools,
+
+
+00:12:48.820 --> 00:12:50.540
+will actually give you a percentage
+
+
+00:12:50.540 --> 00:12:52.900
+of covered public APIs.
+
+
+00:12:52.900 --> 00:12:55.500
+So you can actually see how much coverage
+
+
+00:12:55.500 --> 00:12:57.100
+you have in your documentation.
+
+
+00:12:57.100 --> 00:12:58.580
+So--
+
+
+00:12:58.580 --> 00:13:01.060
+>> That's an interesting definition of code coverage.
+
+
+00:13:01.060 --> 00:13:03.260
+>> Yeah, it is. But I didn't even know about it.
+
+
+00:13:03.260 --> 00:13:05.540
+Then I found it when I was just double-checking everything,
+
+
+00:13:05.540 --> 00:13:10.260
+built okay for a project I will mention later in my extras.
+
+
+00:13:10.260 --> 00:13:11.940
+I noticed it was 100 percent.
+
+
+00:13:11.940 --> 00:13:13.540
+It's like I thought I covered everything and I went back.
+
+
+00:13:13.540 --> 00:13:14.580
+It's like, nope, there were actually
+
+
+00:13:14.580 --> 00:13:18.380
+a couple enum values that I didn't document.
+
+
+00:13:18.380 --> 00:13:19.740
+I was able to go back, do that,
+
+
+00:13:19.740 --> 00:13:22.140
+and make sure I had full 100 percent coverage of my stuff.
+
+
+00:13:22.140 --> 00:13:23.540
+It can be handy, but yeah,
+
+
+00:13:23.540 --> 00:13:24.980
+it's tricky in Python,
+
+
+00:13:24.980 --> 00:13:28.060
+where it's like I could auto-gen my whole API,
+
+
+00:13:28.060 --> 00:13:29.820
+and no way to know whether or not--
+
+
+00:13:29.820 --> 00:13:32.180
+>> At runtime and never have it hit disk, yeah.
+
+
+00:13:32.180 --> 00:13:32.940
+>> Yeah.
+
+
+00:13:32.940 --> 00:13:34.820
+>> Last couple of things,
+
+
+00:13:34.820 --> 00:13:38.900
+docs should be easily accessible and browsed,
+
+
+00:13:38.900 --> 00:13:42.740
+and hopefully a search feature or something,
+
+
+00:13:42.740 --> 00:13:44.860
+even if you attach Google search, that's cool.
+
+
+00:13:44.860 --> 00:13:50.020
+But there was a comment in the text also to say,
+
+
+00:13:50.020 --> 00:13:52.180
+preferably be able to have that online.
+
+
+00:13:52.180 --> 00:13:56.060
+So offline is what the comment is.
+
+
+00:13:56.060 --> 00:13:59.040
+I'm on the fence on that.
+
+
+00:13:59.040 --> 00:14:00.940
+I'm usually attached to the Internet,
+
+
+00:14:00.940 --> 00:14:03.100
+so looking stuff up isn't a bad thing.
+
+
+00:14:03.100 --> 00:14:06.380
+Easy to contribute to, the lastly.
+
+
+00:14:06.380 --> 00:14:07.380
+>> Yeah.
+
+
+00:14:07.380 --> 00:14:09.220
+>> Yeah, documentation stuff.
+
+
+00:14:09.220 --> 00:14:11.660
+There's a lot of stuff, it's hard to get it right.
+
+
+00:14:11.660 --> 00:14:14.940
+There's a lot of stuff I'd add if I was being more verbose,
+
+
+00:14:14.940 --> 00:14:18.260
+but the last thing I really want to add to this is,
+
+
+00:14:18.260 --> 00:14:21.980
+don't slam projects that don't have good documentation because it's hard.
+
+
+00:14:21.980 --> 00:14:24.240
+If you want to have it be better,
+
+
+00:14:24.240 --> 00:14:25.860
+then contribute, fix it yourself.
+
+
+00:14:25.860 --> 00:14:27.860
+- Yeah, Brian, you're kind of blowing up the audience
+
+
+00:14:27.860 --> 00:14:29.360
+out here with the comments.
+
+
+00:14:29.360 --> 00:14:30.900
+So I'll throw a few out that seem interesting.
+
+
+00:14:30.900 --> 00:14:32.440
+Sam out there says, "Pro tip,
+
+
+00:14:32.440 --> 00:14:34.080
+keep on top of your documentation,
+
+
+00:14:34.080 --> 00:14:36.480
+even if it's just a cursory doc string and some notes,
+
+
+00:14:36.480 --> 00:14:38.080
+otherwise it quickly gets out of hand."
+
+
+00:14:38.080 --> 00:14:39.540
+Yeah, it's definitely one of those things
+
+
+00:14:39.540 --> 00:14:42.080
+that if you had to sit down and write it all at once,
+
+
+00:14:42.080 --> 00:14:42.920
+it would be dreadful,
+
+
+00:14:42.920 --> 00:14:45.260
+but if you can kind of do little bits as you go,
+
+
+00:14:45.260 --> 00:14:47.260
+then for sure, right?
+
+
+00:14:47.260 --> 00:14:49.460
+Brandon Brainer says, "Your documentation update
+
+
+00:14:49.460 --> 00:14:51.300
+should be part of the ticket or even better,
+
+
+00:14:51.300 --> 00:14:53.300
+your definition of done for the ticket."
+
+
+00:14:53.300 --> 00:14:55.260
+Right, like when you estimate how much work
+
+
+00:14:55.260 --> 00:14:56.700
+in your sprint or something.
+
+
+00:14:56.700 --> 00:14:58.840
+And then Chris has a great one.
+
+
+00:14:58.840 --> 00:15:00.060
+Bonus documentation,
+
+
+00:15:00.060 --> 00:15:03.500
+if, bonus if your documentation includes animated GIFs
+
+
+00:15:03.500 --> 00:15:04.460
+or emojis.
+
+
+00:15:04.460 --> 00:15:05.300
+Yes.
+
+
+00:15:05.300 --> 00:15:07.560
+Yeah, those are awesome.
+
+
+00:15:07.560 --> 00:15:08.620
+We'll probably leave it there for that one,
+
+
+00:15:08.620 --> 00:15:09.460
+but that's great.
+
+
+00:15:09.460 --> 00:15:10.300
+All right.
+
+
+00:15:10.300 --> 00:15:12.980
+- So one interesting thing you could actually do
+
+
+00:15:12.980 --> 00:15:14.860
+is if you really want to push this,
+
+
+00:15:14.860 --> 00:15:16.300
+is if you keep your documentation
+
+
+00:15:16.300 --> 00:15:17.980
+in the same repository as your code,
+
+
+00:15:17.980 --> 00:15:20.660
+you could, I'm going to use this from GitHub.
+
+
+00:15:20.660 --> 00:15:22.540
+I'm sure GitHub has equivalents,
+
+
+00:15:22.540 --> 00:15:24.520
+but you could probably set up a GitHub action.
+
+
+00:15:24.520 --> 00:15:25.580
+Actually, I know you can,
+
+
+00:15:25.580 --> 00:15:27.600
+'cause I've written the GitHub action to do this,
+
+
+00:15:27.600 --> 00:15:30.200
+to actually have your checks,
+
+
+00:15:30.200 --> 00:15:32.520
+your status checks on your PR fail
+
+
+00:15:32.520 --> 00:15:34.760
+if there are no touch docs
+
+
+00:15:34.760 --> 00:15:37.800
+and have to opt out of that check, right?
+
+
+00:15:37.800 --> 00:15:40.000
+- Yeah, interesting. - I actually have a
+
+
+00:15:40.000 --> 00:15:42.920
+GitHub action I wrote called check for changed files,
+
+
+00:15:42.920 --> 00:15:45.000
+and you could write a requirement saying
+
+
+00:15:45.000 --> 00:15:47.120
+if you change any .py file,
+
+
+00:15:47.120 --> 00:15:49.360
+an equivalent .rst or .md file
+
+
+00:15:49.360 --> 00:15:51.240
+must be changed somewhere in the PR,
+
+
+00:15:51.240 --> 00:15:54.080
+and if it's not, have to add a skip docs
+
+
+00:15:54.080 --> 00:15:57.600
+labeled to make a pass and otherwise let people know very explicitly,
+
+
+00:15:57.600 --> 00:15:59.400
+"Hey, we care about our docs.
+
+
+00:15:59.400 --> 00:16:01.000
+You can't just opt out of it.
+
+
+00:16:01.000 --> 00:16:02.880
+Please make sure everything's up to date."
+
+
+00:16:02.880 --> 00:16:03.400
+>> Fantastic.
+
+
+00:16:03.400 --> 00:16:06.520
+>> There are ways to really push this pretty far if you really want to go for it.
+
+
+00:16:06.520 --> 00:16:09.100
+>> Yeah. Have robots be mean and say,
+
+
+00:16:09.100 --> 00:16:12.720
+"No, you haven't finished your PR yet," rather than the maintainers.
+
+
+00:16:12.720 --> 00:16:15.680
+Yeah. All right. Tell us about this next one, Brett.
+
+
+00:16:15.680 --> 00:16:20.160
+>> Yeah. Once again, more rest on this podcast due to Paul Everett demanding it.
+
+
+00:16:20.160 --> 00:16:23.400
+I've noticed there's been a slight theme the last couple of episodes
+
+
+00:16:23.400 --> 00:16:25.620
+of talking about ways to improve your shell
+
+
+00:16:25.620 --> 00:16:28.940
+and your general development flow, as it were.
+
+
+00:16:28.940 --> 00:16:30.420
+And one thing I use here,
+
+
+00:16:30.420 --> 00:16:32.300
+and partially because Michael's mentioned
+
+
+00:16:32.300 --> 00:16:33.740
+Oh My Posh multiple times,
+
+
+00:16:33.740 --> 00:16:36.160
+and I believe Brian's now mentioned Oh My Zeesh,
+
+
+00:16:36.160 --> 00:16:38.600
+I thought I'd just mention what I use for all my prompts,
+
+
+00:16:38.600 --> 00:16:40.140
+which is Starship.
+
+
+00:16:40.140 --> 00:16:43.480
+The thing I love about this is it's actually cross-shell.
+
+
+00:16:43.480 --> 00:16:47.880
+So what you do is basically you define,
+
+
+00:16:47.880 --> 00:16:51.140
+it comes with a lot of basically plugins
+
+
+00:16:51.140 --> 00:16:52.300
+for configuring built-in.
+
+
+00:16:52.300 --> 00:16:54.540
+And what you do is you basically turn the model off,
+
+
+00:16:54.540 --> 00:16:56.500
+configure them one way or the other,
+
+
+00:16:56.500 --> 00:16:59.460
+and then there's a one line activation
+
+
+00:16:59.460 --> 00:17:01.720
+you just put in your code, and that's it.
+
+
+00:17:01.720 --> 00:17:04.260
+Configuration's done by a TOML file,
+
+
+00:17:04.260 --> 00:17:07.340
+starzip.toml, and then it just works.
+
+
+00:17:07.340 --> 00:17:08.820
+There's no mucking about.
+
+
+00:17:08.820 --> 00:17:11.340
+It doesn't matter what shell you're on,
+
+
+00:17:11.340 --> 00:17:13.100
+and it just does its thing.
+
+
+00:17:13.100 --> 00:17:14.820
+And the reason I really appreciate that
+
+
+00:17:14.820 --> 00:17:17.980
+is I'm one of these people who likes to play with tools,
+
+
+00:17:17.980 --> 00:17:20.660
+which leads to me playing with different shells.
+
+
+00:17:20.660 --> 00:17:23.060
+Probably by the time Paul Everett tries out Phish,
+
+
+00:17:23.060 --> 00:17:24.720
+I'll be trying out New Shell.
+
+
+00:17:24.720 --> 00:17:27.240
+So because of that, I wanna make sure
+
+
+00:17:27.240 --> 00:17:29.320
+that I can bring my shell with me very easily.
+
+
+00:17:29.320 --> 00:17:31.640
+And Starship, for instance, has support for Phish,
+
+
+00:17:31.640 --> 00:17:33.920
+and Zeesh, and Bash, and all of them, and New Shell.
+
+
+00:17:33.920 --> 00:17:36.920
+So I can very easily try out a different shell
+
+
+00:17:36.920 --> 00:17:39.440
+and not feel like I'm in a foreign country
+
+
+00:17:39.440 --> 00:17:42.040
+where the prompting is gibberish, right?
+
+
+00:17:42.040 --> 00:17:42.880
+Like I always hate it whenever--
+
+
+00:17:42.880 --> 00:17:46.080
+- It seems like, oh, my Z Shell go onto Z Shell,
+
+
+00:17:46.080 --> 00:17:48.720
+and oh, my Posh go onto Posh,
+
+
+00:17:48.720 --> 00:17:51.920
+and you're stuck on that specific one, right?
+
+
+00:17:51.920 --> 00:17:53.560
+- Exactly, and there's oh my fish,
+
+
+00:17:53.560 --> 00:17:55.680
+pretty much every shell has an oh my something or other
+
+
+00:17:55.680 --> 00:17:59.020
+to tweak it out, but with this, at least for my prompt,
+
+
+00:17:59.020 --> 00:18:01.320
+which is actually what I see the most,
+
+
+00:18:01.320 --> 00:18:02.140
+I don't know about the rest of you,
+
+
+00:18:02.140 --> 00:18:03.820
+but my prompt is what I interact with
+
+
+00:18:03.820 --> 00:18:05.040
+more than anything in my shell,
+
+
+00:18:05.040 --> 00:18:08.200
+not the extra fancy stuff I put in, it's this.
+
+
+00:18:08.200 --> 00:18:10.960
+And so this is why I really appreciate this project.
+
+
+00:18:10.960 --> 00:18:14.040
+- Yeah, go ahead.
+
+
+00:18:14.040 --> 00:18:15.080
+- Go for it, it's just--
+
+
+00:18:15.080 --> 00:18:17.120
+- Well, what I like, we're seeing on the screen here,
+
+
+00:18:17.120 --> 00:18:20.200
+if you go to the starship.rs site,
+
+
+00:18:20.200 --> 00:18:21.760
+you can see like a little animated GIF
+
+
+00:18:21.760 --> 00:18:23.680
+and props to them for putting that on there.
+
+
+00:18:23.680 --> 00:18:25.080
+That is fantastic.
+
+
+00:18:25.080 --> 00:18:26.960
+- As we just learned, it's good documentation.
+
+
+00:18:26.960 --> 00:18:27.800
+- Yes.
+
+
+00:18:27.800 --> 00:18:31.720
+There's a lot of stuff about if you're in a GitHub branch
+
+
+00:18:31.720 --> 00:18:35.520
+and what branch you're on and versioning things.
+
+
+00:18:35.520 --> 00:18:37.920
+Does it have a specific stuff for Python
+
+
+00:18:37.920 --> 00:18:40.400
+and Python virtual environments and versioning like that?
+
+
+00:18:40.400 --> 00:18:43.220
+- Yes, because I don't use it,
+
+
+00:18:43.220 --> 00:18:44.900
+but there's built-in PyM support.
+
+
+00:18:44.900 --> 00:18:47.140
+But if you use the Python launcher,
+
+
+00:18:47.140 --> 00:18:49.140
+I actually have an entry on it in the FAQ
+
+
+00:18:49.140 --> 00:18:50.900
+for the Python launcher to tell it how to use
+
+
+00:18:50.900 --> 00:18:53.060
+the Python launcher to automatically tell you
+
+
+00:18:53.060 --> 00:18:55.080
+what version of Python's being used.
+
+
+00:18:55.080 --> 00:18:57.220
+And then you can configure the Python configuration
+
+
+00:18:57.220 --> 00:18:59.580
+to say, what should I trigger on
+
+
+00:18:59.580 --> 00:19:01.980
+for it to be considered a Python project?
+
+
+00:19:01.980 --> 00:19:03.600
+And it has a default list that's pretty good,
+
+
+00:19:03.600 --> 00:19:06.620
+like pyproject.toml, setup.py, setbox.cfg,
+
+
+00:19:06.620 --> 00:19:10.300
+the things you would expect any repo or workspace
+
+
+00:19:10.300 --> 00:19:13.220
+or whatever to have to be a clear marker
+
+
+00:19:13.220 --> 00:19:15.900
+that there is Python that I care about here.
+
+
+00:19:15.900 --> 00:19:17.060
+And then the other thing is,
+
+
+00:19:17.060 --> 00:19:20.460
+is there's also a way to, if you use PY,
+
+
+00:19:20.460 --> 00:19:22.300
+you can also have it set up to auto trigger
+
+
+00:19:22.300 --> 00:19:25.200
+as long as you just have like a .vim directory,
+
+
+00:19:25.200 --> 00:19:27.180
+for instance, that contains your virtual environment.
+
+
+00:19:27.180 --> 00:19:29.900
+And then if you happen to use the Python launcher
+
+
+00:19:29.900 --> 00:19:33.060
+to be the way to query for what version of Python it is,
+
+
+00:19:33.060 --> 00:19:34.220
+it all magically just tells you
+
+
+00:19:34.220 --> 00:19:36.540
+what version your virtual environment is in.
+
+
+00:19:36.540 --> 00:19:39.020
+And so I actually use this with the Python launcher
+
+
+00:19:39.020 --> 00:19:40.860
+'cause it will always tell me exactly what will happen
+
+
+00:19:40.860 --> 00:19:42.500
+if I just type PI.
+
+
+00:19:42.500 --> 00:19:45.220
+Oh nice, yeah, yeah, this is awesome.
+
+
+00:19:45.220 --> 00:19:48.220
+- And I know nerd fonts have been mentioned previously
+
+
+00:19:48.220 --> 00:19:49.940
+on this podcast.
+
+
+00:19:49.940 --> 00:19:52.020
+You'll notice that it has nerd font support,
+
+
+00:19:52.020 --> 00:19:53.100
+so if you get that installed,
+
+
+00:19:53.100 --> 00:19:55.140
+there's extra little fancy bits to it.
+
+
+00:19:55.140 --> 00:19:56.340
+You don't have to have it installed,
+
+
+00:19:56.340 --> 00:19:59.580
+a lot of those things will either turn into mojibake
+
+
+00:19:59.580 --> 00:20:01.180
+or you can just turn them off.
+
+
+00:20:01.180 --> 00:20:02.020
+- Yeah.
+
+
+00:20:02.020 --> 00:20:04.060
+- But there's all sorts of stuff that this thing does.
+
+
+00:20:04.060 --> 00:20:05.860
+There's even real nice little subtle details,
+
+
+00:20:05.860 --> 00:20:07.980
+like if you use Starship,
+
+
+00:20:07.980 --> 00:20:09.540
+and if you're watching the live stream,
+
+
+00:20:09.540 --> 00:20:12.380
+you'll notice that the prompt is green.
+
+
+00:20:12.380 --> 00:20:14.100
+when the last command succeeded,
+
+
+00:20:14.100 --> 00:20:16.060
+but if it fails, it turns red.
+
+
+00:20:16.060 --> 00:20:17.980
+Like there's real nice little subtle touches
+
+
+00:20:17.980 --> 00:20:19.980
+to this tool that I really appreciate.
+
+
+00:20:19.980 --> 00:20:21.300
+- Yeah, I really like it too.
+
+
+00:20:21.300 --> 00:20:22.260
+It looks great.
+
+
+00:20:22.260 --> 00:20:23.540
+- I'm gonna try to check this out
+
+
+00:20:23.540 --> 00:20:25.260
+'cause I'm always using,
+
+
+00:20:25.260 --> 00:20:26.820
+I got some tools that I have to run
+
+
+00:20:26.820 --> 00:20:30.020
+from the command prompt,
+
+
+00:20:30.020 --> 00:20:33.180
+but most of the time I'm in Bash or something else.
+
+
+00:20:33.180 --> 00:20:34.500
+- Yeah, very nice.
+
+
+00:20:34.500 --> 00:20:38.220
+ZDocs says, "Using multi-line shell prompts
+
+
+00:20:38.220 --> 00:20:41.580
+"and FZF are two of the better productivity improvements
+
+
+00:20:41.580 --> 00:20:42.580
+I've ever done.
+
+
+00:20:42.580 --> 00:20:45.860
+I've highlighted that specifically
+
+
+00:20:45.860 --> 00:20:47.860
+'cause I really like these multi-line prompts.
+
+
+00:20:47.860 --> 00:20:50.380
+It has all the details and then the prompt is below it,
+
+
+00:20:50.380 --> 00:20:52.300
+but I can't bring myself to use them yet.
+
+
+00:20:52.300 --> 00:20:53.140
+I don't know why.
+
+
+00:20:53.140 --> 00:20:58.020
+I'd rather have it more densely packed on one line.
+
+
+00:20:58.020 --> 00:20:59.380
+Where do you two stand on this?
+
+
+00:20:59.380 --> 00:21:00.540
+- I used to be that way.
+
+
+00:21:00.540 --> 00:21:03.780
+Actually, I used to be a Zs user
+
+
+00:21:03.780 --> 00:21:05.340
+before I became a Phish user.
+
+
+00:21:05.340 --> 00:21:06.580
+And even before this,
+
+
+00:21:06.580 --> 00:21:08.660
+I used to use left prompt and right prompt,
+
+
+00:21:08.660 --> 00:21:11.180
+and I had a consistent left prompt,
+
+
+00:21:11.180 --> 00:21:14.220
+which was basically just the greater than symbol.
+
+
+00:21:14.220 --> 00:21:17.600
+Then I had my current working directory as my right prompt.
+
+
+00:21:17.600 --> 00:21:20.380
+That at least the cursor position never shifted.
+
+
+00:21:20.380 --> 00:21:22.340
+I don't know about the rest of you, but I always find that.
+
+
+00:21:22.340 --> 00:21:24.420
+That there's something nuts like where's the start of
+
+
+00:21:24.420 --> 00:21:26.660
+my prompt now after I changed my directory.
+
+
+00:21:26.660 --> 00:21:28.740
+Having that as the right side was great.
+
+
+00:21:28.740 --> 00:21:31.140
+But then I saw this and I was like,
+
+
+00:21:31.140 --> 00:21:32.740
+okay, I've never loved this,
+
+
+00:21:32.740 --> 00:21:35.820
+but this is so nice and set up across the board for
+
+
+00:21:35.820 --> 00:21:39.180
+everything that I consistently use like Rust,
+
+
+00:21:39.180 --> 00:21:42.760
+Python, NPM, whatever.
+
+
+00:21:42.760 --> 00:21:44.020
+I was like, okay, I'm gonna give it a shot.
+
+
+00:21:44.020 --> 00:21:45.660
+And I did it, and I've stuck with it,
+
+
+00:21:45.660 --> 00:21:46.540
+and I continue to like it.
+
+
+00:21:46.540 --> 00:21:47.900
+So I totally hear where you're coming from
+
+
+00:21:47.900 --> 00:21:49.500
+in terms of the density level,
+
+
+00:21:49.500 --> 00:21:52.500
+but it's just turned out to be way too nice
+
+
+00:21:52.500 --> 00:21:55.540
+with Starship for me to care about going back.
+
+
+00:21:55.540 --> 00:21:57.260
+Now, if I do go back, right,
+
+
+00:21:57.260 --> 00:22:00.100
+and I don't have it set up for this,
+
+
+00:22:00.100 --> 00:22:02.160
+I actually have my dot file set up
+
+
+00:22:02.160 --> 00:22:04.300
+so that my default Bash or C and all that,
+
+
+00:22:04.300 --> 00:22:06.100
+if I end up on a random machine,
+
+
+00:22:06.100 --> 00:22:08.420
+at least has that kind of prompting,
+
+
+00:22:08.420 --> 00:22:13.300
+But as soon as I'm on any machine where I know I'm going to be a fully set up environment,
+
+
+00:22:13.300 --> 00:22:18.580
+I just keep on Starship. I just don't care. Basically, I get it, but this was just too
+
+
+00:22:18.580 --> 00:22:22.420
+many benefits and I just let it go. Now I just don't notice it. It just doesn't bother me.
+
+
+00:22:22.420 --> 00:22:23.380
+>> Yeah, now you're used to it.
+
+
+00:22:23.380 --> 00:22:26.820
+>> I think I'm going to try to embrace it, just run with it.
+
+
+00:22:26.820 --> 00:22:31.140
+>> Honestly, the resolution on all our screens is so high now compared to what it used to be
+
+
+00:22:31.140 --> 00:22:36.100
+back when I picked up that habit that the lack of vertical density, maybe it's because I'm a
+
+
+00:22:36.100 --> 00:22:38.200
+black user doesn't bother me so much anymore.
+
+
+00:22:38.200 --> 00:22:39.160
+Yeah, that's true.
+
+
+00:22:39.160 --> 00:22:40.560
+I do have a 4K monitor.
+
+
+00:22:40.560 --> 00:22:44.700
+I suppose that like a 32 inch 4K monitor, I could probably fit a terminal on it.
+
+
+00:22:44.700 --> 00:22:46.200
+I suspect so.
+
+
+00:22:46.200 --> 00:22:50.760
+It's actually kind of nice to have the those like color stuff in your
+
+
+00:22:50.760 --> 00:22:55.940
+in the multi line prompt to be able to kind of scroll up
+
+
+00:22:55.940 --> 00:22:59.240
+and see where the beginning of your line, your command started.
+
+
+00:22:59.240 --> 00:23:02.500
+Because it's like an HR, a horizontal rule.
+
+
+00:23:02.500 --> 00:23:04.060
+Yeah, exactly.
+
+
+00:23:04.060 --> 00:23:06.600
+- Yeah, final thing, Jeremiah Page out there
+
+
+00:23:06.600 --> 00:23:08.300
+in live stream says, "Starship is great,
+
+
+00:23:08.300 --> 00:23:10.380
+"but I think you need nerd fonts for some of the plugins."
+
+
+00:23:10.380 --> 00:23:11.760
+Hold that thought, we'll be back
+
+
+00:23:11.760 --> 00:23:13.420
+to more nerd fonts later.
+
+
+00:23:13.420 --> 00:23:14.500
+- But that is correct.
+
+
+00:23:14.500 --> 00:23:17.380
+Some of the things, like if you're watching the live stream,
+
+
+00:23:17.380 --> 00:23:19.860
+there's a nice little symbol for like a branch
+
+
+00:23:19.860 --> 00:23:20.780
+next to the get stuff.
+
+
+00:23:20.780 --> 00:23:22.540
+If you have the power monitoring one
+
+
+00:23:22.540 --> 00:23:23.820
+that tells you like your battery's low,
+
+
+00:23:23.820 --> 00:23:25.380
+it uses nerd fonts to show that,
+
+
+00:23:25.380 --> 00:23:27.980
+but Michael's foreshadowing something coming later.
+
+
+00:23:27.980 --> 00:23:29.480
+- Yes, indeed.
+
+
+00:23:29.480 --> 00:23:32.260
+All right, let's talk about James Path.
+
+
+00:23:32.260 --> 00:23:34.960
+Now, Brian, one of the challenges we always have on the show
+
+
+00:23:34.960 --> 00:23:37.740
+is we have these acronyms for packages
+
+
+00:23:37.740 --> 00:23:39.660
+and then we have to speak them
+
+
+00:23:39.660 --> 00:23:41.260
+and we've never spoken to the person
+
+
+00:23:41.260 --> 00:23:43.460
+who creates it or named it.
+
+
+00:23:43.460 --> 00:23:45.640
+So we always, I'm sure we wreck the names
+
+
+00:23:45.640 --> 00:23:49.140
+of so many packages and let's just do a blanket apology.
+
+
+00:23:49.140 --> 00:23:50.940
+But this one is called James Path.
+
+
+00:23:50.940 --> 00:23:55.700
+And I know because it says J-M-E-S-P-A-T-H,
+
+
+00:23:55.700 --> 00:23:58.620
+pronounced James Path, allows you to,
+
+
+00:23:58.620 --> 00:24:00.640
+like, yes, this is another new thing
+
+
+00:24:00.640 --> 00:24:01.920
+I'm starting to really like,
+
+
+00:24:01.920 --> 00:24:04.960
+allows you to declaratively specify
+
+
+00:24:04.960 --> 00:24:07.320
+how to extract elements from a JSON document.
+
+
+00:24:07.320 --> 00:24:11.440
+So instead of going through and sort of going,
+
+
+00:24:11.440 --> 00:24:13.120
+you know, parsing up something as JSON,
+
+
+00:24:13.120 --> 00:24:15.200
+turning to a dictionary and then traversing it
+
+
+00:24:15.200 --> 00:24:17.800
+with indexes and keys and such,
+
+
+00:24:17.800 --> 00:24:20.400
+there's a whole lot of interesting things you can do
+
+
+00:24:20.400 --> 00:24:22.240
+to quickly get at elements.
+
+
+00:24:22.240 --> 00:24:24.440
+So for example, you can just,
+
+
+00:24:24.440 --> 00:24:27.880
+if you had the dictionary that had a key foo
+
+
+00:24:27.880 --> 00:24:31.360
+and then inside there, there was another dictionary
+
+
+00:24:31.360 --> 00:24:34.640
+that had a key bar and then that had a value baz.
+
+
+00:24:34.640 --> 00:24:37.080
+You could just say foo.bar and it'll give you baz,
+
+
+00:24:37.080 --> 00:24:38.720
+which is kind of nice.
+
+
+00:24:38.720 --> 00:24:42.400
+You can also do that with arrays,
+
+
+00:24:42.400 --> 00:24:44.000
+although this is actually not doing anything.
+
+
+00:24:44.000 --> 00:24:46.640
+It's just giving you back the list
+
+
+00:24:46.640 --> 00:24:48.920
+and then you're indexing into it, so whatever.
+
+
+00:24:48.920 --> 00:24:50.960
+But you can do things like star on it.
+
+
+00:24:50.960 --> 00:24:53.000
+So for example, if you had foo.bar
+
+
+00:24:53.000 --> 00:24:55.320
+and then bar was an array,
+
+
+00:24:55.320 --> 00:24:59.280
+you can say like foo.bar a bracket star.name
+
+
+00:24:59.280 --> 00:25:02.680
+and it'll give you all the names out of the sub thing,
+
+
+00:25:02.680 --> 00:25:06.320
+the sub dictionaries in the list that bar points at.
+
+
+00:25:06.320 --> 00:25:09.440
+So there's like these cool, like almost like SQL like things.
+
+
+00:25:09.440 --> 00:25:12.520
+You can also do a negative indexing into it,
+
+
+00:25:12.520 --> 00:25:13.700
+which is pretty nice.
+
+
+00:25:13.700 --> 00:25:17.720
+You can do star, like foo.star.name
+
+
+00:25:17.720 --> 00:25:21.800
+for hashes to get the values out,
+
+
+00:25:21.800 --> 00:25:22.800
+kind of like a set or something.
+
+
+00:25:22.800 --> 00:25:23.840
+So that's pretty nice.
+
+
+00:25:23.840 --> 00:25:25.480
+And yeah, it's pretty interesting.
+
+
+00:25:25.480 --> 00:25:29.480
+This one comes to us from Josh Thurston.
+
+
+00:25:29.480 --> 00:25:31.200
+So thanks for that.
+
+
+00:25:31.200 --> 00:25:32.840
+He said he was working with all these sort of
+
+
+00:25:32.840 --> 00:25:35.680
+arbitrary nested JSON documents
+
+
+00:25:35.680 --> 00:25:37.080
+and it was really handy for that.
+
+
+00:25:37.080 --> 00:25:39.560
+So you look at this code and I'm sure, Brett,
+
+
+00:25:39.560 --> 00:25:41.520
+you're thinking that's not Python, right?
+
+
+00:25:41.520 --> 00:25:44.160
+- No, actually, I'm wondering if the query syntax
+
+
+00:25:44.160 --> 00:25:45.880
+is the same as JQ.
+
+
+00:25:45.880 --> 00:25:47.360
+And do people know what JQ is when I mention that?
+
+
+00:25:47.360 --> 00:25:49.720
+- I don't know what JQ is, yeah, interesting.
+
+
+00:25:49.720 --> 00:25:51.600
+- So JQ is-- - Yeah, go ahead.
+
+
+00:25:51.600 --> 00:25:53.600
+- So JQ is a command line tool.
+
+
+00:25:53.600 --> 00:26:01.600
+So literally it's just jq Juliet Quebec that is designed to actually take in JSON,
+
+
+00:26:01.600 --> 00:26:07.360
+more or less use the same kind of syntax as the query selector and the browser for CSS selectors,
+
+
+00:26:07.360 --> 00:26:12.160
+and query your JSON. I think it's meant a lot for like tools if you're using like
+
+
+00:26:12.160 --> 00:26:17.120
+Httppy or curl or whatever to query some like REST API that's going to give you back JSON and then
+
+
+00:26:17.120 --> 00:26:22.000
+to try to find something out of it. And it looks pretty similar, so I'm thinking that this is maybe
+
+
+00:26:22.000 --> 00:26:24.940
+be kind of just a Python packaging approach
+
+
+00:26:24.940 --> 00:26:26.880
+to the same syntax, which is neat
+
+
+00:26:26.880 --> 00:26:28.040
+because it means if you know one tool,
+
+
+00:26:28.040 --> 00:26:28.880
+hopefully it'll work for the other.
+
+
+00:26:28.880 --> 00:26:30.400
+- Yeah, right, yeah, it could be.
+
+
+00:26:30.400 --> 00:26:33.800
+So you should think of it not as syntax that you write,
+
+
+00:26:33.800 --> 00:26:36.580
+but more almost like a regular expression.
+
+
+00:26:36.580 --> 00:26:38.400
+So you would import JamesPath,
+
+
+00:26:38.400 --> 00:26:40.720
+and then you say expression equals JamesPath compile,
+
+
+00:26:40.720 --> 00:26:41.920
+and then you give it a string,
+
+
+00:26:41.920 --> 00:26:43.900
+which is these things I've been describing,
+
+
+00:26:43.900 --> 00:26:45.560
+and then you can tell it to search
+
+
+00:26:45.560 --> 00:26:48.680
+or execute queries against things.
+
+
+00:26:48.680 --> 00:26:50.640
+So a lot of neat stuff you can do there.
+
+
+00:26:50.640 --> 00:26:55.800
+You can even add custom functions that can become part of this query syntax.
+
+
+00:26:55.800 --> 00:27:00.000
+So if you create a class that derives from functions that comes out of that library,
+
+
+00:27:00.000 --> 00:27:02.520
+you can have things like unique letters.
+
+
+00:27:02.520 --> 00:27:06.640
+And what you could do in there is say, given a string, I would like to do a set on the
+
+
+00:27:06.640 --> 00:27:08.520
+string and then turn it back into a string.
+
+
+00:27:08.520 --> 00:27:14.440
+So it only shows you the letters involved, not necessarily, you know, with duplication,
+
+
+00:27:14.440 --> 00:27:15.440
+right?
+
+
+00:27:15.440 --> 00:27:18.960
+And so then if you create that, then you can do things like when you do your search, you
+
+
+00:27:18.960 --> 00:27:23.400
+do food up bar pipe, unique letters, and you pass the parameters over,
+
+
+00:27:23.400 --> 00:27:26.960
+and it'll give you, you know, basically the result of those values, but
+
+
+00:27:26.960 --> 00:27:28.980
+then applying these transforms and stuff to it.
+
+
+00:27:28.980 --> 00:27:29.480
+Cool.
+
+
+00:27:29.480 --> 00:27:31.000
+So yeah, pretty neat.
+
+
+00:27:31.000 --> 00:27:36.040
+Um, you got a lot of traversing dictionaries and stuff like that, and
+
+
+00:27:36.040 --> 00:27:37.640
+you kind of want to treat them like SQL.
+
+
+00:27:37.640 --> 00:27:41.460
+I feel like this is sort of along those lines, people can check that out.
+
+
+00:27:41.460 --> 00:27:43.080
+All right, Brian, over to you.
+
+
+00:27:43.080 --> 00:27:44.160
+Yeah.
+
+
+00:27:44.160 --> 00:27:48.580
+Um, I was, wanted to cover, this was announced last week, I
+
+
+00:27:48.580 --> 00:27:51.620
+I think there's a tool called pedal board.
+
+
+00:27:51.620 --> 00:27:55.580
+This is a library came from that comes from Spotify.
+
+
+00:27:55.580 --> 00:28:00.340
+And it's for manipulating audio files.
+
+
+00:28:00.340 --> 00:28:03.500
+But in the introductory article, it
+
+
+00:28:03.500 --> 00:28:07.540
+says the power and speed and sound of a DAW.
+
+
+00:28:07.540 --> 00:28:09.900
+I never knew how to pronounce that one either.
+
+
+00:28:09.900 --> 00:28:11.140
+Digital-- what is that?
+
+
+00:28:11.140 --> 00:28:13.140
+Digital audio something?
+
+
+00:28:13.140 --> 00:28:13.900
+Workstation?
+
+
+00:28:13.900 --> 00:28:15.220
+Yeah, digital audio workstation.
+
+
+00:28:15.220 --> 00:28:16.420
+A DAW, I think.
+
+
+00:28:16.420 --> 00:28:16.980
+Maybe a DAW.
+
+
+00:28:16.980 --> 00:28:17.940
+A DAW.
+
+
+00:28:17.940 --> 00:28:19.420
+>> I don't know. What do you use?
+
+
+00:28:19.420 --> 00:28:22.540
+I use Logic Pro usually.
+
+
+00:28:22.540 --> 00:28:24.180
+Something like that would be it.
+
+
+00:28:24.180 --> 00:28:26.540
+>> Yeah, I use Adobe Audition.
+
+
+00:28:26.540 --> 00:28:29.060
+>> There's a lot of stuff you can do
+
+
+00:28:29.060 --> 00:28:30.860
+that are just common things
+
+
+00:28:30.860 --> 00:28:32.300
+that you're going to do to all files.
+
+
+00:28:32.300 --> 00:28:34.180
+It'd be neat to automate that.
+
+
+00:28:34.180 --> 00:28:36.140
+Things I'm thinking about are things like
+
+
+00:28:36.140 --> 00:28:38.780
+a compressor or a high-pass filter, low-pass filter.
+
+
+00:28:38.780 --> 00:28:41.260
+But this thing has a whole bunch of other transforms.
+
+
+00:28:41.260 --> 00:28:45.140
+You can do convolutions and chorus,
+
+
+00:28:45.140 --> 00:28:46.340
+and some distortions,
+
+
+00:28:46.340 --> 00:28:48.860
+and gain if you want to make it louder,
+
+
+00:28:48.860 --> 00:28:51.280
+some reverb, a high-pass filter.
+
+
+00:28:51.280 --> 00:28:53.100
+Then stuff, I don't even know what it is,
+
+
+00:28:53.100 --> 00:28:54.740
+a ladder filter, I don't know what that is.
+
+
+00:28:54.740 --> 00:28:55.540
+>> I don't know what that is.
+
+
+00:28:55.540 --> 00:28:57.540
+>> Phaser, that sounds neat.
+
+
+00:28:57.540 --> 00:28:58.820
+>> I don't know what that is.
+
+
+00:28:58.820 --> 00:29:00.700
+>> Scotty.
+
+
+00:29:00.700 --> 00:29:04.060
+>> I definitely want to try that out.
+
+
+00:29:04.060 --> 00:29:05.780
+If you're working with audio files,
+
+
+00:29:05.780 --> 00:29:08.980
+I think it would be a fun thing.
+
+
+00:29:08.980 --> 00:29:12.940
+We've linked to the GitHub repo for it,
+
+
+00:29:12.940 --> 00:29:14.980
+which is nice, it's completely open source.
+
+
+00:29:14.980 --> 00:29:21.520
+It says it also has some cool things like plugins for VST3 and Audio Unit,
+
+
+00:29:21.520 --> 00:29:23.560
+which I have no idea what those are.
+
+
+00:29:23.560 --> 00:29:29.400
+But also, one of the things with audio is it takes a while.
+
+
+00:29:29.400 --> 00:29:32.140
+There are speed enhancements in this.
+
+
+00:29:32.140 --> 00:29:35.120
+It says it really doesn't take that long to use it.
+
+
+00:29:35.120 --> 00:29:38.560
+It takes advantage of your CPU cores, which is neat.
+
+
+00:29:38.560 --> 00:29:40.820
+Also linking to an article to introduce it,
+
+
+00:29:40.820 --> 00:29:43.280
+and I got to warn people.
+
+
+00:29:43.280 --> 00:29:48.480
+There's an image at the top which totally messed with my head.
+
+
+00:29:48.480 --> 00:29:53.080
+Because it triggers me with all the different flashing colors.
+
+
+00:29:53.080 --> 00:29:54.340
+So be careful with that.
+
+
+00:29:54.340 --> 00:29:55.700
+Scroll past that quick.
+
+
+00:29:55.700 --> 00:29:59.080
+But other than that, it's a good article on what it is.
+
+
+00:29:59.080 --> 00:30:02.180
+Some graphics and I don't quite get.
+
+
+00:30:02.180 --> 00:30:07.000
+There's some graphics on how it works and I don't quite get what the graphics mean.
+
+
+00:30:07.000 --> 00:30:09.600
+Like the noise gate really doesn't tell me much.
+
+
+00:30:09.600 --> 00:30:10.880
+>> I love the noise gate.
+
+
+00:30:10.880 --> 00:30:13.920
+That's one of the biggest tricks to sounding good, actually.
+
+
+00:30:13.920 --> 00:30:19.840
+>> Yeah. So important enough for me that I've got a hardware noise gate in my studio.
+
+
+00:30:19.840 --> 00:30:20.960
+>> Yeah. Nice.
+
+
+00:30:20.960 --> 00:30:23.980
+>> Anyway, cool library. Check it out.
+
+
+00:30:23.980 --> 00:30:25.780
+>> Yes. If you want to do audio transformation,
+
+
+00:30:25.780 --> 00:30:28.480
+if you want to basically write Python code that does like
+
+
+00:30:28.480 --> 00:30:31.100
+audition or the one you said, Brian.
+
+
+00:30:31.100 --> 00:30:33.180
+>> Well, I mean, and especially with automation.
+
+
+00:30:33.180 --> 00:30:36.260
+So if you've got a whole bunch of files you're dealing with,
+
+
+00:30:36.260 --> 00:30:39.040
+and you want to make sure that they're all the same level,
+
+
+00:30:39.040 --> 00:30:42.120
+You definitely want to automate that and not try to,
+
+
+00:30:42.120 --> 00:30:46.600
+and I know there's ways to automate with some of your other tools too,
+
+
+00:30:46.600 --> 00:30:48.380
+but it's cool to have this.
+
+
+00:30:48.380 --> 00:30:49.380
+>> Yeah, definitely.
+
+
+00:30:49.380 --> 00:30:52.720
+>> The only thing I have to contribute is going back to
+
+
+00:30:52.720 --> 00:30:56.580
+Brian's previous link about good documentation.
+
+
+00:30:56.580 --> 00:30:57.980
+While you two were talking,
+
+
+00:30:57.980 --> 00:30:59.240
+I just submitted a PR to fix
+
+
+00:30:59.240 --> 00:31:02.760
+the trailing triple backticks I accidentally left in the readme.
+
+
+00:31:02.760 --> 00:31:05.140
+Just to give feedback to people,
+
+
+00:31:05.140 --> 00:31:07.400
+trying to fix documentation is always appreciated,
+
+
+00:31:07.400 --> 00:31:09.260
+and it's usually something you can do pretty quick,
+
+
+00:31:09.260 --> 00:31:13.760
+especially with either the pencil editor in GitHub
+
+
+00:31:13.760 --> 00:31:15.880
+or just hitting the dot to use github.dev
+
+
+00:31:15.880 --> 00:31:18.800
+if you need a little bit fancier support
+
+
+00:31:18.800 --> 00:31:19.720
+and just send that PR.
+
+
+00:31:19.720 --> 00:31:22.440
+And I mean, most maintainers would appreciate it.
+
+
+00:31:22.440 --> 00:31:23.280
+That as we all know,
+
+
+00:31:23.280 --> 00:31:25.120
+lots of docs is hard to keep going straight.
+
+
+00:31:25.120 --> 00:31:27.780
+- If you submit an issue or send an email
+
+
+00:31:27.780 --> 00:31:31.720
+and say this part of your docs needs this misspelling fixed
+
+
+00:31:31.720 --> 00:31:34.620
+or this link has an extra trailing slash
+
+
+00:31:34.620 --> 00:31:36.140
+that makes it not work, that's work.
+
+
+00:31:36.140 --> 00:31:39.140
+if you submit a PR, that's joy, right?
+
+
+00:31:39.140 --> 00:31:40.780
+He's just saying, I accept.
+
+
+00:31:40.780 --> 00:31:41.620
+Okay, you fixed it.
+
+
+00:31:41.620 --> 00:31:42.900
+Thank you, I'll just carry on, right?
+
+
+00:31:42.900 --> 00:31:44.540
+Rather, oh, geez, I got another thing to do.
+
+
+00:31:44.540 --> 00:31:45.940
+So yeah, that's great.
+
+
+00:31:45.940 --> 00:31:48.740
+- Nice catch, it took me a while to see that.
+
+
+00:31:48.740 --> 00:31:50.820
+- Yeah, well, I mean, some people ask me,
+
+
+00:31:50.820 --> 00:31:52.540
+like, how do you have so many contributions
+
+
+00:31:52.540 --> 00:31:53.820
+to so many repositories?
+
+
+00:31:53.820 --> 00:31:56.140
+That's how, literally, if you just read docs,
+
+
+00:31:56.140 --> 00:31:58.020
+anytime you find anything a little off,
+
+
+00:31:58.020 --> 00:32:00.500
+just take the time to just submit that PR.
+
+
+00:32:00.500 --> 00:32:02.540
+And most of them get in, not all of them do,
+
+
+00:32:02.540 --> 00:32:05.180
+but honestly, that's enough to just kind of help out.
+
+
+00:32:05.180 --> 00:32:07.740
+and honestly you just suddenly end up contributing to,
+
+
+00:32:07.740 --> 00:32:10.180
+I think I'm up to 160 something repos
+
+
+00:32:10.180 --> 00:32:11.300
+on GitHub at this point.
+
+
+00:32:11.300 --> 00:32:12.380
+- Wow, that's awesome.
+
+
+00:32:12.380 --> 00:32:17.420
+- Okay, so Michael said it was nice
+
+
+00:32:17.420 --> 00:32:18.980
+sometimes to have core devs.
+
+
+00:32:18.980 --> 00:32:20.100
+We'll see if this doesn't cause you
+
+
+00:32:20.100 --> 00:32:22.180
+to regret having core devs on the podcast.
+
+
+00:32:22.180 --> 00:32:24.700
+So I'm gonna use this as story time
+
+
+00:32:24.700 --> 00:32:26.860
+and just kind of explain how processes work
+
+
+00:32:26.860 --> 00:32:28.700
+in terms of packaging peps.
+
+
+00:32:28.700 --> 00:32:31.780
+Starting about six months ago,
+
+
+00:32:31.780 --> 00:32:33.980
+I took it upon myself to try to come up
+
+
+00:32:33.980 --> 00:32:36.020
+with lock file format for Python.
+
+
+00:32:36.020 --> 00:32:37.640
+It seemed like it was kind of a gap.
+
+
+00:32:37.640 --> 00:32:39.540
+We had where every multiple tools were
+
+
+00:32:39.540 --> 00:32:41.440
+trying to solve the same problem,
+
+
+00:32:41.440 --> 00:32:43.300
+and that felt like something that we
+
+
+00:32:43.300 --> 00:32:45.140
+should try to avoid if possible.
+
+
+00:32:45.140 --> 00:32:48.020
+Coming from speaking as the dev manager
+
+
+00:32:48.020 --> 00:32:50.100
+for the Python extension for VS code,
+
+
+00:32:50.100 --> 00:32:53.900
+having each bespoke tools such as pip and poetry
+
+
+00:32:53.900 --> 00:32:54.940
+requirements of text files,
+
+
+00:32:54.940 --> 00:32:56.820
+even through pip tools, right?
+
+
+00:32:56.820 --> 00:32:58.280
+Having to support each of those tools
+
+
+00:32:58.280 --> 00:33:00.660
+individually is a drag, right?
+
+
+00:33:00.660 --> 00:33:02.660
+Like it takes a lot of time and effort
+
+
+00:33:02.660 --> 00:33:04.860
+to figure out what to do for each tool.
+
+
+00:33:04.860 --> 00:33:06.860
+If the tools update, suddenly we break.
+
+
+00:33:06.860 --> 00:33:08.300
+So it's a bit tricky.
+
+
+00:33:08.300 --> 00:33:12.180
+Making calls through CLI is kind of an annoyance too,
+
+
+00:33:12.180 --> 00:33:14.180
+'cause we gotta make sure that they're,
+
+
+00:33:14.180 --> 00:33:15.580
+we know how to use their API,
+
+
+00:33:15.580 --> 00:33:17.340
+what they report out is consistent,
+
+
+00:33:17.340 --> 00:33:18.180
+that they don't change it,
+
+
+00:33:18.180 --> 00:33:20.900
+'cause not all tools consider their output of their CLI
+
+
+00:33:20.900 --> 00:33:23.540
+part of their stable API that they maintain.
+
+
+00:33:23.540 --> 00:33:24.780
+Anyway, there's a lot of drawbacks.
+
+
+00:33:24.780 --> 00:33:27.860
+So I tried to, decided to be silly
+
+
+00:33:27.860 --> 00:33:29.820
+and take it upon myself to see if I can come up with a way
+
+
+00:33:29.820 --> 00:33:32.620
+to get all the tools to kind of rally around something.
+
+
+00:33:32.620 --> 00:33:34.580
+There's also needs for like cloud, right?
+
+
+00:33:34.580 --> 00:33:36.980
+Like if you upload something to Azure Functions,
+
+
+00:33:36.980 --> 00:33:39.020
+they want to do the install for you,
+
+
+00:33:39.020 --> 00:33:41.340
+but you need to be able to tell them what you want installed.
+
+
+00:33:41.340 --> 00:33:43.460
+So lock files, good thing, right?
+
+
+00:33:43.460 --> 00:33:44.700
+Just in general.
+
+
+00:33:44.700 --> 00:33:47.220
+So I spent six months talking behind the scenes
+
+
+00:33:47.220 --> 00:33:48.060
+with various people.
+
+
+00:33:48.060 --> 00:33:52.860
+Originally it was me, Pradyun and Zuping from PIP.
+
+
+00:33:52.860 --> 00:33:55.140
+We came up with a lock file spec,
+
+
+00:33:55.140 --> 00:33:59.580
+and then we invited Sebastian and Frost
+
+
+00:33:59.580 --> 00:34:03.000
+from Poetry and PDM respectively.
+
+
+00:34:03.000 --> 00:34:06.200
+And they said, "That's not gonna work for us."
+
+
+00:34:06.200 --> 00:34:07.320
+And we said, "Why?"
+
+
+00:34:07.320 --> 00:34:08.520
+And it's like, "Well, your lock file
+
+
+00:34:08.520 --> 00:34:11.520
+"was defined very specifically for a certain platform."
+
+
+00:34:11.520 --> 00:34:12.540
+Like think of wheel tags, right?
+
+
+00:34:12.540 --> 00:34:15.880
+It says what Python version, what ABI do you support,
+
+
+00:34:15.880 --> 00:34:17.320
+and what OS are you on, right?
+
+
+00:34:17.320 --> 00:34:19.640
+That's the platform from what I'm speaking from.
+
+
+00:34:19.640 --> 00:34:20.760
+It's like, "That's great,
+
+
+00:34:20.760 --> 00:34:24.080
+"but we want platform-agnostic lock files."
+
+
+00:34:24.080 --> 00:34:25.720
+Like if you ever crack open the lock files
+
+
+00:34:25.720 --> 00:34:27.600
+that Poetry spits out,
+
+
+00:34:27.600 --> 00:34:29.520
+they actually work no matter what OS you're on.
+
+
+00:34:29.520 --> 00:34:30.680
+and it was by design,
+
+
+00:34:30.680 --> 00:34:33.360
+Sebastian wanted to make it so that it didn't matter.
+
+
+00:34:33.360 --> 00:34:36.040
+And actually, I've heard a good example from Produne
+
+
+00:34:36.040 --> 00:34:38.800
+where it's like, if let's say you're doing PyWeek, right?
+
+
+00:34:38.800 --> 00:34:40.300
+And you're doing a game.
+
+
+00:34:40.300 --> 00:34:43.200
+If you're, you might be developing on Linux,
+
+
+00:34:43.200 --> 00:34:44.720
+but if you want to give it to your teammate
+
+
+00:34:44.720 --> 00:34:46.400
+who you're working with during PyWeek,
+
+
+00:34:46.400 --> 00:34:47.240
+and they're on Mac,
+
+
+00:34:47.240 --> 00:34:49.800
+you want a way to be consistent on what you work on.
+
+
+00:34:49.800 --> 00:34:52.240
+And then if the judges are on Linux,
+
+
+00:34:52.240 --> 00:34:54.760
+you're on a whole nother place or Windows or whatever, right?
+
+
+00:34:54.760 --> 00:34:56.160
+So there is a use case there
+
+
+00:34:56.160 --> 00:34:58.280
+for platform agnostic log files.
+
+
+00:34:58.280 --> 00:35:00.680
+So we tried to add that back in.
+
+
+00:35:00.680 --> 00:35:04.400
+We took this public to discuss.python.org
+
+
+00:35:04.400 --> 00:35:06.240
+where all the packaging discussions happened
+
+
+00:35:06.240 --> 00:35:09.680
+and it led to 152 comments on a thread
+
+
+00:35:09.680 --> 00:35:11.320
+starting July 29th.
+
+
+00:35:11.320 --> 00:35:15.240
+So actually it's more like, oh God, eight months ago.
+
+
+00:35:15.240 --> 00:35:17.680
+So this led to a whole nother discussion, right?
+
+
+00:35:17.680 --> 00:35:19.640
+About people going like, okay, the clarification,
+
+
+00:35:19.640 --> 00:35:20.680
+and it ranged, right?
+
+
+00:35:20.680 --> 00:35:23.480
+All the way from the title's not clear enough
+
+
+00:35:23.480 --> 00:35:25.660
+to like real nitty gritty details.
+
+
+00:35:25.660 --> 00:35:28.860
+And it's now led to us going back,
+
+
+00:35:28.860 --> 00:35:31.420
+having discussions with the same people,
+
+
+00:35:31.420 --> 00:35:35.140
+plus some other people who participated here,
+
+
+00:35:35.140 --> 00:35:36.820
+who made good comments,
+
+
+00:35:36.820 --> 00:35:38.940
+to try to come back with another approach
+
+
+00:35:38.940 --> 00:35:40.940
+that's a bit more from the ground up,
+
+
+00:35:40.940 --> 00:35:42.660
+covering everything versus what we had before,
+
+
+00:35:42.660 --> 00:35:44.460
+where it was just a platform specific lock file,
+
+
+00:35:44.460 --> 00:35:46.780
+and then we kind of bolted on the agnostic bit
+
+
+00:35:46.780 --> 00:35:48.700
+and try and design it from scratch.
+
+
+00:35:48.700 --> 00:35:50.540
+But the key point here I wanna make is,
+
+
+00:35:50.540 --> 00:35:52.700
+you hear people sometimes go on about,
+
+
+00:35:52.700 --> 00:35:54.060
+oh, I really want lock files, right?
+
+
+00:35:54.060 --> 00:35:58.060
+I've talked about this publicly and I think I talked about this,
+
+
+00:35:58.060 --> 00:36:00.500
+PyCascades maybe I mentioned it during
+
+
+00:36:00.500 --> 00:36:04.140
+the steering council keynote or maybe it was PyCon.
+
+
+00:36:04.140 --> 00:36:07.960
+My wife Andrea who said she might actually be in the live stream,
+
+
+00:36:07.960 --> 00:36:10.320
+said, "Oh my God, all the comments about when you
+
+
+00:36:10.320 --> 00:36:11.940
+mentioned lock files was so positive."
+
+
+00:36:11.940 --> 00:36:13.620
+I'm like, "Okay, cool." It's surprisingly
+
+
+00:36:13.620 --> 00:36:14.860
+hard to make this stuff work.
+
+
+00:36:14.860 --> 00:36:17.060
+Everyone thinks it's a snap your finger,
+
+
+00:36:17.060 --> 00:36:19.580
+someone has an idea, you just get it done.
+
+
+00:36:19.580 --> 00:36:21.500
+But there's a lot of use cases here,
+
+
+00:36:21.500 --> 00:36:22.660
+and especially with packaging.
+
+
+00:36:22.660 --> 00:36:23.980
+You constantly hear people go like,
+
+
+00:36:23.980 --> 00:36:25.840
+oh, packaging in Python is so bad.
+
+
+00:36:25.840 --> 00:36:28.140
+Well, first of all, most people are out of date.
+
+
+00:36:28.140 --> 00:36:31.360
+Brian's been really great about having me and other people come on
+
+
+00:36:31.360 --> 00:36:33.840
+testing code for instance specifically to talk
+
+
+00:36:33.840 --> 00:36:36.840
+about this past packaging stuff to keep people up to date.
+
+
+00:36:36.840 --> 00:36:38.640
+There's a lot going on,
+
+
+00:36:38.640 --> 00:36:41.080
+but you need to try to keep up.
+
+
+00:36:41.080 --> 00:36:42.320
+But on top of that,
+
+
+00:36:42.320 --> 00:36:44.040
+it's just hard to make any changes
+
+
+00:36:44.040 --> 00:36:46.000
+because there's so much legacy out there.
+
+
+00:36:46.000 --> 00:36:48.600
+Everyone's got their own workflow at this point.
+
+
+00:36:48.600 --> 00:36:51.720
+30-year-old language that's had some form of packaging
+
+
+00:36:51.720 --> 00:36:53.980
+for like over 20 of it.
+
+
+00:36:53.980 --> 00:36:55.500
+Everyone's got the way they want to work
+
+
+00:36:55.500 --> 00:36:58.180
+and no one likes to have it changed on them,
+
+
+00:36:58.180 --> 00:37:00.300
+especially your workflow.
+
+
+00:37:00.300 --> 00:37:02.580
+Try telling someone who's using VS Code,
+
+
+00:37:02.580 --> 00:37:05.060
+yeah, we don't think you're doing it the right way.
+
+
+00:37:05.060 --> 00:37:06.300
+Does not fly.
+
+
+00:37:06.300 --> 00:37:07.260
+It just does not work.
+
+
+00:37:07.260 --> 00:37:08.740
+Everyone wants to work the way they want to work,
+
+
+00:37:08.740 --> 00:37:09.740
+which is totally fine.
+
+
+00:37:09.740 --> 00:37:12.620
+But it also makes trying to come up with a standard really hard.
+
+
+00:37:12.620 --> 00:37:14.060
+So the point I'm trying to make here
+
+
+00:37:14.060 --> 00:37:16.500
+is try to be understanding when you work with packaging
+
+
+00:37:16.500 --> 00:37:17.020
+in Python.
+
+
+00:37:17.020 --> 00:37:18.700
+Not only is Python challenging on its own
+
+
+00:37:18.700 --> 00:37:21.180
+due to the amount of C code, Fortran code,
+
+
+00:37:21.180 --> 00:37:23.140
+All the crazy stuff that people used.
+
+
+00:37:23.140 --> 00:37:24.940
+Thanks to us being the glue code,
+
+
+00:37:24.940 --> 00:37:26.540
+the glue language of the world.
+
+
+00:37:26.540 --> 00:37:28.860
+But on top of that, there's a lot of legacy.
+
+
+00:37:28.860 --> 00:37:30.940
+Everyone has something they asked for,
+
+
+00:37:30.940 --> 00:37:32.740
+and people are working very
+
+
+00:37:32.740 --> 00:37:34.540
+diligently to continue to try to improve it.
+
+
+00:37:34.540 --> 00:37:35.980
+But do understand that there's
+
+
+00:37:35.980 --> 00:37:38.180
+a lot of work going on to try to make it better.
+
+
+00:37:38.180 --> 00:37:39.940
+Please try to be understanding on
+
+
+00:37:39.940 --> 00:37:42.260
+Twitter or wherever else you're going.
+
+
+00:37:42.260 --> 00:37:44.340
+Oh my God, packaging Python so bad.
+
+
+00:37:44.340 --> 00:37:47.100
+>> The places where outreach was really hard.
+
+
+00:37:47.100 --> 00:37:49.580
+>> Yeah. That's what really here.
+
+
+00:37:49.580 --> 00:37:51.500
+A lock files are hopefully coming.
+
+
+00:37:51.500 --> 00:37:53.780
+I am working on a V2 of this PEP.
+
+
+00:37:53.780 --> 00:37:56.100
+Probably go public with that.
+
+
+00:37:56.100 --> 00:37:57.780
+I'm going to guess sometime next month.
+
+
+00:37:57.780 --> 00:38:00.700
+>> These will be independent of things like Poetry and
+
+
+00:38:00.700 --> 00:38:03.780
+PIP and just PIP and stuff like that?
+
+
+00:38:03.780 --> 00:38:09.260
+>> If we're lucky. The key point here is we can't require this,
+
+
+00:38:09.260 --> 00:38:11.420
+but the hope is whatever solution we come up with
+
+
+00:38:11.420 --> 00:38:14.020
+will be good enough for those tools to rally behind.
+
+
+00:38:14.020 --> 00:38:16.820
+None of this is like an edict from on
+
+
+00:38:16.820 --> 00:38:19.460
+high to say all packaging tools must use this.
+
+
+00:38:19.460 --> 00:38:21.340
+The idea with all this has to be,
+
+
+00:38:21.340 --> 00:38:23.020
+what's the carrot for the tools?
+
+
+00:38:23.020 --> 00:38:24.660
+How are we making things better both for
+
+
+00:38:24.660 --> 00:38:26.300
+the community but for the tools themselves?
+
+
+00:38:26.300 --> 00:38:28.300
+Now, we make it so great from
+
+
+00:38:28.300 --> 00:38:30.780
+the community that the tools feel pressure to support it.
+
+
+00:38:30.780 --> 00:38:33.140
+But when you're talking from this perspective,
+
+
+00:38:33.140 --> 00:38:35.060
+the first thing you're dealing with is the tools.
+
+
+00:38:35.060 --> 00:38:36.820
+It's trying to make the tools happy because then
+
+
+00:38:36.820 --> 00:38:38.940
+eventually the users also become happy.
+
+
+00:38:38.940 --> 00:38:40.140
+We'll have something.
+
+
+00:38:40.140 --> 00:38:42.220
+At worst, my suspicion is,
+
+
+00:38:42.220 --> 00:38:43.420
+at absolute worst, we'll have
+
+
+00:38:43.420 --> 00:38:45.820
+platform-specific log files come out with this pep.
+
+
+00:38:45.820 --> 00:38:47.540
+But my hope is being a platform agnostic
+
+
+00:38:47.540 --> 00:38:48.940
+and get all the other tools on board so that
+
+
+00:38:48.940 --> 00:38:50.460
+Everyone gets what they want and need,
+
+
+00:38:50.460 --> 00:38:53.020
+and we can service everyone's needs.
+
+
+00:38:53.020 --> 00:38:53.740
+>> Nice.
+
+
+00:38:53.740 --> 00:38:55.240
+>> But the key point here is,
+
+
+00:38:55.240 --> 00:38:56.580
+it's being worked on,
+
+
+00:38:56.580 --> 00:38:57.800
+it's taken a long time,
+
+
+00:38:57.800 --> 00:38:59.540
+it's going to take even longer.
+
+
+00:38:59.540 --> 00:39:01.540
+Understand that when people say,
+
+
+00:39:01.540 --> 00:39:03.460
+"Oh, why can't packaging get better faster?"
+
+
+00:39:03.460 --> 00:39:05.340
+It takes a long time.
+
+
+00:39:05.340 --> 00:39:07.460
+Literally, I've been working on packaging as
+
+
+00:39:07.460 --> 00:39:10.900
+my focus for Python stuff for years now.
+
+
+00:39:10.900 --> 00:39:13.100
+It's not a fast process
+
+
+00:39:13.100 --> 00:39:14.660
+because there's a lot of people involved,
+
+
+00:39:14.660 --> 00:39:16.900
+a lot of projects, everyone has their needs.
+
+
+00:39:16.900 --> 00:39:18.440
+People just need to be patient.
+
+
+00:39:18.440 --> 00:39:20.440
+but do understand things are getting better consistently.
+
+
+00:39:20.440 --> 00:39:23.440
+That ends my rant to hopefully not make you all regret having me on.
+
+
+00:39:23.440 --> 00:39:25.340
+>> No, that's great. I love the insight.
+
+
+00:39:25.340 --> 00:39:28.440
+>> The only thing with packaging that I want to bring up is,
+
+
+00:39:28.440 --> 00:39:31.080
+I wish it didn't change all the time.
+
+
+00:39:31.080 --> 00:39:35.880
+Sorry, I couldn't resist.
+
+
+00:39:35.880 --> 00:39:40.440
+No, I think things are getting better and I like the direction.
+
+
+00:39:40.440 --> 00:39:46.440
+>> Yeah. My grand unified goal when I got involved with packaging really was to try
+
+
+00:39:46.440 --> 00:39:49.440
+to drive everything towards standards and specs, right?
+
+
+00:39:49.440 --> 00:39:51.480
+Like I have a project called Mouse Bender
+
+
+00:39:51.480 --> 00:39:55.980
+after the clerk from the cheese sketch, right?
+
+
+00:39:55.980 --> 00:39:58.760
+If you don't know the Monty Python sketch,
+
+
+00:39:58.760 --> 00:40:01.160
+it's when one of them walks in
+
+
+00:40:01.160 --> 00:40:03.380
+and just starts to ask for every cheese they can think of
+
+
+00:40:03.380 --> 00:40:05.720
+and they don't have any in the cheese monger shop.
+
+
+00:40:05.720 --> 00:40:06.800
+So same after that.
+
+
+00:40:06.800 --> 00:40:08.960
+Anyway, I created an outline of what does it take
+
+
+00:40:08.960 --> 00:40:12.760
+to go from I want to install Django 3.2.7
+
+
+00:40:12.760 --> 00:40:14.440
+down to actually getting files on desk.
+
+
+00:40:14.440 --> 00:40:16.580
+and I figured out where there was a spec
+
+
+00:40:16.580 --> 00:40:18.080
+and where there was a library back in
+
+
+00:40:18.080 --> 00:40:19.280
+that spec and where the gaps were,
+
+
+00:40:19.280 --> 00:40:20.600
+and I've just been trying to plug it.
+
+
+00:40:20.600 --> 00:40:21.980
+This is probably the last one,
+
+
+00:40:21.980 --> 00:40:23.960
+because more or less this takes care of
+
+
+00:40:23.960 --> 00:40:26.880
+the pip tools, pipm, poetry,
+
+
+00:40:26.880 --> 00:40:29.120
+give me a set of locked things
+
+
+00:40:29.120 --> 00:40:31.800
+and let me be able to reproduce my environment.
+
+
+00:40:31.800 --> 00:40:33.720
+After this, I think I'm more or less,
+
+
+00:40:33.720 --> 00:40:36.680
+I'm personally probably going to be done with packaging.
+
+
+00:40:36.680 --> 00:40:39.440
+After this is moving on to WebAssembly,
+
+
+00:40:39.440 --> 00:40:41.360
+which hopefully make Michael happy.
+
+
+00:40:41.360 --> 00:40:41.920
+>> Oh, yeah.
+
+
+00:40:41.920 --> 00:40:43.660
+>> Then probably that'll lead into,
+
+
+00:40:43.660 --> 00:40:46.980
+is there a way to potentially start distributing like a self contained
+
+
+00:40:46.980 --> 00:40:51.040
+binary for Python or just try to help with Python as a Python C,
+
+
+00:40:51.040 --> 00:40:53.580
+Python interpreter distribution kind of solution.
+
+
+00:40:53.580 --> 00:40:57.260
+So is the new pep going to be 666 or was that already taken?
+
+
+00:40:57.260 --> 00:41:02.560
+No, it, actually 666 is taken.
+
+
+00:41:02.560 --> 00:41:03.660
+Okay.
+
+
+00:41:03.660 --> 00:41:05.340
+It's been taken for over a decade.
+
+
+00:41:05.340 --> 00:41:08.100
+It, it was purposely done to be immediately rejected.
+
+
+00:41:08.100 --> 00:41:10.500
+Cause it said you should be a low mixed tabs and spaces.
+
+
+00:41:10.500 --> 00:41:12.900
+So that was written to make people stop asking for that.
+
+
+00:41:12.900 --> 00:41:14.500
+and got rejected immediately.
+
+
+00:41:14.500 --> 00:41:15.340
+- Okay, okay.
+
+
+00:41:15.340 --> 00:41:18.980
+- But no, I'll just, since this didn't get accepted,
+
+
+00:41:18.980 --> 00:41:21.100
+I'm just gonna rewrite it in place.
+
+
+00:41:21.100 --> 00:41:22.380
+The goals are the same.
+
+
+00:41:22.380 --> 00:41:25.380
+There's no need to have to do yet another pep.
+
+
+00:41:25.380 --> 00:41:27.020
+So since it's draft, I'm just gonna basically
+
+
+00:41:27.020 --> 00:41:28.100
+just get it and redo it.
+
+
+00:41:28.100 --> 00:41:30.140
+And since the goal's the same,
+
+
+00:41:30.140 --> 00:41:31.700
+I'm just gonna reuse the number.
+
+
+00:41:31.700 --> 00:41:32.540
+- Okay. - Nice.
+
+
+00:41:32.540 --> 00:41:33.620
+Well, thanks for working on this
+
+
+00:41:33.620 --> 00:41:35.420
+'cause it definitely is important.
+
+
+00:41:35.420 --> 00:41:36.420
+- Yeah, you're welcome.
+
+
+00:41:36.420 --> 00:41:37.980
+Hopefully it'll lead to something.
+
+
+00:41:37.980 --> 00:41:39.820
+Otherwise, I've had a lot of interesting conversations
+
+
+00:41:39.820 --> 00:41:42.660
+about how people do and don't wanna lock things.
+
+
+00:41:42.660 --> 00:41:44.340
+-Brian, back to you. -Back to me?
+
+
+00:41:44.340 --> 00:41:46.140
+-Oh. -For extras.
+
+
+00:41:46.140 --> 00:41:48.380
+-Oh, for extras. -You got any extras?
+
+
+00:41:48.380 --> 00:41:51.860
+Yeah, so I've got one. I'll throw it up.
+
+
+00:41:51.860 --> 00:41:56.660
+So, looks like Python's popular.
+
+
+00:41:56.660 --> 00:41:57.660
+I've heard that.
+
+
+00:41:57.660 --> 00:42:01.220
+I bet it would be popular enough to have a podcast about it.
+
+
+00:42:01.220 --> 00:42:03.460
+-With lots of pop-ups. -Or three, even.
+
+
+00:42:03.460 --> 00:42:08.020
+-Exactly. -So, there's an article on ZDNet.
+
+
+00:42:08.020 --> 00:42:11.900
+Python is on the verge of another big step forward.
+
+
+00:42:11.900 --> 00:42:18.720
+>> The big step forward apparently is the Tyobi index.
+
+
+00:42:18.720 --> 00:42:21.120
+Let's see is the number one language,
+
+
+00:42:21.120 --> 00:42:27.300
+but Python only needs 0.16 percent more to become the number one language,
+
+
+00:42:27.300 --> 00:42:28.860
+according to this index.
+
+
+00:42:28.860 --> 00:42:31.280
+>> So are they arguing that if we got to the top of
+
+
+00:42:31.280 --> 00:42:34.200
+Tyobi that would cause another spike in usage?
+
+
+00:42:34.200 --> 00:42:35.960
+>> I have no idea. No,
+
+
+00:42:35.960 --> 00:42:39.800
+another spike in the usage would cause this to happen maybe, I don't know.
+
+
+00:42:39.800 --> 00:42:40.640
+Oh, I don't know.
+
+
+00:42:40.640 --> 00:42:41.840
+Yeah. Yeah.
+
+
+00:42:41.840 --> 00:42:46.280
+So I think historically, only C and Java have ever had that designation.
+
+
+00:42:46.280 --> 00:42:47.960
+And so it's kind of big news.
+
+
+00:42:47.960 --> 00:42:49.400
+JavaScript's never gotten up there?
+
+
+00:42:49.400 --> 00:42:50.440
+I don't think so.
+
+
+00:42:50.440 --> 00:42:53.400
+Oh, one more thing.
+
+
+00:42:53.400 --> 00:42:56.400
+Brett mentioned the cheese sketch.
+
+
+00:42:56.400 --> 00:43:00.080
+And if you go to PyPI.org and type like anything that's silly,
+
+
+00:43:00.080 --> 00:43:02.080
+you'll probably get a 404.
+
+
+00:43:02.080 --> 00:43:05.400
+And the 404 has the cheese sketch embedded in it.
+
+
+00:43:05.400 --> 00:43:07.240
+Yes, the cheese shop sketch is at the bottom.
+
+
+00:43:07.240 --> 00:43:11.720
+And piece of history, PyPI was originally supposed to be named the Cheat Shop. It was
+
+
+00:43:11.720 --> 00:43:15.320
+actually originally supposed to be, it was actually originally cheatshop.python.org,
+
+
+00:43:15.320 --> 00:43:19.800
+but people were too concerned that managers wouldn't take Python seriously if the package
+
+
+00:43:19.800 --> 00:43:24.440
+index was named after a mighty Python sketch. So it got its name changed.
+
+
+00:43:24.440 --> 00:43:24.920
+- Yeah.
+
+
+00:43:24.920 --> 00:43:26.440
+- Cool.
+
+
+00:43:26.440 --> 00:43:28.280
+- Right, looks like you got some extras as well.
+
+
+00:43:28.280 --> 00:43:33.320
+- Yeah, well, I mean, this is Python Bytes, so we couldn't go an episode without mentioning Will,
+
+
+00:43:33.320 --> 00:43:35.580
+although I think wills out in the live stream.
+
+
+00:43:35.580 --> 00:43:40.580
+So this is also more of the Paul lovefest on here.
+
+
+00:43:40.580 --> 00:43:44.040
+So Paul had, will go on to an episode
+
+
+00:43:44.040 --> 00:43:46.960
+to talk all about textual and rich
+
+
+00:43:46.960 --> 00:43:48.840
+and how it's all structured, mainly textual.
+
+
+00:43:48.840 --> 00:43:50.680
+I believe Will tweeted that he got a haircut
+
+
+00:43:50.680 --> 00:43:52.200
+for this and everything.
+
+
+00:43:52.200 --> 00:43:53.880
+I actually haven't watched it, but as I said,
+
+
+00:43:53.880 --> 00:43:55.920
+it's not Python by itself, well, it doesn't get mentioned.
+
+
+00:43:55.920 --> 00:43:58.640
+So I just want to make sure we all got called out.
+
+
+00:43:58.640 --> 00:44:01.440
+I will also say that it has been 30 episodes
+
+
+00:44:01.440 --> 00:44:06.920
+I was last on, which I thought was kind of a nice round number. But on that episode,
+
+
+00:44:06.920 --> 00:44:11.280
+I mentioned that I was working on the Python launcher for Unix. And since over the last
+
+
+00:44:11.280 --> 00:44:15.480
+30 episodes, I've actually wanted to mention that I had launched version one. And thanks
+
+
+00:44:15.480 --> 00:44:18.720
+to Brian and Michael for feedback, because actually, one of their feature requests got
+
+
+00:44:18.720 --> 00:44:24.480
+into it. The one thing I did want to call it that actually did happen recently is the
+
+
+00:44:24.480 --> 00:44:29.160
+launcher is now actually in Fedora. So one of the first things that got contributed was
+
+
+00:44:29.160 --> 00:44:36.880
+someone actually put Arch, it was actually Bernat Gabor of Talks fame, got it into Arch
+
+
+00:44:36.880 --> 00:44:41.920
+via AUR. I don't know how Arch does community versus not, there's a whole thing, but you
+
+
+00:44:41.920 --> 00:44:48.720
+can install it via Arch. But just the other week, managed some very nice folks from Fedora
+
+
+00:44:48.720 --> 00:44:53.240
+were nice enough to get it in. So you can actually now use DNF to install the launcher
+
+
+00:44:53.240 --> 00:44:58.720
+on Fedora. And then all the previous tarballs are all there as well. So it's still available.
+
+
+00:44:58.720 --> 00:45:01.240
+But yeah, version one, no bugs so far.
+
+
+00:45:01.240 --> 00:45:04.120
+So it seems nice and stable and meeting people's needs,
+
+
+00:45:04.120 --> 00:45:04.960
+pretty much.
+
+
+00:45:04.960 --> 00:45:05.780
+- Awesome.
+
+
+00:45:05.780 --> 00:45:06.620
+Congratulations.
+
+
+00:45:06.620 --> 00:45:07.460
+- Thank you.
+
+
+00:45:07.460 --> 00:45:08.280
+- Good work.
+
+
+00:45:08.280 --> 00:45:10.600
+- One of the, I'm pulling out Michael extra, extra,
+
+
+00:45:10.600 --> 00:45:12.480
+extra, extra at the end.
+
+
+00:45:12.480 --> 00:45:17.080
+I will say that my syntactic sugar series is still going on.
+
+
+00:45:17.080 --> 00:45:19.360
+When it's done, I'll probably have a wrap up thing.
+
+
+00:45:19.360 --> 00:45:21.360
+And this is probably gonna be what my next set of talks
+
+
+00:45:21.360 --> 00:45:24.080
+will be all about, but they're still happening.
+
+
+00:45:24.080 --> 00:45:26.320
+One interesting thing, I actually just did two,
+
+
+00:45:26.320 --> 00:45:28.880
+just in the last two days.
+
+
+00:45:28.880 --> 00:45:29.840
+They were short.
+
+
+00:45:29.840 --> 00:45:31.040
+Actually, oh God, I didn't realize
+
+
+00:45:31.040 --> 00:45:32.240
+I published three in a week.
+
+
+00:45:32.240 --> 00:45:33.840
+That's a lot for me.
+
+
+00:45:33.840 --> 00:45:36.000
+I did have one that didn't work.
+
+
+00:45:36.000 --> 00:45:37.280
+So if anyone's any curious what happens
+
+
+00:45:37.280 --> 00:45:38.800
+when I can't unravel a piece of syntax,
+
+
+00:45:38.800 --> 00:45:40.880
+you can read that blog post to see how I put in
+
+
+00:45:40.880 --> 00:45:43.600
+all the effort to do it and then realize the day after,
+
+
+00:45:43.600 --> 00:45:45.440
+oh yeah, that's not gonna work.
+
+
+00:45:45.440 --> 00:45:47.440
+- I did enjoy that.
+
+
+00:45:47.440 --> 00:45:49.240
+- Oh good, yeah, yeah.
+
+
+00:45:49.240 --> 00:45:52.440
+Assignment expressions continuously break me in various ways.
+
+
+00:45:52.440 --> 00:45:54.080
+So there's a bunch of syntax I can never undo
+
+
+00:45:54.080 --> 00:45:54.920
+'cause of assignment expressions.
+
+
+00:45:54.920 --> 00:45:55.800
+They're handy, by the way.
+
+
+00:45:55.800 --> 00:45:58.880
+I've used them since the month after we approved them,
+
+
+00:45:58.880 --> 00:46:01.520
+but they do make unraveling our stuff hard.
+
+
+00:46:01.520 --> 00:46:05.000
+Then for Brian, I just wanted to call out
+
+
+00:46:05.000 --> 00:46:08.800
+that in our last release for the Python system for VS Code,
+
+
+00:46:08.800 --> 00:46:12.440
+we completely redid our UI.
+
+
+00:46:12.440 --> 00:46:18.420
+VS Code now actually launches with a built-in UI for testing,
+
+
+00:46:18.420 --> 00:46:21.320
+and we integrated directly into it.
+
+
+00:46:21.320 --> 00:46:24.200
+Now you have consistent UI for testing.
+
+
+00:46:24.200 --> 00:46:27.840
+like a test tree result type of navigation thing.
+
+
+00:46:27.840 --> 00:46:30.360
+That's yeah, well, and we had that before actually,
+
+
+00:46:30.360 --> 00:46:34.480
+but it was bespoke to our extension and so there was some wonkiness to it and all that.
+
+
+00:46:34.480 --> 00:46:37.080
+But now that this is actually built into VS code,
+
+
+00:46:37.080 --> 00:46:41.520
+if all the language I suspect will eventually move over to this.
+
+
+00:46:41.520 --> 00:46:43.880
+So by having that learning it for one tool,
+
+
+00:46:43.880 --> 00:46:46.080
+one language means it'll work for another language.
+
+
+00:46:46.080 --> 00:46:51.600
+There's some extra niceties to it as well in terms of updates and all that.
+
+
+00:46:51.600 --> 00:46:53.200
+It's really snappy.
+
+
+00:46:53.200 --> 00:46:56.600
+We'll probably we are also going to rewrite all the code behind
+
+
+00:46:56.600 --> 00:46:58.960
+this and how it runs to make it a bit more
+
+
+00:46:58.960 --> 00:47:00.840
+performant, more stable and all that.
+
+
+00:47:00.840 --> 00:47:03.880
+So if you've had UI problems before with testing with VS
+
+
+00:47:03.880 --> 00:47:04.800
+code for Python,
+
+
+00:47:04.800 --> 00:47:07.960
+please give another try. If you've had more discovery run problems,
+
+
+00:47:07.960 --> 00:47:09.880
+we are going to be working on that,
+
+
+00:47:09.880 --> 00:47:11.360
+so that's coming up as well.
+
+
+00:47:11.360 --> 00:47:12.920
+And then when that's all done,
+
+
+00:47:12.920 --> 00:47:15.480
+will be bugging Brian about this to make sure he
+
+
+00:47:15.480 --> 00:47:16.440
+gets the Bryant.
+
+
+00:47:16.440 --> 00:47:19.640
+Stamp of approval. Yeah,
+
+
+00:47:19.640 --> 00:47:21.080
+you know, I charge for that,
+
+
+00:47:21.080 --> 00:47:24.280
+But I thought that was just coming on the podcast was the fee.
+
+
+00:47:24.280 --> 00:47:33.480
+No, I definitely I tried this out and I like the changes and I'm excited to see the discovery changes as well.
+
+
+00:47:33.480 --> 00:47:39.280
+Yeah, well, we reached out to the Pytest team directly actually and asked them like what would you want us to do?
+
+
+00:47:39.280 --> 00:47:42.980
+And they gave us some feedback of how they think it should be done and all that.
+
+
+00:47:42.980 --> 00:47:47.180
+So we're hoping to incorporate that and use that as the basis of how we do Pytest and then unit test.
+
+
+00:47:47.180 --> 00:47:48.500
+UnitTest is UnitTest.
+
+
+00:47:48.500 --> 00:47:51.300
+Unfortunately, we had to drop no support due to this,
+
+
+00:47:51.300 --> 00:47:55.160
+but honestly, it was extremely low used anyway.
+
+
+00:47:55.160 --> 00:47:56.620
+But we did have Let It Go.
+
+
+00:47:56.620 --> 00:47:58.540
+But we still have UnitTest by default.
+
+
+00:47:58.540 --> 00:48:00.420
+>> People shouldn't use it anyway.
+
+
+00:48:00.420 --> 00:48:04.260
+>> You heard it from Brian. Don't send me the hate mail.
+
+
+00:48:04.260 --> 00:48:05.460
+But yeah, that's it.
+
+
+00:48:05.460 --> 00:48:07.100
+>> Nice. Those are all great ones.
+
+
+00:48:07.100 --> 00:48:10.060
+I now have banners to separate my sections.
+
+
+00:48:10.060 --> 00:48:11.740
+>> Oh, that's awesome.
+
+
+00:48:11.740 --> 00:48:12.660
+>> Nice.
+
+
+00:48:12.660 --> 00:48:13.980
+>> All right. I'll be quick.
+
+
+00:48:13.980 --> 00:48:14.920
+I do have a couple of things.
+
+
+00:48:14.920 --> 00:48:19.800
+I just want to go back and sort of talk more about nerd fonts a little bit at nerdfonts.com.
+
+
+00:48:19.800 --> 00:48:20.800
+People can check this out.
+
+
+00:48:20.800 --> 00:48:24.320
+So it takes all these different things and puts them together like a bunch of font awesome
+
+
+00:48:24.320 --> 00:48:29.360
+fonts, dev icons, weather icons, and to a bunch of things.
+
+
+00:48:29.360 --> 00:48:33.720
+And then the ones that I really like is the developer fonts, right?
+
+
+00:48:33.720 --> 00:48:36.120
+So you go over and check these out.
+
+
+00:48:36.120 --> 00:48:38.320
+They all, a lot of them have font ligatures.
+
+
+00:48:38.320 --> 00:48:42.680
+Brett, I don't know how you feel about font ligatures, but I'm actually a fan, although
+
+
+00:48:42.680 --> 00:48:44.320
+they freaked me out when I first saw them.
+
+
+00:48:44.320 --> 00:48:46.240
+I'm definitely a fan.
+
+
+00:48:46.240 --> 00:48:50.080
+I'm actually a fear code user.
+
+
+00:48:50.080 --> 00:48:51.040
+Exactly, yeah.
+
+
+00:48:51.040 --> 00:48:57.600
+Although the new literature support for infinite arrow length throws me a bit
+
+
+00:48:57.600 --> 00:49:01.440
+sometimes to the point that I actually have turned it off and I use Cascadia
+
+
+00:49:01.440 --> 00:49:04.840
+code the nerd fought version for Starship in my terminal.
+
+
+00:49:04.840 --> 00:49:07.960
+So I actually have a separate font for terminals in here.
+
+
+00:49:07.960 --> 00:49:09.040
+Yeah, cascade right there.
+
+
+00:49:09.040 --> 00:49:11.480
+Cascadia Cove here.
+
+
+00:49:11.480 --> 00:49:15.680
+It's Cascadia code on the official.
+
+
+00:49:15.680 --> 00:49:19.080
+So yeah, I use Cascadia for my terminal
+
+
+00:49:19.080 --> 00:49:23.840
+and then I use Fira code for my editing,
+
+
+00:49:23.840 --> 00:49:25.520
+although I'm contemplating actually
+
+
+00:49:25.520 --> 00:49:31.680
+buying a font called Mono Lisa, M-O-N-O-L-I-S-A, and using
+
+
+00:49:31.680 --> 00:49:33.440
+that, but I haven't pulled the trigger yet.
+
+
+00:49:33.440 --> 00:49:35.480
+I'm not against buying fonts if they're amazing.
+
+
+00:49:35.480 --> 00:49:37.800
+Yeah, neither am I. It's $100.
+
+
+00:49:37.800 --> 00:49:39.300
+Armand Rohnacker actually uses it.
+
+
+00:49:39.300 --> 00:49:41.940
+That's partially how I came across it.
+
+
+00:49:41.940 --> 00:49:43.580
+And someone else recommended it somewhere.
+
+
+00:49:43.580 --> 00:49:46.420
+Kushal Das, based on me tweeting about it,
+
+
+00:49:46.420 --> 00:49:48.180
+bought it and actually thanked me for using it.
+
+
+00:49:48.180 --> 00:49:49.760
+So multiple people I know use it
+
+
+00:49:49.760 --> 00:49:51.100
+and actually appreciate it.
+
+
+00:49:51.100 --> 00:49:52.700
+And it does have a lot of shared support.
+
+
+00:49:52.700 --> 00:49:53.540
+- Good, yeah.
+
+
+00:49:53.540 --> 00:49:54.820
+All right, so one more shell thing.
+
+
+00:49:54.820 --> 00:49:57.860
+So here is my power, my Microsoft terminal
+
+
+00:49:57.860 --> 00:50:00.900
+running Oh My Posh on my computer.
+
+
+00:50:00.900 --> 00:50:02.560
+Look how dreadful that looks, right?
+
+
+00:50:02.560 --> 00:50:05.740
+That's because I'm not using nerd fonts.
+
+
+00:50:05.740 --> 00:50:07.380
+If people are just listening,
+
+
+00:50:07.380 --> 00:50:08.820
+there's just tons of squares
+
+
+00:50:08.820 --> 00:50:11.540
+where there should be symbols and stuff.
+
+
+00:50:11.540 --> 00:50:14.500
+And it says like, you know, username, square, square,
+
+
+00:50:14.500 --> 00:50:17.300
+folder name, square, square, get information.
+
+
+00:50:17.300 --> 00:50:19.580
+But if you go and install the nerd fonts,
+
+
+00:50:19.580 --> 00:50:21.340
+pretty much any of them, the terminal,
+
+
+00:50:21.340 --> 00:50:23.700
+or oh my posh, actually I guess is what it is,
+
+
+00:50:23.700 --> 00:50:26.660
+is tested against all the nerd fonts to work.
+
+
+00:50:26.660 --> 00:50:27.700
+So if you install that,
+
+
+00:50:27.700 --> 00:50:30.780
+then you end up with beautiful terminal, right?
+
+
+00:50:30.780 --> 00:50:34.700
+So definitely something nice to look into
+
+
+00:50:34.700 --> 00:50:36.140
+if you're just a, yeah, just use whatever
+
+
+00:50:36.140 --> 00:50:38.500
+Mono thing is built in.
+
+
+00:50:38.500 --> 00:50:40.220
+Yeah, the nerd funds are cool.
+
+
+00:50:40.220 --> 00:50:42.360
+All right, let's see what's next.
+
+
+00:50:42.360 --> 00:50:44.660
+Oh, did a article interview,
+
+
+00:50:44.660 --> 00:50:47.480
+this company in Russia interviewed me
+
+
+00:50:47.480 --> 00:50:48.500
+if people are interested.
+
+
+00:50:48.500 --> 00:50:50.280
+I wanna give a quick shout out to that.
+
+
+00:50:50.280 --> 00:50:52.540
+It was kind of fun to talk about some of the history
+
+
+00:50:52.540 --> 00:50:54.180
+of the podcast and stuff over there.
+
+
+00:50:54.180 --> 00:50:59.100
+Moreshell, Henry Schreiner III shared with us,
+
+
+00:50:59.100 --> 00:51:04.100
+here's my setup process for setting up a new Mac.
+
+
+00:51:04.420 --> 00:51:06.980
+And there's all these cool scripts and brew setups
+
+
+00:51:06.980 --> 00:51:07.880
+and all sorts of things,
+
+
+00:51:07.880 --> 00:51:12.740
+including all the fish shell and Vim setups
+
+
+00:51:12.740 --> 00:51:13.580
+that you might need.
+
+
+00:51:13.580 --> 00:51:14.920
+So if you wanna follow up,
+
+
+00:51:14.920 --> 00:51:16.620
+we talked a little bit about that last time,
+
+
+00:51:16.620 --> 00:51:17.820
+people can follow up with that.
+
+
+00:51:17.820 --> 00:51:19.500
+- I'll also say one convenient thing
+
+
+00:51:19.500 --> 00:51:22.300
+about committing all of your dot files,
+
+
+00:51:22.300 --> 00:51:24.700
+at least on GitHub, is if you use Codespaces,
+
+
+00:51:24.700 --> 00:51:27.420
+GitHub, and you check a box,
+
+
+00:51:27.420 --> 00:51:30.660
+Codespaces will automatically clone your dot files repo
+
+
+00:51:30.660 --> 00:51:32.700
+and load them up into your Codespaces.
+
+
+00:51:32.700 --> 00:51:33.820
+- Ooh, that's nice. - Ooh.
+
+
+00:51:33.820 --> 00:51:37.900
+- Yeah, and so I've actually published my dot files
+
+
+00:51:37.900 --> 00:51:39.660
+and done somewhat of a similar thing.
+
+
+00:51:39.660 --> 00:51:43.100
+The other nice thing is obviously when your machine,
+
+
+00:51:43.100 --> 00:51:44.980
+I don't know if I ever told the story in this podcast,
+
+
+00:51:44.980 --> 00:51:47.300
+but when your laptop accidentally gets grabbed
+
+
+00:51:47.300 --> 00:51:49.620
+by someone else and ends up in Dubai
+
+
+00:51:49.620 --> 00:51:52.300
+and it gets shipped to you to a core dev sprint
+
+
+00:51:52.300 --> 00:51:54.900
+in London later and you feel the need to wipe it
+
+
+00:51:54.900 --> 00:51:56.620
+for security purposes, it's very convenient
+
+
+00:51:56.620 --> 00:51:57.820
+to have all your stuff in the cloud
+
+
+00:51:57.820 --> 00:51:59.900
+and have your dot files in a repo,
+
+
+00:51:59.900 --> 00:52:01.820
+so it's just a clone run and you're done.
+
+
+00:52:01.820 --> 00:52:03.500
+Yeah, I would want to wipe it too.
+
+
+00:52:03.500 --> 00:52:07.380
+Someone had physical possession of your laptop for a while.
+
+
+00:52:07.380 --> 00:52:08.980
+Uh, yeah.
+
+
+00:52:08.980 --> 00:52:10.500
+All right. A couple of things, Brian.
+
+
+00:52:10.500 --> 00:52:15.380
+Last time I said I was using the editor to just jump between projects and stuff.
+
+
+00:52:15.380 --> 00:52:19.100
+And one thing I didn't point out is like I'm on the terminal all the time as well.
+
+
+00:52:19.100 --> 00:52:25.340
+But I basically everything that I have some kind of terminal command for is I've almost entirely set up some kind of bash alias.
+
+
+00:52:25.340 --> 00:52:31.860
+So that actually uses the specific virtual environment as part of the command in the alias.
+
+
+00:52:31.860 --> 00:52:35.780
+So it doesn't matter what I have activated or where I am or anything like that.
+
+
+00:52:35.780 --> 00:52:37.540
+So anyway, just a quick follow up on that.
+
+
+00:52:37.540 --> 00:52:38.020
+>> Cool.
+
+
+00:52:38.020 --> 00:52:41.100
+>> All right. Well, I think that's it for extras.
+
+
+00:52:41.100 --> 00:52:43.260
+>> Do you have a separator for our joke also?
+
+
+00:52:43.260 --> 00:52:44.340
+>> I have a laughs.
+
+
+00:52:44.340 --> 00:52:45.660
+I have a separator for our laughs.
+
+
+00:52:45.660 --> 00:52:47.380
+Yes, of course.
+
+
+00:52:47.380 --> 00:52:48.660
+>> Nice.
+
+
+00:52:48.660 --> 00:52:51.220
+>> I hope this is not as funny as the joke,
+
+
+00:52:51.220 --> 00:52:52.820
+but you all will be the judge.
+
+
+00:52:52.820 --> 00:52:53.860
+>> Okay.
+
+
+00:52:53.860 --> 00:52:56.900
+All right, so this is going back to a solid place.
+
+
+00:52:56.900 --> 00:53:00.740
+Geekandpoke over at geek-and-poke.com.
+
+
+00:53:00.740 --> 00:53:02.340
+This one is called the last 5%.
+
+
+00:53:02.340 --> 00:53:06.500
+And Brett, your comment was perfect about setting up a new computer
+
+
+00:53:06.500 --> 00:53:08.500
+or re-installing everything, right?
+
+
+00:53:08.500 --> 00:53:09.460
+So this is the last 5%--
+
+
+00:53:09.460 --> 00:53:10.500
+I know where this is going.
+
+
+00:53:10.500 --> 00:53:14.820
+For corporate IT made easy, make sure that the new developers notebooks
+
+
+00:53:14.820 --> 00:53:18.580
+or computers aren't only 95% provisioned.
+
+
+00:53:18.580 --> 00:53:22.420
+So there's a senior woman developer helping a new one
+
+
+00:53:22.420 --> 00:53:25.860
+who can't seem to compile the project or run it or something says,
+
+
+00:53:25.860 --> 00:53:27.020
+I had the same problem,
+
+
+00:53:27.020 --> 00:53:31.140
+but I barely remember somewhere in a wiki or on a file server,
+
+
+00:53:31.140 --> 00:53:33.300
+there was a certificate or something like that,
+
+
+00:53:33.300 --> 00:53:36.180
+and I had to copy it to some folder on my machine.
+
+
+00:53:36.180 --> 00:53:39.100
+It's just entitled the last 5 percent.
+
+
+00:53:39.100 --> 00:53:42.260
+>> It's like anytime someone onboards under your team at work.
+
+
+00:53:42.260 --> 00:53:43.180
+>> Yes, exactly.
+
+
+00:53:43.180 --> 00:53:46.460
+>> Go read with the last person five years ago or two years ago,
+
+
+00:53:46.460 --> 00:53:48.140
+or however often you get a new person come on.
+
+
+00:53:48.140 --> 00:53:49.300
+Did it, and by the way,
+
+
+00:53:49.300 --> 00:53:52.500
+process of all change. So yeah, chances does not work.
+
+
+00:53:52.500 --> 00:53:56.980
+Yeah, just scroll back two years in Slack or Teams and find that message where we talked about it.
+
+
+00:53:56.980 --> 00:53:57.700
+Yeah, it's a little.
+
+
+00:53:57.700 --> 00:54:04.020
+You just have to hire people more often so that they update the wiki at least every few years.
+
+
+00:54:04.020 --> 00:54:06.900
+Yeah, but the question then becomes, is it because your head counts growing or because
+
+
+00:54:06.900 --> 00:54:11.300
+your turnover is so high and that you're just a bad manager and this everyone keeps quitting the team?
+
+
+00:54:11.300 --> 00:54:15.620
+Yeah, I'd rather just have a stable number of people who, by the way, told me they were going
+
+
+00:54:15.620 --> 00:54:18.060
+going to be on the live stream and I didn't see Michael
+
+
+00:54:18.060 --> 00:54:20.380
+let any other comments by so I wonder if they actually showed up.
+
+
+00:54:20.380 --> 00:54:22.620
+So hello to my team if they showed up.
+
+
+00:54:22.620 --> 00:54:25.860
+And if she did, you know, they did.
+
+
+00:54:25.860 --> 00:54:29.020
+And Chris May has a final parting thought for us.
+
+
+00:54:29.020 --> 00:54:32.620
+This comic hits too close to home or work or work from home.
+
+
+00:54:32.620 --> 00:54:35.260
+Yeah, definitely.
+
+
+00:54:35.260 --> 00:54:36.060
+Definitely.
+
+
+00:54:36.060 --> 00:54:37.980
+Cool. Well, that's it.
+
+
+00:54:37.980 --> 00:54:39.780
+So thanks a lot, Brett, for showing up.
+
+
+00:54:39.780 --> 00:54:40.180
+Of course.
+
+
+00:54:40.180 --> 00:54:41.020
+It's great to have you.
+
+
+00:54:41.020 --> 00:54:44.020
+Thank you to my cat for taking a nap during the entire podcast
+
+
+00:54:44.020 --> 00:54:45.860
+and let's not distract me in the middle of it.
+
+
+00:54:45.860 --> 00:54:47.660
+>> We'll put it on our calendar to make sure to
+
+
+00:54:47.660 --> 00:54:50.140
+invite you about every 30 episodes then.
+
+
+00:54:50.140 --> 00:54:51.420
+>> Perfect.
+
+
+00:54:51.420 --> 00:54:55.300
+>> It's great to have you here. Thanks everyone. Thanks Brian.
+
+
+00:54:55.300 --> 00:54:56.380
+>> Thanks guys.
+
+
+00:54:56.380 --> 00:54:58.180
+>> Thanks for listening to Python Bytes.
+
+
+00:54:58.180 --> 00:55:01.020
+Follow the show on Twitter via @PythonBytes.
+
+
+00:55:01.020 --> 00:55:04.140
+That's Python Bytes as in B-Y-T-E-S.
+
+
+00:55:04.140 --> 00:55:06.980
+Get the full show notes over at PythonBytes.fm.
+
+
+00:55:06.980 --> 00:55:08.980
+If you have a news item we should cover,
+
+
+00:55:08.980 --> 00:55:12.220
+just visit PythonBytes.fm and click "Submit" in the nav bar.
+
+
+00:55:12.220 --> 00:55:14.560
+we're always on the lookout for sharing something cool.
+
+
+00:55:14.560 --> 00:55:16.500
+If you want to join us for the live recording,
+
+
+00:55:16.500 --> 00:55:18.780
+just visit the website and click live stream
+
+
+00:55:18.780 --> 00:55:21.940
+to get notified of when our next episode goes live.
+
+
+00:55:21.940 --> 00:55:24.300
+That's usually happening at noon Pacific
+
+
+00:55:24.300 --> 00:55:26.300
+on Wednesdays over at YouTube.
+
+
+00:55:26.300 --> 00:55:28.380
+On behalf of myself and Brian Aukin,
+
+
+00:55:28.380 --> 00:55:29.700
+this is Michael Kennedy.
+
+
+00:55:29.700 --> 00:55:31.900
+Thank you for listening and sharing this podcast
+
+
+00:55:31.900 --> 00:55:33.540
+with your friends and colleagues.
+
