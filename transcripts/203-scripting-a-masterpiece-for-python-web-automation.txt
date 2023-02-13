@@ -1,0 +1,1056 @@
+00:00:00 Hello and welcome to Python Bytes where we deliver Python news and headlines directly to your earbuds.
+
+00:00:04 This is episode 203 recorded October 7th, 2020.
+
+00:00:09 I'm Michael Kennedy.
+
+00:00:10 And I am Brian Okken.
+
+00:00:11 And this episode is brought to you by Datadog.
+
+00:00:14 Thank you Datadog for supporting us.
+
+00:00:16 Pythonbites.fm/datadog and a lot of cool stuff out there.
+
+00:00:19 We'll tell you more about it later.
+
+00:00:21 Brian, can you believe we're like well into the 200s?
+
+00:00:24 Well, by three.
+
+00:00:25 Yeah, we're getting a good start already.
+
+00:00:27 Yeah.
+
+00:00:27 A month almost.
+
+00:00:28 - Yeah, I guess a month, 'cause that's zero-based, which is pretty awesome.
+
+00:00:32 Now, speaking of things that are awesome, DigitalOcean was a sponsor of the show for a while, but before they were sponsors, we actually just used them as, you know, hosting our infrastructure, and we still do.
+
+00:00:44 So when you download the MP3, or your podcast player talks to something, it's talking to our services on DigitalOcean and so on.
+
+00:00:52 And over there, we just have a set of virtual machines, some database servers, some other things, and they manage themselves as kind of a cluster.
+
+00:01:01 And by manage themselves, I mean, I manage them.
+
+00:01:03 (laughing)
+
+00:01:06 I mean, they mostly take care of themselves, but I do have to log in and take care of them.
+
+00:01:09 But there are different ways of hosting your apps that don't require you to actually log in and configure servers and make sure they're all good and so on.
+
+00:01:19 Often that's called platform as a service.
+
+00:01:20 We also have Kubernetes clusters and things like that, where you just say, here's a definition of my code, please make it go on the internet.
+
+00:01:27 Right, so what I want to talk about is DigitalOcean just launched a new app platform that is a platform as a service.
+
+00:01:33 And like I said, I'm a fan of DigitalOcean 'cause they're simple and straightforward and affordable and easy to use, but really high quality.
+
+00:01:40 So I think that it's worth pointing out this new platform that they just launched.
+
+00:01:44 - You're comfortable with doing your own, what, droplet or whatever it is?
+
+00:01:48 - Yeah, exactly.
+
+00:01:49 - I'm not, so I'm kind of looking forward to trying something like this.
+
+00:01:53 - And I've got a ton of different apps they have inner connections within each other that they have to care about.
+
+00:01:59 And there's a lot of stuff where at some point it makes sense to go down that path with various things that all work together.
+
+00:02:06 But if I just got an app and I wanted to get on the internet, often you don't want to deal with or worry about those things or forget to apply an OS patch.
+
+00:02:14 Or how many times, I mean, large-scale VC-funded professional web apps say, we're going to be experiencing downtime for the next 30 minutes or for four hours.
+
+00:02:27 I'm just like, what could you possibly be doing that takes four hours?
+
+00:02:31 I just, it's like boggles my mind that you're not able to do it better than four hours of downtime.
+
+00:02:36 And so platforms like this mean zero downtime deployment and things like that.
+
+00:02:41 So really, really neat.
+
+00:02:42 So they've announced this new app platform.
+
+00:02:43 I want to point out, this is not an ad.
+
+00:02:44 This is just something I think is cool.
+
+00:02:46 So I'm sharing with you.
+
+00:02:47 So yeah, so they came up with this new app platform.
+
+00:02:51 But then you say it's pretty modern.
+
+00:02:54 It's like, how do you get your code into it?
+
+00:02:57 You point it at your GitHub repository.
+
+00:02:59 You don't log into it and do a get thing.
+
+00:03:01 You just say, I'm going to give you access to my source code, and it will automatically deploy from that.
+
+00:03:06 That would be one nice way to get it over there and get it set up.
+
+00:03:10 But you also might want continuous deployment.
+
+00:03:12 So if I push, how do you get a new version with zero downtime deployments and all that?
+
+00:03:17 well, you just push to a particular branch that you decide upon, and it automatically notices that and does a redeploy.
+
+00:03:23 That's pretty sweet.
+
+00:03:24 Like, so I have that for like Talk Python Training.
+
+00:03:27 If I push to a production branch, it'll automatically do the checkout, ensure the requirements are built, recreate it.
+
+00:03:34 I had to write that.
+
+00:03:35 This just happened.
+
+00:03:36 This is just part of it, right?
+
+00:03:37 That's pretty neat.
+
+00:03:38 - Yeah, yeah, I don't want to do that myself.
+
+00:03:39 - I didn't either, but it was better than logging in all the time.
+
+00:03:42 So this is built on top of DigitalOcean Kubernetes, which is interesting because a lot of platform as a service type of things are opaque.
+
+00:03:51 They're like, well, you can give us access to your code and we'll make it run, magic.
+
+00:03:55 But really all this is, is they'll orchestrate running your code on top of their Kubernetes clusters, which means you can define Docker files in your repository that are going to be part of the app that runs in Kubernetes.
+
+00:04:09 You can use some of the tools actually to talk to the underlying infrastructure.
+
+00:04:14 So it's not a closed environment.
+
+00:04:16 you can actually kind of get down to the infrastructure layer a little bit more.
+
+00:04:19 So all these things are pretty neat.
+
+00:04:21 It has automatic handling of traffic spikes for simple, simple, simple apps.
+
+00:04:26 For static apps, it's free for a few limit, for three of them, right?
+
+00:04:31 For real apps, I guess, apps that run code like Python, you can pay five bucks for like a simple version, like on a shared server, or you can pay 12 bucks for a more pro version that has more features, CDN, SSL, all those kinds of things.
+
+00:04:48 And then if you want to scale it up, you can pay tons, right?
+
+00:04:50 You can pay like $150 to run it on a huge server or a bunch of different small servers.
+
+00:04:55 And there's a whole scaling thing that you can do, but there's a pretty decent offering.
+
+00:04:58 It's still not as cheap as running it on your own, but just like you said, a lot of people don't want to run it on their own and that's not their expertise and why should they be doing that, right?
+
+00:05:07 Yeah.
+
+00:05:08 - If you were to offer to do all of my server stuff for me, I would totally buy you dinner once a month.
+
+00:05:16 - Yeah, that's kind of the price, right?
+
+00:05:18 But this would be like a cheap dinner, like a muchos gracias type of enchiladas and a Coke, not a filet mignon.
+
+00:05:25 - Yeah, maybe just like a $5 gift card to Starbucks.
+
+00:05:28 - Yeah, there you go, I could totally get two scones.
+
+00:05:30 Anyway, if you were thinking about running your, I talk to so many people, students of the courses and stuff, and they're like, "I got my app, but now I got to put it online.
+
+00:05:38 Like what a pain.
+
+00:05:38 Like I can't get engine X configured, right.
+
+00:05:40 Or this other thing or so on.
+
+00:05:42 This is another solid option now that has a nice, you know, push to a branch.
+
+00:05:47 Deploy, run your stuff, zero downtime.
+
+00:05:50 You know, it's probably most comparable to Heroku, I would say in the Python ecosystem.
+
+00:05:56 Yeah.
+
+00:05:56 Yeah.
+
+00:05:56 All right.
+
+00:05:57 Well, people can check this out.
+
+00:05:58 I think it's, I think it's a cool offering.
+
+00:05:59 I will not be personally using it because there's a bunch of little gotchas.
+
+00:06:03 Like, you know, it would be better if, right.
+
+00:06:06 For example, I don't want to use their hosted Postgres database.
+
+00:06:10 I want to run a MongoDB server, which is fine.
+
+00:06:12 It's no problem.
+
+00:06:13 You can do that there.
+
+00:06:13 But you can't, like what I do on the MongoDB servers in order to talk to it, you have to be within a white list of known IP addresses that the servers, the web servers and API servers have.
+
+00:06:25 Right?
+
+00:06:25 So there's like 10 APIs in the world that can talk to that server and no others.
+
+00:06:29 The thing is with these Kubernetes clusters, when you push redeploy, it will regenerate it and rehost it potentially somewhere else.
+
+00:06:36 And the IP address keeps changing.
+
+00:06:38 So you can't do things like have a custom database server that has, you know, firewall limited, restricted, like VPN type of stuff.
+
+00:06:45 Those types of things don't exist.
+
+00:06:47 Most people probably don't care.
+
+00:06:48 I care.
+
+00:06:49 So I'm not doing it.
+
+00:06:49 You can't do Mongo with this.
+
+00:06:52 You can do Mongo, but you would have to have the MongoDB database port listen on the open internet rather than be restricted to just a few IP addresses.
+
+00:07:03 Maybe they figured this out and it's buried in the...
+
+00:07:06 It's something that like there's a whole conversation about like, here's the things we're going to add, here's the things that it doesn't currently do, here's some workarounds, etc.
+
+00:07:15 So anyway, there's a whole conversation, you can check it out.
+
+00:07:17 But if you do things like use their hosted database, which would make sense in a pass type of story, you don't have these problems, right?
+
+00:07:24 They automatically wire that stuff up.
+
+00:07:26 Because when you want to break the rules, you get in trouble.
+
+00:07:29 So you're a fan of Shakespeare, is that right?
+
+00:07:32 Head down to Medford.
+
+00:07:34 Ashland, sorry, it's Ashland down there.
+
+00:07:36 There's a whole like Shakespeare week.
+
+00:07:40 Is Ashland still there with the fires and all?
+
+00:07:42 God, I hope so.
+
+00:07:44 No, I've always wanted to, but people that don't live in Oregon have no idea what we're talking about.
+
+00:07:48 But there's a small town in southern Oregon that does a lot of Shakespeare plays.
+
+00:07:54 And that sort of transition was because I want to talk about playwright.
+
+00:07:58 So, Microsoft put out an announcement to put out an announcement announcing Playwright for Python. I was trying to look into this. I didn't, I guess I quite haven't quite got that whether or not Playwright was a thing before Playwright for Python or not. But in any case, it's a Microsoft thing and it's a way to drive and test your web application through easily. So it's end-to-end testing solution. It's open source and whatnot, but in their announcement, it's pretty cool announcement, gives examples and everything.
+
+00:08:32 So I'm going to read their pitch.
+
+00:08:33 The pitch for it is, "With the Playwright API, you can author end-to-end tests that run on all modern web browsers.
+
+00:08:41 Playwright delivers automation that is faster, more reliable, and more capable than existing testing solutions." And I'm guessing by existing testing solutions is a nice way of them to say, "We are better than Selenium." That's what I was thinking as well. So there's already a pytest plugin, there's runs on Python, and there's a little, we've said that we like animated gifs of how it works. And on their announcement page, there's a little animation. And I was actually pretty impressed with that little bit. So you can drive it even from a command line or interactive shell, you can drive some playing with it, which is nice. So a few of the benefits, apparently it's timeout free automation. So this playwright automatically waits for the user interface to be ready before you act on it again. I know there's some workarounds and there's some wrappers on top of Selenium that do that also, but this is built into the system. It's intended to stay modern with emulation of mobile viewports, geolocation, web permissions. You can automate scenarios across multiple pages. I don't really test websites that much, but I didn't know that that was was difficult before, so apparently that's easier now.
+
+00:09:56 Cross platform of course, or cross browser of course, because you gotta test against different things.
+
+00:10:02 They use a Chromium driver for Chrome and Edge emulation, WebKit driver for Safari and a Firefox driver.
+
+00:10:10 And supposedly the Safari rendering driver even works on Windows and Linux.
+
+00:10:16 So you don't actually have to have an Apple computer to do that.
+
+00:10:20 So PyTest compatible and Django compatible, I'm sure it's compatible with lots of other stuff too, but the examples on the announcement show PyTest examples and Django examples, which is cool.
+
+00:10:30 They even mentioned that, of course, you can run this from your continuous integration server and including GitHub Actions and others.
+
+00:10:39 - You must be happy to see that it's PyTest, like natively PyTest friendly, like with fixtures and whatnot.
+
+00:10:45 - I love that that's, that obviously, we're to the point now where if you have a new testing tool, you may as well in the announcement, tell people whether or not you can run it with PyTest because people are gonna ask.
+
+00:10:56 But that's a good state to be in, in the Python world, I think.
+
+00:10:58 - So for example, like the simple hello world sort of test is just go to make sure that you get like a header text on a page.
+
+00:11:06 So it says define a function, which takes a page with type annotations, by the way, double props for that.
+
+00:11:12 So page, and then that's already a fixture from the framework in PyTest.
+
+00:11:16 So it automatically passes that over setup.
+
+00:11:19 All you do is say it takes a page then page, go to URL, assert page.intertext of h1, equal, equal, you know, the text you're looking for.
+
+00:11:28 There's also more, like that you could do with like Beautiful Soup-like stuff, but there's more of the kind of drive it.
+
+00:11:34 Yeah, go ahead.
+
+00:11:34 - That's two lines of code for a test to make sure there's somethings on that web page.
+
+00:11:38 That's pretty cool.
+
+00:11:39 - Yeah, that is pretty slick, and the fixture bit is neat.
+
+00:11:41 You can also go and like do a test to log in.
+
+00:11:44 So get a new page, go to the URL, to page.fill, give it a CSS selector for the username field, the input field, give it a CSS selector for the passwords they fill with that, and then click where the text of a button equals login.
+
+00:12:00 You don't have to do the CSS stuff or anything, just find me a button or a thing or a URL that has the text login and click that, and it's off.
+
+00:12:08 And so one of the examples here is it does that first and then it logs in, then it creates a session that remembers that it's logged in for the rest of the testing.
+
+00:12:15 So that's one of the setup phases, which is pretty cool.
+
+00:12:17 - Yeah. - Yeah.
+
+00:12:18 Let me throw out one other thing.
+
+00:12:19 You talked about Chromium as one of the drivers, right?
+
+00:12:22 So a lot of times when you're doing Selenium, I don't know about this, but it looks the same.
+
+00:12:25 You know, you have to install Chromium and then there's like a little hidden one.
+
+00:12:29 You can also do the Firefox browser for Selenium.
+
+00:12:33 But I was talking to the guys at Attila from Scraping Hub on Talk Python and he pointed out that Scraping Hub makes a headless browser specifically designed to be a headless browser called Splash.
+
+00:12:49 So their headline is, "The headless browser designed specifically for web scraping turned JavaScript-heavy web pages into data." So I don't know how much better that is, but it's interesting to think that you can swap out these browsers.
+
+00:13:02 And here's a cool example as well, something that maybe people don't know about.
+
+00:13:05 - Yeah, I listened to that episode, and thanks for reminding me.
+
+00:13:08 I was like, I gotta check that out.
+
+00:13:10 - Yeah, I do too, but I haven't checked it out, but it definitely looks neat.
+
+00:13:12 So this though, I like it.
+
+00:13:15 I mean, it looks at least as neat as Selenium.
+
+00:13:18 I don't know, maybe it's even better.
+
+00:13:20 So pretty cool.
+
+00:13:21 Also cool, Datadog, they're actually sponsoring the show.
+
+00:13:25 Unlike DigitalOcean where I just found something that I like from somebody who happened to be a sponsor.
+
+00:13:29 But Datadog are sponsoring the show, not making them any less cool.
+
+00:13:33 So let me ask you a question.
+
+00:13:34 Do you have an app in production that's slower than you like?
+
+00:13:37 It's performant, maybe it's all over the place, sometimes fast, sometimes slow?
+
+00:13:41 Here's the important question.
+
+00:13:42 Do you know why?
+
+00:13:43 With Datadog, you will.
+
+00:13:44 You can troubleshoot your app's performance with Datadog's end-to-end tracing, get detailed flame graphs, identify bottlenecks and latency in that finicky app of yours.
+
+00:13:53 Be the hero that got your app back on track at your company.
+
+00:13:57 Get started with a free trial, and I believe they send you a t-shirt, a little cool t-shirt still, over at pythonbytes.fm/datadog.
+
+00:14:05 So, Brian, something we haven't spoken about nearly enough is AsyncIO and AsyncInAwait.
+
+00:14:10 Should we touch on that a little?
+
+00:14:11 - Sure.
+
+00:14:12 (laughing)
+
+00:14:14 Okay, yeah, we've talked about it some.
+
+00:14:17 - Some, I believe some maybe.
+
+00:14:19 So one of the things that async.io is for, I mean, if you look at the name, it's around waiting on IO, waiting on external things like network calls, API calls, and so on, right?
+
+00:14:33 - Oh, I thought it was just trying to be cool, like all the .io.
+
+00:14:37 - It could be that, or it could just be I like the Italian pronunciation.
+
+00:14:40 Asyncio.
+
+00:14:41 - Asyncio.
+
+00:14:41 (laughing)
+
+00:14:43 - No, it's beautiful.
+
+00:14:44 So when I think of files, I think of IO.
+
+00:14:46 Like if somebody said, what is IO?
+
+00:14:48 I would think file IO.
+
+00:14:49 That's the first thing I would say.
+
+00:14:50 And yet Python doesn't have built-in support for asynchronously working with file IO.
+
+00:14:57 That's bizarre, right?
+
+00:14:58 - Yeah, it is.
+
+00:14:59 - I believe there's an external package.
+
+00:15:01 I think I saw it somewhere on like awesome async IO or some list like that, that somebody had built something along those lines.
+
+00:15:08 But there's a cool article called Asynchronously Opening and Closing Files in AsyncIO by Chris Wellens.
+
+00:15:16 - Nice. - So he wrote this and said, "Look, AsyncIO has great support for networking, "sub-process, inter-process communication stuff, "but no file operations like opening, reading, "writing, and closing files.
+
+00:15:26 "And if you're talking to something "that might take a long time," I mean, I don't know about you, but I've got a pretty ragin' SSD on both my computers, so maybe I don't need this.
+
+00:15:34 Unless you're at that corporate, maybe you're logged in through a corporate VPN and you've mapped a network share over to your drive and then you try to read from that, all of a sudden your file IO might get super slow, right?
+
+00:15:46 - Well, even on SSDs, file IO is slower than memory reads.
+
+00:15:50 - Yeah, it's much slower.
+
+00:15:51 So there's certainly situations where this could be extreme, like the network one, but you're right.
+
+00:15:56 Even normal file IO can be slow if you're really looking to squeeze out the most concurrency.
+
+00:16:01 So basically he wrote a little article working through it and it's ridiculously short actually on how you can do this.
+
+00:16:09 So basically he says, look, if I use open, open file in Python, I would, as a decent Pythonic bit of code, typically I would write with open thing as file IO object, right, file string.
+
+00:16:22 Let's build that for, so then we're gonna call aopen, which is an asynchronous one.
+
+00:16:26 And it's kind of bizarre and weird that Python has this, but it does and I think it's neat.
+
+00:16:30 It has async with blocks when you do async things that have to be asynchronously managed within context managers.
+
+00:16:38 So he said, "Let's write this so it implements the async with style," which is really simple.
+
+00:16:45 You basically implement a couple of methods.
+
+00:16:47 Instead of dunder enter, dunder exit, you do dunder a enter, dunder a exit, and so on.
+
+00:16:52 And then he says, "Okay, well, what we're going to do is we're going to define a function that just opens a file, super easy.
+
+00:16:58 But then we're gonna run it in an async IO event loop by saying run in executor.
+
+00:17:04 And what that means is async IO will create a thread pool where it's gonna run over on a background thread and then it just runs that and lets you await it.
+
+00:17:15 And that's basically it.
+
+00:17:17 Isn't that neat?
+
+00:17:18 - That's not much code.
+
+00:17:19 - No, it's like the opening bit is one, two, three, it's six lines of code, including the function name, which has to be there, the five lines of writing code.
+
+00:17:27 - Yeah, and one of the things I like about this is not because I really wanna do async file stuff, it's because it's a neat little example that I can get my head around so that if I have some other process or other slow thing that I want to make async-ified, this might be an example to how to do that.
+
+00:17:46 - Yeah, absolutely.
+
+00:17:47 So I think this is super instructive and interesting.
+
+00:17:50 I'll also throw out that there is an AIO files package.
+
+00:17:55 I think it's files plural.
+
+00:17:57 Maybe it's file?
+
+00:17:58 No, file singular.
+
+00:17:59 AIO file, which you can pip install and then just do this instead of like see the tutorial.
+
+00:18:06 But I think the value here is like, well, what else doesn't have async support and what could I just kick over to a thread but then integrate into async IO event loops?
+
+00:18:15 - Yeah, it's nice.
+
+00:18:16 - Indeed.
+
+00:18:17 You know what else is nice?
+
+00:18:19 Excel, like so many people who can't do any programming or any scripting or anything, they can just go to Excel and like drag and drop a little, you know, a formula and paste it over and then they're good to go.
+
+00:18:30 - Yeah. (laughs)
+
+00:18:31 - Except, except what?
+
+00:18:33 - So-- - Except it's 2020, that's the problem.
+
+00:18:36 - Yeah, so this is only tangentially related to Python.
+
+00:18:40 Mostly it's that people start using databases in Python, stop using Excel so much.
+
+00:18:46 This article, we had a lot of people actually, Say, did you guys see this?
+
+00:18:51 Yeah.
+
+00:18:51 So yeah, lots of people brought this up to us.
+
+00:18:54 I've got an article that I picked.
+
+00:18:56 There's a bunch of articles also, but I picked a BBC.com article because it didn't have very many ads.
+
+00:19:02 So the BBC article says Excel, why using Microsoft's tool caused COVID-19 results to be lost.
+
+00:19:09 Wow.
+
+00:19:10 So there's a apparently if you haven't heard about this, apparently there 16,000 coronavirus cases that went unreported in England. The good news is they, well, sort of good. They did, it only took like a few days for somebody to notice this, but there is a few days where there was some stuff not getting tracked right. - And Posty was like, "Hey, things are getting better. We're trending down. This is amazing." Except, no.
+
+00:19:37 Just didn't read it. - So apparently, you had several commercial testing firms filling out CSV files and sending them to, I forget the name of the place, something, some health organization in England that was pulling all this stuff together. And they were pulling it together by putting it all in an Excel XLS template that could be then uploaded to a central system and made available to NHS test and trace team as well as other government computer dashboards. But the use of the XLS template made it so that there was a limit of 65,000 rows. Actually that just gives me nightmares to think of a 65,000 row Excel spreadsheet. But apparently that's the limit. Nobody quite noticed that they'd hit it. It didn't say anything about failing and people noticed, some people said, "Well you should have used XLSX because that increases the limit by 16 times.
+
+00:20:38 But still, Excel for this? Of course I was thinking, "Why are you doing this in Excel?" And in this article they had a quote from Professor John Croft from the University of Cambridge.
+
+00:20:50 He says, "Excel is always meant for people mucking around with a bunch of data on their small company to see what it looked like. And then when you need something more serious, you build something bespoke that works.
+
+00:21:02 There's dozens of other things that could do, but you wouldn't use an XLS.
+
+00:21:07 Nobody would start with that.
+
+00:21:08 (laughing)
+
+00:21:10 - Exactly.
+
+00:21:11 - Anyway. - Exactly.
+
+00:21:12 - Apparently people did though, and so people should be using Python.
+
+00:21:16 - Yeah, that's not good.
+
+00:21:17 That is not good.
+
+00:21:19 So I think there's a really interesting trend of moving towards things like pandas to answer these questions, right?
+
+00:21:26 - Yeah.
+
+00:21:27 - I don't think that's the answer for everybody, right?
+
+00:21:29 Like, oh, well, Excel is kind of clumsy for you, So here's what you should do is, you should learn a whole bunch of programming, right?
+
+00:21:36 I mean, here's a random story that I would, one of the more frustrating things from my corporate days is when I was doing training, we would have to write proposals to send off to clients.
+
+00:21:47 And like, here's what we're gonna cover, here's what we're gonna teach, here's your goals, and here's the timeline and so on.
+
+00:21:52 And I would send that off as a Word document and work with one of the salespeople I worked with.
+
+00:21:56 And they said, they'd send it off to the client and somebody changed the Word doc, like a doc X, "Oh, Michael, I need you to replace this word with that word." And so she sent me the document back and asked me to replace that word with that word.
+
+00:22:09 I'm like, "Do you not know about Command-R or Control-R?" Or whatever the replace hotkey is.
+
+00:22:15 Why would you ever send me a file and just say, "I need this word to do a find and replace with that word." But I need to do it for her.
+
+00:22:22 I was just like...
+
+00:22:23 So anyway, I'm thinking of that person using Excel.
+
+00:22:25 I would never suggest that that person learn it.
+
+00:22:28 That said, a lot of Excel power users I think would do really well to adopt JupyterLab and Pandas and stuff.
+
+00:22:36 And actually Chris Moffitt, who does practical business Python, just did a webcast with us.
+
+00:22:41 We talked about it before, but the recording is up now.
+
+00:22:44 You can check that out.
+
+00:22:45 That will give you some concrete tips to avoid the Excel if possible.
+
+00:22:48 Oh, nice. Good resource. Links in our show notes.
+
+00:22:52 Would you be a fan of getting documents sent to you and asked to do a finder in place on a Word?
+
+00:22:57 I've totally had that happen.
+
+00:22:58 Yeah.
+
+00:22:59 Like I sent you the doc, you could just, I mean, maybe send it back to me and said, say, Hey, I made some updates and here's my updates if you need to store.
+
+00:23:08 Yeah, exactly.
+
+00:23:10 Yeah.
+
+00:23:10 Just make sure I did it right.
+
+00:23:11 It may be, but I mean, it was pretty straightforward anyway.
+
+00:23:15 Let's move on.
+
+00:23:17 I'm sure everyone out there has a story like that of you wouldn't believe what I had to do in my corporate job.
+
+00:23:25 So this next one comes to us from a listener, Preston Daniel, who's given us lots of cool feedback and ideas.
+
+00:23:32 And this one is called locust.io.
+
+00:23:35 This is actually a pretty good pairing with Playwright.
+
+00:23:38 So Playwright is about validating that what is on the web page makes sense.
+
+00:23:44 I can go log in and press the button, and then I go to this page and this text is here.
+
+00:23:48 Something like that, right?
+
+00:23:49 As a continuous integration.
+
+00:23:51 So Locust is about, okay, you know that works.
+
+00:23:54 What if 10 people do it at the same time?
+
+00:23:56 What if 100 people do it at the same time on our current infrastructure?
+
+00:23:59 You hear about things like the whole healthcare debacle where they spent hundreds of millions of dollars of code on code on these projects, and a few people logged in and it just failed.
+
+00:24:12 And you just wonder, could you just try it?
+
+00:24:15 Just maybe, just seeing, if we call that API 10 times a second, will it actually take it, right?
+
+00:24:23 And so tools like this are exactly what you want.
+
+00:24:25 It's really cool for just simulating, accessing a bunch of different sites.
+
+00:24:29 - I was just thinking one good use for this may have been, sorry to interrupt, maybe the schools could have done this before they had everybody log in so that all the kids on their laptops or their tablets wouldn't have said on day one, "I don't know what's going on, it won't let me in." - Yeah, the page won't load.
+
+00:24:47 It just, it keeps giving me the numbers, 500.
+
+00:24:49 Is this a math class?
+
+00:24:50 (laughing)
+
+00:24:52 - Anyway.
+
+00:24:52 - Exactly, so you should test your code.
+
+00:24:54 And so I've used these before, these types of tools, and often it's like, okay, what you're gonna do is open a web browser, and you're gonna go to the site, and it'll record the URLs, and you can use some weird selection syntax, it gets weird, clumsy GUI, maybe it stores it as XML, but you have a UI on top of it, and it's all crummy.
+
+00:25:13 And they probably charge you a ridiculous amount of money for this.
+
+00:25:16 So here's the thing with Locus.
+
+00:25:18 It basically looks like you're writing unit test code.
+
+00:25:22 So if you look at the, there's an example in the show notes, just check that out.
+
+00:25:25 So what you do is you define a user and then you give the user some tasks or some behaviors.
+
+00:25:31 Oh, this is the one that I was thinking of, sorry, I was confused this with your playwright.
+
+00:25:34 So for example, with the user, like you would say something like self.client.post to login and you just give it a dictionary.
+
+00:25:42 Username is this, password is that.
+
+00:25:44 Boom, that's it.
+
+00:25:45 And that will actually go over there and submit the login form with that data, which is pretty awesome.
+
+00:25:52 And then you give it tasks, and these are kind of like tests.
+
+00:25:54 Like go to the index page, do a get on slash, and do a get on the JavaScript.
+
+00:25:58 Go to the about page and do a get on slash about.
+
+00:26:01 Or go click this button or go make this thing happen.
+
+00:26:04 And then once you have this, then you can turn that into a bunch of distributed parallel requests to see if you get any 500 errors, timeout errors, like what the average latency is for 10 users, 100 users, 1,000 users at a time.
+
+00:26:19 You can run it on distributed machines.
+
+00:26:22 So you can have it simulate millions of users if you want to run it on like 20 cloud VMs or something like that and turn it on onto your website.
+
+00:26:31 What do you think?
+
+00:26:32 - I think this is cool.
+
+00:26:33 And you're saying that there's a game website that's using this?
+
+00:26:37 - There is in the notes, they say when they talk about the features, they say, look, you can define user behavior and code, suit just plain Python code, which is neat.
+
+00:26:45 It's scalable, so you can run it, like I said, and then it's battle tested.
+
+00:26:48 (laughing)
+
+00:26:50 Because Locus has been used to simulate millions of simultaneous users on Battlelog, the web app for Battlefield games.
+
+00:26:58 And so, they could say, you really could say, Locus is Battlefield, battle-tested.
+
+00:27:03 - Nice.
+
+00:27:03 - I don't know if anybody's seen the trailer for the Battlefield games.
+
+00:27:06 I've not been paying attention to it for ever, but for many, many years at least.
+
+00:27:10 Wow, these games have come a long ways.
+
+00:27:12 Like, if you watch the trailer for the latest one, that's crazy, crazy stuff.
+
+00:27:15 But, it's kind of also beside the point.
+
+00:27:17 I think this way of saying, this is what a website user does.
+
+00:27:20 They log in and then they go to this page and I might also visit this page.
+
+00:27:23 And you set up things like, not just I wanna have, so when you answer questions like, how many users can we support?
+
+00:27:30 Typical users are not pathological.
+
+00:27:32 They don't go to your account page and hold down Command + R or Control + R and just refresh it as hard as they can, right?
+
+00:27:38 They'll go there and they'll spend three or four seconds, five seconds, and then they'll go to another thing, they'll spend 10 seconds there, then they'll go off and they'll click this button.
+
+00:27:45 to have normal human behavior.
+
+00:27:47 So one of the things you set up in this class you define that represents a user on your site is the wait time.
+
+00:27:53 So say the wait time is between five and 15 seconds.
+
+00:27:56 And then you ask, can it take a million users?
+
+00:27:58 It doesn't just do a million concurrent requests.
+
+00:28:00 It has like a million of these things randomly waiting between five to 15 seconds as they're kind of like interacting randomly with your site.
+
+00:28:08 - Oh, cool.
+
+00:28:09 So you could sort of scale this then.
+
+00:28:11 You could start with something like some long wait times.
+
+00:28:15 and make sure that it can handle like a thousand users or something, and then gradually make it shorter so that it's hitting on your server harder.
+
+00:28:23 Yeah, exactly.
+
+00:28:24 I think this is really neat.
+
+00:28:25 So I don't know that I would necessarily be using it right now, but if I create something new, especially something I'm sure is going to get a lot of traffic, then I would definitely use this.
+
+00:28:35 It looks really neat.
+
+00:28:36 It's free and open source.
+
+00:28:37 Like, write it in Python.
+
+00:28:38 Like, why the heck not?
+
+00:28:40 The only reason I wouldn't use it now is I've already had like some really big spike events.
+
+00:28:44 I'm like, okay, well, it's, you know, everything's running at like 2%, 5% CPU.
+
+00:28:48 It's like, it's fine.
+
+00:28:49 I don't need it.
+
+00:28:50 You can totally see, I mean, there's a huge use case for this is that like people that have the, they're rolling out a new app or even if they're an existing company, rolling out something new and everything looks fine on their server, even when they're testing with like two or three consecutive tests or something.
+
+00:29:06 But are we ready to roll it out?
+
+00:29:07 We don't know how many people are going to hit it.
+
+00:29:09 So they can sort of gauge that.
+
+00:29:12 - So the one that I always have in mind when I think about this is, you've got some app that's been out there and it's kind of getting some traction and your company's getting some traction in it.
+
+00:29:20 And the company decides, we're gonna run a Super Bowl ad, or we're gonna launch some huge marketing campaign on Black Friday that's like way, way out of bounds of what we normally do.
+
+00:29:33 The last thing, I mean, you only get one shot for your app to work when that Super Bowl ad runs or on that Black Friday event.
+
+00:29:40 if it just goes down for that little bit of time, it's not like, well, we got it up, it's fine now.
+
+00:29:44 You've lost that moment and that million dollar spend or whatever the heck it turns out to be.
+
+00:29:48 So it's like those moments where the spike is unknown, but also the time which you get to deal with it is short.
+
+00:29:55 - Yeah, or things like, yeah, I'm pretty sure that the healthcare marketplace website's ready.
+
+00:30:02 - It's fine, yeah, sure, Mr. President.
+
+00:30:03 This is gonna be fine.
+
+00:30:04 It won't be like blemish your record for all of history.
+
+00:30:07 All right, speaking of things I'm sure are going to be fine. Hacktoberfest was such a, it's a good idea in theory, potentially.
+
+00:30:14 We're like in the middle of October or deep into October already.
+
+00:30:18 I don't know how your repos did, but I got a lot of attention.
+
+00:30:21 Did you? Yeah, no, mine didn't so much.
+
+00:30:24 I'll tell you about that, but go ahead and tell people where we're going with this.
+
+00:30:27 Okay, so Hacktoberfest, hopefully you know about it, but if you don't, it's an interesting idea sponsored by DigitalOcean and other sponsors.
+
+00:30:34 Again, DigitalOcean not sponsoring this episode.
+
+00:30:37 Overall, it's a good idea. So the idea is to encourage people to contribute to open source by bribing them with a t-shirt and other swag that works for geeks. We love our t-shirts.
+
+00:30:46 Like, how else are you going to be like wearing your clothes? What do you put in your closet?
+
+00:30:50 Yeah, maybe maybe you can buy a t-shirt with a half an hour of work, but we're gonna like have you work for like hours and just get one t-shirt.
+
+00:30:58 Anyway, there's always been some spam with this people abusing it, but I think it was not as prevalent as this year.
+
+00:31:05 But what happened this year and I'm gonna link to a video by Anthony Sotile Titled what's wrong with hacktoberfest?
+
+00:31:13 He introduces what hacktoberfest is some of the problems and he recommended some solutions We're not going to cover those today, but apparently there was a youtuber this year. I think it was in India that Did a video on how to get a free t-shirt by doing like it's basically how to get free t-free swag with not much work And he did this video to show you how to submit a pull request to a project and only do something like update the readme to say an awesome project or change its with it is or something like that.
+
+00:31:49 And then do a pull request saying document or improve docs and do that for four different repos and there you got a t-shirt.
+
+00:31:56 I met many of these people.
+
+00:31:59 It turned into a big problem.
+
+00:32:01 So I was actually really thrilled with how fast DigitalOcean and whoever's working on Hacktoberfest fixed it.
+
+00:32:09 Or at least hopefully, I'm sure people are still trying to do this, so I'm sure there's a lot of spam going on.
+
+00:32:15 But they changed the rules.
+
+00:32:16 So as of the 3rd, they updated the rules to try to reduce the spam.
+
+00:32:22 One of the big things is maintainers can opt in by adding a Hacktoberfest topic to their repo.
+
+00:32:29 a whole bunch of stale old repos won't get hit, hopefully.
+
+00:32:32 And then also you can mark any PR that's dumb as invalid and it invalidates stuff.
+
+00:32:39 And actually the full rules is, let's see, we're going to have it in the show notes, it's a little pseudo code.
+
+00:32:46 So if you submit a PR in the month of October and the PR is labeled as hacked overfest accepted by the maintainer, or you submitted it to a repo with a hacked overfest topic and the pull request was merged or it was approved.
+
+00:33:03 So you can't just submit it and get your t-shirt.
+
+00:33:06 It has to be like some maintainer has to say, "Yeah, this is good," or "I approve it," or whatever.
+
+00:33:11 It's not automatic anymore.
+
+00:33:13 Also, if you are a maintainer and you've dealt with all the spam, sorry about that.
+
+00:33:18 But also I'd like to encourage more people to do Hacktoberfest because it's a cool thing.
+
+00:33:24 I didn't want to bring it up before because I didn't want to encourage spam, but I think these changes will help.
+
+00:33:30 And if you're a maintainer, please be sure to do those notifications by November 1st because that's the deadline.
+
+00:33:37 - Yeah, interesting.
+
+00:33:38 I had no idea what was going on until I saw Anthony Petilli's post or Twitter message.
+
+00:33:44 You know, somebody came over to some of the, I have 222 repositories, most of which are public between the courses and various other things.
+
+00:33:53 So there's a bunch of opportunity to go in and make changes, right?
+
+00:33:57 So somebody came along to the beginner, the Python for Absolute Beginners course and said, "I would like to add a few little tips "for some beginners to make this slightly better." You know, we can't change anything 'cause it needs to match what's in the video, but if you had a little section that had like some tips and they were meaningful, sure, I guess that's okay.
+
+00:34:14 And then the next day I woke up and it was like 10 PRs, not necessarily from this person, but from a bunch of different people with weird things like, "Change the readme from this, "you know, check out our latest course "to check out the latest course." and just changing the word hour to the, and I'm like, what is going on?
+
+00:34:31 Then I saw Anthony's thing, and I'm like, okay, close, close, close, close, close, close, close.
+
+00:34:35 Just straight out, I don't even want to talk to these people.
+
+00:34:38 This is super annoying.
+
+00:34:40 And they weren't just making changes to the readme.
+
+00:34:42 They would go in and they would make changes to XML configuration documents.
+
+00:34:46 I'm like, you can't change that.
+
+00:34:47 That's read by the machine, right?
+
+00:34:50 That's gonna break something if I accept this.
+
+00:34:52 Not only is it annoying that I gotta deal with it, but if I were to accept that, I'm pretty sure it would break.
+
+00:34:56 I think maybe it was like formatting, like putting a node, closing node bit, like on a line above, or like putting a space.
+
+00:35:03 I mean, I don't think it actually broke it, but it was really weird stuff.
+
+00:35:06 And I didn't understand it was coming from Hacktoberfest.
+
+00:35:08 I was being hacked by the Hacktoberfesters.
+
+00:35:11 Yeah.
+
+00:35:13 But it has stopped since they made these changes, which is great.
+
+00:35:16 Oh, has it stopped?
+
+00:35:16 So most of that stuff was in the first few days?
+
+00:35:18 Yeah, I haven't seen it in the last couple of days.
+
+00:35:20 I didn't realize.
+
+00:35:20 That's probably because the rules changed.
+
+00:35:22 I just went through and like just denied everything that I saw coming in.
+
+00:35:25 Yeah. I wonder if they forced the takedown of that video. Maybe it's gone.
+
+00:35:30 Yeah. Who knows?
+
+00:35:32 Well, I know that that's it for all of our main topics. Got anything else you want to throw out real quick before we wrap it up with a joke?
+
+00:35:38 I don't. I could totally use a joke. But do you have any extra things?
+
+00:35:41 I do. There's a really cool conference. It's, I believe, theoretically was supposed to be this year in Vancouver, BC, which is an absolutely wonderful town to visit, called Pi Cascades, cycles between Vancouver, Seattle and Portland.
+
+00:35:56 Well, this year it's taken a diversion to cycle to the internet because 2020, although it's in 2021, like still planning now.
+
+00:36:04 So Pi Cascades 2021 will take place Saturday, February 20th from the world.
+
+00:36:11 I don't know if they're having any local stuff going on, but anyway, it's basically a virtual conference and the call for proposals is open.
+
+00:36:19 So if you'd like to give a presentation there, you can do that by November 10th.
+
+00:36:23 Submit proposals.
+
+00:36:25 So that would be cool.
+
+00:36:26 You know, I think talking at get togethers like this meetups, the smaller, not, you know, full blown PyCon, but PI cascades and other types of events are really good way to sort of raise your profile and stretch your, your comfort zone as a developer.
+
+00:36:40 So I encourage people to do it.
+
+00:36:41 Also, Patricia, I spoke at, at the 2020 version that was just before the world fell apart.
+
+00:36:48 That's right.
+
+00:36:49 I was there.
+
+00:36:49 My daughter and I watched from the back. It was great. Next thing, other thing, Patricio Reins, who is a researcher at the Barcelona Supercomputing Center, which by the way, they have this virtual tour he sent me. Oh my God, it is so awesome. They have like a pop song for it. It is held inside, is the super, literally the supercomputer is inside an old cathedral.
+
+00:37:11 So like where, you know, where all the arches are and where the sermons would have been given, like that's where the supercomputer is. That's pretty awesome.
+
+00:37:18 - Can we put that link in the show notes too?
+
+00:37:20 - Yeah, yeah, yeah, I'll put it in there.
+
+00:37:22 But that's not why he sent it to me.
+
+00:37:23 He just said, "Hey, I happen to work here "and I use Jupyter a lot.
+
+00:37:27 "You spoke about Blackcell Magic "and then another black formatter plugin "for Jupyter notebooks." So he said, "You should also check out nb_black, "which works in Jupyter and JupyterLab.
+
+00:37:41 "And there's another one that only works in JupyterLab "called the JupyterLab Code Formatter." So just like always, we mention one thing that we kind of discover, and then listeners are like, that's great, and, and, and, here's a bunch of other stuff.
+
+00:37:54 So thank you for that, Patricio.
+
+00:37:55 - Yeah, nice.
+
+00:37:56 But I love that.
+
+00:37:57 I like the multiple tool thing.
+
+00:37:59 That's fine.
+
+00:37:59 - Yeah, indeed.
+
+00:38:00 All right, let's do a joke.
+
+00:38:01 I've chosen some very clear ones that actually have a visual component, as you know.
+
+00:38:04 I don't know why I do that, but that's what I've done.
+
+00:38:07 So why don't you, I'll let you do the first one.
+
+00:38:10 I'll do the second one.
+
+00:38:12 So the way, people who don't know, This is a classical programmer painting.
+
+00:38:16 And the idea is this is a legitimate real painting from some museum.
+
+00:38:22 Typically they're hundreds of years old, but there's, instead of having, you know, like flowers in the tide pools or whatever, some random thing that the artist named it, it's renamed with a programming title.
+
+00:38:39 Okay?
+
+00:38:40 - Yeah.
+
+00:38:40 - So why don't you quickly describe your picture and then tell us the title.
+
+00:38:44 - Okay, so the picture is, it's a white, kind of a white-gray background.
+
+00:38:50 I think it's snow or something.
+
+00:38:52 There's some horses running.
+
+00:38:53 - There's a white-out blizzard almost.
+
+00:38:54 Yeah, it's horrible.
+
+00:38:55 - Yeah.
+
+00:38:56 And there's some horses running, two horses running, pulling a, what, like a sled or something?
+
+00:39:02 I don't know, and there's somebody laying on the sled.
+
+00:39:04 - All right, what's the title?
+
+00:39:04 - Delivering a Feature in the Time of a Code Freeze.
+
+00:39:07 (laughing)
+
+00:39:09 This is by Anthony Petrowski, Oil & Wood, 1883.
+
+00:39:13 - Yeah, it's beautiful.
+
+00:39:14 - All right, so the one that I got here, it's these three guys, they look highly skeptical, almost like they're on some kind of mission, sneaking out of really tall grass on a boat in some kind of swamp.
+
+00:39:29 You can see them really slowly sort of approaching.
+
+00:39:33 And the title is Red Hat Enterprise Linux Sys Admins Entering the Docker Convention Floor.
+
+00:39:38 Oil on Canvas, 1882.
+
+00:39:40 (laughing)
+
+00:39:41 Isn't that a great one?
+
+00:39:42 Like, look at their face.
+
+00:39:43 - Yeah.
+
+00:39:44 - People gotta check this out.
+
+00:39:46 Click on the link in your podcast player and see it.
+
+00:39:48 - They're like angry pirates in a canoe.
+
+00:39:50 - Yeah, it's sort of a piratey feel to it.
+
+00:39:52 Like, they're like, "Oh, what are we doing here?
+
+00:39:53 "We're breaking in.
+
+00:39:54 "It's such a weird world, this Docker and Kubernetes." - I love this thing of like programmer quotes on paintings.
+
+00:40:02 It's funny.
+
+00:40:03 - Yeah, if there's ever some sort of like artwork exhibition at a PyCon, this is happening.
+
+00:40:09 (laughing)
+
+00:40:11 - We could probably do it virtually somehow, try to do it at a virtual conference.
+
+00:40:15 - Yes, I think we could.
+
+00:40:17 - Yep. - Yep. Alright, well, thanks for being here as always, and thank you everyone out there who's listening.
+
+00:40:21 - Thank you. - Yep, bye-bye. - Bye.
+
+00:40:23 - Thank you for listening to Python Bytes.
+
+00:40:25 Follow the show on Twitter via @PythonBytes, that's Python Bytes as in B-Y-T-E-S.
+
+00:40:29 And get the full show notes at PythonBytes.fm.
+
+00:40:31 If you have a news item you want featured, just visit PythonBytes.fm and send it our way.
+
+00:40:35 We're always on the lookout for sharing something cool.
+
+00:40:38 On behalf of myself and Brian Okken, this is Michael Kennedy.
+
+00:40:41 Thank you for listening and sharing this podcast with your friends and colleagues.
+

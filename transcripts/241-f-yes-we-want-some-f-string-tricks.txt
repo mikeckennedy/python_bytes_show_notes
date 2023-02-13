@@ -1,0 +1,988 @@
+00:00:00 >> Hello and welcome to Python Bytes, where we deliver Python news and headlines directly to your earbuds.
+
+00:00:05 This is Episode 241, recorded July 7, 2021, and I'm Brian Okken.
+
+00:00:11 >> Hey, I'm Michael Kennedy.
+
+00:00:12 >> I'm new here. I'm Jay.
+
+00:00:15 >> Hi, Jay. Thanks for coming.
+
+00:00:17 Tell us a little bit about who you are.
+
+00:00:20 >> Yeah. I'm Jay Miller.
+
+00:00:22 I'm a developer advocate for Elastic, a company that does search using Elasticsearch and many other fine tools that we create.
+
+00:00:31 I spend a lot of time working on podcasts, shooting video, helping other podcasters, which we'll talk about later, and yelling at Michael and Brian as they're podcasting and they can't hear me.
+
+00:00:45 Yeah, that's what I do.
+
+00:00:47 >> I would totally love to hear one of those.
+
+00:00:49 Just record yourself yelling at our podcast at the same time, that'd be great.
+
+00:00:54 But welcome. Thanks.
+
+00:00:56 You're kicking us off today, Michael.
+
+00:00:58 of where we're starting.
+
+00:00:59 - Well, we're gonna start with some automation here.
+
+00:01:02 And I previously had covered that if you go over to GitHub, I'm not logged in, I guess it's not gonna work.
+
+00:01:08 But if you go to GitHub and you forked a repo, so for example, if you forked CPython, if you forked FastAPI, or you know, whatever project it is you forked, all of those things are under pretty active development.
+
+00:01:21 And very quickly, your fork will get out of sync with what's called the upstream, the thing that it was forked from.
+
+00:01:28 And GitHub recently added this ability, which we talked about to go to a repo and press a button.
+
+00:01:35 It says your fork is behind.
+
+00:01:37 Would you like to catch it up?
+
+00:01:38 And you can click a button and boom, it'll catch it up.
+
+00:01:40 So, well, that's neat, but wouldn't it be nicer if you didn't have to do that?
+
+00:01:45 If it just did that on its own.
+
+00:01:47 Like sometimes you fork something and you're actively making a bunch of changes to it and there might be merge conflicts and all sorts of stuff.
+
+00:01:54 But a lot of times I would bet the majority of the time People say, "That's neat, I wanna save that for myself just so I'm sure I've got it and I can do whatever I want no matter what happens to it, right?" Maybe we depend on Flask and who knows what could happen with Flask?
+
+00:02:08 Probably nothing, but let's just fork it just in case, right?
+
+00:02:11 And you just want that to stay in sync.
+
+00:02:13 So here is an article or walkthrough by Yash Walia.
+
+00:02:18 Oh, it says, "Three easy steps to auto-sync your forked repo with the upstream, the origin thing that it came from." Now, of course, you could go to a command line and run a bunch of steps to do this, but what this does is it uses GitHub Actions.
+
+00:02:33 So you come down here and you can go to GitHub Actions.
+
+00:02:35 And basically, when you're choosing a GitHub Action, there's like this marketplace or this catalog of pre-built actions that you can choose from as templates or whatever.
+
+00:02:44 And then it opens up a text file that you basically type in the bits that you need changed.
+
+00:02:50 So you go to the GitHub Actions And there's one called fork sync with upstream action from the actions marketplace.
+
+00:02:59 And you can see it says on the schedule, once every day at 7 a.m.
+
+00:03:04 What we're gonna do is we're gonna run on Ubuntu, guessing Docker image.
+
+00:03:09 It's going to check out the, your project.
+
+00:03:13 And then it's going to pull the upstream changes.
+
+00:03:16 It's gonna add the upstream origin, gonna line up the branches, do the checkout, and then just merge that in and push it back.
+
+00:03:23 So pretty straightforward to do.
+
+00:03:25 I ran this on some projects and, you know, one of the recent changes at GitHub and moves is to get away from like master branch terminology.
+
+00:03:35 And now that's all called main, but I had some that when I forked it previously and it was master and it became main, I had some challenges trying to like, I think I just chose poor examples to try to work from.
+
+00:03:46 So I didn't quite get this working perfectly, but people with more GitHub action experience than I have, I'm sure they can make it work.
+
+00:03:53 So this seems like a really cool way to just say, yes, I wanna fork something, and please just stay up to date.
+
+00:03:59 - This is definitely neat for something where you're actively working on it a lot.
+
+00:04:03 I think if you're just trying to train something out and forking it for a little play yard thing, I definitely wouldn't turn this on, but with a team where you're all working on the same code, you definitely want something like this.
+
+00:04:18 >> I hadn't really thought about it from the team perspective, because a lot of the Git flow with Teams thing is fork it, make changes, and do a PR.
+
+00:04:28 Also, sometimes people just create feature branches and do a PR within the repo.
+
+00:04:33 But if your mode is to create your own repo, and then do the PRs back to the main repo, I can see that this being really helpful.
+
+00:04:41 >> Yeah. We use a method in GitLab where the main repo has to know where all the forks are, but it doesn't push every time there's an update to protected branches.
+
+00:04:54 >> I see. That's cool.
+
+00:04:55 >> I was thinking about using something like this for some of the projects that I do, where there are folks that will take datasets and they're just stored as CSV files and they're sitting in repos.
+
+00:05:07 I'm like, well, if I have access to this data and I want to do some project with Elon or another tool that I use, then I have to then go and just manually download their CSV file and update it every time I'm about to present on that dataset.
+
+00:05:23 Whereas if I just say, "Hey, I can fork their code and then build my project off of their repo, and then set this up so that anytime they update that one area, it's just always up-to-date for me.
+
+00:05:36 I don't have to think about it.
+
+00:05:37 I don't have to go in and go, "Oh, hey, was there an update?" It's just constantly running in the background.
+
+00:05:42 I know you mentioned, Mike, at the beginning, GitHub is working to make a lot of this easier.
+
+00:05:47 I mean, I feel like their mission now that they control like 90 percent of the Git surface out there on the Internet is to just make lives easier for the people that are using their products.
+
+00:05:58 So I think that stuff like this, stuff like having just a simple notification that says, hey, this, you know, your upstream branch is, you know, ahead of you.
+
+00:06:07 Click here and we'll we'll get everything merged in.
+
+00:06:10 and the less GitHub commands I have to try to put in to remember that I am going to mess up 100 percent of the time, the better.
+
+00:06:18 >> Yeah. It's so close to having this built-in.
+
+00:06:20 You've got the button that says, right now sync this, if it just had a checkbox or something, and just keep doing that when you see these changes.
+
+00:06:28 Like basically install this automatically for me, that'd be fantastic.
+
+00:06:32 Maybe when you fork it, I want to fork it and I want it to stay up to date.
+
+00:06:36 I guess probably the hesitation is certain things, it requires certain behaviors.
+
+00:06:40 For example, you shouldn't be making direct changes to the branch that you're thinking with because you might end up with merge conflicts.
+
+00:06:48 You have to work on a separate branch and I don't know, it probably gets complicated, but I would love to see this more automatic.
+
+00:06:52 >> Yeah, that's cool.
+
+00:06:53 >> Brad, I'm trying to remember what the next topic was.
+
+00:06:56 My memory is not that good.
+
+00:06:57 What do you? You know, don't you?
+
+00:06:59 >> Yeah, memory usage.
+
+00:07:02 You actually have a talk about this, don't you, about memory?
+
+00:07:04 >> I do. I've spoken about it before for sure.
+
+00:07:07 >> Yeah. This is a cool article by Itamar, I think his name is Itamar, is that right?
+
+00:07:13 >> Yeah.
+
+00:07:13 >> Anyway, it's a nice, easy to follow discussion.
+
+00:07:16 But there's a cool example he goes through where it's just a neat one-liner to allocate three gigs of memory.
+
+00:07:28 It's a neat thing with NumPy, just allocating a byte array or 1024 by 1024 by 1024 by three matrix.
+
+00:07:42 Some clever math there, you get three gigs.
+
+00:07:45 But it actually works and then it goes through and uses PSUtil to read the memory and figure out how much is there.
+
+00:07:56 I paused at this point when I was reading the article to go and find out what all this stuff does.
+
+00:08:02 When allocating a ones array, you can NumPy as a way to just pre-allocate a bunch of ones, which is neat, and you give it a shape of what the vector shape is that you wanted in.
+
+00:08:15 But then also this process stuff, it's an RSS and I'm used to RSS being really simple syndication.
+
+00:08:22 No, RSS is resident set size, which essentially translates to the resident memory, which is essentially how much RAM you're using.
+
+00:08:33 Anyway, how much RAM are you using?
+
+00:08:35 We're using three gigs, a little bit more.
+
+00:08:37 Then he does something that I was surprised by, goes out and just opens a couple of browsers, Windows, and then goes back and checks again, and suddenly it's down, it's way down.
+
+00:08:50 I tried this and I can't get it to go really far down.
+
+00:08:53 That's because your computer is managing memory and taking some stuff out of RAM and putting it on disk and saving it till later.
+
+00:09:03 >> I see. It's using the memory, but it's not currently actively loaded as RAM.
+
+00:09:09 >> Yeah.
+
+00:09:09 >> Got you.
+
+00:09:10 >> So basically, this is a little bit of a tutorial on how memory works with your computer and what the difference between allocated memory is and peak allocated memory and resident memory.
+
+00:09:22 And the allocated and peak allocated is like the max that's allocated at the time.
+
+00:09:26 And it's kind of too much to go into in this conversation, but it's a really interesting discussion.
+
+00:09:33 And he also talks about how to measure these using what the PSU tell for one.
+
+00:09:37 And then also for the peak allocated memory, he used a profiler called fill.
+
+00:09:43 So I thought I learned a lot in just a few minutes reading this.
+
+00:09:47 - Yeah, very nice.
+
+00:09:48 Yeah, NMR is doing all sorts of cool stuff with memory analysis and profilers and whatnot.
+
+00:09:55 >> There's a surprise in here of if you fill it with ones, you actually get three gigs, but if you do the same thing with zeros, you get nothing.
+
+00:10:05 Python and NumPy figure, it's just zeros.
+
+00:10:08 We'll just remember that there are zeros and until you actually do something with it, we won't allocate it.
+
+00:10:14 >> It's like a lazy allocation or something?
+
+00:10:16 >> Yeah, I guess.
+
+00:10:17 >> Yeah, interesting. What I was going to say is, Another thing that's tricky is like this is using PSUtil.process.memory to analyze it. It's just what, how much memory is the process using, which is not always the right way to think about how much memory you're sort of demanding, because the allocation in Python, you know, you allocate in blocks, big blocks of memory, and then the blocks are managed in pools, and then the pools are managed in arenas.
+
+00:10:43 And there's a lot of pre-allocation and then reuse, but you end up with like over-allocation and then eventually filling those up with things.
+
+00:10:51 And so it gets pretty interesting about actually understanding precisely how much memory and what's using it.
+
+00:10:59 It's not quite as straightforward as just how much process memory is being used.
+
+00:11:03 But that's still a decent proxy, right?
+
+00:11:05 I just want to know how I can subscribe to that RSS feed.
+
+00:11:10 I know.
+
+00:11:11 I had the same thought when I saw it.
+
+00:11:13 All right.
+
+00:11:14 Jay, you got the next one.
+
+00:11:15 What we got here?
+
+00:11:16 All right.
+
+00:11:17 This originally came from a video that I saw trying to solve a problem that I had.
+
+00:11:23 I had to do some deep searching to figure out whether or not we'd talked about it before if you all talked about it before.
+
+00:11:28 But we all know F strings now.
+
+00:11:31 We love F strings. F strings are awesome.
+
+00:11:34 F strings can do a lot.
+
+00:11:36 Sometimes folks don't realize how much F strings can do.
+
+00:11:41 Like for instance, did you know if you put an equal sign after a value, it will actually give you the variable that you've provided, equals, and then whatever the value is, which I think is awesome when it comes to logging and figuring out other information.
+
+00:11:54 But one thing I did not know is that you could use F-strings to format date-time objects just right in the F-string.
+
+00:12:04 >> Nice.
+
+00:12:04 >> You don't have to do like date-time.stringFformat, or all that stuff. You can just do F-string, the date time variable and then the F string format code that you would use to format it normally.
+
+00:12:21 That's over here in this.
+
+00:12:23 If I just scroll down, you can see here where in this example, they use just date time, date time now, and then now colon, the format.
+
+00:12:32 I saw that and my mind was blown because that means I now have to go back through a bunch of code and remove all of the string format like parsing and just throw it directly into the datetime field.
+
+00:12:46 I'm kidding. I'll also just throw out there, sometimes you want to have that stuff separated so that it can be used elsewhere, and you don't have to constantly rewrite it.
+
+00:12:55 But we now have another way to format our datetimes.
+
+00:13:00 But sadly, it still probably sucks with dealing with time zones because datetimes are hard.
+
+00:13:07 >> They are hard. I think it's totally non-obvious that you can have variable colon some format string and an F-string, but it's really nice.
+
+00:13:15 The one that I use the most is colon comma for digit grouping.
+
+00:13:19 I'm like, here's two million such and such, and I wanted to do two comma, three digits comma, three digits.
+
+00:13:26 >> I knew that you could do something like that.
+
+00:13:28 I didn't know that that was how you did it.
+
+00:13:31 Thank you for adding that to my list of things you can do with F-strings.
+
+00:13:35 >> Yeah. I know when you spoke about Brian is to do like the variable equals, which Jay alluded to where it prints out the name of the variable equals the value of the variable. Do you use that often?
+
+00:13:48 >> I use it all the time because I'm a printf debugger person.
+
+00:13:54 >> Let's see some comments from the live stream.
+
+00:13:56 Hey Magnus, FString is cool.
+
+00:13:59 I find selecting between repper and string and FString is really useful.
+
+00:14:04 That's very neat.
+
+00:14:05 Dean, hey Dean, how can I keep the formatting as a variable?
+
+00:14:10 - Can't you just assign it as a variable?
+
+00:14:12 Just say-- - Can you use it in the F string?
+
+00:14:15 Probably. - Maybe you've got to call str of the variable, I don't know.
+
+00:14:20 - Oh man, well that's where you start getting the bang art, like the exclamation point R to just force it to do a repper on whatever you provided.
+
+00:14:31 Again, not saying that you should do it that way, But I mean, probably could.
+
+00:14:36 >> Yeah, definitely.
+
+00:14:38 Sam out there in live streams says, "How have I never heard of these?" Yes, I know. It's amazing.
+
+00:14:43 Amazing, amazing. All right.
+
+00:14:44 I want to throw in a quick thing I want to add to that really quick, F strings.
+
+00:14:49 If you find yourself with a bunch of code that has been around for years, pre 3.6 and you're like, it's got who knows how many variations of formatting strings in it and you just want them all to be F strings, You can use flint, F-L-Y-N-T.
+
+00:15:05 Run that against the top level of your directory.
+
+00:15:07 Boom, everything's F strings.
+
+00:15:09 It looks great. I did this on like 20,000 lines of Python code project.
+
+00:15:14 It had one error, I submitted it to them, they fixed it, and yeah, it was really neat.
+
+00:15:18 >> That's cool.
+
+00:15:19 >> Cool, cool, indeed.
+
+00:15:20 All right. What's the next one here?
+
+00:15:23 I guess I got the next one, don't I, Brian?
+
+00:15:25 >> Yeah.
+
+00:15:25 >> Cool. Well, this one I went back a little bit, back and forth on whether or not I actually wanted to feature this, 'cause it's a little bit recursive, I guess.
+
+00:15:34 So I did a talk for Manning.
+
+00:15:35 They had a developer productivity conference talk or a conference.
+
+00:15:40 Jay, were you part of that?
+
+00:15:41 - I was not part.
+
+00:15:43 I am hearing about this for the first time and I'm very upset. - I feel like you should've been part of this.
+
+00:15:46 I know, like how did you not bring me here with your podcast and all?
+
+00:15:49 So the conference was interesting.
+
+00:15:52 There was some really neat talks.
+
+00:15:54 There were some other talks that I'm not really sure abided by the beam of the conference.
+
+00:15:58 They were just like, "Well, here's a random tech talk." I was like, oh, okay, well, but that's not productivity.
+
+00:16:02 Anyway, I tried to abide by the theme.
+
+00:16:04 So I came up with a talk called 10 Tips and Tools You Can Adopt in 15 Minutes or Less to Level Up Your Developer Productivity.
+
+00:16:12 So really what I wanna do is just give a quick shout out to like the 10 tips and people can go, if they're really interested, they can seek around the video and go find that or email me and I'll send you the slides.
+
+00:16:22 So one of them is to use a proper shell.
+
+00:16:25 Like I find every now and then I run into people and they're just running, you know, the whatever comes out of terminal in Mac OS, or they're just using cmd.exe on Windows.
+
+00:16:34 And it's like, how can you go day to day?
+
+00:16:36 Like there's so much possibility there, right?
+
+00:16:40 So, you know, consider things like, oh, my Z shell or oh my posh.
+
+00:16:43 I just installed oh my posh on the Windows terminal with the new PowerShell on Windows.
+
+00:16:49 And that thing is so much nicer than what you had before.
+
+00:16:51 That's cool.
+
+00:16:53 So get a proper terminal with some of those options.
+
+00:16:55 Use, if you're doing anything on the web, use secure.py, which just adds all the OWASP secure headers that you're supposed to do.
+
+00:17:04 Like don't allow your site to be embedded in an iframe and cross-site scripting and stuff.
+
+00:17:08 Automatically it supports like 10 different Python web frameworks.
+
+00:17:11 And if you're on some other technology, there's things like inwebsec, which does the same thing for ASP.net, or I'm sure you can Google another one.
+
+00:17:19 Tip number three, pick a nice GUI for your get work.
+
+00:17:24 Sometimes it's fine to do stuff on the command shell, but around the CLI, but it's really nice to have visual use of like branching and whatnot.
+
+00:17:33 So think of like SourceTree or even PyCharm and VS Code.
+
+00:17:36 Sync your GitHub forks, just talking about that.
+
+00:17:38 So keeping that going.
+
+00:17:39 Use a proper log framework like Loguru or even Sentry.
+
+00:17:43 Use Let's Encrypt.
+
+00:17:45 Number seven, you can go and just get your site map and request every URL at that destination in your site map.
+
+00:17:53 And that's a way to just like make sure your site's not gonna die.
+
+00:17:56 you could put that as an integration test.
+
+00:17:58 Use PageSpeed Insights to make sure your SEO is good and your site's responding well.
+
+00:18:03 Use Homebrew or Chocolaty on Windows.
+
+00:18:05 And then the very last one is set up Dependabot.
+
+00:18:07 Or even some of the stuff that we talked about, Brian, start using pip compile with a .in file.
+
+00:18:14 And you can tell it to upgrade the requirements whenever you run some CLI command and it'll regenerate your requirements.txt based on all the dependencies and it gives you a really nice organization like this sub-dependency is here because of these three things you've installed in your main requirements.in and so on.
+
+00:18:34 There's 10 quick tips that people can go play with and they can check out that short video if they're interested.
+
+00:18:40 - I mean, I know 11 quick tips wouldn't have been an amazing brand, but I feel like virtual environments, like not brought up at all, that was--
+
+00:18:50 - Yeah, that's true, that's a good point.
+
+00:18:52 Yeah, I mean, you should have been in the conference, I'm pretty sure.
+
+00:18:55 I'm man.
+
+00:18:56 Yeah, only I know about it.
+
+00:18:57 Well, Dean, do some people not use virtual environments?
+
+00:19:01 Dean also have as an 11 there, maybe 12 now close that Facebook tab.
+
+00:19:06 Yeah, I'm surprised at how many people don't use virtual environment still, or even I don't want to say something like using like Pippin for poetry or anything like that, mostly just because I don't have a lot of experience with them.
+
+00:19:18 but what is it, virtual environment wrapper or even high-end.
+
+00:19:25 Just really great tools to make sure that everyone's operating on the same Python version, and that if you need to run Python 3.5 on one thing because your code isn't set up for it yet, and then you want to run 3.9 on something else.
+
+00:19:40 Having tools like that, that once you learn them, they're so phenomenal and just so easy to use.
+
+00:19:47 >> I wonder if the overlap of the people that have a Facebook tab up are the same people that don't use virtual environments.
+
+00:19:54 >> Probably.
+
+00:19:55 >> Probably. Notifications as well, turn off notifications.
+
+00:19:59 Don't let Outlook or other things like that send you, don't let your e-mail send you messages, they're like pot toast, right?
+
+00:20:05 >> Turn on do not disturb.
+
+00:20:07 >> Yeah.
+
+00:20:08 >> Before we move on, Dean mentions in the chat for the f-string thing, you can put layers of curly braces in there.
+
+00:20:18 >> What? Like fString within fString? No way.
+
+00:20:21 >> Yeah.
+
+00:20:22 >> I feel like we're reaching a dangerous point.
+
+00:20:24 >> No, that's awesome. That's so cool. Love it.
+
+00:20:27 >> For people who are listening, I'm not seeing this.
+
+00:20:30 >> I'll put it back up.
+
+00:20:31 >> For people listening, you would normally have an fString, you say f, quote, curly bracket variable close curly, and with the format as a colon.
+
+00:20:38 Dean is saying that if you put as the format string, curly variable that contains the format curly.
+
+00:20:45 Curlies within curlies, that'll do it. That's awesome.
+
+00:20:47 Thanks. I had no idea and I have no idea how you found that out, but that's good.
+
+00:20:51 >> Yo, dog, I heard you like curly braces.
+
+00:20:53 >> I love them. Very cool.
+
+00:20:57 >> All right. Let's see.
+
+00:20:58 I'm next. Cool.
+
+00:21:00 I want to cover a cool article from Vitor, called How to Start a Production-Ready Django Project.
+
+00:21:09 This is just a fun project article because it's focused on Django definitely.
+
+00:21:15 But I think a lot of this advice is just a good idea for any web app or I guess it's mostly web app stuff.
+
+00:21:23 But anyway, it's worth a look even if you're using some other framework.
+
+00:21:29 He starts out, just said at the beginning, when you get started project, just start it out right.
+
+00:21:35 One of the things that I thought was neat was making sure that you set up a local environment, a test environment, and a production environment.
+
+00:21:44 The easiest and most important is the local environment so that new developers can get up really quickly and just start, clone, and go. I think that's really important to make sure that that's working well and easy.
+
+00:21:58 Then almost as important, and I would say maybe more important, but is a test environment.
+
+00:22:04 If you're swapping out a different database or something for your test, making sure that that's configured and set up so that the developers when they're contributing can easily run the tests before they submit code to you.
+
+00:22:19 That's really important.
+
+00:22:21 Then the production environment and the setup for that, that is an interesting argument that that can be more complicated, that can be a different thing because most of the people involved in the project aren't really going to run that.
+
+00:22:33 it's just a handful of experienced developers.
+
+00:22:35 I think that's cool. After setting up the environment stuff, it covers making sure that you have Git or some other version control set up, and use virtual environments.
+
+00:22:45 There you go, Jay. Make sure that you're doing virtual environments.
+
+00:22:50 But then, there's a section on requirements, the text files that I think is amazing.
+
+00:22:55 Maybe everybody knew this already, but it hadn't occurred to me, is to have a directory instead of just a file and have several of them.
+
+00:23:04 The example has a base one, a test one, a local one, and a production one, and they can include each other.
+
+00:23:11 All of them include the base, and local also includes text.
+
+00:23:15 Whatever your environment is, you can just install one of these and it's the right one.
+
+00:23:20 Although the project stuff is all in the base, so everybody uses that.
+
+00:23:25 It's a pretty cool idea. I've never done that.
+
+00:23:28 Have you done that? Either of you used that model before?
+
+00:23:32 >> No. I'm terrible.
+
+00:23:34 I just put everything in environment variables and then I never have to change my code.
+
+00:23:38 I just have to change my environment variables depending on what area of system I'm in.
+
+00:23:43 >> Yeah. That discussion was around the requirements, but there's also a similar discussion around the settings.
+
+00:23:51 The settings set up to make sure that you've got where the database is, where your server is, and all that stuff, and have those set up and switched for local test and production, and just getting all of that stuff set up ahead of time right at the beginning of the project.
+
+00:24:08 Included a couple of things I was surprised to see was making sure that you've got a consistent set of linting and styling tools like Black or Flake 8 or iSort, and then also editor configurations.
+
+00:24:21 You might make the whole team more productive if you just go ahead and store your editor configurations in the project.
+
+00:24:28 I never considered doing that.
+
+00:24:31 >> Yeah. One thing that's really cool is for PyCharm.
+
+00:24:34 I don't know how VS Code works.
+
+00:24:35 There's maybe something for it as well.
+
+00:24:37 But in PyCharm, you can go and customize the code cleanup and formatting and rules of what it inspects and how it'll fix them.
+
+00:24:44 Then instead of saying, "Save that in my user profile," you can say, "Save this in the PyCharm project." So if other people on the team open it up and it won't show squigglies if like your convention is different than pep eight or if you format it, it won't jump around and stuff.
+
+00:24:59 That's cool.
+
+00:25:00 And then of course there's some Django specific stuff like application structure and stuff, but I think, like I said, even if you're not using Django, this is a good set of things to look through.
+
+00:25:09 Yeah.
+
+00:25:09 Yeah.
+
+00:25:10 Cool.
+
+00:25:10 I guess I do the thing with the requirements have like a dev version that's based on the production version and whatnot.
+
+00:25:15 But, yeah, with settings, I hadn't really thought about that.
+
+00:25:18 That's cool.
+
+00:25:18 Neat.
+
+00:25:19 Indeed.
+
+00:25:20 Indeed.
+
+00:25:20 let's see, Jay, you got the next one?
+
+00:25:22 I do.
+
+00:25:23 and just as I always try to bring some type of productivity app, tip or trick.
+
+00:25:30 This time it's a Mac app.
+
+00:25:32 I'm sorry, folks in Windows land, it's Mac only, but I'm sure you could do something similar with like AutoHotKey or one of the similar tools, but I'm talking about a program that a friend of mine, Brett Terpstra, made called Bunch.
+
+00:25:47 It is interesting in how simple yet complex it can get.
+
+00:25:51 So those that don't know, I work on, I help Mike out from time to time, more specifically with the Talk Python newsletter.
+
+00:26:01 And this is literally the bunch that I run every time I start working on the newsletter.
+
+00:26:09 So the thing about bunch that's really cool is when it uses front matter to set up a bunch of different settings within the program.
+
+00:26:17 So that's what you see at the top.
+
+00:26:18 But now here's the title of the thing.
+
+00:26:19 I want it to run sequentially, not parallel.
+
+00:26:22 And then if I want to open an app, I just type the name of the app.
+
+00:26:26 If I want to open Windows within that app, I just add a dash and provide the URLs or the file names for those files.
+
+00:26:35 If I want to run--
+
+00:26:36 - So you've got like Safari and then it has three nested things that are URLs.
+
+00:26:40 So what it does is it opens Safari and then launches those three tabs?
+
+00:26:44 - Yep, perfect.
+
+00:26:45 - Okay.
+
+00:26:45 - And I actually don't even have to tell it to run Safari.
+
+00:26:48 I just do here so people reading it can make sense of it.
+
+00:26:52 If I just put three URLs on there, it would just open up whatever the default browser is, and then open those files.
+
+00:26:58 But by putting Safari in front, I tell it specifically open these in Safari.
+
+00:27:02 If you work with Chrome or if you want to do something like testing on multiple browsers, you could put each browser and then dash whatever the URL is for that.
+
+00:27:12 But the thing I like about this is it also supports things like X callback URLs, which are a URL structure for running commands in applications that support it.
+
+00:27:24 You can add system commands and commands to bunch itself like throwing a pause in.
+
+00:27:29 If I wanted to actually go in and type, like at the end whenever I finish the newsletter, I open up messages, I hit Command F, which is that @ sign and F, pause for a second because sometimes my Mac is slow, and then I type in Michael Kennedy and hit "Enter".
+
+00:27:46 and you can even do some conditional stuff.
+
+00:27:49 Like I have an Apple script that just checks the date.
+
+00:27:52 If it's in the date range that I need to, to make sure that I send bills off properly, then it also will open up, you know, Stripe and let me do my processing thing.
+
+00:28:02 But it supports shell scripts, which means it supports Python.
+
+00:28:06 I actually do have a couple that I'm running.
+
+00:28:09 Well, I haven't ran in a while, but it just opens up and it kind of does similar to what we were talking about in the first topic of like just going in and making sure that projects are up to date because I will forget the commands or I will mess them up.
+
+00:28:23 And it's easier if I can just follow along with what it's doing.
+
+00:28:25 And there's a lot of different tools here.
+
+00:28:27 I don't have enough time to talk about all the things it can do.
+
+00:28:31 One of Michael's tips that he left off, setting do not disturb.
+
+00:28:34 I can do that by just typing in parentheses DND like that.
+
+00:28:39 And it'll set do not disturb whenever this runs.
+
+00:28:42 - And you said something like this as a part of your your profile shell set up so when you log in, it kicks off one of these to configure your environment the way you like it.
+
+00:28:54 >> That's the cool part of-
+
+00:28:56 >> For example, I want to log in and I want the first hour to have no notification so I can just focus when I got energy in the morning and then turn off D&D later or something like that.
+
+00:29:04 >> That's the cool thing with Front Matter is you could just say, start on and if I start my day at 7 AM, I just put start on 7 AM, and I would just create a second bunch that says, start on whatever I wanted to end, and then it would turn it off, like D&D off.
+
+00:29:22 I think you can actually even do a close on.
+
+00:29:25 I can even say close on 8 AM like that.
+
+00:29:29 I don't know about that last one, I have to test that.
+
+00:29:32 But there's start at, so you can have it run on certain days of the week.
+
+00:29:36 There is not a way natively to have it run on a certain day of the month.
+
+00:29:40 It doesn't have cron support, but there is a workaround that I've highlighted in another video.
+
+00:29:45 Which speaking of, I talked about this on my YouTube channel, which is youtube.com/KJMiller, my handle on everything that I do.
+
+00:29:54 >> That's cool. You got a nice YouTube video that walks through this, right?
+
+00:29:56 People can check that out.
+
+00:29:57 >> Yeah. I break down everything that's happening in this particular bunch, like even the Apple script, which is actually JavaScript, but it's fine.
+
+00:30:07 >> I would have expected D&D to send out Dungeons and Dragons invites to random people.
+
+00:30:13 >> Well, funny enough, if you had a bunch called D&D, you could just do D&D.bunch like that and it would just run it.
+
+00:30:19 That is doable.
+
+00:30:22 >> Nice.
+
+00:30:22 >> We can make that happen.
+
+00:30:23 >> Yeah. All right. Everybody gets some Mountain Dew, order a pizza, show up and how's this going to go?
+
+00:30:28 >> Exactly. By the way, Bunch is free.
+
+00:30:31 If you go to bunchapp.co, you can just install it and run it for free.
+
+00:30:36 Again, the developer, it's a solo developer, Brett Terpstra, he makes other mad science on the Internet.
+
+00:30:42 I believe he works for Oracle now, just recently.
+
+00:30:46 Yeah, and then if you're an Alfred user, which I don't have a good way of showing you what Alfred is, but if you know, you know, I am the maintainer.
+
+00:30:56 >> It's like the command space for Mac or the PowerShell little pop-up search in Windows, but as a dedicated app that does more, right?
+
+00:31:05 >> Exactly. I am the maintainer of the official, unofficial Bunch workflow for Alfred.
+
+00:31:15 If you ever need help with that, you know who to yell at, that'd be me.
+
+00:31:18 >> Fantastic. That's a cool one. A nice find there.
+
+00:31:21 >> Cool.
+
+00:31:22 >> All right, Brian, is that it for us? Our main items?
+
+00:31:24 >> That's it for our main items. Do we have anything extra?
+
+00:31:27 >> I was thinking no, and then actually yes.
+
+00:31:31 I just ran across this.
+
+00:31:33 We talked about GitHub Copilot.
+
+00:31:35 In fact, that was the title of last week.
+
+00:31:37 >> Yeah.
+
+00:31:38 >> It was like GitHub, your pilot speaking or something like that, and how both mind-blowing and good and possibly crazy, not necessarily good ways that the Copilot was, and it was pretty interesting.
+
+00:31:51 >> Yeah.
+
+00:31:51 >> There's an article over on the Verge, and I had pointed out, what is the transitive license here?
+
+00:31:59 If you have a GPL license and then you filter it through ML, is the transit of a property applied to the GPL basically was my question, right?
+
+00:32:09 And so there's an article over on the Verge call that says, GitHub's automatic coding tool, aka GitHub Copilot, rests on untested legal ground.
+
+00:32:18 So there's one section in here, it says, despite GitHub's assertion, there's no direct legal precedent in the United States that upholds publicly available training data as fair use.
+
+00:32:30 So anyway, people are interested in this, they can check it out.
+
+00:32:33 I think there's also a caveat there too of what GitHub is doing is on untested ground and your usage of what GitHub is doing is also on untested ground.
+
+00:32:45 Not saying that you can or can't use this, but just know that even if GitHub wins a lawsuit saying that they're good, you may not want to be the person to have to test the lawsuit of whether or not you're going to be good.
+
+00:33:01 Again, I'm not a lawyer, so I don't even pretend to be one.
+
+00:33:05 >> Yeah.
+
+00:33:06 >> I play one of my team.
+
+00:33:07 >> It's a cool project though.
+
+00:33:08 >> Yeah. It is quite cool.
+
+00:33:11 All right. Dean, I always appreciate the help in the comments.
+
+00:33:14 Time for some extra, extra, extra, extra, extra.
+
+00:33:17 This time actually, no, I almost had no extras at all.
+
+00:33:19 I was feeling bad, but just the one.
+
+00:33:22 >> Yeah. Okay. I wanted to share something exciting.
+
+00:33:26 >> Also, one more thing. I don't know if I click this or you click it.
+
+00:33:29 But Magnus says, I also saw that CoPilot spouted API keys.
+
+00:33:33 So we've heard of Shaget and other, don't put secrets in here, but here's yet another interesting way.
+
+00:33:38 You want to connect to AWS?
+
+00:33:40 Here, here's the API key.
+
+00:33:41 >> Here's the API key.
+
+00:33:42 >> Oh my goodness.
+
+00:33:43 >> That's awesome. Go ahead and try it.
+
+00:33:45 Why not? You don't know who's paying for that.
+
+00:33:47 >> It's free. It's free for you.
+
+00:33:49 >> Yeah. So I'm continuing to work on the PyTest book.
+
+00:33:53 Just got the configuration chapter turned in.
+
+00:33:56 It's not available in the beta yet, but it will be within the next few days.
+
+00:34:00 Configuration stuff, it's all fun.
+
+00:34:03 Then I'm excited to get working.
+
+00:34:05 The next chapters I'm going to start working on are talks in CI and the search path and debugging, and those will be fun chapters.
+
+00:34:11 I just wanted to share where I'm at there.
+
+00:34:13 >> Awesome. You're almost there.
+
+00:34:15 >> Yeah.
+
+00:34:16 >> Then I had an extra too, but it's so silly, but it's just fun.
+
+00:34:21 I have to stop sharing that and I have to share another window now. Thanks.
+
+00:34:24 >> Thanks, Tremie.
+
+00:34:26 >> Thanks for that.
+
+00:34:27 >> I found a new tool to play with.
+
+00:34:29 It's called Monodraw, which is a very interesting tool.
+
+00:34:35 I don't know what most people would use it for, but I've been using it as an outline and planning tool, and I'm going to show you what I do with it.
+
+00:34:44 I'm going to add a text here, and it's going to say, "Hi Python Bytes crew," and I'm going to hit "Done".
+
+00:34:51 >> For people listening, this is like drawing on graph paper.
+
+00:34:55 >> Yeah. What happens if I expand this out and I tell it I want it to be a banner?
+
+00:35:04 >> What?
+
+00:35:05 >> That's pretty fun. It turned it into ASCII art and stuff.
+
+00:35:10 >> Yeah. This is a way to actually build ASCII art outlines.
+
+00:35:17 They have a bunch of different versions.
+
+00:35:20 I've used this on a couple of projects.
+
+00:35:23 I'm trying to see if I have one that I can load up real quick for a video that I've made.
+
+00:35:28 When I say it doesn't make sense why this works for my brain, it truly doesn't.
+
+00:35:35 But when it comes to, did it not move it to the right window?
+
+00:35:40 Hold on. Thanks again, StreamYard.
+
+00:35:43 >> I want to use this for my next status report and just do the entire status report in AskYard.
+
+00:35:49 >> Yes.
+
+00:35:50 >> So funny you mentioned that.
+
+00:35:51 >> Put it as a comment and check it in.
+
+00:35:53 Funny you mention that because when I do my video planning, I do it in this format and it's great because you can, you know, you can move stuff around, you can draw arrows, you can highlight different sections and, you know, know how everything is going to look there.
+
+00:36:09 And when I, when I say like, I was able to, in a normal time it would take for me to do a video, I like cut that time in half by just drawing an outline out using the different ASCII art to, to make things work.
+
+00:36:22 I'm going to build presentations with this.
+
+00:36:25 I don't know, I'm going to give a conference talk using ASCII art one day.
+
+00:36:29 >> You could write it both like this.
+
+00:36:30 >> You can copy and paste, but you can also export it as PDF.
+
+00:36:35 Let me see what options I have here.
+
+00:36:37 You can export as PDF, scalable vector graphics, or I'm sorry, ping text or SVG, those three.
+
+00:36:46 For some reason, I thought there was a PDF version in there, but there is not.
+
+00:36:49 >> Cool.
+
+00:36:50 >> Sean out there was asking if you you could export the art.
+
+00:36:54 And hey, John, co-host of the Teaching Python podcast.
+
+00:36:58 - And I guess the thing is it is $5, and I have a link in the show notes for it as well.
+
+00:37:06 But really fun tool.
+
+00:37:07 I haven't figured out all of my use cases for it, but I know that creating outlines and stuff has definitely been a very interesting and effective way of using it, and it's called Monodraw.
+
+00:37:18 And again, it's a Mac-only app.
+
+00:37:19 I'm sorry, Windows folks, but I'm sure that there's something out there.
+
+00:37:23 And if not, build it.
+
+00:37:24 - Yeah, or get one of those weird Mac OS in the cloud as a service.
+
+00:37:29 - That's true.
+
+00:37:30 That one was Mac only to my knowledge.
+
+00:37:34 - Yeah, yeah, yeah.
+
+00:37:35 All right. - All right.
+
+00:37:36 - Brian, how about you?
+
+00:37:37 - Yeah, I think it's time for a joke.
+
+00:37:39 Okay, so imagine that we're here meeting for a startup and we're trying to figure out, we're gonna create some new API here and we just are having a bit of a trouble.
+
+00:37:50 So let's see.
+
+00:37:52 So this is like a little bit of a comic strip.
+
+00:37:54 And I guess Jay, you wanna be the person at the computer, I'll be the bearded dude, and Brian, you can be the guy with the glasses, other guy with glasses.
+
+00:38:01 All right.
+
+00:38:02 So they're trying to think of what to name this API, right?
+
+00:38:05 Or this thing, so data?
+
+00:38:08 - Nah, too generic.
+
+00:38:09 - How about data DB?
+
+00:38:11 - Unclear.
+
+00:38:12 - Well, let's say list completed.
+
+00:38:15 - Already used that.
+
+00:38:16 - Array list data completed then?
+
+00:38:19 >> Nah, we must choose now or the client might cancel the project.
+
+00:38:25 >> Well, how about ArrayList completed from form without duplicate?
+
+00:38:31 >> Nah, it's too long.
+
+00:38:33 >> Then the next panel has a newspaper clipping that says unable to name variable, they go bust.
+
+00:38:39 >> Yeah, exactly. Go out of business.
+
+00:38:41 They couldn't choose naming. That is one of the hard problems in computer science, is naming.
+
+00:38:45 >> Yeah, definitely.
+
+00:38:47 I didn't see completed form without duplicates.
+
+00:38:53 That's what I see. It's almost like the array list, which if you're making good readable code, you would know that it's an array list.
+
+00:39:03 >> Exactly.
+
+00:39:04 >> I would say, yeah.
+
+00:39:05 >> You only need this type name.
+
+00:39:06 >> Do completed form without duplicate.
+
+00:39:08 >> Well, you would have saved them.
+
+00:39:09 They'd still be in business.
+
+00:39:11 >> Or unique, like completed unique.
+
+00:39:15 >> Just everybody just use foo, bar, and baz, and then nobody will complain.
+
+00:39:20 Do you remember those Microsoft-isms where they would prefix types, variables with their type names?
+
+00:39:29 >> The Hungarian notation like SZ for string.
+
+00:39:33 What the heck was the Z there for?
+
+00:39:34 >> Size.
+
+00:39:35 >> Size.
+
+00:39:36 >> Size, that's right. Yeah.
+
+00:39:38 Oh my gosh, that was dreadful.
+
+00:39:39 >> Terrible. With three characters left over for the actual variable name.
+
+00:39:44 Anyway, cool. Well, this was fun.
+
+00:39:46 Thanks Jay for showing up today and thanks Michael as always.
+
+00:39:50 >> You bet. Bye guys.
+
+00:39:51 >> Bye.
+
+00:39:52 >> Thanks everyone for listening.
+

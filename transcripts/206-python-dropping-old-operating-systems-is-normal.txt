@@ -1,48 +1,786 @@
-00:00:00 Hello, and welcome to Python bytes where we deliver Python news and headlines directly to your earbuds. This is Episode 206. Wow. Recorded October 28 2020. I am Brian Aachen. And I'm Michael Kennedy. And we have a special guest today, Steve downer. Hi, thanks for having me on. Steve. Thanks for coming. It's great to have you here. I also want to throw out that this is sponsored by tech meme ride home podcast, check them out of Python, bicep FM slash ride, Steve. I'm sure many listeners know. But maybe just give us the quick rundown you do cool stuff at Microsoft get in Python better on Windows, and you're a core developer? Yeah, so I'm main day job is from Microsoft, or I work as basically a Python engineer, kind of a wide ranging resource to the company. So I haven't shipped anything of my own in a while. But I've had my fingers in a lot of pattern related things that have gone out recently. So a lot of fun, a lot of bouncing around between different teams getting to work with a lot of different people. And yeah, as you say, I'm a C Python core developer, one of the windows experts on the team. I'm responsible for the builds that got on python.org. And just generally keeping Python running well on Windows. Yeah, that's awesome. And you've done some interesting talks, like Python is okay, on Windows, actually, and talks about some of the popularity of it and how we as a community shouldn't discount it just because we might happen to be on a Mac or use Linux or whatever. Right? A lot of people do Python on Windows. Yeah, yeah, the estimates vary. And and every time I get new numbers, they seem to show up slightly different. So it's real hard to get a good fix on how many Python developers there even are in the world. I did get some numbers recently that I had a few people double check, because they were saying there's like 20 million installs of Python on windows in in the entire ecosystem, which sounded like too many to me. So I had them double check. And then I had someone else double check. And they all came back saying, Yeah, that's about that. So I'm like, okay, there's a lot of Python on Windows out there. But yeah, it doesn't show up in conferences doesn't show up on Twitter that much. And a lot of people just look at the packages that don't work and go, Well, I guess it doesn't exist on Windows, because otherwise this package would work. And so you know, chicken and egg problem, right? Yeah, there's a lot of chicken and egg problems in the Python space. And it's a beautiful place. But there are some of these weird chicken and egg ones. Yeah, it's weird. I've been using Python windows since I started Python. So if I,
+00:00:00 Hello and welcome to Python Bytes where we deliver Python news and headlines directly to your earbuds.
 
-00:02:14 but one thing I haven't been using, very much is he named so that was an attempted a transition. So why not? Brian, tell us more.
+00:00:05 This is episode 206. Wow.
 
-00:02:24 Actually, I've tried many times, I've tried to use enums. And I actually, just to be honest, I don't very much and partly because I'm used to using enums in C and c++. And they're, they just act like symbols in in C and c++, they work pretty good. There is some weirdness with enums in Python, and I'm going to highlight a an article called Making enums. As always, arguably, more pythonic by Harry Percival, he starts off by saying I hate enums. So he's a funny guy. And this is a fairly hilarious look at why enums are frustrating, sometimes. And then he presents a semi reasonable workaround, I think, to make them more usable. So what's wrong with you noobs? Well, he gives an example. And just as a simple enum with string values. And you can't directly if you try to compare one of the new elements to the value, like the value gave like a similar string. It's not equal, it doesn't compare. But you can use a dot value or in the Union value, but that's just weird. He also said, he kind of thinks it'd be neat, if you could do a random choice of all the new values, I think that would be neat. And you can't directly convert into a list, there's just interacting with the new type itself, or the the class itself is, has problems. In the documentation, there is a suggestion that you can use with you can, instead of strings use int and doing into enum, and it works a little better. And if you like it like that, but once strings, you can make your own string, a new class, I'm not sure why they didn't just build this into the default, or, you know, one of the standard types anyway, but stringing him is not there. But there's an example. And it sort of fixes a lot of stuff, but not everything it doesn't still doesn't allow for those direct comparisons. So the solution that Harry came up with is just kind of like the solution, the documentation says, derived from both enum type and stir when you're creating your enum class, but then also define this little snippet of a Dunder stir method. So that stir method works better. And at that point, most of this stuff works that he wants to work, it still doesn't do random choice. But apparently, he's gotten over that a little bit. So I actually think this is really, this is still just a really small snippet, a little like two lines of extra code to add to your ainun types to make them a little bit more usable. So I think it's reasonable if you're judging by, like, value add per character.
+00:00:08 Recorded October 28th, 2020.
 
-00:05:00 This is awesome, because it makes working with enumeration so much nicer. You can do like the natural things that you would expect, especially around testing and comparison. And it's like, also add a drive from stir, and just add a Dunder stir method and you're good. See, what do you think about this? Yeah, I just add the the gotcha that you have by doing this as now you can have two values from different items compare as equal, which as I recall from the original discussions was the reason this wasn't put in by default. So you've got a color enumeration and a fruit enumeration? is orange, the same between the two? And I think the decision was made for enums. To say, No, it's not if it's a fruit, orange, it's different from the color orange, making this change or using an entity you know, is going to make them equal. So as long as you're prepared to deal with that, which, to be quite honest, every time I've reached for enums, I am much happier with string literals. And quite comfortable with them. Matching equal Yeah, but that is just one thing to watch out for. Usually, it's about constraining the list of things like I know, there's five things I want to make sure I don't like somehow mix up with those five R's when I go, you know, class dot, and here's the five, let my editor tell me which one of those it is. It seems like it's all that. So what do you think about if you overrode like, if you added gender EQ, vendor and EQ, so like the comparison would say it has to be this type of enumeration, and the store value has to match? Yeah, that would certainly deal with that. Gotcha. Again, when these were being designed, basically, anything that gets designed and added to Python has a very large group of very smart people work through it. And you know, as a result, things always get missed. So it's possible that one was just missed. It's also possible that someone did figure out a reason why that was also risky. And and, you know, risky, when you're developing one of the most popular languages in the world is just anything that might surprise anyone. So someone has deliberately designed around using enums, everywhere, they're probably not going to be surprised someone who is using code and that developer has swapped out all of their, you know, they had a class with static variables, and they turned it into an enum. And now stuff breaks, because of the defaults that were chosen for them. That's the kind of thing that you're trying to avoid. And, you know, in a language that has anywhere between, you know, five and 20 million, kind of regular users. But as a workaround, I mean, if you know where your income is going to be used, there's a reason you can derive from string and it's exactly for stuff like this. Yeah. Thanks, Harry, for putting out there. That's quite a neat little bit of advice there. And I'm so glad that we have Steve here, because I picked some sort of semi internal type of pieces. And I'm going to make some statements about it. And then Steve can correct me to make it more accurate. And also, we get the core developers but a perspective not they represent all core developers, but at least a slice. Alright, so this next one I want to cover is that Python 310 will be 10% faster. And this is the 4.5 years in the making. So Yuri still have enough. Longo did some work on optimizing, think, was it load attribute? Or was it load method load, a call method do about some of these load operations down at the C Python, C Val level. And then Pablo Galindo, who's also a core developer and the Python 310 311 release manager picked up this work. And now we have load method, call method and load global going faster. So basically, there's some optimizations around those opcodes that make this much faster. And this idea apparently first originated in pi, pi, pi pi. So I'm pretty excited to see that, you know, some simple internals that don't seem to change a whole lot of stuff might make this a lot faster. What do you think, Steve? This one is real, like I was so excited about this, when it was first being proposed. The basis of the idea is that Python keeps everything in dictionaries, which means every time you look up, you know, dot name of anything, it takes that name, makes it a string, turns it into a like, gets the hash value, looks it up in the dictionary finds the value, maybe wraps that up in some extra stuff. Like if it's going to be a method, it's not stored as a method, you turned it into a method when you know what it's being kind of dotted through to get to, and then returns that. That's a whole lot of work. And if you're regularly calling the same method over and over again, why not cache it? That's the heart of this, right? It says that cache around load outer, right? Yeah, it does that cache and the inside the URI had that he made work, and I'm back, I think someone else had suggested it earlier and hadn't gotten it to work was what happens when things change. Because again, as I say, it's we're designing language for many, many people do all sorts of weird things. And if you cache a method, look up, and then someone tries to monkey patch it, you know, we've now broken their code for the sake of an optimization, which, you know, is a no no, in Python. It's like correctness beats performance. In every case, that's just the trade off that the language chooses to make. That's almost always what you want or like, when would you want to be faster and wrong rather than slower and right, I'd be happy with Foster and no monkey patching.
+00:00:10 I am Brian Okken.
 
-00:10:00 But, yes, sure, like, faster and fewer restricted capabilities might be a really good trade off, but faster and wrong. And it's not a good one. Yeah, we did some benchmarking and basically found that there was a way to track all dictionary updates in the entire runtime with a version tag that was not going to instantly overflow and not going to break everything. So it became really easy to say has this dictionary changed since I last looked at it with one single value comparison, and so it looks at that value. If it has changed, it's going to do for lockup again. 99.999% of the time, it hasn't changed. So it can give you the cached value and you saved big dictionary lookup, possibly error handling descriptor protocol, all of this extra stuff that just adds so much weight to every operation. And that's everywhere. I mean, that's everywhere in the language, absolutely everywhere. That's fantastic. One of the things when I was first getting into Python that made me sort of have a sad face was realizing that having function calls was pretty expensive, right? Like having a big call chain, like actually, the act of calling a function has a fair amount of overhead. But I wanted to break my code into like a bunch of small functions to make it real readable. This part needs to go a little faster. Maybe that's not what I want. I you know, and so hopefully this helps with that as well. Yeah, that and vector Cole is another optimization that we got in recently. I think that might have been the pet 509 actually was vechicle also designed to make that faster, just removing some of the the internal steps for doing a function call. Fantastic. And he's like Brian said, this is everywhere. So that's everyone's gonna benefit. This is fantastic. Yeah. Well, we would like to thank our sponsor. So this episode is brought to you by tech meme ride home podcast. This is great podcast for more than two years. In nearly 700 episodes, the technium ride home has been Silicon Valley's favorite tech news podcast. The technium ride home is a daily podcast only 15 to 20 minutes long and even and every day by 5pm. Eastern, it's all the latest tech news. But it's more than just headlines. You could get a robot to read your headlines. The tech meme ride home is all the context around the latest news of the day. It's all the top stories, the top posts and tweets and conversations about those stories as well as behind the scenes analysis. The tech meme ride home is the TLDR as a service, the folks at Tech meme are online all day reading everything so that can catch you up. Search your podcast app now for ride home. And subscribe to the tech meme ride home podcast, or visit Python bytes.fm slash ride to subscribe. Yeah, thanks for sponsoring the show. And Brian, every day. Like we do this once a week, and it's a lot of work. These guys are on it. I could totally do this every day. If I didn't have another job. I wouldn't not have any problem with catching up on Python news daily. So actually sounds quite lovely. I wonder how that podcast is doing now that not so many people are having to commute to and from work. That sounds like one of the things where you hope that you've you've given people the the excuse to tell their employer on my commute between four and 5pm I can't do it. You know, I've logged off and go listen to a podcast during that time. I listen to podcasts while I'm I realized I was missing out. So I started listening to podcasts while I'm doing my laundry. I do it when I'm we're doing some doing dishes. I listen, when I'm doing yard work, stuff like that. Yeah, I recently broke out some other older podcasts just to catch up on stuff with a big mess around the home. Like it's a long story with a new puppy that's not worth going into.
+00:00:11 And I'm Michael Kennedy.
 
-00:13:41 I'll tell you guys after the show, it's pretty outrageous. Anyway, yeah. And it's so enjoyable. But what I've actually found is shows like Python bites and ride home that have like a bunch of short little things that you can just drop in and out of match a lot better now that people are not commuting so much. You can like do that 10 minutes while you're like folding laundry and get like a whole segment. And so I think he gets varied, but actually it's pretty interesting. I think that they and us here are well positioned like talk Python has more of a dip than Python bytes. Have you surveyed your listeners to find out what they're doing while they listen to you. No, not really. Everyone should tweet at these guys. Twitter. What were you doing when you were hearing this podcast? Yeah, that's also I've got a few. It's but nothing like a survey or give me a proper answer. See you I think yes, your next item is super, super interesting. And people speaking of Twitter, right, like this whole conversation started as a Hey, Twitter message like why did this happen? Well, let's Steve. Yeah, as you know, I spent a decent amount of time on Twitter, my handle there is Uber, Zed, O Ba, which you'll probably never find in search if you're looking for my name, but that's where I am. I really like actually searching for what people are saying about Python on Windows. It's kind of the most honest feedback you get when they think you're not listening. And so I go and listen and one of these popped up, which was Oh,
+00:00:12 Yeah, and we have a special guest today, Steve Dower.
 
-00:15:00 I tried to install Python 3.9 newest release about a little bit under a month ago on my windows seven machine, and I couldn't install it. And since then I've actually seen a few more posts, someone managed to bypass the installer completely and get it all the way onto their windows seven machine and then found out it wouldn't run. Oh, man. Yeah. And so the question was like, Why would you do this windows seven is still a fairly big platform, why would you take it out? And you know, the answer was just a bit too long for a tweet. But someone kindly included Python bytes in the reply. And so I said, Hey, Oh, come on, and talk about it. So let's do this topic. And the answer is multiple legal looking documents all come together and have to be read in parallel to figure out why we dropped it.
+00:00:14 Hi, thanks for having me on.
 
-00:15:45 Yeah, the small business owners know what I'm talking about. So one of those documents is pepp 11, one of the the lowest number peps that we have. And it's titled removing support for little used platforms. The title was not originally about Windows, but there is a section in that Pep that describes pythons policy for supporting windows on release day of three dot x dot O, all the supported versions of Windows covered by Microsoft support lifecycle will be supported by C Python, and that's on the three dot x dot o release date. So what that means is, then you now have to go and look at Microsoft support lifecycle website and look up all of the different versions of Windows to see which ones are still covered by support to that date, Windows seven, fell out of extended support in January, there was quite a bit of noise about that, because that means no more security patches, except Microsoft did do a couple more security patches, because some really bad stuff was found. But that's largely stopped. Essentially, it's the point when the only people who get windows seven support are paying for it. And I assume they're paying large amounts of money for it. I don't actually know how much it costs. But that's the point where you know, you bought it, but you don't get the free support anymore. So C Python follows that because no one is paying the core team to support Python on all of these platforms. And so it's, it seems like the fairest point to draw that line, because at some point, we have to say our volunteers can no longer keep a Windows seven machine running. Even I can't keep a Windows seven machine running safely. Because there's no security updates for it. How am I meant to develop Python on it? How am I meant to test Python on it, the burden there is too high for volunteers to handle. So we just say that's the point where it goes away. So because those two documents lined up, Windows eight actually dropped off a couple of years ago, because the support lifecycle ended early for that to force everyone onto 8.1. Windows 8.1 has about three more years. So I think Python three dot 12 will be the last one to support 8.1. And then it's all windows 10. Or whatever comes out in the future. Yeah, yeah, Windows 10. x, or whatever they call it.
+00:00:15 Hey Steve. Thanks for coming. It's great to have you here.
 
-00:17:57 That's the difference. That's the Xbox. Yeah. So I you know, I think this makes a ton of sense. And two thoughts I had as you were laying out the case here. One is if you're running on Windows seven, and you can't upgrade to even windows eight or more reasonably windows 10, or one of the server equivalents, right. I'm sure there's like a server quote, like Windows 2003 server. I don't know how long it's supported. But whenever it goes out, it probably falls under that banner as well. Right? Yeah, Windows Server is a bit more interesting that life cycles tend to last longer. Yeah, historically, C Python has only kind of tied itself to the client. Operating Systems. Gotcha. Oh, interesting. Okay. So to me, I feel like if you're running code, or you're running systems that old, you must be running it because it's like some super legacy thing. So do you absolutely necessarily have the most cutting edge? Python or whatever language? Like it's probably something that's that way, because it's calcified? And you probably don't need or you probably shouldn't be putting, like, the newest Chinese things on it. Right? That's not one. What do you think? Yeah, no, I totally agree with that. If that setup that you're running is so critical that you can't upgrade the operating system. How can you upgrade a Language Runtime? Say, how can you upgrade anything on that? I feel like it's in the category. Please just don't touch it. It's over there. Just don't even walk by it. Leave it alone. We cannot have it break. Just leave it over there. probably still has a PS two keyboard plugged into it. Oh, we might with a little blue or pink round thing? Yeah, absolutely. The screen is probably got at least 16 colors. Yeah, the monitors probably really heavy windows seven. It's not that it's not that old. Some of the
+00:00:18 I also want to throw out that this is sponsored by Tech Meme Ride Home podcast.
 
-00:19:37 seriously, like this stuff is old. And you probably don't want to touch it. Right? Yeah, that's exactly it. It's all the motivation that you would have updating to Python 3.9 from 3.8. And again, we're talking about a version that's only one year old, like Python 3.8 is not that old, and you desperately need to upgrade to 3.9 you even more desperately need to upgrade windows. And that's just really there really is no question about that. The
+00:00:21 Check them out at pythonbytes.fm/ride.
 
-00:20:00 Same thing applies to early versions of Ubuntu, people running Ubuntu 14 or even 16. At this point, like need to be facing the same thing. And we have similar discussions around open SSL, where occasionally people will be all I need Python 3.9 to run on open SSL 0.92, which our answer is basically, that's pre Heartbleed. That's
+00:00:24 Steve, I'm sure many listeners know you, but maybe just give us the quick rundown.
 
-00:20:24 okay, I'm gonna play the other side, I totally get the reasons. But I also get the questions. Because the users and the developers or the whoever's wanting to install Python, they usually don't get to choose what operating system they're using. But they do get to choose which version of Python they're using. So I do get said in some cases, and it's
+00:00:27 and you do cool stuff at Microsoft, getting Python better on Windows and you're a core developer.
 
-00:20:48 true, I totally understand where the question is coming. Yeah, we joke about how all these machines are. And they're really not like people are setting up new machines, probably with Windows seven, they certainly were within the last year. And there's good legitimate reasons for that. And, you know, we're not, you know, we're making fun of some of the the apparent contradictions, but we're definitely not making fun of the people who have, you know, often been forced into these positions. But the reality is, we can't afford as a volunteer team to maintain Python against unmaintained operating systems. And so, you know, the advice is, stay on the previous version of Python, that the latest version of Python that works for you, it's not going to break, we're not changing, anything new, that comes up security fixes will still come out. At some point, there just has to be a line drawn. And that's the point where we've chosen to draw it. The other thing I want to point out that we changed in this release, which people are more excited about is if you go to python.org. To download Python for Windows, you get this real big, obvious button up front that just says download for Windows or download now or something as well, python 3.99. That's not getting the 64 bit version, rather than the 32 bit version. For a long time, it's been 32 bit, the reason for that was compatibility. We knew a 32 bit one would run anywhere. When we put Python in the Windows Store that was 64 bit only, we kind of wanted to test the waters and see, hey, Will people notice that we haven't put a 32 bit version here. Turns out no one did. And so when we got to 3.9 had that change, we made it 64 bit by default. So that has not flown effect to the ecosystem. A lot of particularly data science packages would rather just do 64 bit only packages. Some of them certainly get theirs done first, and not 32 bit ones. So expect to see some flow on impact from that. Just broader use of 64 bit Python throughout the the windows ecosystem first, yeah, that's super cool. And just like final thought I had was, you know, Django dropped Python two. And they're like, we were able to remove so much code. And it is easier for new people to contribute because they don't have to write for two ecosystems, they write for one NumPy did the same thing. And I feel like this is sort of the same story like you guys can just not worry about yet another older, outdated operating system, and stay focused on what most people care about. Yeah, one thing that someone did suggest in one discussion was why not dynamically light stuff up for the new operating system? And the answer is we do that. And when we drop the older operating system, we're here to delete about 100 lines of code for each point where we do that. So it is we have to do a cleanup, we get to say Oh, we don't have to dynamically check for this API, this API, load this cache this store that call that call this folder, we can just condense that into all we know that this API is there. So we can use it and just reduce a lot of kind of effectively dead code on newer operating systems. Is that a pre compile like, hash if that sort of thing? Or is it a runtime thing? Does it make a performance difference, it definitely makes a performance difference, though, we try and minimize it. But again, there's, there's always some impact, it tends to be in operating system calls anyway. So you expect a bit of overhead. And so it's not going to add a significant kind of percentage overhead compared to whatever operation you you're doing. But it does certainly add a lot of cognitive burden, someone who's reading the code, or one example that we got to clean up recently, not in the in a previous version was we had about, I think 70 or 80 lines of code to concatenate two part segments. And this is before pythons loaded. So we have to do this with the operating system, the API call up until windows seven, I think so pre windows seven was not secure. And it would you know, buffer overruns, all sorts of horrible stuff. But it was the best available function there for handling certain cases. So we use it, but first, we dynamically look for the newer, safer one and call that soon as we dropped, I think Vista, we could delete all of that code and just unconditionally call the one safe path combined function. And that code got a whole lot simpler. Yeah. Lovely. That's awesome. Yeah. Cool. Brian, would you say it's more robust now? Yes. I think it would be more robust. Actually. I thought I showed up
+00:00:32 Yeah, so my main day job is for Microsoft, where I work as basically a Python engineer, kind of a wide-ranging resource to the company. So I haven't shipped anything of my own in a while, but I've had my fingers in a lot of Python-related things that have gone out recently.
 
-00:25:00 The bash podcast is this the Python podcast? Yeah, this is not as bash bites, okay? I love Python. Of course, I still use bash regularly. And I know a lot of people that are like sis ops people and other people are using bash daily as well. So I wanted to highlight this cool article. This is an article by David passionately called writing robust bash shell scripts. And even though I've been writing scripts for decades, I learned a whole bunch in this, and I'm going to start changing the way I do things right away. The first two tips right away are things I'm going to do. first tip is to include a set dash U. and never heard of this, what it does is it makes your bash script exit if it encounters an uninitialized variable. So the problem without this is like let's say you're constructing a path name or something or a path of long path. And one of the directories or file names you have in a variable, if that's never set, a bash normally just silently just deletes it, and it's just not there. And it'll still keep executing anyway, but it's not going to be what you want it to do. So yeah, I definitely want to turn these this on. So I don't use uninitialized variables. Similarly, if any of your script statements returns a non true value, so it's a that's usually in scripts or shell work non true value means something bad happen. If you use set dash E, that will make your script exit at any point, if one of the sub statements returns a non returns an error value. So you don't you don't want to just keep rolling with an error condition. So this is good. I hopefully, I'll cautiously add this to scripts, because I want to make sure they keep working. And then a tip just to say expect the unexpected. There will be times where you're missing files or missing directories or directory that you're writing into is not created. So there's ways to make sure it's there. Before you write to it, if you're especially if you're running on Windows be prepared for spaces and file names. And so variable expansion in bash, does not really isolate spaces. So you have put quotes around expansion to make sure that it's a single thing. And one of the things right away, the next one is using trap. And I've never actually knew how to do this before. So if you've got a bash script that's running in it, just something's wrong, and it won't exit, you can kill it or other ways to get it to stop. But if you have the system in a state that needs some cleanup, so that this there's a way to use a trap command to exit gracefully and clean up things. The last couple of points were Be careful of race conditions and be atomic. Those are good things to do. But at least a handful of these I'll put to use right away. So it's good. Yeah, this is neat in a lot of the stuff I didn't really know about. So yeah, like, continuing on if something went wrong, just plow ahead. Yeah, that's, that's cool that no, you can make it stop. Yeah, see, if you ever do any bash, you've got a W SL thing going on over there. I've certainly done a lot more bash, since I started using Ws l for a lot of things, I was aware that using another uninitialized variable would substitute nothing but I'm very happy to know that there's a way to kind of turn that off. Because that that is certainly caught me out in the past many times. And this looks like just a good article that I'm gonna have to go read myself now because it has everything that you learn from doing scripts in like command prompt or PowerShell. Now or even Python to some extent, I have not personally mapped those to bash equivalence. So it sounds like this would be a good place for me to, to go through that and up my skills a little bit. My favorite thing was the find command. And once I got that, that felt as powerful as a regex. And I kind of like, Oh, I don't need to write a whole script. Now. I can just do one excessively long find command.
+00:00:49 So it's a lot of fun, a lot of bouncing around between different teams, getting to work with a lot of different people. And yeah, as you say, I'm a CPython core developer, one of the Windows experts on the team, I'm responsible for the builds that go up on python.org, and just generally keeping Python running well on Windows.
 
-00:28:54 Nice. Yeah, you find a lot as well. This next one, I don't want to spend too much time on because I feel like we could easily just go and spend an hour on it. But we, for time sake, we don't have a whole lot of time left for the episode because we have a bit of a hard stop. So I'm going to go through this and get your thoughts on it real quick. There is a tweet about a GitHub repository. That was our conversation on the Python mailing list. Lots of lots of places. So Anthony shot tweeted, calling attention to a roadmap by Mark Shannon, called ideas for making for five times speed of five times faster, C Python. So he laid out a roadmap and a funding map, and some interesting ideas. And I'm going to go through and quick and then especially Steve, we'll see what you what your thoughts are here of how reasonable this might be. So the idea is like, there's going to be four different stages, and each stage thinks he can get 50% speed improvement. You do that four times. That's, you know, compounding, performance interest, you get five so
+00:01:04 Yeah, that's awesome.
 
-00:30:00 I think it talks about three, nine somewhere. But anyway, I think maybe it's kind of shifted numbers a little anyway. So python 310. Stage One was to try to improve will be adaptive, specialized interpreter that will adapt types and values during execution, exploiting type stability. without the need for runtime code generation, that almost sounds a little bit like what you're talking about with the 10% increase, earlier, Steve, and then 311. Stage two would be improved performance for integers, less than one machine word, faster calls and returns through better handling of frames and better object memory layout. Stage Three, Python 312 requires runtime code generation as simple JIT for small regions. But then 13, extending the jet to do a little bit more. And I'm linking to a conversation, a long threaded conversation over on Python Dev, there's a whole bunch of stuff going on here. So I encourage people to read through it. But there's just like a lot of interesting amplification devoutly, how do we pay this if we pay someone to do it? people like Steve, work on C Python and they don't get paid? Like? How is it fair to pay someone else to do it when other people are volunteering their time? There's a lot going on here. Steve, what do you think about this? Have you been following us? I read through the original proposal, I haven't had the chance to chat with Mark directly about it. I will, I guess stop by saying that mark is very smart guy. And he has done all of this planning off on his own in secret and kind of come out and share this plan with us. Which you know, is it's not an ideal kind of workflow, certainly when you're part of a team. But I have certainly found in the past, when you get a very smart guy, or very smart go, goes off and disappears for a few weeks and comes back and says I've solved it, there's a good chance they've solved it. So I'm very interested to see where it goes. The part of the discussion that you didn't mention is that you hinted at is this is kind of a proposal for the pipe and Software Foundation to fund the work. And that part of that funding is conditional on delivery. So the way he's proposed this would work and and the implication seems to be that that mark will do the work himself and be the one getting paid for it. Yeah, that seemed like, it wasn't clear from his GitHub repo. But if you read the conversation was like, Look, I'm pretty sure I can do these things. This is how much would make sense for me to spend the next couple years working on it and getting paid. How do we do a fundraiser so that I can do this for everyone? Yeah. And you know, I think under those conditions, if the PSF is able to put the budget towards it, they are in a bit of a tight spot, since pay con is normally the big fundraiser for the year. And that didn't happen on the other hand source of the big expense. But financially, the PSF is not in their normal place where they'd be for for the year, because pi con didn't happen in the same way. But I think if they're prepared to put funding towards this, I guess if the community consensus is that this is the most important thing for us to do. And there's certainly potential downsides to doing it. Code complexity is the big one. And I don't actually think there's a way that you implement this, or even achieve these performance gains without making the code much more complex. And hence, less accessible to new contributors. And you know, people in earlier stages of learning to code at least on the C side, yeah, yeah. So there's trade offs. I'm very interested to see what would come about, I assume that because 310 is targeted for the first pass that it's already done. And he's already got the code. And he's trying to actually, and he's just trying to get confirmation that he can spend the next few years heavily investing in it, instead of having to go find a full time job and go back to doing this in the evenings. Yeah, which, you know, I'm I'm fully supportive of, again, it's really just a big open question of is this the most important thing for Python to be funding right now for C Python to be getting? In particular, someone I forget, who raised the question of what if we put that money towards pie pie instead? You know, what could they do with it in that amount of time, and ultimately, it's going to come down to someone was probably a small group, presumably, the steering council will have some involvement from the technical side, the Python Software Foundation Board will no doubt be involved in just deciding Is this the best use of the money that we have? Or can go out and get Yeah, for what benefits it would produce? You know, when I look at it, the funding side, I see it is very fraught with challenges on the sort of community funding the PSF funding, but I know there's so many huge companies out there that spend an insane amount of money on Compute and infrastructure that make a lot of money. And that if they could have a five x speed up on their code, they could probably save that money right away on infrastructure. So it seems like that they could also get funded that way, but we should probably move on just because I'm gonna I'm gonna make sure we have time for everything else before we end up running out of time. I do want to call out like you should go check out that conversation. There's a very funny excerpt from Larry Hastings says speaking as the elected me guy is
+00:01:06 And you've done some interesting talks, like, "Python is okay on Windows, actually," and talked about some of the popularity of it, and how we as a community shouldn't discount it just because we might happen to be on a Mac or use Linux or whatever, right?
 
-00:35:00 They were talking about bar references being a challenge. And BB references are evil, the definition of a valid lifetime of bar reference doesn't exist, because they are a hack baked into the API that we mostly get away with because of the Gil. If I still had wishes left on my monkey's paw, I'd wish them away. Unfortunately, I use my last wishes. Back in February, wish I could spend more time at home.
+00:01:18 A lot of people do Python on Windows.
 
-00:35:20 Oh, bad.
+00:01:20 Yeah, yeah. The estimates vary, and every time I get new numbers, they seem to show up slightly different. So it's real hard to get a good fix on how many Python developers there even are in the world. I did get some numbers recently that I had a few people double check because they were saying there's like 20 million installs of Python on Windows in the entire ecosystem. Wow.
 
-00:35:22 Alright, so let's get a little bit more insight from you on this last one. Because you were the core developers friends, which recently happened. Yeah, so I don't know exactly what day this is going to go out. But last week, from recording day, we had the C Python core developer Sprint's so this is kind of a a get together, generally in person event that the core development team has done for five years now. I think this is the fifth year. In the past, we've all gone down to Facebook, or Microsoft, or last year, we hung out at Bloomberg in London, and basically spent a week in a room together, coding, discussing reviewing things, designing things, planning things, and otherwise, just getting to actually meet our other contributors. Because we all work online, we all mostly work over email, and kind of bug tracker on GitHub pull requests throughout the year. And so it's a really good opportunity to get to meet each other get to see who we're dealing with. It's a lot harder to be angry at someone over email when you've met them. Yes, and so so it's been a really good event this year, because we're obviously not traveling for it. We were hosted by Python discord, which is at python discord.com. There's a server that is really well managed, it's really well organized, I was impressed. I have not been there before. But it was great. They set up felt like thousands of channels for us, not too many. But it gave us plenty of space to kind of mingle with other core devs. While we're discussing and working and planning anything, we also did a q&a. So the there'll be a link in the notes for that from YouTube that we live streamed, we had people submit questions ahead of time, everything from what situations? Should I use a mangled name and like a double underscore lead name? through to you know, what's your least favorite part of Python? What do you most want to replace? Did you ever expect by them to get so big, and we had a lot more people involved, we normally do a panel for the host company. So we'll we'll get kind of their employees together. And it's like part of the perk for funding the venue and typically meals and coffee and everything for the week. This time, it was public on YouTube, it was all kind of over video. So everyone got a bit of a turn to jump in. So you'll get to see a lot more core developer faces and you've probably ever seen before, you'll get to hear from a lot more of us than you have before. And a lot of interesting things, the big kind of ideas that came out of the week, kind of had to say a lot of us did come out feeling like we didn't get as much forward momentum on stuff as we normally would in person. But at the same time, a lot of things did move forward. I think there were about seven or eight peps passed up to the steering council during the week, the various things one of mine was deprecating dis utils, which is an entire podcast on its own. So I might, might have to call you guys another time to talk about that one, through to proposal to change how we represent 310. Because a lot of places we put the version numbers back to back with no separator. And so you have the you know, 3839 with no, nothing in between now we're up to 310 or is it 31? Zero? Yeah. Okay, how do we fix that? And we had a lot of discussions about that. There was obviously a lot of talk about JIT about the caapi. All the usual things that we talk about. But again, because it was online, it was really good to have such a range of people involved for you know, across different time zones, and people who would not normally get to travel. Yeah, it makes it more accessible. Yeah, that's awesome. Yeah, we have core developers and countries who can't leave. Like they literally cannot leave their country, either because the populace is just strictly controlled, or they know they would not get back in when they tried to go home. And so they were able to participate. And that was great to, you know, see and meet some of those people. We had a few mentees come along to interact with the rest of the team. And just overall a good week. Awesome. Yeah. Cool. And yeah, people can check it out the YouTube stream. I definitely want to check that out. Sounds nice. I Brian, we got two minutes left. Do you think we should do a joke? Yeah, let's do the joke. Let's go. Let's just cut to the joke. So we don't miss that. Right. So you and I spoke about Oktoberfest going wrong, and like random prs to like config files and change changing the spelling and config file settings. So there is a guy who posted on Twitter said hey, let me double check the name
+00:01:40 Which sounded like too many to me. So I had them double check. And then I had someone else double check. And they all came back saying, yeah, it's about that. So I'm like, okay, there's a lot of Python on Windows out there. But yeah, it doesn't show up in conferences, doesn't show up on Twitter that much and a lot of people just look at the packages that don't work and go well I guess it doesn't exist on windows because otherwise this package would work and so you know chicken and egg problem right yeah there's a lot of chicken and egg problems in the python space I mean it's a beautiful place but there are some of these weird chicken and egg ones yeah it's weird I've been using python on windows since I started python so have I but one thing I haven't been using very much is enums so that was an attempt at a transition so why not Brian tell us more Actually, I've tried many times I've tried to use enums and I actually just to be honest, I don't very much and partly because I'm used to using enums in C and C++ and they're, they just act like symbols in C and C++, they work pretty good.
 
-00:39:44 was Stuart mccrudden. And he posted this cool t shirt that he got says Oktoberfest 2020 any PR is a good R and it's lua.py and it has import. Hi in vim, then
+00:02:39 There is some weirdness with enums in Python and I'm going to highlight an article called Making Enums, as always, Arguably More Pythonic by Harry Percival.
 
-00:40:00 The PR just add hash this imports a package.
+00:02:49 He starts it off by saying, I hate enums.
 
-00:40:05 That's awesome. Steve, did you suffer from any of these? I did not miss it. I might have done my GitHub notifications are a mess. So yeah, I don't even know yet. Yeah, I don't see pull requests until I actually go look at the repo myself for the most part, and yeah, I got a bunch. I got a whole bunch. Yeah. Cool. Okay, I wanted to do one. This should have been a topic, but the five most difficult programming languages in the world. This was submitted to us by Troy, CODEL Cadell, I think so. Really full topic, but I thought was hilarious. This is an article where the author look look at locate, I guess, actually took five programming languages mal Bosh, inter cow brain, you know, we all know that one, cow and whitespace and wrote hello world in that language. And these are hilarious. And my favorite is whitespace. Because the entire language depends on space tab in line feed for writing the program. And any non whitespace character is considered a comment. So this is great. That's crazy. I don't know why that AAPL wasn't on there. A PL is just fully insane. Let me I'll put this in the show notes here at the bottom of this. An example of a Pl. That right there that I put on is I can't try to even speak this but that is an entire thing that finds the all prime numbers from one to R. In that line. If you guys see at the bottom of the notes, it is insane, isn't it? That's not even intentionally bad, is it? It's meant to be a real programming language. It's as if the Egyptians who only wrote in hieroglyphics decided to write a programming language. That's how I feel like you. It's insane. But it's a legitimate language like people try to use it do use it. Anyway. Not very long. Expect only as long as they must. And then they immediately stuff. I just like to this into cow example. It's so polite, and please, please do please do please, please give up.
+00:02:52 So Harry's a funny guy and this is a fairly hilarious look at why enums are frustrating sometimes.
 
-00:42:06 Yeah, apparently you have to sprinkle pleases in it or else like error because it's you're not played enough. But if you'd be doing too much, it also errors because you're overly polite. Yeah. I like that. We need more passive aggressive languages like that.
+00:02:59 And then he presents a semi-reasonable workaround, I think, to make them more usable.
 
-00:42:22 Lovely. Cool. Well, thanks a lot, guys. It was fun. Yeah, yeah. Thanks, Brian. Michael. Yeah. Thanks. And thanks for being here. Steve. It's great to have your perspective. Thank you for listening to Python bytes. Follow the show on twitter at Python bytes. That's Python bytes as in be yts and get the full show notes at Python bytes at FM. If you have a news item you want featured just visit by thumb bytes.fm and send it our way. We're always on the lookout for sharing something cool. This is Brian Aachen and on behalf of myself and Michael Kennedy, thank you for listening and sharing this podcast with your friends and colleagues.
+00:03:04 So what's wrong with enums?
+
+00:03:06 Well, he gives an example and just as a simple enum with string values.
+
+00:03:12 And you can't directly, if you try to compare one of the enum elements to the value, like the value gave, like a similar string, it's not equal.
+
+00:03:22 It doesn't compare.
+
+00:03:23 But you can use a dot value or an enum value, but that's just weird.
+
+00:03:28 He also said, he kind of thinks it'd be neat if you could do a random choice of all the enum values.
+
+00:03:33 I think that would be neat.
+
+00:03:34 And you can't directly convert them to a list.
+
+00:03:37 There's just interacting with the enum type itself or the class itself has problems.
+
+00:03:43 In the documentation, there is a suggestion that you can, instead of strings, use int and do an int enum and it works a little better.
+
+00:03:52 And if you like it like that, but want strings, you can make your own string enum class.
+
+00:03:57 I'm not sure why they didn't just build this into the default or, you know, one of the standard types anyway, but string enum is not there, but there's an example.
+
+00:04:07 And it sort of fixes a lot of stuff, but not everything.
+
+00:04:11 It doesn't, still doesn't allow for those direct comparisons.
+
+00:04:14 So the solution that Harry came up with is just kind of like the solution the documentation says, derived from both enum type and str when you're creating your enum class, but then also define this little snippet of a dunder str method, so that the str method works better.
+
+00:04:35 And at that point, most of the stuff works that he wants to work.
+
+00:04:38 It still doesn't do random choice, but apparently he's gotten over that a little bit.
+
+00:04:43 So I actually think this is really, This is still just a really small snippet, it's like two lines of extra code to add to your enum types, make them a little bit more usable.
+
+00:04:54 So I think it's reasonable.
+
+00:04:55 - If you're judging by like value add per character, this is awesome because it makes working with the enumeration so much nicer.
+
+00:05:03 You can do like the natural things that you would expect, especially around testing and comparison.
+
+00:05:08 And it's like also add a drive from str and just add a dunder str method and you're good.
+
+00:05:14 Steve, what do you think about this?
+
+00:05:15 Yeah, I'd just add that the gotcha that you have by doing this is now you can have two values from different enums compare as equal, which as I recall from the original discussions was the reason this wasn't put in by default.
+
+00:05:27 Say you've got a color enumeration and a fruit enumeration, is orange the same between the two?
+
+00:05:34 And I think the decision was made for enums to say no, it's not.
+
+00:05:37 If it's a fruit orange, it's different from the color orange.
+
+00:05:41 Making this change or using an int enum is going to make them equal.
+
+00:05:44 So as long as you're prepared to deal with that, which, to be quite honest, every time I've reached for enums, I am much happier with string literals and quite comfortable with them matching equal.
+
+00:05:53 Yeah.
+
+00:05:54 But that is just one thing to watch out for.
+
+00:05:55 Usually it's about constraining the list of things.
+
+00:05:58 Like, I know there's five things.
+
+00:05:59 I want to make sure I don't, like, somehow mix up what those five are.
+
+00:06:02 I just want to go, you know, class dot, and here's the five.
+
+00:06:05 Let my editor tell me which one of those it is.
+
+00:06:07 It seems like it's all there.
+
+00:06:09 So what do you think about if you overrode, like if you added gender eq, gender neq, so like the comparison would say it has to be this type of enumeration and the str value has to match.
+
+00:06:21 Yeah, that would certainly deal with that. Gotcha.
+
+00:06:23 Again, when these were being designed, basically anything that gets designed and added to Python has a very large group of very smart people work through it.
+
+00:06:31 And, you know, as a result, things always get missed.
+
+00:06:33 So it's possible that one was just missed.
+
+00:06:35 It's also possible that someone did figure out a reason why that was also risky.
+
+00:06:40 And, you know, risky when you're developing one of the most popular languages in the world is just anything that might surprise anyone.
+
+00:06:47 So someone has deliberately designed around using enums everywhere, they're probably not going to be surprised.
+
+00:06:52 Someone who is using code and that developer has swapped out all of their...
+
+00:06:57 You know, they had a class with static variables and they turned it into an enum, and now stuff breaks because of the defaults that were chosen for enum.
+
+00:07:05 That's the kind of thing that you're trying to avoid in a language that has anywhere between 5 and 20 million kind of regular users.
+
+00:07:14 But as a workaround, I mean, if you know where your enum is going to be used, there's a reason you can derive from string and it's exactly for stuff like this.
+
+00:07:20 Yeah, thanks, Harry, for putting out there. That's quite a neat little bit of advice there.
+
+00:07:24 And I'm so glad that we have Steve here because I picked some sort of semi-internal type of pieces and I'm going to make some statements about it.
+
+00:07:33 And then Steve can correct me to make it more accurate.
+
+00:07:36 And also we get the core developer's perspective.
+
+00:07:38 Not that you represent all core developers, but at least a slice.
+
+00:07:41 All right, so this next one I want to cover is that Python 3.10 will be 10% faster.
+
+00:07:46 And this is 4.5 years in the making.
+
+00:07:49 So Yuri Stelovanov long ago did some work on optimizing, I think, was it load attribute or was it load method, load call method?
+
+00:08:02 So about some of these load operations down at the CPython CUVal level.
+
+00:08:08 And then Pablo Galindo, who's also a core developer, and the Python 3.10.3.11 release manager, picked up this work, and now we have load method, call method, and load global going faster.
+
+00:08:23 So basically, there's some optimizations around those opcodes that make this much faster.
+
+00:08:30 And this idea apparently first originated in PyPy, P-Y, P-Y.
+
+00:08:35 So I'm pretty excited to see that some simple internals that don't seem to change a whole lot of stuff might make this a lot faster.
+
+00:08:43 What do you think, Steve?
+
+00:08:44 This one is real. I was so excited about this when it was first being proposed.
+
+00:08:48 The basis of the idea is that Python keeps everything in dictionaries, which means every time you look up .name of anything, it takes that name, makes it a string, turns it into a...
+
+00:08:59 gets the hash value, looks it up in a dictionary, finds the value, maybe wraps that up in some extra stuff, Like if it's going to be a method, it's not stored as a method, you turn it into a method when you know what it's being kind of dotted through to get to, and then returns that. That's a whole lot of work.
+
+00:09:14 And if you're regularly calling the same method over and over again, why not cache it?
+
+00:09:19 That's the heart of this, right? It does that cache around load data, right?
+
+00:09:22 Yeah, it does that cache. And the insight that Yuri had that he made work, and in fact, I think someone else had suggested it earlier and hadn't gotten it to work was what happens when things change?
+
+00:09:32 Because again, as I say, it's we're designing language for many, many people do all sorts of weird things.
+
+00:09:38 And if you cache a method lookup, and then someone tries to monkey patch it, you know, we've now broken their code for the sake of an optimization, which, you know, is a no-no in Pythons, like correctness beats performance.
+
+00:09:49 In every case, that's just the trade off that the language chooses to make.
+
+00:09:52 That's almost always what you want, right?
+
+00:09:54 When would you want to be faster and wrong rather than slower and right?
+
+00:09:57 I'd be happy with faster and no monkey patching.
+
+00:10:00 But yes, yes, sure, like faster and fewer restricted capabilities might be a really good trade off, but faster and wrong. It's not a good one. Yeah, we did some benchmarking and basically found that there was a way to track all dictionary updates in the entire runtime with a version tag that was not going to instantly overflow and not going to break everything.
+
+00:10:22 So it became really easy to say, has this dictionary changed since I last looked at it with one single value comparison.
+
+00:10:29 And so it looks at that value.
+
+00:10:31 If it has changed, it's going to do the full lockup again.
+
+00:10:34 99.999% of the time it hasn't changed, so it can give you the cached value and you saved big dictionary lookup, possibly error handling, descriptor protocol, all of this extra stuff that just adds so much weight to every operation.
+
+00:10:49 Yeah, and that's everywhere. I mean, that's everywhere in the language.
+
+00:10:51 Absolutely everywhere.
+
+00:10:52 Fantastic. One of the things when I was first getting into Python that made me sort of have a sad face was realizing that having function calls was pretty expensive.
+
+00:11:02 Right? Like having a big call chain, like actually the act of calling a function has a fair amount of overhead.
+
+00:11:09 When I wanted to break my code into like a bunch of small functions to make it real readable, this part needs to go a little faster.
+
+00:11:14 Maybe that's not what I want.
+
+00:11:17 You know, and so hopefully this helps with that as well.
+
+00:11:20 Yeah, that and vector call is another optimization that we got in recently.
+
+00:11:25 I think that might have been the pet 509 actually was a vector call also designed to make that faster just removing some of the internal steps for doing a function call fantastic and like Brian said this is everywhere so that's everyone's gonna benefit this is fantastic.
+
+00:11:40 Well we would like to thank our sponsor.
+
+00:11:43 So this episode is brought to you by tech meme ride home podcast is a great podcast for more than two years and nearly seven hundred episodes the tech meme ride home.
+
+00:11:54 Has been silicon valley's favorite tech news podcast the tech meme ride home is a daily podcast only fifteen to twenty minutes long and even and every day by five p.m. eastern it's all the latest tech news.
+
+00:12:08 But it's more than just headlines. You could get a robot to read your headlines.
+
+00:12:11 The Techmeme Ride Home is all the context around the latest news of the day.
+
+00:12:16 It's all the top stories, the top posts and tweets, and conversations about those stories, as well as behind-the-scenes analysis. The Techmeme Ride Home is the TLDR as a service.
+
+00:12:25 The folks at Techmeme are online all day reading everything so they can catch you up. Search your podcast app now for ride home and subscribe to the tech meme ride home podcast or visit pythonbytes.fm/ride to subscribe. Yeah thanks for sponsoring the show and Brian, every day, like we do this once a week and it's a lot of work. These guys are on it. I could totally do this every day. If I didn't have another job I would not have any problem with catching up on Python news daily. So actually sounds quite lovely. I wonder how that podcast is doing now that not so so many people are having to commute to and from work.
+
+00:13:04 That sounds like one of the things where you hope that you've given people the excuse to tell their employer on my commute between 4 and 5 p.m.
+
+00:13:13 I can't do it.
+
+00:13:14 I've logged off and go listen to a podcast during that time.
+
+00:13:18 I listen to podcasts while I'm, I realized I was missing out.
+
+00:13:20 So I started listening to podcasts while I'm doing my laundry.
+
+00:13:23 I do it when I'm doing dishes.
+
+00:13:26 I listen when I'm doing yard work, stuff like that.
+
+00:13:29 - Yeah, I recently broke out some other older podcasts just to catch up on stuff with a big mess I had around the home.
+
+00:13:35 Like it's a long story with a new puppy that's not worth going into.
+
+00:13:39 (both laughing)
+
+00:13:41 Maybe I'll tell you guys after the show.
+
+00:13:42 It's pretty outrageous.
+
+00:13:43 Anyway, yeah, and it's so enjoyable.
+
+00:13:46 But what I've actually found is shows like Python Bytes and Write Home that have like a bunch of short little things that you can just drop in and out of, match a lot better now that people are not commuting so much.
+
+00:13:56 you can do that 10 minutes while you're folding laundry and get a whole segment.
+
+00:14:00 So I think it gets varied, but actually it's pretty interesting.
+
+00:14:03 I think that they and us here are well positioned.
+
+00:14:06 Like Talk Python has more of a dip than PythonBytes.
+
+00:14:09 - Have you surveyed your listeners to find out what they're doing while they listen to you?
+
+00:14:12 - No, not really.
+
+00:14:13 - Everyone should tweet at these guys' Twitter.
+
+00:14:16 What were you doing when you were hearing this podcast?
+
+00:14:19 - Yeah, that's awesome.
+
+00:14:20 I've got a few anecdotes, but nothing like a survey that would give me a proper answer.
+
+00:14:24 Steve, I think your next item is super, super interesting.
+
+00:14:27 And people speaking to Twitter, right?
+
+00:14:30 Like this whole conversation started as a, "Hey, Twitter message." Like, why did this happen?
+
+00:14:35 Well, let's ask Steve.
+
+00:14:36 Yeah, as you know, I spend a decent amount of time on Twitter.
+
+00:14:39 My handle there is Zuba, Z-O-O-B-A, which you'll probably never find in search if you're looking for my name, but that's where I am.
+
+00:14:46 I really like actually searching for what people are saying about Python on Windows.
+
+00:14:51 It's kind of the most honest feedback you get when they think you're not listening And so I go and listen and one of these popped up Which was oh, I tried to install python 3.9 newest release about a little bit under a month ago On my windows 7 machine and I couldn't install it And since then i've actually seen a few more posts Someone managed to bypass the installer completely and get it all the way onto their windows 7 machine and then found out it wouldn't run oh, man, yeah, and So the question was asked, like, why would you do this? Windows 7 is still a fairly big platform.
+
+00:15:23 Why would you take it out? And, you know, the answer was just a bit too long for a tweet.
+
+00:15:27 But someone, you know, kindly included Python bytes in the reply. And so I said, hey, I'll come on and talk about it. So let's do this topic. And the answer is, multiple legal looking documents all come together and have to be read in parallel to figure out why we dropped it.
+
+00:15:45 Yeah, the small business owners know what I'm talking about.
+
+00:15:48 So one of those documents is PEP 11, one of the lowest number PEPs that we have, and it's titled "Removing Support for Little-Used Platforms".
+
+00:15:57 The title was not originally about Windows, but there is a section in that PEP that describes Python's policy for supporting Windows.
+
+00:16:06 On release day of 3.x.0, all the supported versions of Windows covered by Microsoft Support Lifecycle will be supported by CPython.
+
+00:16:17 And that's on the 3.x.0 release date.
+
+00:16:20 So what that means is then you now have to go and look at Microsoft Support Lifecycle website and look up all of the different versions of Windows to see which ones are still covered by support to that date.
+
+00:16:32 Windows 7 fell out of extended support in January.
+
+00:16:35 There was quite a bit of noise about that because that means no more security patches except Microsoft did do a couple more security patches because some really bad stuff was found, but that's largely stopped.
+
+00:16:47 Essentially, it's the point when the only people who get Windows 7 support are paying for it, and I assume they're paying large amounts of money for it.
+
+00:16:54 I don't actually know how much it costs, but that's the point where, you know, you bought it, but you don't get the free support anymore.
+
+00:17:01 So CPython follows that because no one is paying the core team to support Python on all of these platforms.
+
+00:17:07 And so it's, it seems like The fairest point to draw that line is at some point, we have to say our volunteers can no longer keep a Windows 7 machine running. Even I can't keep a Windows 7 machine running safely because there's no security updates for it. How am I meant to develop Python on it? How am I meant to test Python on it? The burden there is too high for volunteers to handle. So we just say that's the point where it goes away. So because those two documents lined up, Windows 8 actually dropped off a couple of years ago because the support life cycle ended early for that to force everyone onto 8.1. Windows 8.1 has about three more years, so I think Python 3.12 will be the last one to support 8.1, and then it's all Windows 10 or whatever comes out in the future. Yeah, yeah, Windows 10x or whatever they call it. That's a different one. That's the Xbox. Yeah, so I, you know, I think this makes a ton of sense and two thoughts I had as you were laying out the the case here. One is if you're running a Windows 7 and you can't upgrade to even Windows 8 or more recently Windows 10 or one of the server equivalents, right?
+
+00:18:14 I'm sure there's like a server equivalent like Windows 2003 server. I don't know how long I support it but whenever it goes out it probably falls under that banner as well, right? Yeah, Windows server is a bit more interesting. Their life cycles tend to last longer. But historically CPython has only kind of tied itself to the client operating systems.
+
+00:18:33 Gotcha. Oh, interesting. Okay.
+
+00:18:35 So to me, I feel like if you're running code, you're running systems that old, you must be running it because it's like some super legacy thing.
+
+00:18:44 So do you absolutely necessarily need to have the most cutting edge Python or whatever language? It's probably something that's that way because it's calcified and you probably don't need or you probably shouldn't be putting like the newest as shiny as things on it, right? That's that one. What do you think?
+
+00:19:03 Yeah, no, I totally agree with that. If that setup that you're running is so critical that you can't upgrade the operating system, how can you upgrade a language runtime?
+
+00:19:12 Like, how can you upgrade anything on that?
+
+00:19:15 I feel like it's in the category of, "Please just don't touch it. It's over there.
+
+00:19:18 Just don't even walk by. Leave it alone. We cannot have it break. Just leave it over there." It probably still has a PS/2 keyboard plugged into it.
+
+00:19:26 Oh, it might with a little blue or pink round thing. Yeah, absolutely.
+
+00:19:29 The screen has probably got at least 16 colors.
+
+00:19:31 Yeah, and the monitor is probably really heavy.
+
+00:19:33 Windows 7 is not that old.
+
+00:19:35 Some of the...
+
+00:19:37 Seriously, like this stuff is old and you probably don't want to touch it, right?
+
+00:19:40 Yeah, that's exactly it.
+
+00:19:42 It's all the motivation that you would have for updating to Python 3.9 from 3.8. And again, we're talking about a version that's only one year old.
+
+00:19:48 Like Python 3.8 is not that old.
+
+00:19:50 And you desperately need to upgrade to 3.9.
+
+00:19:53 You even more desperately need to upgrade Windows.
+
+00:19:56 And there's just really...
+
+00:19:58 There really is no question about that. The same thing applies to early versions of Ubuntu. People running Ubuntu 14 or even 16 at this point need to be facing the same thing. And we have similar discussions around OpenSSL where occasionally people will be, "Oh, I need Python 3.9 to run on OpenSSL 0.9." To which our answer is basically, "That's pretty hot-bleed." I'm gonna play the other side i totally get the reasons but i also get the questions.
+
+00:20:29 Because the users and the developers or the whoever's wanting to install python they usually don't get to choose what operating system they're using but they do get to choose which version of python.
+
+00:20:43 So i do get send in some cases and inside the room true i totally understand where the questions coming yeah we joke about how old these machines are and they're really not like people are setting up new machines probably with windows seven they certainly were within the last year and there's good legitimate reasons for that.
+
+00:21:00 And you know when not you're making fun of some of the apparent contradictions but we're definitely not making fun of the people who have you know, often being forced into these positions.
+
+00:21:09 But the reality is we can't afford as a volunteer team to maintain Python against unmaintained operating systems.
+
+00:21:16 And so, you know, the advice is, stay on the previous version of Python, that the latest version of Python that works for you, it's not going to break, we're not changing it.
+
+00:21:26 Anything new that comes up, security fixes will still come out.
+
+00:21:30 At some point, there just has to be a line drawn.
+
+00:21:32 And that's the point where we've chosen to draw it.
+
+00:21:35 The other thing I want to point out that we changed in this release, which people are more excited about, is if you go to python.org to download Python for Windows, you get this real big obvious button up front that just says "Download for Windows" or "Download Now" or something.
+
+00:21:48 As of Python 3.9, that's now getting the 64-bit version rather than the 32-bit version.
+
+00:21:54 For a long time, it's been 32-bit.
+
+00:21:55 The reason for that was compatibility.
+
+00:21:57 We knew a 32-bit one would run anywhere.
+
+00:22:00 When we put Python in the Windows Store, that was 64-bit only.
+
+00:22:03 we kind of wanted to test the waters and see, hey, will people notice that we haven't put a 32-bit version here?
+
+00:22:08 Turns out no one did.
+
+00:22:10 And so when we got to 3.9, had that change, we made it 64-bit by default. So that has a flow-on effect to the ecosystem.
+
+00:22:18 A lot of particularly data science packages would rather just do 64-bit only packages.
+
+00:22:24 Some of them certainly get theirs done first and not the 32-bit ones.
+
+00:22:28 So we expect to see some flow-on impact from that.
+
+00:22:31 just broader use of 64-bit Python throughout the Windows ecosystem.
+
+00:22:36 Yeah, that's super cool. And just like, the final thought I had was, you know, Django dropped Python 2, and they're like, we were able to remove so much code, and it is easier for new people to contribute because they don't have to write for two ecosystems, they write for one.
+
+00:22:50 NumPy did the same thing. And I feel like this is sort of the same story.
+
+00:22:53 Like, you guys can just not worry about yet another older, outdated operating system.
+
+00:22:59 and stay focused on what most people care about.
+
+00:23:02 One thing that someone did suggest in one discussion was why not dynamically light stuff up for the newer operating system.
+
+00:23:08 And the answer is we do that.
+
+00:23:10 And when we drop the older operating system, we get to delete about 100 lines of code for each point where we do that.
+
+00:23:17 So it is, we get to do a cleanup.
+
+00:23:19 We get to say, oh, we don't have to dynamically check for this API, this API, load this, cache this, store that, call that, call this, fallback.
+
+00:23:26 we can just condense that into, oh, we know that this API is there, so we can use it and just reduce a lot of kind of effectively dead code on newer operating systems.
+
+00:23:37 Is that a pre-compile like, hash if-death sort of thing, or is it a runtime thing? Does it make a performance difference?
+
+00:23:44 It definitely makes a performance difference, though we try and minimize it.
+
+00:23:49 But again, there's always some impact.
+
+00:23:51 It tends to be in operating system calls anyway, so you expect a bit of overhead.
+
+00:23:55 and so it's not going to add a significant kind of percentage overhead compared to whatever operation you're doing.
+
+00:24:01 But it does certainly add a lot of cognitive burden to someone who's reading the code.
+
+00:24:07 One example that we got to clean up recently, not in a previous version, was we had about, I think, 70 or 80 lines of code to concatenate two path segments.
+
+00:24:17 And this is before Python's loaded, so we have to do this with the operating system.
+
+00:24:20 The API call up until Windows 7, I think, so pre-Windows 7 was not secure.
+
+00:24:27 And it would, you know, buffer overruns, all sorts of horrible stuff, but it was the best available function there for handling certain cases.
+
+00:24:35 So we'd use it, but first we'd dynamically look for the newer, safer one, and call that.
+
+00:24:40 As soon as we dropped, I think, Vista, we could delete all of that code and just unconditionally call the one safe path combined function.
+
+00:24:48 And that code got a whole lot simpler.
+
+00:24:51 Yeah, lovely. That's awesome.
+
+00:24:53 Brian, would you say it's more robust now?
+
+00:24:55 Yes. I think it would be more robust.
+
+00:24:58 Actually, I thought I showed up to the Bash podcast. Is this the Python podcast?
+
+00:25:03 Yeah, this is. No, that's Bash Bytes.
+
+00:25:05 I love Python, of course. I still use Bash regularly. And I know a lot of people that are like sysops people and other people are using Bash daily as well. So I wanted to highlight this Cool article.
+
+00:25:18 This is an article by David Pashley called Writing Robust Bash Cell Scripts.
+
+00:25:23 And even though I've been writing scripts for decades, I learned a whole bunch in this, and I'm going to start changing the way I do things right away.
+
+00:25:31 The first two tips right away are things I'm going to do.
+
+00:25:34 First tip is to include a set-u.
+
+00:25:37 And never even heard of this.
+
+00:25:39 What it does is it makes your bash script exit if it encounters an uninitialized variable.
+
+00:25:45 So the problem without this is like, let's say you're constructing a path name or something or a long path, and one of the directories or file names you have in a variable, if that's never set, a bash normally just silently just deletes it, and it's just not there.
+
+00:26:04 And it'll still keep executing anyway, but it's not going to be what you want it to do.
+
+00:26:09 So, yeah, I definitely want to turn this on so I don't use uninitialized variables.
+
+00:26:14 Similarly, if any of your script statements returns a non-true value, so that's usually in scripts or shell work, non-true value means something bad happened.
+
+00:26:27 If you use set-e, that will make your script exit at any point if one of the sub-statements returns an error value.
+
+00:26:36 So you don't want to just keep rolling with an error condition.
+
+00:26:39 So this is good.
+
+00:26:41 I hopefully, I'll cautiously add this to scripts because I want to make sure they keep working.
+
+00:26:46 And then a tip just to say, expect the unexpected.
+
+00:26:49 There will be times where you'll have missing files or missing directories or directory that you're writing into is not created.
+
+00:26:55 So there's ways to make sure it's there before you write to it.
+
+00:26:59 Especially if you're running on Windows, be prepared for spaces and file names.
+
+00:27:03 And so variable expansion in Bash does not really isolate spaces.
+
+00:27:10 So you have to put quotes around expansion to make sure that it's a single thing.
+
+00:27:14 And one of the things right away, the next one is using trap and I've never actually knew how to do this before.
+
+00:27:20 So if you've got a bash script that's running and it just something's wrong and it won't exit, you can kill it or other ways to get it to stop.
+
+00:27:30 But if you have the system in a state that needs some cleanup, so that this there's a way to use a trap command to exit gracefully and clean up things.
+
+00:27:41 The last couple of points were be careful of race conditions and be atomic.
+
+00:27:45 Those are good things to do, but at least a handful of these I'll put to use right away.
+
+00:27:49 So it's good.
+
+00:27:49 - Yeah, this is neat.
+
+00:27:50 And a lot of the stuff I didn't really know about.
+
+00:27:53 So yeah, like continue on if something went wrong, just plow on ahead.
+
+00:27:58 Yeah, that's cool to know that you can make it stop.
+
+00:28:00 Steve, do you ever do any bash?
+
+00:28:01 You got a WSL thing going on over there?
+
+00:28:04 - I've certainly done a lot more bash since I started using WSL for a lot of things.
+
+00:28:08 I was aware that using an uninitialized variable would substitute nothing, but I'm very happy to know that there's a way to kind of turn that off 'cause that has certainly caught me out in the past many times.
+
+00:28:21 And this looks like just a good article that I'm gonna have to go read myself now because it has everything that you learn from doing scripts in like Command Prompt or PowerShell or even Python to some extent.
+
+00:28:34 I have not personally mapped those to bash equivalents.
+
+00:28:37 So it sounds like this would be a good place for me to go through that and up my skills a little bit.
+
+00:28:42 My favorite thing was the find command.
+
+00:28:44 And once I got that, that felt as powerful as a reg X.
+
+00:28:47 And I'm kind of like, "Oh, I don't need to write a whole script now.
+
+00:28:49 I can just do one excessively long find command." (laughing)
+
+00:28:54 - Nice.
+
+00:28:55 - Yeah, you find a lot as well.
+
+00:28:56 - All right, this next one, I don't want to spend too much time on because I feel like we could easily just go and spend an hour on it.
+
+00:29:03 but for time's sake, we don't have a whole lot of time left for the episode because we have a bit of a hard stop.
+
+00:29:08 So I'm going to go through this and get your guys' thoughts on it real quick.
+
+00:29:12 There was a tweet about a GitHub repository that was a conversation on the Python mailing list.
+
+00:29:21 Lots of places. So Anthony Shaw tweeted calling attention to a roadmap by Mark Shannon called Ideas for Making for 5x Faster CPython.
+
+00:29:34 So he laid out a roadmap and a funding map and some interesting ideas.
+
+00:29:40 And I'm going to go through them quick and then especially Steve will see what you, what your thoughts are here, how reasonable this might be.
+
+00:29:46 So the idea is like, there's going to be four different stages.
+
+00:29:49 And each stage thinks you can get 50% speed improvement.
+
+00:29:53 You do that four times, that's, you know, compounding performance interest, you get five.
+
+00:29:58 So I think it talks about three nine somewhere, but anyway, I think maybe it's got to shift its numbers a little.
+
+00:30:05 Anyway, so Python 3.10, stage one was to try to improve what the adaptive specialized interpreter that will adapt types and values during execution, exploiting type stability without the need for runtime code generation.
+
+00:30:19 That almost sounds a little bit like what you were talking about with the 10% increase earlier, Steve.
+
+00:30:24 And then 3.11, stage two, would be improved performance for integers, a less than one machine word, faster calls and returns through better handling of frames and better object memory layout.
+
+00:30:34 Stage 3, Python 3.12 requires runtime code generation and a simple JIT for small regions.
+
+00:30:40 Python 13, extending the JIT to do a little bit more.
+
+00:30:44 And I'm linking to a conversation, a long threaded conversation, over on Python Dev.
+
+00:30:52 There's a whole bunch of stuff going on here, to read through it, but there's just like a lot of interesting implications about like, how do we pay this if we pay someone to do it? People like Steve work on CPython, and they don't get paid. Like, how is it fair to pay someone else to do it when other people are volunteering their time? There's a lot going on here. Steve, what do you think about this?
+
+00:31:10 Have you been following this?
+
+00:31:12 I read through the original proposal. I haven't had a chance to chat with Mark directly about it.
+
+00:31:16 I will, I guess, start by saying that Mark is a very smart guy. And he has done all of this planning off on his own in secret and kind of come out and share this plan with us, which you know is it's not an ideal kind of workflow certainly when you're part of a team, but I have certainly found in the past that when you get a very smart guy or very smart girl goes off and disappears for a few weeks and comes back and says I've solved it, there's a good chance they've solved it.
+
+00:31:43 So I'm very interested to see where it goes.
+
+00:31:46 The part of the discussion that you didn't mention is, or that you hinted at, is this is kind of a proposal for the Python Software Foundation to fund the work.
+
+00:31:54 And that part of that funding is conditional on delivery.
+
+00:31:58 So the way he's proposed this would work and and the implication seems to be that the mark will do the work himself and be the one getting paid for it.
+
+00:32:06 Yeah, that seemed like it wasn't clear from his GitHub repo.
+
+00:32:09 But if you read the conversation was like, look, I'm pretty sure I can do these things.
+
+00:32:13 This is how much would make sense for me to spend the next couple years working on it and getting paid.
+
+00:32:18 how do we do a fundraiser so that I can do this for everyone?
+
+00:32:21 Yeah, and you know, I think under those conditions, if the PSF is able to put the budget towards it, they are in a bit of a tight spot since PyCon is normally the big fundraiser for the year, and that didn't happen.
+
+00:32:32 On the other hand, it's also the big expense, but financially, the PSF is not in their normal place where they'd be for the year because PyCon didn't happen in the same way.
+
+00:32:43 But I think if they're prepared to put funding towards this, I guess if the community consensus is that this is the most important thing for us to do and there's certainly potential downsides to doing it code complexity is the big one.
+
+00:32:59 And I don't actually think there's a way that you implement this or even achieve these performance gains without making the code much more complex and hence less accessible to new contributors and you know people in earlier stages of learning to code at least on the C side.
+
+00:33:15 Yeah.
+
+00:33:16 So there's trade-offs. I'm very interested to see what would come about.
+
+00:33:20 I assume that because 3.10 is targeted for the first pass, that it's already done.
+
+00:33:25 And he's already got the code.
+
+00:33:26 And he's just trying to get confirmation that he can spend the next few years heavily investing in it.
+
+00:33:34 Instead of having to go find a full-time job and go back to doing this in the evenings.
+
+00:33:38 Which I'm fully supportive of.
+
+00:33:40 Again, it's really just a big open question of, is this the most important thing for Python to be funding right now, for CPython to be getting in particular?
+
+00:33:51 Someone, I forget who, raised the question of what if we put that money towards PyPy instead?
+
+00:33:55 What could they do with it in that amount of time?
+
+00:33:58 And ultimately, it's going to come down to someone, probably a small group, presumably the steering council will have some involvement from the technical side, the Python Software Foundation board will no doubt be involved in just deciding is this the best use of the money that we have or can go out and get for what benefits it would produce.
+
+00:34:21 Yeah, when I look at it with the funding side, I see it as very fraught with challenges on the sort of community funding and the PSF funding, but I know there's so many huge companies out there that spend an insane amount of money on compute and infrastructure that make a lot of money.
+
+00:34:35 and that if they could have a 5x speed up on their code, they could probably save that money right away on infrastructure.
+
+00:34:44 So it seems like that they could also get funded that way. But we should probably move on just because I've got to I'm going to make sure we have time for everything else before we end up running out of time.
+
+00:34:52 I just do want to call out like you should go check out that conversation. There's a very funny excerpt from Larry Hastings.
+
+00:34:57 It says, speaking as the Gillectomy guy, they were talking about borrowed references being a challenge.
+
+00:35:02 "Barb references are evil. The definition of a valid lifetime of a barb reference doesn't exist because they are a hack baked into the API that we mostly get away with because of the gill.
+
+00:35:11 If I still had wishes left at my monkey's paw, I'd wish them away. Unfortunately, I used my last wish back in February, wishing I could spend more time at home." So bad. All right, Siva, let's get a little bit more insight from you on this last one, huh?
+
+00:35:26 Because you were at the Core Developer's Friends, which recently happened.
+
+00:35:30 Yeah, so I don't know exactly what day this is going to go out, but last week from recording day, we had the CPython Core Developer Sprints. So this is kind of a get-together, generally in-person event that the core development team has done for five years now. I think this is the fifth year.
+
+00:35:49 In the past, we've all gone down to Facebook or Microsoft or last year we hung out at Bloomberg in London, and basically spent a week in a room together, coding, discussing, reviewing things, designing things, planning things, and otherwise just getting to actually meet our other contributors because we all work online.
+
+00:36:10 We all mostly work over email and kind of bug tracker and GitHub pull requests throughout the year.
+
+00:36:17 And so it's a really good opportunity to get to meet each other, get to see who we're dealing with.
+
+00:36:21 It's a lot harder to be angry at someone over email when you've met them.
+
+00:36:24 Yes. And so it's been a really good event. This year, because we're obviously not traveling for it, we were hosted by Python Discord, which is at pythondiscord.com. There's a server that is really well managed. It's really well organized. I was impressed. I have not been there before, but it was great. They set up, felt like thousands of channels for us, far too many, but it gave us plenty of space to kind of mingle with other core devs while we were discussing and working and planning anything.
+
+00:36:53 We also did a Q&A, so there'll be a link in the notes for that, from YouTube that we live streamed, we had people submit questions ahead of time, everything from what situations should I use a mangled name in, like a double underscore led name, through to what's your least favorite part of Python, what do you most want to replace, did you ever expect Python to get so big, and we had a lot more people involved.
+
+00:37:15 We normally do a panel for the host company.
+
+00:37:19 So we'll get kind of their employees together and it's like part of the perk for funding the venue and typically meals and coffee and everything for the week.
+
+00:37:27 This time it was public on YouTube.
+
+00:37:29 It was all kind of over video.
+
+00:37:31 So everyone got a bit of a turn to jump in.
+
+00:37:34 So you'll get to see a lot more core developer faces than you've probably ever seen before.
+
+00:37:38 You'll get to hear from a lot more of us than you have before.
+
+00:37:41 And a lot of interesting things.
+
+00:37:43 The big kind of ideas that came out of the week, kind of hard to say.
+
+00:37:48 A lot of us did come out feeling like we didn't get as much forward momentum on stuff as we normally would in person.
+
+00:37:54 But at the same time, a lot of things did move forward.
+
+00:37:57 I think there were about seven or eight peps passed up to the steering council during the week, various things.
+
+00:38:03 One of mine was deprecating disutils, which is an entire podcast on its own.
+
+00:38:08 So I might have to call you guys another time to talk about that one.
+
+00:38:12 Through to a proposal to change how we represent 3.10.
+
+00:38:18 Because a lot of places we put the version numbers back to back with no separator.
+
+00:38:22 And so you have, you know, 3839 with no nothing in between.
+
+00:38:25 Now we're up to 310.
+
+00:38:26 Or is it 310?
+
+00:38:28 Yeah.
+
+00:38:29 Okay.
+
+00:38:30 How do we fix that?
+
+00:38:31 And we had a lot of discussions about that.
+
+00:38:33 There was obviously a lot of talk about JIT, about the C API, all the usual things that we talk about. But again, because it was online, it was really good to have such a range of people involved, you know, across different time zones, and people who would not normally get to travel.
+
+00:38:48 Yeah, it makes it more accessible. Yeah, that's awesome.
+
+00:38:50 Yeah, we have core developers in countries who can't leave.
+
+00:38:52 Like they literally cannot leave their country, either because the populace is just strictly controlled, or they know they would not get back in when they tried to go home.
+
+00:39:02 And so they were able to participate and that was great to you know, see and meet some of those people We had a few mentees come along to interact with the rest of the team And just overall a good week. Awesome. Yeah, cool. Yeah, people can check it out the youtube stream I definitely want to check that out. Sounds neat. All right, brian. We've got two minutes left Do you think we should do a joke? Yeah, let's do the joke. Let's just cut to the joke So we we don't miss that right? So you and I spoke about hacktoberfest going wrong and like random PRs to like, config files and changing the spelling and config file settings.
+
+00:39:37 So there was a guy who posted on Twitter, said, "Hey, let me double check the name." It was Stuart McCroden.
+
+00:39:48 And he posted this cool t-shirt that he got.
+
+00:39:51 It says, "Hacktoberfest 2020. Any PR is a good R." And it's Lua.py.
+
+00:39:56 And it has import pyenvim.
+
+00:39:59 Then the pr just adds hash this imports a package That's awesome steve, did you suffer from any of these?
+
+00:40:07 I did not I might have done my github notifications are a mess So yeah, I I don't even know yet Yeah, I don't I don't see poor requests until I actually go look at the repo myself for the most part Yeah, I got a bunch. I got a whole bunch. Yeah me too. Okay. I wanted to do one This should have been a topic, but the five most difficult programming languages in the world.
+
+00:40:30 This was submitted to us by Troy Caudill, I think. It's not really a full topic, but I thought it was hilarious. This is an article where the author, Locate, I guess, actually took five programming languages, Malboge, Intercal, Brain, we all know that one, cow and whitespace and wrote hello world in that language.
+
+00:40:55 And these are hilarious. And my favorite is whitespace because the entire language depends on space tab and line feed for writing the program.
+
+00:41:03 And any non whitespace characters considered a comment. So this is great.
+
+00:41:08 That's crazy. I don't know why the APL wasn't on there.
+
+00:41:13 APL is just fully insane. Let me, I'll put it just in the show notes here at the bottom of this, an example of APL. That right there that I put on is I can't try to even speak this, but that is an entire thing that finds the all prime numbers from one to R in that that line. I hope you guys see at the bottom of the notes. That's insane, isn't it? That's not even intentionally bad, is it? I mean, it's meant to be a real programming language. It's as if the Egyptians who only wrote in hieroglyphics decided to write a programming language. That's how I feel Like you it's insane, but it's a legitimate language.
+
+00:41:48 Like people try to use it.
+
+00:41:49 They do use it anyway.
+
+00:41:51 Not, not for very long.
+
+00:41:52 I expect only as long as they must.
+
+00:41:55 And then they immediately stop.
+
+00:41:56 I just liked that.
+
+00:41:58 This intercal example is so polite.
+
+00:42:01 It's please, please do please do please.
+
+00:42:03 Oh, please give up.
+
+00:42:04 Yeah.
+
+00:42:07 Apparently you have to sprinkle pleases in it or else it'll like a error because you're not polite enough, but if you do too much, it also errors because you're overly polite.
+
+00:42:17 I like that. We need more passive-aggressive languages like that.
+
+00:42:20 Lovely.
+
+00:42:23 Cool. Well, thanks a lot, guys. It was fun.
+
+00:42:26 Yeah. Thanks, Brian, Michael. Yeah, thanks. And thanks for being here, Steve. It's great to have your perspective. Thank you for listening to PythonBytes.
+
+00:42:33 Follow the show on Twitter @PythonBytes. That's PythonBytes as in B-Y-T-E-S. And get the full show notes at pythonbytes.fm. If you have a news item you want featured, just visit pythonbytes.fm and send it our way. We're always on the lookout for sharing something cool. This is Brian Okken, and on behalf of myself and Michael Kennedy, thank you for listening and sharing this podcast with your friends and colleagues.
 

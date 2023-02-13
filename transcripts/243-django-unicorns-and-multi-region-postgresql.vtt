@@ -1,0 +1,3788 @@
+
+00:00:00.000 --> 00:00:05.500
+Hello and welcome to Python Bytes, where we deliver Python news and headlines directly to your earbuds.
+
+
+00:00:05.500 --> 00:00:10.900
+This is episode 243, recorded July 21st, 2021.
+
+
+00:00:10.900 --> 00:00:12.000
+And I'm Brian Okken.
+
+
+00:00:12.000 --> 00:00:13.300
+And I'm Michael Kennedy.
+
+
+00:00:13.300 --> 00:00:14.600
+And I'm Simon Wilson.
+
+
+00:00:14.600 --> 00:00:17.400
+Welcome, Simon. Thanks for agreeing to show up today.
+
+
+00:00:17.400 --> 00:00:19.600
+No problem at all. I've been looking forward to this.
+
+
+00:00:19.600 --> 00:00:23.800
+If anybody doesn't know who you are, can we do a quick "Who's Simon?"
+
+
+00:00:23.800 --> 00:00:25.800
+Sure. So yeah, my name's Simon Wilson.
+
+
+00:00:25.800 --> 00:00:32.080
+I've been doing Python bits and pieces for around about 20 years now. So I'm a co-creator
+
+
+00:00:32.080 --> 00:00:37.240
+of the Django web framework from many, many years ago. I think Django is celebrating its
+
+
+00:00:37.240 --> 00:00:42.320
+15th birthday now. But more recently, I've been working on a set of open source tools
+
+
+00:00:42.320 --> 00:00:47.520
+around this project I have called Dataset, which is a web application for exploring a
+
+
+00:00:47.520 --> 00:00:52.160
+relational database, SQLite database, but it also has tools for publishing those databases
+
+
+00:00:52.160 --> 00:00:55.400
+online, building those databases out of lots of different sources of data.
+
+
+00:00:55.400 --> 00:01:01.240
+I'm trying to bootstrap an entire ecosystem of data and analytics tooling around SQLite
+
+
+00:01:01.240 --> 00:01:05.400
+because it turns out everyone in the world has SQLite even though they don't necessarily
+
+
+00:01:05.400 --> 00:01:06.400
+know that they have it.
+
+
+00:01:06.400 --> 00:01:08.640
+And there's some really cool stuff that you can do with it.
+
+
+00:01:08.640 --> 00:01:09.920
+>> Yeah, it's a really cool project.
+
+
+00:01:09.920 --> 00:01:10.920
+>> Yeah, it is.
+
+
+00:01:10.920 --> 00:01:13.440
+If you wanted to create your own personal search engine that would let you just go and
+
+
+00:01:13.440 --> 00:01:19.680
+say search your Gmail, your Twitter, your Instagram, and your file system all at once.
+
+
+00:01:19.680 --> 00:01:20.680
+That's pretty much it, right?
+
+
+00:01:20.680 --> 00:01:21.680
+>> That's part of the tooling.
+
+
+00:01:21.680 --> 00:01:26.880
+Yeah, there's a whole side of it, which I've called dog sheep for ridiculous reasons.
+
+
+00:01:26.880 --> 00:01:29.640
+But the dog sheep project is about personal analytics.
+
+
+00:01:29.640 --> 00:01:36.400
+It's about getting your personal tweets and messages and all of the personal data about yourself into one place.
+
+
+00:01:36.400 --> 00:01:41.920
+So you've got essentially a little mini data warehouse on your laptop that you can use to query aspects of your own life.
+
+
+00:01:41.920 --> 00:01:48.800
+And that's been a really fun way of driving features in the software, which can then be applied to like company databases and so forth as well.
+
+
+00:01:48.800 --> 00:01:50.920
+Yeah, super cool.
+
+
+00:01:50.920 --> 00:01:53.140
+>> Well, if I didn't want to do SQLite,
+
+
+00:01:53.140 --> 00:01:55.300
+I might want to use Mongo. What do you think?
+
+
+00:01:55.300 --> 00:01:57.420
+>> You may want to.
+
+
+00:01:57.420 --> 00:01:59.880
+So there's some big news around MongoDB.
+
+
+00:01:59.880 --> 00:02:01.880
+MongoDB 5 is out,
+
+
+00:02:01.880 --> 00:02:04.260
+which I'm all about MongoDB,
+
+
+00:02:04.260 --> 00:02:05.800
+which makes me super excited.
+
+
+00:02:05.800 --> 00:02:08.000
+Probably won't switch right away
+
+
+00:02:08.000 --> 00:02:10.400
+because I don't actually need the features that are there,
+
+
+00:02:10.400 --> 00:02:13.360
+but I'm super excited to see things going strong.
+
+
+00:02:13.360 --> 00:02:16.000
+So some of the things that are relevant,
+
+
+00:02:16.000 --> 00:02:18.760
+and I think they're really relevant to Python people,
+
+
+00:02:18.760 --> 00:02:20.840
+especially the data science side.
+
+
+00:02:20.840 --> 00:02:23.720
+So basically there's two important things.
+
+
+00:02:23.720 --> 00:02:26.760
+One has to do with working with time series
+
+
+00:02:26.760 --> 00:02:30.440
+and the other has to do with stability of the app
+
+
+00:02:30.440 --> 00:02:32.560
+that you don't want to keep changing
+
+
+00:02:32.560 --> 00:02:34.720
+so that you can upgrade your database, right?
+
+
+00:02:34.720 --> 00:02:37.000
+Like if the database API slightly changes,
+
+
+00:02:37.000 --> 00:02:39.160
+you don't wanna have to deal with those incompatibilities
+
+
+00:02:39.160 --> 00:02:41.480
+until you're ready to take advantage of the benefits
+
+
+00:02:41.480 --> 00:02:43.360
+of making those changes.
+
+
+00:02:43.360 --> 00:02:46.280
+So one of the things that comes with is in the database
+
+
+00:02:46.280 --> 00:02:50.280
+that are native time series, schemas and collection types.
+
+
+00:02:50.280 --> 00:02:51.320
+That's incredible.
+
+
+00:02:51.320 --> 00:02:51.860
+Yeah.
+
+
+00:02:51.860 --> 00:02:55.680
+So you can do really interesting things like a moving average as a query
+
+
+00:02:55.680 --> 00:03:00.440
+with across like data and stored data in a format that's meant to make
+
+
+00:03:00.440 --> 00:03:02.240
+that incredibly fast and low latency.
+
+
+00:03:02.240 --> 00:03:05.840
+But you can also do like, I would like the, the numerical
+
+
+00:03:05.840 --> 00:03:10.080
+derivative over time as a moving average, as a query or the
+
+
+00:03:10.080 --> 00:03:12.000
+integral of this collection.
+
+
+00:03:12.280 --> 00:03:15.680
+So you can do like math as part of your query
+
+
+00:03:15.680 --> 00:03:18.040
+and get it to calculate those things
+
+
+00:03:18.040 --> 00:03:19.340
+in really interesting ways.
+
+
+00:03:19.340 --> 00:03:22.120
+So the time series has things like clustered indexes
+
+
+00:03:22.120 --> 00:03:25.080
+and window functions and all sorts of interesting things.
+
+
+00:03:25.080 --> 00:03:26.680
+So that's one.
+
+
+00:03:26.680 --> 00:03:28.820
+It automatically optimizes your schema
+
+
+00:03:28.820 --> 00:03:31.260
+for high-efficient storage, which is pretty cool.
+
+
+00:03:31.260 --> 00:03:33.400
+That's, I think, independent of the time series,
+
+
+00:03:33.400 --> 00:03:35.360
+but not a hundred percent sure.
+
+
+00:03:35.360 --> 00:03:38.360
+It has, the other big thing is the versioned API
+
+
+00:03:38.360 --> 00:03:39.640
+for future-proof apps.
+
+
+00:03:39.640 --> 00:03:41.980
+So suppose you build against version,
+
+
+00:03:41.980 --> 00:03:43.540
+I guess five is the one that has it.
+
+
+00:03:43.540 --> 00:03:45.660
+Do you build against version five of MongoDB?
+
+
+00:03:45.660 --> 00:03:49.240
+And then eventually some point like version seven comes along and like, Oh,
+
+
+00:03:49.240 --> 00:03:51.980
+you can do this new way of querying, but it's going to break some stuff.
+
+
+00:03:51.980 --> 00:03:53.260
+So you want to use it.
+
+
+00:03:53.260 --> 00:03:53.980
+You got to fix your app.
+
+
+00:03:53.980 --> 00:03:58.740
+You can just say, I want the database to look like version five forever.
+
+
+00:03:58.740 --> 00:04:02.120
+And no matter what version is in production, it'll, it'll behave the
+
+
+00:04:02.120 --> 00:04:05.820
+right way, according to what you said, you wanted it to behave, right?
+
+
+00:04:05.820 --> 00:04:08.700
+So you could say, I want version seven to be like five for me, but it can be
+
+
+00:04:08.700 --> 00:04:09.820
+version seven for someone else.
+
+
+00:04:09.820 --> 00:04:10.300
+That kind of thing.
+
+
+00:04:10.300 --> 00:04:11.280
+Yeah.
+
+
+00:04:11.300 --> 00:04:12.980
+The other thing, the way that you talk to it,
+
+
+00:04:12.980 --> 00:04:15.060
+the way that you interact with it is through
+
+
+00:04:15.060 --> 00:04:18.680
+just a terminal app you fired up or a command prompt app
+
+
+00:04:18.680 --> 00:04:19.520
+and you talk to it.
+
+
+00:04:19.520 --> 00:04:21.380
+And traditionally this thing has been gross.
+
+
+00:04:21.380 --> 00:04:23.180
+It's been like, it's fine,
+
+
+00:04:23.180 --> 00:04:25.660
+but it has zero syntax highlighting.
+
+
+00:04:25.660 --> 00:04:29.200
+It has zero auto-complete, those types of things, right?
+
+
+00:04:29.200 --> 00:04:31.260
+So they're introducing a new shell.
+
+
+00:04:31.260 --> 00:04:33.540
+So traditionally you would have typed Mongo,
+
+
+00:04:33.540 --> 00:04:34.900
+enter, connected.
+
+
+00:04:34.900 --> 00:04:37.860
+Now you type Mongo SH because the old one is still there
+
+
+00:04:37.860 --> 00:04:38.980
+for compatibility reasons.
+
+
+00:04:38.980 --> 00:04:42.020
+but that one now has syntax highlighting,
+
+
+00:04:42.020 --> 00:04:44.460
+better error checking, pretty printing,
+
+
+00:04:44.460 --> 00:04:46.300
+auto-complete, things like that.
+
+
+00:04:46.300 --> 00:04:48.060
+If you're going to do stuff on the shell,
+
+
+00:04:48.060 --> 00:04:49.500
+then you really should just run the new one.
+
+
+00:04:49.500 --> 00:04:52.980
+>> That's pretty cool. I'm going to go with Mongoosh as the-
+
+
+00:04:52.980 --> 00:04:56.140
+>> Mongoosh. Oh, Mongoosh, what are you doing?
+
+
+00:04:56.140 --> 00:04:57.540
+Yeah, run the shell, the new one.
+
+
+00:04:57.540 --> 00:04:59.540
+I know it. That's pretty awesome.
+
+
+00:04:59.540 --> 00:05:05.620
+Then also, they're talking about having serverless instances.
+
+
+00:05:05.620 --> 00:05:07.860
+Like Lambda type functions,
+
+
+00:05:07.860 --> 00:05:10.580
+where you don't actually have to manage the database or things like that.
+
+
+00:05:10.580 --> 00:05:12.020
+So I didn't know a whole lot about it.
+
+
+00:05:12.020 --> 00:05:15.620
+You can also watch the keynote and actually the whole conference.
+
+
+00:05:15.620 --> 00:05:17.780
+But the keynote is probably most relevant here.
+
+
+00:05:17.780 --> 00:05:22.020
+Turns out that it's for a public billion dollar company or whatever they're worth.
+
+
+00:05:22.020 --> 00:05:28.340
+It's incredibly amateurish and more like a talent fair of like a high school or something like that.
+
+
+00:05:28.340 --> 00:05:30.100
+But whatever, you'll still learn.
+
+
+00:05:30.100 --> 00:05:31.380
+I mean, it's like you'll see.
+
+
+00:05:31.380 --> 00:05:32.740
+It's like super.
+
+
+00:05:32.740 --> 00:05:34.340
+>> I have to check it out now.
+
+
+00:05:34.340 --> 00:05:40.100
+>> Yeah, it's worth watching for the blush worthy.
+
+
+00:05:40.100 --> 00:05:42.760
+Like, "Oh, come on.
+
+
+00:05:42.760 --> 00:05:44.860
+Okay, well, let's just move on now, please."
+
+
+00:05:44.860 --> 00:05:49.540
+But nonetheless, they do demo some interesting things and whatnot.
+
+
+00:05:49.540 --> 00:05:50.740
+That's probably enough on that.
+
+
+00:05:50.740 --> 00:05:51.760
+But if you're into MongoDB,
+
+
+00:05:51.760 --> 00:05:55.260
+MongoDB 5 has a lot of cool things to talk about there.
+
+
+00:05:55.260 --> 00:05:57.460
+>> What else is cool and coming up?
+
+
+00:05:57.460 --> 00:05:58.420
+>> Python.
+
+
+00:05:58.420 --> 00:06:03.020
+>> 3.11. We don't even have Python 3.10 yet.
+
+
+00:06:03.020 --> 00:06:07.020
+Well, I do. The beta is available for 3.10.
+
+
+00:06:07.020 --> 00:06:11.900
+You can run it, but the Alpha is around for 3.11, which is neat.
+
+
+00:06:11.900 --> 00:06:12.980
+>> Nice.
+
+
+00:06:12.980 --> 00:06:16.140
+>> What I wanted to highlight here was
+
+
+00:06:16.140 --> 00:06:21.400
+enhanced error locations in tracebacks.
+
+
+00:06:21.400 --> 00:06:24.380
+I'm so excited about this. This is so cool.
+
+
+00:06:24.380 --> 00:06:27.460
+Python has not been that bad for tracebacks.
+
+
+00:06:27.460 --> 00:06:29.300
+I've dealt with worse tracebacks,
+
+
+00:06:29.300 --> 00:06:32.900
+but it points out what line is going on,
+
+
+00:06:32.900 --> 00:06:35.140
+but sometimes there's weird stuff like none,
+
+
+00:06:35.140 --> 00:06:37.140
+not irreferenceable or something,
+
+
+00:06:37.140 --> 00:06:39.180
+and you don't know what's going on.
+
+
+00:06:39.180 --> 00:06:41.580
+But now in 3.11,
+
+
+00:06:41.580 --> 00:06:45.020
+it will point to exactly what part of the line has the error,
+
+
+00:06:45.020 --> 00:06:48.760
+with little carrots underneath pointing exactly where it's at.
+
+
+00:06:48.760 --> 00:06:50.100
+>> That is actually super cool.
+
+
+00:06:50.100 --> 00:06:53.360
+So like the example you got on the screen here on the announcement,
+
+
+00:06:53.360 --> 00:06:59.300
+you've got multiple objects accessing their fields like 0.1.x,
+
+
+00:06:59.300 --> 00:07:02.300
+0.2.x, and the error is none type object
+
+
+00:07:02.300 --> 00:07:06.220
+has no attribute X, which is probably the most common error
+
+
+00:07:06.220 --> 00:07:08.220
+that you'll ever find in Python.
+
+
+00:07:08.220 --> 00:07:10.420
+But what I like about it that you're pointing out here
+
+
+00:07:10.420 --> 00:07:14.000
+is like the second object is the one that is none.
+
+
+00:07:14.000 --> 00:07:16.700
+And it actually highlights, no, no, not the first one,
+
+
+00:07:16.700 --> 00:07:18.060
+the second one, 'cause there's nothing
+
+
+00:07:18.060 --> 00:07:19.980
+about the error message that would tell you
+
+
+00:07:19.980 --> 00:07:22.580
+which of these two things was the problem.
+
+
+00:07:22.580 --> 00:07:23.500
+That's awesome.
+
+
+00:07:23.500 --> 00:07:25.700
+- Yeah, and it's deep into the,
+
+
+00:07:25.700 --> 00:07:27.380
+so if you have a deep stack trace,
+
+
+00:07:27.380 --> 00:07:29.580
+it'll show you exactly where into it.
+
+
+00:07:29.580 --> 00:07:31.820
+And even like there's another example
+
+
+00:07:31.820 --> 00:07:35.900
+where it shows like a deep into a dictionary.
+
+
+00:07:35.900 --> 00:07:39.140
+>> A four-level deep dictionary dereference or something, right?
+
+
+00:07:39.140 --> 00:07:43.860
+>> It points out exactly which index is the one that's messing up.
+
+
+00:07:43.860 --> 00:07:45.980
+So that's pretty amazing.
+
+
+00:07:45.980 --> 00:07:50.640
+Also, even math, arithmetic expressions like a division by zero.
+
+
+00:07:50.640 --> 00:07:52.220
+You've got multiple divisions,
+
+
+00:07:52.220 --> 00:07:53.860
+which one is the problem?
+
+
+00:07:53.860 --> 00:07:56.020
+It'll show you exactly which one it is.
+
+
+00:07:56.020 --> 00:07:58.820
+>> The thing I love about this change is this is one of those things,
+
+
+00:07:58.820 --> 00:08:01.020
+this is absurdly difficult.
+
+
+00:08:01.020 --> 00:08:05.100
+This is like acres of computer science and a bunch of people working together on this
+
+
+00:08:05.100 --> 00:08:10.060
+for I couldn't even imagine how long it took them to do, to make something which is just a
+
+
+00:08:10.060 --> 00:08:14.380
+beautiful little incremental improvement to our lives as Python developers. But then if you,
+
+
+00:08:14.380 --> 00:08:18.220
+if you, I think the release notes actually talk about some of the internal changes they had to
+
+
+00:08:18.220 --> 00:08:22.700
+make that to get this to work. This is like really deep stuff and it's totally worth it for what you
+
+
+00:08:22.700 --> 00:08:27.260
+get out of it. But it, it's, I think it's easy to look at this and think, okay, that's a reasonably
+
+
+00:08:27.260 --> 00:08:30.240
+sensible small change and this was not a small change at all.
+
+
+00:08:30.240 --> 00:08:32.560
+>> I think it's going to dramatically increase
+
+
+00:08:32.560 --> 00:08:34.920
+the on-ramping of new people into Python
+
+
+00:08:34.920 --> 00:08:39.480
+because being able to figure out what's wrong with your code,
+
+
+00:08:39.480 --> 00:08:41.180
+that's basics.
+
+
+00:08:41.180 --> 00:08:47.480
+Some of us old hatters are used to digging into confusing tracebacks,
+
+
+00:08:47.480 --> 00:08:49.640
+but some new people are not.
+
+
+00:08:49.640 --> 00:08:51.720
+If we can make them less confusing, that'll be great.
+
+
+00:08:51.720 --> 00:08:53.320
+>> Right. When I work with new programmers,
+
+
+00:08:53.320 --> 00:08:56.160
+it's so common, they get a traceback and they freeze
+
+
+00:08:56.160 --> 00:08:59.040
+because this utter, utter meaningless junk
+
+
+00:08:59.040 --> 00:09:00.120
+has just shown up on their screen.
+
+
+00:09:00.120 --> 00:09:01.360
+And what are they supposed to do with that?
+
+
+00:09:01.360 --> 00:09:03.780
+And here it feels like this is just such a huge improvement
+
+
+00:09:03.780 --> 00:09:05.680
+because at least it's pointing to the bit
+
+
+00:09:05.680 --> 00:09:07.240
+in the giant blob of text
+
+
+00:09:07.240 --> 00:09:08.920
+that they should be paying attention to.
+
+
+00:09:08.920 --> 00:09:10.000
+- Yeah, lovely.
+
+
+00:09:10.000 --> 00:09:11.600
+- Yeah, I guess. - I want it in 3.10 though.
+
+
+00:09:11.600 --> 00:09:13.840
+But we have to wait till 3.11.
+
+
+00:09:13.840 --> 00:09:17.380
+- From futures, import nice stack trace, or trace back.
+
+
+00:09:17.380 --> 00:09:18.320
+Yeah, very cool.
+
+
+00:09:18.320 --> 00:09:21.520
+All right, so Simon, you got the third one.
+
+
+00:09:21.520 --> 00:09:22.440
+Tell us all about it.
+
+
+00:09:22.440 --> 00:09:25.720
+- Okay, so Fly.io, a hosting provider
+
+
+00:09:25.720 --> 00:09:27.920
+who they launched about a year ago.
+
+
+00:09:27.920 --> 00:09:29.220
+I've been following along because they're doing
+
+
+00:09:29.220 --> 00:09:32.160
+some really interesting stuff around hosting Docker containers,
+
+
+00:09:32.160 --> 00:09:33.440
+and all my stuff is in Docker containers,
+
+
+00:09:33.440 --> 00:09:35.300
+so I'm always looking for things where I can
+
+
+00:09:35.300 --> 00:09:37.520
+throw a Docker container that will host online.
+
+
+00:09:37.520 --> 00:09:40.740
+Their secret sauce is that they do geographic hosting,
+
+
+00:09:40.740 --> 00:09:43.520
+so you can ask them to run your container in
+
+
+00:09:43.520 --> 00:09:46.140
+Tokyo and San Francisco and London,
+
+
+00:09:46.140 --> 00:09:48.320
+and they will do that, and they will direct traffic
+
+
+00:09:48.320 --> 00:09:50.760
+to the closest version of that app.
+
+
+00:09:50.760 --> 00:09:54.160
+It's this thing, I worked at Eventbrite for many years,
+
+
+00:09:54.160 --> 00:09:58.080
+And one of the things I was always trying to figure out was, okay, could we run Eventbrite
+
+
+00:09:58.080 --> 00:09:59.560
+close to our users?
+
+
+00:09:59.560 --> 00:10:04.700
+Could we have a database in Europe and a database in New York and give people a faster experience
+
+
+00:10:04.700 --> 00:10:05.700
+that way?
+
+
+00:10:05.700 --> 00:10:06.700
+Incredibly difficult to do.
+
+
+00:10:06.700 --> 00:10:07.700
+>> Right.
+
+
+00:10:07.700 --> 00:10:09.800
+>> And Fli.io- >> What a lot of people do is they do CDNs,
+
+
+00:10:09.800 --> 00:10:10.800
+so the static content.
+
+
+00:10:10.800 --> 00:10:11.800
+>> Right.
+
+
+00:10:11.800 --> 00:10:12.800
+That's easy.
+
+
+00:10:12.800 --> 00:10:15.620
+>> But then there's one server somewhere that is really the one that, yeah.
+
+
+00:10:15.620 --> 00:10:16.620
+>> It's the database.
+
+
+00:10:16.620 --> 00:10:19.960
+It's the application code, and then it's the database server especially.
+
+
+00:10:19.960 --> 00:10:25.080
+What Flydl and AYA are doing is making it so much easier to do this, that you could start a project
+
+
+00:10:25.080 --> 00:10:29.160
+and have it geographically distributed from day one without having to think particularly hard
+
+
+00:10:29.160 --> 00:10:35.320
+about it. I like that about them. This article came out within the last week, I think, and it
+
+
+00:10:35.320 --> 00:10:40.920
+talks about their plan for multi-region databases. In their case, they're talking about Postgres and
+
+
+00:10:40.920 --> 00:10:47.640
+this desire to have Postgres databases distributed around the world. When you're doing that,
+
+
+00:10:49.000 --> 00:10:52.000
+having rights to multiple places remains incredibly difficult.
+
+
+00:10:52.000 --> 00:10:53.800
+But a very common pattern is you say, "Okay,
+
+
+00:10:53.800 --> 00:10:56.520
+we're going to have the leads database is in,
+
+
+00:10:56.520 --> 00:10:59.400
+I don't know, New York and all of the rights go to that."
+
+
+00:10:59.400 --> 00:11:02.120
+Then any of the reads get spread out to
+
+
+00:11:02.120 --> 00:11:05.600
+a replica database that's running in different places around the world.
+
+
+00:11:05.600 --> 00:11:07.560
+That's still a really difficult thing to
+
+
+00:11:07.560 --> 00:11:09.500
+set up with the geographic load balancing.
+
+
+00:11:09.500 --> 00:11:12.240
+What they propose is basically run
+
+
+00:11:12.240 --> 00:11:15.800
+your application all the way around the world and set it up so that if
+
+
+00:11:15.800 --> 00:11:18.400
+anyone tries to write to the database and they're not
+
+
+00:11:18.400 --> 00:11:20.560
+talking to the Leeds database server,
+
+
+00:11:20.560 --> 00:11:23.280
+the error gets caught and the application server
+
+
+00:11:23.280 --> 00:11:25.720
+replies to FlyCDN and says,
+
+
+00:11:25.720 --> 00:11:27.160
+"Hey, rerun this request
+
+
+00:11:27.160 --> 00:11:29.040
+against the Leeds database in New York."
+
+
+00:11:29.040 --> 00:11:31.080
+The user doesn't see anything at all.
+
+
+00:11:31.080 --> 00:11:34.320
+The user attempts to do something and it works.
+
+
+00:11:34.320 --> 00:11:35.600
+What actually happened is they
+
+
+00:11:35.600 --> 00:11:37.480
+tried to do a write against Tokyo.
+
+
+00:11:37.480 --> 00:11:39.760
+Tokyo said, "Oh, we can't handle writes."
+
+
+00:11:39.760 --> 00:11:43.760
+Fly invisibly internally redirected to New York.
+
+
+00:11:43.760 --> 00:11:45.960
+The write happened against New York and the result came back.
+
+
+00:11:45.960 --> 00:11:51.640
+And so this takes geographically distributing your database reads, which used to be, I mean,
+
+
+00:11:51.640 --> 00:11:55.000
+I was thinking it was going to be a team of engineers for six months to get this working.
+
+
+00:11:55.000 --> 00:11:57.080
+And it's just baked into their platform.
+
+
+00:11:57.080 --> 00:12:02.440
+It's this incredibly elegant piece of sort of systems engineering design that they've done.
+
+
+00:12:02.440 --> 00:12:07.040
+And I was fascinated, you know, I've banged my head against this problem for so long, and they just
+
+
+00:12:07.040 --> 00:12:07.720
+solved it.
+
+
+00:12:07.720 --> 00:12:10.080
+You know, they just said, hey, here's a way that will work.
+
+
+00:12:10.080 --> 00:12:12.040
+We've shipped it, try it out.
+
+
+00:12:12.280 --> 00:12:15.380
+I, as something of a architecture nerd,
+
+
+00:12:15.380 --> 00:12:16.880
+this really fascinated me.
+
+
+00:12:16.880 --> 00:12:18.600
+- This is fascinating, yeah.
+
+
+00:12:18.600 --> 00:12:20.140
+And I can see just, you know,
+
+
+00:12:20.140 --> 00:12:23.200
+we've got like the retry decorators and stuff
+
+
+00:12:23.200 --> 00:12:24.560
+for various Python functions.
+
+
+00:12:24.560 --> 00:12:27.300
+Like I could see almost a, you know,
+
+
+00:12:27.300 --> 00:12:30.600
+like retry the right decorator that you put on them.
+
+
+00:12:30.600 --> 00:12:32.200
+And it just goes, it catches the error
+
+
+00:12:32.200 --> 00:12:33.040
+and it just goes, nope,
+
+
+00:12:33.040 --> 00:12:34.040
+we're gonna send it everywhere it goes
+
+
+00:12:34.040 --> 00:12:35.920
+and then return the result, right?
+
+
+00:12:35.920 --> 00:12:38.160
+Like it basically puts decorators
+
+
+00:12:38.160 --> 00:12:39.560
+anywhere you're gonna ever do a write
+
+
+00:12:39.560 --> 00:12:40.480
+and you're good to go.
+
+
+00:12:40.480 --> 00:12:41.320
+- Exactly.
+
+
+00:12:41.320 --> 00:12:47.960
+They have example code for Ruby on Rails. They catch the database error that says you
+
+
+00:12:47.960 --> 00:12:52.640
+tried to do a write in a read-only transaction and turn it into a HTTP header that replays
+
+
+00:12:52.640 --> 00:12:58.160
+it against the lead region. And that's it. It's like this -- on the one hand, it's kind
+
+
+00:12:58.160 --> 00:13:03.540
+of an awful, cludgy hack, but it's also genius. This is taking six months of engineering work
+
+
+00:13:03.540 --> 00:13:07.640
+and turning it into add these five lines of code and now your application works all the
+
+
+00:13:07.640 --> 00:13:09.040
+the way around the world.
+
+
+00:13:09.040 --> 00:13:10.520
+It fascinates me.
+
+
+00:13:10.520 --> 00:13:13.160
+- Yeah, this is pretty interesting.
+
+
+00:13:13.160 --> 00:13:14.000
+Yeah.
+
+
+00:13:14.000 --> 00:13:14.820
+- They also, I've got,
+
+
+00:13:14.820 --> 00:13:16.560
+there's one other link in the show notes.
+
+
+00:13:16.560 --> 00:13:19.420
+There's a second article they put out a few days ago,
+
+
+00:13:19.420 --> 00:13:21.640
+which is just doing something,
+
+
+00:13:21.640 --> 00:13:24.540
+it's more about using Redis as a cache
+
+
+00:13:24.540 --> 00:13:26.680
+in your geographical data centers.
+
+
+00:13:26.680 --> 00:13:28.640
+So you can have a local Redis,
+
+
+00:13:28.640 --> 00:13:32.480
+because I mean, their argument is people in London
+
+
+00:13:32.480 --> 00:13:33.800
+tend to be interested in other things
+
+
+00:13:33.800 --> 00:13:35.480
+that people in London are interested.
+
+
+00:13:35.480 --> 00:13:36.320
+Ditto for Tokyo.
+
+
+00:13:36.320 --> 00:13:39.480
+So actually distributing your cache by city
+
+
+00:13:39.480 --> 00:13:42.080
+normally gives you really good cache hit rates.
+
+
+00:13:42.080 --> 00:13:43.440
+But they also pointed out that,
+
+
+00:13:43.440 --> 00:13:45.140
+and I didn't know that Redis could do this,
+
+
+00:13:45.140 --> 00:13:47.660
+Redis can be set up to allow writes
+
+
+00:13:47.660 --> 00:13:50.020
+to supposedly read-only replicas.
+
+
+00:13:50.020 --> 00:13:51.780
+So you can have a local cache
+
+
+00:13:51.780 --> 00:13:53.260
+that you're writing to and reading from,
+
+
+00:13:53.260 --> 00:13:56.600
+but still have that leader Redis in your main data center
+
+
+00:13:56.600 --> 00:13:59.000
+that can send writes out to all of those replicas.
+
+
+00:13:59.000 --> 00:14:02.040
+So that gives you cache invalidation from a central point.
+
+
+00:14:02.040 --> 00:14:04.120
+You can, in your sort of lead Redis,
+
+
+00:14:04.120 --> 00:14:06.680
+you can say, okay, everyone delete the cache entry
+
+
+00:14:06.680 --> 00:14:08.480
+for whatever this thing is.
+
+
+00:14:08.480 --> 00:14:10.120
+And all of those replicas around the world
+
+
+00:14:10.120 --> 00:14:11.620
+will then delete that cache entry,
+
+
+00:14:11.620 --> 00:14:13.800
+even though normally they're acting independently.
+
+
+00:14:13.800 --> 00:14:15.760
+And yeah, it's, again, this is for,
+
+
+00:14:15.760 --> 00:14:18.440
+if you're a systems architecture design nerd,
+
+
+00:14:18.440 --> 00:14:20.700
+the stuff that they're doing is so interesting.
+
+
+00:14:20.700 --> 00:14:23.860
+- I think it's interesting and I'm not one of those, but.
+
+
+00:14:23.860 --> 00:14:25.400
+- Maybe you are and you didn't realize.
+
+
+00:14:25.400 --> 00:14:26.680
+(laughing)
+
+
+00:14:26.680 --> 00:14:27.840
+- You will be next year.
+
+
+00:14:27.840 --> 00:14:29.080
+You will be next year.
+
+
+00:14:29.080 --> 00:14:29.900
+Fantastic.
+
+
+00:14:29.900 --> 00:14:31.080
+Yeah, this is super cool as well.
+
+
+00:14:31.080 --> 00:14:36.000
+And it seems really useful, you know, and it's perfectly in line with like,
+
+
+00:14:36.000 --> 00:14:41.440
+let's take our app and put the logic in multiple places because that person is
+
+
+00:14:41.440 --> 00:14:46.960
+unlikely to move from Tokyo to Virginia during a session.
+
+
+00:14:46.960 --> 00:14:51.120
+But once they start in one place, they're going to stay in that place.
+
+
+00:14:51.120 --> 00:14:55.380
+So the cache would, would reasonably just have like their local
+
+
+00:14:55.380 --> 00:14:56.640
+data on that one instance.
+
+
+00:14:56.640 --> 00:14:56.960
+Right.
+
+
+00:14:56.960 --> 00:14:57.480
+Yeah.
+
+
+00:14:57.480 --> 00:14:57.920
+Yeah.
+
+
+00:14:57.920 --> 00:14:58.280
+Cool.
+
+
+00:14:58.320 --> 00:15:00.360
+But maybe your CDN or not your CDN,
+
+
+00:15:00.360 --> 00:15:02.640
+your CMS is like generated a page
+
+
+00:15:02.640 --> 00:15:04.960
+and everybody needs that always to be in sync, right?
+
+
+00:15:04.960 --> 00:15:06.640
+There's that global data as well.
+
+
+00:15:06.640 --> 00:15:07.560
+Yeah, so very cool.
+
+
+00:15:07.560 --> 00:15:08.400
+I like this.
+
+
+00:15:08.400 --> 00:15:09.220
+Check it out. - Neat.
+
+
+00:15:09.220 --> 00:15:10.060
+- Neat indeed.
+
+
+00:15:10.060 --> 00:15:11.720
+- Well, let's talk about unicorns.
+
+
+00:15:11.720 --> 00:15:12.960
+- I love the unicorns.
+
+
+00:15:12.960 --> 00:15:15.140
+So unicorns, the magical creature.
+
+
+00:15:15.140 --> 00:15:17.080
+And Simon, I'm so glad that you're here
+
+
+00:15:17.080 --> 00:15:18.600
+'cause we can get your thoughts on this,
+
+
+00:15:18.600 --> 00:15:21.740
+even if you maybe haven't been like deep down in it.
+
+
+00:15:21.740 --> 00:15:24.280
+So not too long ago, we talked about HTMX,
+
+
+00:15:24.280 --> 00:15:26.160
+which I'm still a big fan of HTMX.
+
+
+00:15:26.160 --> 00:15:30.360
+It's a cool like sprinkling of magic onto JavaScript,
+
+
+00:15:30.360 --> 00:15:33.040
+these stuff onto your page to make it more interactive.
+
+
+00:15:33.040 --> 00:15:35.920
+But if you're doing Django, HTMX is very relevant,
+
+
+00:15:35.920 --> 00:15:38.720
+but there's also this thing called Django Unicorn
+
+
+00:15:38.720 --> 00:15:40.720
+at django-unicorn.com.
+
+
+00:15:40.720 --> 00:15:44.320
+It's a magical full stack framework for Django.
+
+
+00:15:44.320 --> 00:15:46.800
+So the idea is that you can create these templates,
+
+
+00:15:46.800 --> 00:15:49.800
+these interactive templates without going
+
+
+00:15:49.800 --> 00:15:52.680
+and rewriting everything in like some front end framework
+
+
+00:15:52.680 --> 00:15:54.400
+like React or something like that.
+
+
+00:15:54.400 --> 00:15:56.440
+you can skip the JavaScript build tools
+
+
+00:15:56.440 --> 00:15:58.420
+because you know, you got a lot less of that
+
+
+00:15:58.420 --> 00:16:01.320
+and you can skip a bunch of serializers
+
+
+00:16:01.320 --> 00:16:04.640
+and just use Django for like the API bits.
+
+
+00:16:04.640 --> 00:16:07.080
+So you install Unicorn, you create a component
+
+
+00:16:07.080 --> 00:16:08.440
+and then at the top of your template,
+
+
+00:16:08.440 --> 00:16:10.920
+you put load, you know, %load Unicorn
+
+
+00:16:10.920 --> 00:16:13.160
+and then you can just give it a, one of these names.
+
+
+00:16:13.160 --> 00:16:15.220
+So for example, here's a little task.
+
+
+00:16:15.220 --> 00:16:18.920
+Task one is tell people about Unicorn.
+
+
+00:16:18.920 --> 00:16:21.360
+I can add that, adds too many.
+
+
+00:16:21.360 --> 00:16:23.320
+I'll tell people about Unicorn.
+
+
+00:16:23.320 --> 00:16:26.320
+And you can see like this cool little thing is interacting
+
+
+00:16:26.320 --> 00:16:28.540
+and it's not refreshing the page, right?
+
+
+00:16:28.540 --> 00:16:30.600
+It's like a front end framework type of thing.
+
+
+00:16:30.600 --> 00:16:32.040
+But the way that you write it
+
+
+00:16:32.040 --> 00:16:35.600
+is you just put some extra template pieces on there
+
+
+00:16:35.600 --> 00:16:38.640
+like unicorn colon prevent, submit, prevent.
+
+
+00:16:38.640 --> 00:16:40.800
+And you're gonna do this add function instead.
+
+
+00:16:40.800 --> 00:16:43.040
+And if somebody hits the escape key,
+
+
+00:16:43.040 --> 00:16:45.120
+we're gonna change the value.
+
+
+00:16:45.120 --> 00:16:46.840
+And that's not JavaScript.
+
+
+00:16:46.840 --> 00:16:48.480
+Those are just HTML attributes,
+
+
+00:16:48.480 --> 00:16:50.800
+but they turn into JavaScript, right?
+
+
+00:16:50.800 --> 00:16:51.640
+Which is very cool.
+
+
+00:16:51.640 --> 00:16:57.320
+So, and then you just put your regular Django template business down and off it goes.
+
+
+00:16:57.320 --> 00:17:02.040
+And it turns it into basically something that's way more front-end framework friendly.
+
+
+00:17:02.040 --> 00:17:03.040
+Simon, what do you think?
+
+
+00:17:03.040 --> 00:17:08.920
+So as far as I can tell, the real magic here is that they're using, they're doing the trick
+
+
+00:17:08.920 --> 00:17:12.880
+where you render the HTML on the server, in this case, we using your Django template.
+
+
+00:17:12.880 --> 00:17:18.200
+And then they send back JSON with a blob of HTML in which you then essentially write into
+
+
+00:17:18.200 --> 00:17:19.880
+an inner HTML to update the page.
+
+
+00:17:19.880 --> 00:17:21.240
+And I love this pattern.
+
+
+00:17:21.440 --> 00:17:24.520
+Like this is sort of fun.
+
+
+00:17:24.520 --> 00:17:28.080
+I've always been a big fan of the progressive enhancement
+
+
+00:17:28.080 --> 00:17:29.460
+method of writing JavaScript,
+
+
+00:17:29.460 --> 00:17:31.160
+where you get the stuff to more or less work
+
+
+00:17:31.160 --> 00:17:32.560
+without any JavaScript at all.
+
+
+00:17:32.560 --> 00:17:33.720
+And then if there's JavaScript,
+
+
+00:17:33.720 --> 00:17:35.440
+then you get in-page, page updates
+
+
+00:17:35.440 --> 00:17:37.120
+and all of that kind of thing.
+
+
+00:17:37.120 --> 00:17:38.200
+But there's also,
+
+
+00:17:38.200 --> 00:17:41.040
+one of the problems I've seen with all sorts of,
+
+
+00:17:41.040 --> 00:17:42.720
+lots of engineering shops that try and do that
+
+
+00:17:42.720 --> 00:17:44.460
+is that you end up writing your templates twice.
+
+
+00:17:44.460 --> 00:17:46.680
+You have the Django templates that know how to do something.
+
+
+00:17:46.680 --> 00:17:49.480
+And then you have front end templates using React
+
+
+00:17:49.480 --> 00:17:52.000
+or handlebars or whatever that know how to do something,
+
+
+00:17:52.000 --> 00:17:53.340
+and you have to keep those in sync,
+
+
+00:17:53.340 --> 00:17:55.820
+which is an enormous waste of time for everyone involved.
+
+
+00:17:55.820 --> 00:17:58.200
+What they're doing here then is they're
+
+
+00:17:58.200 --> 00:18:02.380
+handling that, they're cleaning up that inconsistency for you.
+
+
+00:18:02.380 --> 00:18:04.180
+You write a Django template,
+
+
+00:18:04.180 --> 00:18:07.020
+they can use that template in
+
+
+00:18:07.020 --> 00:18:09.400
+Python code to generate just that fragment of
+
+
+00:18:09.400 --> 00:18:12.180
+HTML, send that back and have that displayed on the page.
+
+
+00:18:12.180 --> 00:18:13.820
+I think this is a really interesting approach.
+
+
+00:18:13.820 --> 00:18:16.260
+I've not spent much time with Django Unicorn itself,
+
+
+00:18:16.260 --> 00:18:18.540
+but it also reminds me a bit of the,
+
+
+00:18:18.540 --> 00:18:20.960
+I think it's called Hotwire.
+
+
+00:18:20.960 --> 00:18:26.400
+The Ruby on Rails community built this very exciting framework,
+
+
+00:18:26.400 --> 00:18:28.360
+again, against these kinds of principles,
+
+
+00:18:28.360 --> 00:18:30.940
+just shipping blobs of HTML back and forth.
+
+
+00:18:30.940 --> 00:18:34.120
+I feel like it's something like the mad rush
+
+
+00:18:34.120 --> 00:18:36.760
+towards single-page applications over the past 10 years,
+
+
+00:18:36.760 --> 00:18:39.600
+has mostly resulted in applications that load
+
+
+00:18:39.600 --> 00:18:42.880
+slower and take longer for people to build.
+
+
+00:18:42.880 --> 00:18:46.360
+>> They're so inconsistent and they make me so crazy.
+
+
+00:18:46.360 --> 00:18:50.800
+for example, I'll go to like a bank or something and I'll say, all right, I'm going to run
+
+
+00:18:50.800 --> 00:18:56.780
+my one password pre-filled page and you'll see it fill out the page and then you try
+
+
+00:18:56.780 --> 00:18:57.780
+to submit it.
+
+
+00:18:57.780 --> 00:18:58.780
+It goes, please fill out this field.
+
+
+00:18:58.780 --> 00:19:01.120
+And there's clearly like an email address or something in there.
+
+
+00:19:01.120 --> 00:19:02.120
+What do you got to do?
+
+
+00:19:02.120 --> 00:19:03.680
+Go put a space, delete the space.
+
+
+00:19:03.680 --> 00:19:10.240
+So the JavaScript event triggers because they're like, not really, it's all that junk.
+
+
+00:19:10.240 --> 00:19:13.880
+And it's just like, yeah, you know what I mean?
+
+
+00:19:13.880 --> 00:19:17.200
+What people actually want is they don't want a full page reload.
+
+
+00:19:17.200 --> 00:19:20.320
+Like anyone who's getting into single page apps and so on, really, they just don't want
+
+
+00:19:20.320 --> 00:19:22.660
+that flicker when the browser reloads everything.
+
+
+00:19:22.660 --> 00:19:27.120
+So using this trick where if JavaScript is available, you update a section of the page
+
+
+00:19:27.120 --> 00:19:30.560
+using stuff that came back from an Ajax API totally works.
+
+
+00:19:30.560 --> 00:19:33.960
+And that feels like the model here and also the Hotwire model from Rails.
+
+
+00:19:33.960 --> 00:19:35.080
+- Exactly, yeah.
+
+
+00:19:35.080 --> 00:19:40.520
+So the HTMX, the Hotwire, and this, it's all about let's not write new stuff.
+
+
+00:19:40.520 --> 00:19:44.320
+Let's just take the views and the templates already doing their magic and let's just put
+
+
+00:19:44.320 --> 00:19:47.560
+the little pieces in there to make them dynamic, which I'm all about this.
+
+
+00:19:47.560 --> 00:19:48.560
+This is great.
+
+
+00:19:48.560 --> 00:19:51.680
+>> What I've missed is why is this a Django thing?
+
+
+00:19:51.680 --> 00:19:55.200
+Is it because it uses the Django templates or is that?
+
+
+00:19:55.200 --> 00:19:56.440
+>> It looks like it, yeah.
+
+
+00:19:56.440 --> 00:20:00.200
+It looks like the magic here is that it's using Django templates.
+
+
+00:20:00.200 --> 00:20:03.440
+>> And the view as well.
+
+
+00:20:03.440 --> 00:20:08.720
+>> It provides its own views because it needs to provide views that have provided JSON API
+
+
+00:20:08.720 --> 00:20:10.440
+you can send it data from a form.
+
+
+00:20:10.440 --> 00:20:12.120
+It then renders that Django template
+
+
+00:20:12.120 --> 00:20:13.960
+in Python code and then sends you back the stuff.
+
+
+00:20:13.960 --> 00:20:15.040
+There's two sides to this.
+
+
+00:20:15.040 --> 00:20:18.440
+There's the Python Django view functions I've written,
+
+
+00:20:18.440 --> 00:20:20.360
+but they've also written a eight kilobyte,
+
+
+00:20:20.360 --> 00:20:23.720
+I think, of JavaScript that hooks it up on the front end.
+
+
+00:20:23.720 --> 00:20:24.840
+>> Cool. Nice.
+
+
+00:20:24.840 --> 00:20:28.140
+>> Yeah. Very neat. Not very much code at all to
+
+
+00:20:28.140 --> 00:20:31.700
+get your Django to become more dynamic, which is great.
+
+
+00:20:31.700 --> 00:20:36.280
+>> Yeah. I don't think unicorns are blue.
+
+
+00:20:36.280 --> 00:20:38.280
+>> I'm not really sure what color unicorns are.
+
+
+00:20:38.280 --> 00:20:39.840
+I feel like they could be any color.
+
+
+00:20:39.840 --> 00:20:40.960
+They might be rainbow,
+
+
+00:20:40.960 --> 00:20:44.200
+but actually that's not a rainbow.
+
+
+00:20:44.200 --> 00:20:45.520
+>> It's not a rainbow.
+
+
+00:20:45.520 --> 00:20:48.120
+I want to talk about blue.
+
+
+00:20:48.120 --> 00:20:52.320
+I think I'm ready to have
+
+
+00:20:52.320 --> 00:20:55.440
+tomatoes thrown at me or something for bringing this up.
+
+
+00:20:55.440 --> 00:21:01.400
+Blue is an alternative to black.
+
+
+00:21:01.400 --> 00:21:04.800
+Anyway, I love black.
+
+
+00:21:04.800 --> 00:21:05.940
+I think black's awesome.
+
+
+00:21:05.940 --> 00:21:12.900
+but there are times where you can't use it for specific reasons.
+
+
+00:21:12.900 --> 00:21:17.760
+I'm thinking here basically about the decision that Black made to
+
+
+00:21:17.760 --> 00:21:24.740
+default to not a default but enforce double quotes on strings instead of single quotes.
+
+
+00:21:24.740 --> 00:21:30.100
+There are some code bases where there's already a standard to use single quotes,
+
+
+00:21:30.100 --> 00:21:34.360
+and then there's also code bases where there's so many strings that
+
+
+00:21:34.360 --> 00:21:36.720
+actually have mixed quotes.
+
+
+00:21:36.720 --> 00:21:40.600
+You've got single quotes and then double quotes inside.
+
+
+00:21:40.600 --> 00:21:44.120
+>> Mine end up mixed sometimes because if I want to
+
+
+00:21:44.120 --> 00:21:46.440
+put quote something in the actual string,
+
+
+00:21:46.440 --> 00:21:47.880
+I'll use single quotes on the outside.
+
+
+00:21:47.880 --> 00:21:50.580
+But if I'm going to say it's a good idea,
+
+
+00:21:50.580 --> 00:21:52.700
+I'll put double quotes on the outside,
+
+
+00:21:52.700 --> 00:21:55.000
+so I don't have to escape the single quote.
+
+
+00:21:55.000 --> 00:21:57.400
+If you're going to have one of the quotes in the string,
+
+
+00:21:57.400 --> 00:21:58.580
+then just go with the other one is
+
+
+00:21:58.580 --> 00:22:00.120
+often something I'll end up doing.
+
+
+00:22:00.120 --> 00:22:02.520
+>> Actually, Black does that for you.
+
+
+00:22:02.520 --> 00:22:05.960
+if you've got a string with a double quote in,
+
+
+00:22:05.960 --> 00:22:07.880
+that's the one time that black will use single quotes,
+
+
+00:22:07.880 --> 00:22:08.640
+which is neat.
+
+
+00:22:08.640 --> 00:22:10.760
+>> Okay. That's good. Good to know.
+
+
+00:22:10.760 --> 00:22:12.520
+>> I do like that.
+
+
+00:22:12.520 --> 00:22:16.560
+If the sticking point is really just the quotes,
+
+
+00:22:16.560 --> 00:22:17.840
+then maybe try blue.
+
+
+00:22:17.840 --> 00:22:19.760
+Blue is actually,
+
+
+00:22:19.760 --> 00:22:21.940
+I was worried there was going to be a fork of black.
+
+
+00:22:21.940 --> 00:22:27.360
+It's not a fork. It includes black and it
+
+
+00:22:27.360 --> 00:22:29.840
+overwrites some of the functionality,
+
+
+00:22:29.840 --> 00:22:32.120
+and specifically, just a few things.
+
+
+00:22:32.120 --> 00:22:36.760
+So the differences are it defaults to single quotes strings,
+
+
+00:22:36.760 --> 00:22:40.440
+except for places where we love double quotes,
+
+
+00:22:40.440 --> 00:22:43.460
+like doc strings and triple-quoted strings.
+
+
+00:22:43.460 --> 00:22:45.820
+For some reason, those look weird with single quotes.
+
+
+00:22:45.820 --> 00:22:48.080
+So I'm on board with that.
+
+
+00:22:48.080 --> 00:22:51.340
+It defaults the line lengths to 79,
+
+
+00:22:51.340 --> 00:22:55.900
+and I don't really care because I always override that to 120 or something like that.
+
+
+00:22:55.900 --> 00:22:59.400
+I like that black allows that overriding.
+
+
+00:22:59.400 --> 00:23:02.060
+Then the other thing that I didn't even think about,
+
+
+00:23:02.060 --> 00:23:06.260
+which is nice, is one of the things Black does is takes the hash.
+
+
+00:23:06.260 --> 00:23:10.320
+If you have hash comments on your right side of your code,
+
+
+00:23:10.320 --> 00:23:12.420
+you've got a block of them.
+
+
+00:23:12.420 --> 00:23:15.620
+Maybe you're talking about an entire block of code,
+
+
+00:23:15.620 --> 00:23:17.280
+so you have a block of comments.
+
+
+00:23:17.280 --> 00:23:21.300
+Black will remove the white space in front of the hash,
+
+
+00:23:21.300 --> 00:23:23.100
+whereas blue will leave those alone,
+
+
+00:23:23.100 --> 00:23:25.280
+so you can have block comments on the side.
+
+
+00:23:25.280 --> 00:23:28.100
+That's really it. That's the only difference.
+
+
+00:23:28.580 --> 00:23:32.420
+I think having this around is a neat thing.
+
+
+00:23:32.420 --> 00:23:35.240
+Interesting quote from the doc is that they actually
+
+
+00:23:35.240 --> 00:23:38.180
+don't want to keep this project alive for very long.
+
+
+00:23:38.180 --> 00:23:40.620
+They'd really like these to just be options in black.
+
+
+00:23:40.620 --> 00:23:41.900
+[LAUGHTER]
+
+
+00:23:41.900 --> 00:23:42.420
+>> Yeah.
+
+
+00:23:42.420 --> 00:23:43.980
+>> I don't know how far they'll get.
+
+
+00:23:43.980 --> 00:23:45.760
+>> I don't think that's going to happen.
+
+
+00:23:45.760 --> 00:23:49.300
+I think black is pretty hardcore,
+
+
+00:23:49.300 --> 00:23:54.260
+they're very into not adding configuration where they can still avoid it.
+
+
+00:23:54.260 --> 00:23:57.380
+>> Yeah. In researching this,
+
+
+00:23:57.380 --> 00:24:00.180
+one of the things I somehow missed about Black,
+
+
+00:24:00.180 --> 00:24:03.080
+maybe I haven't read the documentation in a long time,
+
+
+00:24:03.080 --> 00:24:04.360
+but a couple of years ago,
+
+
+00:24:04.360 --> 00:24:08.940
+it added the ability to have format off and format on.
+
+
+00:24:08.940 --> 00:24:10.800
+One of the things, for instance,
+
+
+00:24:10.800 --> 00:24:12.460
+occasionally, not very often,
+
+
+00:24:12.460 --> 00:24:15.900
+occasionally I've got a large chunk of data
+
+
+00:24:15.900 --> 00:24:21.320
+set up in a list or dictionary or something,
+
+
+00:24:21.320 --> 00:24:26.140
+that I have them aligned with comma alignment,
+
+
+00:24:26.140 --> 00:24:29.340
+like an old style CSV table.
+
+
+00:24:29.340 --> 00:24:32.240
+>> Or a 1980 C programmer.
+
+
+00:24:32.240 --> 00:24:36.100
+>> Yeah, sure. But black totally tears that apart.
+
+
+00:24:36.100 --> 00:24:40.660
+But for that, you can turn formatting off and I appreciate that.
+
+
+00:24:40.660 --> 00:24:42.340
+>> That's cool. That's a good feature.
+
+
+00:24:42.340 --> 00:24:46.660
+>> See, it does have a little bit of give.
+
+
+00:24:46.660 --> 00:24:50.620
+>> Yeah, that's cool. Yeah, very good one.
+
+
+00:24:50.620 --> 00:24:51.940
+>> What do we got next?
+
+
+00:24:51.940 --> 00:24:55.900
+>> Okay. There's a link in the show that's this.
+
+
+00:24:55.900 --> 00:25:02.980
+This is an article that somebody wrote about using Tesseract OCR to build yourself a searchable
+
+
+00:25:02.980 --> 00:25:05.740
+index of your screenshots.
+
+
+00:25:05.740 --> 00:25:09.060
+And I got really excited about this because Tesseract is, like, Tesseract's been around
+
+
+00:25:09.060 --> 00:25:10.940
+since 1995, I think.
+
+
+00:25:10.940 --> 00:25:16.580
+It started off at Hewlett-Packard, and it's pretty much still the leading light of OCR
+
+
+00:25:16.580 --> 00:25:20.100
+in the open source space, but I've never managed to get it to work, and I've always wanted
+
+
+00:25:20.100 --> 00:25:22.500
+OCR that I can just run.
+
+
+00:25:22.500 --> 00:25:25.100
+And thanks to this article, I can actually use Tesseract now.
+
+
+00:25:25.100 --> 00:25:27.420
+I've got a couple of demos here. Can we see this?
+
+
+00:25:27.420 --> 00:25:30.060
+Yeah. I grabbed a screenshot just
+
+
+00:25:30.060 --> 00:25:32.660
+of the random slide from our conversation earlier,
+
+
+00:25:32.660 --> 00:25:34.500
+and I can run, let's see,
+
+
+00:25:34.500 --> 00:25:37.620
+I think it's tesseract screenshot.png.
+
+
+00:25:37.620 --> 00:25:39.940
+I'll put it in a file called screenshot-.
+
+
+00:25:39.940 --> 00:25:41.940
+You have to tell it the language that you're
+
+
+00:25:41.940 --> 00:25:44.100
+using because that affects how it does these things.
+
+
+00:25:44.100 --> 00:25:46.460
+It's like 70 languages, I think.
+
+
+00:25:46.460 --> 00:25:49.380
+I'm going to say I want that as a txt file,
+
+
+00:25:49.380 --> 00:25:52.860
+and you run it, and now if I cat screenshot.txt,
+
+
+00:25:52.860 --> 00:25:56.240
+This is the launch today, MongoDB 5.0.
+
+
+00:25:56.240 --> 00:25:59.200
+This is the screenshot I took of our conversation earlier.
+
+
+00:25:59.200 --> 00:26:00.900
+A better example even would be
+
+
+00:26:00.900 --> 00:26:04.420
+the I took a screenshot of Python documentation just now.
+
+
+00:26:04.420 --> 00:26:06.760
+So I can run that same command except I'll do it
+
+
+00:26:06.760 --> 00:26:09.440
+against Python docs.png.
+
+
+00:26:09.440 --> 00:26:12.720
+Python docs.png, I'll call it pscreenshot.
+
+
+00:26:12.720 --> 00:26:16.380
+There we go. Now if I cat this,
+
+
+00:26:16.380 --> 00:26:19.240
+this is pretty decent OCR against
+
+
+00:26:19.240 --> 00:26:21.580
+the screenshot of a file of documentation.
+
+
+00:26:21.580 --> 00:26:25.500
+The really fun thing though is that you can say you want it as a PDF file.
+
+
+00:26:25.500 --> 00:26:28.540
+If you do that, it will give you a PDF which is visually
+
+
+00:26:28.540 --> 00:26:31.620
+identical to the screenshot but has selectable text on it.
+
+
+00:26:31.620 --> 00:26:34.860
+You can copy and paste out of that PDF.
+
+
+00:26:34.860 --> 00:26:41.380
+The chap whose article is linked in the notes,
+
+
+00:26:41.380 --> 00:26:45.580
+his trick is he has a folder on his computer that he saves screenshots to,
+
+
+00:26:45.580 --> 00:26:47.660
+and he has a automated script that
+
+
+00:26:47.660 --> 00:26:50.680
+then turns those screenshots into these annotated PDFs,
+
+
+00:26:50.680 --> 00:26:53.600
+which means that Spotlight on his Mac can now search them.
+
+
+00:26:53.600 --> 00:26:55.600
+Anything that he drops into that folder,
+
+
+00:26:55.600 --> 00:26:59.280
+a few seconds later becomes available to global search on his computer.
+
+
+00:26:59.280 --> 00:27:01.080
+I think that's a really neat trick.
+
+
+00:27:01.080 --> 00:27:03.440
+>> I love it. That's great.
+
+
+00:27:03.440 --> 00:27:06.720
+>> Yeah, there's so much stuff I want to do with this.
+
+
+00:27:06.720 --> 00:27:10.400
+Yeah, it was Alexandru Nedolcu.
+
+
+00:27:10.400 --> 00:27:12.440
+I don't know if I'm pronouncing that correctly,
+
+
+00:27:12.440 --> 00:27:13.920
+I wrote all of this up.
+
+
+00:27:13.920 --> 00:27:17.240
+But yeah, you can install it with Homebrew,
+
+
+00:27:17.240 --> 00:27:18.960
+it's brew install tesseract.
+
+
+00:27:18.960 --> 00:27:21.240
+there's actually a Python library called Py,
+
+
+00:27:21.240 --> 00:27:22.600
+I think it's called PyTesseract,
+
+
+00:27:22.600 --> 00:27:25.600
+which I thought was doing complicated things with C modules.
+
+
+00:27:25.600 --> 00:27:26.880
+Actually, if you read the source,
+
+
+00:27:26.880 --> 00:27:29.320
+it's just shelling out to this command.
+
+
+00:27:29.320 --> 00:27:33.400
+Apparently, that's the state of the art in Python OCR,
+
+
+00:27:33.400 --> 00:27:35.520
+is shell out to the Tesseract command line tool,
+
+
+00:27:35.520 --> 00:27:38.240
+which I'm perfectly happy to do.
+
+
+00:27:38.240 --> 00:27:42.000
+>> I really like this. If you've got a bunch of
+
+
+00:27:42.000 --> 00:27:45.160
+image data and you want to be able to do interesting things with it,
+
+
+00:27:45.160 --> 00:27:48.120
+here's a really quick and easy way to do it.
+
+
+00:27:48.120 --> 00:27:49.900
+>> Right. It's super simple.
+
+
+00:27:49.900 --> 00:27:52.500
+This article also, I didn't know that you could use
+
+
+00:27:52.500 --> 00:27:55.140
+the Mac LaunchD, I think.
+
+
+00:27:55.140 --> 00:27:57.980
+You can add a launch agent
+
+
+00:27:57.980 --> 00:27:59.700
+which automatically runs a script
+
+
+00:27:59.700 --> 00:28:01.700
+when a file is saved in a certain folder.
+
+
+00:28:01.700 --> 00:28:03.900
+In this case, he's got a launch script that
+
+
+00:28:03.900 --> 00:28:07.300
+runs the TestRack OCR stuff, but this is great.
+
+
+00:28:07.300 --> 00:28:09.980
+Now I can automate any folder on my Mac to do basically
+
+
+00:28:09.980 --> 00:28:12.220
+anything using the system that's built into
+
+
+00:28:12.220 --> 00:28:14.300
+the operating system that I didn't know how to use.
+
+
+00:28:14.300 --> 00:28:15.860
+>> I didn't know you could do that either.
+
+
+00:28:15.860 --> 00:28:17.420
+That's great. That's cool.
+
+
+00:28:17.420 --> 00:28:23.020
+Yeah, that's awesome. I feel like this is right up your alley, Simon, you know, with the data set,
+
+
+00:28:23.020 --> 00:28:27.820
+the dog sheep and like, oh, here's this data we got from this, this automation, and yet I just
+
+
+00:28:27.820 --> 00:28:32.860
+can't dig into it. And now you can. I'm really excited about this. Although, so Apple Photos,
+
+
+00:28:32.860 --> 00:28:38.460
+the next version of Mac OS, Apple Photos is going to do OCR and all of your photographs for you.
+
+
+00:28:38.460 --> 00:28:43.260
+So you can search for text in pictures that you've taken. And if it's anything like the
+
+
+00:28:43.260 --> 00:28:45.320
+the current version of OSX photos,
+
+
+00:28:45.320 --> 00:28:46.800
+all of that data is going to be stored in
+
+
+00:28:46.800 --> 00:28:48.680
+SQLite databases on your computer.
+
+
+00:28:48.680 --> 00:28:52.300
+I've been having a huge amount of fun building things
+
+
+00:28:52.300 --> 00:28:55.320
+against my Apple Photos library because they
+
+
+00:28:55.320 --> 00:28:58.600
+already run machine learning labeling against your photos.
+
+
+00:28:58.600 --> 00:29:01.420
+They know when you take a photo of a dog and they tag it with
+
+
+00:29:01.420 --> 00:29:04.920
+dog and the word dog is in a SQLite database on your computer.
+
+
+00:29:04.920 --> 00:29:06.140
+Once you've figured that out,
+
+
+00:29:06.140 --> 00:29:10.080
+you can run SQL queries against photos you've taken and say,
+
+
+00:29:10.080 --> 00:29:13.720
+show me every photo I've taken of a dog that was in
+
+
+00:29:13.720 --> 00:29:18.200
+San Francisco in the month of May and you get results back,
+
+
+00:29:18.200 --> 00:29:20.160
+which is crazy interesting.
+
+
+00:29:20.160 --> 00:29:20.880
+>> Yeah.
+
+
+00:29:20.880 --> 00:29:21.880
+>> That's pretty cool.
+
+
+00:29:21.880 --> 00:29:23.360
+>> Yeah, that's super cool.
+
+
+00:29:23.360 --> 00:29:25.160
+I love the stuff that you're doing with that.
+
+
+00:29:25.160 --> 00:29:27.680
+>> Is it just local or are they
+
+
+00:29:27.680 --> 00:29:30.840
+caching that in their own databases as well?
+
+
+00:29:30.840 --> 00:29:32.880
+>> Well, they synchronize it all.
+
+
+00:29:32.880 --> 00:29:34.160
+If you're using iCloud,
+
+
+00:29:34.160 --> 00:29:36.440
+your photos are synchronized up to their servers.
+
+
+00:29:36.440 --> 00:29:38.200
+You take a photo on your phone, it shows up on
+
+
+00:29:38.200 --> 00:29:40.800
+your computer automatically, but all of it,
+
+
+00:29:40.800 --> 00:29:43.740
+the actual local data storage is all SQLite database files.
+
+
+00:29:43.740 --> 00:29:46.160
+Apple are really big into SQLite.
+
+
+00:29:46.160 --> 00:29:48.760
+Yeah, there are just these files littering your computer
+
+
+00:29:48.760 --> 00:29:50.440
+with your address book in there and all of
+
+
+00:29:50.440 --> 00:29:53.240
+your iMessages and all of your photo metadata.
+
+
+00:29:53.240 --> 00:29:56.700
+It's just sat there waiting for you to dig in and play with it.
+
+
+00:29:56.700 --> 00:29:59.480
+>> Nice. With dataset, probably.
+
+
+00:29:59.480 --> 00:30:03.660
+>> Right. Yeah. I've got a script called,
+
+
+00:30:03.660 --> 00:30:04.840
+I'll add it to the show notes,
+
+
+00:30:04.840 --> 00:30:07.260
+I've got a script called DogSheepPhotos,
+
+
+00:30:07.260 --> 00:30:10.340
+which uploads your photos to your own S3 bucket
+
+
+00:30:10.340 --> 00:30:11.740
+so that you can actually link to them,
+
+
+00:30:11.740 --> 00:30:13.100
+embed them on web pages,
+
+
+00:30:13.100 --> 00:30:17.460
+and it extracts all of that SQLite data into a more usable format.
+
+
+00:30:17.460 --> 00:30:20.460
+Yeah, I've got a online database of all of
+
+
+00:30:20.460 --> 00:30:24.480
+my photographs that I update every now and then with the script, and it works.
+
+
+00:30:24.480 --> 00:30:26.300
+It's phenomenal what you can do with it.
+
+
+00:30:26.300 --> 00:30:26.780
+>> Cool.
+
+
+00:30:26.780 --> 00:30:28.820
+>> Out in the live scene, Brandon.
+
+
+00:30:28.820 --> 00:30:30.860
+Hey, Brandon. Says, "This is fantastic.
+
+
+00:30:30.860 --> 00:30:34.900
+Definitely excited." Also taking a step back to yours, Brian.
+
+
+00:30:34.900 --> 00:30:39.620
+David Colton. Hey, David says, I'm using double quotes now in black, but my typing has not
+
+
+00:30:39.620 --> 00:30:44.260
+evolved yet to double quotes. So you just pass it through the single quote to double
+
+
+00:30:44.260 --> 00:30:48.500
+quote compiler process called black, and then you got it all adapted. That's nice.
+
+
+00:30:48.500 --> 00:30:56.260
+I'd say like black has given me back, I estimate 5% of my program typing time used to be worrying
+
+
+00:30:56.260 --> 00:31:01.300
+about indentation and such like, and I got all of that back. Like thanks to black, I never even
+
+
+00:31:01.300 --> 00:31:04.560
+think about how I indent or style my code at all.
+
+
+00:31:04.560 --> 00:31:10.180
+I just say, I'll literally write horrible run on lines that go on for ages,
+
+
+00:31:10.180 --> 00:31:13.140
+and then run black and it formats it nicely and I forget about it.
+
+
+00:31:13.140 --> 00:31:15.020
+It's fantastic.
+
+
+00:31:15.020 --> 00:31:15.860
+>> That's cool.
+
+
+00:31:15.860 --> 00:31:16.900
+>> Yeah, great.
+
+
+00:31:16.900 --> 00:31:18.940
+>> Got any extras for us, Michael?
+
+
+00:31:18.940 --> 00:31:20.940
+>> You know I do. I always do.
+
+
+00:31:20.940 --> 00:31:22.340
+Unless I have an extra, extra,
+
+
+00:31:22.340 --> 00:31:23.660
+extra, you're all about it,
+
+
+00:31:23.660 --> 00:31:25.540
+then I guess I still do.
+
+
+00:31:25.540 --> 00:31:29.140
+We talked about strong typing last time,
+
+
+00:31:29.140 --> 00:31:35.740
+which lets you do cool stuff like go and put a decorator onto a function and say,
+
+
+00:31:35.740 --> 00:31:40.260
+well, this one, you know, if it has type annotations or type information like
+
+
+00:31:40.260 --> 00:31:44.380
+Python itself just does, if you put at match typing the decorator on there,
+
+
+00:31:44.380 --> 00:31:48.540
+it'll verify at runtime that you said it took an integer and you actually passed
+
+
+00:31:48.540 --> 00:31:51.460
+an integer, not a list or whatever to that parameter.
+
+
+00:31:51.460 --> 00:31:51.700
+Right.
+
+
+00:31:51.700 --> 00:31:55.900
+Well, Felix, who maintains this project, reached out and said, Hey, that
+
+
+00:31:55.900 --> 00:31:58.380
+actually does a whole lot more that you should check some other things out.
+
+
+00:31:58.380 --> 00:32:00.260
+I just wanted to highlight a couple of things that he pointed out.
+
+
+00:32:00.260 --> 00:32:05.140
+One, if we, you know, we're all familiar with the named tuple and you, you say
+
+
+00:32:05.140 --> 00:32:10.580
+the type name in a quote, and then you say the fields or the elements attributes
+
+
+00:32:10.580 --> 00:32:15.940
+in a list, either space or comma separated, like spell, mana, fact, and so on.
+
+
+00:32:15.940 --> 00:32:21.500
+So this one has a typed name tuple where you can put the type information in very
+
+
+00:32:21.500 --> 00:32:24.960
+similar ways to what Python would have like colon, str, colon, list, and so on.
+
+
+00:32:25.220 --> 00:32:30.260
+And then you get actual type runtime validation that your data going into
+
+
+00:32:30.260 --> 00:32:33.940
+your named tuple is actually the type of data you expect in your name tuple.
+
+
+00:32:33.940 --> 00:32:34.580
+Oh, nice.
+
+
+00:32:34.580 --> 00:32:35.380
+Does that mean?
+
+
+00:32:35.380 --> 00:32:36.100
+Yeah.
+
+
+00:32:36.100 --> 00:32:36.660
+Yeah.
+
+
+00:32:36.660 --> 00:32:37.540
+So there's that.
+
+
+00:32:37.540 --> 00:32:40.580
+And then also I love this about our show.
+
+
+00:32:40.580 --> 00:32:43.860
+It's, it's kind of blows my mind that this, this is how the world works.
+
+
+00:32:43.860 --> 00:32:44.820
+And I really appreciate this.
+
+
+00:32:44.820 --> 00:32:49.020
+Everyone who plays along, we'll say things like, oh, I wish we
+
+
+00:32:49.020 --> 00:32:50.940
+could specify indexes in Beanie.
+
+
+00:32:50.980 --> 00:32:53.460
+and then the next episode we're like, "Hey, look,
+
+
+00:32:53.460 --> 00:32:56.780
+Roman added a way to do indexes in Beanie."
+
+
+00:32:56.780 --> 00:32:59.660
+I said, "This is awesome that it applies to functions,
+
+
+00:32:59.660 --> 00:33:01.060
+but why couldn't it apply to classes?
+
+
+00:33:01.060 --> 00:33:02.660
+It's basically the same thing."
+
+
+00:33:02.660 --> 00:33:04.460
+So now, six days ago,
+
+
+00:33:04.460 --> 00:33:06.460
+we have a new feature.
+
+
+00:33:06.460 --> 00:33:11.620
+You could also apply strong typing to classes as well,
+
+
+00:33:11.620 --> 00:33:14.020
+or something like that. So well done.
+
+
+00:33:14.020 --> 00:33:15.940
+>> Is it because you asked for it?
+
+
+00:33:15.940 --> 00:33:20.420
+Because I asked for single quotes in black and I didn't get that.
+
+
+00:33:20.420 --> 00:33:25.020
+Well, I mean, it also may depend on the size of the project.
+
+
+00:33:25.020 --> 00:33:31.340
+The more input they get, the less influence any individual statement may have on it.
+
+
+00:33:31.340 --> 00:33:32.340
+Right.
+
+
+00:33:32.340 --> 00:33:33.340
+Yeah.
+
+
+00:33:33.340 --> 00:33:35.260
+Anyway, I feel like thanks for working on that and the extra information there.
+
+
+00:33:35.260 --> 00:33:36.260
+Yeah.
+
+
+00:33:36.260 --> 00:33:37.740
+I actually, one other thing.
+
+
+00:33:37.740 --> 00:33:38.740
+Yes.
+
+
+00:33:38.740 --> 00:33:43.980
+I have finally, I've been working to make sure that we don't have to have one of these
+
+
+00:33:43.980 --> 00:33:48.780
+completely useless dreadful talks on technology.
+
+
+00:33:48.780 --> 00:33:50.300
+Our site uses cookies.
+
+
+00:33:50.300 --> 00:33:54.300
+our cookie policy. Do you accept our cookie policy or do you not accept our cookie policy?
+
+
+00:33:54.300 --> 00:33:58.380
+AKA, would you like our website to work or would you like to go away? Like that's kind of what
+
+
+00:33:58.380 --> 00:34:04.620
+the button so often means. Right. and so I thought I removed all the analytics. I removed
+
+
+00:34:04.620 --> 00:34:09.020
+anything else that we might do in third be doing third party. We're good. And I went to Python
+
+
+00:34:09.020 --> 00:34:13.020
+bites and I'm like, wait, there's, there's double click. There's Facebook, there's Google. There's
+
+
+00:34:13.020 --> 00:34:19.180
+like, what is all this stuff? And we started including the live stream YouTube in bed and it
+
+
+00:34:19.180 --> 00:34:22.960
+And it started bringing back and I'm like, why would Google be putting in Facebook?
+
+
+00:34:22.960 --> 00:34:23.960
+That sucks.
+
+
+00:34:23.960 --> 00:34:28.860
+And there was also the Discus conversation stuff that people haven't really stopped using.
+
+
+00:34:28.860 --> 00:34:31.020
+They all just go and chat on the YouTube streams now.
+
+
+00:34:31.020 --> 00:34:33.340
+If they want to have a live comment type of thing.
+
+
+00:34:33.340 --> 00:34:34.880
+So I'm like, well, I'll just take that out.
+
+
+00:34:34.880 --> 00:34:37.100
+That got rid of the Facebook one.
+
+
+00:34:37.100 --> 00:34:39.400
+And then, but what do you do about that?
+
+
+00:34:39.400 --> 00:34:44.460
+So instead of embedding the YouTube player, I said, I'm going to figure out a way to get
+
+
+00:34:44.460 --> 00:34:48.240
+the picture automatically from YouTube, the poster.
+
+
+00:34:48.240 --> 00:34:50.340
+And then when you hover over it, it just has a play icon.
+
+
+00:34:50.340 --> 00:34:52.520
+It says play on YouTube and it opens up a new window.
+
+
+00:34:52.520 --> 00:34:54.200
+And I thought I was all clever
+
+
+00:34:54.200 --> 00:34:55.900
+by just putting the image there,
+
+
+00:34:55.900 --> 00:34:57.680
+but serving it from Google.
+
+
+00:34:57.680 --> 00:35:00.960
+No, there's now like the YouTube image servers
+
+
+00:35:00.960 --> 00:35:02.640
+putting tracking cookies on our side.
+
+
+00:35:02.640 --> 00:35:04.940
+I'm like, well, come on, why is this so hard?
+
+
+00:35:04.940 --> 00:35:08.120
+So now on the server, we use requests.
+
+
+00:35:08.120 --> 00:35:09.400
+We download the image.
+
+
+00:35:09.400 --> 00:35:12.420
+Anytime it has to be shown on a page, put it in MongoDB.
+
+
+00:35:12.420 --> 00:35:14.600
+And then if you pull it, we serve it back out
+
+
+00:35:14.600 --> 00:35:16.680
+so we can like strip the cookies,
+
+
+00:35:16.680 --> 00:35:17.840
+the tracking cookies out.
+
+
+00:35:17.840 --> 00:35:23.760
+And now, now when you look at the tracking content, none detected on the site.
+
+
+00:35:23.760 --> 00:35:26.000
+But why, why world does it have to be so hard?
+
+
+00:35:26.000 --> 00:35:27.000
+I just wouldn't put it like this.
+
+
+00:35:27.000 --> 00:35:31.400
+Isn't it amazing how it used to be YouTube embeds were the absolute gold standard for
+
+
+00:35:31.400 --> 00:35:32.920
+embedding video on a webpage.
+
+
+00:35:32.920 --> 00:35:34.720
+Like why would you do anything else?
+
+
+00:35:34.720 --> 00:35:39.360
+And now actually I'm beginning to think, you know what, post the video, the .mp.mov file
+
+
+00:35:39.360 --> 00:35:42.880
+or whatever yourself and stick on an HTML5 video embed.
+
+
+00:35:42.880 --> 00:35:46.160
+And that's probably a better experience for your users as well.
+
+
+00:35:46.160 --> 00:35:48.240
+'cause when they click the video on their mobile phone,
+
+
+00:35:48.240 --> 00:35:50.400
+it'll play full screen and they won't have to hop through
+
+
+00:35:50.400 --> 00:35:52.360
+to the YouTube app and all of that kind of thing.
+
+
+00:35:52.360 --> 00:35:53.700
+- Yeah, absolutely.
+
+
+00:35:53.700 --> 00:35:55.200
+Yeah, so anyway, just quick shout out,
+
+
+00:35:55.200 --> 00:35:57.000
+like this is taking several passes,
+
+
+00:35:57.000 --> 00:36:01.720
+but I think it's finally 100% no tracking.
+
+
+00:36:01.720 --> 00:36:02.920
+I mean, we weren't putting it there before,
+
+
+00:36:02.920 --> 00:36:04.840
+but like it was seeping in from just like
+
+
+00:36:04.840 --> 00:36:07.200
+what we might include on the page as content, right?
+
+
+00:36:07.200 --> 00:36:09.680
+So anyway, there you have it, Brian.
+
+
+00:36:09.680 --> 00:36:10.640
+That was my weekend.
+
+
+00:36:10.640 --> 00:36:11.600
+How was yours? - Nice.
+
+
+00:36:11.600 --> 00:36:12.800
+Well, thanks.
+
+
+00:36:12.800 --> 00:36:15.320
+I appreciate you doing all that work for us.
+
+
+00:36:15.320 --> 00:36:19.040
+>> Yeah. David Coles has the wash hands emoji.
+
+
+00:36:19.040 --> 00:36:20.080
+There we go. We're all better.
+
+
+00:36:20.080 --> 00:36:22.680
+>> Yeah. Well, I've got no extras.
+
+
+00:36:22.680 --> 00:36:24.800
+Simon, do you have anything extra you want to share?
+
+
+00:36:24.800 --> 00:36:28.320
+>> I've got one. So Textual is the,
+
+
+00:36:28.320 --> 00:36:31.280
+I'm Wil McGugan who's working on which has been building Textual,
+
+
+00:36:31.280 --> 00:36:33.220
+which I know you've talked about on the podcast before.
+
+
+00:36:33.220 --> 00:36:36.180
+What I would encourage people to do is pay close attention
+
+
+00:36:36.180 --> 00:36:37.720
+because I've never seen a piece of
+
+
+00:36:37.720 --> 00:36:40.040
+open-source software developed this quickly.
+
+
+00:36:40.040 --> 00:36:43.560
+Every day, he's posting this video where he's like,
+
+
+00:36:43.560 --> 00:36:47.160
+Here's the new feature where today he posted a video of it doing
+
+
+00:36:47.160 --> 00:36:50.520
+full tree view on a file system,
+
+
+00:36:50.520 --> 00:36:53.560
+which you could interact with with your mouse in the terminal.
+
+
+00:36:53.560 --> 00:36:56.080
+When you clicked on the file, it would open it in a separate panel
+
+
+00:36:56.080 --> 00:36:59.280
+with syntax highlighting.
+
+
+00:36:59.280 --> 00:37:01.920
+It's absolutely astonishing.
+
+
+00:37:01.920 --> 00:37:03.560
+It's like turning into one of
+
+
+00:37:03.560 --> 00:37:05.560
+the better ways of building a GUI application,
+
+
+00:37:05.560 --> 00:37:07.760
+and it's running in text in the terminal.
+
+
+00:37:07.760 --> 00:37:09.920
+>> We can almost have just a section of
+
+
+00:37:09.920 --> 00:37:12.720
+the show called, "What's Will Up To?"
+
+
+00:37:12.720 --> 00:37:14.820
+>> You really could, absolutely.
+
+
+00:37:14.820 --> 00:37:17.280
+He's re-implemented CSS Grid,
+
+
+00:37:17.280 --> 00:37:21.040
+the CSS Grid mechanism for terminal applications.
+
+
+00:37:21.040 --> 00:37:23.000
+It's brilliant. Yeah, I'm just having
+
+
+00:37:23.000 --> 00:37:25.680
+such great time watching him do all of this stuff.
+
+
+00:37:25.680 --> 00:37:28.280
+>> He seems to be live streaming it.
+
+
+00:37:28.280 --> 00:37:31.480
+>> I don't think so, but he posts little five-minute videos
+
+
+00:37:31.480 --> 00:37:33.960
+on Twitter every day of the stuff that he's doing.
+
+
+00:37:33.960 --> 00:37:37.120
+>> But I feel inadequate watching him work this fast.
+
+
+00:37:37.120 --> 00:37:38.600
+But just saying.
+
+
+00:37:38.600 --> 00:37:39.960
+>> It's such a delight though.
+
+
+00:37:39.960 --> 00:37:43.140
+It's like he was born to build this piece of software,
+
+
+00:37:43.140 --> 00:37:45.540
+and now he's building it and we all get to watch him do it.
+
+
+00:37:45.540 --> 00:37:46.920
+>> Yeah, that's great.
+
+
+00:37:46.920 --> 00:37:48.900
+>> Yeah. Henry Shriner,
+
+
+00:37:48.900 --> 00:37:50.980
+hey, out in the live stream says textual is amazing.
+
+
+00:37:50.980 --> 00:37:53.300
+Indeed, it's quite something.
+
+
+00:37:53.300 --> 00:37:56.420
+>> Yeah. I remember when he was trying to name it,
+
+
+00:37:56.420 --> 00:37:58.340
+and textual didn't even come up on
+
+
+00:37:58.340 --> 00:38:00.400
+my radar as something that might be possible,
+
+
+00:38:00.400 --> 00:38:02.060
+but it's so obvious now,
+
+
+00:38:02.060 --> 00:38:04.420
+like graphical and textual.
+
+
+00:38:04.420 --> 00:38:06.260
+Yeah, it makes sense. It's cool.
+
+
+00:38:06.260 --> 00:38:08.660
+Hey, how about a joke maybe?
+
+
+00:38:08.660 --> 00:38:10.160
+Oh man, I got some jokes for us.
+
+
+00:38:10.160 --> 00:38:11.600
+Uh, two jokes.
+
+
+00:38:11.600 --> 00:38:16.180
+The one I'm not really sure how to convey it, but I guess I'll do my best.
+
+
+00:38:16.180 --> 00:38:17.240
+I want you to sing.
+
+
+00:38:17.240 --> 00:38:18.400
+No, man, this is you.
+
+
+00:38:18.400 --> 00:38:19.160
+This is you, bro.
+
+
+00:38:19.160 --> 00:38:20.120
+All right.
+
+
+00:38:20.120 --> 00:38:24.120
+So first one here is, I could definitely do this one.
+
+
+00:38:24.120 --> 00:38:28.240
+This one is, from John on Twitter, but pointed out to us by Nick Moore, who was
+
+
+00:38:28.240 --> 00:38:30.200
+previously on the show not too long ago.
+
+
+00:38:30.200 --> 00:38:30.740
+Thanks, Nick.
+
+
+00:38:30.740 --> 00:38:35.360
+And this one poses, I think also this is perfect for when Simon is on the show.
+
+
+00:38:35.600 --> 00:38:40.720
+It says, what do you get when you select star from goblins, dragons, elves,
+
+
+00:38:40.720 --> 00:38:42.920
+and comma unicorns?
+
+
+00:38:42.920 --> 00:38:44.840
+A query tail.
+
+
+00:38:44.840 --> 00:38:45.720
+Oh my goodness.
+
+
+00:38:45.720 --> 00:38:48.520
+It's close to a fairy tale, a query tale.
+
+
+00:38:48.520 --> 00:38:49.020
+It's bad.
+
+
+00:38:49.020 --> 00:38:49.520
+Terrible.
+
+
+00:38:49.520 --> 00:38:50.120
+It's bad.
+
+
+00:38:50.120 --> 00:38:53.120
+Oh, wow.
+
+
+00:38:53.120 --> 00:38:55.920
+Well, I wanted to share one that people could actually share with their--
+
+
+00:38:55.920 --> 00:38:59.480
+this isn't in the list, but one that I just read recently,
+
+
+00:38:59.480 --> 00:39:02.400
+people might be able to share with their kids.
+
+
+00:39:02.400 --> 00:39:05.080
+In the Northwest, we've got Sasquatch, right?
+
+
+00:39:05.080 --> 00:39:08.200
+So, yeah, what do they call big foot in Europe?
+
+
+00:39:08.200 --> 00:39:09.080
+Big meter.
+
+
+00:39:09.080 --> 00:39:10.960
+Oh,
+
+
+00:39:10.960 --> 00:39:16.540
+quick tip.
+
+
+00:39:16.540 --> 00:39:20.340
+If you're ever near Santa Cruz in California, there is a big foot
+
+
+00:39:20.340 --> 00:39:24.200
+museum in a log cabin in the woods outside of Santa Cruz called the
+
+
+00:39:24.200 --> 00:39:25.640
+big foot discovery experience.
+
+
+00:39:25.640 --> 00:39:26.960
+And it is not a joke.
+
+
+00:39:26.960 --> 00:39:28.200
+It is very serious.
+
+
+00:39:28.200 --> 00:39:30.740
+And there was a man there who will take you through all of his
+
+
+00:39:30.740 --> 00:39:31.960
+evidence for big, big foot.
+
+
+00:39:31.960 --> 00:39:33.320
+And it takes about an hour.
+
+
+00:39:33.400 --> 00:39:37.860
+He's got maps and plaster casts of feet footprints and a map with pins on it.
+
+
+00:39:37.860 --> 00:39:39.880
+It's fascinating.
+
+
+00:39:39.880 --> 00:39:41.440
+I could not recommend it more.
+
+
+00:39:41.440 --> 00:39:47.080
+>> I wonder if the COVID pandemic has affected the Bigfoot population.
+
+
+00:39:47.080 --> 00:39:50.620
+>> You should. You can call him up and ask him.
+
+
+00:39:50.620 --> 00:39:54.760
+While I was talking to him, he got a phone call to answer questions about Bigfoot.
+
+
+00:39:54.760 --> 00:39:55.800
+>> Oh, yeah. I can call him up.
+
+
+00:39:55.800 --> 00:39:57.020
+>> He will answer your calls.
+
+
+00:39:57.020 --> 00:39:57.800
+>> Yeah.
+
+
+00:39:57.800 --> 00:39:58.680
+>> All right.
+
+
+00:39:58.680 --> 00:40:02.600
+>> Hey, Brian, your joke got it grown all the way from Australia.
+
+
+00:40:02.600 --> 00:40:04.280
+>> Nice.
+
+
+00:40:04.280 --> 00:40:05.920
+>> Or was it mine? I'm not sure.
+
+
+00:40:05.920 --> 00:40:07.300
+It could have been either, honestly.
+
+
+00:40:07.300 --> 00:40:07.920
+>> Yeah.
+
+
+00:40:07.920 --> 00:40:10.120
+>> I'm going to go with the meter one.
+
+
+00:40:10.120 --> 00:40:11.920
+>> They were both pretty bad.
+
+
+00:40:11.920 --> 00:40:16.000
+>> All right. I'll see what I can do with this next one here.
+
+
+00:40:16.000 --> 00:40:18.680
+If you're good to the 90s,
+
+
+00:40:18.680 --> 00:40:20.120
+I guess is probably the time.
+
+
+00:40:20.120 --> 00:40:22.480
+There's a pinky in the brain.
+
+
+00:40:22.480 --> 00:40:27.840
+Apparently, on one of the 10 places I have to write your name,
+
+
+00:40:27.840 --> 00:40:30.920
+I typed it too quickly and wrote brain.
+
+
+00:40:30.920 --> 00:40:34.000
+>> Yeah, and Brett Cannon caught it.
+
+
+00:40:34.000 --> 00:40:38.200
+>> He did a take on Pinky and the Brain,
+
+
+00:40:38.200 --> 00:40:41.000
+and it starts out, "What do you want to do today, Brian?"
+
+
+00:40:41.000 --> 00:40:43.200
+>> Same thing we do every Wednesday,
+
+
+00:40:43.200 --> 00:40:46.080
+Michael, help Python take over the world.
+
+
+00:40:46.080 --> 00:40:48.360
+>> It's Michael and the Brain.
+
+
+00:40:48.360 --> 00:40:50.080
+Yes, Michael and the Brain.
+
+
+00:40:50.080 --> 00:40:52.760
+One's into testing, others into GUIs.
+
+
+00:40:52.760 --> 00:40:55.460
+They're both into making Python seem sane.
+
+
+00:40:55.460 --> 00:40:58.800
+They're Michael, they're Michael, and the Brain, Brain, Brain.
+
+
+00:40:58.800 --> 00:40:59.440
+>> Brain, Brain, Brain.
+
+
+00:40:59.440 --> 00:41:00.560
+>> Yeah. Fantastic.
+
+
+00:41:00.560 --> 00:41:02.300
+>> I love it. Thank you.
+
+
+00:41:02.300 --> 00:41:05.100
+>> We need to have somebody that's got musical talent
+
+
+00:41:05.100 --> 00:41:07.820
+to actually put this together as something.
+
+
+00:41:07.820 --> 00:41:11.420
+>> Yes. Someone who is not me because it won't come out well.
+
+
+00:41:11.420 --> 00:41:14.620
+>> So with the lyrics in the show notes,
+
+
+00:41:14.620 --> 00:41:16.140
+I think we should leave them there.
+
+
+00:41:16.140 --> 00:41:18.020
+>> We are accepting submissions.
+
+
+00:41:18.020 --> 00:41:18.500
+>> Yes.
+
+
+00:41:18.500 --> 00:41:20.540
+>> If they pass,
+
+
+00:41:20.540 --> 00:41:23.500
+we may actually play them on one of the next episodes.
+
+
+00:41:23.500 --> 00:41:24.260
+>> I would love it.
+
+
+00:41:24.260 --> 00:41:24.740
+>> Yeah.
+
+
+00:41:24.740 --> 00:41:26.260
+>> Could be the new theme song, Brian.
+
+
+00:41:26.260 --> 00:41:26.940
+>> Yeah.
+
+
+00:41:26.940 --> 00:41:28.420
+>> The dawning of an era.
+
+
+00:41:28.420 --> 00:41:30.420
+>> I'm getting tired of the old theme song.
+
+
+00:41:30.420 --> 00:41:32.580
+Yeah, exactly. Which is no theme song.
+
+
+00:41:32.580 --> 00:41:39.140
+All right. Well, thanks. Thanks a lot for showing up, Michael. And thanks, Simon.
+
+
+00:41:39.140 --> 00:41:41.300
+Thanks for having me.
+
+
+00:41:41.300 --> 00:41:42.740
+Yep. You bet. Bye, everyone.
+
+
+00:41:42.740 --> 00:41:47.300
+Thanks for listening to Python Bytes. Follow the show on Twitter via @PythonBytes.
+
+
+00:41:47.300 --> 00:41:53.220
+That's Python Bytes as in B-Y-T-E-S. Get the full show notes over at PythonBytes.fm.
+
+
+00:41:53.220 --> 00:41:57.780
+If you have a news item we should cover, just visit PythonBytes.fm and click submit in the
+
+
+00:41:57.780 --> 00:42:00.500
+the nav bar, we're always on the lookout for sharing something cool.
+
+
+00:42:00.500 --> 00:42:03.900
+If you want to join us for the live recording, just visit the website and
+
+
+00:42:03.900 --> 00:42:07.820
+click live stream to get notified of when our next episode goes live.
+
+
+00:42:07.820 --> 00:42:12.180
+That's usually happening at noon Pacific on Wednesdays over at YouTube.
+
+
+00:42:12.180 --> 00:42:15.620
+On behalf of myself and Brian Okken, this is Michael Kennedy.
+
+
+00:42:15.620 --> 00:42:18.180
+Thank you for listening and sharing this podcast with
+
+
+00:42:18.180 --> 00:42:19.260
+your friends and colleagues.
+

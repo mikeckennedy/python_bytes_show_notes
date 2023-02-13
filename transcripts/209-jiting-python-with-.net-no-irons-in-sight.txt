@@ -1,56 +1,866 @@
-00:00:00 Hello, and welcome to Python bytes where we deliver Python news and headlines directly to your earbuds. This is Episode 209, recorded on November 18 2020. I'm Michael Kennedy. And I am Brian arkin. And this episode is brought to you by us and all the things we're offering to the Python community. But I kinda want to take a step back in my whole career and start a start back where I spent a little bit of time in dotnet. Isn't that a weird thing for me to do on a Python podcast? Yeah, but you're kind of a dotnet kind of guy in your past? I like C sharp. All right. Like if I had did not if I wasn't doing Python, it's probably what I would be doing. But look like God. Yes, I know. Well, also, I just want to point out, this is not my fault. This is Anthony Shaw's fault. Okay, yeah. So Anthony Shaw wrote an article showing you how to use one of the more exciting visions, evolution, something like that, with regard to Python and how it's actually executed. And it has to do with dotnet. So he wrote an article called running Python on dotnet, five. So there's a couple of layers, we got to unpack here to finally put this together for everyone. So way back on episode 49, like, when I was living in Germany type of way back, I talked about this thing called pigeon pea wide, J IO n with Brett cannon. So what this was, is a way to like shim into C Python,
+00:00:00 Hello and welcome to Python Bytes where we deliver Python news and headlines directly to your earbuds.
 
-00:01:26 something that would intercept when a frame, a function frame was being executed. And you hand over the Python bytecode. When you run Python, it gets compiled to those pi c files into bytecode. But then, unlike, say dotnet, and Java, which JIT compiles that to me machine instruction, they just jams that through the Big C eval dot c loop, like the 3000 lines switch statement, that is pythons runtime, right? So it gets, like, mixed into that workflow. And it can actually take that and there was talk about maybe compiling to the JavaScript chromium engine, potentially, or to dotnet, right, those are like it could be. So the idea was, you could plug in some alternative JIT compiler, you'd be given segments of Python and said, run this block of Python. Cool, right? So you know, obviously, compiled code has at least the potential to be a lot faster if it really understands what it's compiling, then interpreted code. Okay, so that's thing. One thing, too, is dotnet, traditionally used to be this thing that ran on Windows, and it only ran on Windows. And that was a problem for a lot of people. So Microsoft came up with this thing called dotnet. Core, which was the open source version, a multi platform open source version of dotnet. And just recently, they said, it's really so they have these two things. So let's just come up with a single dotnet. Five, that is the new cross platform open source replacement that puts those things together. Okay. And I'm leaking to like, some of the announcements, they just did a conference over there, people can check it out if they want to go deep. Number three, things that run in dotnet often are faster than Python, like you can debate that, but like specially the numerical types of bits, because they work with, you know, integers and floats, not Pi object, long pointers, and so on. And so I just ran across the StackOverflow post, where someone was complaining that their Python implementation or something was 31 times slower than C sharp, that's outside the margin of error, probably. It's not good. I mean, we can debate about whether or not Python is fast or slow. And I think that's a really interesting conversation. Because developing it is faster. If you bring in things like NumPy, all the sudden, you're down to c++, which is probably flat out faster. And there's just all these variations, right? So not to put too much a point on but it is a place where code runs pretty quickly. So if you could get some Python code to run on that place as well, that would be pretty sweet. So what people have traditionally done to make their code faster, as many people know, is compile, like write it in C and compile it as a C extension, you know, things like NumPy might do that. Or use something like scythe on which basically takes sort of writing pi c, right in Python, but then it just compiles it to C which then is compiled to machine instructions. So there's like this sort of escape hatch, right? So dotnet has this JIT compiler that comes with it. Pidgin is this project that allows you to plug a JIT compiler into the Python execution. So the people over at Microsoft Brett cannon, and Dino Vreeland, I got that right. The people involved have been actually working on this for the last four years. And they're now you can now use this pigeon project in Python three, nine. And the reason is back in three, seven, there was a pep called Pep 523, which was basically an API for swapping out frame execution with a replacement implementation. And that's where you might take out interpreter and inject JIT compiler. So basically, they've just you know, now that three seven came out
+00:00:05 This is episode 209 recorded on November 18th, 2020.
 
-00:05:00 With that, they've been building on that. And he's got some really cool examples like, Oh, you go over there as you pip install pigeon, you import pigeon, pigeon dot enable or like something like that to say start and that's it. There's no other changes to your code. And now it's running jet compiled on dotnet. Five cross platform. That's pretty cool. It's got some real interesting possibilities there, right? Yes. And it uses the so there's been other things where you could like plug in Python and alternate runtimes and VMs, like jython, and ironpython, and so on. This is not that this is literally use it the same standard library, you're seeing c extensions are supposed to still work. Right? So what they did is they actually said, they actually went and they tested the entire c Python test suite on all platforms with this. And this is actually the first JIT implementation to ever pass the test suite. That's pretty cool. Yeah. Right, because we've got things like pi pi, but it's like 94%, or whatever, like some, you're mostly mostly Python, but it's not all Python, right? So this is really cool that they've got this highperformance runtime, cross platform JIT compiler that they just seem to have successfully plugged into Python. Yeah. So it's a burning which version of Python three, nine. Okay, that's awesome. Yeah. So it doesn't like, like a lot of these other things said, well, let's replace the Python runtime with x. And then it'll be mostly the same. And so what this does instead is it plugs in just at that Pep five to three frame execution layer and says, you want to run this part of a function. How do you do that? It's just that little bit that changes. So other than that, it's the same old Python three, nine that you know, and love that I'm far as I can tell. Yeah, that's pretty awesome. Yeah, I'm pretty. That's pretty awesome. And then a little, like, some extra news on this. Unless you already mentioned it. This happened a couple days ago. pigeon is unfortunately frozen in the Microsoft repo, but the Anthony's fork is now the official fork. What? Yeah, he's doing so much interesting. low level stuff. Anthony's. Yes, got his like C Python source code book. And oh, yeah. So yeah, that's cool. You're linking over to it. So all this stuff is very exciting. And it has the possibility for code to run much faster. So for example, given something that it can tell is, here's a, a PI long object pointer thing, could we convert that? And it's small, could we convert that to just a, you know, four byte integer and do integer math instead of like, complex math, right? Like that would make a tremendous difference in speed. Yeah, that said, what they've done here so far is just, let's make it run, and not break. And now now they're going to start working on the optimization. So this JIT compiler hasn't done any optimizations yet. But they're going to start teaching Pidgin how to understand the Python code, say, could we restructure that to get the same outcome, but in a much more native to the machine way? So is it faster? A little bit? Not a ton yet, but it opens the door for huge improvements by working specifically on the JIT compiler, understanding how to take code that it gets and turn it into something. Yeah, and this sort of cross work and stuff is interesting. Just interesting about, you know, working with languages working with whether or not you're gonna do interpreted versus JIT compiled and things like that. It's a very interesting story. Yeah. Yeah. And that StackOverflow thing I linked to, they also talked about Pie, pie, pie pie, and how it also made the example there go quite a bit faster. So anyway, Jet seemed to be an interesting option here. So from Pep, five to three to six to one, let's keep rolling on the PAP fan. The Pep 621 is, I guess, a standard trying to standardize some of the metadata in Project tahmo. So we've talked about packaging and pipe project tamo a lot. I think, the different projects like black and flip, and others have been using a loophole in the the original spec that said, Yeah, you can put extra stuff in there. But we don't recommend it to everybody who's putting extra stuff in it. Like, but are we forbidden? No, let's do it. No, yeah. So that took out the recommendation to not do that. But there's motivation to sort of standardize on the things that are building packages. And building wheels, it'd be really great if like, we could kind of standardize on what is in there, and what names, the big players are set up tools, and poetry and flit, of course, but there's others around that do this. And this Pep actually includes the authors of all of those, in trying to get some of this together. Some of the motivation is to try to have some of the metadata statically defined so that other tools can read it quickly. And we can build an ecosystem around just a standard set of things. That makes sense if you're gonna put it there. Anyway, make it at least interchangeable.
+00:00:09 I'm Michael Kennedy.
 
-00:10:00 And useful. Yeah, and and just kind of define what it means to have these things in there. And one of the nice things I looked for because I kind of bugged me about the, the old packaging was whether or not email was required. And it's nice to see that both name and I mean, usually you should put, like an author, maintainer name. And the email is encouraged, but I don't want to put my email in there. And it's optional. So that's Yeah, exactly, because then it gets published, if ipi and, man anytime you put your email on the internet, you just get Yeah, communication. This is still in draft form, officially, I think, but it's, uh, I think it'll go forward. It doesn't change any of the existing core metadata, and it doesn't attempt to standardize all things that you could put in there. But some of the common things like name version description, where the readme is, which Python version is required, what license you have, these are all sort of standard things you that used to be other places, but having them in the project at total would be great. Yeah, it seems like they belong together in there. So like,
+00:00:10 And I'm Brian Okken.
 
-00:11:06 you know, what is the name of the project? What version of Python does it require? and so on? That's as reasonable. Yeah. I'm actually surprised that we haven't already standardized this stuff. Exactly. You know, what else is reasonable? is learning pi test? Yeah, that's a pretty reasonable thing. And often people do it with a book. They do. And I'm still getting some really great quotes from people, which would have been would have been good for me to be ready with that. But people contact me, I get a message probably every other day saying, Man, that Python testing that pi test book that you wrote, has helped me so much get up to speed really quickly. And I really love feedback like that. So if it's helped you please let me know be great. Yeah, yeah, I'm about to release the fast API course, it may actually be out by the time people hear this, because there's this time travel thing that we do with podcasting, not that much, but a little bit. So people should definitely check that out over at talk Python training. And I've already started writing the next course. So that'll be fun, big secret that you're cranking them out. I'm really liking this stuff. And I'm really looking forward to the first API course. Yeah, thanks. It's, it's all done and recorded. It just needs to the final editing and send on the videos. And it's, it's gonna be really fun. I think people will love that framework had a lot of fun, exploring cool. You know, it's not a lot of fun. When you get a DMCA complaint from the record industry, Industry Association of America to take down your GitHub project.
+00:00:11 And this episode is brought to you by us and all the things we're offering to the Python community.
 
-00:12:28 Oh, apparently, it happened to me all the time on I'm
+00:00:16 But I kind of want to take a step back in my whole career and start back where I spent a little bit of time in .NET.
 
-00:12:32 really funny story. I did a webcast like years ago, when I first moved to Oregon. And there were some people who dialed in. And it was so frustrating. Like, there's all these like hundreds of people that somebody put the call on hold because they had someone come to their office, it started playing like the hold music to the whole organ. Everyone, like all hundred people were hearing this hold music and we're like, how do we get rid of this one person without getting rid of the rest? It was really bad. But the reason I bring this up now is it was like a song of an actual copyrighted song. When I publish the webcast to YouTube, it got taken down because the old music that was interrupting the webcast, got a DMCA complaint. So anyway, these are super frustrated. Like why this makes no sense. Anyway. So here's the story. GitHub, had taken down YouTube dash dl YouTube dash DL, I believe it's a Python project that allows basically gives you a CLR for downloading content off of YouTube. So if you're like, oh, that video is really awesome. I wish I had it offline. YouTube dash dl space URL dash format, or whatever, you know, you give it you just run that and it downloads it. However, because the record industry puts a lot of songs and music videos and stuff up on YouTube, they said this theoretically could be used to download a song, therefore we hate it. And so we asked him to take it down and get it interesting. Yeah. But here's the news. They revamped their copyright takedown policy, put a bunch of other policies in place, set up a legal defense fund and restored YouTube download. Access, gave the middle finger to ri a, basically, yeah, because this tool, I mean, maybe this tool helps you do something you shouldn't but it's not itself. Yeah, yeah. So basically, also, you know, big shout out to the E FF electronic Foundation, Frontier Foundation, in that they helped, like critique and go through the actual legal bits of this and show GitHub like, you know, what, actually what their, their main complaint is actually not even what's happening. So the RA argued that the tool ran afoul of Section 1201 of us copyright law by giving people the means to circumvent YouTube's DRM, digital rights management. So that's the important part, right? Like, it's great.
+00:00:24 Isn't that a weird thing for me to do on a Python podcast?
 
-00:15:00 breaking this encryption prevention of copying that YouTube has. But then the E FF looked at the claims and said, you know, what it actually does is it just grabs the video stream and saves it to a file, it doesn't decrypt it or re encode it or anything. So for things like Netflix, or wide Vine or things like that, that use DRM, this actually has no effect on it. Only if the video is in an
+00:00:26 Yeah, but you're kind of a .NET kind of guy in your past.
 
-00:15:25 protected like mp4 format, will it even work? So their main complaint that Oh, it breaks this? This DRM? It doesn't break DRM? So they said, we're putting it back. Okay. Yeah. And as part of this, there's like a pretty big uproar, I believe. So GitHub is implementing new policies to avoid the repeat of such a situation moving forward first, says the team of technical and legal experts will manually evaluate every single section, one to one claim. That's cool. Yeah. And instead of just going, it goes down, they said, if the company's team technical legal teams, ultimately find issues with the project, GitHub will give its owners a chance to address those problems before taking another word that says, Yeah, that's cool. And GitHub is establishing a $1 million Legal Defense Fund for developers. If somebody Sue's them about their GitHub project, that's actually awesome. Yeah, this is a feel good story, right? I think Well, yeah. Cuz the individual developers, sometimes there's just like, you know, a handful of people, or even just one person making some cool tool that they think is neat. You're giving this stuff away? Yeah. You can't get a lawyer, whatever. Yeah, defend yourself in a lot of times, it's published to GitHub under your personal name, right. So like, talk, Python has an organization and we pay GitHub, like 5060 bucks a month to have our organization maintain repos on there, right. There's a lot of people. It's just you know, github.com slash Brian, aka slash Mike C. Kennedy or whatever. There's no like legal guards there. Right. So it's really cool that they're doing this. Yeah. Like, and as I was researching this into my inbox, dropped a newsletter from the E FF, apparently, I'm a subscriber to the newsletter. And they said they just launched a podcast miniseries called How to fix the internet that examines potential solutions to six ills facing the modern modern digital landscape. And this sounds like one of them. So people are like, really interested in this. They can actually listen to the E FF series there. Yeah. Nice. Anyway, that's a wild story. Right? It is very well. Yeah. What you got next year, another one of my favorite topics? Yeah. So you like MongoDB? Right? I do. I love it. So I was curious, I was actually thinking the other day, how small of a machine can I put MongoDB on. And then Mark Smith comes out with a article that says, that's how to install and configure MongoDB on a Raspberry Pi. That's awesome, which is really cool. So it's a fairly comprehensive little guide, but I didn't know you could put a boon to server on a Raspberry Pi either. So that's what how he how he does it, you can install Ubuntu server 64 bit on a Raspberry Pi configures, the Wi Fi installs MongoDB. And but there's like a kind of a quirk on how you're supposed to install MongoDB on it, and then set up an account so that you can safely have a MongoDB server running in your house, he recommends. This is like a local network thing, not a not even a company wide thing. Just if you're using it yourself, go for it if you're already have a Raspberry Pi, and that's like your thing that is running that is your sort of file server or whatever reason that you have it running for. And you want a database. It's cool that you can set this up here, right? I mean, you probably wouldn't host like, like a professional website on it. But maybe you would. I've got stories. One of the things I love about MongoDB is just the ease of like setting up storage areas for it and stuff. And you can just yeah, it's easy to it like you expect it to be. And it just becomes that way, right? You don't say like, oh, run migration scripts and all that. Yeah. So this would be I mean, things like a home network to collect, like, I don't know, temperature data from different places and some of that stuff. Or, you know, whatever. Things like that might be kind of a neat use for that. So definitely think about like IoT thing Smart Home thing going on, and you want to store it somewhere. Yeah, very cool. I love it. Nice. Good, fine there. So this next one is like this new little section I've just invented just for this one time, called extra extra extra here all about it. So normally, we have our extras at the end. But I had so many extras this time. I'm like this show is gonna be super long if we just keep going. So this is like all the other little tiny things grouped into one. So for at least four more little things, but all combined, okay. Okay. Let's start with some listener feedback. So remember, I went on a rant, I'm known to do that sometimes about the Stack Overflow survey and how they were comparing things that were like simply not comparable. Yes. And one of the things I picked on was SQL and I said it doesn't make any sense to have SQL compared to the popularity of SQL compared to the popularity of Python or the
+00:00:30 I like C# alright.
 
-00:20:00 popularity of C sharp, because people who do C sharp, they got to use SQL, people who do Python, they got to use SQL, but not the other way around. Right? It's like, I don't know, it's just it didn't seem like they were right. Like the, the numbers for SQL were inflated, because all the other people were also happening to use SQL. But if you ask them, like, what kind of developer are you, they wouldn't say I'm a SQL Developer. They would say I'm a Python developer, I'm a Java developer, dotnet, or whatever is not SQL, right. So john Nickerson said, Hey, I feel like you're saying that people just use SQL are not real developers. I just want to point out that No, no, that's not at all how I felt about it. I think if like your job mainly is use SQL, then you should check that box, you should say SQL, I'm just criticizing that. We've got these two things side by side, in the surveys, where one of them is standalone. And then one of them also adds to the other, but they're put together as if they're separate and being compared. And that just didn't feel right to me. Yeah. I mean, yeah, there's definitely people that specialized SQL queries. That's a cool thing. And there, there are people that do that for as professionally and I think that's super cool. But like you said, having SQL being used by your Python is not the same as being a SQL Developer. Right? JavaScript has exactly the same problem. Yeah. All the web developers use any technology whatsoever. They also use JavaScript. But that doesn't mean No, no. js is massively more popular than everything else. So I just wanted to quickly follow up when people fill out those surveys. They check anything that they've ever done. Yeah.
+00:00:31 Like if I wasn't doing Python, that's probably what I would be doing.
 
-00:21:38 Exactly. Have I touched CSS this year? Yes. I'm a CSS developer. All right. Next, have the extra This is extra number two, to remember, we talked a little while ago about Guido van Rossum career, Python, retiring. We talked about him stepping down from the steering Council and say, I'm just gonna chill for a while. Yeah, yeah, he's done chillin.
+00:00:34 But look...
 
-00:22:00 So actually, the big news, I think this is pretty big news is that he joined maybe as a technical fellow, I'm not sure exactly what the official role is. But he joined Microsoft now. As a predecessor. Yeah, I think you should to call support, that'd be great.
+00:00:35 Well, thank God for Python.
 
-00:22:15 Yeah, so he said he decided to join said, I decided that retirement was boring and have joined developer division of Microsoft to do what too many things to say. But it'll make using Python better for sure. And not just on Windows. There's lots of open source here, watch the space. And there are 5000. Now 2100 quoted tweets. And I'm not sure how to tell me how many conversations but there's like an insane number of replies to it as well, and a bunch of familiar faces and listeners actually, right. They're all replying to Quito. One in particular, I'd like to point out is a link to this in the show notes as well.
+00:00:37 Yes, I know.
 
-00:22:53 Is somebody said, I'm wondering, you know, at this point in your career, do they still ask you to submit a resume resume? Yes, they did. And I got interviewed by Kevin Scott and Anders house Berg and others. How cool is that? They also asked for my diploma from university exclamation marks. Does Quito.
+00:00:38 Well, also, I just want to point out, this is not my fault.
 
-00:23:12 Oh my gosh, yeah, I would like you just could walk up and say, Hey, I create one of these languages. I'm here. I'm ready. But nope. I don't have to support design my diploma. I I'd have to dig I think I know where it is. But I know generally, what part of the house it's in, but it's in boxes under boxes.
+00:00:41 This is Anthony Shaw's fault.
 
-00:23:31 Anyway, that's really interesting. Okay, that's it. Two, extra, extra extra. If you think about popular editors in the Python space, really these days It feels like it's narrowing down and to VS code and Python. Like, it used to be just completely all over the map. When I asked that question on talk Python, and these days, it's VS code, Python VS code, or I was on one and switch to the other. So yeah, and vim. They don't say something like that. It's either vim or Emacs. Yeah, it's like one of the those types. But right here in Portland, Oregon, roaming the streets, we now have a new editor called Nova. From Really? Yeah. So yeah, panic is
+00:00:43 Okay.
 
-00:24:09 a developer oriented company that makes native Mac apps. And they are right downtown by bypass books. You can see how you can see their office from the coffee shop, I think cool. Yeah. So anyway, they built this thing called Nova, which is like a reinterpretation of their interpretation of what code developer editor should be. And it's got cool things like, like GitHub integration, where it shows you say, the issues around the code that you're working on and stuff like that, like as you're going through it. So I'm sticking with PI charm. I looked at this, it looks neat and all but I'm not using it. That said, I think it's worth pointing out that there's a new developer editor out there from a pretty reputable company that's putting a lot of energy into it. So that's kind of cool. Yeah, it's got a vim mode. I'll try it. I think it does. I'm pretty sure I remember. Alright, last thing extra, extra, extra, extra installed. Big
+00:00:44 Yeah.
 
-00:25:00 Sir on my Mac, and it didn't die. And all the Python things seem to be working all the websites run the MongoDB stuffs working. So that's really pretty neat. homebrew stopped working, which is very frustrating because that's how I manage things like Python. But I just had to upgrade Xcode delays edition. And then it was good again, don't think I put homebrew on my computer. I love I probably do. Yeah, anyway, I like install Python and stuff MongoDB and saw a lot of things like that open SSL SSL seeds always getting there somewhere. And also, I said that I ordered a new MacBook Pro instead of the apple silicom thing actually canceled that and I'm getting a MacBook or Mac Mini Apple one. Very exciting. I'll let you know how it goes. Oh, I can't wait. Actually, I didn't know they're still making minis they revamped it. It is now
+00:00:44 So, Anthony Shaw wrote an article showing you how to use one of the more exciting inventions, evolutions, something like that with regard to Python and how it's actually executed.
 
-00:25:48 faster than any mobile Mac. The only thing that will beat the Mac Mini. Is the Mac like the $5,000 Mac Pro. But sometimes the $600 $700 Mac Mini will still beat the $5,000 Mac Pro. It's like ridiculous. And to get one of these I already got like a really beefy laptop monitor. Yeah, exactly. It'll do one six K and one 4k monitor. So dual monitors, six, six and 4k. And I'm telling you, man, this thing looks incredible. You look at the Geekbench scores, you look at the reviews, it's really awesome. And the price is like okay, so I got like $1,500 back by canceling my MacBook order. And a faster computer. Nice. So anyway, we'll follow up on that. Let's see how that goes. Anyway, that was extra, extra, extra extra. You're all about it. Nice. Well, so are. Normally my spot would be number six. But that'd be like, where are we at like nine now? Or? Nine? Yeah. Okay. So
+00:00:58 And it has to do with .NET.
 
-00:26:41 actually, this is a cool article. I love this story. Dale Markowitz wrote an article called mastering it right now. But it's a Python driven AI stylist inspired by social media. So no way. So it looks at like Instagram and like influencers and stuff. It says this is how we think you should dress and look. Yeah, so one of the cool ideas. And it's so cool. So she works for Google. So she's using a whole bunch of Google tools that are available to everybody else tool to things like Google Storage, Firebase Cloud Vision API, Product Search API and stuff, which actually, I have never played with any of these. But it's kind of neat that they're available to really anybody that they want. And so the idea is, she took pictures of all of her every item in her closet.
+00:00:59 So he wrote an article called "Running Python on .NET 5".
 
-00:27:29 And then has like folders for containing the pictures for related. So like, let's say if we got a shirt or jacket, a few angles of the shirt, and then threw those in a directory and then did that for everything in her closet. And then took influencers that she likes, like a couple social media accounts that that do fashion shots that he likes how they dress, and then throws AI at it, and scripts, the whole thing with Python. So this thing will tell her for this particular person that this look for this from this photo, you can kind of do this look if you use this shirt, and those pants and shoes. And so you've already like what you've already got, you can remix it this way. Yeah. And I think that's a it's probably more of an ad for Google AI products. But I think it's a cool like, you could do this, you know, with some free time and stuff and with some Python code to push it together. I love this idea. It's pretty cool. Yeah, it's pretty. Alright, two thoughts. So one, I remember my statistics class, they talked about, well, if you have like three shirts, and two pants, and five socks, and two pairs of shoes, how many, you know, here's the combinatorics of how many like combinations you might have, right? So those numbers get enormous, like super quick. So this just says like, there's these these outfits that you didn't even know you could create out of like the hundred million possible things from your closet, which is combinations from your closet. That's pretty cool. Yeah. And also like she had to put it in place one of the things she had to do is put in place like a score. So if you like for instance, if you got like multiple gray shirts, they all might fit picture with the gray shirt, but they should have made it so that there was scoring so that you get the like that you can pick the highest score outfit or something. All right, that's cool. My other one is somebody should do this but just for hairstyles and like beard styles if you're a man have it pick a style and then that person has to get that cut.
+00:01:03 So there's a couple of layers we got to unpack here to to finally put this together for everyone.
 
-00:29:32 That's right.
+00:01:09 So way back on episode 49, like when I was living in Germany type way back, I talked about this thing called PYGION, P-Y-G-I-O-N, with Brett Cannon.
 
-00:29:35 Like I this month I'm gonna look like this. Oh my gosh, All right, here we go. Why not? a bouquet okay. You'd have to like sort of make it like short long too short or something because you can't go backwards Yeah, yeah, I guess you'd have to like sort by order because it takes you got to wait longer to get a true FACA sir by here like added ago. Awesome. Yeah. But there's there's some facial hairstyles that if we can
+00:01:20 So what this was is a way to like shim into CPython something that would intercept when a frame, a function frame was being executed and you know hand over the Python bytecode when you run Python it gets compiled to those pyc files into bytecode but then unlike say .NET and Java which JIT compiles that to machine instruction, they just jams that through the big C eval.c loop, like the 3000 line switch statement that is Python's runtime, right?
 
-00:30:00 Get a tool that would tell people to not try certain facial hairstyles based on what they their face shape is that would be good. That would be right. I did see a guy who had like a super big beard and decided to cut it off. But instead of just shaving it off, they were very careful. And they came up with like 10 or 11 different styles. They shave it to one. Take a picture, shave it to the next take a picture, it was actually pretty interesting. Yeah, but yeah, there's some that shouldn't be done.
+00:01:55 So it gets mixed into that workflow and it can actually take that.
 
-00:30:27 All right. Well, I already went off the off the deep end on the extras. How about you? Yeah. Let's skip to the joke. Man. Sounds good to me. All right. So this is a little bit of Back to the Future. Marty McFly and Doc, all that stuff. So you know, he's got that cool DeLorean that stainless steel DeLorean. And it's got the flux capacitor. So this is a little little graphic from dev humor, from comic strip.com. And it's set in January 2006. All right. I'll be Marty and you can be Doc, okay. Okay. All right. So sitting in the DeLorean about to take off this. So what's it like in the future? Doc? Is everyone using CSS three? Wait, wait, you'll see. We're heading to 2020. Knowing all the problems you have with iecex give you something to look forward to. Then in May 2020. There's a big billboard that says Microsoft Edge the IE successor based on Google chromium engine is coming to Linux. Incredible.
+00:02:01 And there was talk about maybe compiling to the JavaScript Chromium engine, potentially, or to .NET, right?
 
-00:31:26 Why? Okay. Yeah. Because it can just because yeah, I had so I've got a work computer. That's windows and I still don't use it. Edge. And you're so far behind the times. I've got edge installed on my Mac. You do apparently it installs on a Mac. Yeah. It's but do you and did you install it? I did. Now the question is, do I use it? I've got like several browsers that I just don't really use. I've got edge. I've got brave. And I've got opera. And I don't really use any of those. I just basically use Firefox. Unless Firefox doesn't work. Then I use Chrome. Yeah. Okay, though. Yeah, but I technically have it installed.
+00:02:09 Those are like, it could be, so the idea was you could plug in some alternative JIT compiler to be given segments of Python and said run this block of Python.
 
-00:32:06 Because there's a big pop up that has to update about every three weeks. Like there's an update every computer click here to upgrade edge. Like, I don't even run this thing. Why do I keep getting this? I know I get it. But like, Why do I have to keep getting I guess, you know, there's still lots of people that don't know what browser they use. They just, they don't even know what if you ask them what browser they use. They don't know what you're saying. Yeah, this is just the internet. What do you look on the websites for I open the internet? The internet is not an application.
+00:02:18 Cool, right? - Okay.
 
-00:32:34 Why not? Awesome. Yeah. So that's, that's a pretty good little shoot to the future. On Yeah, so link to that in show notes. People want to check out the graphics. Thanks a lot. Yeah, you bet. Thanks for being here. And thanks, everyone, for listening. Thank you for listening to Python bytes. Follow the show on Twitter via at Python bytes. That's Python bytes as mb yts and get the full show notes at python bytes.fm. If you have a news item you want featured just visit Python by setup M and send it our way. We're always on the lookout for sharing something cool. On behalf of myself and Brian knockin. This is Michael Kennedy. Thank you for listening and sharing this podcast with your friends and colleagues.
+00:02:19 - So, you know, obviously compiled code has at least the potential to be a lot faster if it really understands what it's compiling than interpreted code.
+
+00:02:28 Okay, so that's thing one.
+
+00:02:31 Thing two is .NET traditionally used to be this thing that ran on Windows and it only ran on Windows.
+
+00:02:37 And that was a problem for a lot of people.
+
+00:02:39 So Microsoft came up with this thing called .NET Core, which was the open source version, a multi-platform open source version of .NET.
+
+00:02:47 And just recently they said, it's really silly to have these two things, so let's just come up with a thing called .NET 5, that is the new cross-platform open source replacement that puts those things together, okay?
+
+00:02:59 And I'm leaking to like some of the announcements, they just did a conference over there, people can check it out if they wanna go deep.
+
+00:03:04 Number three, things that run in .NET often are faster than Python, like you can debate that, but like especially the numerical types of bits, because they work with integers and floats, not Py object long pointers and so on.
+
+00:03:18 And so I just ran across a Stack Overflow post where someone was complaining that their Python implementation of something was 31 times slower than C#.
+
+00:03:26 Like that's outside the margin of error probably.
+
+00:03:30 It's not good.
+
+00:03:31 I mean, we can debate about whether or not Python is fast or slow, and I think that's a really interesting conversation because developing it is faster.
+
+00:03:39 If you bring in things like NumPy, all of a sudden you're down to C++, which is probably flat out faster.
+
+00:03:43 And there's just all these variations, right?
+
+00:03:45 So not to put too much of a point on it, but it is a place where code runs pretty quickly.
+
+00:03:50 So if you could get some Python code to run on that place as well, that would be pretty sweet.
+
+00:03:55 So what people have traditionally done to make their code faster, as many people know, is compile it, like write it in C and compile it as a C extension.
+
+00:04:02 You know, things like NumPy might do that.
+
+00:04:05 Or use something like Cython, which basically takes sort of write in C, you write it in Python, but then it just compiles it to C, which then is compiled to machine instructions.
+
+00:04:14 So there's like this sort of escape hatch, right?
+
+00:04:16 So .NET has this JIT compiler that comes with it.
+
+00:04:20 Pigeon is this project that allows you to plug a JIT compiler into the Python execution.
+
+00:04:25 So the people over at Microsoft, Brett Cannon and Dino Veland, hopefully I got that right, the people involved, have been actually working on this for the last four years, and they're now, you can now use this Pigeon project in Python 3.9.
+
+00:04:41 And the reason is back in 3.7, there was a pep called pep 523, which was basically an API for swapping out frame execution with a replacement implementation.
+
+00:04:51 And that's where you might take out interpreter and inject JIT compiler.
+
+00:04:57 So basically they've just, you know, now that 3.7 came out with that, they've been building on that and he's got some really cool examples.
+
+00:05:03 Like all you go over there is you pip install pigeon, you know, import pigeon, Pigeon.enable or like something like that to say start and that's it.
+
+00:05:12 There's no other changes to your code and now it's running JIT compiled on .NET 5 cross-platform.
+
+00:05:19 That's pretty cool.
+
+00:05:20 It's got some real interesting possibilities there, right?
+
+00:05:23 Yes.
+
+00:05:23 And it uses the...
+
+00:05:24 So there's been other things where you could like plug in Python into alternate run times and VMs like Jython and IronPython and so on.
+
+00:05:32 This is not that.
+
+00:05:33 This literally uses the same standard library.
+
+00:05:37 your C extensions are supposed to still work.
+
+00:05:39 Right? So what they did is they actually said, they actually went and they tested the entire C Python test suite on all platforms with this. And this is actually the first JIT implementation to ever pass the test suite.
+
+00:05:52 - That's pretty cool. - Yeah, right?
+
+00:05:54 So we've got things like PyPy, but it's like 94% or whatever, like some, you know, mostly Python, but it's not all Python, right?
+
+00:06:02 So this is really cool that they've got this high-performance runtime cross-platform JIT compiler that they just seem to have successfully plugged into Python.
+
+00:06:12 Yeah, so it's a running which version of Python?
+
+00:06:16 3.9.
+
+00:06:17 Oh, okay. That's awesome.
+
+00:06:18 Yeah, so it doesn't like like a lot of these other things said, well, let's replace the Python runtime with X and then it'll be mostly the same.
+
+00:06:25 And so what this does instead is it plugs in just at that pep523 frame execution layer and says you want to run this part of a function.
+
+00:06:35 How do you do that? It's just that little bit that changes. So other than that, it's the same old Python three nine that you know, and love that I'm far as I can tell. Yeah, so that's pretty awesome. Yeah, I'm pretty awesome. And then a little like some extra news on this.
+
+00:06:49 Unless you already mentioned it. This happened a couple days ago. Pigeon is unfortunately frozen in the Microsoft repo. But the Anthony's fork is now the official fork. What?
+
+00:07:03 He's doing so much interesting low-level stuff, Anthony is.
+
+00:07:07 He's got his like CPython source code book and yeah, so yeah, that's cool you're linking over to it.
+
+00:07:13 So all this stuff is very exciting and it has the possibility for code to run much faster. So for example, given something that it can tell is here's a a pi long object pointer thing, could we convert that, and it's small, could we convert that to just a you know, four by integer and do integer math instead of like complex math, right? Like that would make a tremendous difference in speed.
+
+00:07:36 That said, what they've done here so far is just let's make it run and not break.
+
+00:07:42 And now they're going to start working on the optimization.
+
+00:07:46 So this JIT compiler hasn't done any optimizations yet.
+
+00:07:49 But they're going to start teaching Pidgin how to understand the Python code, say, could we restructure that to get the same outcome but in a much more native to the machine way.
+
+00:07:59 So is it faster? A little bit, not a ton yet, but it opens the door for huge improvements by working specifically on the JIT compiler, understanding how to take code that it gets and turn it into something.
+
+00:08:12 Yeah, and this sort of cross work and stuff is interesting, just interesting about working with languages, working with whether or not you're going to do interpreted versus JIT compiled, things like that. It's a very interesting story.
+
+00:08:24 Yeah.
+
+00:08:25 Yeah, and that Stack Overflow thing I linked to, They also talk about PyPy, P-Y-P-Y, and how it also made the example there go quite a bit faster.
+
+00:08:32 So anyway, JITs seem to be an interesting option here.
+
+00:08:36 So from PEP 523 to 621, let's keep rolling on the PEP, man.
+
+00:08:41 >> The PEP 621 is, I guess, a standard, trying to standardize some of the metadata in pyproject.toml.
+
+00:08:49 So we've talked about packaging and pyproject.toml a lot, I think.
+
+00:08:54 the different projects like black and flip and others have been using.
+
+00:09:00 Is loophole in the the original spec that said yeah you can put extra stuff in there but we don't recommend it to everybody's putting extra stuff in it but.
+
+00:09:10 Are we forbidden no.
+
+00:09:12 No yeah so they took out the recommendation to not do that but there's motivation to sort of standardize on the things that are building packages and building wheels it'd be really great if like we could kind of standardize on what is in there and what names the big players are set up tools and poetry and flit of course but there's others around that do this and this pep actually includes the authors of all of those in trying to get some of this together. Some of the motivation is to try to have some of the metadata statically defined so that other tools can read it quickly and we can build an ecosystem around just a standard set of things.
+
+00:09:56 That makes a lot of sense. If you're going to put it there anyway, make it at least interchangeable and useful.
+
+00:10:00 Yeah, and just kind of define what it means to have these things in there. And one of the nice I looked for because I kind of bugged me about the old packaging was whether or not email was required and it's nice to see that both name and I mean usually you should put like an author maintainer name and email is encouraged but I don't want to put my email in there and it's optional so that's cool.
+
+00:10:26 Yeah exactly because then it gets published to PyPI and man anytime you put your email on the internet you just get the communication.
+
+00:10:33 This is still in draft form officially, I think, but it's a, I think it'll go forward.
+
+00:10:39 I mean, it doesn't change any of the existing core metadata and it doesn't attempt to standardize all things that you could put in there, but some of the common things like name, version, description, where the readme is, which Python version is required, what license you have, these are all sort of standard things that used to be other places, but having them in the pyproject.toml would be great.
+
+00:11:02 Yeah.
+
+00:11:03 It seems like they belong together in there.
+
+00:11:05 So like, you know, what is the name of the project?
+
+00:11:08 What version of Python does it require?
+
+00:11:10 And so on that's, that's reasonable.
+
+00:11:12 Yeah.
+
+00:11:12 I would actually surprise them.
+
+00:11:14 Like what we haven't already standardized this stuff.
+
+00:11:16 Exactly.
+
+00:11:16 You know, what else is reasonable is a learning pie test.
+
+00:11:20 Yeah.
+
+00:11:20 That's a pretty reasonable thing.
+
+00:11:21 And often people do it with a book.
+
+00:11:23 They do.
+
+00:11:24 And I'm still getting some really great quotes from people, which would been, would have been good for me to be ready with that, but people contact me.
+
+00:11:32 I get a message probably every other day saying, "Man, the Python testing with PyTest book that you wrote has helped me so much to get up to speed really quickly." And I really love feedback like that.
+
+00:11:43 So if it's helped you, please let me know.
+
+00:11:45 It'd be great.
+
+00:11:46 - Yeah, I'm about to release a fast API course.
+
+00:11:49 It may actually be out by the time people hear this 'cause there's this time travel thing that we do with podcasting.
+
+00:11:53 Not that much, but a little bit.
+
+00:11:55 So people should definitely check that out over at Talk Python Training.
+
+00:11:59 And I've already started writing the next course, so that'll be fun.
+
+00:12:02 - Big secret there.
+
+00:12:03 - You're cranking them out.
+
+00:12:04 I'm really liking this stuff and I'm really looking forward to the FastAPI course.
+
+00:12:07 - Yeah, thanks.
+
+00:12:08 It's all done, recorded.
+
+00:12:10 It just needs the final editing sent on the videos and it's gonna be really fun.
+
+00:12:14 I think people will love that framework.
+
+00:12:15 I had a lot of fun exploring it.
+
+00:12:17 You know what's not a lot of fun?
+
+00:12:18 When you get a DMCA complaint from the Record Industry Association of America to take down your GitHub project.
+
+00:12:26 - What?
+
+00:12:27 That happens?
+
+00:12:28 - Apparently.
+
+00:12:30 It happened to me all the time on a really funny story.
+
+00:12:34 I did a webcast like years ago when I first moved to Oregon and there were some people who had dialed in and it was so frustrating.
+
+00:12:43 Like there's all these, like hundreds of people, somebody put the call on hold 'cause they had someone come in their office.
+
+00:12:50 It started playing like the hold music to the whole Oregon, everyone, like all hundred people were hearing this hold music and we're like, how do we get rid of this one person without getting rid of the rest, it was really bad.
+
+00:13:02 But the reason I bring this up now is it was like a song, an actual copyrighted song.
+
+00:13:08 When I published the webcast to YouTube, it got taken down because the old music that was interrupting the webcast got a DMCA complaint.
+
+00:13:18 So anyway, these things are super frustrating.
+
+00:13:20 You're like, why?
+
+00:13:20 This makes no sense.
+
+00:13:21 Anyway, so here's the story.
+
+00:13:24 GitHub had taken down YouTube-DL.
+
+00:13:28 YouTube-DL, I believe it's a Python project, that basically gives you a CLI for downloading content off of YouTube.
+
+00:13:37 So if you're like, "Oh, that video's really awesome, "I wish I had it offline," YouTube-DL space URL-format or whatever, you just run that and it downloads it.
+
+00:13:48 However, because the record industry puts a lot of songs and music videos and stuff up on YouTube, they said this theoretically could be used to download a song, therefore we hate it, and so we asked GitHub to take it down.
+
+00:14:04 And GitHub did.
+
+00:14:05 - Interesting.
+
+00:14:06 - Yeah, but here's the news.
+
+00:14:07 They revamped their copyright takedown policy, put a bunch of other policies in place, set up a legal defense fund, and restored YouTube download.
+
+00:14:16 And gave the middle finger to RIAA, basically.
+
+00:14:20 - Yeah, because this tool, I mean, maybe this tool helps you do something you shouldn't but it's not itself.
+
+00:14:25 - Yeah, yeah, so also, you know, big shout out to the EFF, Electronic Frontier Foundation, in that they helped critique and go through the actual legal bits of this and show GitHub, like, you know what, actually, their main complaint is actually not even what's happening.
+
+00:14:43 So the RIA argued that the tool ran afoul of section 1201 of US copyright law by giving people the means to circumvent YouTube's DRM, digital right management.
+
+00:14:57 So that's the important part, right?
+
+00:14:59 Like it's breaking this encryption prevention of copying that YouTube has.
+
+00:15:04 But then the EFF looked at the claims and said, you know, what it actually does is it just grabs the video stream and saves it to a file.
+
+00:15:12 It doesn't decrypt it or re-encode it or anything.
+
+00:15:15 So for things like Netflix or Widevine or things like that that use DRM, this actually has no effect on it.
+
+00:15:22 Only if the video is in an unprotected, like MP4 format will it even work.
+
+00:15:28 So their main complaint that, oh, it breaks this DRM, it doesn't break DRM.
+
+00:15:35 So they said, we're putting it back.
+
+00:15:36 - Okay. - Yeah.
+
+00:15:37 And as part of this, there's like a pretty big uproar, I believe.
+
+00:15:40 So GitHub is implementing new policies to avoid the repeat of such a situation moving forward.
+
+00:15:46 First, says the team of technical and legal experts will manually evaluate every single section 1201 claim.
+
+00:15:55 That's cool.
+
+00:15:56 And instead of just going, whoop, it goes down, they said, if the company's team, technical legal teams, ultimately find issues with the project, GitHub will give its owners a chance to address those problems before taking down their work.
+
+00:16:08 - That's nice.
+
+00:16:09 - Yeah, that's cool.
+
+00:16:09 And GitHub is establishing a $1 million legal defense fund for developers if somebody sues them about their GitHub project.
+
+00:16:17 - That's actually awesome.
+
+00:16:18 Yeah, this is a feel-good story, right? I think.
+
+00:16:20 Well, yeah, because the individual developers sometimes are just like, you know, a handful of people or even just one person making some cool tool that they think is neat.
+
+00:16:28 You're giving this stuff away, you know?
+
+00:16:30 You can't get a lawyer or whatever to defend yourself.
+
+00:16:33 And a lot of times it's published to GitHub under your personal name, right?
+
+00:16:38 So like, Talk Python has an organization and we pay GitHub like 50, 60 bucks a month to have our organization maintain repos on there.
+
+00:16:48 Right?
+
+00:16:48 But a lot of people, it's just, you know, github.com/brianocken or /mikeckennedy or whatever.
+
+00:16:56 There's no like legal guards there, right?
+
+00:16:59 So it's really cool that they're doing this.
+
+00:17:00 Yeah.
+
+00:17:01 I like it.
+
+00:17:02 And as I was researching this, into my inbox dropped a newsletter from the EFF.
+
+00:17:08 Apparently, I'm a subscriber to their newsletter.
+
+00:17:10 And they said they just launched a podcast miniseries called "How to Fix the Internet" that examines potential solutions to six ills facing the modern digital landscape. And this sounds like one of them. So people are like really interested in this, they can actually listen to the EFF series there. Yeah, nice. Anyway, that's a wild story, right? It is very wild. Yeah.
+
+00:17:29 All right, what you got next here? Another one of my favorite topics?
+
+00:17:31 Yeah, so you like MongoDB, right? I do, I love it.
+
+00:17:35 So I was curious, I was actually thinking the other day, how small of a machine could I put MongoDB on? And then Mark Smith comes out with a article that says that's how to install and configure MongoDB on a Raspberry Pi.
+
+00:17:48 Wow, that's awesome.
+
+00:17:48 Which is totally cool. So it's a fairly comprehensive little guide, but I didn't know you could put Ubuntu server on a Raspberry Pi either.
+
+00:17:56 So that's how he does it. He installs Ubuntu server, 64-bit on a Raspberry Pi, configures the Wi-Fi, installs MongoDB.
+
+00:18:05 And but there's like a kind of a quirk on how you're supposed to install MongoDB on it.
+
+00:18:11 and then set up an account so that you can safely have a MongoDB server running in your house.
+
+00:18:18 He recommends this is like a local network thing, not even a company-wide thing.
+
+00:18:23 Just if you're using it yourself, go for it.
+
+00:18:26 If you already have a Raspberry Pi and that's like your thing that is running, that is your sort of file server or whatever reason that you have it running for, and you want a database, it's cool that you can set this up here, right?
+
+00:18:39 I mean, you probably wouldn't host like a professional website on it, but who knows, maybe you would.
+
+00:18:44 I've got stories.
+
+00:18:45 One of the things I love about MongoDB is just the ease of setting up storage areas for it and stuff.
+
+00:18:51 And you can just, it's easy.
+
+00:18:53 You just talk to it like you expect it to be and it just becomes that way, right?
+
+00:18:56 You don't have to run migration scripts and all that.
+
+00:18:58 Yeah, so this would be, I mean, things like a home network to collect, like, I don't know, temperature data from different places and some of that stuff.
+
+00:19:07 or whatever, things like that might be kind of a neat use for that.
+
+00:19:11 Definitely, if you've got like an IoT thing, smart home thing going on and you want to store it somewhere.
+
+00:19:16 Yeah, very cool. I love it. Nice. Good find there.
+
+00:19:19 So this next one is like this new little section I've just invented just for this one time.
+
+00:19:24 Called "Extra, Extra, Extra, Hear All About It." So normally we have our extras at the end, but I had so many extras this time, I'm like, this show's going to be super long if we just keep going.
+
+00:19:32 So this is like all the other little tiny things grouped into one.
+
+00:19:35 So four, at least four more little things, but all combined.
+
+00:19:38 Okay.
+
+00:19:38 Okay.
+
+00:19:39 Let's start with some listener feedback.
+
+00:19:41 So remember, I went on a rant, I'm known to do that sometimes, about the Stack Overflow Survey and how they were comparing things that were like, simply not comparable.
+
+00:19:50 Yes.
+
+00:19:51 And one of the things I picked on was SQL.
+
+00:19:54 And I said, it doesn't make any sense to have SQL compared to the, popularity of SQL compared to the popularity of Python or the popularity of C#.
+
+00:20:01 because people who do C#, they gotta use SQL.
+
+00:20:05 People who do Python, they gotta use SQL, but not the other way around, right?
+
+00:20:09 It's like, I don't know, it just didn't seem like they were right.
+
+00:20:12 The numbers for SQL were inflated because all the other people were also happening to use SQL.
+
+00:20:17 But if you ask them, like, "What kind of developer are you?" They wouldn't say, "I'm a SQL developer." They would say, "I'm a Python developer," or "I'm a Java developer," or .NET, or whatever is not SQL, right?
+
+00:20:27 So John Nickerson said, "Hey, I feel like you're saying that people just use SQL "or not real developers." I just want to point out that, no, no, no, that's not at all how I felt about it.
+
+00:20:36 I think if your job mainly is to use SQL, then you should check that box.
+
+00:20:39 You should say SQL.
+
+00:20:40 I'm just criticizing that we've got these two things side by side in these surveys where one of them is standalone and then one of them also adds to the other, but they're put together as if they're separate and being compared, and that just didn't feel right to me.
+
+00:20:59 Yeah, I mean, yeah, there's definitely people that specialize in SQL queries.
+
+00:21:04 That's a cool thing, and there are people that do that as professionally, and I think that's super cool. But like you said, having SQL being used by your Python is not the same as being a SQL developer.
+
+00:21:19 Right, JavaScript has exactly the same problem.
+
+00:21:22 All the web developers that use any technology whatsoever, they also use JavaScript.
+
+00:21:25 but that doesn't mean Node.js is massively more popular than everything else.
+
+00:21:29 Also, I just wanted to quickly follow up.
+
+00:21:31 When people fill out those surveys, they check anything that they've ever done.
+
+00:21:35 Yes.
+
+00:21:37 So...
+
+00:21:38 Exactly.
+
+00:21:39 Have I touched CSS this year?
+
+00:21:40 Yes, I'm a CSS developer.
+
+00:21:42 All right.
+
+00:21:43 Next of the extras, this is extra number two.
+
+00:21:46 So remember we talked a little while ago about Kira Van Raasen, creator of Python, retiring.
+
+00:21:52 We talked about him stepping down from the steering council and saying I'm just gonna chill for a while.
+
+00:21:57 - Yeah.
+
+00:21:58 - Yeah, he's done chilling.
+
+00:21:59 (laughing)
+
+00:22:01 So actually the big news, I think this is pretty big news, is that he joined, maybe as a technical fellow, I'm not sure exactly what his official role is, but he joined Microsoft now.
+
+00:22:11 As a pretty high up. - That's awesome.
+
+00:22:12 - Yeah.
+
+00:22:13 - I think he should do call support, that'd be great.
+
+00:22:15 - Yeah, so he said he decided to join, he said, "I decided that retirement was boring "and have joined developer division at Microsoft.
+
+00:22:22 "To do what?
+
+00:22:23 Too many things to say, but it'll make using Python better for sure, and not just on Windows.
+
+00:22:28 There's lots of open source here.
+
+00:22:29 Watch this space.
+
+00:22:30 And there are 5,000, no, 2,100 quoted tweets, and I'm not sure how it'll tell me how many conversations, but there's like an insane number of replies to it as well.
+
+00:22:43 And a bunch of familiar faces and listeners actually right there all replying to Guido.
+
+00:22:48 One in particular I'd like to point out is, I linked to this in the show notes as well, is somebody said, "I'm wondering, at this point in your career, do they still ask you to submit a resume?" Yes, they did.
+
+00:23:02 And I got interviewed by Kevin Scott and Andrew Tilesburg and others.
+
+00:23:05 How cool is that?
+
+00:23:06 They also asked for my diploma from university, exclamation marks.
+
+00:23:09 So, squeed up.
+
+00:23:11 - Oh my gosh.
+
+00:23:12 - Yeah, I would think you just could walk up and say, "Hey, I created one of these languages.
+
+00:23:18 I'm here, I'm ready.
+
+00:23:19 But nope, it went into support.
+
+00:23:21 - I don't even know if I can find my diploma.
+
+00:23:23 - I'd have to dig.
+
+00:23:24 I think I know where it is, but I know generally what part of the house it's in, but it's in boxes under boxes.
+
+00:23:30 Anyway, that's really interesting.
+
+00:23:33 Okay, that's two.
+
+00:23:34 So extra, extra, extra.
+
+00:23:36 If you think about popular editors in the Python space, really these days it feels like it's narrowing down into VS Code and PyCharm.
+
+00:23:43 Like it used to be just completely all over the map when I asked that question on Talk Python, And these days it's VS Code, PyCharm, VS Code, or I was on one and switched to the other.
+
+00:23:51 So, yeah, and Vim.
+
+00:23:53 They don't say something like that.
+
+00:23:55 It's either Vim or Emacs.
+
+00:23:56 Yeah.
+
+00:23:56 It's like one of the, those types, but right here in Portland, Oregon, roaming the streets, we now have a new editor called Nova.
+
+00:24:04 From Panic.
+
+00:24:05 Yeah.
+
+00:24:06 So yeah, Panic is a developer oriented company that makes native Mac apps and they are right downtown by, by Pal's Books.
+
+00:24:17 You can see their office from the coffee shop, I think.
+
+00:24:20 - Cool. - Yeah.
+
+00:24:21 So anyway, they built this thing called Nova, which is like a reinterpretation of their interpretation of what a code developer editor should be.
+
+00:24:30 And it's got cool things like GitHub integration where it shows you, say, the issues around the code that you're working on and stuff like that like as you're going through it.
+
+00:24:39 So I'm sticking with PyCharm.
+
+00:24:41 I looked through this, it looks neat and all, but I'm not using it.
+
+00:24:44 That said, I think it's worth pointing out that there's a new developer editor out there from a pretty reputable company that's putting a lot of energy into it.
+
+00:24:51 So that's kind of cool.
+
+00:24:52 - Yeah, it's got a Vim mode, I'll try it.
+
+00:24:53 - I think it does, I'm pretty sure I remember it.
+
+00:24:55 All right, last thing, extra, extra, extra, extra.
+
+00:24:59 I installed Big Sur on my Mac and it didn't die and all the Python things seem to be working.
+
+00:25:04 All the websites run, the MongoDB stuff's working.
+
+00:25:07 So that's really pretty neat.
+
+00:25:09 Homebrew stopped working, which is very frustrating 'cause that's how I manage things like Python.
+
+00:25:15 But I just had to upgrade Xcode to the latest edition, and then it was good again.
+
+00:25:18 - I don't think I put Homebrew on my computer.
+
+00:25:20 - I love Homebrew. - I probably do.
+
+00:25:21 - Yeah, I like it.
+
+00:25:23 Installed Python, installed MongoDB, installed a lot of things like that.
+
+00:25:25 OpenSSL seems to always get in there somewhere.
+
+00:25:28 And also I said that I ordered a new MacBook Pro instead of the Apple Silicon thing.
+
+00:25:37 I actually canceled that, and I'm getting a Mac Mini Apple one.
+
+00:25:40 Very exciting, I'll let you know how it goes.
+
+00:25:42 - Oh, I can't wait.
+
+00:25:42 Actually, I didn't know they were still making minis.
+
+00:25:45 They revamped it.
+
+00:25:46 It is now faster than any mobile Mac.
+
+00:25:50 And the only thing that will beat the Mac mini is the $5,000 Mac Pro.
+
+00:25:56 But sometimes the $600, $700 Mac mini will still beat the $5,000 Mac Pro.
+
+00:26:00 It's like ridiculous.
+
+00:26:01 I might get one of these.
+
+00:26:03 I already got a really beefy monitor.
+
+00:26:06 Yeah, exactly.
+
+00:26:07 It'll do one 6K and one 4K monitor.
+
+00:26:09 So dual monitors, six and 4K.
+
+00:26:12 I'm telling you, man, this thing looks incredible.
+
+00:26:15 You look at the Geekbench scores, you look at the reviews, it's really awesome.
+
+00:26:19 And the price is like, so I got like $1,500 back by canceling my MacBook order and a faster computer.
+
+00:26:25 - Nice.
+
+00:26:26 - So anyway, we'll follow up on that.
+
+00:26:27 Let's see how it goes.
+
+00:26:28 Anyway, that was extra, extra, extra, extra.
+
+00:26:30 Hear all about it.
+
+00:26:31 - Nice.
+
+00:26:32 Well, so normally my spot would be number six, but that'd be like, we're at like nine now or something.
+
+00:26:38 - Yeah, we're at nine now.
+
+00:26:39 - Okay.
+
+00:26:39 Actually, this is a cool article. I love this story. Dale Markowitz wrote an article called, I'm masquering it right now, but it's a Python-driven AI stylist inspired by social media.
+
+00:26:54 >> No way. So it looks at like Instagram and like influencers and stuff and says, "This is how we think you should dress and look." >> Yeah. So one of the cool ideas, and it's so cool. So she works for Google. So she's using a whole bunch of Google tools that are available to everybody else to do things like Google Storage, Firebase, Cloud Vision API, Product Search API and stuff, which actually I've never played with any of these, but it's kind of neat that they're available to really anybody that they want.
+
+00:27:22 And so the idea is she took pictures of all of her, every item in her closet and then has like folders for containing the pictures for related.
+
+00:27:34 like let's say if you got a shirt or jacket, a few angles of the shirt and then threw those in a directory and then did that for everything in her closet and then took uh influencers that she likes like a couple social media accounts that that do fashion shots that she likes how they dress And then throws ai at it and scripts the whole thing with python. So this thing will tell her for this particular person that this look for this from this photo, you can kind of do this look if you use this shirt and those pants and shoes.
+
+00:28:09 And so you've already like what you've already got, you can remix it this way.
+
+00:28:13 Yeah. And I think that's, it's probably more of an ad for Google AI products. But I think it's a cool like you could do this, you know, with some free time and stuff and with some Python code to push it together.
+
+00:28:28 I love this idea.
+
+00:28:29 It's pretty cool.
+
+00:28:30 Yeah, it's pretty.
+
+00:28:31 All right, two thoughts.
+
+00:28:32 So one, I remember my statistics class, they talked about, well, if you have like three shirts and two pants and five socks and two pairs of shoes, how many, you know, here's the combinatorics of how many like combinations you might have, right?
+
+00:28:47 So those numbers get enormous, like super quick.
+
+00:28:50 So this just says like there's these, these outfits that you didn't even know you could to create out of like the 100 million possible things from your closet, which is accommodations from your closet.
+
+00:29:00 That's pretty cool.
+
+00:29:01 - Yeah, and also, like she had to put it in place.
+
+00:29:03 One of the things she had to do is put in place like a score.
+
+00:29:06 So if you, like for instance, if you got like multiple gray shirts, they all might fit picture with the gray shirt, but they, she made it so that there was scoring so that you'd get the, like the, you can pick the highest score outfit or something.
+
+00:29:20 - Yes.
+
+00:29:21 All right, that's cool.
+
+00:29:22 My other one is somebody should do this, but just for hairstyles and like beard styles, if you're a man, have it pick a style and then that person has to get that cut.
+
+00:29:31 Right?
+
+00:29:33 You're like, all right, this month I'm gonna look like this.
+
+00:29:37 Oh my gosh, all right, here we go.
+
+00:29:40 Why not?
+
+00:29:41 - Okay, you'd have to like sort of make it like long to short or something because you can't go backwards.
+
+00:29:48 - Yeah, yeah, I guess you'd have to like sort by order 'cause you gotta wait longer to get it to grow back out.
+
+00:29:54 - Sort of by hand.
+
+00:29:55 - Yeah, there you go, awesome.
+
+00:29:57 - But there's some facial hairstyles that if we could get a tool that would tell people to not try certain facial hairstyles based on what their face shape is, that would be good.
+
+00:30:09 - That would be very, I did see a guy who had like a super big beard and decided to cut it off, but instead of just shaving it off, they were very careful and they came up with like 10 or 11 different styles.
+
+00:30:19 They shave it to one, take a picture, shave it to the next, take a picture.
+
+00:30:22 It was actually pretty interesting.
+
+00:30:24 - Yeah.
+
+00:30:24 - But yeah, there's some that shouldn't be done.
+
+00:30:26 (laughing)
+
+00:30:27 All right, well I already went off the deep end on the extras, how about you?
+
+00:30:31 - Yeah, let's skip to the joke, man.
+
+00:30:33 - Oh man, sounds good to me.
+
+00:30:36 All right, so this is a little bit of Back to the Future, Marty McFly and Doc, all that stuff.
+
+00:30:41 So you know, he's got that cool DeLorean, that stainless steel DeLorean, and it's got the flux capacitor.
+
+00:30:48 So this is a little graphic from DevHumor, from comicstrip.com and it's set in January 2006.
+
+00:30:57 All right, I'll be Marty and you can be Doc, okay?
+
+00:31:00 - Okay. - All right.
+
+00:31:01 So sitting in the Delorean about to take off this.
+
+00:31:04 So what's it like in the future, Doc?
+
+00:31:06 Is everyone using CSS3?
+
+00:31:08 - Wait, wait, you'll see.
+
+00:31:10 We're heading to 2020.
+
+00:31:12 Knowing all the problems you have with IE6, I'll give you something to look forward to.
+
+00:31:16 - And then in May 2020, there's a big billboard that says Microsoft Edge, the IE successor based on Google Chromium engine is coming to Linux.
+
+00:31:24 Incredible.
+
+00:31:25 - Why?
+
+00:31:27 Okay.
+
+00:31:28 - Yeah, because it can.
+
+00:31:30 Just because it can.
+
+00:31:33 - I have, so I've got a work computer that's Windows and I still don't use Edge.
+
+00:31:39 - And you're so far behind the times.
+
+00:31:40 I've got Edge installed on my Mac.
+
+00:31:41 - You do?
+
+00:31:42 - Apparently it installs on a Mac, yeah.
+
+00:31:44 - But do you, did you install it?
+
+00:31:46 - I did.
+
+00:31:47 Now the question is, do I use it?
+
+00:31:49 I've got like several browsers that I just don't really use.
+
+00:31:52 I've got Edge, I've got Brave, and I've got Opera.
+
+00:31:57 And I don't really use any of those.
+
+00:31:58 I just basically use Firefox.
+
+00:32:00 Unless Firefox doesn't work, then I use Chrome.
+
+00:32:01 - Yeah, okay.
+
+00:32:02 - No, yeah, but I technically have it installed.
+
+00:32:05 I get this big pop-up that has to update it about every three weeks.
+
+00:32:09 Like, there's an update for your computer, click here to upgrade Edge.
+
+00:32:11 I'm like, I don't even run this thing, why do I keep getting this?
+
+00:32:14 I know I get it, but like, why do I have to keep getting it, I guess?
+
+00:32:16 - You know, there's still lots of people that don't know what browser they use.
+
+00:32:20 They just, they don't even know what to, if you ask them what browser they use, they don't know what you're saying.
+
+00:32:25 - Yeah.
+
+00:32:26 - It's just the internet.
+
+00:32:28 Well, what do you look on the websites for?
+
+00:32:29 I open the internet.
+
+00:32:31 You know, the internet is not an application.
+
+00:32:33 (laughing)
+
+00:32:34 - What? It's not?
+
+00:32:36 Awesome, yeah, so that's a pretty good little shoot to the future one.
+
+00:32:41 - Yeah.
+
+00:32:42 - So, link to that in the show notes.
+
+00:32:43 People wanna check out the graphics.
+
+00:32:44 - Cool.
+
+00:32:45 Well, thanks a lot.
+
+00:32:45 - Yeah, you bet.
+
+00:32:46 Thanks for being here, and thanks to everyone for listening.
+
+00:32:47 See y'all.
+
+00:32:48 Thank you for listening to Python Bytes.
+
+00:32:50 Follow the show on Twitter via @PythonBytes.
+
+00:32:52 That's Python Bytes as in B-Y-T-E-S.
+
+00:32:56 And get the full show notes at pythonbytes.fm.
+
+00:32:59 If you have a news item you want featured, just visit pythonbytes.fm and send it our way.
+
+00:33:03 We're always on the lookout for sharing something cool.
+
+00:33:06 On behalf of myself and Brian Auchin, this is Michael Kennedy.
+
+00:33:09 Thank you for listening and sharing this podcast with your friends and colleagues.
 
