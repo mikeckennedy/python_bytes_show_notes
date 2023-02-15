@@ -1,72 +1,980 @@
-00:00:00 Hello, and welcome to Python bytes, where we deliver Python news and headlines directly to your earbuds. This is Episode 227. Recorded March 31. Nice. I'm Brian knockin Michael Kennedy. I'm myka allerease. Welcome. Good to have you here. Thanks, Mike. And Brian, I'm a big fan of the both of your shows. Oh, thank you. Wonderful. Yeah, that's really nice and super cool. You could drop in here and be part of the show. Even before we get on maybe just tell folks about yourself. What do I do? I'm a software developer for more than 10 years. And then I'm also an organizer of the Python community in the Philippines. So yeah, that's about it. Yeah, to jump in. Let's jump in. All right. Well, um, the other day, I was on Twitter. I
+00:00:00 - Hello, and welcome to Python Bytes, where we deliver Python news and headlines directly to your earbuds.
 
-00:00:52 sorry, I made myself laugh. So Ned batchelder.
+00:00:05 This is episode 227, recorded March 31st.
 
-00:00:57 put out a comment, said public service announcement, please do not remove old versions from HP, ipi, because it just causes work for people that have to go find your old versions on GitHub. Pi Pi has a gank feature that you should use instead. And I didn't know about this. Yeah, I didn't know about it, either. I thought you just have to live with leaving it there, or you take it away and cause trouble. Yeah, so. So this is pretty cool. What it does is, um, and I should have had a screenshot of this up. But basically, in peipsi, when you go in and you go in and log into your account, and you go to one of your your the package that you want to take a version down from. And when you go actually if you go to try to delete it, it'll pop up a comment that says, hey, maybe you should make this instead of deleting. And this apparently this just came out like last year or a year before, I can't remember, but it's not terribly old. And I missed it. Yankee is about the same thing. So yanking leaves it there. But it, it doesn't automatically grab that version, even if it's within a range that you've specified, the only way you pipey I'll grab that version is if you specifically have that exact version specified to to grab. And that way, if somebody has a pinned version to just that version, if you if it's gone, they just won't download anything. So that's not nice. It's just gonna crash and Docker build or their system will install or whatever, something bad, right? Yeah, but and then I also wanted to link to Doug Hellman article about. So you've released a broken package, what do you do now? And his recommendation is just relax, it happens. Just push it out again, fix it and push it out. And so I generally, I don't know if I've ever thought of the need to yank because most people probably won't pin the the bad version unless it's unless they know it works for them. So I guess I wouldn't worry about it too much. I did say I guess this is new as well. This is from May of 2019. This yank feature according to the PAP, at least something around that timeframe. So it's pretty new, but it definitely seems like a good feature. Okay. Have you heard of this? I also haven't pushed anything on IP. Just internal packages. Yeah, yeah. Then you just tell people Oh, this is broken. Don't don't use that one. Yeah, if you put it out on pi pi, then yeah, someone PIP installs, Pip freezes it. They've got it. So I guess it depends how popular packages. But even if you have an unpopular one, you know, you've got a just 1000 downloads a day or something or that's still a very high likelihood that someone's gonna grab it. Just pushed up something recently, I was excited that he got up to like, 24 downloads a day. No, I mean, that's, that's good. I think I have nothing I have nothing that scale. I'm thinking you know, if you're you if you're doing flask or Django or pandas and you push a bad thing, like you're gonna hear about it for a long time. It's, it's gonna be a high stress event, where as opposed to like, the stuff that I have up there, no one would notice long as I got to it pretty quick. I'll stick one of mine up in the in the the extra section at the end. Okay. Yeah, perfect. Yeah, I was about to ask.
+00:00:09 Nice, I'm Brian Okken.
 
-00:04:06 So SQL alchemy, maybe you guys have heard of this. I think it's about something to do with databases, something like that. Yeah. So SQL alchemy obviously is the most popular ORM for talking to databases without writing raw SQL which I think for the most part this is the way you should be doing it right you should be programming as suddenly things just change the connection string and it works It doesn't matter what underlying operating or underlying database you're talking to. It'll figure it out. Mostly we'll get to that but big news Mike bear has been working super hard to get SQL alchemy 1.4 out and does it say here says this is a ton of work that they put into over I believe this is months of work, and I think it came out last week but we didn't have time to cover it. So here it is. And this is notable not just because oh look at some point releasing there's a few things but there's a bunch of big changes for people that know about sequel alchemy for example. This is the first one that is moving towards sequel alchemy to Dotto.
+00:00:11 - I'm Michael Kennedy.
 
-00:05:00 is a big change of the API's and things like that. So it introduces a bunch of new API's, especially around async and await. So this is the first sequel alchemy that natively supports without some kind of external patching thing natively supports using the ORM to talk to the database using async. And await allow you to plug into things like fast API and other places in a real scalable way, though, that's pretty cool. And yeah, the fact that it's moving on to this, this tuo style is pretty interesting. So yeah, big news, right? Yeah. Yeah, cool. And there's a lot of changes around working with the ORM towards this new API. So it used to be you would create a session, and then you would say session query of the class, you want to query and then like filter and order by and all that kind of stuff. And that stuff is gone, not removed, but it's not the new style. And it's not the styles that supports async, and await. So I'm pulling up here, this, this doc that shows like the before and after. So if you wanted to get all the users used to say session query of user all now what you do is use this combination of SELECT statements and then executing them. I believe this comes out of the core of SQL alchemy, there was a way to do the core queries, and then the ORM queries. And I think it's leaning more on the way that the core works. So now you would say session dot execute, select every user. And there's a few more steps. For some reason, you got to say, dot scalars dot, all you don't do that what you get back is like a bunch of tuples, where some part of the tuple on each entry is the thing you were looking for, I believe. So it's not super different, but it is not even close to the same. So that's, that's something that people should look at. Let's see if I can find the async support here. I'll just show you one thing that you also I want to point out, I said, normally, you can just change what database you talk to you, if you're doing the async API, you have to be more specific about it. For example, if you just tried to talk to SQL lite, it'll crash and says the sequel lite driver doesn't support async sorry, you can no longer use, you can't use that API to talk to SQL Lite. But what you can do from
+00:00:12 - I'm Michaela Reyes.
 
-00:06:59 time taken from one of my classes is you can use a different connection string. This is from my second fast API course. You can say SQL light plus AI Oh SQL light and say, I want to use the AI Oh, SQL light driver, not the plain SQL light driver for my async connection. Right? Yeah. So if you do that, then you're back to good things go Yeah, things go as you would expect, which is really cool. And then you got to do things different. So to create an engine, you got to create an async engine, the way you work with the the session object is now with the async. With block. There's a lot of interesting, like slight variations going on. But you know, basically, it's really cool that you can now do SQL lite, or SQL alchemy and SQL lite, I guess, but especially SQL alchemy against the databases using the ORM in an async and await friendly way. That's that's the big news. That's really cool. Yeah, I actually think the changes to the your m are kind of neat. Yeah, no, I'm not saying I just like that. They're just you're not just going to be able to put in a weight in front of what used to do. It's a it's a different API, you got to kind of go through and figure it out. But it's, it's fine. It's good. I'm really happy to see. Okay, let's see. Do you think with SQL alchemy? Yeah, it looks the new query style is more understandable, I guess. But I'm just worried about those who were using the old version in production. Yeah, I don't know if it's gonna go away and sequel alchemy to I'm not sure what the story is there, what the future plans are. But if you want to take advantage of the async and await stuff, you've got to go do new things. But there's not going to be a lot of old code. I mean, there's gonna be no old code doing the old async await because it just wasn't supported at all right. So it should be okay. Oh, yeah. All right. Well, that's that for that one, then I think you're up next, right on your iPhone, this Django tenant package back in 2017. And then I just, I was just surprised that it's still being maintained when I when I looked at it. And so it's a multi tenancy implementation for Django, typically used for SAS website. So it's like, what's a what's a good use case? Let's say you have a restaurant with a franchise, and then you have different branches for each location. Then you can have
+00:00:13 - Welcome, Michaela.
 
-00:09:12 for example, your main web main web app is my website that calm and then you can have, let's say, Makati that my website that calm or branch to that my website that calm, it uses Kosgei SQL schemas. So for each then it has a different, it will use a different schema for for each, then. Yeah, this is really neat, because that is such a big challenge. I know. People that have sites that they build that their customer wants to log in multiple logins for them, and when they go in there, they want to see their data but you don't want to have a copy of the website for everyone. You don't have one website.
+00:00:15 So good to have you here.
 
-00:10:00 Do you maintain? And it's always filtered to what company? Are you in? You get to see the data related to that company that account as someone else comes in. Yeah. And this is this is super cool. Is the data leaks can cause you lawsuits? Yeah. Yeah. I mean, you could do it yourself, right? Every single query, you could say, whatever the query is, and your company ID equals or account ID equals whatever it is, but if you forget one time, yeah. in a bad way. Yeah. Yeah. Yeah. This is very cool. Yeah. I was always curious about. I mean, I'm sure there's other ways too, but I was curious about how people would do that, to build this house off of Jenga. It's interesting. And it's based on domains. So like tenant one.domain.com, tenant, two.domain.com, and so on. Yeah. So I like it. I mean, if you're doing Django stuff, it seems it seems like it makes a lot of sense. And this goes down to the actual Django ORM models, right? Yeah. Yeah. Cool. Well, I don't have any use case for this. I don't, right now. But I see that a lot of people out there would I mean, like I said, if if you've got a group of people associated with one customer and another group of people associate with another customer, and you want to make sure that only their data is all kind of shared, but not not overly shared, then this is a cool use case. Yeah. Nice. Well, that's a really good find. Yeah, cool. Awesome. Awesome. All right. I'm Brian. You're ready to commit? Oh,
+00:00:17 - Thanks, Michael and Brian.
 
-00:11:28 yeah. Yeah. So
+00:00:18 I'm a big fan of both of your shows.
 
-00:11:30 I think we've talked about pre commit, I'm pretty sure we have
+00:00:22 - Oh, thank you. - Wonderful.
 
-00:11:34 talked about pre commit hooks in the small but not necessarily in the framework style, I don't know. Yeah, so. So pre commit the well, this is the documentation for pre commit the normal pre commit, everybody knows and loves. And if you don't know it, and love it, you should probably check it out. Because it's a, it's a, I wanted to bring up a couple of things. One of them is that it's a it's a lot more than just so I get I, I am, along with a lot of other people ran across pre commit with things like I want to remember to run black. And you know, I know I'm going to run my test. So I'm so miserable, just check, make sure that all the tests pass before I check stuff in. And maybe I'll run the linter. And just go ahead and run black over something. And then I don't have to worry about it too much, things like that, before you commit. And that's where the pre commit got its name. But there's a lot more hooks than pre commit, then commit, or the pre commit hook with the pre commit tool, you can hook into pre merge and post merge and all sorts of entry points around version control. So it's a very powerful tool. And there's a there's this thing when when people build up a whole bunch of tooling around it. And you can also get best in class low hook snippets from other people to plug into it, which is really great. But if I'm sharing it across a whole bunch of different projects, I kind of have to copy that into all the repos. But you don't really have to anymore, because because now there's a pre commit ci. So it's a continuous integration type version, like a lot of other like, I don't know, like Travis used to be or something or other sort of ci tools. This is another ci tool chain that you can use. And it'll run, you can set up a pre commit hooks and run it over a project. And one of the nice things about it is you can, you can have a whole bunch of different things set up and configured and run it against multiple projects and have that just set up in a different place. So this is a really, really kind of a cool tool. And I've been trying it out on a couple projects. So yeah, so we have pre commit pre commit framework, which lets you use pre commit hooks, there's a lot of layers, it's like turtles all the way down, you could have pre commit, you can have pre commit hooks for good, but they might be written in all different languages like node or rust or Python or whatever. And getting those installed. And running can be a pain. So there's the pre commit framework, which lets you not worry about that stuff, and just run all these pre commit hooks from different sources. This is another thing on top of that this is a pre commit continuous integration service. So people have heard of pre commit before, this is like extra new stuff that Anthony sottile has been working on. Right? Yeah, yep. And he's been doing this on the side for a little while to try to It's, uh, it's believe it's, well, I've signed up with through GitHub, and I think it's free for open source projects. I don't know the details. But yeah, anyway, I think it's an neat idea. I occasionally get some one of the things that's nice about it, obviously, I'm gonna run pre commit the hooks, but if somebody merges something into my code, they can it can choose not to do that and do a merge request. And this, this allows all those hooks to run on all the merge requests. So I'm a big fan of putting stuff in ci because I've seen so many scenarios where people are part of some of the people on the team are really excited about this and really want to work with it and other people. They don't even want to be bothered to figure out what it is yet, but they're
+00:00:23 - Yeah, that's really nice.
 
-00:15:00 In attention to it means the builds break and other stuff goes wrong for the people we're trying to keep. I don't know, though linter happy the unit test running or whatever it is, right? And so if you're relying upon pre commit hooks, this means that everybody gets their pre commit their commit hooks and stuff run and validated, not just the people who didn't, you know, ignore them or whatever. Yeah, like one example is like, just like black. For instance, if you like to run black over stuff before you check it in, you can just not even see it before people do it. And one of the nice things about this is it can, it can change or create a new merge request. So one of the things that will do is if somebody does a pull request or merge request, whatever gets your project and you want this stuff run, like for instance, some of them will actually change your code, Black Swan that changes your code. So this takes the old merge request, runs black on it, and then creates a new merge request with the changes. So that's nice. Yeah. Okay, are you sending pre commit hooks or anything like that with your teams? No, I'm so aware of black but when Brian explained, it's it's, yeah, it's similar to it, although it's something that you put on GitHub. Did I understand that? Well, or whatever, your continuous integration version, the what we're just covering does, you can put it on GitHub, but the and frequent works with GitHub projects as well. But it's something you run locally. So you have it, it's it's run by get pre commit hooks are triggering the hooks that you can configure. Yeah, that's a yes. It's turtles all the way down. Yeah. So Brian, I don't know if you have any awareness of this or not. But I'll ask you anyway, just tell me if you don't know, would it still make sense to wrap it the pre commit framework locally? and have it write to do it locally before it happens in GitHub? So maybe you get a better, more immediate feedback on it? Or, like depend on the one on the CI server? Of course I do. So that because I I want to catch it before I push it up my own stuff. But if somebody
+00:00:24 And yeah, it's super cool you could drop in here and be part of this show.
 
-00:17:07 wants to, you know, do a pull request, I don't even want to look at their code, if it doesn't pass. I mean,
+00:00:27 So before we get on, maybe just tell folks about yourself.
 
-00:17:13 I mean, it might be a cool idea. But But if it's if if you know, it's a lot of work, if somebody pushes something in it, all the tests are broken, and whatever. And then worst case, you don't want to go back and say, oh, I'll accept your PR, but you have to go and run black against it. And then I'll accept it. Like, just make it automatic. Yeah, just make it automatic. So yeah, yeah, super cool. All right. The next one here comes to us from David's Schmidt. And he, like many of our listeners are very helpful since and things periodically, hey, I happen across this thing at sneak s in y k.io. And I'm not sure how new This is, but it's quite neat. So over here, we have the sneak package advisor. And it's not just for Python is for many of the things I guess three of the things at the moment, NPM Hi, pi and Docker. And what you can do is you can go over here, I'll just focus on ipi for now. And you can put in packages like they have Django they're listed. So let's put Django in and see what happens. And it will tell you, what is the package health score? What is the security story? Have there been issues? Have they been fixed? How often is this being worked on? So many times people who are new to Python, or even not new to Python, but new to an area? Like you know what, I want to start using async and await with an ORM? What are my options? I've been using SQL alchemy and imagine it didn't get an update, I got to switch to something else. What are my choices? Here's four, how do I know which one of those four is still alive, healthy, etc, etc. So you come in here and you can see some information about it. I'm going to say that this is not not necessarily the best. Let me see if I find Django without one of the things I'm seeing that makes me kind of wonder I clicked on the maybe the wrong one. I click on a specific version. And it said it was not very popular and like that can't be right for Jenkins.
+00:00:30 - What do I do?
 
-00:18:59 It's an unpopular job. It tells you things like what is the popularity and for Django said this is a key ecosystem project like too big to fail. Why does this maintenance story? It's healthy. Does it have known security concerns? No. is Kennedy active or whatever. And then also, it's cool it has, you might also look at these other packages like Django is getting 97 flask, it shows right there. flask is a 93 out of 100 and a score. And you can open it up and see why there's a bunch of graphs around here as well. You can see like the commit frequency, the open issues, open prs, when was the last commit GitHub forks, all sorts of stuff around here. So number of contributors go down there and see that actually the community shows like The recent people, does it have a code of conduct that it could discover, right, is it have funding that have a contributing Doc, what were the recent security issues, all sorts of stuff, you know, I'm not going to go through all of it, but there's a bunch of cool things you can just pull up about other packages and compare them against each other. You can pull up like flask. If you want
+00:00:31 I'm a software developer for more than 10 years.
 
-00:20:00 See that side by side and so on? So, yeah, all right. Yeah, I think it's neat. It's similar to Django packages that are Oh, yeah, Django packages that are, which is why he said a similar idea. But just for like, for Django, layer for Django, or a special admin back in for Django, but this is more like for the whole Yeah, community.
+00:00:36 And then I'm also an organizer of the Python community in the Philippines.
 
-00:20:25 Are there it supports other languages too, right? Yeah, this sorta it supports node as and Docker. Right. So yeah, I think the idea is probably that more stuff is coming along. But I do like this, you know, if everything else being equal, and you can't decide put two projects in here, and it says, right, you can see, like, to me, one of the big warning signs of an open source project is if there's a bunch of prs that are like six months old, nobody's even bothered to respond. You know, somebody has gone to the effort of I've actually tried to improve this. I've done the work, I've written the test. Here it is, will you just accept it or tell me what I set out to do? And they're not even willing to respond like that is a huge red flag. And that kind of stuff will come up here as well. And hey, Anthony Shaw out there in the live stream, is if you sign up with your GitHub creds sneek will check your project requirements dot txt for you and raise prs. If there's security issues. Yeah. Oh, no. And if you use PI charm, the PI charm security extension it has sneek is integrated in Oh, and Anthony, who makes then pi charm secure extension? That's right, Anthony. That's that one.
+00:00:42 So yeah, that's about it.
 
-00:21:33 Awesome. Yeah. That's really good work. Anthony. Thanks for the that extra information as well. So you can just search a project on there. Yeah. Put me on the spot. search my cards. What is it? No pi test dash? up? I just checked. Gotcha. Oh, let's see what we get when we're gonna get
+00:00:44 - Nice. - Yeah.
 
-00:21:51 pretty good. You got to 65. I mean, you look, you're recognized like this. And you're no known security issues. Like I'm saying this is the same bad man. The I mean, there are fewer committers than in Django To be fair, but still. Yeah. Right. But, but I'm surprised that there's 10 contributors. This is just something that I it's pretty good. It's probably my oldest package. So that's okay. No, this is pretty good. I mean, it has no no security issues. That's pretty good. And you can even embed a little package health score if you wanted to. Right. Well, let's get let's figure out how I can get it up.
+00:00:45 - Should we jump in?
 
-00:22:27 Yeah, I get that into the 90s. And then in the 90s. Perfect. Fantastic. All right. Who's next? I guess, Kayla, you're next. So there you go. That's about this one. So the This one has been contributed by one of the shows in on Twitter, pants.
+00:00:46 - Let's jump in.
 
-00:22:49 And then, when I first looked at it, I thought it is this another? It's just another tool that tries to do away with JavaScript. But then when I tried it out,
+00:00:46 - All right.
 
-00:23:02 I guess I kind of had an appreciation for it, because it can be used for. Yeah, I mean, I imagine for hobby projects, like for people who, oh, wait, let me just explain what it's for. It allows you to build simple applications or browser based UI applications without the need to write HTML, and JavaScript. So it has input and output modules. It's also based on tornado when I check the requirements.
+00:00:47 Well, the other day I was on Twitter.
 
-00:23:33 Oh, that's really cool. So if you're going to write a script, just a terminal COI type application, and it would ask questions like input, what is your height in centimeters input? What is your weight, and it would convert that to a float, and then you would print out the information. So this has really similar stuff, like the input doesn't come from the built in one, it comes from pi web i o input, to actually create a text box. And because you say the type, you'll even get validation, like, Oh, this has to be a number. That's pretty neat. Yeah, I think it can be used for hobby projects, like for people who know how to write Python code, but don't want to write HTML and JavaScript. And it also, as a teaching tool for let's say, you're teaching kids the concept of input and output and don't want them to just use the terminal. Yeah, you know, it's really interesting. My daughter wanted to learn Python and get into programming and stuff. And I tried to show her stuff in the terminal, she was just no on it.
+00:00:50 I, sorry, I made myself laugh.
 
-00:24:36 And then started playing with Anvil, which has a similar like really simple way to just get like graphical stuff on the screen. And I was she was all about it. She played with it for hours creating little apps and quizzes for people and stuff. And it's it doesn't seem like a big difference, but that visual aspect, I think it's pretty big. I think.
+00:00:54 So Ned Backhelder.
 
-00:24:54 You know, it makes a big difference. Yeah, yeah, I was um, so I probably use something like this for maybe
+00:00:57 put out a comment, said a public service announcement, please do not remove old versions from PyPI because it just causes work for people that have to go find your old versions on GitHub.
 
-00:25:00 build scripts, for instance, were used by a team. So sometimes you have like, just a few questions, you need to ask somebody. And you can do that easily on a web form or something like that. But, but if it's a, like a script that you're running on the command line, and some people don't want to run to have interactive command line, I don't understand that actually, personally. Definitely people on my team that will not voluntarily run a command line script. Yeah, absolutely. And it looks like it integrates into existing web frameworks, which is cool. But it also the way it runs, it looks like you might be able to actually package it up with PI installer and just go here, double click this, and it'll come up with some Yeah, yeah. No, don't don't limitation I see is that when once you want to style, the HTML code, that's fire that way part of the future, I mean, yeah.
+00:01:10 PyPI has a yank feature that you should use instead.
 
-00:25:55 Right. Yeah. Cool. That's a good pick. Right. Nice. Thanks to the contributor in on Twitter. Yeah, absolutely. All right. That's that's it for me. Brian, have you got anything else? Um, well, I teased about just saying that while we already talked about paychecks test check a little bit. So I'm the new
+00:01:13 And I didn't know about this yank feature.
 
-00:26:15 the new package that I just put up last week, I guess, was it's a, I went ahead and I misunderstood. There's a package called pi test poo, which is a brilliant package that I thought I hadn't had it wrong. I thought it put little like, ooh, emojis for failed tests. Turns out it didn't. What it does is, is you put, you had to market test with, like poo. And then it just showed those, whether it passed or failed? And I said, Well, I thought we kind of need to distinguish or So also, I don't think I could get my team to use oo emojis. So I created my test yaak, because I'm a kid of the Mr. Yuck generation, I guess. And so these, what it does is you, you market test with yuck. And if it passes, you get a green, queasy face. And if it fails, it actually throws up so.
+00:01:15 - I didn't know about it either.
 
-00:27:14 So this is a new and it's download stats are the only date that recorded was 24 downloads. So that's actually pretty good for its first day. That's I'm gonna say that's good. It's probably all me. But then, I don't know, a month ago or so I did I test source pass, which just allows you to specify import paths for so that your tests can find your code. And then, as we already showed, by just check is the one that's been out for years, just allows multiple failures. So those are my my packages. No, those are really cool. And you've been busy.
+00:01:16 I thought you just have to live with leaving it there or you take it away and cause trouble.
 
-00:27:50 As trays? Yeah.
+00:01:20 - Yeah, so this is pretty cool.
 
-00:27:53 That's actually nice. All right, I got a few real quick things to throw out there at the end here as well, Marco garelli, sent over this project he's working on called absolute absolute fi imports. So if you've got a package that's using relative imports, and you would rather to convert it over, so all the dot, and you know, from.or, from dot, dot, whatever, import something and turn those into absolute imports, it's like one line. To me, it's a little bit like Flint, run that against your project that turns all the string formatting into f strings, this will do that. But for the imports, take them from relative to absolute. So that might be helpful. People got some code to migrate, they want to do it like this. And then notice Anthony Shah was in the audience. I was already going to cover this last week, Kelly herdez, who said, Oh, I want to talk about beanie, the MongoDB ORM. She's like, Oh, I thought you're talking about Beanie Babies. And then somebody threw out that Anthony Shaw should make a Beanie Baby login. And it looks like he's already made a Beanie Baby Bear.
+00:01:23 What it does is, and I should have had a screenshot this up, but basically in PyPI, when you go in, you go in and log into your account and you go to one of your, your, the, the package that you want to take a version down from.
 
-00:28:53 That amazing. He had this up like the same day. Well done. Anthony. Thanks for keeping it. Interactive. That's awesome. Yeah, that's good. Yeah, cool. And we talked about supply chain issues and hacks and whatnot. Well, this one should take people's breath away. Like, you were like, Oh, you don't want install from this other other install source rather than from like, main source on python.org, or whatever I was talking about the other day, right? I'm like, I build it from source at this point. This is driving me crazy. Well, DHP, didn't want to use GitHub. They wanted to have their own like sort of GitHub like thing with their own authentication and all that kind of stuff. Well, somebody broke into that, and literally put a backdoor into PHP itself. Oh, think about that. 79% of the websites in the world run on PHP. And the runtime itself had a backdoor in it just for a little while. But yeah, I mean, just for a little while. Yeah, right. So there's
+00:01:35 And when you go, actually, if you go to try to delete it, it'll pop up a comment that says, Hey, maybe you should yank this instead of deleting.
 
-00:29:47 a little bit of a def here in this Ars Technica article I'm linking to like, excuse me, what is this line? Do? This line executes PHP code from within the user agent. If the string if the user
+00:01:43 And this, apparently this just came out like last year or a year before I can't remember, but it's not terribly old and I missed it.
 
-00:30:00 It includes zero Diem. So you just put your user eight, you just put the hack, you want to run in your user agent and do a request to the server and off it goes. That's nuts. That's not good. So thankfully, it's not Python. And then this one, this one was you Michaela, right? Yeah. It's the last one. It's the last day of the match membership drive for the PSF. I mean, they said that they you can be a member anytime of the year, but it's the last day for their 2000. Goal. Member for March. Yeah. Super cool. Hopefully they're doing well over here. Yeah. Yeah. People, please be part of that. If, yeah. If you want to be great to support them that way. All right. And I got to say, Michael, thanks for bringing up Flint. I was actually forgot about that. And I need it in. fl YNT. Love it. Yes, y n T. I was googling it for a while till I found it. Nice. Yeah, I've turned that loose on some most of the Python code I have to live with and any frequency I have to go back to it's like, just find all the strings and make them f strings and I'll go look at it. Lovely. I love it. Okay. All right. Speaking of love and stuff, how about a joke? I love one. Alright, so this one comes not to us, but was found and Ricardo for Marissa put this out on Twitter. So I thought this would be fun. Like we've talked about comments before. And we've even had those jokes where it's like all about the comments, right? It's all the crazy things people put in their comments. Like, you know, hash, I really need to find a better job type of comments. So this one is more visual. I know some people are more visual and commenting what they're doing. So Brian, this is a got like a smart speaker or like a, like a, some kind of conference phone. And on the phone. It's got some buttons, they have little icons like a mute microphone. My phone number one, two, like maybe placed the call up down in volumes have like louder volume, less loud volume, maybe describe the comments for our listeners. Well, there's dashed lines to go to each button with like a manual or something right with it with like the the same icon that's on the device just next to it. Just Yeah, exactly. This is like just the EDA slash slash or hash or whatever, of the, you know, logger. logger equals new logger was the comment, you know,
+00:01:50 Yanking is about the same thing.
 
-00:32:17 this is the same, but if we're in the user interface, yeah, that's definitely like the the, you know, string user comment the user.
+00:01:52 So yanking leaves it there, but it doesn't automatically grab that version, even if it's within a range that you've specified.
 
-00:32:27 Exactly. Beautiful. Nice. Yeah. Well, super fun to be us about Python again with you this week. Kayla, for joining us expand and Miko Yeah, it was really great to have you here. Thanks for coming. Good to see you. As always, Brian. Bye, I think Thank you for listening to Python bytes. Follow the show on Twitter via at Python bytes. That's Python bytes as in BYT s and get the full show notes at python bytes.fm. If you have a news item you want featured just visit Python bisetta fm and send it our way we're always on the lookout for sharing something cool. On behalf of myself and Brian rockin. This is Michael Kennedy. Thank you for listening and sharing this podcast with your friends and colleagues.
+00:02:02 The only way PyPI will grab that version is if you specifically have that exact version specified to grab.
+
+00:02:11 And that way, if somebody has a pinned version to just that version, if it's gone, they just won't download anything.
+
+00:02:18 So that's not nice.
+
+00:02:18 - Yeah, it's just gonna crash and their Docker thing won't build their system won't install or whatever something bad right? Yeah but and then I also wanted to link to Doug Heldman article about so you've released a broken package what do you do now and his recommendation is just relax it happens just push it out again fix it and push it out and so I generally I don't know if I've ever thought of the need to yank because most people probably won't pin the bad version unless they know it works for them.
+
+00:02:53 So I guess I wouldn't worry about it too much.
+
+00:02:55 - It's interesting.
+
+00:02:56 I guess this is new as well.
+
+00:02:57 This is from May of 2019, this Yank feature, according to the pep at least, something around that timeframe.
+
+00:03:03 So it's pretty new, but it definitely seems like a good feature.
+
+00:03:06 Kayla, have you heard of this?
+
+00:03:07 - I also haven't pushed anything on PyPI yet.
+
+00:03:11 Just internal packages.
+
+00:03:14 - Yeah, yeah.
+
+00:03:14 Then you just tell people, "Oh, this is broken.
+
+00:03:16 don't use that one.
+
+00:03:17 (laughs)
+
+00:03:18 Yeah, if you put it on PyPI, then, you know, someone pip installs, pip freezes it, they've got it.
+
+00:03:23 So I guess it depends how popular a package is.
+
+00:03:25 But even if you have an unpopular one, you know, you've got just a thousand downloads a day or something, or that's still a very high likelihood that someone's gonna grab it.
+
+00:03:35 - I just pushed up something recently.
+
+00:03:37 I was excited that it got up to like 24 downloads a day.
+
+00:03:40 - No, I mean, that's good.
+
+00:03:41 I think, well, I have nothing, I have nothing that scale.
+
+00:03:44 I'm thinking, you know, if you're doing Flask or Django or Pandas and you push a bad thing, like you're gonna hear about it for a long time.
+
+00:03:51 It's gonna be a high stress event.
+
+00:03:53 Whereas opposed to like the stuff that I have up there, no one would notice as long as I got to it pretty quick.
+
+00:03:58 - I'll stick one of mine up in the extra section at the end.
+
+00:04:02 - Okay. - Yeah, perfect.
+
+00:04:03 - Yeah, I was about to ask.
+
+00:04:05 - So SQLAlchemy, maybe you guys have heard of this.
+
+00:04:09 I think it's about something to do with databases, something like that.
+
+00:04:12 - Yeah.
+
+00:04:12 SQLAlchemy obviously is the most popular ORM for talking to databases without writing raw SQL, which I think for the most part, this is the way you should be doing it, right?
+
+00:04:21 You should be programming with so many things, just change the connection string and it works.
+
+00:04:24 It doesn't matter what underlying operating or underlying database you're talking to, it'll figure it out, mostly.
+
+00:04:29 We'll get to that.
+
+00:04:30 But big news, Mike Bayer has been working super hard to get SQLAlchemy 1.4 out.
+
+00:04:37 And does it say here?
+
+00:04:38 It says this is a ton of work that they put into over, I believe this is months of work.
+
+00:04:44 And I think it came out last week, but we didn't have time to cover it.
+
+00:04:47 So here it is.
+
+00:04:48 And this is notable, not just because, oh, look, at some point releasing, there's a few things, but there's a bunch of big changes for people that know about SQLAlchemy.
+
+00:04:55 For example, this is the first one that is moving towards SQLAlchemy 2.0, which is a big change of the APIs and things like that.
+
+00:05:03 So it introduces a bunch of new APIs, especially around async and await.
+
+00:05:07 So this is the first SQLAlchemy that natively supports without some kind of external patching thing.
+
+00:05:12 Natively supports using the ORM to talk to the database using async and await, allow you to plug into things like fast API and other places in a real scalable way.
+
+00:05:22 So that's pretty cool.
+
+00:05:23 And yeah, the fact that it's moving on to this 2.0 style is pretty interesting.
+
+00:05:28 So yeah, big news, right?
+
+00:05:29 - Yeah. - Yeah, cool.
+
+00:05:31 And there's a lot of changes around working with the ORM towards this new API.
+
+00:05:37 So it used to be you would create a session and then you would say session.query of the class you want to query, and then like filter and order by and all that kind of stuff.
+
+00:05:45 And that stuff is gone, not removed, but it's not the new style and it's not the styles that supports async and await.
+
+00:05:51 So I'm pulling up here this doc that shows the before and after.
+
+00:05:56 So if you wanted to get all the users, you used to say session.query of user all.
+
+00:06:00 Now what you do is use this combination of select statements and then executing them.
+
+00:06:05 I believe this comes out of the core of SQLAlchemy.
+
+00:06:08 there's a way to do the core queries and then the ORM queries, and I think it's leaning more on the way that the core work.
+
+00:06:13 So now you would say session.execute, selective user, and there's a few more steps for some reason, then you gotta say .scalers.all.
+
+00:06:21 You don't do that, what you get back is like a bunch of tuples, where some part of the tuple on each entry is the thing you were looking for, I believe.
+
+00:06:28 So it's not super different, but it is not even close to the same.
+
+00:06:32 So that's something that people should look at.
+
+00:06:36 Let's see if I can find the async support here.
+
+00:06:38 I'll just show you one thing that you also, I wanna point out, I said, normally you can just change what database you talk to.
+
+00:06:44 If you're doing the async API, you have to be more specific about it.
+
+00:06:47 For example, if you just try to talk to SQLite, it'll crash and says, "The SQLite driver doesn't support async." Sorry, you can no longer use, you can't use that API to talk to SQLite.
+
+00:06:56 But what you can do from this little, I'm taking from one of my classes, is you can use a different connection string.
+
+00:07:03 This is from my second fast API course.
+
+00:07:06 You can say SQLite plus AIO SQLite and say, I want to use the AIO SQLite driver, not the plain SQLite driver for my async connection.
+
+00:07:16 Right? - Wow.
+
+00:07:17 - Yeah.
+
+00:07:17 So if you do that, then you're back to good.
+
+00:07:19 - That's cool. - Things go, yeah.
+
+00:07:20 Things go as you would expect, which is really cool.
+
+00:07:22 And then you've got to do things different instead of creating an engine, you've got to create an async engine.
+
+00:07:26 The way you work with the session object is now with the async with block.
+
+00:07:30 There's a lot of interesting, like slight variations going on, But basically it's really cool that you can now do SQLite, or sorry, SQLAlchemy and SQLite, I guess, but especially SQLAlchemy against the databases using the ORM in an async and await-friendly way.
+
+00:07:45 That's the big news.
+
+00:07:46 - That's really cool.
+
+00:07:47 - Yeah.
+
+00:07:48 - I actually think that changes to the ORM are kinda neat.
+
+00:07:51 - Yeah, no, I'm not saying I dislike them.
+
+00:07:53 You're not just gonna be able to put in a wait in front of what you used to do.
+
+00:07:55 It's a different API.
+
+00:07:57 You gotta kinda go through and figure it out.
+
+00:07:59 But it's fine, it's good.
+
+00:08:00 I'm really happy to see it.
+
+00:08:01 - Okay, do you do anything with the SQLAlchemy?
+
+00:08:04 - Yeah, it looks the new query style is more understandable, I guess, but I'm just worried about those who are using the old version in production.
+
+00:08:14 - Yeah, I don't know if it's gonna go away in SQLAlchemy 2.
+
+00:08:18 I'm not sure what the story is there, what the future plans are, but if you wanna take advantage of the async and await stuff, you've gotta go do new things, but there's not gonna be a lot of old code.
+
+00:08:27 I mean, there's gonna be no old code doing the old async way, 'cause it just wasn't supported at all, right?
+
+00:08:32 So it should be okay.
+
+00:08:33 Yeah, all right, well, that's that for that one.
+
+00:08:35 And I think you're up next, right?
+
+00:08:37 On your item.
+
+00:08:38 - I found this Django tenants package back in 2017.
+
+00:08:43 And then I was just surprised that it's still being maintained when I looked at it.
+
+00:08:51 And so it's a multi-tenancy implementation for Django, typically used for SaaS websites.
+
+00:08:59 So it's like, what's a good use case?
+
+00:09:03 Let's say you have a restaurant with franchise and then you have different branches for each location.
+
+00:09:10 Then you can have, for example, your main web app is mywebsite.com and then you can have, let's say, makati.mywebsite.com or branch2.mywebsite.com.
+
+00:09:28 It uses PostgreSQL schemas.
+
+00:09:33 So for each tenant, it has a different, it will use a different schema for each tenant.
+
+00:09:43 - Okay, cool.
+
+00:09:44 Yeah, this is really neat because that is such a big challenge.
+
+00:09:47 I know people that have sites that they build that their customer wants to log in, multiple logins for them, and when they go in there, they wanna see their data, but you don't want to have a copy of the website for everyone.
+
+00:09:59 You want to have one website that you maintain, and it's always filtered to what company are you in?
+
+00:10:04 You get to see the data related to that company, that account, as someone else comes in.
+
+00:10:08 This is super cool.
+
+00:10:10 >> Yeah. It's the data leaks can cost you lawsuits.
+
+00:10:14 >> Yeah. I mean, you could do it yourself.
+
+00:10:16 Every single query you could say, whatever the query is, and your company ID equals or account ID equals whatever it is.
+
+00:10:24 but if you forget one time, you're in the news in a bad way.
+
+00:10:27 >> Yeah.
+
+00:10:28 >> Yeah.
+
+00:10:30 >> This is very cool. I was always curious about how people, I mean, I'm sure there's other ways too, but I was curious about how people would do that to build this house off of Django.
+
+00:10:39 >> It's interesting and it's based on domains.
+
+00:10:41 Like tenant1.domain.com, tenant2.domain.com and so on.
+
+00:10:46 >> Yeah.
+
+00:10:47 >> I like it. I mean, if you're doing Django stuff, it seems like it makes a lot of sense.
+
+00:10:52 And this goes down to the actual Django ORM models, right?
+
+00:10:57 - Yeah.
+
+00:10:58 - Yeah, cool.
+
+00:10:59 Well, I don't have any use case for this.
+
+00:11:01 I don't think right now, but I can certainly see that a lot of people out there would.
+
+00:11:05 I mean, like I said, if you've got a group of people associated with one customer and another group of people associated with another customer and you wanna make sure that only their data is all kind of shared, but not overly shared, then this is a cool use case.
+
+00:11:18 Yeah, nice.
+
+00:11:19 Well, that's a really good find.
+
+00:11:20 Yeah. - Cool.
+
+00:11:20 - Awesome, awesome.
+
+00:11:21 - All right.
+
+00:11:22 - All right, Brian, you ready to commit?
+
+00:11:24 - Oh.
+
+00:11:25 (laughing)
+
+00:11:26 - Race condition, race condition.
+
+00:11:28 - Yeah, yeah, so you've, I think we've talked about pre-commit, I'm pretty sure we have.
+
+00:11:34 - Definitely talked about pre-commit hooks in the small, but not necessarily in the framework style, I don't know.
+
+00:11:40 - Yeah, so pre-commit, well, this is the documentation for pre-commit, the normal pre-commit everybody knows and loves, and if you don't know it and love it, you should probably check it out, because I wanted to bring up a couple of things.
+
+00:11:52 One of them is that it's a lot more than just, so I get, I'm along with a lot of other people ran across pre-commit with things like, I wanna remember to run black and, you know, I know I'm gonna run my tests, so I may as well just check, make sure that all the tests pass before I check stuff in, and maybe I'll run the linter and just go ahead and run black over something and then I don't have to worry about it too much.
+
+00:12:18 things like that before you commit.
+
+00:12:20 And that's where the pre-commit got its name.
+
+00:12:22 But there's a lot more hooks than pre-commit, than commit or the pre-commit hook.
+
+00:12:26 With the pre-commit tool, you can hook into pre-merge and post-merge and all sorts of entry points around version control.
+
+00:12:35 So it's a very powerful tool.
+
+00:12:36 And there's a thing when people build up a whole bunch of tooling around it, and you can also get best in class little hook snippets from other people to plug into it, which is really great.
+
+00:12:49 But if I'm sharing it across a whole bunch of different projects, I kind of have to copy that into all the repos, but you don't really have to anymore because now there's a pre-commit CI.
+
+00:13:00 So it's a continuous integration type version like a lot of other, like, I don't know, like Travis used to be or something or other sort of CI tools.
+
+00:13:11 This is another CI tool chain that you can use and it'll run, you can set up a pre-commit hooks and run it over a project.
+
+00:13:20 And then one of the nice things about it is you can, you can have a whole bunch of different things set up and configured and run it against multiple projects and have that just set up in a different place.
+
+00:13:31 So this is a really, really kind of a cool tool.
+
+00:13:34 And I've been trying it out on a couple of projects.
+
+00:13:37 So.
+
+00:13:38 - Yeah, so we have pre-commit, pre-commit framework, which lets you use pre-commit hooks.
+
+00:13:44 There's a lot of layers, it's like turtles all the way down.
+
+00:13:46 You can have pre-commit hooks for Git, but they might be written in all different languages like Node or Rust or Python or whatever, and getting those installed and running can be a pain.
+
+00:13:56 So there's the pre-commit framework, which lets you not worry about that stuff and just run all these pre-commit hooks from different sources.
+
+00:14:02 This is another thing on top of that.
+
+00:14:04 This is the pre-commit continuous integration service.
+
+00:14:07 So if people have heard of pre-commit before, this is like extra new stuff that Anthony Sotili's been working on, right?
+
+00:14:13 - Yeah, yeah, and he's been doing this on the side for a little while to try to, it's a, it's believe it's, well, I've signed up with, through GitHub and I think it's free for open source projects.
+
+00:14:24 I don't know the details, but yeah, anyway, I think it's a neat idea.
+
+00:14:29 I occasionally get, so one of the things that's nice about it, obviously I'm gonna run pre-commit the hooks, but if somebody merges something into my code, they can choose not to do that and do a merge request.
+
+00:14:41 And this allows all those hooks to run on all the merger quests.
+
+00:14:45 >> I'm a big fan of putting stuff in CI because I've seen so many scenarios where people are, some of the people on the team are really excited about this and really want to work with it.
+
+00:14:56 And other people, they don't even want to be bothered to figure out what it is.
+
+00:14:59 But they're in attention to, it means the builds break and other stuff goes wrong for the people who are trying to keep, I don't know, the linter happy, the unit test running or whatever it is, right?
+
+00:15:11 And so if you were relying upon pre-commit hooks, this means that everybody gets their pre-commit hooks and stuff run and validated, not just the people who didn't ignore them or whatever.
+
+00:15:23 - Yeah, like one example is just like Black, for instance.
+
+00:15:27 If you like to run Black over your stuff before you check it in, you can just not even see it before people do it.
+
+00:15:33 And one of the nice things about this is that it can create a new merge request.
+
+00:15:38 So one of the things it'll do is if somebody does a pull request or merge request, whatever, against your project, and you want this stuff run, like for instance, some of them will actually change your code.
+
+00:15:48 Black's one that changes your code.
+
+00:15:50 So this takes the old merge request, runs black on it, and then creates a new merge request with the changes.
+
+00:15:56 So that's nice.
+
+00:15:56 - Yeah, cool.
+
+00:15:58 Okay, are you using any pre-commit hooks or anything like that with your teams?
+
+00:16:02 - No, I'm just aware of black, but when Brian explained it, It's similar to it, although it's something that you put on GitHub, did I understand it right?
+
+00:16:15 Or whatever your--
+
+00:16:17 - The continuous integration version, the one we're just covering does, you can put it on GitHub, but the, and pre-commit works with GitHub projects as well, but it's something you run locally, so you have it, it's run by Git pre-commit hooks, or triggering the hooks that you can configure, >> Yeah, it's turtles all the way down.
+
+00:16:39 >> Yeah. So Brian, I don't know if you have any awareness to this or not, but I'll ask you anyway. Just tell me if you don't know.
+
+00:16:46 Would it still make sense to put the pre-commit framework locally and have it try to do it locally before it happens in GitHub?
+
+00:16:53 So maybe you get a better, more immediate feedback on it, or just depend on the one on the CI server?
+
+00:16:58 >> Of course, I do. Because I want to catch it before I push it up for my own stuff.
+
+00:17:04 But if somebody wants to do a pull request, I don't even want to look at their code if it doesn't pass.
+
+00:17:11 I mean, it might be a cool idea, but it's a lot of work if somebody pushes something and all the tests are broken and whatever.
+
+00:17:22 - And then in worst case, you don't want to go back and say, "Oh, I'll accept your PR, "but you have to go and run black against it, "and then I'll accept it." Like just make it automatic.
+
+00:17:29 - Yeah, just make it automatic.
+
+00:17:31 - Yeah, yeah, super cool.
+
+00:17:32 All right, the next one here comes to us from David Smit.
+
+00:17:36 And he, like many of our listeners, is very helpful, sends in things periodically.
+
+00:17:41 He says, "Hey, I happened across this thing "at sneak, S-N-Y-K dot IO." And I'm not sure how new this is, but it's quite neat.
+
+00:17:49 So over here we have the Sneak Package Advisor.
+
+00:17:53 And it's not just for Python, it's for many of the things, I guess three of the things at the moment, NPM, HiPI, and Docker.
+
+00:18:00 And what you can do is you can go over here, I'll just focus on PyPI for now.
+
+00:18:04 And you can put in packages, like they have Django there listed, so let's put Django in and see what happens.
+
+00:18:09 And it will tell you what is the package health score?
+
+00:18:12 What is the security story?
+
+00:18:14 Have there been issues?
+
+00:18:15 Have they been fixed?
+
+00:18:16 How often is this being worked on?
+
+00:18:18 So many times people who are new to Python, or even not new to Python, but new to an area, like, you know what, I wanna start using async and await with an ORM.
+
+00:18:27 What are my options?
+
+00:18:27 I've been using SQLAlchemy, and imagine it didn't get as update, I gotta switch to something else.
+
+00:18:31 What are my choices?
+
+00:18:32 Here's four.
+
+00:18:33 How do I know which one of those four is still alive, healthy, et cetera, et cetera.
+
+00:18:38 So you come in here and you can see some information about it.
+
+00:18:42 I'm going to say that this is not necessarily the best.
+
+00:18:47 Let me see if I can find Django without.
+
+00:18:49 One of the things I'm seeing that makes me kind of wonder, I clicked on maybe the wrong one.
+
+00:18:54 I clicked on a specific version and it said it was not very popular.
+
+00:18:57 I'm like, that can't be right for Django.
+
+00:18:58 (laughing)
+
+00:19:00 It's an unpopular package.
+
+00:19:01 So it tells you things like what is the popularity?
+
+00:19:04 And for Django, so this is a key ecosystem project, like too big to fail, sort of.
+
+00:19:08 What is its maintenance story?
+
+00:19:10 It's healthy.
+
+00:19:11 Does it have known security concerns?
+
+00:19:13 No.
+
+00:19:14 Is this community active or whatever?
+
+00:19:15 And then also it's cool, it has, you might also look at these other packages, like Django's getting 97, Flask, it shows right there.
+
+00:19:22 Flask is a 93 out of a hundred in its score.
+
+00:19:24 And you could open it up and see why.
+
+00:19:25 There's a bunch of graphs around here as well.
+
+00:19:27 you can see like the commit frequency, the open issues, open PRs, when was the last commit, GitHub forks, all sorts of stuff around here.
+
+00:19:37 So number of contributors, go down there and see that.
+
+00:19:40 Actually the community shows like the recent people, does it have a code of conduct that it could discover, right?
+
+00:19:45 Is it have funding, does it have a contributing doc?
+
+00:19:48 What were the recent security issues?
+
+00:19:51 All sorts of stuff, you know, and I'm not gonna go through all of it, but there's a bunch of cool things you can just pull up about other packages and compare them against each other.
+
+00:19:58 You can pull up like Flask if you want and see that side by side and so on.
+
+00:20:02 So what do you guys think? - Neat.
+
+00:20:03 - Yeah, cool, right?
+
+00:20:04 - Yeah, I think it's neat.
+
+00:20:05 - It's similar to django-packages.org.
+
+00:20:09 Oh, yeah, django-packages.org.
+
+00:20:11 - Which is, like you said, a similar idea, but just for like-- - Yeah, for Django.
+
+00:20:16 - Like an off layer for Django or a special admin back end for Django.
+
+00:20:20 But this is more like for the whole community.
+
+00:20:23 - Yeah, for the whole Python.
+
+00:20:25 - Oh, or it supports other languages too, right?
+
+00:20:28 - Yeah, this, sorta, it supports Node and Docker, right?
+
+00:20:33 So yeah, I think the idea is probably that more stuff is coming along, but I do like this, you know, if everything else being equal and you can't decide, put two projects in here and see what it says, right?
+
+00:20:43 You can see, like to me, one of the big warning signs of an open source project is if there's a bunch of PRs that are like six months old, nobody's even bothered to respond, You know, somebody has gone to the effort of, I've actually tried to improve this.
+
+00:20:57 I've done the work, I've written the tests.
+
+00:20:58 Here it is, will you just accept it or tell me what else I gotta do?
+
+00:21:02 And they're not even willing to respond.
+
+00:21:03 Like that is a huge red flag.
+
+00:21:05 And that kind of stuff will come up here as well.
+
+00:21:07 And hey, Anthony Shaw out there in the live stream, is if you sign up with your GitHub creds, Snyk will check your project requirements.txt for you and raise PRs if there's security issues.
+
+00:21:18 Yeah. - Oh, nice.
+
+00:21:19 - And if you use PyCharm, the PyCharm security extension, It has sneak is integrated in.
+
+00:21:24 Oh, and Anthony, who makes that a PyCharm security extension?
+
+00:21:28 Is that a, that's right.
+
+00:21:29 Anthony does that one.
+
+00:21:30 Awesome.
+
+00:21:33 Yeah, that's really good work, Anthony.
+
+00:21:35 Thanks for the, that extra information as well.
+
+00:21:37 So you can just search a project on there.
+
+00:21:39 Yeah.
+
+00:21:39 Put me on the spot and search my, cards.
+
+00:21:42 What is it?
+
+00:21:43 No.
+
+00:21:43 Pytest dash check.
+
+00:21:44 A Pytest check.
+
+00:21:45 Gotcha.
+
+00:21:46 Oh, let's see what we get.
+
+00:21:48 What are we going to get?
+
+00:21:49 Oh, yeah.
+
+00:21:51 You're doing pretty good.
+
+00:21:52 - Dude, you got a 65.
+
+00:21:53 I mean, look, you were recognized.
+
+00:21:56 Look at this.
+
+00:21:57 And you're sustainable with no known security issues.
+
+00:21:59 Like I'm saying, this is the same bad, man.
+
+00:22:01 I mean, there are fewer committers than Django to be fair, but still.
+
+00:22:07 (laughing)
+
+00:22:07 - Yeah.
+
+00:22:08 - Still, it's quite good, right?
+
+00:22:09 - But I'm surprised that there's 10 contributors.
+
+00:22:11 This is just something that I, it's pretty good.
+
+00:22:14 It's probably my oldest package, so that's.
+
+00:22:16 - Okay, no, this is pretty good.
+
+00:22:17 I mean, it has no known security issues.
+
+00:22:19 That's pretty good.
+
+00:22:20 - And you could even embed a little package health score if you wanted to, right?
+
+00:22:23 - Well, let's figure out how I can get it up.
+
+00:22:26 (laughing)
+
+00:22:27 - Yeah, get that into the 90s and then embed it.
+
+00:22:29 - Get up in the 90s.
+
+00:22:30 - How about that?
+
+00:22:31 Perfect, fantastic.
+
+00:22:32 All right, who's next?
+
+00:22:34 I guess, Gela, you're next, so there you go.
+
+00:22:38 Tell us about this one.
+
+00:22:39 - So this one has been contributed by one of the shows on Twitter, fans.
+
+00:22:49 And then when I first looked at it, I thought it's just another tool that tries to do away with JavaScript.
+
+00:22:59 But then when I tried it out, I guess I kind of had an appreciation for it because it can be used for, yeah, I imagine for hobby projects, like for people who, oh wait, let me just explain what it's for.
+
+00:23:16 It allows you to build simple applications or browser-based GUI applications without the need to write HTML and JavaScript.
+
+00:23:25 So it has input and output modules.
+
+00:23:28 It's also based on Tornado when I check the requirements.
+
+00:23:32 - Oh, that's really cool.
+
+00:23:34 So if you were gonna write a script, just a terminal CLI type application, and it would ask questions like, input, what is your height in centimeters?
+
+00:23:44 Input, what is your weight?
+
+00:23:45 And it would convert that to a float, then you would print out the information.
+
+00:23:49 So this has really similar stuff, like the input doesn't come from the built-in one, it comes from pywebio.input.
+
+00:23:57 And that'll actually create a text box.
+
+00:23:59 And because you say the type, you'll even get validation, like, oh, this has to be a number.
+
+00:24:03 That's pretty neat.
+
+00:24:05 - Yeah, I think it can be used for hobby projects, like for people who know how to write Python code, but don't want to write HTML and JavaScript.
+
+00:24:13 And it also as a teaching tool for, let's say, you're teaching kids the concept of input and output and don't want them to just use the terminal.
+
+00:24:26 - Yeah, you know, it's really interesting.
+
+00:24:28 My daughter wanted to learn Python and get into programming and stuff.
+
+00:24:32 And I tried to show her stuff in the terminal and she was just, "No, uninteresting." And then we started playing with Anvil, which has a similar, like really simple way to just get like graphical stuff on the screen.
+
+00:24:43 And she was all about it.
+
+00:24:44 She played with it for hours, creating little apps and quizzes for people and stuff.
+
+00:24:48 And it doesn't seem like a big difference, but that visual aspect, I think it's pretty big.
+
+00:24:53 I think people are, you know, it makes a big difference.
+
+00:24:56 - Yeah.
+
+00:24:57 - Yeah, I was, so I probably use something like this for maybe build scripts, for instance, used by a team.
+
+00:25:04 So sometimes you have like, you know, just a few questions you need to ask somebody and you can do that easily on a web form or something like that.
+
+00:25:10 but if it's like a script that you're running on the command line, and some people don't want to run to have interactive command line.
+
+00:25:18 I don't understand that actually personally, but there's definitely people on my team that will not voluntarily run a command line script.
+
+00:25:27 - Yeah, absolutely.
+
+00:25:28 And it looks like it integrates into existing web frameworks, which is cool.
+
+00:25:32 But it also, the way it runs, it looks like you might be able to actually patch it up with PyInstaller and just go here, double click this, and it'll come up with something.
+
+00:25:40 - Yeah. - Yeah.
+
+00:25:41 - Yeah, pretty neat.
+
+00:25:42 - The only limitation I see is that when once you want to style the HTML code, but that's far, way far in the future.
+
+00:25:52 I mean, if it wants you--
+
+00:25:54 - Probably gotta do CSS or something like that, right?
+
+00:25:56 Yeah, cool, that's a good pick, very nice.
+
+00:25:58 - Thanks to the contributor on Twitter.
+
+00:26:01 - Yeah, absolutely.
+
+00:26:02 All right, that's it for me, Brian.
+
+00:26:04 You got anything else?
+
+00:26:06 - Well, I had teased about just saying that, Well, we already talked about PyTest check a little bit.
+
+00:26:11 So the new package that I just put up last week, I guess, I went ahead and, so I misunderstood, there's a package called PyTest poo, which is a brilliant package that I thought, I had it wrong.
+
+00:26:30 I thought it put little like poo emojis for failed tests.
+
+00:26:35 Turns out it didn't.
+
+00:26:36 What it does is you had to mark a test with poo and then it just showed those whether it passed or failed.
+
+00:26:46 And I said, well, I thought, well, we kind of need a distinguisher.
+
+00:26:49 So also I don't think I could get my team to use poo emojis.
+
+00:26:53 So I created PyTest Yuck 'cause I'm a kid of the Mr. Yuck generation, I guess.
+
+00:27:00 And so what it does is you mark a test with yuck And if it passes, you get a green queasy face.
+
+00:27:09 And if it fails, it actually throws up.
+
+00:27:12 So this is a new and it's a download stats are the only day that recorded was 24 downloads.
+
+00:27:22 - That's actually pretty good for its first day.
+
+00:27:24 I'm gonna say that's good.
+
+00:27:26 - It was probably all me.
+
+00:27:27 But, and then, I don't know, a month ago or so, I did PyTest source pass, which just allows you to specify import paths so that your test can find your code.
+
+00:27:38 And then as we already showed, PyTest check is the one that's been out for years.
+
+00:27:43 It just allows multiple failures.
+
+00:27:44 So those are my packages.
+
+00:27:46 - No, those are really cool.
+
+00:27:47 And you've been busy.
+
+00:27:49 - Yeah.
+
+00:27:50 - I'll try the yuck package later.
+
+00:27:55 - Nice.
+
+00:27:55 All right, I got a few real quick things to throw out there at the end here as well.
+
+00:27:58 Marco Gorelli sent over this project he's working on called absolutify imports.
+
+00:28:04 So if you've got a package that's using relative imports and you would rather to convert it over.
+
+00:28:09 So all the, you know, dot and, you know, from dot or from dot dot, whatever import something and turn those into absolute imports.
+
+00:28:17 It's like one line.
+
+00:28:18 To me, it's a little bit like Flint, run that against your project that turns all the string formatting to F strings.
+
+00:28:23 This will do that, but for the imports, take them from relative to absolute.
+
+00:28:27 So that might be helpful.
+
+00:28:28 People got some code to migrate and they want to do it like this.
+
+00:28:30 And then I noticed Anthony Shaw was in the audience, but I was already going to cover this Anthony.
+
+00:28:35 Last week, Kelly, who said, "Oh, I want to talk to you about Beanie, the MongoDB ORM." She's like, "Oh, I thought you were talking about Beanie Babies." And then somebody threw out that Anthony Shaw should make a Beanie Baby plugin.
+
+00:28:49 And it looks like he's already made a Beanie Baby bear.
+
+00:28:52 Isn't that amazing?
+
+00:28:54 He hit this up like the same day.
+
+00:28:55 Well done, Anthony.
+
+00:28:56 Thanks for keeping it interactive.
+
+00:28:59 - That's awesome.
+
+00:29:00 - Yeah, that's good.
+
+00:29:00 - Yeah, yeah, cool.
+
+00:29:01 And we talked about supply chain issues and hacks and whatnot.
+
+00:29:05 Well, this one should take people's breath away.
+
+00:29:07 Like, I mean, you were like, oh, you don't wanna install from this other install source rather than from like main source on python.org or whatever I was talking about the other day, right?
+
+00:29:18 I'm like, I'm building from source at this point.
+
+00:29:19 This is driving me crazy.
+
+00:29:20 Well, PHP didn't wanna use GitHub.
+
+00:29:23 They wanted to have their own like sort of GitHub-like thing with their own authentication and all that kind of stuff.
+
+00:29:28 Well, somebody broke into that and literally put a backdoor into PHP itself.
+
+00:29:33 Think about that.
+
+00:29:35 79% of the websites in the world run on PHP and the runtime itself had a backdoor in it.
+
+00:29:42 - Just for a little while, but yeah.
+
+00:29:44 - Yeah, I mean, just for a little while.
+
+00:29:45 Like, so there's, we can even cut a little bit of a diff here in this Ars Technica article I'm linking to, like, excuse me, what does this line do?
+
+00:29:54 This line executes PHP code from within the user agent if the string, if the user agent includes zero DM.
+
+00:30:02 So you just put your user, you just put the hack you wanna run in your user agent and do a request to the server and off it goes.
+
+00:30:08 - That's nuts.
+
+00:30:09 - That's not good.
+
+00:30:10 So thankfully that's not Python.
+
+00:30:12 And then this one, this one was you, Michaela, right?
+
+00:30:15 - Yeah.
+
+00:30:16 It's the last day. - Yeah, tell us about this last day.
+
+00:30:18 - It's the last day of the March membership drive for the PSF.
+
+00:30:23 I mean, they said that you can be a member any time of the year, but it's the last day for their 2000 goal member for March.
+
+00:30:33 - Yeah, super cool.
+
+00:30:35 Hopefully they're doing well over here.
+
+00:30:37 Yeah, see?
+
+00:30:38 Yeah, so people, please be part of that if you want to be great to support them that way.
+
+00:30:44 All right.
+
+00:30:45 - And I got to say, Michael, thanks for bringing up Flint.
+
+00:30:48 I was actually forgot about that and I need it.
+
+00:30:50 And for anybody- - I love Flint.
+
+00:30:51 - F-L-Y-N-T, love it.
+
+00:30:53 - Yes, Y-N-T, I was Googling it for a while until I found it, nice.
+
+00:30:57 - Yeah, I've turned that loose on some, most of the Python code I have to live with and any frequency I have to go back to, it's like, just find all the strings and make them F-strings, then I'll go look at it.
+
+00:31:06 Lovely, I love it.
+
+00:31:07 - Okay.
+
+00:31:08 - All right, speaking of love and stuff, how about a joke?
+
+00:31:09 - I'd love one.
+
+00:31:10 - All right, so this one comes not to us, but was found, and Ricardo Ferreria put this out on Twitter.
+
+00:31:18 So I thought this would be fun.
+
+00:31:19 Like we've talked about comments before, we've even had those jokes where it's like all about the comments, right?
+
+00:31:23 It's all the crazy things people put in their comments, like, you know, hash, I really need to find a better job type of comments.
+
+00:31:30 So this one is more visual.
+
+00:31:31 I know some people are more visual and commenting what they're doing.
+
+00:31:34 So, Brian, this is like a, like a smart speaker or like a, like a, some kind of conference phone and on the phone, it's got some buttons and they have little icons, like a mute microphone, like a phone number one to like, maybe they place the call up down volumes have like louder volume, less loud volume.
+
+00:31:51 Maybe describe the comments for our listeners.
+
+00:31:53 Well, there's dashed lines to go to each button with like a manual or something, right?
+
+00:31:58 With it, with like the, the same icon that's on the device just next to it.
+
+00:32:04 Just, yeah, exactly.
+
+00:32:06 This is like just the, the, you know, slash slash or hash or whatever of the, you know, logger logger equals new logger was the comment, you know, hash - Yeah.
+
+00:32:16 - This is the same, but for documenting the user interface.
+
+00:32:21 - Yeah, that's definitely like the, you know, string user comment, the user.
+
+00:32:26 - Exactly.
+
+00:32:27 - Things like that.
+
+00:32:28 - Exactly.
+
+00:32:29 Beautiful.
+
+00:32:30 - Nice.
+
+00:32:30 - Yeah.
+
+00:32:31 - Well, super fun to be us about Python again with you this week.
+
+00:32:34 - As always.
+
+00:32:35 - Thanks, Michaela, for joining us.
+
+00:32:36 - Thanks, Brian and Michael.
+
+00:32:38 - Yeah, it was really great to have you here.
+
+00:32:39 Thanks for coming.
+
+00:32:41 Good to see you. - Lots of fun.
+
+00:32:41 - As always, Brian.
+
+00:32:42 - Bye.
+
+00:32:43 - Bye. - Bye, guys.
+
+00:32:44 - Thank you for listening to Python Bytes.
+
+00:32:45 Follow the show on Twitter via @pythonbytes, that's Python Bytes as in B-Y-T-E-S.
+
+00:32:51 And get the full show notes at PythonBytes.fm.
+
+00:32:54 If you have a news item you want featured, just visit PythonBytes.fm and send it our way.
+
+00:32:59 We're always on the lookout for sharing something cool.
+
+00:33:01 On behalf of myself and Brian Auchin, this is Michael Kennedy.
+
+00:33:04 Thank you for listening and sharing this podcast with your friends and colleagues.
 

@@ -1,0 +1,1208 @@
+00:00:00 - Hello and welcome to Python Bytes, where we deliver Python news and headlines directly to your earbuds.
+
+00:00:05 This is episode 222, recorded February 24th, 2021.
+
+00:00:10 I'm Michael Kennedy.
+
+00:00:11 - And I'm Brian Ockett.
+
+00:00:12 - And I'm Greg Herrera.
+
+00:00:13 (laughing)
+
+00:00:14 - Hey Greg Herrera, welcome, welcome.
+
+00:00:15 We have a special guest.
+
+00:00:16 - Thank you.
+
+00:00:17 - Welcome.
+
+00:00:18 Part of the Talk Python team, and now part of the Python Bytes podcast.
+
+00:00:21 It's great to have you here.
+
+00:00:21 - Happy to be here, thank you.
+
+00:00:23 - Yeah, it's great.
+
+00:00:24 Also making us happy is, and many users throughout the world, is Linode.
+
+00:00:29 Linode is sponsoring this episode and you can get $100 credit for your next project at Pythonbytes.fm/linode.
+
+00:00:34 Check them out.
+
+00:00:36 It really helps support the show.
+
+00:00:38 So Greg, you want to just tell people really quickly about yourself before we dive into the topics?
+
+00:00:42 >> Yeah, before I joined the team at Pythonbytes, I had run a data analytics consulting firm where we built data warehouses and did data science type things.
+
+00:00:53 It was called business intelligence at the time.
+
+00:00:56 And as I was learning, we started running into a lot of open source users, in particular Python.
+
+00:01:05 And so I dove into the Python ecosystem when I sold that company to get up to speed on how things are going to be done in the future.
+
+00:01:12 - That's awesome.
+
+00:01:13 One of those Wayne Gretzky moments, right?
+
+00:01:16 - Yes, exactly.
+
+00:01:17 - Cool.
+
+00:01:18 Well, awesome.
+
+00:01:19 It's great to have you here.
+
+00:01:20 So I want to jump right into our first topic.
+
+00:01:23 We have a lot of things to cover today.
+
+00:01:25 So I'll try to not delay too long, but I've got to tell you, I'm a big fan of AWS S3, big fan of some of the services of AWS in general, right?
+
+00:01:36 Don't run the main stuff over there, but many of the things, many of the services and APIs I use.
+
+00:01:42 That said, I feel like the S3 or the Boto API, the Boto 3 API rather, is one of the worst programming interfaces I've ever used in my life.
+
+00:01:52 I mean, it is so frustratingly bad.
+
+00:01:56 The way you work with it is you go through and you say, I'd like to talk to Amazon, and then you say, I would like to get a service.
+
+00:02:04 And instead of creating a class or a sub module or something like that, that would be very natural in Python.
+
+00:02:10 What you do is you go to a function, say, give me the service, and you give it a string, like I want quote S3, or I want quote EC2, or quote some other thing.
+
+00:02:19 And then you get a generic object back, and you have no idea what you got back, what you can do to it, you start passing stuff over to it.
+
+00:02:25 Sometimes it takes keyword arguments, but sometimes you just put dictionaries, which are one of the values of a keyword.
+
+00:02:31 There's just all this weirdness around it.
+
+00:02:33 So every time I interact with them, like, oh, I'm just probably doing this wrong.
+
+00:02:36 I have no idea of even what type I'm working with, 'cause it's like this bizarro API that is like levels of indirection.
+
+00:02:44 'Cause it's generated at runtime, or at least dynamically, right?
+
+00:02:47 There's not static Python that is it, It like looks at the service you're asking for and then like dynamic up thing.
+
+00:02:53 I feel like there's a lot of work over there that could be done to just, you know, put a proper wrapper at a minimum on top of those types of things.
+
+00:03:00 That said, wouldn't it be nice if your editor knew better than AWS is willing to help you with?
+
+00:03:07 So we've got this really cool library that I wanna talk about.
+
+00:03:10 This was sent over by Michael Lerner.
+
+00:03:12 And the idea is you can add type annotations as an add on to the Bodo library.
+
+00:03:18 So then you get full on auto-complete.
+
+00:03:20 So let me give you a little example here.
+
+00:03:22 For those who are in the live stream, you can see it, but those who are not, you can just like, I'll just describe it.
+
+00:03:26 So for example, if I wanna talk to S3, like I said, I say boto3.client, quote S3, as opposed to quote EC2.
+
+00:03:33 And what comes back is a base client, figure it out.
+
+00:03:35 It can do things, it can get a waiter and a paginator, and it has the possibility to see exceptions about it.
+
+00:03:41 And that's it, right?
+
+00:03:42 That's all you know.
+
+00:03:43 And this is the API you get when you're working with things like PyCharm and VS Code.
+
+00:03:48 and mypy and other type annotation validators, linters and whatnot, they get nothing.
+
+00:03:54 So if you go and use this Bodo library, this Bodo type annotations, there's no runtime behavior.
+
+00:04:02 It just creates, I think they're PYI files.
+
+00:04:04 I can't remember what the final letter is, but it's like these kind of like a C++ header file.
+
+00:04:08 Just says these things have these fields, but no implementation.
+
+00:04:12 They actually come from the Bodo library.
+
+00:04:14 So we just go and import, you know, from Boto3 type annotations.s3 import client.
+
+00:04:20 And we say, s3 colon client equals this weird factory thing.
+
+00:04:25 Boom, all of a sudden you get all the features of S3.
+
+00:04:28 You can say s3. and it says, create bucket, get object, create multi-part upload.
+
+00:04:33 Hey, guess what?
+
+00:04:34 Here's all the parameters that are super hard to find in the documentation.
+
+00:04:37 Thank you, Michael, for sending this over.
+
+00:04:38 I already rewrote one of my apps to use this.
+
+00:04:41 It's glorious.
+
+00:04:42 - Nice.
+
+00:04:42 - What do you guys think?
+
+00:04:43 - You said you rewrote the app, does it really change?
+
+00:04:47 - No, well, let me rephrase that.
+
+00:04:49 I wanted to make a change in the way one of my apps that was extremely S3 heavy, it basically shuffles a bunch of stuff around and like on using S3 and some other stuff.
+
+00:04:59 And I wanted to change it, but before I changed it, I'm like, well, let me fancy it up with all these types.
+
+00:05:05 And then it'll tell me whether I'm doing it right or wrong and whatnot.
+
+00:05:08 So now if I have a function, I can say it takes an S3.client and mypy will say, "No, no, no, you gave that an S3 service locator," or whatever the heck.
+
+00:05:18 There's like all these different things you can sort of get that will do similar but not the same stuff.
+
+00:05:22 So yeah, anyway, fantastic, fantastic addition.
+
+00:05:25 Because this really should be coming from Boto3.
+
+00:05:28 I just don't, I feel, you know, maybe it was a little bit harsh on them at the beginning.
+
+00:05:32 But the reason, it's like one of these things where you write a function, you just say, "Well, it takes star args, star star kw args," and you don't bother to write the documentation.
+
+00:05:40 You're like, well, how in the world am I supposed to know what to do with this?
+
+00:05:43 Like, it could so easily help me, and it's just like not, right?
+
+00:05:47 Like, those could be keyword arguments with default values or whatever.
+
+00:05:51 So, I feel like a company as large as Amazon, they could probably justify writing like typed wrappers around these things that really help people and help mypy and all these other validation tools.
+
+00:06:04 But until then, Voda3, type annotations.
+
+00:06:06 It's awesome.
+
+00:06:07 - Yeah, nice.
+
+00:06:07 >> Oh, and Dean also threw out really quick before we move on to the next item, Brian, that prototypes can literally, well, not literally, save my life.
+
+00:06:16 Yes, I agree, Dean.
+
+00:06:17 It's like, "Oh, sorry, did I take down that EC2 machine?
+
+00:06:21 I didn't mean that. I wanted something else.
+
+00:06:23 I wanted to delete the bucket.
+
+00:06:24 Sorry." Anyway, awesome.
+
+00:06:26 >> Interesting, literally, to translate transition.
+
+00:06:29 >> Yes, indeed.
+
+00:06:31 >> So, yeah.
+
+00:06:33 So I want to cover code reviews.
+
+00:06:35 >> Brian, you're such a romantic.
+
+00:06:37 So this was suggested by Milosh, I think, and written by Michael Lynch.
+
+00:06:44 And it's an article called, "How to make your code reviewer fall in love with you." And just, oh my gosh, it's got great content, but the title, yuck.
+
+00:06:54 Maybe you're not a romantic.
+
+00:06:57 I mean, come on.
+
+00:06:59 Well, I mean, I like my coworkers, but you know.
+
+00:07:04 Anyway, even in the article it says even your reviewer will literally fall in love with you.
+
+00:07:11 They won't literally fall in love with you, they might figuratively appreciate your code review.
+
+00:07:17 >> I mean they may, but it could be an HR issue.
+
+00:07:20 >> Yeah, I don't know about that.
+
+00:07:23 But I do want to cover, there's some really great tips in here, because actually being nice to your reviewers will help you immensely.
+
+00:07:33 And one of the things he covers is just value your reviewers' time.
+
+00:07:37 And I just put a code review in this morning just to try this out, try some of these techniques.
+
+00:07:42 And it only takes like an extra 30 seconds, maybe a minute, to do it right.
+
+00:07:46 And it saves everybody on your team time.
+
+00:07:50 So it's worth it.
+
+00:07:51 So let's cover a few of these.
+
+00:07:53 One of them is don't just check for mistakes.
+
+00:07:57 Imagine that you're reading the code review for the first time.
+
+00:08:01 So you need to be the reviewer of your code first.
+
+00:08:05 So that's actually really important.
+
+00:08:07 And I encourage that with everybody on my team because there's times where it just doesn't, there's stuff in there that doesn't make sense.
+
+00:08:15 And why is that related to the thing?
+
+00:08:17 I guess we'll get there.
+
+00:08:19 Okay, so. - Well, and you can also, if you're in a rush, what you say can come across feeling unkind or inconsiderate.
+
+00:08:26 And you're just like, "I didn't really mean to be inconsiderate.
+
+00:08:27 "I just like, I've got four of these "and I have 20 minutes, I just gotta get it." but that's not how it's received.
+
+00:08:32 You know, it may be received really differently.
+
+00:08:34 So, you know, from that perspective, right?
+
+00:08:36 - Yeah, and even if the code review itself only takes somebody a few minutes to review your code change it's interrupted their day by a half an hour at least.
+
+00:08:45 So respect that entire time.
+
+00:08:48 One of the next suggestions is write clear change log description.
+
+00:08:53 So, right, and he describes this a little bit.
+
+00:08:58 One of the things is it's not just what you changed, but it's what your change achieves and why you made the change.
+
+00:09:06 The why is always way more important than what you did.
+
+00:09:09 I can look at the code change.
+
+00:09:10 I should be able to look at the code change and know what you changed.
+
+00:09:13 So don't describe that too much in the list at the top.
+
+00:09:18 Next, narrowly that I want to talk about, narrowly scope your changes.
+
+00:09:22 So I think I skipped down.
+
+00:09:25 - Here's what I did this week.
+
+00:09:26 - Yeah. - Have a look.
+
+00:09:27 - Yeah.
+
+00:09:28 Now--
+
+00:09:30 - It's easy to do that.
+
+00:09:31 Like I haven't checked in for a while, so here's what I did.
+
+00:09:32 - Yeah.
+
+00:09:33 - Like no, no, no, no.
+
+00:09:34 - And actually this is something that I even caught myself doing yesterday.
+
+00:09:37 I noticed that a test really kind of needed refactored 'cause I needed to add a test to a test module.
+
+00:09:45 And there was the way the entire test module was arranged.
+
+00:09:50 I could rearrange the fixtures so that it would run like three times faster if I change the setup and in common setup and stuff like that.
+
+00:10:00 I really wanted to do that, but that's not what I really needed to do.
+
+00:10:03 What I really needed to do was just add a test.
+
+00:10:05 So I added the test and that code review went through this morning.
+
+00:10:10 And then today I'm gonna do a cleanup of trying to make things faster.
+
+00:10:13 So separating them is important.
+
+00:10:15 Also another thing is separating a functional and non-functional changes.
+
+00:10:20 So you're like in this case, you're adding a test to a module.
+
+00:10:24 You got like, you notice that the formatting is just a nightmare.
+
+00:10:30 Just write that down on your to-do list.
+
+00:10:33 Either do that merge first, clean it up and then merge it, and then add your change, or add your change and then clean it up.
+
+00:10:40 Do them in two merge requests.
+
+00:10:41 It'll be a lot easier for people to figure out.
+
+00:10:44 Break up large change lists.
+
+00:10:45 If you've been working for a while, maybe you should merge them in a few, you know, in pieces.
+
+00:10:52 If it's like a thousand lines of code and 80 files, that's too big, that's just way too big.
+
+00:10:57 Then there's actually quite a few chunks in there that talk about basically being a nice person.
+
+00:11:04 I'm just going to pick out one, respond graciously to critiques, and that's the hardest one for me.
+
+00:11:11 If somebody picks apart your code, they're not attacking you, they're talking about the code and they want to own the code also.
+
+00:11:17 So think about those as the reviewer wanting to make the code theirs as well as yours and try to respond well and don't get too defensive about it because fights in code reviews are not fun.
+
+00:11:32 Yeah.
+
+00:11:33 And often there's a power differential, right?
+
+00:11:34 A senior person is reviewing a junior person's type of work.
+
+00:11:37 So that's always true.
+
+00:11:38 Yeah.
+
+00:11:39 Yeah, yeah, for sure.
+
+00:11:40 Greg is someone who's relative to say Brian and me, a little bit newer at Python.
+
+00:11:45 (laughing)
+
+00:11:47 Python, what are your thoughts on this code review stuff?
+
+00:11:50 I mean, I know you don't necessarily write a lot of code in teams that gets reviewed, but do you see this as helpful, stressful?
+
+00:11:56 - Yeah, yeah.
+
+00:11:57 It's important to do the, if you have the interpersonal part of it, right, like the both, they trust each other, the reviewer and the reviewee, it's gonna go a lot more smoothly.
+
+00:12:09 We're in this together, a shared fate, and it'll go as opposed to a conflict, it's gonna be much easier.
+
+00:12:18 - Yeah, for sure.
+
+00:12:19 Brian, quick comment from Magnus.
+
+00:12:21 I believe a code review should really review the current code, not just the diff lines, so the whole code comes out better after review, yeah?
+
+00:12:28 - Yeah, definitely.
+
+00:12:29 - It depends on how big it is, right?
+
+00:12:31 Like maybe like that little sub-module or something, right?
+
+00:12:34 It could be too massive, but yeah.
+
+00:12:35 - Yeah, and actually this is one of the times where I kind of put on the brakes and just say, you're right, we do need to fix that.
+
+00:12:42 and put it on the to-do list, but it shouldn't stop a merge just because things are.
+
+00:12:47 - Yeah, Brian, does your team do internal PRs or do you just make changes?
+
+00:12:52 - No, everything goes through a PR.
+
+00:12:54 - Yeah, I vary, right?
+
+00:12:55 Sometimes I do some.
+
+00:12:56 All right, Greg, you're up next on repos.
+
+00:12:59 - Yeah, thank you.
+
+00:13:00 - Speaking of repos and merges and PRs and all that stuff.
+
+00:13:03 - We thank Hector Munoz for sending this suggestion in.
+
+00:13:07 It started with a response to a blog on Tidelift by Tidelift about, hey, if I'm making a decision on which library to use, how could I gauge the maturity of that library?
+
+00:13:23 So-- - Yeah, that's a question I get all the time from people like, hey, I'm new to Python, I want to know which library I should use.
+
+00:13:30 How do I know if the library is a good choice or a bad choice?
+
+00:13:33 And so there's a lot of different metrics you might use, but maybe they're hard to find, right?
+
+00:13:37 - Exactly.
+
+00:13:38 So Lawrence Malloy made this library repo dash available so that you can track the metrics about, that give a clear indication of the health of the project.
+
+00:13:52 You got your opened issues over any timeframe.
+
+00:13:56 This actually captures it within the time range that the user specifies.
+
+00:14:01 So how many items were opened, how many issues are open, how many closed in that timeframe, still open.
+
+00:14:08 And it will give you a much better feel for the level of maturity and activity.
+
+00:14:15 - Yeah, this is cool.
+
+00:14:17 Like how long issues have been sitting there open or total number of open issues over time, like how fast should it be enclosed versus being opened versus unassigned.
+
+00:14:27 Yeah, all those kinds of things are really important.
+
+00:14:28 Another one, probably in here somewhere, I just haven't seen it yet, is the number of PRs that are open.
+
+00:14:34 Like a real red flag to me is I go to a project and there's significant number of PRs that are both open and maybe even not responded to and they've been there for like six months.
+
+00:14:44 You're like, okay, whoever's working on this, they've kind of lost the love for it.
+
+00:14:48 - Yeah.
+
+00:14:49 - Yeah.
+
+00:14:50 - And tying it together, it's might be the signal of where you need code reviews if you're stuck somewhere.
+
+00:14:57 - Yeah, that's right.
+
+00:14:58 I mean, that's basically what a PR is.
+
+00:14:59 It's like a, it's waiting on a code review more or less.
+
+00:15:01 Yeah.
+
+00:15:02 - Yeah.
+
+00:15:03 - Yeah. Awesome.
+
+00:15:04 And I think it'll help people who create repos or create projects, make sure that their repo is getting sort of the health of what they're doing.
+
+00:15:12 But then also for people who are new or new to a project, they could quickly look at it and go, "Red flags or green flags?" Which is it?
+
+00:15:21 Yeah, certainly.
+
+00:15:22 If you're doing the things that are making your product, it's all part of transparency.
+
+00:15:26 This is where we're the real deal over here on this team.
+
+00:15:30 Yeah.
+
+00:15:31 - Cool little categorization bar chart of the types of issues that are open, like feature requests versus a good first issue versus bugs and so on.
+
+00:15:39 That's cool.
+
+00:15:39 So, Ryan, what do you think?
+
+00:15:40 - Well, I guess I don't know if you covered this already, but I'm a little lost.
+
+00:15:44 Is this a service or is that something I add to my repo?
+
+00:15:47 Do you know?
+
+00:15:48 - I think it's something you run.
+
+00:15:50 You point it at a repo and you run it.
+
+00:15:51 - Okay.
+
+00:15:52 - That's my understanding.
+
+00:15:53 I don't totally...
+
+00:15:55 Yeah, I haven't used it, but I believe so.
+
+00:15:57 - Okay.
+
+00:15:57 - Yeah.
+
+00:15:57 - Hmm.
+
+00:15:58 - Yeah.
+
+00:15:58 So, it's a CLI thing.
+
+00:16:01 You just point it at like some GitHub repo and you say, "Tell me how they're doing. Would I want to depend on this thing? Yes or no?" >> No, I think that's cool. I like it.
+
+00:16:09 >> Yeah. You know what else is cool?
+
+00:16:10 >> Sponsors.
+
+00:16:11 >> Sponsors that keep us going. Thank you.
+
+00:16:13 Thank you. Linode is very cool because not only are they sponsoring the show, but they're giving everyone a bunch of credit, $100 credit for just using our link.
+
+00:16:24 You want to build something on Kubernetes, you want to build some virtual servers or something like that.
+
+00:16:28 Here you go. You can simplify your infrastructure and cut your cloud bills in half with Linode's Linux virtual machines, develop, deploy, and scale your modern applications faster and easier. And whether you're working on a personal project or some of those larger workloads, really should be thinking about something affordable and usable and just focused on the job like Linode. So as I said, you'll get $100 free credit, so be sure to use the link in your podcast player. You got data centers around the world. It's the same pricing no matter where you are. Line up, tell them where your customers are and you want to create your stuff there and that's pay the same price.
+
+00:17:02 You also get 24/7, 365 human support.
+
+00:17:05 Oh my gosh.
+
+00:17:06 I'm working on another, some, something else with someone else.
+
+00:17:08 And this would be so appreciated right now, but not, and if it was a little note, they'd be helping me out, but oh my gosh, don't get me on a rant about.
+
+00:17:15 other things anyway, do you can choose shared or dedicated compute and scale the price with your need and so on and use your a hundred dollars credit, even on S3 compatible storage.
+
+00:17:25 How about that?
+
+00:17:26 that you could use Boto3 and the type annotations that both change where it's going, point it over there.
+
+00:17:32 So yeah, if it runs a Linode, or if it runs a Linux, it runs a Linode.
+
+00:17:35 So use pythonbytes.fm/linode, click the create free account button to get started.
+
+00:17:40 So Brian, I'm not covering two topics this week like normal.
+
+00:17:44 - You're not?
+
+00:17:45 - No, because I have so many.
+
+00:17:46 I can't even possibly deal with it.
+
+00:17:48 So it's all about extra, extra, extra, extra.
+
+00:17:51 Here all about it.
+
+00:17:52 The first one, you may know what a CVE is.
+
+00:17:55 If it applies to your software, you don't like that.
+
+00:17:58 So this sounds more scary than I believe it is, but let me just do a quick little statement here, a reading from nist.gov.
+
+00:18:06 Python 3 up through 3.9.1, which was the latest version of Python until five days ago, has a buffer overflow in PyCRGrepper, D types, which may lead to remote code execution.
+
+00:18:20 Remote code execution sounds bad.
+
+00:18:21 That sounds like the internet taking my things my data and other bad stuff when you're accepting a floating point number.
+
+00:18:27 Oh, wait a minute.
+
+00:18:28 A floating point number.
+
+00:18:30 Like I might get it at JSON API.
+
+00:18:33 Somebody posts some data and here's my floating point number, but this one hacks my Python web app with remote code execution, that sounds bad.
+
+00:18:39 Right?
+
+00:18:39 Yeah.
+
+00:18:40 Yeah.
+
+00:18:40 Now it turns out the way it has to be used.
+
+00:18:43 It's like, it's a very narrow thing.
+
+00:18:45 It shouldn't send people's like hair on fire running like, I've got to update the server, right?
+
+00:18:50 But you should still probably update this.
+
+00:18:52 So what do I do?
+
+00:18:53 I've logged into the various servers, Linux servers, Ubuntu, latest version of Ubuntu that I want.
+
+00:18:59 And I say, "Oh my goodness, I heard about this.
+
+00:19:01 Please update, you know, do an app update.
+
+00:19:05 There better be a update for Python 3." Oh no, no, there's no update for Python 3.
+
+00:19:09 In fact, it's still running 385 where this was fixed, I think in 388 or something like that.
+
+00:19:15 And a week's gone by and there's still no update for Python on Ubuntu by default.
+
+00:19:20 Now what I can do is I can go to this like place that seems semi-official, but not really official called dead snakes and add that as a package manager endpoint for apps.
+
+00:19:28 But I don't really want to do that either.
+
+00:19:30 That sounds like maybe even worse than holding hold Python.
+
+00:19:33 So that sends me down item number two of my, of my extra, extra, extra, extra.
+
+00:19:38 And that is building Python from source on Ubuntu.
+
+00:19:41 Because, I really don't want to be running the old Python in production.
+
+00:19:48 Even if it is unlikely, you know, - Do you trust yourself over dead snakes?
+
+00:19:53 Okay.
+
+00:19:54 - Well, no, what I originally wanted to do, maybe, yes, but originally what I wanted to do was use PyENV, 'cause PyENV lets you install all sorts of different versions, right?
+
+00:20:04 - Yeah.
+
+00:20:05 - Well, the only one available that was 3.9 was 3.9.1, which was the one with the bug still.
+
+00:20:09 And then locally, I use Homebrew on my machine and it just updated yesterday, I think it was, but it was a little bit behind, but that's updated.
+
+00:20:17 So yeah, I guess I do.
+
+00:20:19 Anyway, so I found a cool article that walks you through all the building, the stuff.
+
+00:20:22 And then the thing that makes me willing to try this and trust this, but also related to the next extra, extra, extra is you can go, instead of doing make install, which is the compile step, takes a while, but then magic Python comes out the other side.
+
+00:20:36 You can say make alt install.
+
+00:20:38 And what it'll do is it'll install the version of Python under like a version name.
+
+00:20:43 So I can type Python 3.9 and get Python 3.9.2 with no vulnerabilities.
+
+00:20:49 But if I just type Python or Python 3, It's just the system one.
+
+00:20:51 So that one didn't seem too dangerous.
+
+00:20:53 - Oh, yeah.
+
+00:20:54 - Yeah, and then I just create a virtual environment for my stuff that runs on the server.
+
+00:20:58 Python 3.9-mvenv, create that, and then off it goes.
+
+00:21:03 And then it's just running this one from here.
+
+00:21:05 So pretty good.
+
+00:21:06 That worked out quite well.
+
+00:21:07 So anyway, I've been doing that for a week and the world hasn't crashed or blown up or anything.
+
+00:21:11 So apparently this works.
+
+00:21:13 - Good.
+
+00:21:14 - Yeah, one heads up though is like, I have a bunch of machines that are all the same version of Linux.
+
+00:21:18 They all seem to have different dependencies and ways of dealing with this.
+
+00:21:21 Like one said, oh, the SSL module is not installed as a system library, like apt install libssl type thing.
+
+00:21:27 Another one, it had that, but it didn't have some other thing, some other aspect that I forgot.
+
+00:21:32 But like, they all seem to have different stuff that you also got to add in.
+
+00:21:35 So that was a little bit wonky in the beginning, but it's all good now.
+
+00:21:38 All right, that's extra number two.
+
+00:21:40 Extra number three, really probably should have preceded that because to make all that work, I wanted to make sure that I had it just right.
+
+00:21:48 And so I wanted to do this on Ubuntu 2004 LTS.
+
+00:21:52 And yet I cannot run Docker, which is exactly the place where you would do this sort of thing, to test it out.
+
+00:21:58 I couldn't do Docker on my Apple M1.
+
+00:22:01 - Oh no, okay.
+
+00:22:02 - Now, Docker says it runs.
+
+00:22:04 Docker says you can run a Docker prototype on your M1, but I've installed it, and all it does is sit there and say starting, starting, starting, starting, starting, indefinitely, and it will never run.
+
+00:22:14 I've uninstalled it, I've done different versions of it, like it just won't run.
+
+00:22:18 People who were listening said, "Oh, what you gotta do is you probably installed parallels "or this other thing and it caused this problem "and you could fix it this way." Like, nope, the problem isn't there 'cause I didn't install any of those things.
+
+00:22:27 I can't change it.
+
+00:22:27 So long story short, I, go ahead.
+
+00:22:30 - No, I was just laughing.
+
+00:22:31 - Yeah, yeah.
+
+00:22:32 And so what I ended up doing is I saw a really cool trick.
+
+00:22:36 Not trick, technique.
+
+00:22:37 I put this in the show notes.
+
+00:22:38 You can just say basically two lines on the command line prompt or do a Docker to say, "You know what?
+
+00:22:45 "If you wanna just do Docker stuff, don't do it here, do it over there.
+
+00:22:48 And so I have my Intel MacBook Pro that's running Ubuntu in a virtual machine.
+
+00:22:54 So I just turned that on and I just said, Docker context create that thing over there, and then Docker context use.
+
+00:22:59 And after that, every Docker command, without thinking about it, or remember it just automatically runs over on that machine.
+
+00:23:05 And I know it's working because my Mac M1 mini is super quiet, you never hear it or anything.
+
+00:23:11 But when I work with Docker, I can hear the thing grinding away over in the corner.
+
+00:23:14 So I know it's working.
+
+00:23:16 All right, really quick.
+
+00:23:17 I know I'm running low on time.
+
+00:23:18 The last one is people have heard me whinge on about Dependabot and how it's such a pain and I'm sure they're thinking like, oh, Michael, why are you whinging about this?
+
+00:23:25 Why are you like just complaining?
+
+00:23:27 You know, it can't be that bad.
+
+00:23:28 Yeah.
+
+00:23:29 So look what is on the screen here.
+
+00:23:30 Dependabot merge conflict with itself.
+
+00:23:34 Like, so these are the things I have to do on Monday morning.
+
+00:23:37 I have to log in and it says there's a merge conflict.
+
+00:23:40 Dependabot put cryptography equal, equal 346 when it had unchanged for months.
+
+00:23:47 Cryptography equal equal three dot four dot three.
+
+00:23:49 It's like, though it's one line it, it's, it's conflicting with itself.
+
+00:23:54 Like this is crazy.
+
+00:23:55 That's so anyway, this is not a big deal, but people are like, why does Michael keep complaining about dependent bot and merges like, because I have to go and like the one line it changes merges with itself, like this is not perfect.
+
+00:24:05 All right.
+
+00:24:05 Oh no, we're not looking at that one yet.
+
+00:24:07 That's for later.
+
+00:24:08 All right.
+
+00:24:08 I guess that's it.
+
+00:24:09 Oh, final shout out though.
+
+00:24:10 I'll put this in the link in the show notes.
+
+00:24:11 Anthony Shaw, along with one of his coworkers, whose name I'm sorry, I forgot, built a GitHub bot that will automatically merge all those things for you or specifically for dependabot.
+
+00:24:20 So I'll cover that more later when he writes it up, but he did it like a little shout out about it, Twitter.
+
+00:24:24 So link to that since it's related.
+
+00:24:25 Yeah.
+
+00:24:26 Whew.
+
+00:24:26 That was a lot of extras.
+
+00:24:27 Yeah.
+
+00:24:28 I got a short one.
+
+00:24:29 It's an extra tool also.
+
+00:24:30 So it's also about Docker.
+
+00:24:32 So yeah, yeah.
+
+00:24:33 This is quite related.
+
+00:24:34 Nice follow on.
+
+00:24:34 So, Josh Peek suggested, and I'm not sure what he was listening to, but you are just wondering if we'd heard about it.
+
+00:24:42 One of the things people talk about with testing is whether or not they should mock or stub activities to the database.
+
+00:24:50 And even if, and then I've talked with a lot of people about that.
+
+00:24:54 And even if you've got a database that has in-memory setup, so you can configure it to be in-memory during your testing and stuff, it's still a different configuration.
+
+00:25:05 So one of the suggestions that we've gotten from a lot of people is stick your database in a Docker container and then test it.
+
+00:25:12 So, and then Josh Peek suggested this library called testcontainers-python.
+
+00:25:18 And this is slick.
+
+00:25:20 I mean, this thing really is.
+
+00:25:22 You've got, you just install this thing and you can, so it covers what?
+
+00:25:27 Selenium grid containers, standalone containers, MySQL database containers, MySQL, MariaDB, Neo4j, Oracle DB, Postgres, Microsoft SQL Server even, wow.
+
+00:25:39 And then just normal Docker containers.
+
+00:25:41 - Yeah, it also even does MongoDB, even though it's not listed.
+
+00:25:44 I saw some of the examples that had Mongo as well.
+
+00:25:46 - Oh, that's great.
+
+00:25:47 I was curious about that.
+
+00:25:48 So after you install this thing, you can just, it provides context managers.
+
+00:25:53 It probably has other stuff too.
+
+00:25:54 I didn't read all of it.
+
+00:25:55 But this is just really not that much code to create a Docker container that you can throw your connect and fill your dummy data in or whatever.
+
+00:26:05 - I love it.
+
+00:26:06 It's like, I want to use Docker to help test stuff in isolation, but I don't wanna know about Docker or be able to use Docker or care about Docker, right?
+
+00:26:15 - Right.
+
+00:26:16 - I just wanna know Python.
+
+00:26:16 - What it gives you is, it gives you a SQLAlchemy friendly URL that you can just connect to your, connect my SQLAlchemy or whatever, but you just get this URL out.
+
+00:26:32 So if you're configuring where your database is through URL, you can throw that in whatever configuration environment or variable or whatever and test as you run with that.
+
+00:26:43 And it's pretty neat.
+
+00:26:44 - That's so cool, yeah.
+
+00:26:45 Just with MySQL container, give it some connection string you want or some host address or whatever as MySQL and then you just, off you go, right?
+
+00:26:54 Just the Docker thing exists while the context is open.
+
+00:26:57 - Yeah, and I didn't specifically see any documentation in here talking about PyTest, but if anybody's curious, I'm sure it'll work with that because even if you have to write your own fixture, you can return a context manager items in a fixture.
+
+00:27:12 So that'll work.
+
+00:27:13 - Yeah, yeah, yeah, super cool.
+
+00:27:15 You know, that's exactly what I was thinking when you were talking about as a PyTest fixture that maybe loads it and then fills up with test data and then hands it off to the test or something like that.
+
+00:27:24 - Yeah, yeah.
+
+00:27:25 - Greg, what do you think?
+
+00:27:25 - I like it.
+
+00:27:26 - Yeah, it's neat, right?
+
+00:27:27 Hey, I got a quick follow-up from the last one, Magnus on the live stream asks, will using Pydantic mitigate the floating point overflow bug?
+
+00:27:35 Using Pydantic definitely makes exchanging JSON data really nice and does some validation, but I suspect it probably doesn't.
+
+00:27:41 That said, people really wish I could find this conversation.
+
+00:27:45 There was a conversation with Dustin Ingram and I think Brett Cannon talking about this and how it's really not that severe because I believe you gotta take the input and directly hand it off at the C layer in Python, like passing it to float parenthesis in Python I don't think is enough to trigger it.
+
+00:27:59 you've gotta like go down into something like NumPy or something super low level.
+
+00:28:03 So it's not as dangerous, but you know there's a lot of things that you see later, so who knows what's going on down there.
+
+00:28:09 So that's why I'm building from source for the moment.
+
+00:28:11 Anyway, I should also throw out there really quick, I was also just frustrated that the latest version I can get is 3.8, which is over a year old.
+
+00:28:18 And I was like, why am I on a year old version of Python when I could just take an hour and be on the new version of Python?
+
+00:28:23 There's more to it than just the bug.
+
+00:28:25 All right, I guess Greg, we'll throw it back to you for this last one.
+
+00:28:28 Don't have a graphic for it, I don't think.
+
+00:28:29 >> Yeah, thank you.
+
+00:28:30 The context on this was I had been in data science in pretty much the proprietary world.
+
+00:28:38 Proprietary software using SQL Server and Tableau, and Cognos, and those different tools.
+
+00:28:45 We started noticing, we're a Bay Area-based company, we started noticing that customers were leaving that proprietary world and going to Python.
+
+00:28:55 That actually is one of the things that led me to to myself to start going in and understanding the industry.
+
+00:29:02 And just in the time that I've been with Talk Python, which is a bit, just a short of a year now, I'm seeing a relentless march towards more and more adoption in the Python ecosystem for businesses that had traditionally always relied on proprietary software and it's reaching top of mind to a level that I didn't expect that it was going to happen so fast.
+
+00:29:29 You know, you follow the Jeffrey Moore, the adoption, you know, the early adopters and then hitting the main street.
+
+00:29:36 This one is moving really fast.
+
+00:29:39 We're seeing like some of the largest corporations in the world moving, looking at Python as a means of looking, moving away from Excel even.
+
+00:29:49 And it's just, it's reaching top of mind because more and more decision makers are hearing from their technology teams that they can deliver solutions at unprecedented price performance.
+
+00:30:01 And that's all we should be talking about.
+
+00:30:03 - You were talking this realm, like we should talk Gartner, right?
+
+00:30:06 So there was a Gartner study about why companies are moving to open source.
+
+00:30:11 And it was really interesting because a lot of people say, "Well, you're gonna move to open source "because it doesn't cost money, "so it helps the bottom line." And so many of the companies that were interviewed by Gartner were like, "It has nothing to do with price." I mean, price, it's a benefit.
+
+00:30:23 We'll take not paying less, that's fine.
+
+00:30:25 This is about higher quality, higher visibility, and so on.
+
+00:30:28 And I think that's a real interesting inherent advantage in the community.
+
+00:30:32 - Right, and in the case of Excel, you're hitting up against limitations in Excel, you know, the size limitations most notably, and now you're able to handle it with, it happens to be open source, the solution, but you really, the pain was the limitations, and now you're able to do without it.
+
+00:30:51 - There's gotta also be maintenance too, because we, I mean, sometimes I've heard Perl referred to as a write-only language, but it's got--
+
+00:30:59 - That's a regular expression, yeah.
+
+00:31:01 - Yeah, it's got nothing over trying to edit somebody else's spreadsheet full of macros.
+
+00:31:07 - Right. - Oh yeah, yeah.
+
+00:31:09 If they put some VBA in there, it's the kiss of death for sure.
+
+00:31:11 - Yeah. - I mean, that's like, those are like go-to statements, it's insane.
+
+00:31:15 - Yeah, and so what we're seeing is, you know, even though it feels like there's heavy adoption, it's still relatively small in road compared to what we're gonna see in the future.
+
+00:31:26 It's like water rapidly collecting behind a weak dam.
+
+00:31:31 We've seen that happen in the industry before.
+
+00:31:34 - I think that's a really great thing to highlight, Greg.
+
+00:31:37 I talked with Mahmoud Hashemi, who at the time was at PayPal, about Python for enterprise software development.
+
+00:31:44 I think this is the fourth episode of Talk Python.
+
+00:31:46 I was certainly right at the beginning in 2015.
+
+00:31:49 - I remember that one.
+
+00:31:49 - Yeah, thanks.
+
+00:31:50 And it was like a big question, like, well, does it make sense?
+
+00:31:53 Should people be using Python for these company stuff?
+
+00:31:55 Does that make it like now?
+
+00:31:57 It just seems, yeah, it seems just like so obviously.
+
+00:32:00 There's one thing I was actually going to cover this and I'll cover it again more depth because I had so many extras already.
+
+00:32:05 So I made room.
+
+00:32:06 But one of the interesting things that Google came on to sponsor the PSF at, they say, they probably don't say this is like a friendly one, but there was another article, this is just the sort of fresh release from the PSF, but they They came on and they're now sponsoring the PSF as a visionary sponsor, which I think is over 300,000 in terms of how much they're, and they're also sponsoring a core developer, particularly for things around security and PyPI and whatnot, so a lot of interesting stuff.
+
+00:32:35 I'll come back to that later, but in another show.
+
+00:32:38 Yeah, seems worth giving a little shout out about that.
+
+00:32:41 And then a quick comment, Greg, from Magnus.
+
+00:32:43 I read an article about the reinsurance industry also moving from Excel to Python.
+
+00:32:48 - Yeah.
+
+00:32:49 - I can imagine, awesome.
+
+00:32:50 - Thank you, Magnus.
+
+00:32:51 - Yeah, all right.
+
+00:32:52 I guess that's it for items.
+
+00:32:53 Now, Brian, how about some extras?
+
+00:32:55 - Well, I know that you've been using Firefox for a while, right?
+
+00:33:00 - I did notice over on your stream that looks a little Firefoxy over there.
+
+00:33:04 What happened, man?
+
+00:33:05 - Yeah, so the thing that convinced me is this announcement.
+
+00:33:09 They just released Firefox 86 and it's got this enhanced cookie protection And I don't understand the gist of it, but mostly it seems like they just said, whatever site you're on, they can, 'cause sometimes I've heard people say, "I turn off cookies." Well, sites don't work without, 'cause some of them just don't work.
+
+00:33:29 - Yeah, you wanna log in?
+
+00:33:30 Well, you're gonna need a cookie, I'm sorry.
+
+00:33:32 - Yeah, so, or just saving stuff.
+
+00:33:35 There's times where I just don't, there's nothing private there, I don't wanna log in every time.
+
+00:33:39 But I don't want you to share it with other people either.
+
+00:33:41 So this enhancement is just keep the site's cookies to themselves.
+
+00:33:46 So they have like a cookie jar or a storage area for cookies that's individual to each site.
+
+00:33:51 And you can save as many as you want for your site.
+
+00:33:54 And then another site gets another one.
+
+00:33:57 And there's the obvious, like you were saying, login stuff.
+
+00:34:01 I used different login providers.
+
+00:34:04 There is an exception for that.
+
+00:34:05 So you can use a login providers and it allows that.
+
+00:34:09 but these are non-tracking cookie uses.
+
+00:34:13 - Yeah, I'm super excited about this as well.
+
+00:34:16 Basically, if you were to go to CNN.com and then you were to go, I'm not for sure about this, right, but likely, then you were to go to The Verge and then you're gonna go to Chewy.com and buy something for your pet.
+
+00:34:29 Very likely they're using some ad network that's put a cookie that knows you did that sequence of events.
+
+00:34:34 And oh, by the way, you're logged in as so-and-so over on that one.
+
+00:34:37 So on all the other sites, we now know that so and so is really interested in chew toys for a medium-sized dog, but a puppy, not a full grown, right?
+
+00:34:45 You know, and it gets to the point where people think, oh, well, all these things are listening to us on our phone, but they just track us so insanely deeply.
+
+00:34:53 And so the idea is, yeah, let that third-party thing, let it set a cookie, but when they get to chewy.com from cnn.com and they ask for the cookies there, like, yeah, sure, you can have your third-party cookie, but it's a completely unrelated brand new one, as if you like deleted your history and started over, which is beautiful.
+
+00:35:09 I'm super excited about this as well.
+
+00:35:11 And Robert Robinson says that CNN better not try to sell him doggy toys.
+
+00:35:15 (laughing)
+
+00:35:17 I'm with you, man.
+
+00:35:18 I'm with you.
+
+00:35:19 Doggy toys from the doggy toys site.
+
+00:35:21 News from the news site.
+
+00:35:22 Sometimes they're hard to tell apart, but you never know.
+
+00:35:25 - Stay in your lane.
+
+00:35:26 - Stay in your lane, CNN.
+
+00:35:28 All right, yeah, so that was the one thing you wanted to cover, right?
+
+00:35:30 - Yeah.
+
+00:35:31 - Yeah, I did my extra, extra, extra, extra, so I've already covered that.
+
+00:35:34 So I feel like, Greg, anything you wanna throw out there?
+
+00:35:36 there before we move on to a joke?
+
+00:35:38 No, can't get in the way of a joke.
+
+00:35:40 No, I know this is good.
+
+00:35:41 So sometimes we, we find an interesting joke or a funny thing out there and sometimes we strike gold, right?
+
+00:35:49 Like Brian pie jokes.
+
+00:35:50 I mean, pip X install pie joke.
+
+00:35:52 Come on.
+
+00:35:53 Like CLI is now full of dad developer jokes.
+
+00:35:56 Well, I kind of feel like I got one of those here as well.
+
+00:35:58 So there's this place called, article called 56 funny code comments that people actually wrote.
+
+00:36:05 - Nice.
+
+00:36:06 - I don't wanna go through 56, but I feel like we may revisit this.
+
+00:36:08 So I wanna go through four here.
+
+00:36:10 - Okay.
+
+00:36:11 - I linked to the real article in there, but I pulled them out separately.
+
+00:36:13 So I'm showing on the screen here.
+
+00:36:16 Like I'll read the first one, and we can take turns reading.
+
+00:36:19 There's only four or five here.
+
+00:36:20 But the first one is, it's a big like header at the top of a function in a comment.
+
+00:36:25 It says, "Dear maintainer, "once you're done trying to optimize this routine, "and you've realized what a terrible mistake that was, "please increment the following counter "as a warning to the next guy.
+
+00:36:33 (laughing)
+
+00:36:34 Total hours wasted here equals 73.
+
+00:36:37 73.
+
+00:36:38 [LAUGHTER]
+
+00:36:41 Is that awesome or what?
+
+00:36:42 [LAUGHTER]
+
+00:36:44 Yeah.
+
+00:36:45 Oh, man.
+
+00:36:46 That's beautiful, isn't it?
+
+00:36:47 Yeah, I've had code that one out of five developer that gets to it says, oh, I think we can make this cleaner.
+
+00:36:55 And they don't.
+
+00:36:56 Nope.
+
+00:36:56 They just make it stop working.
+
+00:36:57 Then they have to fix it.
+
+00:36:58 And then it goes back like it was.
+
+00:37:00 All right, Brian, you want to do the next one?
+
+00:37:01 Sure.
+
+00:37:02 Sometimes I believe compiler ignores all my comments.
+
+00:37:05 That's a comment.
+
+00:37:07 Sometimes I believe the compiler ignores all your comments.
+
+00:37:14 Like probably all the time.
+
+00:37:16 Hopefully.
+
+00:37:16 Oh, this next one's my favorite.
+
+00:37:19 Yeah.
+
+00:37:20 All right.
+
+00:37:20 Great.
+
+00:37:20 That was you.
+
+00:37:21 Great drunk drunk fix later.
+
+00:37:23 I can totally see that one.
+
+00:37:28 Honesty, honesty.
+
+00:37:31 also this one is nice.
+
+00:37:34 Probably this came from stack overflow and a partial level of understanding.
+
+00:37:37 The comment is magic.
+
+00:37:38 Do not touch.
+
+00:37:39 Definitely.
+
+00:37:41 Yeah.
+
+00:37:41 Oh, Brian, you want to round us out with this last one?
+
+00:37:43 Because sometimes the best part about comments is if they're accurate or not.
+
+00:37:46 Is there wrong?
+
+00:37:47 Yeah.
+
+00:37:48 I've heard people refer to comments as future lives.
+
+00:37:51 and this one, is there's a routine called, it's a Boolean returns a Boolean it's called is available.
+
+00:37:58 And it returns false.
+
+00:38:00 It's just a single statement, return false with a comment that says always returns true.
+
+00:38:04 I love it.
+
+00:38:08 I'm telling you there's going to be a lot of good jokes coming from this this article here.
+
+00:38:12 Nice, so yeah, pretty good.
+
+00:38:14 Alright, well thank you Brian.
+
+00:38:15 As always, Greg, thank you for being here.
+
+00:38:17 Thank you for having me.
+
+00:38:18 Yeah, it's definitely great and thanks everyone for listening.
+

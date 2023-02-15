@@ -1,0 +1,834 @@
+00:00:00 Hello and welcome to Python Bytes where we deliver Python news and headlines directly to your earbuds.
+
+00:00:04 This is episode 189 recorded July 2nd, 2020. I'm Michael Kennedy.
+
+00:00:11 And I am Brian Okken.
+
+00:00:12 And this episode is brought to you by us, our courses and our books and all those sorts of things. Tell you more about that later. Right now, let's talk about improving Python exceptions.
+
+00:00:22 Yeah, this came from Ram Racham. I'm probably getting his last name wrong, But it's this pretty interesting article.
+
+00:00:29 Actually, I had seen this in code.
+
+00:00:32 So exceptions are a big part of programming in Python, I think.
+
+00:00:36 Some people don't like to use them because they're kind of difficult in some languages, but it's pretty easy in Python.
+
+00:00:41 So let's say you're dealing with an exception.
+
+00:00:44 You're inside of the except part of a try except block.
+
+00:00:48 And an exception happens.
+
+00:00:50 And if an exception is raised from an except clause, which exception should be reported?
+
+00:00:56 And I really don't know what the mechanism was in Python 2, but there were changes made for Python 3 that are associated with PEP 3.1.3.4 and others, that both of them will be reported. So you get both exceptions.
+
+00:01:10 But you get something like that, often you get something that says, "During handling of the above exception, another exception occurred." Right, which is super frustrating because it's not actually saying the error occurred trying to handle it. It's like, I'm trying to add more information to it or give you more detail and more specificity or something like that, right?
+
+00:01:28 Right. So what Ram is pointing out is that if an exception is raised within an except clause, it can be really one of two things.
+
+00:01:35 It can be something, I called some code that I didn't expect to have any exceptions and an exception happened there.
+
+00:01:43 And that's what kind of the default message sort of implies.
+
+00:01:46 But it might also be, and he has like this long block, I'm just going to read it.
+
+00:01:52 An exception was raised and we decided to replace it with a different exception that will make more sense to whoever called this code.
+
+00:01:58 Maybe the new exception will make more sense because we're giving a more helpful error message, or maybe we're using an exception class that is more relevant to the problem domain, and whoever's calling our code could wrap the call with an except clause that's tailored to this failure mode.
+
+00:02:13 So, a long mouthful, but basically trying to be nice and raise a better exception or a better message or something.
+
+00:02:21 In order to do that, all you have to do is just change one thing and it's the from e.
+
+00:02:27 Within your exception clause, you accept something as e or as any variable, but e is often used.
+
+00:02:36 You raise the other exception with a different message from e, and that little from will get you a message within, trace back will have both exceptions.
+
+00:02:45 It'll say, "During the handling of the above exception, another exception occurred." Oh no wait, no it'll say that's what we had before.
+
+00:02:54 It'll say...
+
+00:02:55 That's a confusing one because it looks like we tried to handle it but we actually crashed again inside the handling of it, right?
+
+00:03:01 Right, so the new thing if you do the from me it'll say the above exception was the direct cause of the following exception.
+
+00:03:08 So that's a little clearer, I think.
+
+00:03:12 So you have the one on the top caused the second one to happen.
+
+00:03:16 So you know that we're in the case of somebody's trying to wrap an exception with a friendlier exception.
+
+00:03:22 Which is subtle. The reason why I kind of, I don't know, I just like it, Rom likes it, and but he didn't see that nobody was using it. So he went even further and he went out and wrote a script that can look for probable places where that should be happening. And he did he did pull requests to set up tools, scipy, matplotlib, pandas, pytest, ipython, mypy, pigments, and sphinx, which is like awesome that he just went out and did pull requests against all of those projects. Oh, that's really cool. The other thing he did was he wrote a new rule for pylint. And so w0707, raise missing from, which is kind of weird, but basically pylint will now catch it. So if you use the most recent, it's not released yet, but if you run pilot from GitHub, you can see that rule. But the next time they release pilot, it'll be in there.
+
+00:04:21 Yeah.
+
+00:04:21 This is neat.
+
+00:04:21 I like it. I think it's confusing the way it is now, if you don't do it the right way. And I often get messages from students saying, oh, I got this really bizarre error, like some, you know, some other thing. And the problem is buried in the other part of this whole story, right? And it's not clear what part they should be paying attention to. So I think this makes it more clear and it's nice. All right. Well, the next thing I want to talk about is publishing data science and other interactive stuff on the internet. Now, there's a couple of ways you can do this. You could go to like Google CoLab and whatnot, but Tim Pogue sent over this new place where you basically custom built for this story and it's called DataPane.
+
+00:05:07 So DataPane is an open source framework which makes it easy to turn scripts and notebooks into interactive reports.
+
+00:05:15 So you can export a Jupyter notebook as a report but then it's just static, you can't interact with it.
+
+00:05:21 Or if you try to run it, then there's a bunch of code in there and there's all kinds of stuff that you probably don't want people to see.
+
+00:05:27 So DataPane is a way to like create and host interactive HTML that runs against APIs and runs data and so on.
+
+00:05:36 It's pretty cool.
+
+00:05:37 You go in there and like use sliders to adjust what's happening in say a graph or filtering or things like that.
+
+00:05:44 - That's neat.
+
+00:05:45 So this is one of those things that it's a paid service but they have free accounts that you can do, right?
+
+00:05:50 - Yes, exactly.
+
+00:05:50 So I'm not entirely sure the whole spectrum of what's going on.
+
+00:05:54 So it says it's an open source framework.
+
+00:05:56 So I think there's an API that you bring in to make this happen.
+
+00:05:59 And there might be a self-posting story.
+
+00:06:01 They also have a platform for publishing it too.
+
+00:06:04 And on that platform, it's free for individuals, but I can't find a price anywhere, but it looks like they're going to eventually charge for a team commercial corporate version.
+
+00:06:17 I don't really know what's going on with that anymore, but it's free for individuals and you can use their open source framework to generate these reports.
+
+00:06:24 - Okay, and they also have the gallery there.
+
+00:06:26 So I was looking for it, I found it for a while.
+
+00:06:29 It's obviously right at the top.
+
+00:06:30 It says open analysis gallery for looking at pictures.
+
+00:06:34 - Exactly.
+
+00:06:35 Yeah, so the idea is that you can use like the tools that you already know and love.
+
+00:06:39 So you can use Jupyter or Colab or Airflow and you can build reports using their frameworks, using Markdown as well, and cool libraries that people probably are already using for visualization like Altair, what I've been using for my visualizations lately.
+
+00:06:54 And then you can either export these as standalone HTML files, which is one option.
+
+00:06:58 That's the totally disconnected, just take the library.
+
+00:07:01 The other one is you can publish them to Data Pane for free, where people can share them and embed them.
+
+00:07:07 And there's probably this paid corporate thing that I don't have details on.
+
+00:07:10 - Nice.
+
+00:07:11 - Yeah.
+
+00:07:11 So you're going to add like forms to help filter and drive the report.
+
+00:07:16 You can have a talk to APIs.
+
+00:07:18 Also, they have APIs that you can use to deploy your scripts to their server, And you can even have integrated set up with like GitHub actions or airflow or standard CI CD stuff to like update your reports on data pain.com.
+
+00:07:31 So pretty cool.
+
+00:07:32 Like you said, there's a gallery.
+
+00:07:33 I'll link to the gallery at the end of the section.
+
+00:07:35 So these kinds of things, you just want to poke around the gallery and get a sense before you mess with it.
+
+00:07:39 Right.
+
+00:07:39 I like pictures.
+
+00:07:40 I do.
+
+00:07:41 We both like pictures.
+
+00:07:41 Now, before we go on to the next thing and we look at the ways in which pickle might make you sour.
+
+00:07:47 Let's really talk about things that won't make you sour.
+
+00:07:50 your PyTest book, if people are interested in learning PyTest, getting into testing and not just scratching the surface, but really deeply understanding PyTest, they can check out your book, which we'll link to in the show notes.
+
+00:08:01 And if they would like to take some courses, we have a whole bunch of courses over at Talk Python.
+
+00:08:06 We're almost up to 200 hours of courses over there.
+
+00:08:10 That's a lot.
+
+00:08:10 - Nice, it is a lot.
+
+00:08:11 But like I've said before, one of the things I like about it is you don't have to spend hours at a time.
+
+00:08:16 You can spend a few minutes and not lose your place.
+
+00:08:18 It's a nice way to set it up.
+
+00:08:19 - Yeah, thanks.
+
+00:08:20 the PyTest site, I wanted to reach out to people. I'm pretty available on Twitter or through the contact form on Python, not talk Python, Python bytes. However, I've had people try to email me at the contact form on talk Python and Michael just send it to me nicely.
+
+00:08:38 So anyway, I want to have people know, I'd like to know people, if they want to learn how to test more, whether or not they've read the PyTest book, what's stopping you? I don't know how to get in people's heads of why are they not testing more.
+
+00:08:52 So please reach out to me and let me know your questions.
+
+00:08:55 That'd be awesome.
+
+00:08:56 Yeah, absolutely.
+
+00:08:57 Now you want to make me sour?
+
+00:08:58 I love pickles.
+
+00:08:59 Do you like pickles?
+
+00:08:59 I'm coming around to them.
+
+00:09:01 I've used to really not like pickles, but I'm OK.
+
+00:09:03 OK.
+
+00:09:04 I have a really fun pickle story to tell you, but it's like 10 minutes.
+
+00:09:07 It's better over a minute or so.
+
+00:09:08 Next time.
+
+00:09:09 But let's talk about Python's pickle.
+
+00:09:10 I kind of like it sometimes.
+
+00:09:12 No, it's one of the first things I learned about for saving data and stuff is you can pickle stuff.
+
+00:09:18 So if you got whatever object, a bunch of objects or whatever in a collection, you can use pickle to serialize it somewhere.
+
+00:09:24 I think we've brought it up here on this podcast, but you'll occasionally run into people saying, just be careful with pickle or never use pickle or something.
+
+00:09:33 And Ned Batchelder put together a post called Pickles 9 Flaws, where he says, it's not never use it, but use pickle if you're okay with these flaws.
+
+00:09:44 So, and I like this list, cuz I've heard some of these before, but never in one place. First off, it's insecure.
+
+00:09:50 So unless you really, I mean, if you're only pickling and unpickling your own data within your own program, and there's not a chance of having somebody else feed you bad pickles, then you're okay. But it's not secure.
+
+00:10:04 There's ways to have them and have malicious pickles be generated that can cause the unpickler to run random code, which is not what you want.
+
+00:10:13 And then he links to a more thorough article on the security if you're worried about that.
+
+00:10:19 Old pickles, second one is old pickles look like old code.
+
+00:10:23 And the gist of it is, you can't really version this stuff.
+
+00:10:27 So if you change the way your objects look, your pickles aren't gonna, it's not gonna work right.
+
+00:10:34 Change your data structure and you got to pretty much throw all data away and start.
+
+00:10:38 - Yeah, this one is really tricky because it takes the entire object graph.
+
+00:10:41 You say like, here, save this list.
+
+00:10:43 this list contains these things, these things contain pointers, so those other things, it's gonna save all of that stuff.
+
+00:10:48 And if the code that defines the fields of that change, like if you rename a field, and you try to load it, you're done.
+
+00:10:55 It's not gonna be able, it's like this binary blob that doesn't fit together anymore.
+
+00:10:59 There's not like a, well, let me adjust for this.
+
+00:11:02 It's just like, nope, nope, you can no longer load that file.
+
+00:11:06 So it depends, but not being able to load your file at all, or open it in a text editor even, that might be a bad place.
+
+00:11:14 - Basically, if you're trying to save code between versions or save stuff between versions, it's not a good thing.
+
+00:11:21 There may be cases where you're just using it to serialize between a live app, a running application, and you're not gonna save that data anywhere.
+
+00:11:28 - I think there was an interesting problem.
+
+00:11:31 I think it was Instagram that had this problem.
+
+00:11:34 Somebody that had done a big talk at PyCon, they were doing caching in something like Redis or something, and they were putting their pickles, they would pickle stuff, put it in the cache, and they'd pull it out, and then they'd switch from like two to three, and they could no longer read their cache, and it like took down the system or something.
+
+00:11:51 - Yeah.
+
+00:11:52 - Like something really, even really weird like that, like deploying a new version of the site.
+
+00:11:54 - Yeah. - Yeah.
+
+00:11:55 - I'll read through the whole list, we can pick out a few.
+
+00:11:57 They're implicit, so it serializes everything, even if you don't want it to.
+
+00:12:02 Oh, that's the over-serializes.
+
+00:12:04 The implicit part is it serializes things as class objects, and even if that's not really what you'd want, Like his example is date time.
+
+00:12:14 You really wouldn't want to serialize it as a date time object.
+
+00:12:17 You'd want to serialize it as a string or something.
+
+00:12:20 The init isn't called.
+
+00:12:21 So normally your classes, the init gets called, but during unpickling, it just creates this object without calling init.
+
+00:12:29 So if there's any side effects that you need to have happen, that ain't gonna happen.
+
+00:12:33 It's Python only.
+
+00:12:34 You can't convert it between different languages.
+
+00:12:37 It's unreadable.
+
+00:12:38 You mentioned it's binary.
+
+00:12:39 So if anything goes wrong, good luck with debugging it.
+
+00:12:42 It appears to pickle your code, but it really doesn't.
+
+00:12:45 So if you've got a list of functions and classes and objects, those will be in there, but it's just names of stuff.
+
+00:12:51 And then when you unpickle it, it creates those objects without calling init.
+
+00:12:55 It's slow.
+
+00:12:57 And so the binary part gets me, but basically these are all the things that are wrong with it.
+
+00:13:04 But there's some ways to get around it.
+
+00:13:06 And a lot of people will say, "Well, there's ways to get around it." and Ned's comment is, if you're going through some of the code to work around the problems with pickle, then just why are you using pickle?
+
+00:13:17 There's other things out there.
+
+00:13:18 And my favorite alternative is just JSON.
+
+00:13:21 So JSON mostly works most of the time and you can read it.
+
+00:13:26 So you can look at what's wrong and go, oh, I see why that didn't work because I was putting this garbage in there or whatever, or I haven't tried these others.
+
+00:13:35 So there's other suggestions like marshmallow, I haven't used those before.
+
+00:13:39 But the, what was I going to bring up?
+
+00:13:42 You brought up something about being binary, and that's one of the parts that gets me is a serializer that goes to binary.
+
+00:13:48 That makes sense if it's really fast, but using a slow serializer to--
+
+00:13:54 It's both slow and binary, come on.
+
+00:13:57 Yeah, one of the things that the over-serializing, which I found is interesting, is caching is something we do for like long, like hard computations or something, or just to save some computation, you cache the result, that stuff will get saved in your pickle also, and that's surprising.
+
+00:14:14 So it's just weird.
+
+00:14:16 So thanks, Ned.
+
+00:14:17 - Yeah, it's a cool article.
+
+00:14:18 You know, the one place that pickle kind of makes sense to me is if I'm doing like a really quick prototype, and what I would need to save would be fairly complicated.
+
+00:14:27 I'm just like, you know what, I just want to save this.
+
+00:14:30 And if I really invest, and I like what we built here, we're going to go and rewrite this with a proper serialization data saving story, yeah, I could see that, all right, just pickle it.
+
+00:14:39 Now, I don't really often do that, that off very light, it's not very common, but I would certainly consider, like I just need to save this complicated data structure and I don't want really know if I even need this forever, but I'm just gonna do it for now.
+
+00:14:51 I might consider pickling, but in general, it's not super awesome.
+
+00:14:54 And also the malicious bits makes you, you know, you gotta be careful.
+
+00:14:57 - So the reason why you can't grab JSON right away is because there's some objects that are not serializable, right?
+
+00:15:03 - Yes, exactly.
+
+00:15:04 In some things that are simple like date times, like if you had a really complicated, some structure that had like say date times or other objects in there, you can't just dump the whole thing to JSON, right?
+
+00:15:15 So if you were just in a hurry, you're like, I'm just really trying to spend 30 minutes to figure this out, but I just need to save this and then load it and like, then maybe pickling makes sense.
+
+00:15:22 But the fact that you could never be, it's very possible you upgrade Python, you can never load it again, or things like that.
+
+00:15:30 You can't look at it like that makes me never wanna invest this as like a long-term option.
+
+00:15:34 - Yeah, the other thing I thought might be a reasonable thing is, I'd like to hear other people's thoughts on what reasonable uses for pickle are.
+
+00:15:42 But like in-memory stuff, so you're serializing it just to get it from one part of your system to another or something.
+
+00:15:49 - Yeah, yeah, yeah.
+
+00:15:50 Like a super deep copy sort of thing might make sense, potentially, right?
+
+00:15:54 Yeah, speaking of, it might change because you get a new version of Python.
+
+00:16:00 That is now gonna be more common.
+
+00:16:02 - Yeah. - Yeah.
+
+00:16:03 So Luca Slinga, he's been in charge of releasing, release management of Python recently, and he has gotten PEP 602 accepted.
+
+00:16:14 And PEP 602 says, "We're switching from a 17 "to 18 month release cycle to a yearly release cycle." Yay! - That makes sense.
+
+00:16:24 - Yeah, remember we were talking about something that got into Python 3.9, And we were looking at the conversation on the dev channel.
+
+00:16:32 And it was like, I really, really tried.
+
+00:16:34 I submitted this before the deadline, but you guys weren't able to like review the PR before the window closed for three, eight.
+
+00:16:42 So because of that, like that feature missed by a couple of weeks and it was a year and a half before it could actually get accepted, right.
+
+00:16:50 It was like really long.
+
+00:16:51 So on one hand, this, this is to shorten that cycle.
+
+00:16:55 The other thing is on a given year, when will Python come out?
+
+00:16:58 I don't know, is it an even year or an odd year?
+
+00:17:01 Like that's just a weird way to think of things, right?
+
+00:17:03 We have conferences yearly in theory, things like that, right?
+
+00:17:08 But for Python, it had been on this 18 month sort of alternating cycle.
+
+00:17:13 This way they can schedule it so that things like the feature freeze or beta stage happens right after PyCon.
+
+00:17:21 So the sprints can always focus on getting that last bit into CPython at PyCon and what, and it's much more predictable.
+
+00:17:30 So I think that'll be nice.
+
+00:17:31 Yeah.
+
+00:17:31 And there's other stuff in life like, you know, holidays and things like that, that you can just sort of figure out when a good time is for the whole schedule and then just do that every year.
+
+00:17:41 Absolutely.
+
+00:17:42 Absolutely.
+
+00:17:43 So let's see, there's a little bit of interesting detail.
+
+00:17:46 It says the pep proposes that Python three dot whatever be developed around.
+
+00:17:55 I think it's over 17 months across a 17 month period, which doesn't sound annual, does it?
+
+00:18:01 - No.
+
+00:18:01 - So the way it works is the first five months will overlap with the previous version's beta period.
+
+00:18:09 And then there's seven months spent on the alpha release, and then three months on beta releases.
+
+00:18:15 And then finally two months on release candidates.
+
+00:18:18 So there's, the way it's gonna work, instead of like we're now on 3.8, now we're all focusing on 3.9, that three is out, there's like an overlap.
+
+00:18:24 So basically as soon as the features freeze on the previous, on the what's coming out, right?
+
+00:18:31 So like right now, three nine is coming out.
+
+00:18:34 So as soon as it hit feature freeze, three 10 would start.
+
+00:18:38 Right.
+
+00:18:38 So there's like this overlap as the version that's coming out, it's getting stabilized and finalized new features and developments already happening on the other one in the way with that overlap working, it's going to result in a new version every 12 months, there'll be like a five month period of where there's like new features go to the new one and stabilization to the old one.
+
+00:18:55 And this is kind of how commercial software is done anyway.
+
+00:18:57 Yeah.
+
+00:18:58 Yeah.
+
+00:18:58 You never, it's like, no one touches the new one until we've like shipped it the gold version.
+
+00:19:02 Like now, like some people are fixing stuff that they need to fix and some people are putting the new features.
+
+00:19:07 So in terms of advantages, they call out makes the releases smaller.
+
+00:19:11 So doubling the cadence doesn't double their available development resources and so on, and consecutive releases are going to be smaller in terms of features.
+
+00:19:20 So that's good.
+
+00:19:21 It puts features and bug fixes in the hands of users sooner, right?
+
+00:19:25 Six months sooner, it creates a more gradual upgrade path, right?
+
+00:19:29 You instead of adopting 18 months at a time, you can adopt 12 months at a time.
+
+00:19:33 Like you could be, if you're saying like, we're always going to be one version back of what just got released on the Python, right?
+
+00:19:40 So if you're saying we're going to run on three, seven in today's world, right?
+
+00:19:43 That's not an 18 month gap.
+
+00:19:45 That's a 12 month gap.
+
+00:19:46 So that's good.
+
+00:19:46 You're a little less far behind if you're on the laggard side of things.
+
+00:19:50 the predictable calendar.
+
+00:19:52 So the final release is always going to be in October after the annual core sprint and the beta phase always starts in May.
+
+00:19:59 So after the PyCon US sprint.
+
+00:20:02 So there's like a nice lineup for that as well.
+
+00:20:04 - Also my prediction is that people won't be doing the two version thing.
+
+00:20:08 They'll actually do three.
+
+00:20:10 I recommend everybody do this anyway.
+
+00:20:11 So let's say like right now, if you've got a project on Python, you should make sure that it works on 3.7 and 3.8, of course, So 3.9 is around, so test it on 3.9 also.
+
+00:20:22 And then when 3.9 is the official one, maybe you keep 3.7, but if you don't want to, you're at least doing, making sure you're compatible with the next one, the current one, and the last one.
+
+00:20:34 So it'll make more sense.
+
+00:20:36 - Absolutely. Very good.
+
+00:20:38 Now, we spent a lot of last episode on Git, right?
+
+00:20:41 - Yeah, well, episode 187, we talked about Oh Shit Git from Azeem from Julie Evans.
+
+00:20:47 And I mentioned that I was concerned about, I wanted to buy this for my team, but I didn't know if HR would like the naming of it.
+
+00:20:55 And John Place reached out, one of our listeners, and said, "You know, there's a non-swearing version." He actually sent us a ton of great Git information.
+
+00:21:03 So the same little magazine, you can get it as DangitGit.
+
+00:21:07 - Aw shucks, Git.
+
+00:21:08 - Aw shucks, Git.
+
+00:21:09 (laughing)
+
+00:21:11 Aw darnit, Git.
+
+00:21:13 All of those would be good, but it's DangitGit.
+
+00:21:16 And then also when I was looking around these, there's also, these were zines that you can buy, but these were inspired by two websites that were put together by Katie Seiler Miller, dangitgit.com and ohshitgit.com.
+
+00:21:31 There's actually really cool.
+
+00:21:33 These are free websites that have kind of the idea of something went wrong, how do I fix it?
+
+00:21:40 And then every single one of the topics is clickable and linkable.
+
+00:21:44 And I didn't understand the clicks at first.
+
+00:21:46 I'm like, oh, these are links, so they go to articles.
+
+00:21:48 Oh, it just takes me right to where I already was.
+
+00:21:52 I don't understand this, why would I do this?
+
+00:21:54 Well, it's so that they're anchors so that you can click on it and get the URL and send it to somebody.
+
+00:21:59 So if somebody asks you a question, and the answer's here, you can send them the link and say, here's how to fix it.
+
+00:22:05 And then next time they can fix it themselves.
+
+00:22:07 So these are neat things in the community.
+
+00:22:11 And then also this, okay, do you see the link for get cheat sheet?
+
+00:22:15 Have you looked at this yet?
+
+00:22:16 I'm looking at it now.
+
+00:22:17 - I thought this was gonna be a get PDF, like a PDF or something with a bunch of commands.
+
+00:22:22 But this is an incredible resource.
+
+00:22:24 The get cheat sheet is an interactive single page website.
+
+00:22:28 That's just beautiful to look at for one, but it's got five columns.
+
+00:22:33 I'm gonna pull it up also.
+
+00:22:35 It's got five columns, the stash, workplace, index, local repository and upstream repository.
+
+00:22:41 And you just, when you hover over it click on the different columns, it shows you all of the different Git commands that affect that.
+
+00:22:51 So if you click on the local repo, for instance, it'll show you how to get information from diff, how do you compare between the workspace and the local repo, what reset does, switch, rebase, cherry-picking, and all sorts of stuff.
+
+00:23:07 Then different commands that go between the index and the local repo and the local repo and the upstream one, with pushes and stuff.
+
+00:23:15 But it has this nice visual of where your stuff is and how do you get it back and forth.
+
+00:23:20 And then you hover over, if you hover over any of the commands, it shows you the information on the bottom.
+
+00:23:25 This is just great.
+
+00:23:26 I'm going to share this with my team for everybody that's--
+
+00:23:31 because one of the things that takes a while to get your head around with Git is this idea of what is the workspace and the index and the local repo and stuff.
+
+00:23:40 So having a visual of what commands affect which part of Git, it's pretty darn cool.
+
+00:23:46 The last thing I wanted to share was, this is a one-pager that you could print out.
+
+00:23:51 It's a GitPretty that is like the dang it, get and oh shit, get offerings, where it's a single-page PNG flow chart that starts with, so you have a mess on your hands, and then it asks you a bunch of questions of funneling it to, like what commands might fix it.
+
+00:24:08 I don't know if I use this much, but I totally want to print this out and put it on my cubicle wall because it's kind of entertaining.
+
+00:24:15 Yeah, this is really cool. I like it.
+
+00:24:16 More get resources.
+
+00:24:17 These are a bunch of great.
+
+00:24:18 Yeah, a lot of a lot of bunch of get resources.
+
+00:24:20 All right. I'm going to close this.
+
+00:24:22 Our main items out, Brian, with a simple one. OK. OK.
+
+00:24:25 So there's a new pep around strip, basically.
+
+00:24:31 That's the short version before I tell you the long version. OK.
+
+00:24:33 So if I have a string and the string is Saturday is the first.
+
+00:24:39 Like, so Saturday is the number one ST.
+
+00:24:43 And suppose for whatever reason, I'm not sure it's a real normal use case, but for whatever reason, I want to get the ST off of the end here.
+
+00:24:54 And so I might say dot strip ST.
+
+00:24:58 What comes out of there?
+
+00:24:59 Yeah, that's interesting.
+
+00:25:02 So what I thought was when I first encountered the strip function, I would pass it a string and that string would be taken away from the string that I was stripping it from.
+
+00:25:11 So like, if I say dot strip ST, it's going to take the ST off the end.
+
+00:25:15 But what it really means is take away all the S's and take away all the T's until you hit something else.
+
+00:25:21 So it would be attorday is the one, right?
+
+00:25:24 It would take the S off the front.
+
+00:25:26 Even though it's not ST, it's just S right?
+
+00:25:28 Yeah.
+
+00:25:29 I mean, I guess the idea is you give it a space, a tab and a backslash in and a backslash R and you say, take that away and that destroys the white space.
+
+00:25:36 right, that's probably the foundation, right?
+
+00:25:38 But you give it a string, it doesn't take the string away, it turns it into a bunch of characters and it just takes the characters away.
+
+00:25:44 But what if you wanted to take away the ST?
+
+00:25:47 Well, you've got to write a bunch of code that goes and finds the ST and sees if it's at the end and then take it away.
+
+00:25:54 Or you wait a little while and use a new function that's gonna be in 3.9 called remove prefix or remove suffix.
+
+00:26:02 So Dennis Sweeney has got a pep accepted to add these two functions that are actually probably what you first thought that strip would do. Given a string, it's going to take it that string off of the ends. Okay. Not a big deal, but I suspect that there's probably people out there that type more than one character into strip and expect it to be treated as a substring when it's not. And so there's going to be in three nine, two functions that do that.
+
+00:26:28 Yeah, I mean, I totally because I get the need to have like a set of things if you want to pass it in like a space and a tab and a new line. There's a bunch of things you want to strip off the end.
+
+00:26:40 Well, there's easier ways to strip the white space, but like, let's say there's other like random stuff that might appear at the end. Yeah.
+
+00:26:47 Stripping that, but having it be character, I was totally surprised by that. I didn't believe you, I just typed it in because I'm like, well, what about the S and is, but no, it just, the strip takes those, it's a set of characters that are only at the end.
+
+00:27:01 Yeah, it takes the S off Saturday and the ST off of first, but it leaves the other ones alone. Yeah.
+
+00:27:05 Yeah.
+
+00:27:06 Yeah. So replace doesn't, there's not, there was not really a great way in Python to do that without writing your own function that checks that those are only on the ends and then takes them away. And so now remove prefix and remove suffix.
+
+00:27:17 Nice. Cool.
+
+00:27:18 Nice. And just to finally, this will be applied to all the string-like things in Python. So So Unicode str, binary bytes, byte arrays, objects, and collections.userString.
+
+00:27:31 So not just against str, but it takes all these other things that are stringish.
+
+00:27:35 Oh, nice.
+
+00:27:36 Stringish.
+
+00:27:37 Is that a technical term?
+
+00:27:39 That's...
+
+00:27:40 I think if we get the pep accepted, it'll be technical, yeah.
+
+00:27:43 Okay.
+
+00:27:44 No.
+
+00:27:45 Yeah.
+
+00:27:46 All right.
+
+00:27:47 So that's it for our main items.
+
+00:27:48 What else you got?
+
+00:27:49 I've just been working a lot, so I got nothing.
+
+00:27:50 How about you?
+
+00:27:51 I got nothing.
+
+00:27:52 Well, actually, a couple of things going on.
+
+00:27:54 So Manning, the book publisher, they are going to have a Python conference in a couple of days.
+
+00:28:02 I'm pulling up really quick to see exactly what day that is.
+
+00:28:05 Think actually I do know what day it is.
+
+00:28:07 I think it's the 17th.
+
+00:28:08 Okay.
+
+00:28:09 I think it's the 17th of July.
+
+00:28:11 Anyway, we're going to be there.
+
+00:28:13 Not the 17th.
+
+00:28:14 It's the 14th.
+
+00:28:15 The 14th of July.
+
+00:28:16 So we're going to be doing a live Python Bytes at the Manning conference.
+
+00:28:20 And I'll put a link to it in the show notes so you guys can sign up.
+
+00:28:24 So if you want to see us do a live event, you know, we've done that at PyCon, we've done that at some other events, and it'll be fun to do it virtually, which is basically all we get for our conferences, right?
+
+00:28:34 - By live, you mean like in real time, but like online.
+
+00:28:38 - Right, with audience questions and stuff like that.
+
+00:28:40 - Oh, okay.
+
+00:28:41 - So that'll be fun.
+
+00:28:42 Also, I did a talk on 10 techniques for web developers with a little bit of a focus on Pyramid, but more generally just for web developers, tips and tricks and tools and whatnot at the Python virtual conference that was last month.
+
+00:28:57 Well, maybe the big, yeah, last month for sure in June.
+
+00:29:00 So the recording for that is out and I'll put a link to that as well.
+
+00:29:03 We also have a Humble Bundle running right now.
+
+00:29:06 It's probably when this episode comes out, got another week or so.
+
+00:29:10 So there we've got a couple of courses for me, but tons of stuff, stuff from Matt Harrison and stuff from real Python and Reuven Lerner and on and on.
+
+00:29:18 Great long list, there's like $1,400 worth of Python content and you can get it for 25 bucks.
+
+00:29:23 So that's going like crazy right now.
+
+00:29:25 So if you're thinking about maybe taking one of the courses either for me or one of these other guys, check it out.
+
+00:29:31 It's pretty much as good of a deal as you're gonna get on those.
+
+00:29:34 And then lastly, lastly, Abhishek Pednekar, hopefully I got your name close to right there, actually built something really cool for us.
+
+00:29:43 So at PythonBytes.fm and Talk Python.fm, we have a search API.
+
+00:29:48 You can click on the little search box in the top right, and there's like a link to a JSON API you can use.
+
+00:29:52 So he did, of course, what you should do when you find an API and use it.
+
+00:29:57 He wrote two Telegram bots, and you can just speak to the Telegram bot and you can either install the Talk Python one or the Python Bytes Telegram bot.
+
+00:30:06 If you just text or speak to it in Telegram, it'll search Talk Python and give you relevant responses about stuff we've covered.
+
+00:30:13 - What?
+
+00:30:14 That's cool.
+
+00:30:15 - Isn't that cool?
+
+00:30:16 Yeah, it's super, super cool.
+
+00:30:16 So I'll put the links to get those telegram bots for you if you want.
+
+00:30:21 Nice.
+
+00:30:21 All right, you ready for a joke?
+
+00:30:22 I am.
+
+00:30:23 All right, this one comes from Karen Chee.
+
+00:30:25 I just don't think she submitted it to us.
+
+00:30:27 I think we just found it on Twitter.
+
+00:30:28 But here's a quick adaptation.
+
+00:30:30 It's not exactly what she said.
+
+00:30:32 I expanded a little.
+
+00:30:32 She did it on Twitter, so it had to fit within a couple of characters.
+
+00:30:36 So it's a conversation.
+
+00:30:38 And Brian, let's just have it together, OK?
+
+00:30:40 OK.
+
+00:30:41 Who do you want me to be?
+
+00:30:42 Oh, I'll be you.
+
+00:30:43 No.
+
+00:30:43 [LAUGHS]
+
+00:30:45 I'll be me.
+
+00:30:46 Wait.
+
+00:30:46 - Yeah, I'll start it off, how's that?
+
+00:30:48 'Cause it's very confusing, the way I phrase that.
+
+00:30:51 All right, hey, a famous engineer inventor is coming over tonight for dinner, you wanna join us?
+
+00:30:56 - Sure, who is it?
+
+00:30:57 - Oh, his name is Rube Goldberg.
+
+00:30:59 - That name rings a bell, which sets off a trap under the, that undoes a buckle and releases a ball that rolls down a pipe and yeah.
+
+00:31:07 - And on and on and on and on.
+
+00:31:10 All right, well that's it, Rube Goldberg, I love those things.
+
+00:31:13 I should probably go check the internet for some really funny ones.
+
+00:31:15 And with all the coronavirus stuff, there's actually some awesome real goldbergs that people are putting together on YouTube lately 'cause people are at home and they have lots of time on their hands and their kids are home.
+
+00:31:26 - Absolutely, absolutely.
+
+00:31:29 All right, well, I'm definitely gonna go check YouTube now.
+
+00:31:32 - Okay, bye.
+
+00:31:33 - All right, see you, Brian, thanks.
+
+00:31:35 Follow the show on Twitter via @pythonbytes.
+
+00:31:37 That's Python Bytes as in B-Y-T-E-S.
+
+00:31:40 And get the full show notes at pythonbytes.fm.
+
+00:31:43 If you have a news item you want featured, just visit pythonbytes.fm and send it our way.
+
+00:31:47 We're always on the lookout for sharing something cool.
+
+00:31:50 On behalf of myself and Brian Auchin, this is Michael Kennedy.
+
+00:31:53 Thank you for listening and sharing this podcast with your friends and colleagues.
+

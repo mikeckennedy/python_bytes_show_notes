@@ -1,0 +1,2948 @@
+
+00:00:00.000 --> 00:00:04.960
+Hello and welcome to Python Bytes where we deliver Python news and headlines directly to your earbuds.
+
+
+00:00:04.960 --> 00:00:11.040
+This is episode 189 recorded July 2nd, 2020. I'm Michael Kennedy.
+
+
+00:00:11.040 --> 00:00:12.160
+And I am Brian Okken.
+
+
+00:00:12.160 --> 00:00:16.800
+And this episode is brought to you by us, our courses and our books and all those sorts of
+
+
+00:00:16.800 --> 00:00:22.640
+things. Tell you more about that later. Right now, let's talk about improving Python exceptions.
+
+
+00:00:22.640 --> 00:00:26.800
+Yeah, this came from Ram Racham. I'm probably getting his last name wrong,
+
+
+00:00:27.360 --> 00:00:29.760
+But it's this pretty interesting article.
+
+
+00:00:29.760 --> 00:00:32.060
+Actually, I had seen this in code.
+
+
+00:00:32.060 --> 00:00:36.000
+So exceptions are a big part of programming in Python, I think.
+
+
+00:00:36.000 --> 00:00:38.600
+Some people don't like to use them because they're
+
+
+00:00:38.600 --> 00:00:40.120
+kind of difficult in some languages,
+
+
+00:00:40.120 --> 00:00:41.880
+but it's pretty easy in Python.
+
+
+00:00:41.880 --> 00:00:44.760
+So let's say you're dealing with an exception.
+
+
+00:00:44.760 --> 00:00:48.880
+You're inside of the except part of a try except block.
+
+
+00:00:48.880 --> 00:00:50.480
+And an exception happens.
+
+
+00:00:50.480 --> 00:00:54.200
+And if an exception is raised from an except clause,
+
+
+00:00:54.200 --> 00:00:56.080
+which exception should be reported?
+
+
+00:00:56.080 --> 00:00:59.520
+And I really don't know what the mechanism was in Python 2,
+
+
+00:00:59.520 --> 00:01:06.680
+but there were changes made for Python 3 that are associated with PEP 3.1.3.4 and others,
+
+
+00:01:06.680 --> 00:01:10.320
+that both of them will be reported. So you get both exceptions.
+
+
+00:01:10.320 --> 00:01:13.680
+But you get something like that, often you get something that says,
+
+
+00:01:13.680 --> 00:01:16.820
+"During handling of the above exception, another exception occurred."
+
+
+00:01:16.820 --> 00:01:20.620
+Right, which is super frustrating because it's not actually saying
+
+
+00:01:20.620 --> 00:01:23.620
+the error occurred trying to handle it. It's like,
+
+
+00:01:23.620 --> 00:01:28.260
+I'm trying to add more information to it or give you more detail and more specificity or something like that, right?
+
+
+00:01:28.260 --> 00:01:35.420
+Right. So what Ram is pointing out is that if an exception is raised within an except clause, it can be really one of two things.
+
+
+00:01:35.420 --> 00:01:43.100
+It can be something, I called some code that I didn't expect to have any exceptions and an exception happened there.
+
+
+00:01:43.100 --> 00:01:46.940
+And that's what kind of the default message sort of implies.
+
+
+00:01:46.940 --> 00:01:52.020
+But it might also be, and he has like this long block, I'm just going to read it.
+
+
+00:01:52.020 --> 00:01:58.580
+An exception was raised and we decided to replace it with a different exception that will make more sense to whoever called this code.
+
+
+00:01:58.580 --> 00:02:03.260
+Maybe the new exception will make more sense because we're giving a more helpful error message,
+
+
+00:02:03.260 --> 00:02:07.180
+or maybe we're using an exception class that is more relevant to the problem domain,
+
+
+00:02:07.180 --> 00:02:13.380
+and whoever's calling our code could wrap the call with an except clause that's tailored to this failure mode.
+
+
+00:02:13.380 --> 00:02:21.020
+So, a long mouthful, but basically trying to be nice and raise a better exception or a better message or something.
+
+
+00:02:21.020 --> 00:02:23.060
+In order to do that,
+
+
+00:02:23.060 --> 00:02:27.940
+all you have to do is just change one thing and it's the from e.
+
+
+00:02:27.940 --> 00:02:30.060
+Within your exception clause,
+
+
+00:02:30.060 --> 00:02:34.800
+you accept something as e or as any variable,
+
+
+00:02:34.800 --> 00:02:36.300
+but e is often used.
+
+
+00:02:36.300 --> 00:02:40.280
+You raise the other exception with a different message from e,
+
+
+00:02:40.280 --> 00:02:43.900
+and that little from will get you a message within,
+
+
+00:02:43.900 --> 00:02:45.840
+trace back will have both exceptions.
+
+
+00:02:45.840 --> 00:02:48.920
+It'll say, "During the handling of the above exception,
+
+
+00:02:48.920 --> 00:02:50.580
+another exception occurred."
+
+
+00:02:50.580 --> 00:02:54.480
+Oh no wait, no it'll say that's what we had before.
+
+
+00:02:54.480 --> 00:02:55.180
+It'll say...
+
+
+00:02:55.180 --> 00:03:01.180
+That's a confusing one because it looks like we tried to handle it but we actually crashed again inside the handling of it, right?
+
+
+00:03:01.180 --> 00:03:08.780
+Right, so the new thing if you do the from me it'll say the above exception was the direct cause of the following exception.
+
+
+00:03:08.780 --> 00:03:12.280
+So that's a little clearer, I think.
+
+
+00:03:12.280 --> 00:03:16.380
+So you have the one on the top caused the second one to happen.
+
+
+00:03:16.380 --> 00:03:22.460
+So you know that we're in the case of somebody's trying to wrap an exception with a friendlier exception.
+
+
+00:03:22.460 --> 00:03:28.780
+Which is subtle. The reason why I kind of, I don't know, I just like it, Rom likes it, and
+
+
+00:03:28.780 --> 00:03:36.540
+but he didn't see that nobody was using it. So he went even further and he went out and
+
+
+00:03:36.540 --> 00:03:42.540
+wrote a script that can look for probable places where that should be happening. And he did
+
+
+00:03:43.340 --> 00:03:50.300
+he did pull requests to set up tools, scipy, matplotlib, pandas, pytest, ipython, mypy,
+
+
+00:03:50.300 --> 00:03:55.740
+pigments, and sphinx, which is like awesome that he just went out and did pull requests against
+
+
+00:03:55.740 --> 00:03:59.740
+all of those projects. Oh, that's really cool. The other thing he did was he wrote a new rule
+
+
+00:03:59.740 --> 00:04:09.740
+for pylint. And so w0707, raise missing from, which is kind of weird, but basically pylint
+
+
+00:04:09.740 --> 00:04:16.220
+will now catch it. So if you use the most recent, it's not released yet, but if you run pilot from
+
+
+00:04:16.220 --> 00:04:21.020
+GitHub, you can see that rule. But the next time they release pilot, it'll be in there.
+
+
+00:04:21.020 --> 00:04:21.260
+Yeah.
+
+
+00:04:21.260 --> 00:04:21.900
+This is neat.
+
+
+00:04:21.900 --> 00:04:27.100
+I like it. I think it's confusing the way it is now, if you don't do it the right way. And I
+
+
+00:04:27.100 --> 00:04:33.020
+often get messages from students saying, oh, I got this really bizarre error, like some,
+
+
+00:04:33.020 --> 00:04:38.140
+you know, some other thing. And the problem is buried in the other part of this whole story,
+
+
+00:04:38.140 --> 00:04:43.820
+right? And it's not clear what part they should be paying attention to. So I think this makes it
+
+
+00:04:43.820 --> 00:04:48.940
+more clear and it's nice. All right. Well, the next thing I want to talk about is publishing
+
+
+00:04:48.940 --> 00:04:54.060
+data science and other interactive stuff on the internet. Now, there's a couple of ways you can
+
+
+00:04:54.060 --> 00:05:01.340
+do this. You could go to like Google CoLab and whatnot, but Tim Pogue sent over this new place
+
+
+00:05:01.340 --> 00:05:05.300
+where you basically custom built for this story
+
+
+00:05:05.300 --> 00:05:07.440
+and it's called DataPane.
+
+
+00:05:07.440 --> 00:05:10.220
+So DataPane is an open source framework
+
+
+00:05:10.220 --> 00:05:12.740
+which makes it easy to turn scripts
+
+
+00:05:12.740 --> 00:05:15.260
+and notebooks into interactive reports.
+
+
+00:05:15.260 --> 00:05:18.540
+So you can export a Jupyter notebook as a report
+
+
+00:05:18.540 --> 00:05:21.400
+but then it's just static, you can't interact with it.
+
+
+00:05:21.400 --> 00:05:23.140
+Or if you try to run it,
+
+
+00:05:23.140 --> 00:05:24.960
+then there's a bunch of code in there
+
+
+00:05:24.960 --> 00:05:25.980
+and there's all kinds of stuff
+
+
+00:05:25.980 --> 00:05:27.980
+that you probably don't want people to see.
+
+
+00:05:27.980 --> 00:05:32.980
+So DataPane is a way to like create and host interactive HTML
+
+
+00:05:32.980 --> 00:05:36.780
+that runs against APIs and runs data and so on.
+
+
+00:05:36.780 --> 00:05:37.620
+It's pretty cool.
+
+
+00:05:37.620 --> 00:05:40.500
+You go in there and like use sliders to adjust
+
+
+00:05:40.500 --> 00:05:43.320
+what's happening in say a graph or filtering
+
+
+00:05:43.320 --> 00:05:44.540
+or things like that.
+
+
+00:05:44.540 --> 00:05:45.360
+- That's neat.
+
+
+00:05:45.360 --> 00:05:47.380
+So this is one of those things that it's a paid service
+
+
+00:05:47.380 --> 00:05:50.020
+but they have free accounts that you can do, right?
+
+
+00:05:50.020 --> 00:05:50.940
+- Yes, exactly.
+
+
+00:05:50.940 --> 00:05:53.780
+So I'm not entirely sure the whole spectrum
+
+
+00:05:53.780 --> 00:05:54.600
+of what's going on.
+
+
+00:05:54.600 --> 00:05:56.020
+So it says it's an open source framework.
+
+
+00:05:56.020 --> 00:05:57.780
+So I think there's an API that you bring in
+
+
+00:05:57.780 --> 00:05:59.620
+to make this happen.
+
+
+00:05:59.620 --> 00:06:01.540
+And there might be a self-posting story.
+
+
+00:06:01.540 --> 00:06:04.180
+They also have a platform for publishing it too.
+
+
+00:06:04.180 --> 00:06:06.660
+And on that platform, it's free for individuals,
+
+
+00:06:06.660 --> 00:06:09.080
+but I can't find a price anywhere,
+
+
+00:06:09.080 --> 00:06:12.500
+but it looks like they're going to eventually charge
+
+
+00:06:12.500 --> 00:06:17.020
+for a team commercial corporate version.
+
+
+00:06:17.020 --> 00:06:18.940
+I don't really know what's going on with that anymore,
+
+
+00:06:18.940 --> 00:06:20.180
+but it's free for individuals
+
+
+00:06:20.180 --> 00:06:22.980
+and you can use their open source framework
+
+
+00:06:22.980 --> 00:06:24.660
+to generate these reports.
+
+
+00:06:24.660 --> 00:06:26.460
+- Okay, and they also have the gallery there.
+
+
+00:06:26.460 --> 00:06:29.420
+So I was looking for it, I found it for a while.
+
+
+00:06:29.420 --> 00:06:30.700
+It's obviously right at the top.
+
+
+00:06:30.700 --> 00:06:34.500
+It says open analysis gallery for looking at pictures.
+
+
+00:06:34.500 --> 00:06:35.860
+- Exactly.
+
+
+00:06:35.860 --> 00:06:38.480
+Yeah, so the idea is that you can use like the tools
+
+
+00:06:38.480 --> 00:06:39.700
+that you already know and love.
+
+
+00:06:39.700 --> 00:06:42.880
+So you can use Jupyter or Colab or Airflow
+
+
+00:06:42.880 --> 00:06:46.220
+and you can build reports using their frameworks,
+
+
+00:06:46.220 --> 00:06:48.660
+using Markdown as well, and cool libraries
+
+
+00:06:48.660 --> 00:06:50.160
+that people probably are already using
+
+
+00:06:50.160 --> 00:06:52.180
+for visualization like Altair,
+
+
+00:06:52.180 --> 00:06:54.540
+what I've been using for my visualizations lately.
+
+
+00:06:54.540 --> 00:06:58.180
+And then you can either export these as standalone HTML files,
+
+
+00:06:58.180 --> 00:06:58.940
+which is one option.
+
+
+00:06:58.940 --> 00:07:01.660
+That's the totally disconnected, just take the library.
+
+
+00:07:01.660 --> 00:07:05.340
+The other one is you can publish them to Data Pane for free,
+
+
+00:07:05.340 --> 00:07:07.940
+where people can share them and embed them.
+
+
+00:07:07.940 --> 00:07:09.580
+And there's probably this paid corporate thing
+
+
+00:07:09.580 --> 00:07:10.820
+that I don't have details on.
+
+
+00:07:10.820 --> 00:07:11.220
+- Nice.
+
+
+00:07:11.220 --> 00:07:11.780
+- Yeah.
+
+
+00:07:11.780 --> 00:07:16.900
+So you're going to add like forms to help filter and drive the report.
+
+
+00:07:16.900 --> 00:07:18.740
+You can have a talk to APIs.
+
+
+00:07:18.740 --> 00:07:23.660
+Also, they have APIs that you can use to deploy your scripts to their server,
+
+
+00:07:23.660 --> 00:07:27.460
+And you can even have integrated set up with like GitHub actions or airflow or
+
+
+00:07:27.460 --> 00:07:31.940
+standard CI CD stuff to like update your reports on data pain.com.
+
+
+00:07:31.940 --> 00:07:32.780
+So pretty cool.
+
+
+00:07:32.780 --> 00:07:33.700
+Like you said, there's a gallery.
+
+
+00:07:33.700 --> 00:07:35.620
+I'll link to the gallery at the end of the section.
+
+
+00:07:35.620 --> 00:07:38.640
+So these kinds of things, you just want to poke around the gallery and get a
+
+
+00:07:38.640 --> 00:07:39.640
+sense before you mess with it.
+
+
+00:07:39.640 --> 00:07:39.840
+Right.
+
+
+00:07:39.840 --> 00:07:40.700
+I like pictures.
+
+
+00:07:40.700 --> 00:07:41.060
+I do.
+
+
+00:07:41.060 --> 00:07:41.960
+We both like pictures.
+
+
+00:07:41.960 --> 00:07:46.060
+Now, before we go on to the next thing and we look at the ways in
+
+
+00:07:46.060 --> 00:07:47.920
+which pickle might make you sour.
+
+
+00:07:47.920 --> 00:07:50.540
+Let's really talk about things that won't make you sour.
+
+
+00:07:50.860 --> 00:07:53.740
+your PyTest book, if people are interested in learning PyTest,
+
+
+00:07:53.740 --> 00:07:56.900
+getting into testing and not just scratching the surface,
+
+
+00:07:56.900 --> 00:07:58.620
+but really deeply understanding PyTest,
+
+
+00:07:58.620 --> 00:07:59.980
+they can check out your book,
+
+
+00:07:59.980 --> 00:08:01.620
+which we'll link to in the show notes.
+
+
+00:08:01.620 --> 00:08:04.260
+And if they would like to take some courses,
+
+
+00:08:04.260 --> 00:08:06.780
+we have a whole bunch of courses over at Talk Python.
+
+
+00:08:06.780 --> 00:08:10.020
+We're almost up to 200 hours of courses over there.
+
+
+00:08:10.020 --> 00:08:10.860
+That's a lot.
+
+
+00:08:10.860 --> 00:08:11.680
+- Nice, it is a lot.
+
+
+00:08:11.680 --> 00:08:12.700
+But like I've said before,
+
+
+00:08:12.700 --> 00:08:14.360
+one of the things I like about it is
+
+
+00:08:14.360 --> 00:08:16.020
+you don't have to spend hours at a time.
+
+
+00:08:16.020 --> 00:08:18.380
+You can spend a few minutes and not lose your place.
+
+
+00:08:18.380 --> 00:08:19.500
+It's a nice way to set it up.
+
+
+00:08:19.500 --> 00:08:20.340
+- Yeah, thanks.
+
+
+00:08:20.340 --> 00:08:25.900
+the PyTest site, I wanted to reach out to people. I'm pretty available on Twitter or
+
+
+00:08:25.900 --> 00:08:33.180
+through the contact form on Python, not talk Python, Python bytes. However, I've had people
+
+
+00:08:33.180 --> 00:08:38.980
+try to email me at the contact form on talk Python and Michael just send it to me nicely.
+
+
+00:08:38.980 --> 00:08:44.300
+So anyway, I want to have people know, I'd like to know people, if they want to learn
+
+
+00:08:44.300 --> 00:08:48.980
+how to test more, whether or not they've read the PyTest book, what's stopping you? I don't
+
+
+00:08:48.980 --> 00:08:52.780
+know how to get in people's heads of why are they not testing more.
+
+
+00:08:52.780 --> 00:08:55.580
+So please reach out to me and let me know your questions.
+
+
+00:08:55.580 --> 00:08:56.180
+That'd be awesome.
+
+
+00:08:56.180 --> 00:08:57.180
+Yeah, absolutely.
+
+
+00:08:57.180 --> 00:08:58.280
+Now you want to make me sour?
+
+
+00:08:58.280 --> 00:08:59.180
+I love pickles.
+
+
+00:08:59.180 --> 00:08:59.980
+Do you like pickles?
+
+
+00:08:59.980 --> 00:09:01.280
+I'm coming around to them.
+
+
+00:09:01.280 --> 00:09:03.880
+I've used to really not like pickles, but I'm OK.
+
+
+00:09:03.880 --> 00:09:04.380
+OK.
+
+
+00:09:04.380 --> 00:09:07.480
+I have a really fun pickle story to tell you, but it's like 10 minutes.
+
+
+00:09:07.480 --> 00:09:08.780
+It's better over a minute or so.
+
+
+00:09:08.780 --> 00:09:09.280
+Next time.
+
+
+00:09:09.280 --> 00:09:10.980
+But let's talk about Python's pickle.
+
+
+00:09:10.980 --> 00:09:12.180
+I kind of like it sometimes.
+
+
+00:09:12.180 --> 00:09:16.180
+No, it's one of the first things I learned about for saving data and stuff
+
+
+00:09:16.180 --> 00:09:18.180
+is you can pickle stuff.
+
+
+00:09:18.180 --> 00:09:22.020
+So if you got whatever object, a bunch of objects or whatever in a collection,
+
+
+00:09:22.020 --> 00:09:24.460
+you can use pickle to serialize it somewhere.
+
+
+00:09:24.460 --> 00:09:27.340
+I think we've brought it up here on this podcast, but
+
+
+00:09:27.340 --> 00:09:31.260
+you'll occasionally run into people saying, just be careful with pickle or
+
+
+00:09:31.260 --> 00:09:33.180
+never use pickle or something.
+
+
+00:09:33.180 --> 00:09:38.260
+And Ned Batchelder put together a post called Pickles 9 Flaws,
+
+
+00:09:38.260 --> 00:09:44.140
+where he says, it's not never use it, but use pickle if you're okay with these flaws.
+
+
+00:09:44.140 --> 00:09:47.980
+So, and I like this list, cuz I've heard some of these before, but
+
+
+00:09:47.980 --> 00:09:50.900
+never in one place. First off, it's insecure.
+
+
+00:09:50.900 --> 00:09:53.220
+So unless you really, I mean,
+
+
+00:09:53.220 --> 00:09:57.020
+if you're only pickling and unpickling your own data within your own program,
+
+
+00:09:57.020 --> 00:10:02.180
+and there's not a chance of having somebody else feed you bad pickles,
+
+
+00:10:02.180 --> 00:10:04.820
+then you're okay. But it's not secure.
+
+
+00:10:04.820 --> 00:10:09.820
+There's ways to have them and have malicious pickles be generated that can cause
+
+
+00:10:09.820 --> 00:10:13.700
+the unpickler to run random code, which is not what you want.
+
+
+00:10:13.820 --> 00:10:16.740
+And then he links to a more thorough article
+
+
+00:10:16.740 --> 00:10:19.360
+on the security if you're worried about that.
+
+
+00:10:19.360 --> 00:10:23.520
+Old pickles, second one is old pickles look like old code.
+
+
+00:10:23.520 --> 00:10:25.700
+And the gist of it is,
+
+
+00:10:25.700 --> 00:10:27.340
+you can't really version this stuff.
+
+
+00:10:27.340 --> 00:10:30.980
+So if you change the way your objects look,
+
+
+00:10:30.980 --> 00:10:34.140
+your pickles aren't gonna, it's not gonna work right.
+
+
+00:10:34.140 --> 00:10:35.180
+Change your data structure
+
+
+00:10:35.180 --> 00:10:38.180
+and you got to pretty much throw all data away and start.
+
+
+00:10:38.180 --> 00:10:39.580
+- Yeah, this one is really tricky
+
+
+00:10:39.580 --> 00:10:41.900
+because it takes the entire object graph.
+
+
+00:10:41.900 --> 00:10:43.300
+You say like, here, save this list.
+
+
+00:10:43.300 --> 00:10:44.580
+this list contains these things,
+
+
+00:10:44.580 --> 00:10:45.540
+these things contain pointers,
+
+
+00:10:45.540 --> 00:10:46.380
+so those other things,
+
+
+00:10:46.380 --> 00:10:48.100
+it's gonna save all of that stuff.
+
+
+00:10:48.100 --> 00:10:51.980
+And if the code that defines the fields of that change,
+
+
+00:10:51.980 --> 00:10:53.740
+like if you rename a field,
+
+
+00:10:53.740 --> 00:10:55.500
+and you try to load it, you're done.
+
+
+00:10:55.500 --> 00:10:56.480
+It's not gonna be able,
+
+
+00:10:56.480 --> 00:10:58.060
+it's like this binary blob
+
+
+00:10:58.060 --> 00:10:59.820
+that doesn't fit together anymore.
+
+
+00:10:59.820 --> 00:11:02.220
+There's not like a, well, let me adjust for this.
+
+
+00:11:02.220 --> 00:11:04.060
+It's just like, nope, nope,
+
+
+00:11:04.060 --> 00:11:06.100
+you can no longer load that file.
+
+
+00:11:06.100 --> 00:11:11.100
+So it depends, but not being able to load your file at all,
+
+
+00:11:11.100 --> 00:11:13.120
+or open it in a text editor even,
+
+
+00:11:13.120 --> 00:11:14.280
+that might be a bad place.
+
+
+00:11:14.280 --> 00:11:17.160
+- Basically, if you're trying to save code between versions
+
+
+00:11:17.160 --> 00:11:21.080
+or save stuff between versions, it's not a good thing.
+
+
+00:11:21.080 --> 00:11:24.320
+There may be cases where you're just using it to serialize
+
+
+00:11:24.320 --> 00:11:26.400
+between a live app, a running application,
+
+
+00:11:26.400 --> 00:11:28.840
+and you're not gonna save that data anywhere.
+
+
+00:11:28.840 --> 00:11:31.440
+- I think there was an interesting problem.
+
+
+00:11:31.440 --> 00:11:34.300
+I think it was Instagram that had this problem.
+
+
+00:11:34.300 --> 00:11:37.600
+Somebody that had done a big talk at PyCon,
+
+
+00:11:37.600 --> 00:11:40.080
+they were doing caching in something like Redis
+
+
+00:11:40.080 --> 00:11:42.520
+or something, and they were putting their pickles,
+
+
+00:11:42.520 --> 00:11:44.480
+they would pickle stuff, put it in the cache,
+
+
+00:11:44.480 --> 00:11:45.320
+and they'd pull it out,
+
+
+00:11:45.320 --> 00:11:47.280
+and then they'd switch from like two to three,
+
+
+00:11:47.280 --> 00:11:49.080
+and they could no longer read their cache,
+
+
+00:11:49.080 --> 00:11:51.160
+and it like took down the system or something.
+
+
+00:11:51.160 --> 00:11:52.000
+- Yeah.
+
+
+00:11:52.000 --> 00:11:53.160
+- Like something really, even really weird like that,
+
+
+00:11:53.160 --> 00:11:54.760
+like deploying a new version of the site.
+
+
+00:11:54.760 --> 00:11:55.600
+- Yeah. - Yeah.
+
+
+00:11:55.600 --> 00:11:56.640
+- I'll read through the whole list,
+
+
+00:11:56.640 --> 00:11:57.800
+we can pick out a few.
+
+
+00:11:57.800 --> 00:12:00.440
+They're implicit, so it serializes everything,
+
+
+00:12:00.440 --> 00:12:02.700
+even if you don't want it to.
+
+
+00:12:02.700 --> 00:12:04.760
+Oh, that's the over-serializes.
+
+
+00:12:04.760 --> 00:12:08.800
+The implicit part is it serializes things as class objects,
+
+
+00:12:08.800 --> 00:12:12.440
+and even if that's not really what you'd want,
+
+
+00:12:12.440 --> 00:12:14.540
+Like his example is date time.
+
+
+00:12:14.540 --> 00:12:16.140
+You really wouldn't want to serialize it
+
+
+00:12:16.140 --> 00:12:17.540
+as a date time object.
+
+
+00:12:17.540 --> 00:12:20.260
+You'd want to serialize it as a string or something.
+
+
+00:12:20.260 --> 00:12:21.500
+The init isn't called.
+
+
+00:12:21.500 --> 00:12:24.780
+So normally your classes, the init gets called,
+
+
+00:12:24.780 --> 00:12:26.620
+but during unpickling,
+
+
+00:12:26.620 --> 00:12:29.140
+it just creates this object without calling init.
+
+
+00:12:29.140 --> 00:12:31.900
+So if there's any side effects that you need to have happen,
+
+
+00:12:31.900 --> 00:12:33.340
+that ain't gonna happen.
+
+
+00:12:33.340 --> 00:12:34.420
+It's Python only.
+
+
+00:12:34.420 --> 00:12:37.380
+You can't convert it between different languages.
+
+
+00:12:37.380 --> 00:12:38.700
+It's unreadable.
+
+
+00:12:38.700 --> 00:12:39.980
+You mentioned it's binary.
+
+
+00:12:39.980 --> 00:12:41.060
+So if anything goes wrong,
+
+
+00:12:41.060 --> 00:12:42.860
+good luck with debugging it.
+
+
+00:12:42.860 --> 00:12:45.220
+It appears to pickle your code, but it really doesn't.
+
+
+00:12:45.220 --> 00:12:47.380
+So if you've got a list of functions and classes
+
+
+00:12:47.380 --> 00:12:49.760
+and objects, those will be in there,
+
+
+00:12:49.760 --> 00:12:51.540
+but it's just names of stuff.
+
+
+00:12:51.540 --> 00:12:53.200
+And then when you unpickle it,
+
+
+00:12:53.200 --> 00:12:55.980
+it creates those objects without calling init.
+
+
+00:12:55.980 --> 00:12:57.420
+It's slow.
+
+
+00:12:57.420 --> 00:13:00.980
+And so the binary part gets me,
+
+
+00:13:00.980 --> 00:13:03.340
+but basically these are all the things
+
+
+00:13:03.340 --> 00:13:04.540
+that are wrong with it.
+
+
+00:13:04.540 --> 00:13:06.540
+But there's some ways to get around it.
+
+
+00:13:06.540 --> 00:13:07.540
+And a lot of people will say,
+
+
+00:13:07.540 --> 00:13:08.700
+"Well, there's ways to get around it."
+
+
+00:13:08.700 --> 00:13:11.340
+and Ned's comment is,
+
+
+00:13:11.340 --> 00:13:13.340
+if you're going through some of the code
+
+
+00:13:13.340 --> 00:13:15.220
+to work around the problems with pickle,
+
+
+00:13:15.220 --> 00:13:17.500
+then just why are you using pickle?
+
+
+00:13:17.500 --> 00:13:18.820
+There's other things out there.
+
+
+00:13:18.820 --> 00:13:21.060
+And my favorite alternative is just JSON.
+
+
+00:13:21.060 --> 00:13:26.060
+So JSON mostly works most of the time and you can read it.
+
+
+00:13:26.060 --> 00:13:28.620
+So you can look at what's wrong and go,
+
+
+00:13:28.620 --> 00:13:30.940
+oh, I see why that didn't work
+
+
+00:13:30.940 --> 00:13:33.860
+because I was putting this garbage in there or whatever,
+
+
+00:13:33.860 --> 00:13:35.500
+or I haven't tried these others.
+
+
+00:13:35.500 --> 00:13:37.540
+So there's other suggestions like marshmallow,
+
+
+00:13:37.540 --> 00:13:39.540
+I haven't used those before.
+
+
+00:13:39.540 --> 00:13:42.540
+But the, what was I going to bring up?
+
+
+00:13:42.540 --> 00:13:44.540
+You brought up something about being binary,
+
+
+00:13:44.540 --> 00:13:46.540
+and that's one of the parts that gets me
+
+
+00:13:46.540 --> 00:13:48.540
+is a serializer that goes to binary.
+
+
+00:13:48.540 --> 00:13:51.540
+That makes sense if it's really fast,
+
+
+00:13:51.540 --> 00:13:54.540
+but using a slow serializer to--
+
+
+00:13:54.540 --> 00:13:57.540
+It's both slow and binary, come on.
+
+
+00:13:57.540 --> 00:14:00.540
+Yeah, one of the things that the over-serializing,
+
+
+00:14:00.540 --> 00:14:02.540
+which I found is interesting,
+
+
+00:14:02.540 --> 00:14:05.540
+is caching is something we do for like long,
+
+
+00:14:05.540 --> 00:14:07.840
+like hard computations or something,
+
+
+00:14:07.840 --> 00:14:10.140
+or just to save some computation,
+
+
+00:14:10.140 --> 00:14:11.260
+you cache the result,
+
+
+00:14:11.260 --> 00:14:13.580
+that stuff will get saved in your pickle also,
+
+
+00:14:13.580 --> 00:14:14.940
+and that's surprising.
+
+
+00:14:14.940 --> 00:14:16.380
+So it's just weird.
+
+
+00:14:16.380 --> 00:14:17.220
+So thanks, Ned.
+
+
+00:14:17.220 --> 00:14:18.680
+- Yeah, it's a cool article.
+
+
+00:14:18.680 --> 00:14:21.340
+You know, the one place that pickle kind of makes sense
+
+
+00:14:21.340 --> 00:14:24.400
+to me is if I'm doing like a really quick prototype,
+
+
+00:14:24.400 --> 00:14:27.540
+and what I would need to save would be fairly complicated.
+
+
+00:14:27.540 --> 00:14:30.460
+I'm just like, you know what, I just want to save this.
+
+
+00:14:30.460 --> 00:14:33.100
+And if I really invest, and I like what we built here,
+
+
+00:14:33.100 --> 00:14:34.260
+we're going to go and rewrite this
+
+
+00:14:34.260 --> 00:14:38.060
+with a proper serialization data saving story,
+
+
+00:14:38.060 --> 00:14:39.760
+yeah, I could see that, all right, just pickle it.
+
+
+00:14:39.760 --> 00:14:41.260
+Now, I don't really often do that,
+
+
+00:14:41.260 --> 00:14:43.300
+that off very light, it's not very common,
+
+
+00:14:43.300 --> 00:14:45.120
+but I would certainly consider,
+
+
+00:14:45.120 --> 00:14:47.920
+like I just need to save this complicated data structure
+
+
+00:14:47.920 --> 00:14:50.280
+and I don't want really know if I even need this forever,
+
+
+00:14:50.280 --> 00:14:51.560
+but I'm just gonna do it for now.
+
+
+00:14:51.560 --> 00:14:53.520
+I might consider pickling, but in general,
+
+
+00:14:53.520 --> 00:14:54.560
+it's not super awesome.
+
+
+00:14:54.560 --> 00:14:56.720
+And also the malicious bits makes you,
+
+
+00:14:56.720 --> 00:14:57.960
+you know, you gotta be careful.
+
+
+00:14:57.960 --> 00:15:00.520
+- So the reason why you can't grab JSON right away
+
+
+00:15:00.520 --> 00:15:02.400
+is because there's some objects
+
+
+00:15:02.400 --> 00:15:03.760
+that are not serializable, right?
+
+
+00:15:03.760 --> 00:15:04.600
+- Yes, exactly.
+
+
+00:15:04.600 --> 00:15:06.760
+In some things that are simple like date times,
+
+
+00:15:06.760 --> 00:15:08.600
+like if you had a really complicated,
+
+
+00:15:08.600 --> 00:15:11.440
+some structure that had like say date times
+
+
+00:15:11.440 --> 00:15:12.600
+or other objects in there,
+
+
+00:15:12.600 --> 00:15:15.200
+you can't just dump the whole thing to JSON, right?
+
+
+00:15:15.200 --> 00:15:16.600
+So if you were just in a hurry,
+
+
+00:15:16.600 --> 00:15:18.360
+you're like, I'm just really trying to spend 30 minutes
+
+
+00:15:18.360 --> 00:15:20.240
+to figure this out, but I just need to save this
+
+
+00:15:20.240 --> 00:15:22.960
+and then load it and like, then maybe pickling makes sense.
+
+
+00:15:22.960 --> 00:15:26.140
+But the fact that you could never be,
+
+
+00:15:26.140 --> 00:15:27.760
+it's very possible you upgrade Python,
+
+
+00:15:27.760 --> 00:15:30.200
+you can never load it again, or things like that.
+
+
+00:15:30.200 --> 00:15:32.420
+You can't look at it like that makes me never wanna invest
+
+
+00:15:32.420 --> 00:15:34.900
+this as like a long-term option.
+
+
+00:15:34.900 --> 00:15:36.500
+- Yeah, the other thing I thought
+
+
+00:15:36.500 --> 00:15:38.180
+might be a reasonable thing is,
+
+
+00:15:38.180 --> 00:15:40.060
+I'd like to hear other people's thoughts
+
+
+00:15:40.060 --> 00:15:42.300
+on what reasonable uses for pickle are.
+
+
+00:15:42.300 --> 00:15:45.660
+But like in-memory stuff, so you're serializing it
+
+
+00:15:45.660 --> 00:15:47.460
+just to get it from one part of your system
+
+
+00:15:47.460 --> 00:15:49.300
+to another or something.
+
+
+00:15:49.300 --> 00:15:50.140
+- Yeah, yeah, yeah.
+
+
+00:15:50.140 --> 00:15:52.140
+Like a super deep copy sort of thing
+
+
+00:15:52.140 --> 00:15:54.600
+might make sense, potentially, right?
+
+
+00:15:54.600 --> 00:15:58.460
+Yeah, speaking of, it might change
+
+
+00:15:58.460 --> 00:16:00.560
+because you get a new version of Python.
+
+
+00:16:00.560 --> 00:16:02.300
+That is now gonna be more common.
+
+
+00:16:02.300 --> 00:16:03.340
+- Yeah. - Yeah.
+
+
+00:16:03.340 --> 00:16:07.340
+So Luca Slinga, he's been in charge of releasing,
+
+
+00:16:07.340 --> 00:16:10.300
+release management of Python recently,
+
+
+00:16:10.300 --> 00:16:14.400
+and he has gotten PEP 602 accepted.
+
+
+00:16:14.400 --> 00:16:18.460
+And PEP 602 says, "We're switching from a 17
+
+
+00:16:18.460 --> 00:16:22.940
+"to 18 month release cycle to a yearly release cycle."
+
+
+00:16:22.940 --> 00:16:24.460
+Yay! - That makes sense.
+
+
+00:16:24.460 --> 00:16:27.340
+- Yeah, remember we were talking about something
+
+
+00:16:27.340 --> 00:16:29.660
+that got into Python 3.9,
+
+
+00:16:29.660 --> 00:16:32.780
+And we were looking at the conversation on the dev channel.
+
+
+00:16:32.780 --> 00:16:34.920
+And it was like, I really, really tried.
+
+
+00:16:34.920 --> 00:16:38.540
+I submitted this before the deadline, but you guys weren't able to like
+
+
+00:16:38.540 --> 00:16:42.780
+review the PR before the window closed for three, eight.
+
+
+00:16:42.780 --> 00:16:46.900
+So because of that, like that feature missed by a couple of weeks and it was a
+
+
+00:16:46.900 --> 00:16:50.100
+year and a half before it could actually get accepted, right.
+
+
+00:16:50.100 --> 00:16:51.140
+It was like really long.
+
+
+00:16:51.140 --> 00:16:55.020
+So on one hand, this, this is to shorten that cycle.
+
+
+00:16:55.020 --> 00:16:58.880
+The other thing is on a given year, when will Python come out?
+
+
+00:16:58.980 --> 00:17:01.820
+I don't know, is it an even year or an odd year?
+
+
+00:17:01.820 --> 00:17:03.980
+Like that's just a weird way to think of things, right?
+
+
+00:17:03.980 --> 00:17:06.520
+We have conferences yearly in theory,
+
+
+00:17:06.520 --> 00:17:08.100
+things like that, right?
+
+
+00:17:08.100 --> 00:17:11.640
+But for Python, it had been on this 18 month
+
+
+00:17:11.640 --> 00:17:13.320
+sort of alternating cycle.
+
+
+00:17:13.320 --> 00:17:16.780
+This way they can schedule it so that things like
+
+
+00:17:16.780 --> 00:17:21.780
+the feature freeze or beta stage happens right after PyCon.
+
+
+00:17:21.780 --> 00:17:26.340
+So the sprints can always focus on getting that last bit
+
+
+00:17:26.340 --> 00:17:30.540
+into CPython at PyCon and what, and it's much more predictable.
+
+
+00:17:30.540 --> 00:17:31.700
+So I think that'll be nice.
+
+
+00:17:31.700 --> 00:17:31.980
+Yeah.
+
+
+00:17:31.980 --> 00:17:34.940
+And there's other stuff in life like, you know, holidays and things like
+
+
+00:17:34.940 --> 00:17:38.780
+that, that you can just sort of figure out when a good time is for the whole
+
+
+00:17:38.780 --> 00:17:41.020
+schedule and then just do that every year.
+
+
+00:17:41.020 --> 00:17:42.460
+Absolutely.
+
+
+00:17:42.460 --> 00:17:43.100
+Absolutely.
+
+
+00:17:43.100 --> 00:17:46.060
+So let's see, there's a little bit of interesting detail.
+
+
+00:17:46.060 --> 00:17:54.700
+It says the pep proposes that Python three dot whatever be developed around.
+
+
+00:17:55.020 --> 00:17:59.740
+I think it's over 17 months across a 17 month period,
+
+
+00:17:59.740 --> 00:18:01.060
+which doesn't sound annual, does it?
+
+
+00:18:01.060 --> 00:18:01.900
+- No.
+
+
+00:18:01.900 --> 00:18:04.860
+- So the way it works is the first five months
+
+
+00:18:04.860 --> 00:18:09.260
+will overlap with the previous version's beta period.
+
+
+00:18:09.260 --> 00:18:13.140
+And then there's seven months spent on the alpha release,
+
+
+00:18:13.140 --> 00:18:15.700
+and then three months on beta releases.
+
+
+00:18:15.700 --> 00:18:18.020
+And then finally two months on release candidates.
+
+
+00:18:18.020 --> 00:18:19.500
+So there's, the way it's gonna work,
+
+
+00:18:19.500 --> 00:18:21.940
+instead of like we're now on 3.8,
+
+
+00:18:21.940 --> 00:18:23.340
+now we're all focusing on 3.9,
+
+
+00:18:23.340 --> 00:18:24.960
+that three is out, there's like an overlap.
+
+
+00:18:24.960 --> 00:18:30.200
+So basically as soon as the features freeze on the previous,
+
+
+00:18:30.200 --> 00:18:31.920
+on the what's coming out, right?
+
+
+00:18:31.920 --> 00:18:34.640
+So like right now, three nine is coming out.
+
+
+00:18:34.640 --> 00:18:38.000
+So as soon as it hit feature freeze, three 10 would start.
+
+
+00:18:38.000 --> 00:18:38.580
+Right.
+
+
+00:18:38.580 --> 00:18:41.720
+So there's like this overlap as the version that's coming out, it's getting
+
+
+00:18:41.720 --> 00:18:45.360
+stabilized and finalized new features and developments already happening on the
+
+
+00:18:45.360 --> 00:18:48.880
+other one in the way with that overlap working, it's going to result in a new
+
+
+00:18:48.880 --> 00:18:52.440
+version every 12 months, there'll be like a five month period of where there's
+
+
+00:18:52.440 --> 00:18:55.400
+like new features go to the new one and stabilization to the old one.
+
+
+00:18:55.400 --> 00:18:57.760
+And this is kind of how commercial software is done anyway.
+
+
+00:18:57.760 --> 00:18:58.040
+Yeah.
+
+
+00:18:58.040 --> 00:18:58.280
+Yeah.
+
+
+00:18:58.280 --> 00:19:01.040
+You never, it's like, no one touches the new one until we've like
+
+
+00:19:01.040 --> 00:19:02.400
+shipped it the gold version.
+
+
+00:19:02.400 --> 00:19:06.120
+Like now, like some people are fixing stuff that they need to fix and some
+
+
+00:19:06.120 --> 00:19:07.320
+people are putting the new features.
+
+
+00:19:07.320 --> 00:19:11.680
+So in terms of advantages, they call out makes the releases smaller.
+
+
+00:19:11.680 --> 00:19:15.440
+So doubling the cadence doesn't double their available development
+
+
+00:19:15.440 --> 00:19:18.640
+resources and so on, and consecutive releases are going to be
+
+
+00:19:18.640 --> 00:19:20.300
+smaller in terms of features.
+
+
+00:19:20.300 --> 00:19:20.960
+So that's good.
+
+
+00:19:21.240 --> 00:19:25.440
+It puts features and bug fixes in the hands of users sooner, right?
+
+
+00:19:25.440 --> 00:19:29.640
+Six months sooner, it creates a more gradual upgrade path, right?
+
+
+00:19:29.640 --> 00:19:33.960
+You instead of adopting 18 months at a time, you can adopt 12 months at a time.
+
+
+00:19:33.960 --> 00:19:37.760
+Like you could be, if you're saying like, we're always going to be one version
+
+
+00:19:37.760 --> 00:19:40.580
+back of what just got released on the Python, right?
+
+
+00:19:40.580 --> 00:19:43.920
+So if you're saying we're going to run on three, seven in today's world, right?
+
+
+00:19:43.920 --> 00:19:45.240
+That's not an 18 month gap.
+
+
+00:19:45.240 --> 00:19:46.160
+That's a 12 month gap.
+
+
+00:19:46.160 --> 00:19:46.840
+So that's good.
+
+
+00:19:46.840 --> 00:19:50.480
+You're a little less far behind if you're on the laggard side of things.
+
+
+00:19:50.480 --> 00:19:52.840
+the predictable calendar.
+
+
+00:19:52.840 --> 00:19:55.240
+So the final release is always going to be in October
+
+
+00:19:55.240 --> 00:19:56.840
+after the annual core sprint
+
+
+00:19:56.840 --> 00:19:59.680
+and the beta phase always starts in May.
+
+
+00:19:59.680 --> 00:20:02.180
+So after the PyCon US sprint.
+
+
+00:20:02.180 --> 00:20:04.720
+So there's like a nice lineup for that as well.
+
+
+00:20:04.720 --> 00:20:06.880
+- Also my prediction is that people won't be
+
+
+00:20:06.880 --> 00:20:08.680
+doing the two version thing.
+
+
+00:20:08.680 --> 00:20:10.160
+They'll actually do three.
+
+
+00:20:10.160 --> 00:20:11.620
+I recommend everybody do this anyway.
+
+
+00:20:11.620 --> 00:20:13.280
+So let's say like right now,
+
+
+00:20:13.280 --> 00:20:15.720
+if you've got a project on Python,
+
+
+00:20:15.720 --> 00:20:18.720
+you should make sure that it works on 3.7 and 3.8,
+
+
+00:20:18.720 --> 00:20:19.560
+of course,
+
+
+00:20:19.560 --> 00:20:22.840
+So 3.9 is around, so test it on 3.9 also.
+
+
+00:20:22.840 --> 00:20:26.240
+And then when 3.9 is the official one,
+
+
+00:20:26.240 --> 00:20:28.840
+maybe you keep 3.7, but if you don't want to,
+
+
+00:20:28.840 --> 00:20:31.680
+you're at least doing, making sure you're compatible
+
+
+00:20:31.680 --> 00:20:34.320
+with the next one, the current one, and the last one.
+
+
+00:20:34.320 --> 00:20:36.560
+So it'll make more sense.
+
+
+00:20:36.560 --> 00:20:38.120
+- Absolutely. Very good.
+
+
+00:20:38.120 --> 00:20:41.440
+Now, we spent a lot of last episode on Git, right?
+
+
+00:20:41.440 --> 00:20:45.260
+- Yeah, well, episode 187, we talked about Oh Shit Git
+
+
+00:20:45.260 --> 00:20:47.440
+from Azeem from Julie Evans.
+
+
+00:20:47.440 --> 00:20:50.200
+And I mentioned that I was concerned about,
+
+
+00:20:50.200 --> 00:20:51.680
+I wanted to buy this for my team,
+
+
+00:20:51.680 --> 00:20:55.520
+but I didn't know if HR would like the naming of it.
+
+
+00:20:55.520 --> 00:20:58.080
+And John Place reached out, one of our listeners,
+
+
+00:20:58.080 --> 00:21:01.200
+and said, "You know, there's a non-swearing version."
+
+
+00:21:01.200 --> 00:21:03.920
+He actually sent us a ton of great Git information.
+
+
+00:21:03.920 --> 00:21:07.480
+So the same little magazine, you can get it as DangitGit.
+
+
+00:21:07.480 --> 00:21:08.640
+- Aw shucks, Git.
+
+
+00:21:08.640 --> 00:21:09.760
+- Aw shucks, Git.
+
+
+00:21:09.760 --> 00:21:11.640
+(laughing)
+
+
+00:21:11.640 --> 00:21:13.080
+Aw darnit, Git.
+
+
+00:21:13.080 --> 00:21:16.800
+All of those would be good, but it's DangitGit.
+
+
+00:21:16.800 --> 00:21:18.760
+And then also when I was looking around these,
+
+
+00:21:18.760 --> 00:21:21.800
+there's also, these were zines that you can buy,
+
+
+00:21:21.800 --> 00:21:24.240
+but these were inspired by two websites
+
+
+00:21:24.240 --> 00:21:28.280
+that were put together by Katie Seiler Miller,
+
+
+00:21:28.280 --> 00:21:31.280
+dangitgit.com and ohshitgit.com.
+
+
+00:21:31.280 --> 00:21:33.760
+There's actually really cool.
+
+
+00:21:33.760 --> 00:21:37.600
+These are free websites that have kind of the idea
+
+
+00:21:37.600 --> 00:21:40.560
+of something went wrong, how do I fix it?
+
+
+00:21:40.560 --> 00:21:43.280
+And then every single one of the topics
+
+
+00:21:43.280 --> 00:21:44.880
+is clickable and linkable.
+
+
+00:21:44.880 --> 00:21:46.600
+And I didn't understand the clicks at first.
+
+
+00:21:46.600 --> 00:21:48.880
+I'm like, oh, these are links, so they go to articles.
+
+
+00:21:48.880 --> 00:21:52.000
+Oh, it just takes me right to where I already was.
+
+
+00:21:52.000 --> 00:21:54.000
+I don't understand this, why would I do this?
+
+
+00:21:54.000 --> 00:21:55.620
+Well, it's so that they're anchors
+
+
+00:21:55.620 --> 00:21:58.120
+so that you can click on it and get the URL
+
+
+00:21:58.120 --> 00:21:59.120
+and send it to somebody.
+
+
+00:21:59.120 --> 00:22:00.860
+So if somebody asks you a question,
+
+
+00:22:00.860 --> 00:22:03.320
+and the answer's here, you can send them the link
+
+
+00:22:03.320 --> 00:22:05.200
+and say, here's how to fix it.
+
+
+00:22:05.200 --> 00:22:07.840
+And then next time they can fix it themselves.
+
+
+00:22:07.840 --> 00:22:11.440
+So these are neat things in the community.
+
+
+00:22:11.440 --> 00:22:13.320
+And then also this, okay,
+
+
+00:22:13.320 --> 00:22:15.280
+do you see the link for get cheat sheet?
+
+
+00:22:15.280 --> 00:22:16.480
+Have you looked at this yet?
+
+
+00:22:16.480 --> 00:22:17.520
+I'm looking at it now.
+
+
+00:22:17.520 --> 00:22:19.240
+- I thought this was gonna be a get PDF,
+
+
+00:22:19.240 --> 00:22:22.540
+like a PDF or something with a bunch of commands.
+
+
+00:22:22.540 --> 00:22:24.880
+But this is an incredible resource.
+
+
+00:22:24.880 --> 00:22:28.800
+The get cheat sheet is an interactive single page website.
+
+
+00:22:28.800 --> 00:22:31.880
+That's just beautiful to look at for one,
+
+
+00:22:31.880 --> 00:22:33.920
+but it's got five columns.
+
+
+00:22:33.920 --> 00:22:35.520
+I'm gonna pull it up also.
+
+
+00:22:35.520 --> 00:22:38.400
+It's got five columns, the stash, workplace, index,
+
+
+00:22:38.400 --> 00:22:41.600
+local repository and upstream repository.
+
+
+00:22:41.600 --> 00:22:44.000
+And you just, when you hover over it
+
+
+00:22:44.000 --> 00:22:46.400
+click on the different columns,
+
+
+00:22:46.400 --> 00:22:51.280
+it shows you all of the different Git commands that affect that.
+
+
+00:22:51.280 --> 00:22:54.680
+So if you click on the local repo, for instance,
+
+
+00:22:54.680 --> 00:22:59.200
+it'll show you how to get information from diff,
+
+
+00:22:59.200 --> 00:23:02.200
+how do you compare between the workspace and the local repo,
+
+
+00:23:02.200 --> 00:23:04.360
+what reset does, switch,
+
+
+00:23:04.360 --> 00:23:07.560
+rebase, cherry-picking, and all sorts of stuff.
+
+
+00:23:07.560 --> 00:23:10.040
+Then different commands that go between the index and
+
+
+00:23:10.040 --> 00:23:13.640
+the local repo and the local repo and the upstream one,
+
+
+00:23:13.640 --> 00:23:15.180
+with pushes and stuff.
+
+
+00:23:15.180 --> 00:23:18.440
+But it has this nice visual of where your stuff is
+
+
+00:23:18.440 --> 00:23:20.480
+and how do you get it back and forth.
+
+
+00:23:20.480 --> 00:23:23.400
+And then you hover over, if you hover over any of the commands,
+
+
+00:23:23.400 --> 00:23:25.520
+it shows you the information on the bottom.
+
+
+00:23:25.520 --> 00:23:26.720
+This is just great.
+
+
+00:23:26.720 --> 00:23:31.360
+I'm going to share this with my team for everybody that's--
+
+
+00:23:31.360 --> 00:23:34.280
+because one of the things that takes a while to get your head
+
+
+00:23:34.280 --> 00:23:37.640
+around with Git is this idea of what
+
+
+00:23:37.640 --> 00:23:40.920
+is the workspace and the index and the local repo and stuff.
+
+
+00:23:40.920 --> 00:23:45.020
+So having a visual of what commands affect which part of Git,
+
+
+00:23:45.020 --> 00:23:46.660
+it's pretty darn cool.
+
+
+00:23:46.660 --> 00:23:48.860
+The last thing I wanted to share was,
+
+
+00:23:48.860 --> 00:23:51.360
+this is a one-pager that you could print out.
+
+
+00:23:51.360 --> 00:23:55.300
+It's a GitPretty that is like the dang it,
+
+
+00:23:55.300 --> 00:23:57.440
+get and oh shit, get offerings,
+
+
+00:23:57.440 --> 00:24:01.640
+where it's a single-page PNG flow chart that starts with,
+
+
+00:24:01.640 --> 00:24:03.420
+so you have a mess on your hands,
+
+
+00:24:03.420 --> 00:24:06.240
+and then it asks you a bunch of questions of funneling it to,
+
+
+00:24:06.240 --> 00:24:08.420
+like what commands might fix it.
+
+
+00:24:08.420 --> 00:24:10.320
+I don't know if I use this much,
+
+
+00:24:10.320 --> 00:24:13.060
+but I totally want to print this out and put it on my cubicle wall
+
+
+00:24:13.060 --> 00:24:15.060
+because it's kind of entertaining.
+
+
+00:24:15.060 --> 00:24:16.360
+Yeah, this is really cool. I like it.
+
+
+00:24:16.360 --> 00:24:17.560
+More get resources.
+
+
+00:24:17.560 --> 00:24:18.400
+These are a bunch of great.
+
+
+00:24:18.400 --> 00:24:20.860
+Yeah, a lot of a lot of bunch of get resources.
+
+
+00:24:20.860 --> 00:24:22.620
+All right. I'm going to close this.
+
+
+00:24:22.620 --> 00:24:25.820
+Our main items out, Brian, with a simple one. OK. OK.
+
+
+00:24:25.820 --> 00:24:31.060
+So there's a new pep around strip, basically.
+
+
+00:24:31.060 --> 00:24:33.760
+That's the short version before I tell you the long version. OK.
+
+
+00:24:33.760 --> 00:24:39.360
+So if I have a string and the string is Saturday is the first.
+
+
+00:24:39.760 --> 00:24:43.240
+Like, so Saturday is the number one ST.
+
+
+00:24:43.240 --> 00:24:49.280
+And suppose for whatever reason, I'm not sure it's a real normal use case,
+
+
+00:24:49.280 --> 00:24:54.920
+but for whatever reason, I want to get the ST off of the end here.
+
+
+00:24:54.920 --> 00:24:58.360
+And so I might say dot strip ST.
+
+
+00:24:58.360 --> 00:24:59.680
+What comes out of there?
+
+
+00:24:59.680 --> 00:25:02.680
+Yeah, that's interesting.
+
+
+00:25:02.680 --> 00:25:06.600
+So what I thought was when I first encountered the strip function, I would
+
+
+00:25:06.600 --> 00:25:10.840
+pass it a string and that string would be taken away from the string
+
+
+00:25:10.840 --> 00:25:11.720
+that I was stripping it from.
+
+
+00:25:11.720 --> 00:25:15.800
+So like, if I say dot strip ST, it's going to take the ST off the end.
+
+
+00:25:15.800 --> 00:25:18.920
+But what it really means is take away all the S's and take away all the
+
+
+00:25:18.920 --> 00:25:21.520
+T's until you hit something else.
+
+
+00:25:21.520 --> 00:25:24.160
+So it would be attorday is the one, right?
+
+
+00:25:24.160 --> 00:25:26.040
+It would take the S off the front.
+
+
+00:25:26.040 --> 00:25:28.700
+Even though it's not ST, it's just S right?
+
+
+00:25:28.700 --> 00:25:29.440
+Yeah.
+
+
+00:25:29.440 --> 00:25:31.960
+I mean, I guess the idea is you give it a space, a tab and a backslash
+
+
+00:25:31.960 --> 00:25:36.200
+in and a backslash R and you say, take that away and that destroys the white space.
+
+
+00:25:36.240 --> 00:25:38.440
+right, that's probably the foundation, right?
+
+
+00:25:38.440 --> 00:25:41.200
+But you give it a string, it doesn't take the string away,
+
+
+00:25:41.200 --> 00:25:42.840
+it turns it into a bunch of characters
+
+
+00:25:42.840 --> 00:25:44.760
+and it just takes the characters away.
+
+
+00:25:44.760 --> 00:25:47.600
+But what if you wanted to take away the ST?
+
+
+00:25:47.600 --> 00:25:50.300
+Well, you've got to write a bunch of code
+
+
+00:25:50.300 --> 00:25:53.280
+that goes and finds the ST and sees if it's at the end
+
+
+00:25:53.280 --> 00:25:54.600
+and then take it away.
+
+
+00:25:54.600 --> 00:25:58.160
+Or you wait a little while and use a new function
+
+
+00:25:58.160 --> 00:26:01.680
+that's gonna be in 3.9 called remove prefix
+
+
+00:26:01.680 --> 00:26:02.760
+or remove suffix.
+
+
+00:26:02.760 --> 00:26:09.880
+So Dennis Sweeney has got a pep accepted to add these two functions that are actually probably
+
+
+00:26:09.880 --> 00:26:13.720
+what you first thought that strip would do. Given a string, it's going to take it that
+
+
+00:26:13.720 --> 00:26:18.920
+string off of the ends. Okay. Not a big deal, but I suspect that there's probably people out there
+
+
+00:26:18.920 --> 00:26:23.400
+that type more than one character into strip and expect it to be treated as a substring
+
+
+00:26:23.400 --> 00:26:28.200
+when it's not. And so there's going to be in three nine, two functions that do that.
+
+
+00:26:28.200 --> 00:26:35.400
+Yeah, I mean, I totally because I get the need to have like a set of things if you want to pass it
+
+
+00:26:35.400 --> 00:26:40.920
+in like a space and a tab and a new line. There's a bunch of things you want to strip off the end.
+
+
+00:26:40.920 --> 00:26:44.760
+Well, there's easier ways to strip the white space, but like, let's say there's other like
+
+
+00:26:44.760 --> 00:26:47.560
+random stuff that might appear at the end. Yeah.
+
+
+00:26:47.560 --> 00:26:52.120
+Stripping that, but having it be character, I was totally surprised by that. I didn't believe you,
+
+
+00:26:52.120 --> 00:26:57.720
+I just typed it in because I'm like, well, what about the S and is, but no, it just,
+
+
+00:26:57.720 --> 00:27:01.000
+the strip takes those, it's a set of characters that are only at the end.
+
+
+00:27:01.000 --> 00:27:04.040
+Yeah, it takes the S off Saturday and the ST off of first,
+
+
+00:27:04.040 --> 00:27:05.560
+but it leaves the other ones alone. Yeah.
+
+
+00:27:05.560 --> 00:27:06.040
+Yeah.
+
+
+00:27:06.040 --> 00:27:10.200
+Yeah. So replace doesn't, there's not, there was not really a great way in Python to do that
+
+
+00:27:10.200 --> 00:27:15.080
+without writing your own function that checks that those are only on the ends and then takes them
+
+
+00:27:15.080 --> 00:27:17.880
+away. And so now remove prefix and remove suffix.
+
+
+00:27:17.880 --> 00:27:18.760
+Nice. Cool.
+
+
+00:27:18.760 --> 00:27:24.760
+Nice. And just to finally, this will be applied to all the string-like things in Python. So
+
+
+00:27:24.760 --> 00:27:31.680
+So Unicode str, binary bytes, byte arrays, objects, and collections.userString.
+
+
+00:27:31.680 --> 00:27:35.080
+So not just against str, but it takes all these other things that are stringish.
+
+
+00:27:35.080 --> 00:27:36.080
+Oh, nice.
+
+
+00:27:36.080 --> 00:27:37.080
+Stringish.
+
+
+00:27:37.080 --> 00:27:39.000
+Is that a technical term?
+
+
+00:27:39.000 --> 00:27:40.000
+That's...
+
+
+00:27:40.000 --> 00:27:43.360
+I think if we get the pep accepted, it'll be technical, yeah.
+
+
+00:27:43.360 --> 00:27:44.360
+Okay.
+
+
+00:27:44.360 --> 00:27:45.360
+No.
+
+
+00:27:45.360 --> 00:27:46.360
+Yeah.
+
+
+00:27:46.360 --> 00:27:47.360
+All right.
+
+
+00:27:47.360 --> 00:27:48.360
+So that's it for our main items.
+
+
+00:27:48.360 --> 00:27:49.360
+What else you got?
+
+
+00:27:49.360 --> 00:27:50.360
+I've just been working a lot, so I got nothing.
+
+
+00:27:50.360 --> 00:27:51.360
+How about you?
+
+
+00:27:51.360 --> 00:27:52.360
+I got nothing.
+
+
+00:27:52.360 --> 00:27:54.400
+Well, actually, a couple of things going on.
+
+
+00:27:54.400 --> 00:28:01.720
+So Manning, the book publisher, they are going to have a Python conference in a couple of
+
+
+00:28:01.720 --> 00:28:02.720
+days.
+
+
+00:28:02.720 --> 00:28:05.560
+I'm pulling up really quick to see exactly what day that is.
+
+
+00:28:05.560 --> 00:28:07.080
+Think actually I do know what day it is.
+
+
+00:28:07.080 --> 00:28:08.080
+I think it's the 17th.
+
+
+00:28:08.080 --> 00:28:09.080
+Okay.
+
+
+00:28:09.080 --> 00:28:11.280
+I think it's the 17th of July.
+
+
+00:28:11.280 --> 00:28:13.320
+Anyway, we're going to be there.
+
+
+00:28:13.320 --> 00:28:14.320
+Not the 17th.
+
+
+00:28:14.320 --> 00:28:15.640
+It's the 14th.
+
+
+00:28:15.640 --> 00:28:16.640
+The 14th of July.
+
+
+00:28:16.640 --> 00:28:20.200
+So we're going to be doing a live Python Bytes at the Manning conference.
+
+
+00:28:20.200 --> 00:28:24.280
+And I'll put a link to it in the show notes so you guys can sign up.
+
+
+00:28:24.280 --> 00:28:27.780
+So if you want to see us do a live event,
+
+
+00:28:27.780 --> 00:28:29.040
+you know, we've done that at PyCon,
+
+
+00:28:29.040 --> 00:28:30.760
+we've done that at some other events,
+
+
+00:28:30.760 --> 00:28:32.620
+and it'll be fun to do it virtually,
+
+
+00:28:32.620 --> 00:28:34.880
+which is basically all we get for our conferences, right?
+
+
+00:28:34.880 --> 00:28:38.480
+- By live, you mean like in real time, but like online.
+
+
+00:28:38.480 --> 00:28:40.400
+- Right, with audience questions and stuff like that.
+
+
+00:28:40.400 --> 00:28:41.240
+- Oh, okay.
+
+
+00:28:41.240 --> 00:28:42.060
+- So that'll be fun.
+
+
+00:28:42.060 --> 00:28:47.060
+Also, I did a talk on 10 techniques for web developers
+
+
+00:28:47.060 --> 00:28:48.580
+with a little bit of a focus on Pyramid,
+
+
+00:28:48.580 --> 00:28:51.020
+but more generally just for web developers,
+
+
+00:28:51.020 --> 00:28:53.620
+tips and tricks and tools and whatnot
+
+
+00:28:53.620 --> 00:28:57.300
+at the Python virtual conference that was last month.
+
+
+00:28:57.300 --> 00:29:00.180
+Well, maybe the big, yeah, last month for sure in June.
+
+
+00:29:00.180 --> 00:29:01.420
+So the recording for that is out
+
+
+00:29:01.420 --> 00:29:03.020
+and I'll put a link to that as well.
+
+
+00:29:03.020 --> 00:29:06.220
+We also have a Humble Bundle running right now.
+
+
+00:29:06.220 --> 00:29:08.420
+It's probably when this episode comes out,
+
+
+00:29:08.420 --> 00:29:10.080
+got another week or so.
+
+
+00:29:10.080 --> 00:29:12.440
+So there we've got a couple of courses for me,
+
+
+00:29:12.440 --> 00:29:15.460
+but tons of stuff, stuff from Matt Harrison
+
+
+00:29:15.460 --> 00:29:18.780
+and stuff from real Python and Reuven Lerner and on and on.
+
+
+00:29:18.780 --> 00:29:22.500
+Great long list, there's like $1,400 worth of Python content
+
+
+00:29:22.500 --> 00:29:23.840
+and you can get it for 25 bucks.
+
+
+00:29:23.840 --> 00:29:25.780
+So that's going like crazy right now.
+
+
+00:29:25.780 --> 00:29:29.280
+So if you're thinking about maybe taking one of the courses
+
+
+00:29:29.280 --> 00:29:31.640
+either for me or one of these other guys, check it out.
+
+
+00:29:31.640 --> 00:29:33.140
+It's pretty much as good of a deal
+
+
+00:29:33.140 --> 00:29:34.200
+as you're gonna get on those.
+
+
+00:29:34.200 --> 00:29:39.100
+And then lastly, lastly, Abhishek Pednekar,
+
+
+00:29:39.100 --> 00:29:41.700
+hopefully I got your name close to right there,
+
+
+00:29:41.700 --> 00:29:43.660
+actually built something really cool for us.
+
+
+00:29:43.660 --> 00:29:46.780
+So at PythonBytes.fm and Talk Python.fm,
+
+
+00:29:46.780 --> 00:29:48.020
+we have a search API.
+
+
+00:29:48.020 --> 00:29:49.940
+You can click on the little search box in the top right,
+
+
+00:29:49.940 --> 00:29:52.780
+and there's like a link to a JSON API you can use.
+
+
+00:29:52.780 --> 00:29:55.380
+So he did, of course, what you should do
+
+
+00:29:55.380 --> 00:29:57.500
+when you find an API and use it.
+
+
+00:29:57.500 --> 00:29:59.980
+He wrote two Telegram bots,
+
+
+00:29:59.980 --> 00:30:02.420
+and you can just speak to the Telegram bot
+
+
+00:30:02.420 --> 00:30:04.860
+and you can either install the Talk Python one
+
+
+00:30:04.860 --> 00:30:06.660
+or the Python Bytes Telegram bot.
+
+
+00:30:06.660 --> 00:30:09.240
+If you just text or speak to it in Telegram,
+
+
+00:30:09.240 --> 00:30:12.740
+it'll search Talk Python and give you relevant responses
+
+
+00:30:12.740 --> 00:30:13.580
+about stuff we've covered.
+
+
+00:30:13.580 --> 00:30:14.420
+- What?
+
+
+00:30:14.420 --> 00:30:15.240
+That's cool.
+
+
+00:30:15.240 --> 00:30:16.080
+- Isn't that cool?
+
+
+00:30:16.080 --> 00:30:16.980
+Yeah, it's super, super cool.
+
+
+00:30:16.980 --> 00:30:21.120
+So I'll put the links to get those telegram bots for you if you want.
+
+
+00:30:21.120 --> 00:30:21.620
+Nice.
+
+
+00:30:21.620 --> 00:30:22.740
+All right, you ready for a joke?
+
+
+00:30:22.740 --> 00:30:23.240
+I am.
+
+
+00:30:23.240 --> 00:30:25.420
+All right, this one comes from Karen Chee.
+
+
+00:30:25.420 --> 00:30:27.180
+I just don't think she submitted it to us.
+
+
+00:30:27.180 --> 00:30:28.760
+I think we just found it on Twitter.
+
+
+00:30:28.760 --> 00:30:30.980
+But here's a quick adaptation.
+
+
+00:30:30.980 --> 00:30:32.220
+It's not exactly what she said.
+
+
+00:30:32.220 --> 00:30:32.940
+I expanded a little.
+
+
+00:30:32.940 --> 00:30:36.300
+She did it on Twitter, so it had to fit within a couple of characters.
+
+
+00:30:36.300 --> 00:30:38.540
+So it's a conversation.
+
+
+00:30:38.540 --> 00:30:40.660
+And Brian, let's just have it together, OK?
+
+
+00:30:40.660 --> 00:30:41.160
+OK.
+
+
+00:30:41.160 --> 00:30:42.540
+Who do you want me to be?
+
+
+00:30:42.540 --> 00:30:43.320
+Oh, I'll be you.
+
+
+00:30:43.320 --> 00:30:43.820
+No.
+
+
+00:30:43.820 --> 00:30:45.060
+[LAUGHS]
+
+
+00:30:45.060 --> 00:30:46.060
+I'll be me.
+
+
+00:30:46.060 --> 00:30:46.700
+Wait.
+
+
+00:30:46.700 --> 00:30:48.500
+- Yeah, I'll start it off, how's that?
+
+
+00:30:48.500 --> 00:30:51.700
+'Cause it's very confusing, the way I phrase that.
+
+
+00:30:51.700 --> 00:30:54.220
+All right, hey, a famous engineer inventor
+
+
+00:30:54.220 --> 00:30:56.420
+is coming over tonight for dinner, you wanna join us?
+
+
+00:30:56.420 --> 00:30:57.260
+- Sure, who is it?
+
+
+00:30:57.260 --> 00:30:59.020
+- Oh, his name is Rube Goldberg.
+
+
+00:30:59.020 --> 00:31:01.500
+- That name rings a bell, which sets off a trap
+
+
+00:31:01.500 --> 00:31:04.980
+under the, that undoes a buckle and releases a ball
+
+
+00:31:04.980 --> 00:31:07.340
+that rolls down a pipe and yeah.
+
+
+00:31:07.340 --> 00:31:10.620
+- And on and on and on and on.
+
+
+00:31:10.620 --> 00:31:12.340
+All right, well that's it, Rube Goldberg,
+
+
+00:31:12.340 --> 00:31:13.300
+I love those things.
+
+
+00:31:13.300 --> 00:31:14.580
+I should probably go check the internet
+
+
+00:31:14.580 --> 00:31:15.540
+for some really funny ones.
+
+
+00:31:15.540 --> 00:31:17.660
+And with all the coronavirus stuff,
+
+
+00:31:17.660 --> 00:31:19.900
+there's actually some awesome real goldbergs
+
+
+00:31:19.900 --> 00:31:22.460
+that people are putting together on YouTube lately
+
+
+00:31:22.460 --> 00:31:23.900
+'cause people are at home
+
+
+00:31:23.900 --> 00:31:25.220
+and they have lots of time on their hands
+
+
+00:31:25.220 --> 00:31:26.420
+and their kids are home.
+
+
+00:31:26.420 --> 00:31:29.780
+- Absolutely, absolutely.
+
+
+00:31:29.780 --> 00:31:32.580
+All right, well, I'm definitely gonna go check YouTube now.
+
+
+00:31:32.580 --> 00:31:33.420
+- Okay, bye.
+
+
+00:31:33.420 --> 00:31:35.060
+- All right, see you, Brian, thanks.
+
+
+00:31:35.060 --> 00:31:37.500
+Follow the show on Twitter via @pythonbytes.
+
+
+00:31:37.500 --> 00:31:40.540
+That's Python Bytes as in B-Y-T-E-S.
+
+
+00:31:40.540 --> 00:31:43.740
+And get the full show notes at pythonbytes.fm.
+
+
+00:31:43.740 --> 00:31:45.340
+If you have a news item you want featured,
+
+
+00:31:45.340 --> 00:31:47.820
+just visit pythonbytes.fm and send it our way.
+
+
+00:31:47.820 --> 00:31:50.660
+We're always on the lookout for sharing something cool.
+
+
+00:31:50.660 --> 00:31:52.500
+On behalf of myself and Brian Auchin,
+
+
+00:31:52.500 --> 00:31:53.840
+this is Michael Kennedy.
+
+
+00:31:53.840 --> 00:31:55.860
+Thank you for listening and sharing this podcast
+
+
+00:31:55.860 --> 00:31:57.500
+with your friends and colleagues.
+
