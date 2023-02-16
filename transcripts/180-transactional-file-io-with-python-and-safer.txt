@@ -1,0 +1,1002 @@
+00:00:00 Hello and welcome to Python Bytes where we deliver news and headlines directly to your earbuds.
+
+00:00:04 This is episode 180, can't believe it, recorded April 29th, 2020. It's almost Mayday. I am Brian Okken. And I'm Michael Kennedy. And this episode is brought to you by DigitalOcean and we'll talk more about them a little later. Well, I have some very timely news because not very long ago, a couple of days ago, Ubuntu 20.04 is out.
+
+00:00:28 - What? - That's cool, right?
+
+00:00:29 Yeah, the new Ubuntu.
+
+00:00:31 And it's, why is this big news?
+
+00:00:33 Well, there's a lot of releases of Ubuntu and whatnot, but this is the first new LTS long-term support version in two years.
+
+00:00:43 So basically this is the first like real production grade version of Ubuntu that's been out in two years.
+
+00:00:49 So that's a big deal, I think.
+
+00:00:50 - Oh yeah, really big deal.
+
+00:00:51 and it's got something special in it.
+
+00:00:54 - It does, it hates legacy Python, but it loves modern Python.
+
+00:00:57 So one of the things that's bugged me about 1804, which is what I've been using for production, is it was stuck on 3.6.
+
+00:01:05 I mean, imagine April 2018, it's using Python 3.6.
+
+00:01:10 It didn't change.
+
+00:01:11 Well, what's the current version now?
+
+00:01:13 Well, that's Python 3.8.
+
+00:01:15 Sadly, 3.9 is gonna be out really soon, and this is 3.8, but nonetheless, - Okay, 3.8 is awesome.
+
+00:01:22 It has a bunch of cool new features that we can use.
+
+00:01:25 And yeah, it comes included.
+
+00:01:27 I don't even think you have to pip install Python.
+
+00:01:29 I think 3.8 is already there.
+
+00:01:31 - That's really cool.
+
+00:01:31 - Yeah, and to get legacy Python, you can get it, but you have to go like apt install it explicitly to say, no, no, I want the old one.
+
+00:01:37 - Yeah, Python 3.8 automatic.
+
+00:01:40 - It is now. - F strings are everywhere.
+
+00:01:42 - That's right, like it's time to hit it, all of your code with Flint and auto F string, all the things.
+
+00:01:48 So upgraded all of the servers for Python bytes.
+
+00:01:51 The servers are pretty small and simple, but if you look at all the stuff that I'm running, there's actually a ton of servers.
+
+00:01:57 And I actually talked about that with Dan Bader on TalkBython episode 215.
+
+00:02:02 So people really want to look in what we're doing, what I'm doing here, what we're doing for Python bytes.
+
+00:02:07 In terms of infrastructure, they could do that, but upgraded a bunch of servers to 20.04.
+
+00:02:14 There's a bunch of stuff that kind of built up cruft and I'm like, oh, we could do this way better.
+
+00:02:17 Read it all that stuff over the weekend.
+
+00:02:19 And so now everything's on the shiny new versions of Python 3.8 and Ubuntu 20.04.
+
+00:02:24 And it went really well for me.
+
+00:02:25 So that's great.
+
+00:02:26 Yeah, and the kernel has been upgraded to 5.4, which adds support for WireGuard, VPNs, better support for like Raspberry Pis and Intel and AMD hardware.
+
+00:02:37 New version of GNOME.
+
+00:02:39 You can install the desktop on top of the ZFS file system, if you care about that.
+
+00:02:44 And you talked about DigitalOcean at the top.
+
+00:02:47 you can go to DigitalOcean right now and just check off, I want a new 20.04 droplet, boom, off it goes.
+
+00:02:53 That's how I got ours.
+
+00:02:54 - Oh, that's great.
+
+00:02:55 Nice.
+
+00:02:56 - Yeah, yeah.
+
+00:02:57 And actually, we've already had the kernel upgraded, the 5.4 kernel upgraded to like a new version.
+
+00:03:02 I just had to like apply some patches.
+
+00:03:04 So I guess it's pretty active, but here you go.
+
+00:03:07 - So yeah, different topic, but for our servers, you have to like pay attention to kernel upgrades and stuff?
+
+00:03:13 - Yeah, apparently, yeah.
+
+00:03:15 They're not like on a platform as a service type of thing.
+
+00:03:17 It's not a big deal.
+
+00:03:18 It's pretty regular, like once a month or whatever.
+
+00:03:20 I'm usually logged in to one of them every couple of days doing something, and it'll say, oh, like either it's already applied, it says you gotta reboot it, it'll be like obvious that there's an update when you log in.
+
+00:03:31 And then I'm like, oh, I should just run that thing that upgrades all of them.
+
+00:03:35 - Okay.
+
+00:03:35 - Once I notice it, yeah.
+
+00:03:36 So pretty much, yeah.
+
+00:03:38 - Okay, neat.
+
+00:03:38 - Yeah.
+
+00:03:39 - Okay, well, I'm gonna switch hats.
+
+00:03:41 So I wanna talk about warnings.
+
+00:03:44 So warning, I'm gonna switch a hat.
+
+00:03:46 So Reuven Lerner is a friend of the show and great guy, teaches Python.
+
+00:03:50 And he wrote an article called "Working with Warnings in Python." And I like this because I don't think we've talked about warnings much.
+
+00:03:57 No, not much at all, actually.
+
+00:03:58 It's a good introduction, but he talks about exceptions and the class hierarchy and printouts and stuff.
+
+00:04:04 But if you want to, like, if something goes wrong, you kind of want, you've got options of like printing out to the user or throwing an exception, but you also have warnings.
+
+00:04:12 And how should you treat those?
+
+00:04:15 And I love what he wrote.
+
+00:04:17 He said, "Most of the time, warnings are aimed at developers rather than users.
+
+00:04:22 Warnings in Python are sort of like the service needed light on a car.
+
+00:04:26 The user might know that something is wrong, but only a qualified repair person will know what to do.
+
+00:04:31 Developers should avoid showing warnings to end users." But one of the things that the warning system is used for is deprecation warnings.
+
+00:04:40 A lot of projects do this where they kind of want to get rid of a feature so they can refactor some stuff and or just doesn't fit in the API very well.
+
+00:04:49 So they'll deprecate it and they'll issue a deprecation warning when somebody uses it.
+
+00:04:54 So it's an alert. It doesn't stop working, but it alerts people to that there's a warning.
+
+00:04:59 One of the things I love about warnings is by default, PyTest turns on warnings.
+
+00:05:05 And so you can see those and you can also make them make Pytest so that it fails on warnings.
+
+00:05:10 So this is a good thing to pay attention to, but it doesn't stop your project.
+
+00:05:15 - That's cool, I didn't know you can make Pytest, like observe and use the warnings as a error.
+
+00:05:21 - Yeah, the warning system gives you a whole bunch of stuff.
+
+00:05:23 Python's warning system, it treats warnings as separate types of output so that we don't confuse them with either exceptions or printed texts.
+
+00:05:32 It lets us indicate what kind of warning we're sending the user.
+
+00:05:34 so we have different types.
+
+00:05:35 It's like the exception hierarchy.
+
+00:05:37 You can have a warning, there's a warning hierarchy.
+
+00:05:39 You can create your own and you can filter on them so that you can screen out stuff that you don't care about, selectively fix things.
+
+00:05:48 Anyway, it's a very powerful system.
+
+00:05:50 People should use it when they need it.
+
+00:05:52 The article goes on to give specifics on the syntax of how to use them, how to create custom warnings and how to filter on them.
+
+00:06:00 And it's a good intro.
+
+00:06:01 - Yeah, this looks super interesting and like something I should be paying more attention to than I have so far.
+
+00:06:06 Is this something I'm not really using?
+
+00:06:08 I'm more a consumer of warnings.
+
+00:06:10 I'm like, oh, that library, it started issuing warnings about something.
+
+00:06:14 And sometimes it's really frustrating because it's like the library being used by the library I'm actually trying to use is doing something wrong.
+
+00:06:23 It says, well, this is gonna be deprecated and now you gotta do this.
+
+00:06:25 I'm like, well, but I'm not doing that.
+
+00:06:27 I don't wanna see this.
+
+00:06:28 But nonetheless, it looks like way simpler then maybe I just haven't looked at it.
+
+00:06:32 It looks great, so I should use this more.
+
+00:06:34 - One of the cool use cases that I heard recently is using PyTest warnings, or PyTest's knowledge of warnings, and testing your system when you're upgrading Python so that you can say, oh, when we're, 'cause Python will deprecate things too.
+
+00:06:49 And then you can have a heads up that you need to start fixing your code because, and it'll pinpoint to you exactly, it's kind of like the exception system, it tells you exactly where it's coming from, so.
+
+00:07:00 - Yeah, that is really nice.
+
+00:07:01 Do you want to know something else that's nice?
+
+00:07:03 - DigitalOcean?
+
+00:07:04 - DigitalOcean is very nice.
+
+00:07:05 And DigitalOcean just launched their virtual private cloud or VPC system and new trust platform.
+
+00:07:14 Ooh, a trust platform.
+
+00:07:15 Together, these make it easier to architect and run serious business applications with even stronger security and confidence.
+
+00:07:22 VPC allows you to create multiple private networks for your account or your team, instead of having just one private network.
+
+00:07:30 DigitalOcean can auto-generate your private networks, IP address range, and, or you can specify your own IPs.
+
+00:07:39 You can now configure droplets to have, to behave as internet gateways.
+
+00:07:44 That's cool.
+
+00:07:45 - Yeah, it's like your own little baby internet.
+
+00:07:46 - Yeah, that's neat.
+
+00:07:48 And Trust Platform is a new microsite that provides one place to get all your security and privacy questions answered and download our available security certifications.
+
+00:07:59 DigitalOcean is your trusted partner in the cloud.
+
+00:08:01 Visit pythonbytes.fm/digitalocean to get $100 credit for new users to build something awesome.
+
+00:08:08 - Yeah, we love it.
+
+00:08:09 Like I just said, I'll put a voodoo20.04 on there and it's been working great for so many years.
+
+00:08:14 Now, one thing that I ran across, there's a few little libraries that are so simple and yet when you come across them, you're like, oh yes, this is so cool.
+
+00:08:25 One of those that I go on and on about is Unsync, how that unifies all the different APIs that do asynchronous programming, like async IO, threaded stuff, multi-processing stuff and whatnot, right?
+
+00:08:38 So this is one, I think, that kind of is like that.
+
+00:08:41 It's not about unification, but it's about solving a problem in a way that's kind of transparent to the user, but is really, really awesome because it just adds some nice durability to your code.
+
+00:08:53 So there's different levels of like exception handling if you look at it, right?
+
+00:08:59 So if you look at code, there's probably like the beginner level that has no try except blocks anywhere in the code.
+
+00:09:06 It's just like, I don't know what you call it.
+
+00:09:08 Is that optimistic programming?
+
+00:09:10 Like I don't need to do error handling.
+
+00:09:11 It's gonna be fine.
+
+00:09:12 Everything's fine.
+
+00:09:13 This is fine.
+
+00:09:14 That's one way.
+
+00:09:15 The next level would be to say, okay, I'm gonna have some exception handling.
+
+00:09:19 I'm gonna do a try, do a bunch of stuff, except handle the error, right?
+
+00:09:24 That's good and maybe you're catching different errors.
+
+00:09:26 Like maybe that's another level.
+
+00:09:27 I don't know what the making these levels up a little bit, but even if you are catching an error, something could have gone terribly, terribly wrong and corrupted your data along the way.
+
+00:09:38 So there's like durable error handling and there's, it isn't technically crashing at the moment error handling, right?
+
+00:09:43 So the durable error handling, I don't think a lot of people think about nearly as much.
+
+00:09:48 So simple example is what you would maybe use a transaction for in a database.
+
+00:09:53 It's like, I'm gonna transfer money from this account to that account, but what happens if the transfer to the second account fails?
+
+00:10:00 I wanna make sure I don't actually take the money from the first account, right?
+
+00:10:03 Or I want to write some piece of data to a file.
+
+00:10:07 So I'm gonna open the file, and I'm gonna make sure there's a try except, I'm gonna put it in a with block so the file pointer gets closed, everything's gonna be good.
+
+00:10:15 I'm gonna make one change and another change and then a third change, like write these three things to the file.
+
+00:10:20 what if the exception happens after the second line?
+
+00:10:24 You've half written to the file.
+
+00:10:26 Now what? - I don't know.
+
+00:10:27 - Wow. - That's bad, right?
+
+00:10:29 - Yeah. - So there's all these ways in which, like you still have a try-except, you still catch it, you still close the file pointer, it doesn't matter, it's corrupted, right?
+
+00:10:35 So there's like this another level of error handling of like kind of treating memory and files and whatnot as transactional type things, right?
+
+00:10:44 If there's an error, they just go back the way they were.
+
+00:10:47 And so this thing that, this long-winded introduction is about is called Safer.
+
+00:10:52 So a Safer file writer.
+
+00:10:55 And it's this cool, simple little thing.
+
+00:10:58 Instead of saying with open file name as file pointer, you say with Safer.open file name as file pointer.
+
+00:11:06 And then otherwise all your code is identical.
+
+00:11:08 - Okay.
+
+00:11:09 - Okay, here's what it actually does.
+
+00:11:10 So as you write to the file pointer, it's writing to a temporary file behind the scenes.
+
+00:11:16 And then if, you know, when you exit a with block, the with block, the exit, the dunder exit, takes whether or not there was an error on the way out the door.
+
+00:11:26 So you know as you exit the with block, did I, am I leaving 'cause a crash or am I leaving because everything is cool and we're done?
+
+00:11:35 So it uses that information to either throw away the temp file or move the temp file over top the thing you thought you were writing on.
+
+00:11:43 Isn't that cool?
+
+00:11:43 So if there's an exception in your with block, it still closes up the file pointer and everything but your data is unchanged.
+
+00:11:49 It's kind of like a transaction with a auto rollback for files.
+
+00:11:53 That's pretty cool.
+
+00:11:54 Isn't that cool?
+
+00:11:54 And it's like 28 lines of code that does that little bit.
+
+00:11:57 Yeah.
+
+00:11:57 Is it any idea what the time hit is?
+
+00:12:00 It's got to be a little bit, but--
+
+00:12:01 It's pretty small because it just uses shutil to replace the file.
+
+00:12:05 Like it writes to the file just as you would write to the file.
+
+00:12:08 And then at the very end, it goes, move this file to this destination and overwrite.
+
+00:12:12 So it basically adds a file move, which in an SSD is like nothing, right?
+
+00:12:18 OK.
+
+00:12:18 It doesn't matter how big it is.
+
+00:12:19 It probably just like updates the, I don't know, like the table and the drive, whatever that means.
+
+00:12:26 - Yeah. - Isn't that cool?
+
+00:12:26 - That is very cool.
+
+00:12:27 I like it.
+
+00:12:28 - Yeah, so it seems so easy to use.
+
+00:12:31 It looks like something that might be worth looking at.
+
+00:12:33 So I'm linking to a couple of things.
+
+00:12:34 I'm linking to an article that introduces this.
+
+00:12:37 And in the beginning, apparently there was like some edge case where something wasn't working quite right.
+
+00:12:42 If you passed like an integer representing a file handle or something funky like that.
+
+00:12:48 It didn't deal with that, right?
+
+00:12:49 So there's another like a updated article that doesn't have all the motivation, but then talks about this fix.
+
+00:12:56 And there's also a GitHub repo and you can just pip install it.
+
+00:12:58 So all those things are good.
+
+00:12:59 And the final in this section, I'm linking to the actual 28 lines of code.
+
+00:13:04 Do you have that open?
+
+00:13:04 - I did.
+
+00:13:05 - Click on that really quick, 'cause I wanted to talk about a couple of really interesting patterns here.
+
+00:13:10 Like if you wanted to study 28 lines of code that took and brought together a bunch of interesting ideas, like, whoa, this is pretty crazy.
+
+00:13:18 So it has a generator expression on an infinite sequence of numbers to find the temporary file, which is pretty interesting because it just says, I'm going to call it.
+
+00:13:30 1.2.3.
+
+00:13:32 And in case those exist, we're just going to go through all of them until one doesn't.
+
+00:13:36 Isn't this crazy?
+
+00:13:37 So that's pretty fun.
+
+00:13:39 And that uses SHU to copy the file over, which is pretty cool.
+
+00:13:43 it uses yield to automatically return the inner file pointer.
+
+00:13:48 So when you say with thing as whatever, even though you said safer.open, it actually yields out the underlying pointer, file pointer that came from open.
+
+00:13:59 There's just a bunch of different layers of, oh, that's interesting.
+
+00:14:02 Oh, that's neat.
+
+00:14:03 Yeah, anyway, I think this is really clever and it seems like a cool little library.
+
+00:14:08 The reason I think it would probably be useful and not gonna give you a big hit, It's like this is literally it.
+
+00:14:14 You can see it's creating the temp file, it writes to the temp file, and then it uses os.rename the temp file to the actual thing.
+
+00:14:21 So, you know, not a whole lot of magic going on, but really quite useful, I think.
+
+00:14:26 - Not a lot of code either, yeah.
+
+00:14:27 Just a-- - Yeah, isn't that crazy?
+
+00:14:28 - Yeah, it's pretty cool.
+
+00:14:29 - I love it.
+
+00:14:30 Useful, gives you that sort of durable error handling, almost like transactional files, and yet super simple.
+
+00:14:37 Very good.
+
+00:14:38 - Uses unit test as its test runner, though.
+
+00:14:39 - Oh my God.
+
+00:14:40 All right, I retract all of my endorsements of this thing.
+
+00:14:43 [laughter]
+
+00:14:46 All right, what's the next one?
+
+00:14:48 Okay, I'm on the other tab.
+
+00:14:50 Did I distract you?
+
+00:14:51 Oh, yeah, you did.
+
+00:14:52 And new article, new hat.
+
+00:14:54 So, Codespell.
+
+00:14:56 So, I got this from Christian Klaus, that silly little project I play with on the side called Cards.
+
+00:15:04 I got a pull request against the project to add a pre-commit hook to run Codespell.
+
+00:15:10 And I had never heard of Codespell, so I was excited to have a new topic for the podcast.
+
+00:15:16 Also, just, this is neat.
+
+00:15:18 So Codespell, what it does is it fixes common misspellings in text files.
+
+00:15:22 And specifically, it's designed primarily for checking misspelled words in source code, but it can be used as other files as well.
+
+00:15:31 When Christian applied this to the Cards project, it noticed that in one of the documentation files I've got, one of the Markdown files, I had spelled arguments with an extra you in the middle of it and one of the problems with spelling, I mean it's embarrassing to do and distracting to have spelling errors in your code or your comments or anything. It's hard to deal with because a lot of source code doesn't have, you can't just throw normal spell checkers at source code because it'll just warn you on your your variable names and all sorts of stuff.
+
+00:16:06 - Right, you can't drop it in Grammarly.
+
+00:16:08 That's not gonna go well.
+
+00:16:09 - It's not gonna work, but so I'm really excited to try this and to start using it because if it can work for just about anything, it might be able to work for non-Python programs too, as well, why not?
+
+00:16:22 So it's pretty neat.
+
+00:16:23 - Yeah, all sorts of documentation, that's cool.
+
+00:16:24 - It's an open source project.
+
+00:16:26 The GitHub repo has the entire dictionary so you can scan through it, and there's ways to ignore certain words if you're like, no, that's the correct spelling and it keeps doing stuff you can ignore it.
+
+00:16:36 - Nice, well, that's a really good one.
+
+00:16:38 The most embarrassing misspelling I've ever done in code was I'd misspelled like a namespace or a class name or a package name or something like that.
+
+00:16:50 I can't remember quite where it was, but it was on a project I had been working on for like a year and I misspelled it, but everything was auto-complete.
+
+00:17:00 And so I don't care, I'm like, da-da-da, it is just like, okay, auto-complete.
+
+00:17:02 I'm not even like ever typing that again, right?
+
+00:17:05 I guess I just wasn't paying attention to that.
+
+00:17:08 I kind of suck at spelling.
+
+00:17:09 That was like an extra bad case.
+
+00:17:11 Some new person came on the team and said, "Dude, why is this misspelled all over the place?" And I'm like, "Oh, we got to fix it." But it was like other applications depended on that library and they used the misspelling.
+
+00:17:22 It was so bad because it was like, it had become pervasive throughout like all these different things.
+
+00:17:28 I'm like, "We may have to leave that misspelled." I think we eventually fixed it, But it was quite a bit of work, considering what it should have been.
+
+00:17:36 - That's funny.
+
+00:17:37 That's awesome.
+
+00:17:38 Well, at least you didn't have both of the spellings be valid symbols in your program and mean completely different things.
+
+00:17:45 - That's true.
+
+00:17:46 Yeah, so one of the things that's awesome about this podcast is we'll find some random thing, or maybe somebody will send it to us, and we'll say, "Oh, did you even know "that this was a thing?
+
+00:17:57 "I had never heard of this." And then five other people will shoot us a message and say, yeah, and this variation or this other thing.
+
+00:18:04 And that's cool, but there's also X, Y, and Z, right?
+
+00:18:06 Isn't that awesome?
+
+00:18:07 - Yeah, yeah, yeah.
+
+00:18:08 I learned so much by doing this.
+
+00:18:10 - Yes, I know.
+
+00:18:11 We just got to throw something we vaguely know about and like people will correct us.
+
+00:18:14 - Yeah. - It'll be awesome.
+
+00:18:15 So, no, seriously, we talked about profilers and I talked about scaling, how it was really nice and fast and it did memory profiling and all that.
+
+00:18:26 Well, friend of the show, Anthony Shaw said, hey, since you're on this kick for profilers, Have you heard about Austin?
+
+00:18:32 To me, Austin is either a guy's name or a town in Texas.
+
+00:18:36 I hadn't heard about Austin, have you?
+
+00:18:37 - I got a neighbor named Austin.
+
+00:18:39 - Yeah, I don't think this is the same thing.
+
+00:18:41 So this is like scaling as a frame stack sampler for CPython, meaning it doesn't have like this huge effect of once you run it on your code, it doesn't become 10 times slower as instrumenting versions do.
+
+00:18:56 You know, it just asks like, "Hey, what are you up to?" really quickly.
+
+00:18:58 So that's cool, it's nice and fast.
+
+00:19:00 It also is just pure C code, there's no real dependencies like other than like the C runtime, which is in all the operating systems.
+
+00:19:07 So it looks at running Python code at intervals and then it dumps out whatever it finds, which is cool.
+
+00:19:13 It has a really simple output, but as you will learn, it has all these interesting ways to visualize that output.
+
+00:19:20 So it's sort of base, it's atomic unit of output is a flame graph.
+
+00:19:25 So flame graphs are like stacked up sort of things that are colorful and they also have information.
+
+00:19:31 So like the color communicates information and the height.
+
+00:19:34 So it's kind of like a graph with like color bars type of thing.
+
+00:19:37 And it has the parts of code that are running.
+
+00:19:39 If you want to see what that is, just click on the link and it has it right there at the top.
+
+00:19:43 And that's cool.
+
+00:19:44 So it puts that out, but you can build other tools to analyze that, or you could even make like a little player application that replays the execution of your application in like slow motion.
+
+00:19:54 and it replays that flame graph over time.
+
+00:19:56 - Oh, that's neat.
+
+00:19:57 - Isn't that cool?
+
+00:19:58 - Yeah.
+
+00:19:59 - So now is where it gets really fun because there's a couple of user interfaces on top of this simple output that can be interpreted.
+
+00:20:06 So the first one is called the TUI, the Terminal User Interface.
+
+00:20:11 Do you see this animated in our little show notes and we'll be in there.
+
+00:20:14 - It's nice, yeah, it's really cool.
+
+00:20:15 - Yeah, so let me try to describe it.
+
+00:20:17 Imagine you've opened, I don't know, Emacs or something like that, But the top part of it shows the process information, the CPU it's using, the memory it's using, how long it's been running, and then a graph, an active, like interactive flowing graph across the top of like the performance analysis.
+
+00:20:38 And then it has something that's a little bit like top, maybe, showing you like what it's currently running, how much time it's using, is this time being spent on a sub-function call?
+
+00:20:49 Like did I call a thing that called request that is talking to the network and that's why it's slow 'cause we're waiting on the internet or is it actually computationally my stuff running in Python or whatever, right?
+
+00:20:59 So what do you think?
+
+00:21:00 That's cool, huh?
+
+00:21:01 - Yeah, that bottom part reminds me of the thing that you put the process explorer on Windows where you can look at all of the, all your processes.
+
+00:21:08 - Yeah, a little bit like task manager, but it's actually for like your functions instead of other processes.
+
+00:21:13 - Yeah, yeah, it's nice.
+
+00:21:15 - That's cool.
+
+00:21:16 So that's the TUI, which is gonna be a popular one, but you may also wanna be on the web.
+
+00:21:20 So there's Web Austin, which is another example of making this for the web.
+
+00:21:24 So you basically can log in to wherever you're running it, connect to it.
+
+00:21:29 And it has a D3 flame graph.
+
+00:21:31 That's like animated of what your web app or whatever process you're watching on that remote system is up to.
+
+00:21:36 So it's kind of the same thing, but like more visual or graphical, like the flame flame graph is there and whatnot.
+
+00:21:42 So that's pretty cool.
+
+00:21:44 People can check that one out and you can even pause it and whatnot.
+
+00:21:48 Then finally, there's this other format called SpeedScope, which can be visualized in other tools.
+
+00:21:55 And you can convert Austin output into the SpeedScope JSON format.
+
+00:22:01 And there's a sample for that in the repo.
+
+00:22:04 If you go look at that, you can load it into the SpeedScope visualizer type of things and have another way to view the data.
+
+00:22:09 So this is really nice because so many of these profilers are like, we collected all this information.
+
+00:22:14 How would you like it as a CSV?
+
+00:22:17 or how would you like it as just like random columns in a terminal?
+
+00:22:22 And this is so much, like, I would not like it that way.
+
+00:22:26 I really like the visualization because it's one thing to gather the information.
+
+00:22:31 It's another to go, oh, I see right there is actually where it's slow.
+
+00:22:35 And if it's, there's just a dump of a bunch of numbers.
+
+00:22:38 I mean, yeah, you can like sort it and whatnot.
+
+00:22:40 And it, you can use C profile with different sorting options and get it to mean stuff, but it's not the same as like, aha, there's the picture.
+
+00:22:47 I see it's red right there and it's really tall.
+
+00:22:49 Let's go figure that out.
+
+00:22:50 - Yeah, and the web one, the logo's awesome.
+
+00:22:53 It's good.
+
+00:22:54 - It is really good.
+
+00:22:55 - Yeah, it's like a '70s thing.
+
+00:22:56 - It reminds me of Austin Powers a little bit, right?
+
+00:23:00 - Yep.
+
+00:23:01 - In a non-copyright infringing way.
+
+00:23:04 (laughing)
+
+00:23:06 Anyway, that's it.
+
+00:23:06 If people are looking for a profiler, Austin looks pretty cool.
+
+00:23:10 Check it out.
+
+00:23:11 - Definitely.
+
+00:23:12 - It's definitely one of the contenders.
+
+00:23:13 Anthony, for sending that in.
+
+00:23:14 - I wanna talk about numbers.
+
+00:23:16 Does this fit in the screen?
+
+00:23:17 - Oh yeah, you got your mathematician hat on now.
+
+00:23:20 Or your wizard hat, I can't decide.
+
+00:23:21 - I got this from, man, he writes too great of stuff.
+
+00:23:25 First name Mosh, last name Zadka?
+
+00:23:27 Zadka?
+
+00:23:28 Mosh, you gotta contact me and find out, tell me how to pronounce your name.
+
+00:23:32 But numbers in Python, really great article.
+
+00:23:35 In Python, you don't really have to think about numbers too much.
+
+00:23:37 They just sort of work.
+
+00:23:39 But you do kind of need to think about them.
+
+00:23:41 And this article's a really good, quick tutorial about the different things that you need to know.
+
+00:23:46 Like integers, they turn into floats really easily.
+
+00:23:49 Like any time there's a division, it'll turn into a float.
+
+00:23:52 Right, which is unlike other languages which are like truncating sort of things, right?
+
+00:23:57 That basically take the floor of whatever the result would be.
+
+00:24:00 Yeah, in earlier Python versions, 2.7 like that?
+
+00:24:04 Yeah, yeah.
+
+00:24:05 Like truncated off.
+
+00:24:06 Right, if you want that old type, now you got to double divide, like the two slashes.
+
+00:24:11 Yeah, and I forget about the two slashes thing.
+
+00:24:13 Yeah, I never use the two slashes because that seems wrong.
+
+00:24:15 [laughs]
+
+00:24:17 Anyway, so the implications are weird though.
+
+00:24:20 The other thing, okay, so you got integers, they turn into floats if you divide them.
+
+00:24:24 You got floats, which are things with decimal points in them.
+
+00:24:27 They're not the only things with decimal points in them though.
+
+00:24:30 One of the things you learn early on in programming, but some people are new to programming, or numbers, so it's a good thing to remember, is floats don't behave like floating point numbers in math.
+
+00:24:41 Like, the subtraction and addition are not inverses.
+
+00:24:44 and addition is not associative always.
+
+00:24:47 And you can't multiply and then divide and get the same number.
+
+00:24:51 Those are weird things you should be aware of.
+
+00:24:53 The normal thing that I mostly need to remember is don't try to compare floating point numbers with the double equals.
+
+00:25:02 You have to use something like approximate or something.
+
+00:25:04 Yeah, that's the one that can really catch people out.
+
+00:25:07 I mean, okay, so I thought I was going to get 14 and I got 13.999999997... 8?
+
+00:25:13 Okay, well, it's computers, we know that stuff's truncated, but it's really easy to go, if X equals some number I'm looking for, and that never ever happens, right?
+
+00:25:25 - Yeah. - It looks right, and it is so wrong, and I think just our training for so many years in theoretical mathematics means that it's hard to look at that and go, that's wrong.
+
+00:25:36 (laughing)
+
+00:25:37 - Yeah, well, it's interesting that when you see it in numbers, you can, like for instance, One of the examples is one plus two minus two minus one is zero, obviously.
+
+00:25:47 - Of course it is.
+
+00:25:48 - If it's floating point numbers though.
+
+00:25:51 So floats don't end up with zero.
+
+00:25:53 You end up with a very small number, but it's not zero.
+
+00:25:57 Okay, so floats are weird, be careful.
+
+00:25:59 Fractions, so if you don't wanna use floats, there's fractions.
+
+00:26:02 Python has built-in fractions.
+
+00:26:03 I actually have never really used these.
+
+00:26:06 It's neat, they're there.
+
+00:26:07 - I've never used them either, but yeah, there's like a class called fraction with a numerator and a denominator or it takes another fraction or a floating point, even takes a string.
+
+00:26:17 How about that?
+
+00:26:18 - The warning in this article is they, fractions take a lot longer than you expect they would for algorithms.
+
+00:26:25 So you can represent things as fractions.
+
+00:26:28 It's cool that you can do that.
+
+00:26:30 Be very careful with any sort of algorithm because it can explode in memory and size and time and stuff like that.
+
+00:26:37 So probably use floating point.
+
+00:26:39 - That doesn't surprise me, because when I have to do like fraction algorithms, in my mind, it takes a lot longer too, so.
+
+00:26:47 - Yeah, the last one that is, which he talks about and it's something that some people don't realize right away is the decimals are built in.
+
+00:26:54 So there's a decimals library that it's not probably not surprising.
+
+00:26:58 One of the reasons it's in there is for financial transactions.
+
+00:27:01 They're set up to be correct with precision and do the right thing.
+
+00:27:05 And so I'm really glad it's there, Otherwise we'd have like competing decimal third-party libraries or something like that.
+
+00:27:11 We probably do, but this one's built in.
+
+00:27:14 I'm glad the article was written though because something weird about decimals that I didn't know about was there's a global state variable called context that holds the precision that's being used for decimal like division and stuff.
+
+00:27:30 It could be anywhere in your program that the precision gets changed.
+
+00:27:35 So the recommendation in this article is to use a local context.
+
+00:27:39 So you can do a, those blocks, context, what are those things called?
+
+00:27:43 I always forget.
+
+00:27:44 context manager.
+
+00:27:45 Context manager.
+
+00:27:46 Yep.
+
+00:27:47 You can use the context manager, local context to set a local context precision or your arithmetic.
+
+00:27:54 So that's good.
+
+00:27:55 That seems like that should be the required way because just setting it globally seems really, I don't know.
+
+00:28:02 It seems wrong because, you know, think of the race condition there.
+
+00:28:06 I was doing math and then the precision got cut in half and then it wasn't what I expected anymore.
+
+00:28:11 Yeah.
+
+00:28:14 Or, or I dunno, maybe there should be a minimum precision.
+
+00:28:17 This is interesting though.
+
+00:28:18 Like I didn't realize that you could even change the precision of decimals.
+
+00:28:21 So like in the docs, it says unlike hardware based binary floating point numbers, the decimal module has a user alterable precision defaulting to 28 places, which can be as large as needed for a given problem.
+
+00:28:34 So yeah, you can change it.
+
+00:28:36 The example in the, in the Python document on the docs show, she's globally changing it halfway through a calculation, which seems like a bad.
+
+00:28:44 Let's kick them down the stairs instead of teaching them to hold on to the hand railing, but this is really cool.
+
+00:28:49 Like this local context, change it.
+
+00:28:52 You can set it really high.
+
+00:28:53 That's cool.
+
+00:28:54 I had no idea that you could actually change that to grow as you needed them, which is cool.
+
+00:28:57 Yeah.
+
+00:28:58 - I guess you could still use the global context as long as you, maybe this isn't safe, but as long as you always remember to set it before you do decimal arithmetic.
+
+00:29:07 - It's safe as long as you're not doing threading.
+
+00:29:09 - Oh yeah, okay.
+
+00:29:11 - Yeah, 'cause what if somebody, some other thread has the same idea and changes it?
+
+00:29:15 I think the idea is maybe, it seems to me like possibly it would be better if once set, it couldn't be set again.
+
+00:29:21 Like you could set it at the beginning of your program, but it couldn't be altered and altered and altered.
+
+00:29:25 Like, right, something along those lines, like, okay, we set it, we're done.
+
+00:29:29 It's an exception if you try to set it again to something else and so on.
+
+00:29:32 I don't know.
+
+00:29:33 >> I mean, it probably is a convenience.
+
+00:29:35 >> Yeah, this is a whole world I didn't even know about.
+
+00:29:37 This is cool.
+
+00:29:37 >> Yeah, I would probably set up some sort of like hook or something to make sure that you're only setting it one place if you're doing that.
+
+00:29:43 I don't know.
+
+00:29:44 >> Yeah, sounds good to me.
+
+00:29:46 Cool, anyway, yeah, this is actually more interesting than I thought because, like, as usual, I've learned something, which is cool.
+
+00:29:52 >> Last thing on this, we're going to link to the standard library documentation for fractions and decimals because you may not have heard of them. And then a very old article that if you really care about floating-point numbers you should at least know this article exists. Although I don't think I've actually gotten through the whole thing ever. But it's what every computer scientist should know about floating-point arithmetic. That's a good article.
+
+00:30:13 Yeah. Cool. All right. Any extras for us today, Michael? You know, not too much. I don't have too much to share right now. Nothing personal. But I do want to say thank you to everyone who subscribed to the YouTube feed of this podcast.
+
+00:30:26 Because we're breaking every segment.
+
+00:30:29 We've just covered six things.
+
+00:30:30 We're breaking that into six different videos and you can see us on video, which is kind of cool.
+
+00:30:35 A bunch of people are subscribing at pythonbites.fm/youtube.
+
+00:30:39 You all can check that out and you will see that Brian has awesome hats for every segment.
+
+00:30:43 Well, at least this episode, this episode, which, yeah, you got to wait.
+
+00:30:48 Yeah, for sure.
+
+00:30:49 This episode.
+
+00:30:49 So eventually you'll get to see the hats.
+
+00:30:52 Okay.
+
+00:30:52 - Yeah, I'm glad we mentioned that.
+
+00:30:53 I wanted to mention also that Python 3.9.0 alpha six is the last alpha release before we go into betas, I believe, and it is available and it has the PEG parser that we talked with, I think last week about a little bit.
+
+00:31:11 - Yeah, yeah, Guido was here and talked about that was really cool, the work he's been doing there.
+
+00:31:15 That's a big long-term upgrade, right?
+
+00:31:18 That's something that got written in the original version of Python.
+
+00:31:21 was unchanged and obviously can be better, right?
+
+00:31:24 Basically the syntax was limited by the parser and how much it like looked ahead and stuff.
+
+00:31:29 And so this should open up the language for more complex concepts or make it easier to add concepts to it.
+
+00:31:36 All right, so I see we have some competing jokes here.
+
+00:31:38 You wanna go first?
+
+00:31:39 - Yeah, I just put a call out on Twitter and said I need some more jokes and boy, I got a whole bunch of great ones back.
+
+00:31:45 I'm gonna pick one.
+
+00:31:46 This one's from James Abel.
+
+00:31:48 If you put a thousand monkeys at a thousand computers, eventually one will write a Python program and the rest will write Perl.
+
+00:31:55 (laughing)
+
+00:31:56 - That's right.
+
+00:31:57 I think maybe like 950 of them will write Perl.
+
+00:32:00 A couple of them are just gonna be writing regular expressions, like all on their own.
+
+00:32:04 - Yeah, that's true.
+
+00:32:06 - All right, I have one that's maybe in a similar vein here.
+
+00:32:09 So, you know, like we talked about Austin, it has all these different user interfaces and it's very user-friendly.
+
+00:32:15 Well, you could say that Unix is very user-friendly as well.
+
+00:32:19 It's just very particular about who its friends are.
+
+00:32:22 (laughing)
+
+00:32:24 - Yeah, I got friends like that.
+
+00:32:26 - Yeah.
+
+00:32:27 (laughing)
+
+00:32:27 I got that one from the Pyjoke package, so pip install pyjoke and you can have it too.
+
+00:32:31 - Yeah, that's good.
+
+00:32:33 Yeah, anyway, cool, thanks.
+
+00:32:35 - All right, fun as always.
+
+00:32:37 Great to be here with you.
+
+00:32:38 - Bye. - Bye.
+
+00:32:38 - Thank you for listening to Python Bytes.
+
+00:32:40 Follow the show on Twitter @pythonbytes.
+
+00:32:42 That's Python Bytes as in B-Y-T-E-S.
+
+00:32:45 And get the full show notes at pythonbytes.fm.
+
+00:32:48 If you have a news item you want featured, just visit pythonbytes.fm and send it our way.
+
+00:32:53 We're always on the lookout for sharing something cool.
+
+00:32:55 This is Brian Okken, and on behalf of myself and Michael Kennedy, thank you for listening and sharing this podcast with your friends and colleagues.
+

@@ -1,0 +1,706 @@
+00:00:00 Hello and welcome to Python Bytes, where we deliver Python news and headlines directly to your earbuds.
+
+00:00:05 This is episode 153, recorded October 16, 2019. I'm Brian Okken.
+
+00:00:11 And I'm Michael Kennedy.
+
+00:00:12 This week's episode is sponsored by DigitalOcean. We'll talk more about them later.
+
+00:00:16 But first, Michael, could you extend my knowledge a bit?
+
+00:00:19 Yeah, by extending the entire Python ecosystem, maybe?
+
+00:00:23 Yeah.
+
+00:00:24 Yeah, so there's actually a cool real Python article called "Building a C, Python C Extension Module." So, Brian, you know how to write C code, right?
+
+00:00:33 Yes, or at least that's the theory. I used to know how.
+
+00:00:36 Yeah, I have this really awesome former self of mine that was super good at C++.
+
+00:00:40 I kind of remember that person that I was.
+
+00:00:43 I used to be able to write a lot of C.
+
+00:00:44 That was my main job is to write C and 3D stuff and OpenGL and things like that, right?
+
+00:00:50 So it's definitely the main way to extend Python these days.
+
+00:00:55 And there's other options, like there's some cool Rust options and whatnot.
+
+00:00:58 But primarily people know C, it runs everywhere, has light runtime requirements.
+
+00:01:03 You're already running CPython probably, so you already have those requirements met, right?
+
+00:01:08 So extending your code with some kind of C extension gives you a couple of options.
+
+00:01:14 One is clearly performance.
+
+00:01:16 I love to talk about Python performance because one, it always surprises me.
+
+00:01:19 And two, like people are usually wrong about it.
+
+00:01:21 They say Python is slow.
+
+00:01:23 Like I was just reading something on Quora about why, like compare C# to Python.
+
+00:01:29 And somebody's like, "Well, you can't even compare them.
+
+00:01:31 C# is 50 times faster." Well, it's true for certain operations, unless maybe part of that it's done in C, and then probably Python is faster, because like now it's down in like NumPy and doing it in C, which is actually faster, right?
+
+00:01:42 There's just, it gets really interesting.
+
+00:01:44 And so one reason you might care about writing a C module is just for performance.
+
+00:01:47 And I think that's what most people think of.
+
+00:01:49 But there's also like low-level operating system APIs or other C APIs, like some library you can get, you might want to use, that happens to be written in C and doesn't have a Python way to talk to it, right?
+
+00:02:04 Yeah, there's lots of stuff with DLLs that are available with C header files, but you don't have a Python binding.
+
+00:02:10 Exactly.
+
+00:02:11 You have a lot of experience with that with all of your devices and stuff like that.
+
+00:02:15 Yep.
+
+00:02:16 Yeah.
+
+00:02:17 Okay.
+
+00:02:18 So those are the two main reasons I can think of writing C extensions.
+
+00:02:20 I mean, obviously throw some Cython at it if it's a performance thing to give it a try, but there's a cool tutorial on real Python and it talks about how you can, you know, like things you'll be able to do is like import C functions within Python, pass arguments from Python to C, raise correct exceptions in your C code so they surface bubble back into your Python code as a proper like value error type exception or something like that, all sorts of cool things and even how to test and distribute it.
+
+00:02:46 So let me just sort of talk through the process and then people really care.
+
+00:02:50 They can go read the big long article, right?
+
+00:02:52 So if you want to basically get access to some C functionality, or if you want to just like write your implementation and see for some degree, first thing you got to do is go and figure out, let's suppose you want to call like a some C function.
+
+00:03:06 So the article uses FPUTS, which puts a string into a file pointer, right?
+
+00:03:11 Like basically writes a string to a file in C.
+
+00:03:15 So you have to write a function, which is pretty interesting because it returns, you have to start talking in the C Python language, not Python, right?
+
+00:03:24 So everything that gets passed around is a Python object pointer, or the return value is like a Py object pointer, right?
+
+00:03:33 So you pass these things around and first of all you declare whatever inbound arguments you're really expecting and you get basically passed a single pointer that is the arguments to your function but it's really a tuple.
+
+00:03:45 So there's a pyarg parse tuple, give you the arguments, a format thing, and you give it the address of the pointers, you pass them by reference basically.
+
+00:03:54 And then you just do your CPython code.
+
+00:03:55 In this case the function that they're wrapping FPUTs returns the number of bytes copied when it does that.
+
+00:04:02 And so this function wants to return the bytes copied, but you can't just return an integer or a long, no, no, no, because everything in Python is a py object at the C level, py object star, even numbers, so you have to convert from a long to a py long from long, which is a function that you get from the python.h C header file.
+
+00:04:22 It's actually pretty simple.
+
+00:04:24 There's some weird non-obvious structure at the beginning of the function so that it can be called by Python, and the return value is weird, But everything else in the middle is like straight C.
+
+00:04:34 So you don't really have to think about what's going on.
+
+00:04:37 The gill will protect you from race conditions, all that kind of stuff.
+
+00:04:40 Yeah.
+
+00:04:40 And actually, one of the things I love about this article is that it's using a fairly simple example so that you're not distracted by the example.
+
+00:04:48 It's just the boilerplate junk that you've got to learn about.
+
+00:04:50 Yeah, absolutely.
+
+00:04:51 Which is probably the thing you don't know, even if you know C, right?
+
+00:04:54 Yeah.
+
+00:04:55 It says also there's a few other things that are necessary if you actually want to use this code and not just write it and compile it in C, is you have to write a definition for your module in C and the methods that it contains. So there's a few C functions that you call there and then you have to build it for Python which you basically create a setup.py file and use just utils and it will compile and create the right base library and install it for you.
+
+00:05:20 Okay. Pretty cool, huh? Pretty cool, yeah. One of the issues with this is that the people that have to, a lot of times when you need to do this, it isn't a hardcore C compiler person or a hardcore Python, C Python person that needs to do this, it's just your casual user that happens to have a use case that they need to connect Python to C.
+
+00:05:41 And so this is great.
+
+00:05:43 - Yeah, and it's super approachable, and like you said, the examples are pretty straightforward.
+
+00:05:47 Obviously you're writing C, which puts you in a different category of hard, right?
+
+00:05:51 I mean, free malloc pointers, pointers by reference, like all that kind of stuff that you learn when you learn C, but that's the world you gotta live in when you go down and you take the blue pill or whatever it is.
+
+00:06:03 (laughing)
+
+00:06:05 - Is the blue one the good one?
+
+00:06:06 I think--
+
+00:06:07 - You know, I always forget.
+
+00:06:08 I know that there's a pill that's good and there's a pill that's bad and it keeps the facade, but yeah.
+
+00:06:14 Probably the red, I don't know.
+
+00:06:16 - Do you know what else is good?
+
+00:06:17 - Documentation.
+
+00:06:18 - Documentation.
+
+00:06:18 - No, Python 3.8.
+
+00:06:20 - Python 3.8 is good.
+
+00:06:22 - But also Python 3.8.
+
+00:06:23 - Read the URL, sorry.
+
+00:06:24 - Python 3.8 dropped just this week.
+
+00:06:29 So it is no longer beta, it is final, and you can download it from the front page.
+
+00:06:34 The default is Python 3.8.0 now when you download it.
+
+00:06:38 So yay. - Yes, that's awesome.
+
+00:06:39 - We have talked about a lot of stuff.
+
+00:06:41 On this podcast, we've talked about things going into 3.8.
+
+00:06:44 Like the walrus operator, of course, that's come up a lot of times.
+
+00:06:48 Those are assignment expressions.
+
+00:06:50 positional only parameters and f strings.
+
+00:06:53 F strings have the little equal sign so you can debug with them easier.
+
+00:06:56 - Right, f strings have been here since 3.6 but now they have this like self-documenting short print statement thing, right?
+
+00:07:02 - Yeah, and it takes longer to describe than to show and it's cool.
+
+00:07:06 What I wanted to highlight is the what's new in Python 3.8 document that came out from, that's at docs.python.org.
+
+00:07:13 And it's a really great summary of all the stuff that's in 3.8.
+
+00:07:17 It does have all of those new things that all those big hitters, but it also has some stuff that I was surprised by that I hadn't heard of before.
+
+00:07:26 One of them is we've talked about a lot of async stuff, and now you can type Python -m asyncio, and it launches a async native REPL.
+
+00:07:37 - That is so cool, and I had no idea that that was there.
+
+00:07:41 I guess it would have been a pain in the butt before to like work with async stuff over there in the REPL, right?
+
+00:07:47 So-- - Yeah, I guess.
+
+00:07:48 Now you can just, 'cause I often drop into the REPL to try something out, now you can try out async stuff in there, so that's cool.
+
+00:07:54 - Yeah, that's super cool.
+
+00:07:55 - A couple other things that'll just help you while writing Python, couple new warnings and messages for things that you might do wrong.
+
+00:08:02 So when you're not supposed to compare, use is or is not to compare non-objects, like strings or integers or something.
+
+00:08:10 It's just like, if x is three, don't do that.
+
+00:08:14 But apparently the warning wasn't very good, and so now the warning is better.
+
+00:08:17 it tells you to use double equal or not equal.
+
+00:08:20 So that's cool.
+
+00:08:21 And then one of the things that I often get because I do a lot of parameterized testing is if you've got a list with tuples inside or basically a list of lists or a tuple of tuples and you forget the commas between some of the things because maybe they're on a new line or something.
+
+00:08:39 The warning was weird before but now it is a more helpful message.
+
+00:08:43 So I love things like that.
+
+00:08:45 - Yeah, it drives me crazy if those are strings.
+
+00:08:47 Like if you're creating a JSON document or something like that, or a multi-line, like a list of strings, and you forget a comma, it just concatenates them, even though they're on separate lines.
+
+00:08:55 I'm like, oh, really?
+
+00:08:57 That's the default behavior?
+
+00:08:58 But I understand where it comes from, but it drives me crazy.
+
+00:09:00 - That probably is still there.
+
+00:09:02 - Yeah, yeah.
+
+00:09:02 I don't see how you would fix that without changing what that means.
+
+00:09:05 - Yeah.
+
+00:09:06 This one, it took me a while to get my head around, but I didn't know that this was an issue before.
+
+00:09:11 Iterable unpacking-- so if you packed a bunch of stuff into a variable, you can unpack it with star variable name.
+
+00:09:19 You can't return that in a return statement or you couldn't before out of a tuple.
+
+00:09:26 So you had to put parentheses around it before you return it.
+
+00:09:29 But now that's gone away, you can just return it.
+
+00:09:32 - Yeah, there's a lot of good stuff in here actually.
+
+00:09:33 And you just did an episode on it, didn't you?
+
+00:09:35 - Yep, episode 91 of Testing Code.
+
+00:09:37 I just read through the entire article and it's still just 20 minutes.
+
+00:09:42 I didn't read through everything, but I highlighted all the stuff that I thought was cool.
+
+00:09:45 - Super.
+
+00:09:46 - You know, something else that's cool is DigitalOcean.
+
+00:09:48 - I love DigitalOcean.
+
+00:09:49 - This episode is sponsored by DigitalOcean and Python Bytes infrastructure runs on DigitalOcean, thanks to Michael putting that all together.
+
+00:09:57 And it's quite solid and we're super happy with it.
+
+00:10:00 But did you know that not all web applications and services have the same memory and CPU demands?
+
+00:10:05 - It's shocking, isn't it?
+
+00:10:06 - Shocking.
+
+00:10:07 Anyway, so DigitalOcean has embraced this diversity in their droplet structure, which is cool.
+
+00:10:12 with the ratio of memory to CPU powers in droplets.
+
+00:10:16 The general purpose droplets have a ratio of four gigabytes of memory per CPU, and you can scale those up.
+
+00:10:23 They added, not too long, a couple years ago, I think, CPU optimized ones, so they doubled the number of CPUs per the amount of memory, and that's great for CPU bound tasks.
+
+00:10:33 But there's some applications like high performance databases or in-memory caches or data processing of large sets that a lot of memory might be a really great thing.
+
+00:10:43 So there's now a memory optimized droplet that reverses that structure and makes it like eight gigabytes of memory per CPU.
+
+00:10:51 It's pretty cool.
+
+00:10:52 - Yeah, very cool.
+
+00:10:53 - Yeah, use the right kind of droplet for the right service that you're using and try it out at pythonbytes.fm/digitalocean and they'll give you a $50 credit for new users.
+
+00:11:02 - You and I have mentioned that folks should put legacy Python where it belongs in the past.
+
+00:11:08 Last time we spoke about 35 million lines of Python code at JPMorgan Chase and their journey to work on that.
+
+00:11:16 And that's all interesting, but we just recently got this announcement from the UK's NCSC, the National Cyber Security Center.
+
+00:11:25 Wow.
+
+00:11:26 Yeah.
+
+00:11:26 And they're warning developers of the risk of sticking with Python too, particularly library writers.
+
+00:11:32 Okay.
+
+00:11:32 That's interesting, right?
+
+00:11:33 That they actually go so far as to call that out as a thing.
+
+00:11:38 So they say, look, this could be like basically the companies that continue to use Python two past its end of life could be like tempting or setting the environment for another WannaCry or even an Equifax incident.
+
+00:11:52 So Equifax was a horrible data breach.
+
+00:11:55 Basically it's one of these companies that gathers up so much private data.
+
+00:12:00 Like they know stuff about my financial past that I have forgotten and don't even know.
+
+00:12:03 Right.
+
+00:12:04 They go, did you know you had this account in California?
+
+00:12:06 Like I did.
+
+00:12:07 Oh, okay.
+
+00:12:07 well, I guess I do. Right. They know all of that. And it was broken into why because there was a vulnerability in Apache struts, which is an open source framework, people stress are like, guys, this is super bad. You just have to send like a special a super p request to the server and it's owned, right?
+
+00:12:24 Well, the folks at Equifax got that message, but they didn't really want to get around to like upgrading it to the new version, because hey, it's kind of hard to upgrade this thing. It's like a new version, which probably was old and was slightly incompatible or something.
+
+00:12:37 Anyway, that's where Equifax came from, is running an old version of one of these frameworks, not Java itself, but like the web framework on top of it.
+
+00:12:44 Anyway, there's some cool quotes in here.
+
+00:12:47 They say, "If you're still using Python 2.x, "it's time to port your code to Python 3.
+
+00:12:53 "If you continue to use unsupported modules, "you are risking the security of your organization "and data as vulnerabilities will sooner or later appear, "which nobody's fixing." Okay, that's one.
+
+00:13:03 One interesting quote, another one is, if you maintain a library that other developers depend upon, you may be preventing them from updating to three, and by holding back other developers, you're indirectly and likely unintentionally increasing the security risk of basically all the computers in the world.
+
+00:13:19 - Yeah. - Yeah.
+
+00:13:20 So, I mean, we've said this before, right?
+
+00:13:21 You and I have said this, but if the NSA or the NCSC, they come out and publicly call out Python 2 like this, well, that maybe carries more weight than Python bytes.
+
+00:13:35 Not that we don't carry some weight, I'm sure.
+
+00:13:37 - Yeah, it actually makes me think, though.
+
+00:13:38 Like, let's say you have a library that now works on both Python 2 and 3, and somebody else is depending on it, and they're also depending on another library that is 2 only.
+
+00:13:50 They're gonna stick with 2, but if, like, for instance, you could push them if you stopped supporting Python 3 or Python 2.
+
+00:13:58 - That's a good question.
+
+00:13:59 In six months, do we have a obligation to actually cut Python 2 out of our libraries?
+
+00:14:06 I mean, I don't have any libraries people care about, but--
+
+00:14:08 - Maybe to force people to upgrade.
+
+00:14:10 Maybe you could do some help.
+
+00:14:12 - Yeah, most of these changes have been more self-serving or self-centered, right?
+
+00:14:16 Like NumPy and Django, all those folks dropped Python 2, not because they're like, "We're gonna fix the world," but like, "We don't wanna maintain this stuff.
+
+00:14:23 "We wanna just move forward and use the cool features, "and we can't right now." - Yeah. - Yeah, pretty cool.
+
+00:14:28 I guess one other kind of interesting thing to call out from this report, article, whatever you call it, is that they said that Python's popularity makes updating the code imperative, which I thought was pretty interesting.
+
+00:14:40 It's like Python is so successful.
+
+00:14:42 It's so broadly deployed.
+
+00:14:43 We can't just ignore this.
+
+00:14:45 It's not like Adobe Flash.
+
+00:14:47 It's now running an old version.
+
+00:14:48 We should deal with it.
+
+00:14:49 It's like this is one of the really important parts of the computer infrastructure that they called out.
+
+00:14:55 Yeah, I mean, there's got to be other places where we get this kind of news, right?
+
+00:14:59 So I got a notification from a guy called Sebastian Steins, and he put up a, it's basically a Hacker News lookalike site called news.python.sc. I don't know what sc stands for.
+
+00:15:13 Yeah, it looks a lot like Hacker News, but it's just got Python stuff on it.
+
+00:15:17 And it's pretty neat. So I thought, oh, that's cool. We should talk about it.
+
+00:15:22 But one of the neat things about it is you put it all together relatively quickly in like a week or so And it's built on django And all of its open source so you can take it and look at how it's done And everything plus it's up and it's live and you can post stuff. It's neat And I thought yeah, maybe we'll cover this and then while I was thinking about covering it We got like two or three other people say tell us about this new news site So I think people are using it.
+
+00:15:50 It's kind of fun.
+
+00:15:51 What do you think?
+
+00:15:52 I like it.
+
+00:15:52 It definitely looks like Hacker News, but more Python at colors.
+
+00:15:56 And, you know, looking through this, this is these are all legitimately interesting things.
+
+00:16:01 I'm like, yeah, oh, yeah, I read about that.
+
+00:16:03 That was cool.
+
+00:16:03 And, oh, I didn't know about that.
+
+00:16:05 But interesting.
+
+00:16:05 Yeah, I feel like this is great.
+
+00:16:07 And even if it doesn't take off, I think it's cool to have an example of a working model of simple with, like, people being able to vote things up and down and that's kind of a neat model to say there's a working website, a working user model, how can I emulate that in Python? Yeah, it's super cool. I'm definitely gonna start checking it out as one of my new sources in addition to Redis and Twitter and other places. Yeah, like we don't have enough to do. I know, now you just gave me work man, come on, it's homework. So you've heard that most people are moving to the cloud and data science is moving to the cloud, there's all sorts of interesting stuff happening up there. But you know a lot of times this type of work, especially training like machine learning models and stuff, is super super intensive. So if you've got like a laptop, some of the GPU processing and other really interesting things are inaccessible to you. Like for example my MacBook is super killer but it's got you know like 12 cores if you count the hyper threads and it's got 32 gigs of RAM, but it has a ATI, not a NVIDIA graphics card.
+
+00:17:11 So you can't use CUDA on it, for example, right?
+
+00:17:13 So what do I do?
+
+00:17:15 I go to the cloud.
+
+00:17:16 Well, if you're really into deep learning and you really want to do like data science with GPUs, there's this place called Lambda, this company called Lambda that is creating these deep learning workstation servers and laptops.
+
+00:17:31 Have you heard about this?
+
+00:17:32 - No.
+
+00:17:33 - Just to be clear, this is like a super commercial product.
+
+00:17:35 These are like servers that you buy and we have no this is not like a product placement I just ran across this and thought dang. This is interesting. So I thought I would just talk about it. So they're selling gpu accelerated tensorflow pytorch keras and other types of Pre-configured machines just they say just plug in and start training. You're good to go And they talk about how you can save a bunch of money, right? You don't run on the cloud The cloud can save you money for short work but if you got to do it over a long time it can get expensive.
+
+00:18:05 So they offer a TensorBook, which is a GPU training available laptop, capable laptop, for $2,900. That's a pricey laptop, right?
+
+00:18:15 Yeah.
+
+00:18:16 Actually, it's less expensive than my MacBook, but still.
+
+00:18:20 But if you were going to do GPU stuff, this is a really cool option to be able to do it on the go or be mobile.
+
+00:18:26 Then they also have a workstation, which is called LambdaQuad, quad which has four GPUs in it.
+
+00:18:33 And this one is $21,000.
+
+00:18:35 - Okay.
+
+00:18:36 - Okay, that's a lot.
+
+00:18:37 But if you go and like grab like a second tier GPU enabled EC2 instance, specifically a P3 8X large, that's over $12 an hour, which comes out to close to $9,000 a month in cloud bills.
+
+00:18:52 If you were to like run it all the time, obviously probably not all the time.
+
+00:18:55 But so you know, like $21,000 is a lot, but a $9,000 monthly bill for AWS is also a lot.
+
+00:19:01 - Yeah, it's something to pay attention to.
+
+00:19:03 As your bill starts getting bigger, maybe a dedicated hardware makes sense.
+
+00:19:08 - Anytime I run across something like this, if it were Alienware for gaming laptops or like the Apple MacBook Pro or whatever, it's like, all right, well, what if you're all in?
+
+00:19:16 What if you turn all the knobs to 11?
+
+00:19:17 What could you get?
+
+00:19:19 So they have this thing called the Lambda Hyperplane, which has eight Tesla V100 GPUs, and it starts at, it's not the final price, It starts at $114,000.
+
+00:19:30 - Nice.
+
+00:19:31 That's without the pinstriping.
+
+00:19:32 - Yeah, exactly.
+
+00:19:33 That's not even the leather-bound keyboard or whatever, I don't know.
+
+00:19:38 Anyway, if you're into deep learning and you need GPUs for computational stuff, data science and whatnot, this is actually pretty cool.
+
+00:19:46 - Yeah, also, I'm sure there's applications where you really don't wanna use the cloud.
+
+00:19:49 You wanna use in-house computers and not go out, or the connection's bad.
+
+00:19:53 You're sticking some data in the middle of nowhere or something and you can't get to the end of it.
+
+00:19:58 - Right, right, if you got terabytes of data, like that takes days to upload.
+
+00:20:02 So maybe it's better to just run it locally, who knows.
+
+00:20:05 Black has been a big hit.
+
+00:20:06 - Yeah, I like black.
+
+00:20:08 - Yeah, for sure.
+
+00:20:09 - A lot of people do.
+
+00:20:10 - Oh yeah.
+
+00:20:11 - One of the things, so I ran across an article, it's not a new article, but it's all still relevant.
+
+00:20:16 It's auto formatters in Python.
+
+00:20:18 And big shock, black's in there.
+
+00:20:20 But one of the things I liked about it is they talked, they spent a little bit of time talking about why you want to use black or something else.
+
+00:20:28 And I'm finding this more and more as a team lead that just it's not great to have, like if you're doing code reviews, you don't want to have like style be part of the code review.
+
+00:20:40 It's way better to have a tool just dictate the style.
+
+00:20:44 And so people can argue with the tool instead of arguing with each other.
+
+00:20:47 - Yeah, it's like if the code review, the people there, I'm sure they feel like, well, I have to make a constructive or critical comment about something.
+
+00:20:55 shouldn't be "why are you indenting like that?" or "why is there not a space by those commas?" Like that's the stuff machines can agree upon and just do for us, right? Like have architectural or algorithmic conversations, right? Yeah, you should be using three double quotes there instead of one. So get off the style police and use an auto formatter instead. I love black, a lot of people do, but there's reasons for some people like an established code base or other predefined style guide that maybe it's too much.
+
+00:21:24 It does do things that sometimes I don't like it to do.
+
+00:21:27 So there's a couple other options, and this article talks about AutoPep8 and YAPF.
+
+00:21:35 Now AutoPep8 is essentially just, it just does Pep8, or uses PyCode style, the utility, to detect Pep8 violations and just change the code.
+
+00:21:45 You can do both with it.
+
+00:21:47 It does less than black, but it doesn't do much more.
+
+00:21:50 So if really you're just trying to stick to PEP8, maybe that'd be better to use.
+
+00:21:56 And the other end of it is YAPF, which is a tool out of, I don't know how to say that.
+
+00:22:01 Yap-oof? - Yap-oof.
+
+00:22:02 - It's probably yet another Python formatter.
+
+00:22:05 - Yeah, it probably is.
+
+00:22:06 - It's a Google tool.
+
+00:22:07 I think it's Google.
+
+00:22:08 I think it's good if you want, it's got a lot of knobs and dials, a lot of customization.
+
+00:22:12 So if black doesn't have enough controls for you and you really want to tweak it to be your personal company's code style, this might be great for you.
+
+00:22:21 In the documentation it says it takes away some of the drudgery in maintaining your code and what just ultimate goal is to code is that it produces as good a code as that a programmer would write if they were following the style guide.
+
+00:22:36 That sounds pretty good, honestly.
+
+00:22:37 One of the interesting things, I was researching this story is I didn't know this about Black.
+
+00:22:43 after it's changed your code, it does a check to see if the reformatted code still produces a valid abstract syntax tree that is equivalent to the original.
+
+00:22:55 That's pretty cool. I didn't know it did that.
+
+00:22:57 Yeah, that is cool. So run it through the Python parser and turn it into bytecode and then just see if the essence is the same, which yeah, I mean, because you don't actually want to change the meaning of the way the code actually gets interpreted, it's just formatting, right?
+
+00:23:10 So the meaning changes like, well, that might be a problem.
+
+00:23:13 - Yeah.
+
+00:23:14 The other thing I wanted to highlight this article for is it took a few code examples and just did the, what does black change it into?
+
+00:23:20 And what does YAPF change it into?
+
+00:23:22 And what does AutoPIP change it into?
+
+00:23:24 - Oh, that's sweet.
+
+00:23:25 I like that.
+
+00:23:26 - Yeah. - Very, very cool.
+
+00:23:27 All right, well, that's all of our main items.
+
+00:23:28 You got anything else you want to throw out there while we're here?
+
+00:23:31 - No, you?
+
+00:23:32 - Yes, a couple of things.
+
+00:23:33 I'm getting excited for PyCon US.
+
+00:23:35 It's earlier this year in April at some point, I'm guessing.
+
+00:23:39 But the announcement I want to make is that the applications for financial aid are open and they'll be accepting them through January 31st, 2020.
+
+00:23:48 So 30 days into a world with only Python 3.
+
+00:23:52 The Python Software Foundation and PyLadies are making this financial aid possible and check it out.
+
+00:23:57 Yeah, so like PSF is contributing $130,000 towards that.
+
+00:24:00 And yeah, it's pretty good.
+
+00:24:02 So if you're thinking, hey, I would really love to go to PyCon and make some connections, head into this world, use some networking and learn more about it, but I just can't justify the expense or afford it, maybe do that.
+
+00:24:13 - Yeah, nice.
+
+00:24:14 - Indeed, indeed.
+
+00:24:15 And I'm working on some new courses.
+
+00:24:16 I got one that's all done and recorded, just getting edited.
+
+00:24:19 Another one, I spent like six contiguous hours recording videos yesterday.
+
+00:24:24 That doesn't sound like a lot of time if you haven't done it, but six straight hours recording, that's a lot, so I'm really, really excited about what's coming out.
+
+00:24:29 We'll share more with it when I can.
+
+00:24:31 - Very exciting.
+
+00:24:32 - Oh yeah.
+
+00:24:33 Now, sometimes we have really short jokes.
+
+00:24:36 I see that you have one.
+
+00:24:37 - We got a short joke that was contributed by Eric Nelson.
+
+00:24:40 Thanks, Eric.
+
+00:24:41 It is a math joke.
+
+00:24:42 The joke is, "I is as complex as it gets." - I love it, I love it.
+
+00:24:50 Studied a bunch of complex analysis and things like that when I was doing math and yeah, I like it.
+
+00:24:55 - Yeah, we have another one too that it's long.
+
+00:24:57 - It's long and I'm not gonna be able to do justice to it, so you have to check this out.
+
+00:25:02 So you know the song "American Pie," right?
+
+00:25:04 - Yes.
+
+00:25:05 "Heavy to the levy, but the levy was dry." That sort of song.
+
+00:25:08 - Yeah, you can sing it.
+
+00:25:09 - No, no, I can't sing it.
+
+00:25:10 I could recite it.
+
+00:25:12 If I sing it, it's not gonna be singing.
+
+00:25:13 It's gonna be something else.
+
+00:25:14 There's another one.
+
+00:25:15 One of our listeners, I only know his username on Reddit, I'm afraid, I can't even find the tweet in time.
+
+00:25:22 Wait, said, "Hey, you inspired me to write this song "called 'American Pie, American P-Y'." And it's basically the story of Legacy Python done to American Pie the song.
+
+00:25:35 - Yeah, it's pretty awesome.
+
+00:25:37 - It's really, really well done.
+
+00:25:38 I'll just like recite a little bit here, one of the verses.
+
+00:25:41 So, "Bye bye to your legacy pies.
+
+00:25:44 "Made decisions about division, so you'll have to revise.
+
+00:25:47 "And UDecode's official, it's not a bunch of bite lies.
+
+00:25:50 "Singing that'll be the day it dies.
+
+00:25:52 "That'll be the day it dies." It's really good, yeah.
+
+00:25:54 People should check it out.
+
+00:25:55 If somebody can perform this and give it to us, he's given us permission to take that and put it on the air.
+
+00:26:00 If it's good enough, man, we'd love it.
+
+00:26:01 That'd be awesome.
+
+00:26:02 - I cannot do this.
+
+00:26:03 - I want somebody to sing it.
+
+00:26:04 'Cause it includes the phrase, "I was a crusty old fart coding guy." (laughing)
+
+00:26:11 - You could be a YouTube sensation if you just take this chance here.
+
+00:26:16 Jump on it.
+
+00:26:17 - Yes, and if you do, let us know.
+
+00:26:18 - Yeah, for sure, let us know.
+
+00:26:19 That'd be awesome.
+
+00:26:20 All right, well, yeah, this really nice song and a nice job there.
+
+00:26:26 Well done on that.
+
+00:26:27 And Brian, thanks for everything.
+
+00:26:29 Thanks for being here. - Thank you.
+
+00:26:30 - And sharing this.
+
+00:26:31 Yep, you bet.
+
+00:26:32 Thank you for listening to Python Bytes. Follow the show on Twitter @PythonBytes.
+
+00:26:36 That's Python Bytes as in B-Y-T-E-S. And get the full show notes at PythonBytes.fm. If you have a news item you want featured, just visit PythonBytes.fm and send it our way. We're always on the lookout for sharing something cool. This is Brian Okken, and on behalf of myself and Michael Kennedy, thank you for listening and sharing this podcast with your friends and colleagues.
+

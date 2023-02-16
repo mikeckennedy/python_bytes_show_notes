@@ -1,0 +1,3032 @@
+
+00:00:00.000 --> 00:00:04.640
+Hello and welcome to Python Bytes where we deliver Python news and headlines directly to your
+
+
+00:00:04.640 --> 00:00:10.560
+earbuds. This is episode 160 recorded December 4th, 2019. I'm Michael Kennedy.
+
+
+00:00:10.560 --> 00:00:11.360
+And I'm Brian Okken.
+
+
+00:00:11.360 --> 00:00:16.160
+And this episode is brought to you by DigitalOcean. Check them out at pythonbytes.fm/digitalocean.
+
+
+00:00:16.160 --> 00:00:21.920
+$50 credit for new users. Let's start with a topic that we've covered quite a bit, Brian,
+
+
+00:00:21.920 --> 00:00:24.000
+type hints, or do you call them type annotations?
+
+
+00:00:24.000 --> 00:00:27.040
+I usually call them type hints.
+
+
+00:00:27.040 --> 00:00:30.720
+Yeah, I go back and forth and the article you're going to mention actually says you can call them
+
+
+00:00:30.720 --> 00:00:34.960
+both. But yeah, it's kind of funky that they don't have like a definitive name. Maybe they do and I
+
+
+00:00:34.960 --> 00:00:40.080
+just don't have certainty around it. Yeah, one of them's wrong and whatever the one I'm using is
+
+
+00:00:40.080 --> 00:00:44.240
+probably the wrong one. So we have covered it a lot and there's a lot of tools that we've talked
+
+
+00:00:44.240 --> 00:00:49.440
+about like mypy and others. So hopefully we've convinced everybody that they should at least do
+
+
+00:00:49.440 --> 00:00:55.120
+a little bit of type hinting. If you're in that boat, then this article is perfect for you. Al
+
+
+00:00:55.120 --> 00:00:59.960
+Paul Swigert wrote an article called Type Hints for Busy Python Programmers.
+
+
+00:00:59.960 --> 00:01:00.960
+And that's everybody, right?
+
+
+00:01:00.960 --> 00:01:01.960
+I mean,
+
+
+00:01:01.960 --> 00:01:02.960
+We're all busy.
+
+
+00:01:02.960 --> 00:01:03.960
+We're all busy.
+
+
+00:01:03.960 --> 00:01:05.040
+I really like the article.
+
+
+00:01:05.040 --> 00:01:09.320
+It's a kind of a, when I first went to it, I was a little shocked because there's a lot
+
+
+00:01:09.320 --> 00:01:12.080
+of words there, but it reads like a conversation.
+
+
+00:01:12.080 --> 00:01:16.040
+It's a conversational thing as if it's a programmer talking to an expert.
+
+
+00:01:16.040 --> 00:01:21.000
+So that sort of tone of, I think I should do this, but what do I do?
+
+
+00:01:21.000 --> 00:01:24.160
+And so he just sort of walks through a whole bunch of questions with it.
+
+
+00:01:24.160 --> 00:01:29.160
+He covers using mypy and typing as the two modules you need
+
+
+00:01:29.160 --> 00:01:30.600
+and how to use those.
+
+
+00:01:30.600 --> 00:01:32.380
+And there are other tools,
+
+
+00:01:32.380 --> 00:01:34.600
+but really most people are using mypy.
+
+
+00:01:34.600 --> 00:01:37.160
+And that's what, that's El's saying that.
+
+
+00:01:37.160 --> 00:01:39.160
+I don't know if most people are using mypy
+
+
+00:01:39.160 --> 00:01:40.820
+or some of the other tools.
+
+
+00:01:40.820 --> 00:01:42.520
+We don't, I don't think there's any way
+
+
+00:01:42.520 --> 00:01:43.940
+to gain statistics on that,
+
+
+00:01:43.940 --> 00:01:46.520
+but I think mypy is a good way to start.
+
+
+00:01:46.520 --> 00:01:50.800
+And a reminder that using types doesn't affect runtime.
+
+
+00:01:50.800 --> 00:01:53.520
+It's, you have to run a tool like mypy
+
+
+00:01:53.520 --> 00:01:54.860
+to get it to work.
+
+
+00:01:54.860 --> 00:01:57.700
+And so I don't think he covers this,
+
+
+00:01:57.700 --> 00:02:00.700
+but I think that people should hook a running mypy
+
+
+00:02:00.700 --> 00:02:02.820
+into their talks system
+
+
+00:02:02.820 --> 00:02:06.480
+or into their continuous integration pipeline
+
+
+00:02:06.480 --> 00:02:09.140
+to make sure that these are met.
+
+
+00:02:09.140 --> 00:02:10.780
+- Yeah, everything's hanging together, yeah.
+
+
+00:02:10.780 --> 00:02:14.180
+- Yeah, there isn't any compiler to catch you.
+
+
+00:02:14.180 --> 00:02:15.340
+So one of the things I liked about it
+
+
+00:02:15.340 --> 00:02:16.780
+is that it gets you started
+
+
+00:02:16.780 --> 00:02:18.180
+and it covers some of the basics,
+
+
+00:02:18.180 --> 00:02:21.100
+but there's, as I've started running it,
+
+
+00:02:21.100 --> 00:02:23.020
+started using type hints,
+
+
+00:02:23.020 --> 00:02:26.820
+The exact things that I've run into, ALT covers.
+
+
+00:02:26.820 --> 00:02:29.340
+For instance, you got a function that takes an integer,
+
+
+00:02:29.340 --> 00:02:32.820
+but it also could be none, or the default is none,
+
+
+00:02:32.820 --> 00:02:34.440
+or it's optional or something.
+
+
+00:02:34.440 --> 00:02:35.800
+How do you deal with that?
+
+
+00:02:35.800 --> 00:02:39.380
+There is stuff built in the type int system for union.
+
+
+00:02:39.380 --> 00:02:42.580
+So you can say it's either an int or none,
+
+
+00:02:42.580 --> 00:02:44.580
+and there's optional parameters.
+
+
+00:02:44.580 --> 00:02:46.300
+And then a shout out to stuff that,
+
+
+00:02:46.300 --> 00:02:47.980
+if you kind of get into it and you might,
+
+
+00:02:47.980 --> 00:02:51.120
+like if you're passing callables or sequences around,
+
+
+00:02:51.120 --> 00:02:53.560
+yes, there are ways to type that.
+
+
+00:02:53.560 --> 00:02:56.400
+And so I think this is actually just a really great
+
+
+00:02:56.400 --> 00:02:59.120
+quick read and it'll get you started pretty fast.
+
+
+00:02:59.120 --> 00:03:00.080
+- Yeah, I really like it.
+
+
+00:03:00.080 --> 00:03:01.440
+I love the conversational style.
+
+
+00:03:01.440 --> 00:03:03.240
+It seems super approachable
+
+
+00:03:03.240 --> 00:03:06.280
+and it's kind of from the skeptics perspective.
+
+
+00:03:06.280 --> 00:03:08.080
+It seems a little bit like, oh, I wanna do this,
+
+
+00:03:08.080 --> 00:03:10.180
+but what about, I don't know if I'm sure about this.
+
+
+00:03:10.180 --> 00:03:11.120
+Why can I do this?
+
+
+00:03:11.120 --> 00:03:13.000
+And yeah, it seems like a lot of fun.
+
+
+00:03:13.000 --> 00:03:16.160
+I'm definitely a fan of type hints these days,
+
+
+00:03:16.160 --> 00:03:18.240
+not for the mypy reasons.
+
+
+00:03:18.240 --> 00:03:20.480
+I understand that makes sense for very large projects,
+
+
+00:03:20.480 --> 00:03:24.640
+But for me, the editors are just so much better
+
+
+00:03:24.640 --> 00:03:28.240
+if you can just give them these little hints here and there.
+
+
+00:03:28.240 --> 00:03:29.760
+I'll give you an example.
+
+
+00:03:29.760 --> 00:03:32.640
+For the database for Python bytes,
+
+
+00:03:32.640 --> 00:03:35.760
+we are talking to MongoDB with Mongo engine.
+
+
+00:03:35.760 --> 00:03:38.280
+And the way you specify it is much like SQLAlchemy
+
+
+00:03:38.280 --> 00:03:40.480
+or even maybe more so like Django or M-Way.
+
+
+00:03:40.480 --> 00:03:44.860
+You say, this column is a Mongo engine column
+
+
+00:03:44.860 --> 00:03:46.260
+of type such and such.
+
+
+00:03:46.260 --> 00:03:47.960
+Well, the type editor,
+
+
+00:03:47.960 --> 00:03:49.800
+the editors think the type is like a column,
+
+
+00:03:49.800 --> 00:03:51.880
+But it's not a column, it's probably a date time.
+
+
+00:03:51.880 --> 00:03:55.000
+Or it's a string, or it's a list, or it's anything but whatever they think it is.
+
+
+00:03:55.000 --> 00:03:59.960
+And so you can use type-ins to say, "This column is an integer, and it's equal to one
+
+
+00:03:59.960 --> 00:04:00.960
+of these column things."
+
+
+00:04:00.960 --> 00:04:04.600
+That'll tell all the editors, "When I hit dot on this, don't tell me it's one of these
+
+
+00:04:04.600 --> 00:04:05.600
+column things.
+
+
+00:04:05.600 --> 00:04:06.600
+I don't want to know that.
+
+
+00:04:06.600 --> 00:04:09.600
+I want to know what its value is, because that's what I program against when I run it."
+
+
+00:04:09.600 --> 00:04:12.320
+So there's just all these different angles that make it super valuable.
+
+
+00:04:12.320 --> 00:04:14.840
+Wow, to take a look at how you're using that, that's pretty cool.
+
+
+00:04:14.840 --> 00:04:15.840
+Yeah, for sure.
+
+
+00:04:15.840 --> 00:04:20.680
+Speaking of cool, another thing that we have beaten to death but is very tough and leathery
+
+
+00:04:20.680 --> 00:04:25.400
+and has not died is the ability to create an application out of Python code.
+
+
+00:04:25.400 --> 00:04:26.400
+Right?
+
+
+00:04:26.400 --> 00:04:27.400
+Yes.
+
+
+00:04:27.400 --> 00:04:28.720
+Well, I stumbled across this thing.
+
+
+00:04:28.720 --> 00:04:34.240
+I don't believe it is new, but it actually is interesting on layers.
+
+
+00:04:34.240 --> 00:04:35.480
+Layers of interest here.
+
+
+00:04:35.480 --> 00:04:36.480
+Called auto-py-2-exe.
+
+
+00:04:36.480 --> 00:04:37.480
+Auto-py-2-exe.
+
+
+00:04:37.480 --> 00:04:38.480
+Okay.
+
+
+00:04:38.480 --> 00:04:44.560
+Okay, so this is a GUI, and it's built with EEL.
+
+
+00:04:44.560 --> 00:04:45.560
+First of all, what?
+
+
+00:04:45.560 --> 00:04:48.080
+It's a GUI Python thing built with EEL.
+
+
+00:04:48.080 --> 00:04:48.760
+Remember EEL?
+
+
+00:04:48.760 --> 00:04:49.480
+I know.
+
+
+00:04:49.480 --> 00:04:49.960
+Remind me.
+
+
+00:04:49.960 --> 00:04:50.320
+Yeah.
+
+
+00:04:50.320 --> 00:04:51.240
+It lives in the ocean.
+
+
+00:04:51.240 --> 00:04:52.320
+Some of them are electrical.
+
+
+00:04:52.320 --> 00:04:53.080
+You shouldn't touch them.
+
+
+00:04:53.080 --> 00:04:53.360
+No, wait.
+
+
+00:04:53.360 --> 00:04:53.960
+Hold on.
+
+
+00:04:53.960 --> 00:04:59.080
+It's a library for making electron-like HTML and JavaScript GUI apps with Python.
+
+
+00:04:59.080 --> 00:04:59.640
+OK.
+
+
+00:04:59.640 --> 00:05:01.680
+It says electric snake.
+
+
+00:05:01.680 --> 00:05:02.080
+Got it.
+
+
+00:05:02.080 --> 00:05:03.720
+Yeah, electron-- yeah, exactly.
+
+
+00:05:03.720 --> 00:05:05.600
+So it's very much like that.
+
+
+00:05:05.600 --> 00:05:09.120
+I think it's for kind of simplistic ones, but it certainly works for this app,
+
+
+00:05:09.120 --> 00:05:10.760
+which is pretty cool.
+
+
+00:05:10.760 --> 00:05:12.600
+So here's a Python app built in EEL.
+
+
+00:05:12.600 --> 00:05:13.580
+That's cool.
+
+
+00:05:13.580 --> 00:05:17.100
+And it's kind of meta in the sense that its job
+
+
+00:05:17.100 --> 00:05:19.260
+is to make other Python applications out
+
+
+00:05:19.260 --> 00:05:20.340
+of native Python code.
+
+
+00:05:20.340 --> 00:05:21.380
+- Okay, interesting.
+
+
+00:05:21.380 --> 00:05:22.380
+- Okay, yeah.
+
+
+00:05:22.380 --> 00:05:24.020
+So what it does is basically this is
+
+
+00:05:24.020 --> 00:05:26.580
+automation over top PyInstaller.
+
+
+00:05:26.580 --> 00:05:28.260
+And you might think, okay, well I could just
+
+
+00:05:28.260 --> 00:05:30.500
+pass the command line arguments and just do that.
+
+
+00:05:30.500 --> 00:05:32.900
+But there's something really nice about having
+
+
+00:05:32.900 --> 00:05:34.900
+a GUI say here's the icon,
+
+
+00:05:34.900 --> 00:05:37.100
+I just put the icon into the happen,
+
+
+00:05:37.100 --> 00:05:40.780
+here's the name I want for the title and such and such.
+
+
+00:05:40.780 --> 00:05:44.280
+and here are the additional binary files
+
+
+00:05:44.280 --> 00:05:46.340
+or additional resource files I want bundled
+
+
+00:05:46.340 --> 00:05:47.620
+and shipped with my application.
+
+
+00:05:47.620 --> 00:05:50.600
+We're using this JSON file and we're using this,
+
+
+00:05:50.600 --> 00:05:53.220
+I don't know, this image that we're gonna embed somewhere.
+
+
+00:05:53.220 --> 00:05:54.420
+Just include those.
+
+
+00:05:54.420 --> 00:05:57.200
+So there's all sorts of settings in this autopy.exe
+
+
+00:05:57.200 --> 00:05:59.380
+where you can just pick all that stuff out
+
+
+00:05:59.380 --> 00:06:01.040
+and you don't really have to be an expert at all
+
+
+00:06:01.040 --> 00:06:03.100
+with PyInstaller, but you can build pretty nice stuff.
+
+
+00:06:03.100 --> 00:06:04.060
+Like there's a checkbox.
+
+
+00:06:04.060 --> 00:06:06.060
+Do you want just a loose set of files
+
+
+00:06:06.060 --> 00:06:08.260
+or do you want it bundled into a single .exe
+
+
+00:06:08.260 --> 00:06:10.620
+that I can just give and it'll contain Python
+
+
+00:06:10.620 --> 00:06:11.820
+and the dependencies and all that.
+
+
+00:06:11.820 --> 00:06:13.540
+- Okay, this does sound neat.
+
+
+00:06:13.540 --> 00:06:14.860
+- It's pretty neat, right?
+
+
+00:06:14.860 --> 00:06:17.180
+Yeah, and so really people wanna,
+
+
+00:06:17.180 --> 00:06:18.660
+if this sounds interesting to you
+
+
+00:06:18.660 --> 00:06:20.400
+and you wanna find out, hey, is this cool?
+
+
+00:06:20.400 --> 00:06:21.240
+Is this interesting?
+
+
+00:06:21.240 --> 00:06:23.380
+There's a three minute YouTube video.
+
+
+00:06:23.380 --> 00:06:24.220
+You can just check that out.
+
+
+00:06:24.220 --> 00:06:25.040
+- Okay, cool.
+
+
+00:06:25.040 --> 00:06:26.780
+- So I put the link to the three minute video at the end.
+
+
+00:06:26.780 --> 00:06:28.100
+People can click on that and watch it.
+
+
+00:06:28.100 --> 00:06:29.540
+And then within three minutes,
+
+
+00:06:29.540 --> 00:06:31.300
+you'll decide whether or not this is useful for you.
+
+
+00:06:31.300 --> 00:06:33.740
+But some of the conversation I saw,
+
+
+00:06:33.740 --> 00:06:36.140
+people saying, yeah, I know it just automates PyInstaller
+
+
+00:06:36.140 --> 00:06:37.480
+and that's cool, but there were things
+
+
+00:06:37.480 --> 00:06:39.100
+I couldn't get to work with PyInstaller,
+
+
+00:06:39.100 --> 00:06:40.580
+but doing it here, it worked fine.
+
+
+00:06:40.580 --> 00:06:42.340
+So I feel like there's a lot of value in this.
+
+
+00:06:42.340 --> 00:06:43.180
+- Yeah, nice.
+
+
+00:06:43.180 --> 00:06:45.480
+- Yeah, speaking of value, DigitalOcean,
+
+
+00:06:45.480 --> 00:06:46.580
+they are adding a lot of value
+
+
+00:06:46.580 --> 00:06:48.260
+to all the hosted things of the world,
+
+
+00:06:48.260 --> 00:06:50.700
+including our stuff that's hosted there,
+
+
+00:06:50.700 --> 00:06:52.420
+across all the different sites and whatever.
+
+
+00:06:52.420 --> 00:06:55.940
+I believe we're doing like 15 terabytes of traffic a month
+
+
+00:06:55.940 --> 00:06:56.860
+through DigitalOcean. - Wow.
+
+
+00:06:56.860 --> 00:06:59.060
+- That is not messing around, that's a lot.
+
+
+00:06:59.060 --> 00:07:00.460
+So been rock solid.
+
+
+00:07:00.460 --> 00:07:02.880
+The other thing that they have that they're just launching
+
+
+00:07:02.880 --> 00:07:06.540
+is the Kubernetes, their own container registry
+
+
+00:07:06.540 --> 00:07:09.460
+for things like their Kubernetes service.
+
+
+00:07:09.460 --> 00:07:14.020
+So we've got Docker Hub and places that you can put your containers, but that's on the
+
+
+00:07:14.020 --> 00:07:16.260
+public internet and things like that.
+
+
+00:07:16.260 --> 00:07:19.300
+It'd be nice to have a private little one for your private code that you want to make
+
+
+00:07:19.300 --> 00:07:24.020
+sure doesn't somehow leak with making it public or private on accident or whatever.
+
+
+00:07:24.020 --> 00:07:29.460
+So you can use their DigitalOcean container registry and have nice private container definitions,
+
+
+00:07:29.460 --> 00:07:32.180
+which is pretty cool, among other things.
+
+
+00:07:32.180 --> 00:07:33.180
+So check them out at pythonbytes.fm/digitalocean.
+
+
+00:07:33.180 --> 00:07:38.900
+Like I said, $50 credit for new users to get started and play around with this.
+
+
+00:07:38.900 --> 00:07:41.180
+Speaking of playing around, I've never played with Sphinx.
+
+
+00:07:41.180 --> 00:07:42.020
+- Oh, you never have?
+
+
+00:07:42.020 --> 00:07:43.740
+- I haven't, I've had no reason to do it,
+
+
+00:07:43.740 --> 00:07:46.020
+but it seems like something that's useful.
+
+
+00:07:46.020 --> 00:07:46.860
+Maybe I should learn about it.
+
+
+00:07:46.860 --> 00:07:48.500
+- Yeah, so one of the things,
+
+
+00:07:48.500 --> 00:07:51.580
+so what I've wanted to use Sphinx for,
+
+
+00:07:51.580 --> 00:07:54.460
+so Sphinx can be used for building up documentation
+
+
+00:07:54.460 --> 00:07:56.740
+and makes a documentation website
+
+
+00:07:56.740 --> 00:07:59.020
+based on either REST or Markdown,
+
+
+00:07:59.020 --> 00:08:00.980
+or not, the REST in that-- - Restructured text.
+
+
+00:08:00.980 --> 00:08:02.420
+- Restructured text.
+
+
+00:08:02.420 --> 00:08:04.300
+Yeah, thanks a lot, programming world,
+
+
+00:08:04.300 --> 00:08:07.060
+for having two things that could be abbreviated REST.
+
+
+00:08:07.060 --> 00:08:11.520
+In the C++ land, there was some auto documentation tools
+
+
+00:08:11.520 --> 00:08:13.100
+to where you can take,
+
+
+00:08:13.100 --> 00:08:15.480
+and I know other programming languages have this too,
+
+
+00:08:15.480 --> 00:08:17.020
+where you can take information
+
+
+00:08:17.020 --> 00:08:18.920
+about the structure of a program
+
+
+00:08:18.920 --> 00:08:22.400
+and automatically generate some web documentation
+
+
+00:08:22.400 --> 00:08:25.880
+about how to use it and what the parameters are
+
+
+00:08:25.880 --> 00:08:27.840
+for different functions and stuff like that.
+
+
+00:08:27.840 --> 00:08:29.400
+So you can do that with Sphinx
+
+
+00:08:29.400 --> 00:08:31.920
+and that's the thing I've been wanting to do
+
+
+00:08:31.920 --> 00:08:34.380
+and I've tried several times and failed.
+
+
+00:08:34.380 --> 00:08:37.000
+And it's usually because, probably on my part,
+
+
+00:08:37.000 --> 00:08:39.080
+but the tutorials get me part of way
+
+
+00:08:39.080 --> 00:08:42.320
+and then they reference a bunch of documentation and stuff
+
+
+00:08:42.320 --> 00:08:44.920
+and I don't want to become a Sphinx expert.
+
+
+00:08:44.920 --> 00:08:46.280
+That's kind of the point of this.
+
+
+00:08:46.280 --> 00:08:49.680
+I want to be able to just point it at my code and go do it.
+
+
+00:08:49.680 --> 00:08:52.160
+And like for instance, I'm pulling out,
+
+
+00:08:52.160 --> 00:08:53.600
+so what does a function do?
+
+
+00:08:53.600 --> 00:08:55.680
+What do different tests do?
+
+
+00:08:55.680 --> 00:08:58.040
+I'd like that to be embedded in the doc string
+
+
+00:08:58.040 --> 00:08:59.680
+so that when I'm coding,
+
+
+00:08:59.680 --> 00:09:01.160
+I can make sure that that's correct
+
+
+00:09:01.160 --> 00:09:03.840
+and then that's just automatically generated.
+
+
+00:09:03.840 --> 00:09:06.760
+So what I'm highlighting today is an article called
+
+
+00:09:06.760 --> 00:09:09.540
+how to document Python code with Sphinx.
+
+
+00:09:09.540 --> 00:09:13.420
+It's a short tutorial by Mosh Zadka.
+
+
+00:09:13.420 --> 00:09:14.680
+That's a cool name.
+
+
+00:09:14.680 --> 00:09:17.180
+And so walks through,
+
+
+00:09:17.180 --> 00:09:19.320
+it has a little example of a little module
+
+
+00:09:19.320 --> 00:09:20.600
+with the doc string,
+
+
+00:09:20.600 --> 00:09:25.440
+and then the small example of how to set up your index.rst.
+
+
+00:09:25.440 --> 00:09:28.200
+And I like Markdown better, but this is so short,
+
+
+00:09:28.200 --> 00:09:31.200
+I'd probably just use the restructured checks version.
+
+
+00:09:31.200 --> 00:09:33.040
+Points out that you need a few extensions,
+
+
+00:09:33.040 --> 00:09:35.840
+you need auto-doc, Napoleon and view code.
+
+
+00:09:35.840 --> 00:09:39.160
+And then it just gives you the conf.py file
+
+
+00:09:39.160 --> 00:09:40.680
+you need to make this work.
+
+
+00:09:40.680 --> 00:09:42.220
+And then how do you generate this stuff?
+
+
+00:09:42.220 --> 00:09:44.520
+Well, there's this long, weird command.
+
+
+00:09:44.520 --> 00:09:47.060
+It's not that weird, but I don't wanna memorize it.
+
+
+00:09:47.060 --> 00:09:51.660
+So this tutorial also shows you how to set up a toxini file
+
+
+00:09:51.660 --> 00:09:54.800
+with this Sphinx built in, so you can just say tox
+
+
+00:09:54.800 --> 00:09:56.620
+and your docs get rebuilt.
+
+
+00:09:56.620 --> 00:09:59.480
+So I like this tutorial and I'm gonna give it a shot.
+
+
+00:09:59.480 --> 00:10:00.880
+- Yeah, it's a really cool thing
+
+
+00:10:00.880 --> 00:10:03.420
+and automatically generating your documentation.
+
+
+00:10:03.420 --> 00:10:04.340
+Not terrible at all.
+
+
+00:10:04.340 --> 00:10:05.900
+Of course, it doesn't cover like,
+
+
+00:10:05.900 --> 00:10:07.420
+okay, well now that you've generated it,
+
+
+00:10:07.420 --> 00:10:09.380
+it's a bunch of web pages and stuff.
+
+
+00:10:09.380 --> 00:10:10.620
+Where do you put that?
+
+
+00:10:10.620 --> 00:10:14.060
+But for internal documentation within a team,
+
+
+00:10:14.060 --> 00:10:15.140
+you got your own way to do it,
+
+
+00:10:15.140 --> 00:10:18.620
+whether you're pushing it into a small web server
+
+
+00:10:18.620 --> 00:10:20.860
+or just leaving it with your code or whatever.
+
+
+00:10:20.860 --> 00:10:22.660
+So leave that to the user.
+
+
+00:10:22.660 --> 00:10:24.300
+- Yeah, or put it on DigitalOcean,
+
+
+00:10:24.300 --> 00:10:26.860
+or not DigitalOcean, GitHub Pages, right?
+
+
+00:10:26.860 --> 00:10:27.940
+- Yeah. - That's one thing you do.
+
+
+00:10:27.940 --> 00:10:29.820
+You put it on Netlify, a lot of options
+
+
+00:10:29.820 --> 00:10:32.460
+for just hosting HTML. - Yeah, or throw it
+
+
+00:10:32.460 --> 00:10:37.460
+into a GitHub cluster, a Kubernetes cluster, maybe not.
+
+
+00:10:37.460 --> 00:10:38.480
+- That's right.
+
+
+00:10:38.480 --> 00:10:40.640
+So, you know, something that's always amused me
+
+
+00:10:40.640 --> 00:10:44.180
+is the association of Python ecosystem
+
+
+00:10:44.180 --> 00:10:46.400
+and language with snakes.
+
+
+00:10:46.400 --> 00:10:48.800
+Because that's not what the origin, right?
+
+
+00:10:48.800 --> 00:10:50.600
+That's not what Python is named after.
+
+
+00:10:50.600 --> 00:10:52.200
+It's named after Monty Python.
+
+
+00:10:52.200 --> 00:10:54.540
+All these apps and stuff should have like
+
+
+00:10:54.540 --> 00:10:56.720
+medieval knight type of names, but they don't.
+
+
+00:10:56.720 --> 00:10:59.000
+So I'm gonna tell you about one that is called snake.
+
+
+00:10:59.000 --> 00:11:02.420
+Snek, S-N-E-K, Snek.
+
+
+00:11:02.420 --> 00:11:04.080
+(laughs)
+
+
+00:11:04.080 --> 00:11:06.320
+Don't quite know the right accent to put on it
+
+
+00:11:06.320 --> 00:11:08.280
+to pull that off, but Snek.
+
+
+00:11:08.280 --> 00:11:09.120
+It's pretty awesome.
+
+
+00:11:09.120 --> 00:11:12.240
+So it's a PowerShell module for integrating
+
+
+00:11:12.240 --> 00:11:14.680
+standard CPython, just Python code,
+
+
+00:11:14.680 --> 00:11:17.920
+and various packages with PowerShell.
+
+
+00:11:17.920 --> 00:11:19.840
+So if you're doing anything on Windows,
+
+
+00:11:19.840 --> 00:11:22.560
+any sort of automation or advanced shell stuff,
+
+
+00:11:22.560 --> 00:11:24.800
+you're probably using PowerShell,
+
+
+00:11:24.800 --> 00:11:27.780
+although the regular terminal's getting better as well.
+
+
+00:11:27.780 --> 00:11:31.020
+And you know, the story of Python on Windows
+
+
+00:11:31.020 --> 00:11:33.780
+has always had a little caveat, or maybe a little star,
+
+
+00:11:33.780 --> 00:11:35.420
+like, yeah, you always do this,
+
+
+00:11:35.420 --> 00:11:37.420
+except for on Windows, you type this other thing.
+
+
+00:11:37.420 --> 00:11:38.860
+And it's slowly getting better, right?
+
+
+00:11:38.860 --> 00:11:41.380
+Steve Dower's done a lot of work to improve that.
+
+
+00:11:41.380 --> 00:11:42.540
+- Yeah. - With, say,
+
+
+00:11:42.540 --> 00:11:45.100
+the Python installer that comes off the Windows 10 store
+
+
+00:11:45.100 --> 00:11:49.340
+has Python 3 as a command, and not just Python, and so on.
+
+
+00:11:49.340 --> 00:11:51.500
+But here's one more thing that you can do
+
+
+00:11:51.500 --> 00:11:55.080
+to make working on Windows with Python better.
+
+
+00:11:55.080 --> 00:11:56.780
+If you do anything with PowerShell,
+
+
+00:11:56.780 --> 00:12:00.780
+you can write scripts now that have sections of those scripts
+
+
+00:12:00.780 --> 00:12:03.340
+or libraries for PowerShell written in Python.
+
+
+00:12:03.340 --> 00:12:06.260
+And it uses this library called Python for .NET,
+
+
+00:12:06.260 --> 00:12:12.700
+which is a new modern way to share the entire Flask
+
+
+00:12:12.700 --> 00:12:15.940
+library of .NET and all the objects you might create there
+
+
+00:12:15.940 --> 00:12:17.700
+with Python code.
+
+
+00:12:17.700 --> 00:12:19.900
+And similarly, say, this Python thing
+
+
+00:12:19.900 --> 00:12:21.620
+returns some funky .NET type that
+
+
+00:12:21.620 --> 00:12:24.620
+can be converted so it looks normal to the rest
+
+
+00:12:24.620 --> 00:12:27.980
+of the PowerShell land, which is generally .NET stuff.
+
+
+00:12:27.980 --> 00:12:29.880
+So if you're doing stuff with PowerShell,
+
+
+00:12:29.880 --> 00:12:31.740
+check this out, it's pretty cool.
+
+
+00:12:31.740 --> 00:12:34.620
+The syntax is funky, but it's PowerShell syntax,
+
+
+00:12:34.620 --> 00:12:36.460
+so there you have it.
+
+
+00:12:36.460 --> 00:12:37.980
+- Yeah, well, okay.
+
+
+00:12:37.980 --> 00:12:39.960
+So I think that people can't be blamed
+
+
+00:12:39.960 --> 00:12:43.220
+for doing the snake thing, because our logo is two snakes.
+
+
+00:12:43.220 --> 00:12:44.120
+- I know.
+
+
+00:12:44.120 --> 00:12:46.340
+I think that that is absolutely true.
+
+
+00:12:46.340 --> 00:12:48.540
+- I think it should be maybe some cheese.
+
+
+00:12:48.540 --> 00:12:50.700
+- Yeah, exactly, or maybe a shield,
+
+
+00:12:50.700 --> 00:12:51.700
+or yeah, I don't know, whatever.
+
+
+00:12:51.700 --> 00:12:52.940
+I don't mind having it being snake.
+
+
+00:12:52.940 --> 00:12:55.140
+Snake is cool and there's the Python snake.
+
+
+00:12:55.140 --> 00:12:57.060
+It's just funny that that's not actually the name.
+
+
+00:12:57.060 --> 00:12:58.700
+- No, Killer Rabbit would be nice.
+
+
+00:12:58.700 --> 00:13:02.140
+- Yes, the Killer Rabbit would be fantastic.
+
+
+00:13:02.140 --> 00:13:04.700
+If you just got an exception and that appeared as an emoji,
+
+
+00:13:04.700 --> 00:13:06.540
+that would be beautiful.
+
+
+00:13:06.540 --> 00:13:08.140
+Or maybe a failed test in PyTest, right?
+
+
+00:13:08.140 --> 00:13:09.340
+You could write a plugin.
+
+
+00:13:09.340 --> 00:13:13.460
+Unleashes the Killer Rabbit and all that.
+
+
+00:13:13.460 --> 00:13:14.700
+All right, we're going down a bit of a hole.
+
+
+00:13:14.700 --> 00:13:17.860
+So maybe get us out and talk, get us back to the databases.
+
+
+00:13:17.860 --> 00:13:19.300
+- Okay, so databases.
+
+
+00:13:19.300 --> 00:13:23.440
+since in Python world, one of the things we like to do
+
+
+00:13:23.440 --> 00:13:26.740
+is use pandas because pandas makes dealing with data
+
+
+00:13:26.740 --> 00:13:29.580
+like so much easier with data frames and stuff.
+
+
+00:13:29.580 --> 00:13:31.900
+And also one of the things with databases
+
+
+00:13:31.900 --> 00:13:33.540
+that we can use is SQLAlchemy
+
+
+00:13:33.540 --> 00:13:37.460
+if it's a SQL-based database, and most of them are.
+
+
+00:13:37.460 --> 00:13:39.860
+So you can just take pandas
+
+
+00:13:39.860 --> 00:13:41.580
+and put it together with SQLAlchemy
+
+
+00:13:41.580 --> 00:13:43.580
+and put it together with your database
+
+
+00:13:43.580 --> 00:13:46.420
+and just slurp your entire data tables
+
+
+00:13:46.420 --> 00:13:49.880
+into Pandas data frames and then manipulate them there.
+
+
+00:13:49.880 --> 00:13:51.000
+So you're good to go, right?
+
+
+00:13:51.000 --> 00:13:53.080
+- Right, unless you have like five gigs of data,
+
+
+00:13:53.080 --> 00:13:55.920
+then you're good to swap and be very slow.
+
+
+00:13:55.920 --> 00:13:58.080
+- Yeah, or if terabytes of data, that'd be bad.
+
+
+00:13:58.080 --> 00:13:59.360
+- Yeah, very bad.
+
+
+00:13:59.360 --> 00:14:03.160
+- So all hope is not lost because I'm gonna guess
+
+
+00:14:03.160 --> 00:14:05.760
+Irina Tron wrote this article called
+
+
+00:14:05.760 --> 00:14:08.840
+"How to Use Pandas to Access Databases"
+
+
+00:14:08.840 --> 00:14:09.800
+and it's really great.
+
+
+00:14:09.800 --> 00:14:11.600
+One of the recommendations she uses is
+
+
+00:14:11.600 --> 00:14:14.160
+don't be afraid of the command line for SQL
+
+
+00:14:14.160 --> 00:14:16.280
+because you can play around with queries
+
+
+00:14:16.280 --> 00:14:20.440
+and look to see how big the shape of your data is
+
+
+00:14:20.440 --> 00:14:22.480
+to start with, which is a good thing.
+
+
+00:14:22.480 --> 00:14:25.920
+But then goes on to tips on how to put this together
+
+
+00:14:25.920 --> 00:14:29.980
+correctly, like, and I'm just gonna read out the highlights,
+
+
+00:14:29.980 --> 00:14:31.940
+but there's examples of all of these,
+
+
+00:14:31.940 --> 00:14:33.940
+so I think it's great to have a look.
+
+
+00:14:33.940 --> 00:14:35.240
+Don't grab a whole table,
+
+
+00:14:35.240 --> 00:14:37.340
+limit to just the fields that you care about
+
+
+00:14:37.340 --> 00:14:38.980
+that you're gonna actually use.
+
+
+00:14:38.980 --> 00:14:41.440
+Tables often have a lot of columns that you don't need,
+
+
+00:14:41.440 --> 00:14:42.820
+so don't grab everything.
+
+
+00:14:42.820 --> 00:14:44.200
+Limit the number of records.
+
+
+00:14:44.200 --> 00:14:46.920
+you can either use the limit field to say,
+
+
+00:14:46.920 --> 00:14:49.960
+I only want to grab like a thousand elements or something.
+
+
+00:14:49.960 --> 00:14:52.960
+You can also combine that with just the number of fields,
+
+
+00:14:52.960 --> 00:14:54.960
+but also you can also pick out,
+
+
+00:14:54.960 --> 00:14:58.680
+say I know I'm going to already throw away all the rows
+
+
+00:14:58.680 --> 00:15:01.480
+that don't have a particular value in this one field.
+
+
+00:15:01.480 --> 00:15:04.000
+So you can limit that in your query.
+
+
+00:15:04.000 --> 00:15:05.480
+One of the things you'll often run into
+
+
+00:15:05.480 --> 00:15:07.240
+with SQL databases, of course,
+
+
+00:15:07.240 --> 00:15:10.200
+is the need to use joins.
+
+
+00:15:10.200 --> 00:15:12.300
+And the quick recommendation there
+
+
+00:15:12.300 --> 00:15:15.100
+is let the database do that, put it in your query,
+
+
+00:15:15.100 --> 00:15:17.300
+don't do the join within pandas,
+
+
+00:15:17.300 --> 00:15:19.580
+because you can do it with pandas
+
+
+00:15:19.580 --> 00:15:21.980
+and SQL coming together, but don't.
+
+
+00:15:21.980 --> 00:15:23.620
+It's gonna be slower.
+
+
+00:15:23.620 --> 00:15:24.940
+- Right, load it all into memory
+
+
+00:15:24.940 --> 00:15:27.420
+and have the data table merge it.
+
+
+00:15:27.420 --> 00:15:29.420
+That seems probably not like the best way to do it.
+
+
+00:15:29.420 --> 00:15:30.260
+- Right.
+
+
+00:15:30.260 --> 00:15:32.260
+- Databases are pretty good at joining stuff.
+
+
+00:15:32.260 --> 00:15:34.300
+- Yeah, and I mean, if you find,
+
+
+00:15:34.300 --> 00:15:35.740
+of course, it didn't talk about this,
+
+
+00:15:35.740 --> 00:15:37.900
+but if you find you're doing that a lot,
+
+
+00:15:37.900 --> 00:15:40.820
+you can kind of restructure some of your queries within.
+
+
+00:15:40.820 --> 00:15:44.780
+I think you can build that and make a join be faster.
+
+
+00:15:44.780 --> 00:15:46.780
+I don't know, I'm not a database person.
+
+
+00:15:46.780 --> 00:15:49.020
+- You could put indexes, you could write a store procedure
+
+
+00:15:49.020 --> 00:15:50.340
+and call that, there's a couple options.
+
+
+00:15:50.340 --> 00:15:52.400
+- Okay, ask Michael how to do it.
+
+
+00:15:52.400 --> 00:15:54.780
+Anyway, maybe not.
+
+
+00:15:54.780 --> 00:15:56.860
+So a lot of this is we're caring about memory,
+
+
+00:15:56.860 --> 00:15:58.340
+so how do you figure it out?
+
+
+00:15:58.340 --> 00:15:59.860
+Like how much memory are you gonna use?
+
+
+00:15:59.860 --> 00:16:01.040
+And I didn't know you could do this,
+
+
+00:16:01.040 --> 00:16:06.040
+but she has a tip of using query called memory_usage
+
+
+00:16:06.040 --> 00:16:07.700
+and then summing it.
+
+
+00:16:07.700 --> 00:16:09.980
+This is, I don't know what the field comes back.
+
+
+00:16:09.980 --> 00:16:13.120
+but you can do a query and grab the memory,
+
+
+00:16:13.120 --> 00:16:14.480
+but you do like a small query,
+
+
+00:16:14.480 --> 00:16:17.240
+like just a hundred rows or something,
+
+
+00:16:17.240 --> 00:16:18.280
+and then take that,
+
+
+00:16:18.280 --> 00:16:21.800
+and then you can use that to estimate the total size
+
+
+00:16:21.800 --> 00:16:23.240
+if when you're going to read out
+
+
+00:16:23.240 --> 00:16:25.640
+like a thousand or 2000 or something.
+
+
+00:16:25.640 --> 00:16:29.080
+And then the last one I'm actually didn't quite follow,
+
+
+00:16:29.080 --> 00:16:31.200
+but I think I kind of followed.
+
+
+00:16:31.200 --> 00:16:34.920
+The tip is to talk that the types get converted,
+
+
+00:16:34.920 --> 00:16:39.000
+like integer types get converted to like 64 bit types,
+
+
+00:16:39.000 --> 00:16:42.760
+I think, and you don't really need that for a lot of stuff.
+
+
+00:16:42.760 --> 00:16:44.960
+So there's a, I'm calling this out
+
+
+00:16:44.960 --> 00:16:46.880
+because it's definitely for the user,
+
+
+00:16:46.880 --> 00:16:47.920
+read this if you need it,
+
+
+00:16:47.920 --> 00:16:52.200
+but there's a little bit on using chunking
+
+
+00:16:52.200 --> 00:16:56.200
+and then combining that with specifying what types,
+
+
+00:16:56.200 --> 00:17:01.200
+pandas types to use so that you get smaller data footprints.
+
+
+00:17:01.200 --> 00:17:02.600
+- Yeah, yeah, so for example,
+
+
+00:17:02.600 --> 00:17:04.880
+maybe one of the columns in the data frame
+
+
+00:17:04.880 --> 00:17:06.680
+that just the way it came back from the database
+
+
+00:17:06.680 --> 00:17:09.520
+is a 64-bit typed integer,
+
+
+00:17:09.520 --> 00:17:11.380
+and you know everything that actually fit
+
+
+00:17:11.380 --> 00:17:14.820
+into an untyped, an unsigned 16-bit integer,
+
+
+00:17:14.820 --> 00:17:16.960
+well, that'll save you,
+
+
+00:17:16.960 --> 00:17:18.520
+it'll be a quarter of the size of the data
+
+
+00:17:18.520 --> 00:17:20.280
+if you'd make that conversion, right?
+
+
+00:17:20.280 --> 00:17:21.640
+So, got a million of them,
+
+
+00:17:21.640 --> 00:17:24.200
+a quarter of the size of a million is possibly meaningful.
+
+
+00:17:24.200 --> 00:17:25.600
+- Yeah, I mean, a lot of stuff that,
+
+
+00:17:25.600 --> 00:17:27.440
+like for instance, a lot of stuff,
+
+
+00:17:27.440 --> 00:17:30.740
+one of the tables I deal with has a number,
+
+
+00:17:30.740 --> 00:17:33.120
+numbers for the different,
+
+
+00:17:33.120 --> 00:17:37.200
+specifying which kind of result we're looking at,
+
+
+00:17:37.200 --> 00:17:40.760
+for instance, and they each have like a number code.
+
+
+00:17:40.760 --> 00:17:44.000
+There's only like six, so the number can be one through six.
+
+
+00:17:44.000 --> 00:17:46.640
+I don't need 64 bits to store that.
+
+
+00:17:46.640 --> 00:17:47.480
+- Yeah, for sure.
+
+
+00:17:47.480 --> 00:17:48.300
+- So it's good.
+
+
+00:17:48.300 --> 00:17:51.120
+Do you use Pandas with SQLAlchemy in any of our--
+
+
+00:17:51.120 --> 00:17:52.040
+- No. - When you're doing it?
+
+
+00:17:52.040 --> 00:17:53.040
+- Not really.
+
+
+00:17:53.040 --> 00:17:54.280
+There's a few times I've been thinking
+
+
+00:17:54.280 --> 00:17:57.800
+I should probably try to do some BI,
+
+
+00:17:57.800 --> 00:17:59.160
+like graphing type stuff,
+
+
+00:17:59.160 --> 00:18:02.880
+maybe about popularity of episodes or things like that.
+
+
+00:18:02.880 --> 00:18:05.160
+you know, figure out what day I should release our podcast on,
+
+
+00:18:05.160 --> 00:18:06.640
+but I haven't done anything, so no.
+
+
+00:18:06.640 --> 00:18:08.720
+- Okay, but you do use the SQLAlchemy though, right?
+
+
+00:18:08.720 --> 00:18:11.360
+- Some, but not for the main site,
+
+
+00:18:11.360 --> 00:18:13.120
+because that's MongoDB.
+
+
+00:18:13.120 --> 00:18:13.960
+- Oh, right, yeah.
+
+
+00:18:13.960 --> 00:18:14.780
+- I'm using something equivalent,
+
+
+00:18:14.780 --> 00:18:15.620
+like we're using MongoAgent,
+
+
+00:18:15.620 --> 00:18:16.560
+which is super equivalent.
+
+
+00:18:16.560 --> 00:18:17.560
+- Okay. - Yeah.
+
+
+00:18:17.560 --> 00:18:18.400
+- Nice. - Cool.
+
+
+00:18:18.400 --> 00:18:20.800
+Yeah, I suspect there's probably some interesting
+
+
+00:18:20.800 --> 00:18:22.340
+MongoDB integration with Pandas
+
+
+00:18:22.340 --> 00:18:23.200
+that I just don't know about,
+
+
+00:18:23.200 --> 00:18:25.720
+but I don't know any equivalent there.
+
+
+00:18:25.720 --> 00:18:27.320
+Well, this next one I'm gonna cover
+
+
+00:18:27.320 --> 00:18:29.520
+is very similar to what you talked about.
+
+
+00:18:29.520 --> 00:18:32.240
+It talks about how do I basically efficiently work
+
+
+00:18:32.240 --> 00:18:34.960
+with data from this one source databases.
+
+
+00:18:34.960 --> 00:18:38.800
+And how do I not just select star from all the tables
+
+
+00:18:38.800 --> 00:18:41.840
+into pandas and work on it?
+
+
+00:18:41.840 --> 00:18:45.320
+Another problem you might have is you might have JSON data.
+
+
+00:18:45.320 --> 00:18:48.320
+JSON is sweet, but one thing JSON is not very
+
+
+00:18:48.320 --> 00:18:51.680
+obviously good at is streaming data, right?
+
+
+00:18:51.680 --> 00:18:55.040
+Because how do you know where the closing curly braces?
+
+
+00:18:55.040 --> 00:18:58.180
+Maybe you've got some key and then it's got an array
+
+
+00:18:58.180 --> 00:19:01.440
+of stuff and the closing bit of that array is not until
+
+
+00:19:01.440 --> 00:19:04.960
+you know, maybe 500 megabytes down the file.
+
+
+00:19:04.960 --> 00:19:06.520
+That's a problem, potentially, right?
+
+
+00:19:06.520 --> 00:19:10.160
+So if you just load up a import JSON
+
+
+00:19:10.160 --> 00:19:14.000
+and do a JSON load and give it a file pointer,
+
+
+00:19:14.000 --> 00:19:16.000
+it's just gonna hoover that all up
+
+
+00:19:16.000 --> 00:19:18.840
+and jam it to one giant dictionary and spit it out.
+
+
+00:19:18.840 --> 00:19:21.440
+But if it's huge, obviously what you wanna do
+
+
+00:19:21.440 --> 00:19:24.320
+is iterate over it and process it item by item.
+
+
+00:19:24.320 --> 00:19:26.320
+Yeah, I mean, that's what you would do for a regular file
+
+
+00:19:26.320 --> 00:19:27.640
+if you could take it line by line,
+
+
+00:19:27.640 --> 00:19:30.920
+but because it's this formatted thing, it's much harder.
+
+
+00:19:30.920 --> 00:19:34.360
+And something I ran across last time, time before,
+
+
+00:19:34.360 --> 00:19:36.560
+we were talking about some other project,
+
+
+00:19:36.560 --> 00:19:39.800
+and it said, "Oh, this project uses iJSON."
+
+
+00:19:39.800 --> 00:19:41.440
+I'm like, "Wait a minute, what is iJSON?
+
+
+00:19:41.440 --> 00:19:42.280
+That's interesting."
+
+
+00:19:42.280 --> 00:19:43.120
+- Yeah.
+
+
+00:19:43.120 --> 00:19:46.800
+- Yeah, so iJSON is an iterative JSON parser
+
+
+00:19:46.800 --> 00:19:49.680
+with the standard Python iterator interface.
+
+
+00:19:49.680 --> 00:19:54.040
+So what you can do is basically point it at a file stream,
+
+
+00:19:54.040 --> 00:19:58.880
+some search expression, kind of, in the JSON document,
+
+
+00:19:58.880 --> 00:20:01.120
+and then it will stream those back to you,
+
+
+00:20:01.120 --> 00:20:02.800
+generator style, one at a time.
+
+
+00:20:02.800 --> 00:20:03.880
+- That's so cool.
+
+
+00:20:03.880 --> 00:20:06.440
+- Yeah, so there's a little example I put in the show notes.
+
+
+00:20:06.440 --> 00:20:10.640
+It says, "Imagine we've got some object called earth
+
+
+00:20:10.640 --> 00:20:13.440
+"in our JSON document, and it has a bunch of continents,
+
+
+00:20:13.440 --> 00:20:16.200
+"and within each continent, it lists out, say,
+
+
+00:20:16.200 --> 00:20:18.240
+"cities and states and so on."
+
+
+00:20:18.240 --> 00:20:20.040
+If that was huge, probably it's not,
+
+
+00:20:20.040 --> 00:20:21.880
+but if it were, you would want to iterate over it.
+
+
+00:20:21.880 --> 00:20:23.720
+So you just go to the iJSON and go,
+
+
+00:20:23.720 --> 00:20:28.620
+"Give me the items from this file for earth.europe.item."
+
+
+00:20:28.620 --> 00:20:31.420
+an item is just a way to say, stop there.
+
+
+00:20:31.420 --> 00:20:32.940
+And then what you do is you just say,
+
+
+00:20:32.940 --> 00:20:35.220
+for thing in, you know,
+
+
+00:20:35.220 --> 00:20:37.300
+whatever came back from that load that you did,
+
+
+00:20:37.300 --> 00:20:39.060
+and you just iterate over it in a for in loop.
+
+
+00:20:39.060 --> 00:20:39.940
+- That's really neat.
+
+
+00:20:39.940 --> 00:20:40.760
+- Yeah.
+
+
+00:20:40.760 --> 00:20:43.780
+- And it's doing, like, I was looking at the website.
+
+
+00:20:43.780 --> 00:20:46.940
+There's an example with grabbing it from like a URL,
+
+
+00:20:46.940 --> 00:20:50.980
+'cause that's, you might be getting it from an API endpoint.
+
+
+00:20:50.980 --> 00:20:51.820
+- Yeah.
+
+
+00:20:51.820 --> 00:20:53.980
+- So I'm guessing that it's not grabbing everything
+
+
+00:20:53.980 --> 00:20:55.640
+from the endpoint at first.
+
+
+00:20:55.640 --> 00:20:58.020
+- It probably depends on how the endpoint is set up,
+
+
+00:20:58.020 --> 00:21:02.460
+or even maybe how the object that's querying it back.
+
+
+00:21:02.460 --> 00:21:05.420
+So I think they're using URL lib or something like that there.
+
+
+00:21:05.420 --> 00:21:08.060
+If you would set that up to do streaming,
+
+
+00:21:08.060 --> 00:21:09.940
+then you pass the stream over to iJSON,
+
+
+00:21:09.940 --> 00:21:12.060
+then it would probably stream it from the server
+
+
+00:21:12.060 --> 00:21:13.980
+and never keep it all in memory at once anyway.
+
+
+00:21:13.980 --> 00:21:14.820
+That'd be cool.
+
+
+00:21:14.820 --> 00:21:15.640
+- Yeah, that'd be cool.
+
+
+00:21:15.640 --> 00:21:16.540
+- Yeah, but there's probably several layers
+
+
+00:21:16.540 --> 00:21:17.500
+you gotta set that up as.
+
+
+00:21:17.500 --> 00:21:20.120
+- I'm using generators and iterators more and more
+
+
+00:21:20.120 --> 00:21:24.180
+because doing lazy work is awesome.
+
+
+00:21:24.180 --> 00:21:26.220
+It speeds things up quite a bit sometimes.
+
+
+00:21:26.220 --> 00:21:29.800
+It's so awesome and you basically no longer have a memory issue,
+
+
+00:21:29.800 --> 00:21:30.900
+no matter how much data you have.
+
+
+00:21:30.900 --> 00:21:34.100
+You might still have a time issue, but you're not going to run out of memory, right?
+
+
+00:21:34.100 --> 00:21:37.980
+You're just going to blast through it one at a time instead of blasting through them all and then working on them.
+
+
+00:21:37.980 --> 00:21:39.580
+>> Oh, nice. I got to check this out.
+
+
+00:21:39.580 --> 00:21:39.700
+Cool.
+
+
+00:21:39.700 --> 00:21:43.900
+>> Yeah. So, people, if you have large JSON, bring out the iJSON.
+
+
+00:21:43.900 --> 00:21:44.900
+>> Bring out the iJSON.
+
+
+00:21:44.900 --> 00:21:45.460
+Yep.
+
+
+00:21:45.460 --> 00:21:46.620
+>> For sure.
+
+
+00:21:46.620 --> 00:21:46.820
+All right.
+
+
+00:21:46.820 --> 00:21:49.660
+Well, that's it for all of our main items, Brian.
+
+
+00:21:49.660 --> 00:21:55.060
+I have, for some reason, it's like a crazy news week and I actually decided to not throw a bunch of stuff in here,
+
+
+00:21:55.060 --> 00:21:58.960
+but to save it till next time because I just don't want to overwhelm everyone.
+
+
+00:21:58.960 --> 00:22:00.960
+But yeah, I've got a bunch of stuff to talk about.
+
+
+00:22:00.960 --> 00:22:01.460
+How about you?
+
+
+00:22:01.460 --> 00:22:07.160
+I am just kind of in a lull after Thanksgiving.
+
+
+00:22:07.160 --> 00:22:08.360
+Still in the turkey coma?
+
+
+00:22:08.360 --> 00:22:09.560
+Turkey coma, yeah.
+
+
+00:22:09.560 --> 00:22:10.560
+My head's spinning.
+
+
+00:22:10.560 --> 00:22:13.460
+There's a lot of stuff coming up in the next couple months,
+
+
+00:22:13.460 --> 00:22:15.160
+and I'm pretty excited about it.
+
+
+00:22:15.160 --> 00:22:15.760
+That's awesome.
+
+
+00:22:15.760 --> 00:22:19.760
+Yeah, I'm trying to juggle between getting over that holiday break,
+
+
+00:22:19.760 --> 00:22:22.360
+doing all the Black Friday stuff at Talk Python Training,
+
+
+00:22:22.360 --> 00:22:24.260
+and then getting ready for vacation.
+
+
+00:22:24.260 --> 00:22:24.860
+It's a lot.
+
+
+00:22:24.860 --> 00:22:27.400
+But in that little gap where I'm really still paying attention,
+
+
+00:22:27.400 --> 00:22:29.120
+there's a bunch of stuff that I ran across this week.
+
+
+00:22:29.120 --> 00:22:32.680
+So first of all, let's start with this.
+
+
+00:22:32.680 --> 00:22:34.880
+Django 3 was released.
+
+
+00:22:34.880 --> 00:22:35.720
+>> Oh, sweet.
+
+
+00:22:35.720 --> 00:22:36.800
+>> Yeah, so that's pretty cool.
+
+
+00:22:36.800 --> 00:22:39.920
+And Django 3, there's a couple of things that are important about it.
+
+
+00:22:39.920 --> 00:22:44.760
+One is it has official support for MariaDB, which is pretty cool.
+
+
+00:22:44.760 --> 00:22:48.840
+The other one is that it begins the journey to the async world.
+
+
+00:22:48.840 --> 00:22:49.840
+>> Dun, dun, dun.
+
+
+00:22:49.840 --> 00:22:53.040
+>> Dun, dun, we'll cross over to the ASGI world.
+
+
+00:22:53.040 --> 00:22:55.260
+- Yeah, so things like async and await
+
+
+00:22:55.260 --> 00:22:58.100
+are now making their way to Django.
+
+
+00:22:58.100 --> 00:23:00.900
+I saw some messages from some of the developers there
+
+
+00:23:00.900 --> 00:23:02.740
+saying that this is not like the full story,
+
+
+00:23:02.740 --> 00:23:04.460
+this is the first steps.
+
+
+00:23:04.460 --> 00:23:05.620
+So we've got a long ways to go,
+
+
+00:23:05.620 --> 00:23:06.980
+but it's first steps, right?
+
+
+00:23:06.980 --> 00:23:08.400
+It's great to see them moving that way
+
+
+00:23:08.400 --> 00:23:13.000
+so that you get super high scalability if you need it.
+
+
+00:23:13.000 --> 00:23:14.180
+Most people actually don't need it,
+
+
+00:23:14.180 --> 00:23:17.500
+but if you do, it's cool to say the answer is not,
+
+
+00:23:17.500 --> 00:23:19.860
+well, now you moved to Go or Node,
+
+
+00:23:19.860 --> 00:23:22.260
+it's you put the async keyword in front of your view method
+
+
+00:23:22.260 --> 00:23:23.100
+and you're good again.
+
+
+00:23:23.100 --> 00:23:24.340
+- Yeah, I'm excited to watch this.
+
+
+00:23:24.340 --> 00:23:27.240
+And actually the Django 3 release,
+
+
+00:23:27.240 --> 00:23:29.460
+I dipped my toes in Django before
+
+
+00:23:29.460 --> 00:23:31.820
+and I wanted to sort of wait until,
+
+
+00:23:31.820 --> 00:23:33.060
+I knew the 3 was coming,
+
+
+00:23:33.060 --> 00:23:35.300
+so I was sort of waiting for this to be official
+
+
+00:23:35.300 --> 00:23:37.300
+before I started up again.
+
+
+00:23:37.300 --> 00:23:40.060
+So now I got no excuse, I can get started again.
+
+
+00:23:40.060 --> 00:23:41.120
+- Yeah, that's awesome.
+
+
+00:23:41.120 --> 00:23:42.940
+Speaking of excuses running out,
+
+
+00:23:42.940 --> 00:23:45.140
+the death clock does toll, doesn't it?
+
+
+00:23:45.140 --> 00:23:45.980
+- Yeah.
+
+
+00:23:45.980 --> 00:23:48.140
+- Pretty soon, the death clock is gonna toll
+
+
+00:23:48.140 --> 00:23:50.740
+for Python 2.7 or 2 in general,
+
+
+00:23:50.740 --> 00:23:52.800
+in particular, 2.7.
+
+
+00:23:52.800 --> 00:23:56.960
+And as part of that, Python 2 will be removed from Homebrew.
+
+
+00:23:56.960 --> 00:23:57.800
+- Wow, that's big.
+
+
+00:23:57.800 --> 00:23:59.400
+- Yeah, that's pretty, it's just another sign
+
+
+00:23:59.400 --> 00:24:00.800
+that you know, you probably shouldn't be using this.
+
+
+00:24:00.800 --> 00:24:04.040
+It used to be installable, Homebrew install Python at 2
+
+
+00:24:04.040 --> 00:24:06.560
+or 2 or whatever the keyword was.
+
+
+00:24:06.560 --> 00:24:08.200
+Yeah, that doesn't work.
+
+
+00:24:08.200 --> 00:24:10.180
+Not yet, very soon that's gonna stop working.
+
+
+00:24:10.180 --> 00:24:11.920
+So, that's cool.
+
+
+00:24:11.920 --> 00:24:16.120
+Big news, although not really sure what's been put on it,
+
+
+00:24:16.120 --> 00:24:17.140
+so I'll just give you the news,
+
+
+00:24:17.140 --> 00:24:20.020
+is Guido is stepping down from the steering council.
+
+
+00:24:20.020 --> 00:24:21.940
+And this came to us from Vincent Polio.
+
+
+00:24:21.940 --> 00:24:22.780
+- Great.
+
+
+00:24:22.780 --> 00:24:23.600
+It's a thing.
+
+
+00:24:23.600 --> 00:24:25.460
+I don't really know how to spin it other than that.
+
+
+00:24:25.460 --> 00:24:27.140
+- Well, yeah, I mean, basically,
+
+
+00:24:27.140 --> 00:24:29.420
+from what I got out of doing a little bit of reading
+
+
+00:24:29.420 --> 00:24:32.460
+is there were new elections to reelect people
+
+
+00:24:32.460 --> 00:24:33.820
+to the steering council.
+
+
+00:24:33.820 --> 00:24:36.580
+And Hito didn't put his name in the hat.
+
+
+00:24:36.580 --> 00:24:38.340
+And people said, "He didn't put his name in the hat.
+
+
+00:24:38.340 --> 00:24:39.500
+"Here, let me put it in there for him."
+
+
+00:24:39.500 --> 00:24:41.100
+And then there was a conversation that followed.
+
+
+00:24:41.100 --> 00:24:43.180
+Like, you know, a lot of people are enjoying
+
+
+00:24:43.180 --> 00:24:44.380
+being part of the steering council.
+
+
+00:24:44.380 --> 00:24:47.500
+I've been on that part of Python for a long time,
+
+
+00:24:47.500 --> 00:24:49.820
+and it's just not fun for me right now.
+
+
+00:24:49.820 --> 00:24:53.020
+I've earned some fun in the programming world.
+
+
+00:24:53.020 --> 00:24:55.860
+So I want to work on projects and not politics
+
+
+00:24:55.860 --> 00:24:57.260
+and all that kind of stuff.
+
+
+00:24:57.260 --> 00:24:58.380
+So I'm going to let someone else take it.
+
+
+00:24:58.380 --> 00:25:01.220
+And he also said, the reason I'm comfortable doing this
+
+
+00:25:01.220 --> 00:25:02.780
+is it's in good hands.
+
+
+00:25:02.780 --> 00:25:05.580
+The people already, the other council members there
+
+
+00:25:05.580 --> 00:25:06.420
+are great.
+
+
+00:25:06.420 --> 00:25:07.540
+So y'all don't need me.
+
+
+00:25:07.540 --> 00:25:09.260
+I'm still going to be around and working on stuff,
+
+
+00:25:09.260 --> 00:25:10.820
+but I just don't want to be on the steering council.
+
+
+00:25:10.820 --> 00:25:12.500
+So anyway, thanks Vincent for sending that over.
+
+
+00:25:12.500 --> 00:25:14.780
+That's big news, but that's about all I got to say.
+
+
+00:25:14.780 --> 00:25:16.300
+There wasn't a whole lot written about it really.
+
+
+00:25:16.300 --> 00:25:17.140
+- Okay.
+
+
+00:25:17.140 --> 00:25:22.140
+is freezing open source for hundreds of thousands of years
+
+
+00:25:22.140 --> 00:25:26.020
+to preserve it for humanity, that's pretty awesome.
+
+
+00:25:26.020 --> 00:25:28.500
+- Yeah, so the GitHub Archive Program,
+
+
+00:25:28.500 --> 00:25:29.620
+I watched this video.
+
+
+00:25:29.620 --> 00:25:30.580
+- It's well done, right?
+
+
+00:25:30.580 --> 00:25:32.020
+It's like a polished little video.
+
+
+00:25:32.020 --> 00:25:34.740
+- Yeah, so I don't know what to make of it
+
+
+00:25:34.740 --> 00:25:36.500
+other than it's a thing.
+
+
+00:25:36.500 --> 00:25:38.020
+They're gonna put a whole bunch,
+
+
+00:25:38.020 --> 00:25:40.780
+all the, as of, like, they've already put
+
+
+00:25:40.780 --> 00:25:43.780
+a bunch of stuff in there, but I guess next spring
+
+
+00:25:43.780 --> 00:25:46.820
+they're gonna, or when, next summer or something,
+
+
+00:25:46.820 --> 00:25:50.860
+they're gonna go up and take all open source code on GitHub
+
+
+00:25:50.860 --> 00:25:54.060
+and digitize it into these weird--
+
+
+00:25:54.060 --> 00:25:55.220
+- Microfish code.
+
+
+00:25:55.220 --> 00:25:56.060
+- Yeah.
+
+
+00:25:56.060 --> 00:25:57.020
+- Digital microfiche or something
+
+
+00:25:57.020 --> 00:25:58.180
+that'll last for very long.
+
+
+00:25:58.180 --> 00:25:59.820
+- Yeah, it's supposed to last a thousand years
+
+
+00:25:59.820 --> 00:26:00.980
+or something like that.
+
+
+00:26:00.980 --> 00:26:03.780
+And they're gonna put it in some cave
+
+
+00:26:03.780 --> 00:26:05.140
+on an island somewhere.
+
+
+00:26:05.140 --> 00:26:07.560
+- Greenland, Iceland, one of those two, I can't remember.
+
+
+00:26:07.560 --> 00:26:09.500
+- Right, so why?
+
+
+00:26:09.500 --> 00:26:11.060
+- To preserve it, I don't know.
+
+
+00:26:11.060 --> 00:26:13.620
+I'm pretty excited, I have over 100 public repos
+
+
+00:26:13.620 --> 00:26:15.180
+that are gonna be up there, that's gonna be awesome.
+
+
+00:26:15.180 --> 00:26:16.900
+I'm excited for them to get cold.
+
+
+00:26:16.900 --> 00:26:21.260
+- Yeah, if all of civilization collapses,
+
+
+00:26:21.260 --> 00:26:23.780
+we're counting on future civilizations
+
+
+00:26:23.780 --> 00:26:26.020
+to be able to find this cave
+
+
+00:26:26.020 --> 00:26:27.780
+and figure out some technology
+
+
+00:26:27.780 --> 00:26:29.840
+to read these microfish things.
+
+
+00:26:29.840 --> 00:26:32.340
+- Wow, those ancient creatures
+
+
+00:26:32.340 --> 00:26:34.260
+wrote in a very weird symbol form.
+
+
+00:26:34.260 --> 00:26:37.700
+- Yeah, okay, well good luck future selves.
+
+
+00:26:37.700 --> 00:26:38.860
+- Yeah, good luck future selves.
+
+
+00:26:38.860 --> 00:26:40.680
+Hopefully they got some hints.
+
+
+00:26:40.680 --> 00:26:41.940
+But anyway, that's pretty cool.
+
+
+00:26:41.940 --> 00:26:44.760
+And the last thing, I had talked about this Python
+
+
+00:26:44.760 --> 00:26:48.400
+for Decision Makers course that I'm working on.
+
+
+00:26:48.400 --> 00:26:52.040
+And basically it's a high level of why Python,
+
+
+00:26:52.040 --> 00:26:54.120
+when to use it, what it's good for, what it's not good for.
+
+
+00:26:54.120 --> 00:26:56.400
+I'm also gonna do a live webcast
+
+
+00:26:56.400 --> 00:26:58.740
+that people can check out after the winter break.
+
+
+00:26:58.740 --> 00:27:01.640
+So mid-January, I'm doing just a free webcast.
+
+
+00:27:01.640 --> 00:27:03.520
+People can sign up and come ask questions
+
+
+00:27:03.520 --> 00:27:05.360
+and we can just share our thoughts on
+
+
+00:27:05.360 --> 00:27:07.600
+whether Python makes sense for whatever they're doing.
+
+
+00:27:07.600 --> 00:27:09.240
+So people can check that out.
+
+
+00:27:09.240 --> 00:27:10.880
+Click the link and register for free.
+
+
+00:27:10.880 --> 00:27:12.320
+- Cool, that's a lot of stuff, man.
+
+
+00:27:12.320 --> 00:27:13.160
+- It is.
+
+
+00:27:13.160 --> 00:27:14.740
+I think we should wrap it up with a joke, though.
+
+
+00:27:14.740 --> 00:27:15.660
+- Yeah, let's do that.
+
+
+00:27:15.660 --> 00:27:17.340
+- As is our tradition now.
+
+
+00:27:17.340 --> 00:27:18.180
+All right, you go first.
+
+
+00:27:18.180 --> 00:27:23.020
+- Okay, so, okay, web developer walks into a restaurant.
+
+
+00:27:23.020 --> 00:27:24.940
+He immediately leaves in disgust
+
+
+00:27:24.940 --> 00:27:27.220
+as the restaurant is laid out in tables.
+
+
+00:27:27.220 --> 00:27:30.460
+- Oh, must have been a NoSQL web developer.
+
+
+00:27:30.460 --> 00:27:33.780
+Doesn't want that relational stuff in there.
+
+
+00:27:33.780 --> 00:27:34.740
+Yeah, that's pretty funny.
+
+
+00:27:34.740 --> 00:27:37.940
+That comes from a joke API that Shinjitsu sent over,
+
+
+00:27:37.940 --> 00:27:39.260
+and so I appreciate that.
+
+
+00:27:39.260 --> 00:27:40.900
+And this next one as well is from there,
+
+
+00:27:40.900 --> 00:27:42.540
+but I kind of like it, so I'm gonna cover it.
+
+
+00:27:42.540 --> 00:27:44.660
+So last time when we were talking about Pint,
+
+
+00:27:44.660 --> 00:27:47.660
+You talked about using prefixes and suffixes for variable names.
+
+
+00:27:47.660 --> 00:27:49.980
+Like, if I'm going to have something in meters,
+
+
+00:27:49.980 --> 00:27:53.780
+I'd use an underscore m, potentially, or centimeters, underscore cm,
+
+
+00:27:53.780 --> 00:27:55.780
+whatever convention you use.
+
+
+00:27:55.780 --> 00:27:59.380
+So what is the best prefix for global variables?
+
+
+00:27:59.380 --> 00:27:59.940
+I'm not sure.
+
+
+00:27:59.940 --> 00:28:00.440
+What?
+
+
+00:28:00.440 --> 00:28:01.020
+Maybe g?
+
+
+00:28:01.020 --> 00:28:02.380
+That would be g.
+
+
+00:28:02.380 --> 00:28:03.860
+G underscore, something like that.
+
+
+00:28:03.860 --> 00:28:04.860
+It's global.
+
+
+00:28:04.860 --> 00:28:08.500
+Or hash.
+
+
+00:28:08.500 --> 00:28:10.260
+Like, you shouldn't have global variables.
+
+
+00:28:10.260 --> 00:28:11.300
+So let's just comment those babies out.
+
+
+00:28:11.300 --> 00:28:12.180
+Comment those out.
+
+
+00:28:12.180 --> 00:28:12.620
+Pretty sweet.
+
+
+00:28:12.620 --> 00:28:14.680
+- Yeah, thanks Shinjitsu for sending those in.
+
+
+00:28:14.680 --> 00:28:15.680
+Those are funny.
+
+
+00:28:15.680 --> 00:28:17.240
+All right, Brian, well, thanks as always.
+
+
+00:28:17.240 --> 00:28:18.200
+- Thank you, bye.
+
+
+00:28:18.200 --> 00:28:19.080
+- Yep, bye.
+
+
+00:28:19.080 --> 00:28:20.800
+Thank you for listening to Python Bytes.
+
+
+00:28:20.800 --> 00:28:23.280
+Follow the show on Twitter via @PythonBytes.
+
+
+00:28:23.280 --> 00:28:26.320
+That's Python Bytes as in B-Y-T-E-S.
+
+
+00:28:26.320 --> 00:28:29.520
+And get the full show notes at pythonbytes.fm.
+
+
+00:28:29.520 --> 00:28:31.120
+If you have a news item you want featured,
+
+
+00:28:31.120 --> 00:28:33.600
+just visit pythonbytes.fm and send it our way.
+
+
+00:28:33.600 --> 00:28:36.460
+We're always on the lookout for sharing something cool.
+
+
+00:28:36.460 --> 00:28:38.320
+On behalf of myself and Brian Aukin,
+
+
+00:28:38.320 --> 00:28:39.640
+this is Michael Kennedy.
+
+
+00:28:39.640 --> 00:28:41.640
+Thank you for listening and sharing this podcast
+
+
+00:28:41.640 --> 00:28:43.240
+with your friends and colleagues.
+

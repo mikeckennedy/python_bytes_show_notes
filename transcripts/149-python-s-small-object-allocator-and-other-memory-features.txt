@@ -1,0 +1,1028 @@
+00:00:00 Hello and welcome to Python Bytes where we deliver Python news and headlines directly to your earbuds.
+
+00:00:05 This is episode 149, recorded September 18th, 2019.
+
+00:00:10 I'm Michael Kennedy.
+
+00:00:11 And I am Brian Okken.
+
+00:00:12 And this episode is brought to you by Datadog.
+
+00:00:14 Tell you more about them later.
+
+00:00:16 Brian, this first item that you have here, it actually sparked some philosophical sort of challenge to my way of seeing the world here.
+
+00:00:25 So why don't you run it by and I'll tell you about my problem.
+
+00:00:28 Maybe you can help me through it.
+
+00:00:29 me through it. I'm curious about this now. Yes. I'm pretty sure we've covered this before, but Dropbox is kind of behind a lot of the push to do different type checking or type hinting and checking those type hints within Python. The mypy project is, I think, spearheaded by Dropbox. Yes. There's an article that they put out called "Our Journey to Type Checking 4 Million Lines of Python." Wow, 4 million lines. That's a big code base. That's a lot of Python. Yeah. I wonder how much of it's interconnected. You know, like you've got all these little utilities and nothing actually depends on it directly. Maybe they depend on the output. On the other hand, it could be like a super complicated sort of monolith thing. It's interesting to think about that much code. That is a ton. They're leading a lot of stuff but one of the... I like this. So why? I mean that's not free. You don't have a huge code base and move it to type checking. You don't get that for free. So there has to be benefits to this cost.
+
+00:01:29 And that's one of the things, so this article does talk about their, kind of their, does go through some of their story of how they did it.
+
+00:01:37 What I really liked is it covered some of the benefits.
+
+00:01:39 And this isn't even that surprising.
+
+00:01:41 It says, "Experience tells us that understanding code "becomes the key to maintaining developer productivity, "and that grows with a larger code base.
+
+00:01:51 "So without type of annotation, "basic reasoning such as figuring out what the valid arguments to a function are, or the return types, that's a key one for me, becomes kind of a hard problem.
+
+00:02:04 And just answering those questions quickly, more quickly, what does this function return?
+
+00:02:10 Does it return none sometimes?
+
+00:02:11 Can it return none?
+
+00:02:13 Things like that.
+
+00:02:14 These become more and more of a drain as you're looking at a larger code base.
+
+00:02:18 I mean, it's definitely true.
+
+00:02:19 You spend more time reading code than writing it.
+
+00:02:21 So thinking about the types as you're writing it and putting those in place, especially for interfaces to functions.
+
+00:02:28 Those are an easy win.
+
+00:02:30 I like it.
+
+00:02:31 They talked about some of the other benefits that the type checkers actually finding subtle bugs that they wouldn't have caught easily without it.
+
+00:02:39 Refactoring becomes easier.
+
+00:02:41 And then running the type checking is faster than running the suite of unit tests.
+
+00:02:46 So the feedback can be faster.
+
+00:02:48 And I didn't think about that aspect of it.
+
+00:02:51 That's pretty interesting.
+
+00:02:52 to include type checking as part of like a TDD flow.
+
+00:02:55 That'd be, I haven't tried that.
+
+00:02:57 That'd be kind of fun.
+
+00:02:58 And then one of the things I do know is that the IDEs such as Visual Studio Code and PyCharm allow you, allow for better completion and static error checking and a whole bunch of goodies that you get from the IDEs if you have type hints in there.
+
+00:03:14 But anyway, the other part of the story that I think is, they talk about is the improvements to mypy to fit their needs.
+
+00:03:22 And so if you like mypy now, it's probably it's because Dropbox needed it to be really good.
+
+00:03:28 So anyway, it's a good article.
+
+00:03:30 - I'm a big fan of type hinting and stuff.
+
+00:03:33 I think it, all these things here that you've laid out, I definitely think they're all true.
+
+00:03:37 I would say absolutely the biggest one for me is making the IDEs and the editors just better.
+
+00:03:43 When I get the return value function that declares its return type, and I hit dot on that variable, boom, there's the list of the things that I can do.
+
+00:03:52 I type one or two characters, it auto-completes, I just, you know, just flow.
+
+00:03:56 And yes, it's in the docs, what comes back from some of these things.
+
+00:03:59 Yes, you can go look them up, what arguments or what operations you can do on them.
+
+00:04:04 But if it's one character or two typing and it's just always there, it just massively improves what you're doing and your confidence and the speed and it doesn't take you out of that flow.
+
+00:04:13 And I really appreciate that aspect of it.
+
+00:04:15 - One of the things, I mean, bracing more and more as things that can return multiple types, because we definitely can do that in Python.
+
+00:04:22 So arguments that can be set to none, but are either a none or a Boolean, or they can be an a element or a list of those types of elements, those sorts of things are great, because if they're one of the types most of the time, you don't even really think about making sure that it works for the other one.
+
+00:04:40 - For sure.
+
+00:04:41 So you want to hear my philosophical dilemma?
+
+00:04:43 - Yeah, I do.
+
+00:04:44 - All right.
+
+00:04:44 So in that article, it says something to the effect of, mypy is an open source project, and the core team is employed by Dropbox.
+
+00:04:53 One of the people who is doing major work on this project is Guido van Rossum.
+
+00:04:58 I think he did something in Python, like created.
+
+00:05:01 Things like that.
+
+00:05:02 He created the language and whatnot.
+
+00:05:04 And it wasn't until, gosh, I don't know, well into the 2010s or something like that, till type-hinting became a thing in the language.
+
+00:05:13 So Python was created, its sort of core essence is a language without type declarations, right?
+
+00:05:21 So here's my philosophical debate.
+
+00:05:22 Like, would Guido have gone back and said, in 1991, actually a little bit of type hints should have been how Python originally came into the world?
+
+00:05:34 Or is this something that you have to go through and you're like, oh, it's fine when you have a hundred lines of code that don't have any type information, But if you have 4 million, all of a sudden you're in a bad place with 4 million and hundreds of people working on it.
+
+00:05:48 Well, all of a sudden these types now are super valuable because here he is working explicitly on this thing that he probably decided not to have in his original language.
+
+00:05:57 And there's my dilemma.
+
+00:05:58 - I think it's the size thing.
+
+00:06:00 It's helpful for large projects, for tiny little things it's not.
+
+00:06:04 I mean, has it ever bothered you that there are no type declarations in Bash scripts?
+
+00:06:10 - Yeah, not really, I guess.
+
+00:06:12 I don't do really huge bash applications.
+
+00:06:15 Yeah, that's probably some form of anti-pattern right there, isn't it?
+
+00:06:19 Yeah, I don't know.
+
+00:06:20 Maybe it's also the tooling, right?
+
+00:06:21 The editors do a lot more with that information now.
+
+00:06:24 It is an interesting question of, why didn't it have it to begin with?
+
+00:06:27 If someone else was working on this, sure, OK, these are two philosophies, and they kind of come together or don't in different ways.
+
+00:06:33 But it's the same person, right?
+
+00:06:35 So that was my thought as I was looking through this article.
+
+00:06:39 Yeah.
+
+00:06:39 But cool.
+
+00:06:40 I'm happy to see them doing it.
+
+00:06:41 And I like to bring this sort of stuff into my code as well.
+
+00:06:44 I think it makes it better.
+
+00:06:45 All right.
+
+00:06:46 Well, what do you got for us?
+
+00:06:47 I did mention that we have these editors these days that do so much more than they did in 1991.
+
+00:06:55 And namely, this would be PyCharm and Visual Studio Code.
+
+00:06:58 Those are the two main ones.
+
+00:06:59 Obviously, there's others.
+
+00:07:00 But these are the main ones that are super rich.
+
+00:07:03 Our friend Miguel Grimberg decided he was going to put together a cool video about setting up Visual Studio Code to work with a full-fledged Flask application.
+
+00:07:13 >> Yeah. >> So with PyCharm, I think it's pretty straightforward, right?
+
+00:07:16 PyCharm kind of is what it is.
+
+00:07:18 It's you go in and you're like, all right, here's the project, I see that.
+
+00:07:21 Here's how I run stuff, here's how, and like there's, it's sort of really clear what you do.
+
+00:07:26 There's a lot of stuff going on there and it's really busy, but it's, you can look at it and see what you're supposed to do.
+
+00:07:30 With Visual Studio Code, I don't feel that way.
+
+00:07:33 I look at it and I go like, all right, I know that this thing can be configured and adapted to do all this amazing stuff, and it gives me no breadcrumbs or hints on how to even take that first step.
+
+00:07:44 I'm like, man, I know this thing's cool, probably, but I'm just gonna edit this file and go on, right?
+
+00:07:50 But this is a video that also has a blog post version from Miguel, and it's actually a follow-up to doing the same thing in PyCharm about a year ago.
+
+00:08:01 And I think the reason he did it in PyCharm, even though I just told you how easy it was, is he's doing it in PyCharm Community, which is not officially able to support web development.
+
+00:08:09 It's the free version.
+
+00:08:11 So he's like, how do you set up a web development project in a thing that's not meant for that or officially configured for that or whatever?
+
+00:08:17 Anyway, so it goes through and it sort of walks you through all the steps.
+
+00:08:20 And you know what?
+
+00:08:21 It's really nice.
+
+00:08:22 And I think that the grand finale, you will appreciate here, Brian.
+
+00:08:25 So as I think a lot of people do, so all right, here's what we're gonna do.
+
+00:08:28 We're gonna go set up, we're gonna clone the repo, we'll create a virtual environment, we're gonna install the requirements and sort of configure environment variables, maybe run some custom Flask commands like Flask deploy, which initializes the database or does database migrations and all that kind of stuff in the terminal before we actually get to the editor.
+
+00:08:48 And this is how I work as well.
+
+00:08:49 How about you?
+
+00:08:50 Do you like start from within PyCharm or do you kind of get to it eventually?
+
+00:08:53 - Oh no, I, same thing.
+
+00:08:55 I'm setting up, well, I've got a little extra little hooks to create an environment and activate an environment 'cause I'm doing that on the command line all the time anyway.
+
+00:09:05 Like if I'm gonna clone a repo and stuff, I'm just gonna do that, so.
+
+00:09:08 - Same, and I have all these aliases and stuff that will do multiple steps at once and make it a little bit nicer and so on.
+
+00:09:14 All right, so all that is in Terminal, but then he says, all right, here's what we're gonna do in VS Code.
+
+00:09:18 You're gonna open the folder, which is a thing you could do in VS Code, and it will automatically find the virtual environment.
+
+00:09:25 But in order for all that stuff to happen, you have to encourage Visual Studio Code to go into Python mode, so just open any Python file, And that activates all the little subsystems that fire up, like the environment variable detection and all that kind of stuff, the virtual environment detection and so on.
+
+00:09:42 And then, it says, all right, now what we want to do is how do you run the thing?
+
+00:09:45 So he talks about how to set up a run configuration in the debugger.
+
+00:09:50 So you open the Debugger tab, add a configuration.
+
+00:09:53 And you can actually pick Flask.
+
+00:09:55 And it knows all about Flask.
+
+00:09:56 It asks you a couple of questions, like, well, what's the app PY called, and things like that.
+
+00:10:01 but then it'll set it all up.
+
+00:10:03 And then you can run it in the debugger or run it without, and that's pretty nice.
+
+00:10:06 And then it says, finally, there's another thing about this UI that, like I said, it's kind of like water, right?
+
+00:10:12 It can be whatever you want, but you don't look at water and go, I bet that could be a sculpture of a seal if I froze it and carved it down, right?
+
+00:10:21 So--
+
+00:10:21 - That's our example.
+
+00:10:22 But yeah, sure, go on.
+
+00:10:23 - Yeah, right, like, OK, ice sculptures.
+
+00:10:26 So there's another command you can run in VS Code.
+
+00:10:28 And this I didn't know about is you ask it to discover Python tests.
+
+00:10:32 - That's nice.
+
+00:10:33 - Yeah, so you can say discover Python tests and it'll hunt through and find all the tests in your project and it'll even offer the what test framework do you wanna run?
+
+00:10:40 You wanna run unit test or PyCharm or whatever and then once you do that, like a new UI element sort of pops up and now you can run your tests in a pretty cool runner.
+
+00:10:49 So it's about a half hour video.
+
+00:10:51 It's good, I think, and there's something really nice about seeing it in action.
+
+00:10:55 I'm a big fan of learning through video stuff as people might imagine, since I put some time and energy into it.
+
+00:11:01 But it's one thing to read it.
+
+00:11:02 It's another to see just that sort of process gone through and explain step by step.
+
+00:11:08 And Miguel does a good job, and I like it.
+
+00:11:10 At the end, he also talks about a limitation of handling crashing Flask applications with a debugger.
+
+00:11:19 And he says it's a Flask thing, not a VS Code thing.
+
+00:11:22 So you have to do it in both PyCharm and VS Code.
+
+00:11:25 But he shows you the little workaround.
+
+00:11:26 - Yeah, basically you have to stop going through the Flask run option and go to the flask.py or app.py, run it, and then override some settings in the run there.
+
+00:11:38 So yeah, it's pretty straightforward, but that's definitely a nice touch as well.
+
+00:11:40 - Yeah, and then the other thing I wanted to touch on is when he's showing how to run tests in the video, they're just sort of magically running in the background and you don't see what they're doing.
+
+00:11:50 And he doesn't cover this, but at the bottom of the screen or at the bottom of your VS Code window, There's some icons that show you the status of the tests.
+
+00:11:59 And if you click on that, you can go--
+
+00:12:01 that's where you go look at the output and look at the failures and whatever.
+
+00:12:04 Yeah, very cool.
+
+00:12:05 Nice.
+
+00:12:05 So that's a good one.
+
+00:12:06 Another thing that I am a big fan of is parallel programming.
+
+00:12:10 And you've got a few things on that one for us, huh?
+
+00:12:12 There's an article called "Multiprocessing versus Threading in Python--
+
+00:12:17 What Every Data Scientist Needs to Know." It talked about multiprocessing and threading.
+
+00:12:22 It did not talk about async.
+
+00:12:25 And I don't know if that's appropriate or not with if async's even something that you can, would be useful for data science or not.
+
+00:12:33 - Sometimes, not computationally though.
+
+00:12:34 - In any case, I liked it because a lot of people from data science are coming into program, like we know, they're coming in not as programmers, they're coming in from other fields.
+
+00:12:44 So there's a lot of background computer science knowledge that they just don't have, or you know, there might be gaps.
+
+00:12:51 So that's one of the reasons why I picked this because I like it.
+
+00:12:53 I like that it talked about some of the basic concepts of parallelism, parallel computing, how to think about it, has some diagrams, and then what the difference between multiprocessing and threading is in general, specifically multi, or threading is within one process.
+
+00:13:11 You've got a bunch of stuff going on.
+
+00:13:14 And multiprocessing is you get a bunch of processes, but there's trade-offs.
+
+00:13:18 And then it also talks about specifically that Python has a GIL, so it's a little different.
+
+00:13:24 But because of the GIL, so it talks about that threads wait on, you can use either one, but in general, the general rule of thumb is CPU intensive work, you need multiprocessing.
+
+00:13:36 If you're IO bound or waiting on users, then threads are fine for that.
+
+00:13:42 So the surprising bit to me was the charts and some of the graphs that he has, because he sort of does some benchmarks of code running something on like both CPU intensive and IO intensive work and how it speeds up with multi-processing, multi-threading.
+
+00:14:02 Obviously throwing more processors at it and it helps or more threads.
+
+00:14:09 But what surprised me is that the difference between the two wasn't really that great.
+
+00:14:13 I thought it would be more pronounced.
+
+00:14:15 Basically, if you're not sure which one to use, pick one, and it'll speed up your code.
+
+00:14:21 - Interesting, yeah.
+
+00:14:22 - I kind of thought it would be, even with CPU intensive stuff, at least with stuff he was showing, that even multi-threading helped speed things up.
+
+00:14:31 So I think this is good.
+
+00:14:33 And then he goes through a couple data, specifically data science examples, and shows the code and how to throw multi-processing and multi-threading at data science problems.
+
+00:14:42 - That sounds super useful.
+
+00:14:44 The comparisons are interesting.
+
+00:14:45 These benchmarks are always so full of landmines and special cases.
+
+00:14:51 And I didn't use it that way, so I didn't get the right results that you said.
+
+00:14:54 You know, like, they're just so tricky to get them right.
+
+00:14:57 But it is cool to have them here.
+
+00:14:58 I like that a lot.
+
+00:15:00 One thing I would like to throw out there is, you know, a lot of times you have these sort of, I could do it this way, or I could do it that way, and we'll see what we get.
+
+00:15:06 And then sometimes it's this, sometimes it's that.
+
+00:15:09 So now you've got to know two APIs and how you combine them.
+
+00:15:11 And I'm a big fan of the unsync, U-N-S-Y-N-C, library, which takes the async programming model and applies it to multiprocessing, to threads, and async methods, and makes it all nice and clean, just a couple of decorators, and they're all the same.
+
+00:15:28 So do you still have to pick?
+
+00:15:30 You have to pick at the implementation level.
+
+00:15:33 So imagine you have three functions.
+
+00:15:34 One of them is async, because it actually implements async in a way it uses them.
+
+00:15:38 One is just a regular function you'd like to run on a thread, one is a regular function--
+
+00:15:43 sorry, one is a function that does computational stuff, and one does a weighting.
+
+00:15:47 So you just put a decorator.
+
+00:15:48 You say @unsync on the regular async one.
+
+00:15:51 That will run on async I/O. On the one that's doing weighting stuff, it would work for threads.
+
+00:15:56 You just say @unsync, and it automatically runs on threads if it's not an async method.
+
+00:16:01 In the last one, you would say @unsync CPU bound equals true.
+
+00:16:05 But then once you consume those, the way you program against it, they're all the same, regardless of which style it is.
+
+00:16:12 So it's like when you define the function, oh, this is a CPU bound one.
+
+00:16:15 Oh, this one is actually async.
+
+00:16:17 So it just is async.
+
+00:16:19 And it just adapts.
+
+00:16:19 It's a pretty cool library.
+
+00:16:21 It's 126 lines of Python in one file.
+
+00:16:25 And it does all that to unify all these APIs.
+
+00:16:27 It's great.
+
+00:16:28 - Wow, that's cool.
+
+00:16:28 - Yeah, so pretty cool.
+
+00:16:29 Anyway, yeah, this is really nice and certainly something people want to think about.
+
+00:16:33 It's a little bit tricky.
+
+00:16:35 We'll see if this is still a discussion in a couple years.
+
+00:16:38 In Python 3.9, there's talk of maybe using sub-interpreters to remove the limitation of the GIL inside a single processes and all sorts of stuff.
+
+00:16:47 Aaron Snow's working on that.
+
+00:16:48 So if they actually got that working, then you'd probably be better 'cause you can share data better, more richly, and faster within a single process.
+
+00:16:58 And it's about to get even more crazy.
+
+00:17:01 - That's a long discussion.
+
+00:17:03 How much more do you have to care about blocking and stuff like that?
+
+00:17:08 Yeah, it brings all that stuff back in because you don't have the gill anymore.
+
+00:17:12 Actually, with the sub-interpreters, they're talking about a mechanism to explicitly share data in a safe way between them.
+
+00:17:18 So still, it's faster, though.
+
+00:17:20 OK.
+
+00:17:20 Cool.
+
+00:17:21 Well, speaking of making things faster, if you're looking at your app and you wonder what's going on, it would be nice to see everything that's going on across all the layers, across the database, across the web tier, things like that.
+
+00:17:34 So you should check out Datadog.
+
+00:17:35 They're sponsoring this episode.
+
+00:17:37 It's a modern cloud scale monitoring platform that brings together metrics and logs and distributed traces all in one place.
+
+00:17:44 So it auto-instruments things like Django and Flask and Postgres, means you get to see everything across all those boundaries.
+
+00:17:52 And it helps you optimize your Python apps in just a few minutes.
+
+00:17:55 Start monitoring your environment for free and get a sweet Datadog t-shirt.
+
+00:17:59 Just visit pythonbytes.fm/datadog to get started.
+
+00:18:02 - Nice.
+
+00:18:02 Well, not to be outdone by your async stuff.
+
+00:18:07 I also chose some async stuff here.
+
+00:18:10 So remember, we talked about Starlet a little while ago.
+
+00:18:13 And Starlet comes from this GitHub organization called Encode, E-N-C-O-D.
+
+00:18:19 And that place is full of magic.
+
+00:18:21 So they have uvicorn, which is the ASGI server.
+
+00:18:25 That's pretty awesome, like g-unicorn, but for async based on the uv event loop, UV loop, event loop, and so on.
+
+00:18:34 And there's Starlet, there's also Django REST framework, but there's HTTPS, which we talked about last time.
+
+00:18:39 And the last thing I wanna just cover is a few more things in here, 'cause like I said, there's a lot of great stuff.
+
+00:18:44 Is there's a project just simply called ORM, right?
+
+00:18:48 We've got SQLAlchemy and Django ORM, and these guys just said, you know what, we'll just, the term ORM is just free in Python, so let's just do that.
+
+00:18:56 (laughing)
+
+00:18:57 Which is an async ORM.
+
+00:19:00 And they also have a thing called databases, which adds async support for talking to all these different databases, Postgres and whatnot.
+
+00:19:09 So this is a really cool project, especially this ORM one, because it's kind of like SQLAlchemy, and it's actually based on the SQLAlchemy core for building queries.
+
+00:19:21 And that gives you a bunch of benefits, right?
+
+00:19:23 That means if you already have some stuff that works with SQLAlchemy, to some degree it will be similar.
+
+00:19:28 It means that Alembic, which is the tool to do database migrations on SQLAlchemy, also works with this ORM.
+
+00:19:36 So you can automatically just apply Alembic to it.
+
+00:19:38 And that's pretty cool.
+
+00:19:39 Wow.
+
+00:19:39 Yeah, it uses this database project that I talked about for cross-database async support.
+
+00:19:45 And it also has this thing called TypeSystem for data validation, which is pretty cool.
+
+00:19:49 I hadn't heard of that either.
+
+00:19:51 But yeah, it's a really sweet async API for working with databases and ORMs.
+
+00:19:59 So the way you create the models, it's very similar to SQLAlchemy.
+
+00:20:01 It's not identical, but it's similar.
+
+00:20:04 And then from there on, you just work with it kind of like you would do normal ORM stuff, right?
+
+00:20:10 Like I would say, if I'm working on an album, I might say album.objects.create.
+
+00:20:16 Or maybe I would do some kind of filter.
+
+00:20:19 So I'd say track.objects.filter, and I would do something.
+
+00:20:23 But every one of these operations is async, so you just put a weight in front of it.
+
+00:20:27 And if you have something you've got to scale, a whole lot of concurrent data traffic, like say a website, well, this is a pretty good combo.
+
+00:20:36 - Okay.
+
+00:20:37 So like in the future, will we just have a weight in front of every other word?
+
+00:20:41 - Everything, exactly.
+
+00:20:43 So I was gonna point out that you've gotta be pretty async and await savvy to be doing that.
+
+00:20:47 Like there's a lot of waiting, isn't there?
+
+00:20:50 (laughing)
+
+00:20:52 - Yeah.
+
+00:20:52 - I think if you want to work with this library, you just have to say, we're just going all in on async.
+
+00:20:57 And that's the way it goes, right?
+
+00:20:58 - No, it's good.
+
+00:20:59 If you're already working with async, that's when you would think, hey, I wonder if there's an async ORM that I can use.
+
+00:21:05 - Yeah, yeah, it looks good.
+
+00:21:06 And I like that it's based on SQLAlchemy core.
+
+00:21:08 That means a big chunk of like the database conversation and say the table creation and the migrations, All that stuff is already known and proven and working really well.
+
+00:21:20 It's just this API kind of around the side of the traditional SQLAlchemy conversation, like directly with the database.
+
+00:21:29 I do wish that SQLAlchemy would take this approach.
+
+00:21:32 I interviewed Mike Bader about it a long time ago, and like four years ago, he said, I don't really think it's gonna make that big of a difference, but I think it actually would make a huge difference.
+
+00:21:42 You just gotta think about what is your goal, right?
+
+00:21:45 If your goal is performance, it probably won't make a big difference.
+
+00:21:48 If your goal is scalability, it can make a tremendous difference, right?
+
+00:21:53 Are you trying to make an individual user's experience a little bit faster, or are you trying to make the website not take 10 concurrent users, but 10,000?
+
+00:22:02 Right, like, it probably might even make it a tiny bit slower for that one person, but it might make that 10 to 10,000 like no big deal.
+
+00:22:09 So, it depends on what you're after, right?
+
+00:22:11 - Yeah, definitely.
+
+00:22:12 - Speaking of what you're after, what's next for us?
+
+00:22:14 - One of the things you might be after is some data on somebody else's website, like through an API.
+
+00:22:19 - Yes.
+
+00:22:20 - There's more and more people, and I think it's great kind of doing the data science stuff of people coming into Python and programming from just trying to get their work done.
+
+00:22:28 And this is a dataquest.io blog post called Getting Started with APIs.
+
+00:22:35 And it's not getting started writing APIs, it's getting started consuming them with Python.
+
+00:22:41 If you've kind of know what all this stuff is, but you haven't really thought about the basics.
+
+00:22:46 That's why I picked up this post is because it's really good with the basics.
+
+00:22:50 Has a conceptual introduction of what a web APIs are versus what a website is, kind of what the differences are.
+
+00:22:58 And why, I mean, why also, why have APIs if you can just have, people could just store the data in CSV files, that'd be easier, wouldn't it?
+
+00:23:06 - That'd be amazing, I'd love to live in that world.
+
+00:23:09 No.
+
+00:23:10 - No, but there are a lot of data sets out there that are just CSV files sitting around.
+
+00:23:17 - It depends if it's dynamic, right?
+
+00:23:18 - Right, dynamic and also if you want to specify it.
+
+00:23:21 So with APIs you can have parameters to your queries to say I only want the data for this user or they gave an example of Spotify music or something.
+
+00:23:33 You don't want to have all the data for all the songs that Spotify knows about but maybe just the songs from a particular artist or something.
+
+00:23:42 So things like that are good, but this is actually the first time I've seen this and they're probably all over the place, but talked about status codes, especially get status codes, because that's what we're doing here is retrieving things.
+
+00:23:55 And it had a nice list of all the descriptions and things that you might run into for error codes, including like the 301, which isn't necessarily a problem, but you're getting redirected.
+
+00:24:06 So maybe you want to know about that.
+
+00:24:09 And then the 400 is something's not wrong on their end, it's wrong on your end.
+
+00:24:16 The server thinks you made a bad request.
+
+00:24:19 So that might be an endpoint that expects data, or parameters, but you didn't send any parameters with it.
+
+00:24:24 - Or you sent an int when it expected a string, or whatever.
+
+00:24:27 - And then it talks about endpoints, and endpoints that take query parameters, endpoints being the specific API.
+
+00:24:35 So we think of a service providing an API, but it's usually not just one API.
+
+00:24:40 It's usually a whole bunch of related different bits of data that you can query together or query separately for different aspects of it.
+
+00:24:50 And then of course, what APIs usually return is JSON data.
+
+00:24:53 So it has a little bit of an explanation for what JSON looks like.
+
+00:24:57 And then using the JSON module to convert back and forth between native Python stuff and JSON.
+
+00:25:04 And it also talks about requests and a bunch of examples for how to pull this.
+
+00:25:08 So if you're getting started trying to pull some data from an API somewhere, this is a good way to get started.
+
+00:25:15 - It's a nice blend of theory and steps, right?
+
+00:25:18 It doesn't just say, well, you open up requests and you do this.
+
+00:25:20 It's like, here's what an API is, here's what the HTTP verbs mean, here's what the status codes are, here's how you get to that, and how do you manifest that in Python and stuff.
+
+00:25:31 Yeah, it's nice.
+
+00:25:32 - Yeah, but it's not at the level of like a college course lecture.
+
+00:25:35 It's just enough to get the concepts right.
+
+00:25:38 - Exactly, it's not trying to make you read the RESTful dissertations, things like that.
+
+00:25:44 - Yeah, I don't even know if it mentions REST, even though that's what we're talking about.
+
+00:25:47 - Cool, that's probably a good thing.
+
+00:25:49 That was overdone for a while.
+
+00:25:50 Now, last thing I want to cover is memory management in Python.
+
+00:25:54 This is an article entitled Memory Management in Python, but what it really is is it's a narrow slice, but a common slice of memory management in Python.
+
+00:26:02 So you probably don't think about memory very much in Python, huh, Brian?
+
+00:26:05 - No, I usually forget about it.
+
+00:26:06 - Yeah, just forget about it.
+
+00:26:07 That's right.
+
+00:26:09 So you don't use malloc or free or new or any of these things.
+
+00:26:14 Definitely not delete.
+
+00:26:16 If you use delete, it means something else, sort of.
+
+00:26:18 And things like that, right?
+
+00:26:19 - Yeah.
+
+00:26:20 - So I think it's actually pretty interesting that the story of understanding how the runtime experience is in CPython, it's kind of opaque a little bit, right?
+
+00:26:30 There's not a lot written about memory management, which is why I decided to pick this thing and talk a little bit about what it covers, because I think it doesn't really matter that you know this in some sense, right?
+
+00:26:43 Like your Python code will still work, but you more closely understand what your code is doing, how that might map over to like CPU architectures and caches and RAM and all that kind of stuff.
+
+00:26:54 And, you know, just having a high level understanding that that's good.
+
+00:26:58 Yeah, so here's a pretty deep detailed article, not too long, get to it pretty quick, about memory management in Python, but it only covers, like I said, a little bit.
+
+00:27:07 It's really about how does small object allocation and deallocation happen in Python.
+
+00:27:14 It doesn't talk about the gill, which it's about thread safety and memory allocation.
+
+00:27:18 It doesn't talk about reference counts.
+
+00:27:19 It doesn't talk about garbage collection for cycles or much else.
+
+00:27:25 So it's all about small objects, but most things we make in Python are small objects.
+
+00:27:29 Even when they're big, they're really just a bunch of small things pointed at each other, right? So if I've got like a list of a million items, I don't have each of those items is 10 bytes, I don't have 10 million bytes, I have this big list with a bunch of things, but then each one of those is a pointer out to its actual thing that it is right. Even when you have strings, or even numbers, right, a lot of languages, numbers are allocated on the stack, and treated as value types and stuff. But you know, everything is an object. So every little thing that you make has to get allocated and deallocated. So understanding how these small objects get allocated, that's, that's pretty interesting. So that's what this article talks about. So I'll try to like summarize some of the stuff covered there. One of the problems you have with memory allocation is that memory can get super fragmented, right?
+
+00:28:18 If I just allocate a bunch of stuff and they deleted and keep allocating and just, just let that grow, you know, just keep adding on on the end, wherever the memory is, and I want to interact with that, that can really mess up.
+
+00:28:30 Like reading from RAM and getting stuff on cache to be high performance and stuff like that.
+
+00:28:35 So what Python does is it actually pre-allocates these little 256k chunks, and then it partitions those up and it plucks in the small objects into those spaces, and then will potentially take them back out and then reuse those spaces that it had already allocated when it needs to make a new small thing.
+
+00:28:56 All right, so that's supposed to help with memory optimization, the locality stuff, the fragmentation, and so on.
+
+00:29:04 So there's a special memory manager in Python called PyMalloc, general purpose allocator.
+
+00:29:10 On top of like C malloc, there's a Python allocator, right?
+
+00:29:14 So there's like this layer, we have RAM, we have the operating systems, virtual memory management, we have C's malloc, we have this PyMem, PyMalloc thing, We have the Python object allocator that then figures out where to place these things and we actually have object memory.
+
+00:29:29 So there's a lot of stuff going on here and they break it into three levels of organization.
+
+00:29:35 Okay, so for small objects, which are things that are individually smaller than 512 bytes, right?
+
+00:29:41 Not like maybe a list that has a bunch of stuff, but each little bit smaller, right?
+
+00:29:46 So those are the things we're talking about.
+
+00:29:48 And what happens is it gets broken into these three things called the block, the pool, and the arena.
+
+00:29:55 So a block is a chunk of memory of a certain size, and it only holds Python objects of a certain size.
+
+00:30:03 So maybe there's a block that holds 16 byte Python things.
+
+00:30:08 Yeah?
+
+00:30:08 OK.
+
+00:30:09 That's weird.
+
+00:30:10 Yeah.
+
+00:30:10 So the reason is Python can then--
+
+00:30:13 it knows how to exactly fill up and then reuse those blocks.
+
+00:30:17 Oh, yeah.
+
+00:30:17 OK.
+
+00:30:18 So if it's like, oh, I'm going to get a bunch of numbers, all the numbers are the same size unless they become utterly huge.
+
+00:30:23 So we can just like allocate them into the spot.
+
+00:30:26 Some of those numbers go away.
+
+00:30:27 We got another block.
+
+00:30:27 We drop that new number pointer in right there or the number which we then point at right there and so on.
+
+00:30:32 So there's these different blocks.
+
+00:30:34 Each one is a uniform size between eight and 512 bytes.
+
+00:30:39 And then the blocks are managed by this thing called a pool, which is usually limited to a memory page size, so four kilobytes.
+
+00:30:47 And then the pools are managed as these things called arenas.
+
+00:30:51 And these are the things that are allocated on the heap.
+
+00:30:54 I believe they are 256k pieces of memory, which hold 64 pools, which hold some number of blocks and things like that.
+
+00:31:04 So there's this really intricate way in which memory is trying to be grouped together and then also trying to be reused without reallocating it from the operating system.
+
+00:31:15 So even though Python might new up a bunch of objects, it actually says, well, but we already have this block that holds those size of things and there's some spots in there, so let's fill that bad boy up.
+
+00:31:25 - Oh, all right.
+
+00:31:26 - Yeah, anyway, so it's pretty interesting how all this stuff is working together, but that's the Python small object allocator.
+
+00:31:33 - Never thought about that before, but kind of interesting.
+
+00:31:36 Also, I'm trying to visualize like a sports arena with 64 swimming pools in it.
+
+00:31:41 - That's not a bad one.
+
+00:31:43 And then each pool is filled with exactly the same size people or creatures swimming around, something like that.
+
+00:31:49 - Yeah. - Yeah, there you go.
+
+00:31:49 That makes a lot of sense.
+
+00:31:51 The first part of it totally made sense.
+
+00:31:53 The last bit, maybe not so much.
+
+00:31:54 All right, well, anyway, what I like about this article is it seems like it has a lot of stuff from like, here's the actual C code that defines what an arena is.
+
+00:32:04 Here you can see it's like a doubly linked list and how it all fits together.
+
+00:32:06 And it's just got some good analysis.
+
+00:32:08 So have a look if you've wondered about this.
+
+00:32:11 All right, well, that's it for our main items.
+
+00:32:13 I know Brian, you have big news for the entire world if they live near Portland.
+
+00:32:19 - If they live in Portland or really close to Portland.
+
+00:32:22 - Or want to come to Portland.
+
+00:32:24 - September 26th, I'll be speaking downtown at the Portland Python User Group and I'm still working on my talk, but I'll be there.
+
+00:32:32 That'll be fun.
+
+00:32:33 And then I'll probably polish it more and people have to volunteer for this other talk.
+
+00:32:38 So on October 6th, it's the inaugural first day of meeting the Python PDX West.
+
+00:32:46 So we've got a new user group for Python in town.
+
+00:32:51 I'm hosting it along with you.
+
+00:32:52 Yeah, it'll be fun.
+
+00:32:53 I'm really looking forward to it.
+
+00:32:54 Yeah, and you'll be speaking there.
+
+00:32:55 I will.
+
+00:32:56 And I'm trying to get other people to volunteer to speak.
+
+00:32:58 And if they don't, then it'll just be you and me speaking.
+
+00:33:01 But I think it'll be fun.
+
+00:33:02 So we've got a bunch of people signed up so far.
+
+00:33:05 So it's filling up fast.
+
+00:33:07 People should sign up.
+
+00:33:08 Maybe we could do a live Python Bytes sometime there as well at the end of the day or something, who knows?
+
+00:33:13 - That's a great idea, yeah, we could have--
+
+00:33:14 - Maybe not Tuesday, October 6th, but maybe someday we can make that happen.
+
+00:33:18 - Maybe someday, yeah.
+
+00:33:19 - Yeah, that's great news.
+
+00:33:20 If you happen to be around, definitely drop in.
+
+00:33:23 That'd be great, it's on meetup.com, right?
+
+00:33:25 People can just sign up there.
+
+00:33:26 - Yep, and a link in the show notes.
+
+00:33:27 - Do you have any intention of recording, live casting, or otherwise spreading this in a farther path?
+
+00:33:34 - It's not a bad idea.
+
+00:33:36 We don't have anything like that set up right away.
+
+00:33:38 in the future maybe we could do that.
+
+00:33:39 Probably people would be interested in watching these.
+
+00:33:42 But I also wanna make it really accessible to people that are new to presenting as well.
+
+00:33:48 I'd love to have people come in and do like a talk that they're working on.
+
+00:33:52 It's not quite polished yet.
+
+00:33:54 I want it to not just be experts talking to everybody else, but I'd like it to be people working out things that they're just interested in.
+
+00:34:02 So I think it'd be good.
+
+00:34:03 - Yeah, that sounds like a great philosophy for it.
+
+00:34:05 - How about you?
+
+00:34:06 Any extras?
+
+00:34:07 I have a couple presenting and speaking PyCon 2020, which is a little earlier this year.
+
+00:34:12 I believe it's like in April or something.
+
+00:34:14 The website's up.
+
+00:34:15 - Yeah.
+
+00:34:16 - Yeah, so April 15th to 23rd.
+
+00:34:19 So the call for proposals is now open for PyCon 2020.
+
+00:34:24 So if you would like to be considered, a talk of yours to be considered there, then now is the time.
+
+00:34:29 - Yeah, go ahead and submit those.
+
+00:34:30 'Cause you know you're only gonna spend like a week writing it up anyway, so may as well get that done.
+
+00:34:34 Right, and away.
+
+00:34:36 >> That's right, do it like a band-aid, stop worrying about it, just get it over with.
+
+00:34:39 >> Yeah. >> Pull it right off.
+
+00:34:40 All right, another thing, have you heard of Gitbook?
+
+00:34:43 >> Yeah, but I haven't really looked into it much.
+
+00:34:45 >> I hadn't either, I was interviewing the guy, Joe, from Masonite, the Masonite web framework.
+
+00:34:51 And I noticed that Masonite's documentation is written in Gitbook.
+
+00:34:57 And so I looked at it, and Gitbook is pretty interesting.
+
+00:34:59 You can use it as kind of like almost a base camp project management type thing.
+
+00:35:05 So stuff, personal notes or things you want to track or stuff like that, but you can also use it for documentation and knowledge bases and whatnot.
+
+00:35:13 So it looked pretty cool.
+
+00:35:15 And so I thought I'd just, you know, let people know that it's out there.
+
+00:35:17 It's free for small teams, like with some limitations, it's costs a little bit of money for non-trivial small teams, like $7 user, but it's also free for open source and nonprofit teams, which is kind of cool.
+
+00:35:30 So I'm also a big fan of read the docs.
+
+00:35:33 So it's, you know, I'm not saying they shouldn't use that, but here's an interesting project that I ran across that I hadn't heard of.
+
+00:35:38 - It looks nice.
+
+00:35:39 If people, for some reason, are opposed to read the docs, I don't know why you would be, or just like this look better, here's another opportunity.
+
+00:35:46 So good to have options.
+
+00:35:48 - Good to have options.
+
+00:35:49 Also good to have laughs.
+
+00:35:50 - Yeah, let's do some jokes.
+
+00:35:52 - All right.
+
+00:35:53 How about you go first?
+
+00:35:54 - Okay.
+
+00:35:55 So I pulled these out of a list of dad jokes you had posted somewhere on our Trello, but changed it a little bit.
+
+00:36:01 So what do you call a 3.14 foot long snake?
+
+00:36:05 - I don't know.
+
+00:36:06 - Well, that would be a python, of course.
+
+00:36:08 - With the Greek symbol, thon, yeah, python.
+
+00:36:10 - Yeah, so if it's not feet but 3.14 inches, then what is it?
+
+00:36:15 It's a micropython.
+
+00:36:16 - It's a micropython, a mu-py-thon.
+
+00:36:19 Yeah, I feel like we're back in calculus or physics.
+
+00:36:22 - Yeah, so do you wanna do some of these?
+
+00:36:24 - Sure.
+
+00:36:25 So why doesn't Hollywood make more big data movies?
+
+00:36:28 - I don't know, why?
+
+00:36:29 - No sequel.
+
+00:36:29 (laughing)
+
+00:36:31 This last one is a little bit crass.
+
+00:36:32 I don't know, it's a little low level, but I'll see what I can do here.
+
+00:36:35 So why didn't the angle bracket div get invited to the dinner party?
+
+00:36:40 - I don't know, why?
+
+00:36:41 - It had no class.
+
+00:36:42 (laughing)
+
+00:36:44 Oh yeah, that's a good one.
+
+00:36:45 All right, well thanks for throwing those in there.
+
+00:36:47 These are fun.
+
+00:36:48 - Yeah, thank you once again for talking with me on a nice Wednesday.
+
+00:36:52 - Absolutely, see you later.
+
+00:36:53 - Bye.
+
+00:36:54 - Thank you for listening to Python Bytes.
+
+00:36:55 Follow the show on Twitter via @PythonBytes.
+
+00:36:58 That's Python Bytes as in B-Y-T-E-S.
+
+00:37:01 get the full show notes at pythonbytes.fm. If you have a news item you want featured, just visit pythonbytes.fm and send it our way. We're always on the lookout for sharing something cool. On behalf of myself and Brian Okken, this is Michael Kennedy. Thank you for listening and sharing this podcast with your friends and colleagues.
+
