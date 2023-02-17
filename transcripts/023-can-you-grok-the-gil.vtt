@@ -1,0 +1,1384 @@
+
+00:00:00.000 --> 00:00:07.000
+Hello and welcome to Python Bytes, where we deliver Python news and headlines directly to your earbuds.
+
+
+00:00:07.000 --> 00:00:12.000
+This is episode 23, recorded April 25th, 2017.
+
+
+00:00:12.000 --> 00:00:14.000
+And I'm one of your hosts, Michael Kennedy.
+
+
+00:00:14.000 --> 00:00:15.000
+And I'm Brian Okken.
+
+
+00:00:15.000 --> 00:00:18.000
+And we're here to share a bunch of cool Python stuff with you.
+
+
+00:00:18.000 --> 00:00:22.000
+We've got six cool items queued up and ready to go.
+
+
+00:00:22.000 --> 00:00:24.000
+But before we get to that, I want to say thanks to Advanced Digital.
+
+
+00:00:24.000 --> 00:00:26.000
+They have an awesome Python job.
+
+
+00:00:26.000 --> 00:00:29.000
+You can check it out at python.advanced.net.
+
+
+00:00:29.000 --> 00:00:31.000
+and we'll talk more about that later.
+
+
+00:00:31.000 --> 00:00:33.000
+Right now I want to talk about the GIL, Brian, what do you think?
+
+
+00:00:33.000 --> 00:00:37.000
+I think it's great to talk about the GIL, and I'm really glad that...
+
+
+00:00:37.000 --> 00:00:42.000
+So this is an article called "Grok the GIL - How to Write Fast and Thread-Safe Python"
+
+
+00:00:42.000 --> 00:00:49.000
+and we talk about the GIL as the reason why we can't do parallel computing
+
+
+00:00:49.000 --> 00:00:52.000
+and programming just built in in Python,
+
+
+00:00:52.000 --> 00:00:55.000
+but I haven't really jumped into it a lot.
+
+
+00:00:55.000 --> 00:01:02.080
+And this this article is from a Jesse Giroux Davis who by the way is an excellent writer if you want to have
+
+
+00:01:02.080 --> 00:01:05.700
+Some examples of great writing read his stuff. It's great
+
+
+00:01:05.700 --> 00:01:09.120
+So that he has this a little it's a very lightweight
+
+
+00:01:09.120 --> 00:01:14.320
+introduction to what the gill is and to talk and I like the approach of
+
+
+00:01:14.320 --> 00:01:20.840
+Not just the details of it because most of us aren't going to go in and start hack and seek the CPython core
+
+
+00:01:21.040 --> 00:01:27.660
+But a little peek into the CPython core to see that it's a mutex inside an interpreter lock the in the global
+
+
+00:01:27.660 --> 00:01:32.560
+The gill is the global interpreter lock. I love how he pulls out little snippets from
+
+
+00:01:32.560 --> 00:01:39.060
+CPython he's got a section behold the global interpreter lock. It's just so she'd like the C code. Yeah, it's just one line
+
+
+00:01:39.060 --> 00:01:42.380
+Yeah, exactly, and you don't really need to know a lot of C to appreciate it
+
+
+00:01:42.380 --> 00:01:45.820
+But there's just like there's enough to make it super concrete
+
+
+00:01:45.820 --> 00:01:51.220
+you're like this is actually the code that runs when you like call the socket like and
+
+
+00:01:51.220 --> 00:01:55.020
+that's how the gill gets released for example right yeah we're talking about sockets and
+
+
+00:01:55.020 --> 00:02:00.780
+it really he really talks about that that it's a it's focused around the lock is around
+
+
+00:02:00.780 --> 00:02:05.900
+IO whenever you were waiting for IO and I think there's other places too but that's
+
+
+00:02:05.900 --> 00:02:13.140
+the main place where your code will pause and let some other thread run I like the he
+
+
+00:02:13.140 --> 00:02:17.660
+has a thing that says it's so simple that you can the effect on threads is so
+
+
+00:02:17.660 --> 00:02:21.540
+simple you can write it on the back of your hand. One thread runs Python while
+
+
+00:02:21.540 --> 00:02:27.020
+in others sleep or await I/O and he actually has a picture of his hand I
+
+
+00:02:27.020 --> 00:02:30.660
+think it's his hand. Yeah I was wondering if that's actually his hand. Yeah and if
+
+
+00:02:30.660 --> 00:02:33.860
+he wrote it that means he must be left-handed because it's written on the
+
+
+00:02:33.860 --> 00:02:37.700
+back of his right hand or he had somebody else write it. So I was always
+
+
+00:02:37.700 --> 00:02:41.220
+curious about this what are the limitations and it's and how do you
+
+
+00:02:41.220 --> 00:02:47.060
+utilize it to have faster code and the gist of it is if you've got some code that's waiting
+
+
+00:02:47.060 --> 00:02:52.700
+I/O like maybe pulling off a whole bunch of different, taking a bunch of connections or
+
+
+00:02:52.700 --> 00:02:57.340
+pulling off a bunch of your, downloading a bunch of URLs, that's a great place to use
+
+
+00:02:57.340 --> 00:03:03.260
+multi-threading because the gil doesn't really get in your way. There's in places where you
+
+
+00:03:03.260 --> 00:03:08.100
+really have multiple processing where you really want your Python code to run at the same time,
+
+
+00:03:08.100 --> 00:03:12.740
+then you have to jump into multi-processing and he actually gives
+
+
+00:03:12.740 --> 00:03:18.820
+an example of that and it's not that bad either. So anyway I liked the quick jump
+
+
+00:03:18.820 --> 00:03:22.900
+into it and I'm I'm think I'm gonna be a better Python programmer for reading
+
+
+00:03:22.900 --> 00:03:27.100
+this. Yeah this is really nice work. Good job Jesse. He's a great writer. I actually
+
+
+00:03:27.100 --> 00:03:31.700
+had him on Talk Python on episode 69 I think about design patterns for
+
+
+00:03:31.700 --> 00:03:36.960
+programmer blogs and we did a whole session on blogging. It was great and one
+
+
+00:03:36.960 --> 00:03:42.020
+One of the things I like about this is he talks about cooperative multitasking, concurrency
+
+
+00:03:42.020 --> 00:03:48.180
+versus parallelism, preemptive multitasking, how sometimes you still need to actually lock
+
+
+00:03:48.180 --> 00:03:53.140
+your Python code, even though you might think of like, "Well, this is all straight Python.
+
+
+00:03:53.140 --> 00:03:55.320
+It's not going to get interrupted."
+
+
+00:03:55.320 --> 00:04:01.480
+But there's certain mechanisms that slightly vary between Python 2 and 3 where if you hang
+
+
+00:04:01.480 --> 00:04:06.420
+onto the GIL too long, it will be potentially taken from you and given to another thread.
+
+
+00:04:06.420 --> 00:04:10.800
+might still cause what would appear to be parallel race conditions.
+
+
+00:04:10.800 --> 00:04:12.400
+So that's also worth reading about.
+
+
+00:04:12.400 --> 00:04:16.360
+Yeah, and one of the things that surprised me is, and I do realize I don't really worry
+
+
+00:04:16.360 --> 00:04:23.200
+about that, I deal with multi-threading in C++ and with C++ you have to do it fine-grain
+
+
+00:04:23.200 --> 00:04:28.800
+locking of data structures, any data structure shared by multiple threads.
+
+
+00:04:28.800 --> 00:04:35.080
+But I was surprised how much you can share between threads in Python because the GIL
+
+
+00:04:35.080 --> 00:04:41.080
+won't interrupt a bytecode and it'll only interrupt yeah between bytecodes
+
+
+00:04:41.080 --> 00:04:47.000
+not not in the C code so the like things like sorting a list will happen
+
+
+00:04:47.000 --> 00:04:52.000
+atomically and you won't be interrupted with that which is that surprised me I
+
+
+00:04:52.000 --> 00:04:56.080
+didn't know that it is at where ironically incrementing a variable could
+
+
+00:04:56.080 --> 00:05:00.300
+be interrupted right because it ends up being like a two-step or read modify
+
+
+00:05:00.300 --> 00:05:04.780
+write operation yeah exactly exactly and Jesse uses the disk module to look
+
+
+00:05:04.780 --> 00:05:06.060
+inside, which is all very good.
+
+
+00:05:06.060 --> 00:05:06.920
+So that's a great article.
+
+
+00:05:06.920 --> 00:05:09.900
+I think that's probably the most substantive thing we're covering.
+
+
+00:05:09.900 --> 00:05:13.640
+Do you want to think about not so some substantive, but pretty cool?
+
+
+00:05:13.640 --> 00:05:14.120
+Yes.
+
+
+00:05:14.120 --> 00:05:14.880
+I've got one for you.
+
+
+00:05:14.880 --> 00:05:18.100
+Let's talk about the NBA as in a national basketball.
+
+
+00:05:18.100 --> 00:05:20.880
+Association, the American basketball.
+
+
+00:05:20.880 --> 00:05:25.160
+So there was a pretty big deal on Twitter the other day.
+
+
+00:05:25.160 --> 00:05:30.460
+So Mark Cuban, he owns the Dallas Mavericks and he's, I don't know
+
+
+00:05:30.460 --> 00:05:31.820
+if he comes from tech or not.
+
+
+00:05:31.820 --> 00:05:34.760
+I don't really think so, but he definitely was an entrepreneur.
+
+
+00:05:34.760 --> 00:05:37.680
+He's worth like, he's a billionaire basically.
+
+
+00:05:37.680 --> 00:05:41.040
+But as a billionaire, owner of a NBA team,
+
+
+00:05:41.040 --> 00:05:44.520
+he posted out a pretty interesting thing on Twitter
+
+
+00:05:44.520 --> 00:05:46.760
+saying, "Here's the new NBA."
+
+
+00:05:46.760 --> 00:05:50.960
+And it was a picture of him learning Python machine learning
+
+
+00:05:50.960 --> 00:05:54.680
+with, I think, iPython and iPython Notebook open.
+
+
+00:05:54.680 --> 00:05:56.400
+And he's like, "I need to understand
+
+
+00:05:56.400 --> 00:05:57.740
+"the Mavericks and the NBA.
+
+
+00:05:57.740 --> 00:05:58.920
+"I'm on it." - Wow.
+
+
+00:05:58.920 --> 00:05:59.760
+- It's pretty cool, right?
+
+
+00:05:59.760 --> 00:06:00.800
+- It is pretty cool.
+
+
+00:06:00.800 --> 00:06:03.320
+I don't know much about basketball or Mark Cuban
+
+
+00:06:03.320 --> 00:06:07.120
+or any of that, but it's neat that somebody that high up
+
+
+00:06:07.120 --> 00:06:09.800
+is wanting to learn Python and notebooks.
+
+
+00:06:09.800 --> 00:06:12.040
+- That was basically the main takeaway.
+
+
+00:06:12.040 --> 00:06:14.680
+Bunch of people like our friends over at Partially Derivative
+
+
+00:06:14.680 --> 00:06:15.880
+invited him to be on the show.
+
+
+00:06:15.880 --> 00:06:17.480
+They're like, "Oh, we have to hear your story."
+
+
+00:06:17.480 --> 00:06:19.000
+He's like, "No, no, I'm just getting started.
+
+
+00:06:19.000 --> 00:06:20.460
+"They have a team at the Mavericks.
+
+
+00:06:20.460 --> 00:06:23.360
+"I just wanna understand what they're doing
+
+
+00:06:23.360 --> 00:06:24.720
+"when they use machine learning
+
+
+00:06:24.720 --> 00:06:27.920
+"to help make predictions and planning."
+
+
+00:06:27.920 --> 00:06:29.600
+And that's kinda cool to think of how machine learning
+
+
+00:06:29.600 --> 00:06:32.480
+is actually like driving these professional sports teams
+
+
+00:06:32.480 --> 00:06:39.480
+as well. Yeah, very interesting. Indeed, indeed. All right, so next up we have somebody winning
+
+
+00:06:39.480 --> 00:06:44.640
+an award. How cool is that? Yeah, Ian Kardashian. He got a or was announced that he will get
+
+
+00:06:44.640 --> 00:06:51.660
+the 2017 Community Service Award from the Python Software Foundation. And I think that's
+
+
+00:06:51.660 --> 00:06:55.760
+pretty cool. It's apparent. I didn't know that he was doing that a lot of the stuff
+
+
+00:06:55.760 --> 00:07:01.800
+that he did. I mean, I was familiar with Ian, he was on Test and Code Episode 13. And we
+
+
+00:07:01.800 --> 00:07:07.020
+talked about Betamax library that he has for for recording recording and playing
+
+
+00:07:07.020 --> 00:07:12.060
+back requests interactions. He's apparently been the election
+
+
+00:07:12.060 --> 00:07:17.860
+administrator for the PSF since 2015, volunteering all that time of course, and
+
+
+00:07:17.860 --> 00:07:24.380
+he is active in mentoring new coders and supporting other Python developers with
+
+
+00:07:24.380 --> 00:07:28.620
+a with apparently really a focus on trying to be active in mentoring women
+
+
+00:07:28.620 --> 00:07:31.820
+in Python. And I think that's just pretty awesome.
+
+
+00:07:31.820 --> 00:07:36.140
+Yeah, that's really awesome. So congratulations, Ian. And his project that you talked about,
+
+
+00:07:36.140 --> 00:07:39.140
+like replaying requests, that's called Betamax?
+
+
+00:07:39.140 --> 00:07:40.140
+Yes.
+
+
+00:07:40.140 --> 00:07:41.140
+That's an awesome name.
+
+
+00:07:41.140 --> 00:07:47.460
+Yeah, yeah. It's, I guess the idea of course, of there's a VCR type library in some other
+
+
+00:07:47.460 --> 00:07:52.500
+languages, but he chose Betamax because, well, everybody knows Betamax was better.
+
+
+00:07:52.500 --> 00:07:53.500
+That's right.
+
+
+00:07:53.500 --> 00:07:55.780
+Yeah, you should listen to it.
+
+
+00:07:55.780 --> 00:07:57.580
+It's a pretty interesting tool.
+
+
+00:07:57.580 --> 00:08:00.620
+So that was one that the community asked me to do.
+
+
+00:08:00.620 --> 00:08:03.940
+There were community members of listeners of Test and Code
+
+
+00:08:03.940 --> 00:08:06.060
+that said, hey, could you go find Ian
+
+
+00:08:06.060 --> 00:08:07.820
+and talk to him about Betamax?
+
+
+00:08:07.820 --> 00:08:08.660
+- That's awesome.
+
+
+00:08:08.660 --> 00:08:10.660
+We'd love to get those recommendations for all the shows,
+
+
+00:08:10.660 --> 00:08:13.060
+including some stuff that we're covering here today, right?
+
+
+00:08:13.060 --> 00:08:14.220
+- Yeah, definitely.
+
+
+00:08:14.220 --> 00:08:15.060
+- Definitely.
+
+
+00:08:15.060 --> 00:08:17.360
+So if you want to work with these kind of fun things,
+
+
+00:08:17.360 --> 00:08:20.340
+maybe you work at a company where you're doing Java
+
+
+00:08:20.340 --> 00:08:21.940
+and you dabble in Python,
+
+
+00:08:21.940 --> 00:08:26.300
+or you don't really get to do all the cool things you'd like,
+
+
+00:08:26.300 --> 00:08:29.580
+Advanced Digital has a cool job offer for everyone out there
+
+
+00:08:29.580 --> 00:08:30.740
+who might want to make a change.
+
+
+00:08:30.740 --> 00:08:33.980
+- I wish I was near Jersey City, 'cause this sounds fun.
+
+
+00:08:33.980 --> 00:08:35.100
+- It does sound fun.
+
+
+00:08:35.100 --> 00:08:37.100
+So, right, they're in Jersey City,
+
+
+00:08:37.100 --> 00:08:40.500
+just across the Hudson from Manhattan there.
+
+
+00:08:40.500 --> 00:08:42.340
+Small, agile environment.
+
+
+00:08:42.340 --> 00:08:43.540
+They're mostly a Python shop,
+
+
+00:08:43.540 --> 00:08:45.380
+but they play with other cool technologies.
+
+
+00:08:45.380 --> 00:08:47.940
+They fund you guys to go to conferences,
+
+
+00:08:47.940 --> 00:08:50.380
+professional development, and most importantly,
+
+
+00:08:50.380 --> 00:08:55.180
+coolest I think is they run one of the 10 largest news sites by traffic in the US.
+
+
+00:08:55.180 --> 00:08:56.900
+And they do it with Python.
+
+
+00:08:56.900 --> 00:09:00.260
+So if you want to be part of that team, you want to play with cool stuff like that, just
+
+
+00:09:00.260 --> 00:09:04.140
+visit python dot advance.net and check it out.
+
+
+00:09:04.140 --> 00:09:09.780
+So there's a couple of things coming up, Brian, that have to do with Python versus legacy
+
+
+00:09:09.780 --> 00:09:10.780
+Python.
+
+
+00:09:10.780 --> 00:09:17.540
+Remember, Matias from the IPython project, Matias Boussinet, I'm sorry if I mess up your
+
+
+00:09:17.540 --> 00:09:19.520
+name, but I think that's pretty close.
+
+
+00:09:19.520 --> 00:09:24.600
+He was the original guy who got us talking Python versus Legacy Python instead of Python
+
+
+00:09:24.600 --> 00:09:25.600
+3 versus Python 2.
+
+
+00:09:25.600 --> 00:09:26.600
+Oh yeah, right.
+
+
+00:09:26.600 --> 00:09:27.600
+Yeah.
+
+
+00:09:27.600 --> 00:09:31.240
+So he works on IPython and Jupyter and all that stuff and he's back with a new blog post
+
+
+00:09:31.240 --> 00:09:33.840
+which is my next item.
+
+
+00:09:33.840 --> 00:09:35.360
+And it's a pretty big deal.
+
+
+00:09:35.360 --> 00:09:40.180
+We just talked about Mark Cuban, the new MBA, machine learning, IPython.
+
+
+00:09:40.180 --> 00:09:43.800
+And so they just released IPython 6.
+
+
+00:09:43.800 --> 00:09:44.800
+Okay.
+
+
+00:09:44.800 --> 00:09:45.800
+So that's pretty big news.
+
+
+00:09:45.800 --> 00:09:46.800
+That is big news.
+
+
+00:09:46.800 --> 00:09:47.800
+Yeah.
+
+
+00:09:47.800 --> 00:09:53.000
+who use IPython, you know, there's a brand new version, that's awesome. The bigger thing is
+
+
+00:09:53.000 --> 00:09:59.640
+that this is the first release where IPython goes Python 3 only. They've gone up for Python 2.
+
+
+00:09:59.640 --> 00:10:00.200
+That's great.
+
+
+00:10:00.200 --> 00:10:05.560
+So, or as Matthias would say, they now support Python and not mixing in legacy Python with it.
+
+
+00:10:05.560 --> 00:10:05.960
+Yeah.
+
+
+00:10:05.960 --> 00:10:10.120
+And what I thought was nice is, you know, it's a pretty major project. They did a little write up
+
+
+00:10:10.120 --> 00:10:15.640
+of what was their experience of converting a mixed source code to Python 3 only. What were
+
+
+00:10:15.640 --> 00:10:16.640
+What were the benefits?
+
+
+00:10:16.640 --> 00:10:17.640
+What were the drawbacks?
+
+
+00:10:17.640 --> 00:10:22.320
+So, let's see, a couple of things, a couple of stats that Matias put out.
+
+
+00:10:22.320 --> 00:10:27.840
+The size of the IPython code base has decreased by 1500 lines.
+
+
+00:10:27.840 --> 00:10:28.880
+That's pretty solid, right?
+
+
+00:10:28.880 --> 00:10:29.880
+That's significant.
+
+
+00:10:29.880 --> 00:10:30.880
+Less code means less maintenance.
+
+
+00:10:30.880 --> 00:10:31.880
+Right.
+
+
+00:10:31.880 --> 00:10:35.980
+They said it's not just because of dropping Python 2, but a significant amount is.
+
+
+00:10:35.980 --> 00:10:40.640
+And even more impressive is they added some entirely new features that required hundreds
+
+
+00:10:40.640 --> 00:10:42.320
+of new lines of code.
+
+
+00:10:42.320 --> 00:10:47.760
+So they're really the decrease in amount of code they had to support for Python 3 or really
+
+
+00:10:47.760 --> 00:10:53.080
+for 2, they were able to get rid of when they went to Python 3 is actually probably more.
+
+
+00:10:53.080 --> 00:10:54.280
+So that's pretty cool.
+
+
+00:10:54.280 --> 00:10:58.400
+And they said one of the benefits they think is that contributors can spend less time worrying
+
+
+00:10:58.400 --> 00:11:01.920
+about, well, how does this work if we do it in Python 2?
+
+
+00:11:01.920 --> 00:11:06.320
+Or, you know, this has happened to me, you make a pull request, you submit it, it runs
+
+
+00:11:06.320 --> 00:11:10.600
+on the continuous integration, and it works fine in Python 3, but then it fails in Python
+
+
+00:11:10.600 --> 00:11:15.320
+to because you know you forgot the B in the string or whatever right so they don't have
+
+
+00:11:15.320 --> 00:11:16.880
+to worry about that.
+
+
+00:11:16.880 --> 00:11:18.840
+CI runs faster.
+
+
+00:11:18.840 --> 00:11:22.660
+They're told they said basically in summary we're totally happy we're entirely pleased
+
+
+00:11:22.660 --> 00:11:27.380
+with having switched to basically have the ability to write Python 3 only code and they're
+
+
+00:11:27.380 --> 00:11:33.360
+looking forward to using a lot of the improvements and Python 3 specifically async and await
+
+
+00:11:33.360 --> 00:11:34.360
+which will be cool.
+
+
+00:11:34.360 --> 00:11:38.280
+So an async and await rebel inside of IPython how cool is that?
+
+
+00:11:38.280 --> 00:11:42.840
+neat is a sinking away in all of the three versions or did that get introduced
+
+
+00:11:42.840 --> 00:11:44.160
+it came in three five.
+
+
+00:11:44.160 --> 00:11:48.760
+Okay, the async IO stuff was introduced in Python three four I think and then three five
+
+
+00:11:48.760 --> 00:11:52.240
+they're like let's put some proper syntax on this and make it really easy.
+
+
+00:11:52.240 --> 00:11:57.280
+Yeah, I'm experienced trying to I'm writing a little thing that I want to have available
+
+
+00:11:57.280 --> 00:12:03.640
+on Python two also, and at least two seven.
+
+
+00:12:03.640 --> 00:12:08.800
+And even if I were to just do Python 3, all of the three versions, I still can't use fstrings,
+
+
+00:12:08.800 --> 00:12:10.800
+which I wish I could use fstrings.
+
+
+00:12:10.800 --> 00:12:11.800
+I know they're so new.
+
+
+00:12:11.800 --> 00:12:12.800
+It's 3.6 only.
+
+
+00:12:12.800 --> 00:12:14.920
+Like, even on my production server, it's 3.5.
+
+
+00:12:14.920 --> 00:12:16.520
+So it is what it is.
+
+
+00:12:16.520 --> 00:12:17.960
+That's a move in the right direction.
+
+
+00:12:17.960 --> 00:12:22.800
+And I think it's great that Matias and others talked about their experience with that change.
+
+
+00:12:22.800 --> 00:12:23.800
+Yeah, that's awesome.
+
+
+00:12:23.800 --> 00:12:24.800
+Yeah, thanks, Matias.
+
+
+00:12:24.800 --> 00:12:25.800
+Excellent.
+
+
+00:12:25.800 --> 00:12:28.640
+I think I'm, to use an American expression, beating a dead horse.
+
+
+00:12:28.640 --> 00:12:29.960
+But we have another--
+
+
+00:12:29.960 --> 00:12:32.360
+Is that dead horse called Source, SRC?
+
+
+00:12:32.360 --> 00:12:33.360
+Yes.
+
+
+00:12:33.360 --> 00:12:37.960
+The other package I was talking about me building up it's it's for the book
+
+
+00:12:37.960 --> 00:12:42.320
+but it's I wanted to make sure I was representing the community correctly and how to
+
+
+00:12:42.320 --> 00:12:48.940
+How to put together a distributable package and do it correctly at least it with best practice
+
+
+00:12:48.940 --> 00:12:53.480
+I know there's not really a correct but somebody pointed me to the direction. I've a
+
+
+00:12:53.480 --> 00:13:01.640
+Article by I'm gonna probably get this wrong. I think it's Enoch and it's called testing and packaging and it's basically
+
+
+00:13:01.640 --> 00:13:05.640
+he's the guy that did the adders project or ATTRS.
+
+
+00:13:05.640 --> 00:13:06.440
+Mm-hmm.
+
+
+00:13:06.440 --> 00:13:07.080
+Great project.
+
+
+00:13:07.080 --> 00:13:08.600
+That we've talked about a couple times.
+
+
+00:13:08.600 --> 00:13:16.760
+And how there were issues, at least with one package that wasn't using the source,
+
+
+00:13:16.760 --> 00:13:21.880
+SRC, that the testing that was done was there was a bug that showed up in
+
+
+00:13:21.880 --> 00:13:27.400
+with installed applications that doesn't show up in non-installed.
+
+
+00:13:27.400 --> 00:13:33.620
+So one of the benefits of using a SRC is you can more easily make sure that you're only
+
+
+00:13:33.620 --> 00:13:37.880
+testing the installed package and not the non installed.
+
+
+00:13:37.880 --> 00:13:41.760
+And he also just shows that it's really just two lines of code change.
+
+
+00:13:41.760 --> 00:13:44.800
+So to do the right thing is not that much work.
+
+
+00:13:44.800 --> 00:13:45.800
+Right.
+
+
+00:13:45.800 --> 00:13:50.600
+So basically, in your setup, py, the call to setup, you set the packages to be looking
+
+
+00:13:50.600 --> 00:13:54.320
+in the source directory, and you set the package to be in the source directory, right?
+
+
+00:13:54.320 --> 00:13:55.320
+Yeah.
+
+
+00:13:55.320 --> 00:14:00.440
+normally say find packages he recommends specifically saying find packages and then
+
+
+00:14:00.440 --> 00:14:07.240
+give it a where equals src but you can also just put src in the uh as the the first argument that
+
+
+00:14:07.240 --> 00:14:13.400
+works also and then uh listing it in the packages dir and then one of the things i noticed which i
+
+
+00:14:13.400 --> 00:14:19.240
+don't think people have really talked about is the entire repository looks better it's uh you've got
+
+
+00:14:19.240 --> 00:14:24.840
+all of the package junk like your setup and your manifest and all that stuff at the top level
+
+
+00:14:24.840 --> 00:14:29.840
+And the stuff you really care about on a day-to-day basis is separated into subdirectories.
+
+
+00:14:29.840 --> 00:14:33.840
+You've got the docs in one and the tests in another and then your source in another.
+
+
+00:14:33.840 --> 00:14:38.840
+And that separation just, it pleases my organization. It just is nice.
+
+
+00:14:38.840 --> 00:14:40.840
+Yeah, I'm coming around to this as well. It sounds pretty solid.
+
+
+00:14:40.840 --> 00:14:45.840
+Anyway, but that's, I'll probably try to drop talking about that every episode.
+
+
+00:14:45.840 --> 00:14:47.840
+But there you go, one more article.
+
+
+00:14:47.840 --> 00:14:51.840
+Well, I'm not quite done beating the Python versus legacy Python horse yet.
+
+
+00:14:51.840 --> 00:14:55.280
+yet so I'm going to keep going on that one because there's some more big news.
+
+
+00:14:55.280 --> 00:15:03.400
+We've heard that iPython went to Python 3 only and now same week, last week, AWS Lambda
+
+
+00:15:03.400 --> 00:15:09.080
+goes to Python or adds not only but adds Python 3.6 support was just 2.7 so that's a big jump.
+
+
+00:15:09.080 --> 00:15:10.600
+Wow, that's a big jump.
+
+
+00:15:10.600 --> 00:15:11.600
+Yeah.
+
+
+00:15:11.600 --> 00:15:12.600
+Yeah.
+
+
+00:15:12.600 --> 00:15:14.720
+So that's pretty awesome and do you have much experience with Lambda?
+
+
+00:15:14.720 --> 00:15:15.720
+Have you played with it?
+
+
+00:15:15.720 --> 00:15:18.320
+No, I've heard a lot about it but I haven't played with it yet.
+
+
+00:15:18.320 --> 00:15:25.400
+So Lambda is one of these, one of these things from AWS, from Amazon, that fits into this
+
+
+00:15:25.400 --> 00:15:27.900
+serverless architecture.
+
+
+00:15:27.900 --> 00:15:31.280
+So basically, you say, here's a function.
+
+
+00:15:31.280 --> 00:15:33.900
+And when something happens, run this, please.
+
+
+00:15:33.900 --> 00:15:39.200
+So run it on a schedule, somebody changes the database, somebody uploads a file to S3,
+
+
+00:15:39.200 --> 00:15:40.200
+whatever.
+
+
+00:15:40.200 --> 00:15:44.160
+And it just runs, there's no servers that you deal with, obviously, there are servers,
+
+
+00:15:44.160 --> 00:15:49.520
+like it just distributes your code to run when it needs to across a whole bunch of servers.
+
+
+00:15:49.520 --> 00:15:54.160
+So it scales basically infinitely, you know, as long as you have infinite money,
+
+
+00:15:54.160 --> 00:15:58.480
+you can infinitely scale this, it's fine, right? And that's, that's pretty cool.
+
+
+00:15:58.480 --> 00:16:00.080
+Yeah. So you just, have you tried it?
+
+
+00:16:00.080 --> 00:16:06.160
+No, I have not had a real reason to do it. I mean, I guess there's a couple of things that I could do,
+
+
+00:16:06.160 --> 00:16:12.320
+like on the websites, there's a job that runs like every couple hours that will
+
+
+00:16:12.320 --> 00:16:17.680
+completely re index the database and like reorganize it for super fast queries like the
+
+
+00:16:17.680 --> 00:16:22.960
+queries on on the various websites run and I'm going to be adding to Python bites, no worries.
+
+
+00:16:22.960 --> 00:16:27.040
+They, you know, run like sub millisecond right in order to get that stuff you got like kind of
+
+
+00:16:27.040 --> 00:16:32.400
+pre compute some things, maybe that's a perfect lambda operation, right? Well, I mean, especially
+
+
+00:16:32.400 --> 00:16:38.480
+now that they have three six support I'm intrigued enough that I might give it a shot anyway, just to
+
+
+00:16:38.480 --> 00:16:41.840
+to come up make up some excuse to play with it.
+
+
+00:16:41.840 --> 00:16:43.080
+- Exactly, we need to run this.
+
+
+00:16:43.080 --> 00:16:45.560
+But I mean, if you're using other AWS stuff,
+
+
+00:16:45.560 --> 00:16:49.480
+like their database services, Dynamo or RDS or S3,
+
+
+00:16:49.480 --> 00:16:51.480
+or like, here's a way to run code,
+
+
+00:16:51.480 --> 00:16:55.320
+like really near your resources on triggers with no effort.
+
+
+00:16:55.320 --> 00:16:56.800
+And one of the things I thought was pretty cool,
+
+
+00:16:56.800 --> 00:16:58.880
+like this announcement just came out.
+
+
+00:16:58.880 --> 00:17:03.320
+And Zappa, so Zappa, if you look at their page,
+
+
+00:17:03.320 --> 00:17:07.520
+which I linked, it's called serverless Python web services.
+
+
+00:17:08.400 --> 00:17:09.920
+That's interesting, right?
+
+
+00:17:09.920 --> 00:17:12.800
+So basically you can set it up so that
+
+
+00:17:12.800 --> 00:17:16.380
+using the AWS architecture, you can route web requests
+
+
+00:17:16.380 --> 00:17:18.280
+to these Lambda functions,
+
+
+00:17:18.280 --> 00:17:21.120
+but you don't really have servers or anything like that.
+
+
+00:17:21.120 --> 00:17:25.480
+And people have been asking for Python 3 support,
+
+
+00:17:25.480 --> 00:17:27.200
+and they've been saying, "No, no, no, no."
+
+
+00:17:27.200 --> 00:17:28.200
+As soon as this dropped, they're like,
+
+
+00:17:28.200 --> 00:17:29.940
+"Yes, it has Python 3 support."
+
+
+00:17:29.940 --> 00:17:32.240
+So that is pretty cool as well.
+
+
+00:17:32.240 --> 00:17:34.360
+So you've seen things that basically are layered
+
+
+00:17:34.360 --> 00:17:37.760
+on top of Lambda also started to support Python 3,
+
+
+00:17:37.760 --> 00:17:43.240
+Yeah, definitely. Cool. All right. Yeah, maybe we should play with Lambda. I don't know. Yeah, very nice. All right
+
+
+00:17:43.240 --> 00:17:46.600
+Well, that's it for the news Brian. You got it in the anything personally want to share with everyone?
+
+
+00:17:46.600 --> 00:17:47.360
+No
+
+
+00:17:47.360 --> 00:17:54.720
+I'm gonna be I guess I guess I'll be in the in the Munich area the second week in May if there's anybody around
+
+
+00:17:54.720 --> 00:18:00.320
+That wants to once I have a beer or something with me hit me up. Yeah, that sounds awesome. I'm jealous
+
+
+00:18:00.320 --> 00:18:03.360
+I'd love to go visit Germany. Well, I'll do that the end of the end of the summer
+
+
+00:18:03.360 --> 00:18:08.320
+maybe we'll see. But no no news for me. I just want to say thank you everyone for listening.
+
+
+00:18:08.320 --> 00:18:11.840
+Oh, you know what, actually one more thing I that's not personal news, but it falls right
+
+
+00:18:11.840 --> 00:18:18.720
+here. I also saw check io at check io.org. These guys have a pretty cool like gamification
+
+
+00:18:18.720 --> 00:18:24.240
+learning Python. They also just went Python three. Oh, cool. So just just to keep on this,
+
+
+00:18:24.240 --> 00:18:28.000
+hey, Python three is starting to really roll. I'd say it's really starting to roll this week.
+
+
+00:18:28.000 --> 00:18:33.120
+I use check io for hopefully I won't get in trouble for this. But I've gone through a
+
+
+00:18:33.120 --> 00:18:35.840
+a bunch of this stuff and I use them for interview questions.
+
+
+00:18:35.840 --> 00:18:37.200
+- Yeah, I think it's actually pretty good.
+
+
+00:18:37.200 --> 00:18:40.740
+And what I really like is you can solve a puzzle
+
+
+00:18:40.740 --> 00:18:43.080
+and then you can look at other people's solutions.
+
+
+00:18:43.080 --> 00:18:45.280
+And I found after solving a bunch
+
+
+00:18:45.280 --> 00:18:48.200
+and looking at the solutions that I unknowingly
+
+
+00:18:48.200 --> 00:18:50.480
+have an implicit bias towards performance
+
+
+00:18:50.480 --> 00:18:53.760
+over ease of reading or simplicity or whatever.
+
+
+00:18:53.760 --> 00:18:56.320
+And it was just interesting that it uncovered that for me.
+
+
+00:18:56.320 --> 00:18:57.200
+- Oh, that's interesting.
+
+
+00:18:57.200 --> 00:18:58.440
+And I totally have the opposite.
+
+
+00:18:58.440 --> 00:19:01.400
+I like them to be readable more than anything else.
+
+
+00:19:01.400 --> 00:19:03.400
+Yeah, funny, huh?
+
+
+00:19:03.400 --> 00:19:04.840
+All right, well, thanks, Brian.
+
+
+00:19:04.840 --> 00:19:06.120
+Thank you, everyone, for listening,
+
+
+00:19:06.120 --> 00:19:07.200
+and we'll catch you next week.
+
+
+00:19:07.200 --> 00:19:08.040
+- And thank you.
+
+
+00:19:08.040 --> 00:19:08.860
+- Yep, you're welcome.
+
+
+00:19:08.860 --> 00:19:10.280
+Bye.
+
+
+00:19:10.280 --> 00:19:12.040
+Thank you for listening to Python Bytes.
+
+
+00:19:12.040 --> 00:19:14.520
+Follow the show on Twitter via @PythonBytes.
+
+
+00:19:14.520 --> 00:19:17.720
+That's Python Bytes as in B-Y-T-E-S.
+
+
+00:19:17.720 --> 00:19:21.080
+And get the full show notes at pythonbytes.fm.
+
+
+00:19:21.080 --> 00:19:22.720
+If you have a news item you want featured,
+
+
+00:19:22.720 --> 00:19:25.160
+just visit pythonbytes.fm and send it our way.
+
+
+00:19:25.160 --> 00:19:28.320
+We're always on the lookout for sharing something cool.
+
+
+00:19:28.320 --> 00:19:30.160
+On behalf of myself and Brian Okken,
+
+
+00:19:30.160 --> 00:19:31.680
+This is Michael Kennedy.
+
+
+00:19:31.680 --> 00:19:33.720
+Thank you for listening and sharing this podcast
+
+
+00:19:33.720 --> 00:19:35.360
+with your friends and colleagues.
+

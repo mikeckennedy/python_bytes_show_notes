@@ -1,0 +1,742 @@
+00:00:00 Hello and welcome to Python Bytes where we deliver Python news and headlines directly to your earbuds.
+
+00:00:05 This is episode 117, recorded February 12th, 2019.
+
+00:00:10 I'm Michael Kennedy.
+
+00:00:11 And I'm Brian Okken.
+
+00:00:12 Hey Brian, how you doing?
+
+00:00:13 I'm great.
+
+00:00:13 Excellent. Great to hear. Great to hear.
+
+00:00:15 You haven't been flooded out in this torrential rain that we're having around here?
+
+00:00:19 Nope. And I survived snowpocalypse.
+
+00:00:22 Yes, so did I. My rain jacket got me through.
+
+00:00:24 Yeah.
+
+00:00:25 Wouldn't do bad.
+
+00:00:26 This episode is brought to you by Datadog.
+
+00:00:28 Check them out at pythonbytes.fm/datadog.
+
+00:00:31 All sorts of cool modern stuff to tell you about more later.
+
+00:00:35 Brian, the first thing you have queued up here is super exciting to me.
+
+00:00:39 Hit me.
+
+00:00:39 Okay. Well, in 117 episodes, this is the first time we collided and both picked the same article.
+
+00:00:46 Because it's good, because it matters.
+
+00:00:48 Okay. So here is Goodbye Virtual Environments.
+
+00:00:52 What?
+
+00:00:55 Well, I don't know about that.
+
+00:00:56 >> Is this just like pseudo pip install into like root?
+
+00:00:59 Is this what they're just like, forget it, it's too much, we're out of here?
+
+00:01:02 >> Well, so we have a lot of solutions to this.
+
+00:01:05 So this is an article by Chad Smith, and apparently this is referencing PEP 582, which is a local packages directory PEP improvement.
+
+00:01:16 Okay, so here's the premise.
+
+00:01:18 Virtual environments are awesome, but they have some problems.
+
+00:01:23 the learning curve bit.
+
+00:01:25 So when you're trying to teach people how to use Python, you want them to have a safe environment, so you start them off with virtual environments, and you have to teach them about all this gunk, and they don't even see any code yet.
+
+00:01:38 So there's that problem.
+
+00:01:39 - Right, and if you close your terminal, yeah, it'll come back, and you're like, oh, man, I forgot to reactivate it, like, why won't this run?
+
+00:01:46 I mean, once you get into it, it's fine, but as a new person, you're like, why did this work before, and now it doesn't?
+
+00:01:51 Super frustrating, right?
+
+00:01:52 And so the proposal is, if you have a directory sitting around in your local, say, called Dunder Pi Packages, so it's two underscores on each end, Pi Packages as a directory.
+
+00:02:04 It's just sitting there, doesn't have to have anything in it.
+
+00:02:08 The idea is if you pip install while you're there, instead of installing it in the site packages or anywhere else, it'll just install it in this local package directory.
+
+00:02:17 And you don't even really have to care what it looks like in there, but it's there.
+
+00:02:23 And then, so there's a couple of changes.
+
+00:02:25 It's got a pip has to change, but also Python has to change because Python has to include looking for a pypackages directory locally to see if something's there.
+
+00:02:36 Some of the neat things about this is that it's not where you're calling it from.
+
+00:02:40 It's not your current directory when you're calling a module or something.
+
+00:02:44 So let's say somebody is just somebody that's writing a Python script, and it has some dependencies.
+
+00:02:49 They could have a PyPackages directory right next to their script.
+
+00:02:53 And then as long as their script is in their search path, Python will pick, run that.
+
+00:02:59 And then if that module has some imports, it'll try the local packages first.
+
+00:03:04 So that's kind of cool.
+
+00:03:06 I think that's it.
+
+00:03:07 Yeah, I think this is fantastic.
+
+00:03:09 If I could take all my votes for what I'd like to see added to Python, certainly more than one would go towards this.
+
+00:03:16 So I think this is great.
+
+00:03:17 It's basically like what Node does with Node modules and other things.
+
+00:03:21 There's a convention that if there's this folder in the root of your project and you run code, it will try to use the modules, or packages in our case, from that location.
+
+00:03:32 There's no more activating, there's no more deactivating, none of that.
+
+00:03:35 You pip install, if it sees dunder pi packages, it installs it there.
+
+00:03:40 You Python run, and if it sees pi packages next to your file or in the working directory, it uses that from there as if it were a virtual environment.
+
+00:03:49 You don't have to keep activating it and deactivate it and make sure it's the right one.
+
+00:03:54 And it already follows a convention that so many people already do.
+
+00:03:57 Either create a venv or .env folder at the root of your project.
+
+00:04:02 So many people do that.
+
+00:04:03 editors like PyCharm and VS Code automatically detect and activate them, but this would just solve that problem.
+
+00:04:10 Flat, I love it.
+
+00:04:11 - Well, solves most of the problem.
+
+00:04:13 - I love it.
+
+00:04:14 What problems didn't it solve?
+
+00:04:15 Where do you see the challenges remain?
+
+00:04:17 - So this article also, it's kind of cool that it has like this little trial thing.
+
+00:04:22 You can install a Python loc package to try it out.
+
+00:04:27 So I tried it out, and one of the things that's missing is your entry points.
+
+00:04:33 So like let's say I'm installing a command line, some utility that has a command line interface.
+
+00:04:39 Where do those go?
+
+00:04:41 They actually go in this PyPackages directory also, but they're not obvious where they are.
+
+00:04:46 It's not difficult to find them.
+
+00:04:47 There's a bin directory in there.
+
+00:04:49 In order to be able to use them, you'd still have to modify your environment, like your bash environment or something.
+
+00:04:54 - I see.
+
+00:04:55 So like, for example, Pyramid has a pserv web server that comes when you install it, and it's just in the Python path.
+
+00:05:03 So you'd have to do some kind of mechanism to make that be active.
+
+00:05:08 >> Yeah, or like PyTest or Tox or so many things have little extra things that go with them.
+
+00:05:13 >> Yeah, I mean, I guess you could usually do Python-M of that thing, but that's pretty clumsy compared to just typing PyTest.
+
+00:05:20 >> Yeah.
+
+00:05:20 >> Okay. Yeah, got you.
+
+00:05:21 >> I'm all for this.
+
+00:05:22 I want it to happen, but I don't think virtual environments are going to go away unless we have, maybe they'll just be, you can have some extra thing in your path or something in your environment bash environment or whatever that says, Hey, also look here.
+
+00:05:37 Yeah.
+
+00:05:37 Well, what I would like to see, I mean, maybe like this Dunder pie packages is a virtual environment that you just don't have to activate, but you could, if you want to run these types of utilities that you're talking about.
+
+00:05:50 Yeah, that would be a pretty good compromise.
+
+00:05:52 I think anyway, good thing doesn't solve everything, but I think it's a super step forward because it doesn't impose some opinionated behavior and workflow and other tooling to replace.
+
+00:06:04 It's like, it just now works. I run Python.
+
+00:06:07 It works using the packages that I meant for it to use. I run pip.
+
+00:06:11 It installs them into the proper place generally that I met them to do and so on.
+
+00:06:16 So I like it.
+
+00:06:17 The getting new people up to speed on stuff quicker, getting, being able to isolate installs application development.
+
+00:06:25 There's so many benefits here that it, yeah, it's great.
+
+00:06:28 - Yeah, love it.
+
+00:06:29 So yeah, definitely vote for that over some of the other options.
+
+00:06:32 Super cool.
+
+00:06:33 So Brian, I got some bad news today.
+
+00:06:35 - You do.
+
+00:06:36 - Well, you know, my life's pretty good given that I'm calling this bad news, but I learned about this thing called Google Lighthouse.
+
+00:06:42 Have you heard of this?
+
+00:06:43 I'd never heard of this.
+
+00:06:44 - No.
+
+00:06:45 - So Google Lighthouse is a thing that will analyze your websites basically for how well they're going to rank it based on a whole bunch of factors.
+
+00:06:55 I mean, people have heard of SEO, so you've got like, of course, You should have your title on your head and your H1s and all this stuff that you need.
+
+00:07:01 But this is more about the behavior of your web application.
+
+00:07:05 So is it responsive?
+
+00:07:07 Are your images, do they fit on like phone screens?
+
+00:07:10 Does it return data the right amount of time?
+
+00:07:13 Are you serving like old style images that are too large and you could re-encode them in small, like a huge bunch of these types of things.
+
+00:07:20 Are you bundling and minifying your CSS and JavaScript?
+
+00:07:23 So I sent my site through there, which I consider to be blazing fast because if you go to like talkpython.fm or some of the other ones or pythonbytes.fm, although I've been cranking on talkpython first before I break pythonbytes, if you go to the homepage, it renders like out to the network in 15 milliseconds.
+
+00:07:40 And I'm like, well, that's pretty much as good as it's gonna get, right?
+
+00:07:44 Maybe I could shave two milliseconds off it, but who cares, right?
+
+00:07:46 It's so fast.
+
+00:07:48 But when you look at all the CSS and all the JavaScript and the way it renders and the images and everything, it turns out that that could be better.
+
+00:07:56 And I knew that it could be better, but I didn't realize how much Google was punishing my site for it.
+
+00:08:02 So I went looking, and I found this cool Python project called WebAssets.
+
+00:08:07 I'd never heard of it.
+
+00:08:08 Yeah, and I found it on Python--
+
+00:08:09 awesome Python.
+
+00:08:10 So I went there and said, well, what can I find for minifying JavaScript and bundling CSS, like five CSS files into one and whatnot?
+
+00:08:18 So this is a Python package you install.
+
+00:08:20 You basically create an environment that registers your settings.
+
+00:08:25 like here's the static folders.
+
+00:08:27 If you're gonna generate files, like if you're gonna take five CSS files, minifying them and like mush them into one giant file that can be gzipped, right?
+
+00:08:35 If you do that, where do you save it?
+
+00:08:36 All those kinds of things.
+
+00:08:38 What transformations you wanna apply to it, like bundling and minification or whatever.
+
+00:08:42 You configure that, you give it a list of files, and then it will just bust out like a new one onto disk, and you can just start serving that instead.
+
+00:08:51 You just take away the five CSS links and you put it in the one.
+
+00:08:53 It also has built-in Flask, Django, and Pyramid support, so it integrates in there.
+
+00:08:58 But to me, it looks like a whole bunch of stuff that's getting in the way of your web app working.
+
+00:09:02 Whereas you could just ask it to save a file that gets served out of Nginx and doesn't touch your Python code.
+
+00:09:08 That seems nicer.
+
+00:09:09 So that's what I'm doing.
+
+00:09:11 I don't want to integrate it into my app.
+
+00:09:13 But if you wanted to go that path, you certainly could.
+
+00:09:15 It's a really cool little thing.
+
+00:09:16 - Oh, neat.
+
+00:09:17 So Tuck Python is faster now.
+
+00:09:18 - It is much faster.
+
+00:09:20 it now has a best score or whatever on Google's Lighthouse, basically, which will help it rank higher in Google search results, which is also pretty awesome.
+
+00:09:31 So yeah, there's a bunch of cool--
+
+00:09:33 so anybody doing anything with the web, they should look at their website in Google Lighthouse, which I have a link to.
+
+00:09:39 And then one way to address some portion of that around your static files, anyway, has to do with WebAssets.
+
+00:09:45 So that's a pretty cool thing.
+
+00:09:47 - Awesome.
+
+00:09:47 - Yeah, and it's all Python goodness.
+
+00:09:49 - Yeah.
+
+00:09:50 - On the next item, have we spoken about packaging?
+
+00:09:52 I think we might've touched on it once.
+
+00:09:54 - Yes.
+
+00:09:55 - This week, have we spoken about it this week?
+
+00:09:57 Not yet, let's do it.
+
+00:09:58 Sort of, we kind of have in a sense, but let's go.
+
+00:10:01 What's next?
+
+00:10:01 - Okay, so we've got actually a three-part series of articles by, I think his name is Bernat Gabor, and he is one of the maintainers for TOCs and virtual environment and a bunch of other stuff.
+
+00:10:14 He's with the Python Packaging Authority, and he's right in the thick of all of this changes in packaging and everything.
+
+00:10:22 He wrote kind of a three-part series.
+
+00:10:25 The first part is the state of Python packaging, which is just kind of a nice overview of what are we trying to do and what is the issue and all that stuff.
+
+00:10:33 We've got a bunch of, like a directory full of a source directory, and you want to share it with other people.
+
+00:10:40 And how does that all happen?
+
+00:10:42 And how did it happen in the past using setup tools and all that and where are we at now?
+
+00:10:48 And then some of the problems, you talked about some of the problems with, I guess it's kind of hard to hand wave this, but it isn't just source files that you just copy from one computer to another.
+
+00:10:58 Sometimes there's C parts to it that need compiled for different machines.
+
+00:11:03 - Even Fortran in the data science world, you gotta compile like crazy stuff, right?
+
+00:11:06 - Yeah, and so there's that part of it and that's included in all of this packaging mess.
+
+00:11:12 And then on the other side, when you're trying to install it, if you just grab the source distribution, then you have to compile it on your side, but you have to make sure that all the compilers are available and all that stuff.
+
+00:11:23 And it's kind of a mystery black box with a lot of scary guts inside because it's a scary problem.
+
+00:11:30 It's a hard problem.
+
+00:11:32 Now, moving towards things like wheels are pre-compiled.
+
+00:11:36 So you build everything before you push it up and then clients just can just sort of download it and unpack it.
+
+00:11:42 But in order for this all to work right, There's a lot of moving parts and it's all being done by people in there volunteering their time And that's why I love this this set of articles. It's it's from the inside talking about some of the hard problems why they did what they did some of the breaks that happened and why they happened and Moving forward and I want to read one article. It's actually the conclusion one bit of it It's the conclusion to the third article. It says Packaging is hard.
+
+00:12:12 Improving a packaging system without any breakage where users can write and run arbitrary code during the packaging in your free time is probably impossible.
+
+00:12:21 - Yeah, that sounds about right.
+
+00:12:23 - Yeah, they said, granted, as we go through this change, some packages might break and we might disallow some practices that worked up until now.
+
+00:12:32 But we, the packaging authority maintainers, do not do it in bad faith.
+
+00:12:36 So when errors do pop up, please do fill in a detailed error report with what went wrong, how you tried to use it, and what is your use case?
+
+00:12:45 And I guess I have to speak from experience when we just, when I started trying to, even when some of the same involved people were working on some of the transition to the new pip server, IPI, it's a similar sort of situation, I think, is when we change the way we do things, some people get upset and just expect it to all just work for free.
+
+00:13:10 but please keep your head and read this article.
+
+00:13:12 It's a great series of articles on where we are and it's gonna be hard, yeah, I'm not even gonna try to summarize it, but it's good.
+
+00:13:19 - Yeah, it sounds like a great write-up.
+
+00:13:21 Did you know if they, he mentioned the PEP, the one you just mentioned there, what was it, 582?
+
+00:13:27 - No, he didn't reference that, but there's of course reference to 517 and 518 that dealt with the PyProject automal and stuff like that.
+
+00:13:37 - Yeah, cool.
+
+00:13:39 - All right, well, you know what all this means to me, the way I perceive it is, like people are trying to solve this problem, they know it is a problem.
+
+00:13:45 And I think if we get it dealt with as a community, I think it'll be a massive, massive benefit.
+
+00:13:52 I mean, I was just talking to someone the other day at a conference here in town and he was like, "Oh, well, Go is so awesome." I'm like, "Okay, tell me why Go is like, sell me on it, why is Go so awesome?" He's like, "I press a button, I compile it, I get a single binary I can give to anyone and they can run it as long as they're on that platform." I'm like, yeah, that's a benefit.
+
+00:14:08 That would be nice, wouldn't it?
+
+00:14:10 If there was a Python space build option.
+
+00:14:13 So very, very cool.
+
+00:14:14 But there's a lot of stuff coming and a lot of work being done on it.
+
+00:14:17 We talked about PyOxidizer recently as well.
+
+00:14:21 Yeah.
+
+00:14:21 Quite cool.
+
+00:14:22 Yeah.
+
+00:14:22 One more thing before we move on, and one of the things he brought up is Flit.
+
+00:14:27 Flit uses the new TML style.
+
+00:14:29 The implementation of Flit is built on top of distutils and all that stuff also.
+
+00:14:36 And that's one of the things moving forward is some of these newer packaging tools, if Python embraces some of the stuff and some of the changes, we'll be able to kind of simplify the maintenance of a lot of these extra things.
+
+00:14:50 - Right, 'cause they do a lot of work to piece it together and paper over the challenges, right?
+
+00:14:54 And if the underlying bits changed, it got easier, well, maybe it just, they just, you know, use the easier foundation, right?
+
+00:15:01 - Yep. - Nice.
+
+00:15:02 All right, let me tell you about Datadog before we get to the next one.
+
+00:15:05 So Datadog has been a long time sponsor of the show.
+
+00:15:08 Super big thanks to them.
+
+00:15:11 And they're a cloud monitoring platform built by engineers for engineers.
+
+00:15:15 They're tracing client auto instruments, popular frameworks like Django, Flask, Tornado, and so on.
+
+00:15:21 So you can quickly visualize the flow of data across your application architecture, not just how's my Django app doing, but how is all my infrastructure and moving parts doing.
+
+00:15:30 They also integrate with over 250 technologies like Hadoop and Redis, allowing you to pivot seamlessly between distributed request traces, metrics, and logs.
+
+00:15:38 So check them out and get a free trial, as well as a cool Datadog t-shirt over at pythonbytes.fm/datadog.
+
+00:15:45 Really helps support the show.
+
+00:15:46 - Cool.
+
+00:15:47 - Yeah, Brian, I picked this one to be custom picked for you.
+
+00:15:50 This was the one you could have chosen, but I got it today.
+
+00:15:53 I beat you to it.
+
+00:15:54 - Okay.
+
+00:15:54 - All right, so this one is a cheat sheet for mocking in Python.
+
+00:15:58 So mocking, not the insult, but the ability to change the behavior of some deep internal parts of your application without rewriting them, super powerful testing feature.
+
+00:16:11 If I want to test how my data access layer works, but I don't want it to actually touch the database, or I wanna test how my credit card system works, but I don't really want it to talk to Stripe or whatever, I can mock out different parts of that and basically inject behavior into my app, right?
+
+00:16:29 - Yes, yep.
+
+00:16:30 So, mocks are built into Python, right?
+
+00:16:33 That's great, you can just import mock and start doing stuff with it.
+
+00:16:36 However, there's a lot of different ways in which you can do that, and there's also a lot of features.
+
+00:16:44 You could use mocks the way I described them there, which I think is sort of making your tests decoupled from your dependencies, but you can also say, "I would like to kind of look inside the behavior and make sure certain parts of my app are using functions that I want." For example, I could say, I'm going to call the login function or the access, let's say, admin part of my app.
+
+00:17:05 I'm going to make sure that it's checking "Is admin" on the user.
+
+00:17:09 If it talks to the admin section and it doesn't test whether or not I have the permissions, something's badly wrong.
+
+00:17:16 You can even verify that things were called with an assert called once and so on.
+
+00:17:20 This is a nice write-up that takes you through all the different things things you can do with mock and like quickly gives you examples for those various things like how to use a mock as a decorator, how to use it as a context manager and on and on. Great.
+
+00:17:34 Yeah, nice.
+
+00:17:35 Yeah. So all those folks out there who are testing or want to start testing or even if you don't test because testing is too hard, you're like, well, all this stuff happens when I call this function. How am I supposed to test it? Mock, here you go.
+
+00:17:48 Yeah. One of the things that's nice about having it not just completely tied with testing, Although that's definitely where it's used a lot is we can like some applications that have like a I don't know a debug mode or a some other mode that they're operating in.
+
+00:18:04 You can even build it into your application to you know flip a flip a bit or something and it turns some of the system off. So yeah and you can use mock for that if you don't want to build it other ways. Yeah I guess you could right you could just you could fire off the mock if you want the log in to do nothing, right?
+
+00:18:22 I'm going to create a mock that replaces this file behavior or whatever, right?
+
+00:18:26 Yeah, or if you wanted to switch out for diagnosing software issues or debugging, you can switch out your database interface with some other database entry or something or whatever.
+
+00:18:38 I don't know if very many people use it for that, but you could.
+
+00:18:42 Yeah, very cool. Alright, yeah, mocking is super powerful. What do you got next?
+
+00:18:46 I have just an article about conference speaking. So, Sarone, and I'm not going to try to pronounce her last name. Do you know how to pronounce it?
+
+00:18:54 Yitbarek.
+
+00:18:55 Sure.
+
+00:18:56 I'm going to go with Yitbarek.
+
+00:18:57 Okay. I know her from the Coder Newbie or Code Newbie or something. She does a podcast, and she's been doing quite a bit in software to try to get more people involved with software. And she's been doing a great job.
+
+00:19:09 But one of the things that she wrote recently was just talking about, if you're giving a technical talk, just improving it.
+
+00:19:15 So, and I love this because it's a, it's just a zero in on one little bit to try to make presentations better.
+
+00:19:22 The article is called transitions, the easiest way to improve your tech talk, improving how you speak.
+
+00:19:29 Public speaking is part of one of the things I work on personally.
+
+00:19:32 So I'm going to before we get started. I'm going to grab a quote that I got read recently from the Jeff Atwood from coding horror He said the people who can write and communicate effectively are all too often the only people who get heard They get to set the terms of the debate and I think that definitely applies to public speaking as well So that's one of the reasons why I picked this up but one of the things that so Saron mentioned is The typical way people will default to presenting something is they get they put their stuff that they want to talk about on slides And then they talk about whatever's on the first slide and then when they get to them and then they pause Click to the next slide and then talk about the new topic this is where the focus is of this article is to try to work on those transitions and It's a simple thing. I think it would take practice. It's definitely something I'm going to practice but as an example which talks about transitioning from one slide to another, instead of pausing, you can have a sentence transition as well.
+
+00:20:36 You can, for instance, say, "And that's why documentation is important as we see on this slide." Span that sentence over transitioning from one slide to another.
+
+00:20:50 You can even time your clicking from one slide to the next, and how you transition a sentence from one to the next.
+
+00:20:56 This totally makes sense and we've been doing it in writing all the time, transition sentences in paragraphs and we get, we've been dinged on it throughout school, but somehow we forget to do it while talking.
+
+00:21:09 So I just wanted to bring this up and highlight this article.
+
+00:21:12 - I think this is great.
+
+00:21:14 It's such a good recommendation.
+
+00:21:16 And when I first started doing in-person training, standing in front of 20 people giving technical training is highly nerve-wracking, especially when you're new to it.
+
+00:21:28 And it's easy to get derailed or try to like, you kind of fall back to reading your slides, which is like really not very engaging for anybody.
+
+00:21:38 So the thing that I found was super helpful is if I could have one sentence that's engaging, like this is how I'm going to start this slide.
+
+00:21:46 Everything is just downhill and like smooth from there.
+
+00:21:49 And this really seems to kind of capture that same idea.
+
+00:21:51 Like every part of your presentation, if you can start it well and you feel good, like, yeah, this is going great.
+
+00:21:57 Like you just, you have that natural momentum that just keeps going.
+
+00:22:00 But if you start it clumsily, it distracts you and it just goes downhill in the wrong way, right?
+
+00:22:05 So this is actually a huge benefit, I think, but it's so easy.
+
+00:22:09 Like, can you have one sentence for each major concept in your presentation?
+
+00:22:14 Like it might be 10, like how hard is that, right?
+
+00:22:17 It's not that hard, but it's super valuable.
+
+00:22:19 - Yeah, and then also, I think when I've been presenting before, I will take advantage of the end of the slide to take a little micro break.
+
+00:22:28 And it's nice for me, but it's kind of annoying for the viewer to sit there and watch nothing as the person transitions from one slide to another.
+
+00:22:37 But no, she brings up that there's definitely times where you really are transitioning ideas that it's perfectly fine to take that little break.
+
+00:22:45 It gives everybody a rest a little bit, and you're moving on to a new topic.
+
+00:22:50 a great time to not talk while transitioning.
+
+00:22:52 - Yeah, silence is important too, right?
+
+00:22:54 Like people too often think I have to be absolutely continuously making noise, right?
+
+00:23:00 But like a few seconds of silence as a point sinks in or your transition ideas, it's also really valuable.
+
+00:23:06 - Yeah, anyway, so cool.
+
+00:23:08 - Cool, great pick.
+
+00:23:09 So it's so cool that PEP 582 is presented as an idea, but there's this problem, like since Guido has stepped down, there really hasn't been any way to even address these peps, right?
+
+00:23:22 Because how the decision making happens, it's just been on hold, right?
+
+00:23:26 Yeah.
+
+00:23:26 So maybe that PyPackages thing is just going to be in limbo forever?
+
+00:23:30 No.
+
+00:23:32 Finally, we have good news.
+
+00:23:34 The final governance model for Python was chosen to be the steering council model.
+
+00:23:40 And the people who populate that council, the first steering councillors, I don't know if you call them that, but I'm calling them that, The first steering counselors have been elected.
+
+00:23:50 And so our new technical leaders are Barry Warsaw, Brett Cannon, Carol Willing, Guido Van Rossum, and Nick Coughlin.
+
+00:23:57 All great folks, and congratulations to them.
+
+00:24:00 And this is news sent to me from Joe Carey.
+
+00:24:03 So thanks Joe for sending that in.
+
+00:24:05 - Yeah, that's awesome.
+
+00:24:06 Good thing, very good pick.
+
+00:24:08 So, of course there's tons of great people we could have, that would have been fine, but these are good, good set.
+
+00:24:13 - Yeah, I think it's a great set as well.
+
+00:24:15 I think one of the things that's really cool here is we have Gita Van Rossum is not gone.
+
+00:24:20 He didn't just go like, you know what?
+
+00:24:22 I'm going to go do Go, or whatever.
+
+00:24:24 He's still on the steering council.
+
+00:24:27 He's still part of Python.
+
+00:24:29 He just doesn't have to bear the brunt of all the friction of moving it forward on himself alone.
+
+00:24:36 So he's still part of this, which I think is great.
+
+00:24:39 Also, happy to see Carol Willing on there.
+
+00:24:40 That's really good.
+
+00:24:41 So very, very good news.
+
+00:24:43 All right, so it looks like maybe stuff will start happening around Python, which is long overdue, actually.
+
+00:24:49 - Yeah, they still have a lot to figure out, but we will report it when we hear more.
+
+00:24:53 - There's a bunch of good things happening in the community, a bunch of good ideas being proposed, like this pep we talked about at the opening, and until this stuff gets finalized, it just literally cannot be addressed or any action can be taken, so it's really good to see this taking place.
+
+00:25:07 - Yeah. - All right, well, Brian, that's it for our six main items.
+
+00:25:11 What else you got for us?
+
+00:25:12 - Well, I got interviewed recently, So I got interviewed for the IT Energizer podcast.
+
+00:25:18 - Right, with Phil Burgess, yeah.
+
+00:25:19 - Yeah, and you've been on there too, so we're gonna drop a link to both of our interviews in the show notes, but mine's better, so listen to mine.
+
+00:25:27 No, they're both good.
+
+00:25:28 - That's great, I hadn't listened to yours yet.
+
+00:25:29 I knew you had been interviewed, but it hadn't been out yet, so I'm looking forward to listening.
+
+00:25:34 - Yeah, and then also, I'm sorry, I can't remember who sent this to us, but somebody mentioned to us that PyCon Latin America is coming up in Puerto Vallarta, Mexico on August 29th, and the call for proposals is open until May 31st.
+
+00:25:50 - Oh, that sounds super.
+
+00:25:51 It'd be great to go down there and spend some time while it's warm.
+
+00:25:55 And it's in the summer, right?
+
+00:25:56 A lot of people have maybe a little more flexibility.
+
+00:25:58 Yeah, so call for proposals, get them out there.
+
+00:26:01 Get your talks in. - Plus, it's in Puerto Vallarta, we should go.
+
+00:26:04 - Exactly, we have to go do a live podcast recording because work.
+
+00:26:08 - Yeah, but so if somebody wants to sponsor us to go down there, that'd be awesome.
+
+00:26:12 - Yeah, that would be great.
+
+00:26:12 So there's something wrong with this episode.
+
+00:26:14 We haven't really fulfilled our duty.
+
+00:26:16 Like, I don't think we've even mentioned Anthony Shaw yet on this show, have we?
+
+00:26:20 (laughing)
+
+00:26:21 - I'm not sure how Anthony is part of this, but--
+
+00:26:24 - He's so prolific.
+
+00:26:25 He seems to always have something on the ground.
+
+00:26:27 - Okay, so we've got our joke section, and you put a list on our database of show ideas.
+
+00:26:34 Is this list coming from Anthony, but it's not his list, is it?
+
+00:26:37 or did he just tell you about it?
+
+00:26:38 - No, he just said, "Hey, Michael, you should check out," or, "Hey, PythonBytes, you should check out these jokes." So they're not his jokes, they're just transferred to us via him.
+
+00:26:47 - Okay, I couldn't pick one, so I've got a few.
+
+00:26:49 - All right, hit me.
+
+00:26:50 - Okay, what's the second movie about a database engineer called?
+
+00:26:54 - The Migration.
+
+00:26:55 - Oh, that would be good.
+
+00:26:57 No, the sequel, of course.
+
+00:26:59 - Of course, the SQL sequel, I love it.
+
+00:27:02 Perfect, all right, these are like programming dad jokes, I love 'em, what's the next one?
+
+00:27:06 - Yeah, programming dad jokes.
+
+00:27:07 Okay, this one is not false.
+
+00:27:10 It's funny 'cause it's true.
+
+00:27:12 (laughing)
+
+00:27:14 Okay, these are bad.
+
+00:27:16 And this last one, I actually laughed out loud at this.
+
+00:27:20 So, a programmer's spouse tells them, "Would you run to the store and pick up a loaf of bread?
+
+00:27:25 "If they have eggs, get a dozen." The programmer comes home with 12 loaves of bread.
+
+00:27:30 (laughing)
+
+00:27:31 - That's right, they must have had eggs.
+
+00:27:32 (laughing)
+
+00:27:34 All right, these are great.
+
+00:27:35 These are great.
+
+00:27:36 Thanks for putting these in here.
+
+00:27:37 So awesome.
+
+00:27:38 Very cool.
+
+00:27:39 Just for everybody that's annoyed with these jokes, we keep getting feedback from people that they like them, so they're going to stay in there.
+
+00:27:45 Yeah, people seem to love them, even if they're bad.
+
+00:27:49 Thanks.
+
+00:27:50 Yeah, these are funny.
+
+00:27:51 Yeah.
+
+00:27:52 Thanks for doing the episode.
+
+00:27:53 Talk to you next time.
+
+00:27:54 Talk to you next week.
+
+00:27:55 Bye.
+
+00:27:56 Thank you for listening to Python Bytes.
+
+00:27:57 Follow the show on Twitter via @PythonBytes.
+
+00:27:59 That's Python Bytes as in B-Y-T-E-S.
+
+00:28:02 get the full show notes at PythonBytes.fm. If you have a news item you want featured, just visit PythonBytes.fm and send it our way. We're always on the lookout for sharing something cool. On behalf of myself and Brian Okken, this is Michael Kennedy. Thank you for listening and sharing this podcast with your friends and colleagues.
+

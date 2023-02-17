@@ -1,0 +1,800 @@
+00:00:00 Hello and welcome to Python Bytes, where we deliver Python news and headlines directly to your earbuds.
+
+00:00:04 This is episode 131, recorded May 15th, 2019. I'm Michael Kennedy.
+
+00:00:09 And I'm Brian Atkin.
+
+00:00:10 Hey Brian, how are you doing?
+
+00:00:10 I am good. How are you?
+
+00:00:12 I still have a little bit of conference hangover.
+
+00:00:15 Two conferences in a row and then some parties.
+
+00:00:18 Like, definitely took it out of me. How about you?
+
+00:00:20 Oh yeah, you went to Build afterwards. How was that?
+
+00:00:22 It was good. I did a bunch of podcasting, met some other folks.
+
+00:00:25 I got to see what a different type of conference than PyCon looked like.
+
+00:00:29 And yeah, it's pretty different.
+
+00:00:31 - Okay, so anybody out there from Build listening, you can invite me next year, that'd be just fine.
+
+00:00:35 (laughing)
+
+00:00:36 - Yeah, absolutely, absolutely.
+
+00:00:38 So yeah, it was fun to be there, but it's good to be back home from all the conferencing.
+
+00:00:42 - Yeah, it is.
+
+00:00:44 So let's get back into Python.
+
+00:00:45 - Let's get into it.
+
+00:00:46 So before we do, though, I wanted to say thank you to DigitalOcean, check them out at pythonbytes.fm/digitalocean.
+
+00:00:51 More about that later.
+
+00:00:52 I feel like we kind of have a little bit of a pep roundup for this episode, Brian.
+
+00:00:57 We got at least three peps. - Are we?
+
+00:00:58 Yeah, we got at least three peps making an appearance, maybe four.
+
+00:01:01 Okay, well, the ball is rolling now with the new steering council in place, and they're kicking butt and taking names. And it's great. So we'll start off with, I just saw this today, pep 581 is accepted. And that is the GitHub issues for CPython. So CPython has traditionally had its own, I think it was its own custom made defect tracking system or something it hasn't switched yet but it will be switching to GitHub issues. We'll link to the PEP and also it has discussion of pros and cons but it has been accepted. But the follow-on PEP is 588 and I'll quote Barry Warsaw here, "The migration will be a large effort with much planning, development, and testing and we welcome volunteers who wish to help make it a reality.
+
+00:01:50 I look forward to your contributions on PEP 588 and the actual work of migrating issues to GitHub." So 588 is, okay, now that we've decided to do it, how are we going to do it?
+
+00:02:01 How are we going to do the migration?
+
+00:02:02 Man, once they figure that out, they'll probably need some help to do it.
+
+00:02:05 So that's cool.
+
+00:02:06 And you know, you spoke to Barry on our episode, our live episode at PyCon, yeah, PyCon about becoming a core developer and ways you can help.
+
+00:02:14 And here, it sounds like another way you can contribute to CPython without actually writing C code potentially.
+
+00:02:21 Yeah.
+
+00:02:21 I'm not afraid of C code, but I know, I mean, especially in the Python community, There's some people that don't aren't involved with C code.
+
+00:02:27 So there's other places, ways to help.
+
+00:02:29 And this is one.
+
+00:02:30 Yeah.
+
+00:02:30 Yeah.
+
+00:02:31 And it's, it's one thing to write C code.
+
+00:02:32 It's another to write on the core of C Python itself.
+
+00:02:36 Right.
+
+00:02:36 I mean, that's like, it's a super highly polished piece of software and any change you make is like massive ramification.
+
+00:02:44 So, right.
+
+00:02:44 I can see how the world depends on it.
+
+00:02:46 No pressure.
+
+00:02:47 You're going to take down the Instagram influencers if you mess this up.
+
+00:02:51 So don't.
+
+00:02:52 Yeah.
+
+00:02:54 Maybe some science and other important things as well.
+
+00:02:57 I think this is good.
+
+00:02:58 You know, Brett Kana was key in getting CPython, the source code over to GitHub originally.
+
+00:03:04 And I feel like this is well overdue, right?
+
+00:03:06 Like, having the issues there means you can reference them in check-ins, it means that you get that integration for pull requests and all sorts of stuff.
+
+00:03:15 It just makes a lot of sense to do this.
+
+00:03:17 - Yeah, and I have no idea what the migration path looks like, but--
+
+00:03:20 - Yeah, I was wondering, like, are they gonna copy every single issue across or is it this a chance to kind of like clean house?
+
+00:03:28 I go, well, if this bug comes back, it's important enough to worry about.
+
+00:03:32 If it doesn't, maybe it's not.
+
+00:03:33 I've been on projects like that, that have, we've gotten to a different bug tracking system where we just said, well, we'll just leave the other one around.
+
+00:03:41 And if anybody really cares about moving them over, we will, but those are sometimes cleaning up as a good thing.
+
+00:03:48 Yeah, I totally agree.
+
+00:03:49 So how about cleaning up some code?
+
+00:03:51 Yes, let's clean up code.
+
+00:03:52 So I'm a big fan of design patterns in general, the solid principles, all these things I really enjoy, like thinking about how that influences code.
+
+00:04:00 And one of the things that makes me crazy when I read code is like ultra nested indented conditional stuff.
+
+00:04:08 And when I see it, I feel like people write code like that because.
+
+00:04:12 They don't believe there's another way.
+
+00:04:15 It's just like, well, this code is complicated.
+
+00:04:17 So it's like indented, you know, 16 spaces or whatever it happens to be indented as right, like it doesn't have to be this way most of the time.
+
+00:04:26 So I just wanted to like call out a super easy to implement design pattern called guard clauses or guarding clauses.
+
+00:04:33 Okay.
+
+00:04:33 So this is if you have like a nested stuff, I have two little examples, like a bad one and a good one here in our show notes and people can check that out.
+
+00:04:43 And.
+
+00:04:44 It's like a little checkout for a user.
+
+00:04:46 So a user, they've got a shopping cart, they've got some items in there.
+
+00:04:49 Some of them are available, some of them aren't.
+
+00:04:51 Some of them are selected to be express shipped, some of them are not, and things like that.
+
+00:04:56 And so it's got like, if user is not none, go through their carts.
+
+00:05:01 If the item is available, add it.
+
+00:05:03 In addition to that, if the item is selected to be express shipped, add it.
+
+00:05:07 And that's like just, what is that, a 30, 30 degrees down, 45 degrees down line of code, right?
+
+00:05:13 It's not vertical, it's like, you know, on an angle, probably 45, right?
+
+00:05:17 And every one of these is asserting a positive thing.
+
+00:05:20 The thing I want, if the user is good, I want to go through them.
+
+00:05:23 If the thing is available, I want to do this, and so on and so on.
+
+00:05:26 Guarding clauses basically check for the negative and bail out as soon as possible.
+
+00:05:30 So you could rewrite that and go, if the user is none, return empty stuff for their stuff.
+
+00:05:34 If it's not available, just skip through the loop with a continue and so on, and it's much simpler.
+
+00:05:38 And it's not just about visual code.
+
+00:05:41 It's not just like easier to read, but it's easier to reason about.
+
+00:05:45 Like if you get into one of these super nested conditional structures, then it's really hard to think about like, okay, I want this case and that case, like where does that go?
+
+00:05:54 Do I need another branch in this if and so on?
+
+00:05:57 I feel like it's much easier to maintain and add to with these guarding clauses.
+
+00:06:00 - And in the example you're showing and we're gonna have in the show notes, the better one actually ends up being more lines of code.
+
+00:06:08 However, you're visually gonna skip over the top part 'cause you're like, oh, I'm just making sure the things are the right.
+
+00:06:14 And then in the middle, I've got highlighted just like three lines of code where the actual work is.
+
+00:06:20 And highlighting where the real work is instead of dispersing the real work across lots of if clauses.
+
+00:06:26 I think that's a great idea.
+
+00:06:27 - Yeah, thanks.
+
+00:06:28 I super love it.
+
+00:06:29 I'm linking to Martin Fowler's original little article on it, which is like C or JavaScript or something.
+
+00:06:33 But it's, you know, it's if statements.
+
+00:06:35 It's basically the same idea.
+
+00:06:37 As well as to one on from a Go, a Medium article about line of sight programming, talking about like you can just, you know, see right down the line.
+
+00:06:45 Anyway, it's all pretty cool.
+
+00:06:48 Definitely, definitely think how those can be used.
+
+00:06:51 I find it to make it a lot nicer, a lot easier to maintain this code.
+
+00:06:54 - It'll also reduce the cyclomatic complexity of your code.
+
+00:06:57 - Yes, yes it will.
+
+00:06:58 And that also probably, you know, that's cool because it'll make Anthony Shaw happy in his Wiley, but it'll, (laughs)
+
+00:07:06 but it also means like it's less cognitive overhead to maintain, right?
+
+00:07:10 You can say, okay, I cleared out the stuff that's not good.
+
+00:07:12 Now we're in the good spot.
+
+00:07:13 It's not indented.
+
+00:07:14 It's not a lot going on.
+
+00:07:15 You're right.
+
+00:07:16 It's so simple that I don't, you know, if you're not using it, just check it out.
+
+00:07:20 It's great.
+
+00:07:21 - Good reminder.
+
+00:07:22 - Speaking of if you're not using it.
+
+00:07:23 - Yeah, so Python 3 is a thing.
+
+00:07:26 We've talked about it a few times in the past.
+
+00:07:29 There's probably a lot more people.
+
+00:07:31 Well, I don't know.
+
+00:07:31 There's probably more people, some people now still converting to Python 3 or starting to get used to it.
+
+00:07:37 The easy hurdles are just to start not using the stuff you can't anymore, and some of the string changes and whatever.
+
+00:07:44 But here's an article we ran across called "Things You're Probably Not Using in Python 3, But Should." So there's a lot of new items in Python 3, but this article goes through a handful.
+
+00:07:56 So there's some obvious, I think obvious, of course items, like fstrings, pathlib, and maybe data classes.
+
+00:08:03 I'm using them a lot, but maybe fstrings and pathlib, definitely, everybody should be using those.
+
+00:08:09 Those are awesome.
+
+00:08:10 I'm warming to type hinting a little bit more.
+
+00:08:12 I think it's feeling more natural.
+
+00:08:15 I'm not really a zealot about it.
+
+00:08:17 But when I start trying to see myself start typing a comment to say what kind of stuff should go into a function or what should be in a variable, I'm like, oh, I could just put a type hint on there.
+
+00:08:28 Exactly.
+
+00:08:30 Yeah, comments are deodorant, right?
+
+00:08:32 They go on to bad code to make it smell better.
+
+00:08:34 But maybe you should just make it better by putting some type hint.
+
+00:08:37 >> Maybe type hint, yeah.
+
+00:08:38 So especially when I'm only intending it for the reader.
+
+00:08:43 I'm not using some testing tools around that.
+
+00:08:45 But there's some stuff that I knew about that I just forgot.
+
+00:08:49 So I'm glad that I'm going to list three that he listed.
+
+00:08:53 Enumerations with the new enum package and enum and auto methods and classes.
+
+00:08:59 >> Yeah, I love enums. They're really great.
+
+00:09:01 I don't use them enough, but yeah, they're super.
+
+00:09:04 - Enough, I wanna use them a little bit more after this reminder.
+
+00:09:08 Also, LRU-Cache is built in.
+
+00:09:10 It's a decorator in FuncTools that you can use really easy memoization.
+
+00:09:16 So if anybody's not familiar with LRU-Cache or memoization, the gist of it is you just throw this decorator on a function.
+
+00:09:24 If it's really functional programming type stuff where you pass in some value and you get at, and that has no behavioral side effects and it just returns some other, some value that's a one-to-one correlation between input and output.
+
+00:09:39 And it's called a lot.
+
+00:09:41 You can use memoization with LRU cache to speed it up.
+
+00:09:44 And it just remembers the old stuff.
+
+00:09:46 - Yeah, it just says, if I see this argument come in, say you have a number in your example, if the number 72 comes in and the answer was 7,000, the next time it's called it just goes, that argument's 72, we know, it's not changed, the answer is going to be 7,000.
+
+00:10:01 Anytime you have a function that basically is deterministic, you give it the same input, it gives you the same output, this is a super good option.
+
+00:10:08 - Yeah, especially if it's something that's time consuming, it has to do some data crunching or something.
+
+00:10:13 The last one I'm going to highlight that I totally forgot about is extended iterable unpacking.
+
+00:10:19 And this one you kind of have to see to get it, but basically you can, when you, like for instance, if you're unpacking a list with a three element list, You can assign it to three variables.
+
+00:10:30 We know that.
+
+00:10:31 But if you have more than three, you can put a star on one of those things and it'll catch all of the rest.
+
+00:10:38 And that's cool.
+
+00:10:40 There's lots of places that I could use that that I forgot about.
+
+00:10:43 - You know, you can even do the star in the middle, right?
+
+00:10:45 You've got like head, star, body, and tail for five things.
+
+00:10:48 And the body is three things.
+
+00:10:50 Pretty awesome.
+
+00:10:51 - Yeah.
+
+00:10:51 - When I look at this and I think about it, you know, obviously there's a lot of people moving to modern Python using it in their code, right?
+
+00:10:59 But just like you could come from C and write non-pythonic Python, you could move to Python 3 and write non-Python 3-ic?
+
+00:11:08 I don't know.
+
+00:11:09 Like, you could write code that's not idiomatic to Python 3, right?
+
+00:11:12 You still do everything the Python 2 style, not taking advantage of any of these things, right?
+
+00:11:17 Like, f-strings, pathlibs, type hinting, async and await, you know, like you said, enums.
+
+00:11:23 You could like do none of that and still be quote using Python 3.
+
+00:11:26 So I think it's cool a cool reminder an example of things you could do to be more idiomatically Python 3.
+
+00:11:32 Yeah, actually when I was thinking about that the author of this even says some of his old articles are written essentially for Python 2.
+
+00:11:39 And I think that's a great place for people if they were if they're new to they want to start doing technical blogging and they They don't really have some ideas on what to do. You go look at some common and popular articles that are written in Python 2 style and kind of make them your own and do a similar article.
+
+00:11:57 Don't copy it, but do a similar article with Python 3 syntax and you'll probably get some hits.
+
+00:12:03 - Yeah, yeah, for sure.
+
+00:12:04 Or even if you really love that resource you're reading, you could send them a note like, hey, I'd love to upgrade these three articles to Python 3, could I help you?
+
+00:12:11 - Oh yeah, that would be much nicer, do that.
+
+00:12:13 - Yeah.
+
+00:12:14 (laughing)
+
+00:12:16 They, well, they both have their own merits, right?
+
+00:12:18 - Yeah.
+
+00:12:18 - Speaking of merits, let me tell you about Digitalition.
+
+00:12:20 DigitalOcean is powering all of our things, which is awesome.
+
+00:12:23 And we talked about GitHub at the beginning.
+
+00:12:25 One of the big things GitHub is doing is GitHub Actions.
+
+00:12:28 So kind of automated workflow for things that happen, you know, check-ins and other stuff on GitHub.
+
+00:12:35 And DigitalOcean has a GitHub Actions for DigitalOceans that you can install and plug in there.
+
+00:12:42 So you can take your workflow that's happening on GitHub and automatically use that to do things like create a new virtual machine or push a new version to a Kubernetes, managed Kubernetes cluster based on a push or something like that, right?
+
+00:12:58 Or maybe snapshot it when an issue is filed, who knows?
+
+00:13:01 But all sorts of cool stuff you can do with GitHub Actions and DigitalOcean mixed together with that.
+
+00:13:05 So check that out at pythonbytes.fm/digitalocean.
+
+00:13:10 Get $100 free credit for new users.
+
+00:13:12 Definitely can recommend them.
+
+00:13:13 They're doing good stuff.
+
+00:13:15 So how about some fun, Brian?
+
+00:13:16 - Yeah, we got a couple fun ones.
+
+00:13:18 - Yeah, yeah, let's play a few games here.
+
+00:13:20 It's awesome that these came up just right by each other.
+
+00:13:23 So I want to talk about this thing called the Python Arcade Library, which is at arcade.academy, which I didn't even know .academy was a top-level domain, but apparently, apparently it is.
+
+00:13:37 That's pretty awesome.
+
+00:13:38 So this is a library for easily building 2D games in Python that run at like 60 frames a second on OpenGL.
+
+00:13:48 - That's pretty cool, right?
+
+00:13:49 So it's really about, like this is by a guy, his name is Paul, Paul, hopefully I'm getting that right.
+
+00:13:56 He built this to help teach, he teaches at a college, and it helps teach his students a more visual way to learn programming.
+
+00:14:03 So it's not to teach game development, it's to teach programming, but because it's got a visual aspect and not just like a terminal version, you can see what you're creating more easily and see it working.
+
+00:14:14 So that's pretty cool, you can create like Minesweeper games, Hangman games, and in particular, platformer games.
+
+00:14:20 So if you wanted to recreate Lemmings, or he wanted to do like Joust or whatever, you could totally use this for that.
+
+00:14:26 - Ooh, neat.
+
+00:14:27 - Yeah, and you can check out the sample games made with it.
+
+00:14:30 So there's like a tower defense game.
+
+00:14:33 I'm a sucker for tower defense.
+
+00:14:35 There's like a little Angry Bird thing made.
+
+00:14:37 There's all sorts of fun stuff.
+
+00:14:38 There's tons of examples here.
+
+00:14:39 I think mostly because these are students who are taking the class, but then submitting their projects.
+
+00:14:45 - Oh, that's a great idea.
+
+00:14:46 - Yeah, nice, right?
+
+00:14:48 - Yeah, and I like these 2D games.
+
+00:14:51 - I do too.
+
+00:14:52 Yeah, and it also includes things like physics, which is nice, 'cause it's one thing to get the graphics on the screen, but hit detection, physics, sound, all these other things are super hard, and I believe sound is still like a little bit of a iffy feature here.
+
+00:15:04 I hear that that's tough in Python, so maybe that's like a cool C extension somebody should write, I don't know.
+
+00:15:10 But anyway, it's all based on OpenGL, and it looks pretty cool, So definitely want to recommend that people check that out.
+
+00:15:17 Yeah, and you guys, similar one.
+
+00:15:19 How about that?
+
+00:15:20 - Yeah, so I wanted to highlight a article called Teaching a Kid to Code with Pygame Zero, written by Matt Lehman.
+
+00:15:27 So this is just this guy with his kids, he likes to play video games with his kid, and thought, you know, I should try to teach him how to code.
+
+00:15:36 And they tried, his son did like a version of Scratch, but the worry is that Scratch is really far removed from actual coding and the skills you build might not be transferable really easily.
+
+00:15:50 So I went ahead and decided to try Pygame Zero using the Mew editor.
+
+00:15:55 And I guess Pygame Zero is already pre-installed in Mew as is Python interpreter.
+
+00:16:04 I didn't know that.
+
+00:16:05 That's cool. - Oh, that's cool.
+
+00:16:06 Yeah, that's great.
+
+00:16:06 - And so a quote from somewhere.
+
+00:16:09 (laughs)
+
+00:16:10 "Pygame Zero is intended for use in education so that teachers can teach basic programming without needing to explain the Pygame API or write an event loop.
+
+00:16:19 He worked with his son and they came up with a 29 line of code, including blank spaces, little game, doesn't really do much, but it teaches a lot.
+
+00:16:30 So he said that his son learned about naming things and variables and mutability and fiddling with constants to see how those affect the screen size and stuff like that.
+
+00:16:40 writing functions that have side effects and interacting with mouse events.
+
+00:16:44 So you learn quite a bit with just this little bit of code and it's actually Python.
+
+00:16:49 So that's kind of neat.
+
+00:16:50 And then one of the things that I really like, 'cause I do want to start, I haven't worked with my kids with coding yet, but the article also includes some tips on how to behave as the adult when you're working with kids with coding.
+
+00:17:02 So this is good.
+
+00:17:03 - Yeah, it's truly tricky to set up the right balance of, It's interesting, but quickly becomes too hard, or it's easy enough to get kids started, but they have expectations of something they can do with their iPhone as a game.
+
+00:17:18 What you build does not necessarily match, right?
+
+00:17:21 - Yeah, and I like the tips at the end because I'm one of those kind of people that would just say, "Okay, you just sit at the side "and I'll do it, and you watch." It's not really teaching.
+
+00:17:30 - Yeah, true, true, true.
+
+00:17:32 It's cool, though, I think these are both really fun options for teaching kids programming and building a little game.
+
+00:17:39 'Cause not everybody cares about building games, but a lot of people who do, like a lot of people's introduction to programming was they wanted to build a game, programming was just what was required to make that happen, right?
+
+00:17:50 - And you can go do something else, like a useful utility that somebody might need.
+
+00:17:54 But I mean, how many six-year-olds really need a useful utility written in Python?
+
+00:17:59 - Yeah, true, true, true.
+
+00:18:00 - Anyway.
+
+00:18:01 (laughs)
+
+00:18:02 - While we're talking about games, Like if kids are not quite ready for a game, but they're ready to do adventurous stuff, I guess, I wanna throw a shout out to CodeCombat.com.
+
+00:18:13 That's a super cool place.
+
+00:18:15 It has a free version where you basically go into these dungeons and you solve the dungeon by writing Python programs.
+
+00:18:21 - Oh, neat.
+
+00:18:22 - And the editor has like auto-complete like nobody's business.
+
+00:18:25 It's super, super nice.
+
+00:18:26 So you have to like have your hero move around.
+
+00:18:28 You say like hero.attack and select like an enemy.
+
+00:18:31 If you type the letter A, it'll auto-complete hero.attack.
+
+00:18:34 I mean, it's like really, really beginner-friendly.
+
+00:18:37 So definitely, that's maybe a first step.
+
+00:18:40 And then one of these two that we just spoke about would be really good as well.
+
+00:18:43 - Oh, I'll try that.
+
+00:18:44 - Yeah, I was doing that one with my daughter and she was super into it.
+
+00:18:46 She got like 50 levels in or something.
+
+00:18:49 50 little dungeons.
+
+00:18:50 Cool, so all right, so last one, let's round it up with something a little more serious.
+
+00:18:54 So we talked before about whether or not the GIL will become obsolete with the introduction of PEP 554.
+
+00:19:03 And this was on episode 128, which is cool.
+
+00:19:06 So Anthony Shaw wrote a cool article called "Has the Python GIL been slain?" That really digs deeply into that idea that we were touching on back then.
+
+00:19:16 So the answer is kind of, maybe, I don't know, probably, but for a limited case.
+
+00:19:23 So we've got a multithreading in Python, which is pretty easy, but it's not actually concurrent because of the GIL, we have multi-processing, which is harder to exchange data and stuff.
+
+00:19:33 It carries a lot of overhead, but does escape the GIL, because it's all these separate processes.
+
+00:19:37 So PEP 554 introduces this idea of sub-interpreters.
+
+00:19:42 Remember that from back then, Brian?
+
+00:19:44 Yeah.
+
+00:19:45 And we speculated that maybe the ability to have multiple sub-interpreters would remove the problem of the GIL, because the GIL is not a process thing.
+
+00:19:53 It's an interpreter thing.
+
+00:19:55 is the global interpreter lock.
+
+00:19:56 So if we just take and run our threads on multiple sub-interpreters, there would be no gill.
+
+00:20:02 Things would go potentially faster, at least some of the time, right?
+
+00:20:06 The problem is, if you actually try to share data across those sub-interpreters, things get pretty tricky.
+
+00:20:12 So Anthony's article really digs into that and talks about how you might use shared memory and IPC, which is also another feature coming to multiprocessing, but that's also kind of slow and challenging.
+
+00:20:26 So he highlights another PEP, so here's our fourth PEP, PEP 574, which proposes a new PQL protocol.
+
+00:20:34 Is that surprising?
+
+00:20:35 (laughing)
+
+00:20:36 - Yeah, a little bit.
+
+00:20:36 - A little bit, 'cause like people say, don't use PQL, it has all these vulnerabilities and versioning issues and whatnot, except for it's a nice binary format.
+
+00:20:44 And if your goal is to just literally exchange data from subinterpreter to subinterpreter through shared memory, well, then that's fine.
+
+00:20:52 That's within the runtime of a process.
+
+00:20:55 It should be OK.
+
+00:20:56 You're not going to hack yourself.
+
+00:20:58 And if you do, you deserve it.
+
+00:20:59 So this is a special protocol, version 5, that has support for allowing memory buffers to be handled separately from the rest of the pickle stream, basically.
+
+00:21:07 So all these things could be combined together to get us a cool, faster, more concurrent Python.
+
+00:21:14 And the answer is the question, when?
+
+00:21:16 When will maybe these things be here?
+
+00:21:17 So pickle version 5 and shared memory will probably make it to Python 3.8, which will be October of this year, 2019.
+
+00:21:25 And subinterpreters may make that, but they might take another version, 3.9, which I believe at the time that's going to be 18 months later.
+
+00:21:34 I think we're still on the 18-month release cycle here.
+
+00:21:38 Yeah.
+
+00:21:39 What I really appreciate about this article isn't that there's suddenly stuff that I can use now.
+
+00:21:43 It's that we have been talking about the subinterpreters, and I haven't really got my head around really how that affects us and I think this is a good jump in, a good discussion about it.
+
+00:21:54 So that if you're curious about this, he talks about all the kind of the backstory and in kind of where we're going from here. The where we're going from here I think is still kind of up in the air. I would like to see something more around like a shared memory.
+
+00:22:09 One of the discussions is having shared memory objects that are owned by one sub-interpreter at of time. So you could say, well, I'm creating this data to have another interpreter take it over.
+
+00:22:21 Right. I'm handing it off to you. You can have it now.
+
+00:22:23 Yeah. And it would be nice if I didn't have to pickle that. If I could just, the data I'm creating is just normal data, but it happens to live in an area that I can hand over to a different process or something. Oh, that's interesting. Like, basically dereference it in the current garbage collector system and re-reference that information in the other one. Yeah, somehow, something like that.
+
+00:22:44 - Yeah, okay, cool.
+
+00:22:45 - There's, I'm sure, lots of smart people working on the problem.
+
+00:22:49 But it is neat, it's neat to see it going forward.
+
+00:22:51 - Absolutely.
+
+00:22:52 - Plus there's a really amusing video of a breakdancer where like six guys come out, none of them are doing anything except for one who's spitting on his head.
+
+00:23:01 (laughing)
+
+00:23:02 - Yeah, it's a very, I don't know even how to describe it.
+
+00:23:05 It's a very different interpretation of how the global interpreter lock kills concurrency through breakdancing.
+
+00:23:11 - Yeah, through breakdancing.
+
+00:23:13 - I knew it all along, man.
+
+00:23:15 The rap beat was off.
+
+00:23:16 That's why we can't get this thing to run in parallel.
+
+00:23:18 - Yeah.
+
+00:23:19 (laughing)
+
+00:23:20 - All right, cool.
+
+00:23:20 Well, that's it for our main topics today.
+
+00:23:23 What else you got that you just wanna quickly chat about?
+
+00:23:25 - A couple things.
+
+00:23:25 PyCon seems like it just got over, but the videos are already all available, and I've already started watching them, including Ant's complexity with Wiley talk.
+
+00:23:36 And the other thing I wanted to bring up is, I'm reviewing, I'm not reviewing it, but I bought the new Pragmatic Programmer book, the 20th anniversary edition.
+
+00:23:47 They rewrote it, and I'm reading the testing chapter, starting there, and they bring up PyTest, and they're using PyTest and Hypothesis, and that's pretty cool.
+
+00:23:55 - Oh yeah, that's super cool, and Hypothesis, that's pretty interesting, that one.
+
+00:23:59 - Yeah.
+
+00:24:00 - All right, well, I have a couple quick announcements for you all.
+
+00:24:02 So first of all, quick and easy one, I've been creating a bunch of different things lately.
+
+00:24:06 The iOS and Android apps are both out for the Talk Python Training stuff, But I just released new versions that have a couple of cool new features.
+
+00:24:15 So if you have it installed, make sure you update it.
+
+00:24:17 If you don't have it installed, well, check it out at training.tacmathon.fm.
+
+00:24:21 That's cool.
+
+00:24:22 So Brian, I've joined you in the journey that is writing a book.
+
+00:24:27 - Yes, you're an author now.
+
+00:24:28 - Yeah, apparently.
+
+00:24:30 Somehow, I don't feel like I've gotten any official stamp or any letter or no little pamphlet that makes me officially an author.
+
+00:24:39 But yeah, so we have a book called "Effective PyCharm" that's out and it has a digital version, has a print version, it has sort of bundled stuff with some of the courses.
+
+00:24:48 So I'll link to that in the show notes.
+
+00:24:50 People can check that out at effectivepycharm.com.
+
+00:24:53 So that's pretty cool.
+
+00:24:54 And then also we just released a new course, "100 Days of Web." - It's pretty neat, I've started watching it.
+
+00:24:59 I like it.
+
+00:25:00 - Yeah, thanks for checking it out.
+
+00:25:01 That's awesome.
+
+00:25:02 So it's kind of intense.
+
+00:25:03 It's like 28 little different web projects.
+
+00:25:06 So one time you build an API in Flask And one time we build like logins with Django and migrations with SQLAlchemy.
+
+00:25:13 So all these different things you might want to do all over, it's kind of like a super sampling of all the web stuff.
+
+00:25:19 So check that out.
+
+00:25:20 You know, the links in the show notes that talk about on training as well.
+
+00:25:24 All right, well, that's all I got for now.
+
+00:25:26 Do you got a joke for us?
+
+00:25:27 - I don't, but I wanted to bring up something about your course.
+
+00:25:31 - Oh, thank you.
+
+00:25:32 - My first concern was that like 100 different web projects might seem overwhelming, but it isn't that.
+
+00:25:37 Like you said, it's 28 projects, is that right, 28?
+
+00:25:40 - Yeah, and there's four of them that are super short, so it's kind of 24.
+
+00:25:43 - Yeah, you get more into it than just some quick thing that you can do in one day.
+
+00:25:49 I appreciate that pacing.
+
+00:25:51 - Yeah, thanks a bunch.
+
+00:25:52 Yeah, we were trying to find a balance there, 'cause 100 separate projects is too small.
+
+00:25:56 One huge project, you don't get enough variety of other things, so 24, that was the slicing we came up with.
+
+00:26:04 All right, how about this?
+
+00:26:05 - So there's a programmer going to a coffee shop looking to get out of the cube, right?
+
+00:26:11 Can't stand being in the cube more.
+
+00:26:13 So they get out and there's a waiter that comes over and says, "Hey, welcome to the restaurant.
+
+00:26:18 "Would you like coffee or tea?" (laughing)
+
+00:26:21 The programmer says, "Yes." - Yes, of course.
+
+00:26:24 (laughing)
+
+00:26:27 Have you done this?
+
+00:26:28 - No, but it sounds like it might be sort of fun.
+
+00:26:31 - Yeah, I mean, I haven't done it with coffee or tea, but I definitely think that sometimes if somebody gives me an or question, I'll answer with yes.
+
+00:26:39 Yes.
+
+00:26:40 Yeah, they mean exclusive or don't they?
+
+00:26:44 Yeah, pretty awesome.
+
+00:26:46 All right, well.
+
+00:26:46 Thanks a lot.
+
+00:26:47 You bet.
+
+00:26:48 Good to chat with you and I'll catch you next time around.
+
+00:26:50 Okay. Bye.
+
+00:26:50 Bye.
+
+00:26:51 Thank you for listening to Python Bytes.
+
+00:26:53 Follow the show on Twitter via @PythonBytes.
+
+00:26:55 That's Python Bytes as in B-Y-T-E-S.
+
+00:26:58 And get the full show notes at pythonbytes.fm.
+
+00:27:01 If you have a news item you want featured, just visit pythonbytes.fm and send it our way.
+
+00:27:06 We're always on the lookout for sharing something cool.
+
+00:27:08 On behalf of myself and Brian Okken, this is Michael Kennedy.
+
+00:27:12 Thank you for listening and sharing this podcast with your friends and colleagues.
+

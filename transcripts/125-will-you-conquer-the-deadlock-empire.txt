@@ -1,0 +1,936 @@
+00:00:00 Hello and welcome to Python Bytes where we deliver Python news and headlines directly to your earbuds. This is episode 125 recorded April 10th. I'm Michael Kennedy. I'm Brian Hocken.
+
+00:00:10 And this episode is brought to you by Datadog. Check them out at pythonbytes.fm/datadog We'll click the link in your show notes. Tell you more about them later. Brian first, I want to know how you're doing I'm doing really good. We just keep reading these numbers and 125. They just keep getting bigger I know it's it's pretty incredible the growth of the podcast and you know I just want to say thank you to everyone listening, because we keep doing it because people care, they appreciate it.
+
+00:00:32 Sponsors are sponsoring the show because listeners are listening, and it's just great.
+
+00:00:37 I love doing it with you, so it's cool that we're still going.
+
+00:00:40 Me too.
+
+00:00:40 For sure, for sure.
+
+00:00:41 OK, now I feel like--
+
+00:00:43 didn't we just have an XKCD about the whole packaging and dependency management thing?
+
+00:00:48 Yeah, actually.
+
+00:00:49 And I feel like we've got requirements.txt, we have piplock, we have Pyproject.toml, probably stuff I don't even know about yet, but listeners are going to tell me now because that's the magic of talking about this in the podcast is, you mentioned these seven things, but did you know about these three others, which is amazing.
+
+00:01:07 But here we are again with some more packaging, right?
+
+00:01:09 Yeah.
+
+00:01:10 What's the story?
+
+00:01:10 We've covered Pyproject.toml, and a lot of times we think about that going with either going with Flit or Poetry for packaging, but it does work with Setup Tools too.
+
+00:01:22 So Brian Skin is a friend of the show, and he wrote an article called "My How and Why Pi Project TOML and the Source Project Structure." So if you're using pi-project.toml with Flit, Flit doesn't allow you to use right now unless you fork it or something.
+
+00:01:40 Flit doesn't allow you to use a source directory to keep all of your sources.
+
+00:01:44 But you can do setup tools, of course, and how do you get all of those pieces together?
+
+00:01:49 And so I wanted to highlight this article mostly because Brian put together this article with setup tools and pyproject.toml, how to get that working with a source directory.
+
+00:02:00 And then also included how to put his black settings for black within and talks within a toml file as well.
+
+00:02:08 And just all of the pieces, how to make sure dot all the I's and cross the T's to make sure it works.
+
+00:02:13 - That's really cool.
+
+00:02:14 Nice work, Brian.
+
+00:02:15 And Brian Skin, that is.
+
+00:02:17 And yeah, it brings together a lot of the cool stuff we've spoken about already on the show, so happy to see that.
+
+00:02:22 And so do you know, is pyproject.toml, that's like the current new hotness that is like, where's that?
+
+00:02:29 It's working with setup tools, that's kind of a big deal, right?
+
+00:02:32 - The pyproject.toml makes it so that you can, wheels can be specified, and when you're pip installing stuff, so pip works with it, so that when you're installing things, you can tell pip where everything is and how things work.
+
+00:02:47 So the toml file is the standard, whether you use setup tools or flit or poetry to build the wheel, that's up to you.
+
+00:02:56 Or you could make up your own, but it's the standard interfaces at the toml interface.
+
+00:03:02 - All right, cool, thanks for that.
+
+00:03:03 Are you ready to go on an adventure?
+
+00:03:05 A multi-threaded dungeon, if you will?
+
+00:03:08 A parallel dungeon.
+
+00:03:10 So as you and all the listeners probably know, I'm a big fan of async, await, parallelism, all that kind of stuff.
+
+00:03:17 But there is the problem, not so much with async and await, but certainly with the threading and other forms of parallelism of getting your application to a deadlock, having race conditions for things that look like they should be atomic, but they turn out to be multiple steps.
+
+00:03:33 And so you could have them interrupted by other threads, like x plus equals 1, something to that effect, right?
+
+00:03:40 So I ran across this cool little website called the Deadlock Empire.
+
+00:03:45 And it's subtitled "Slay Dragons, Master of Concurrency." - Oh, that's great.
+
+00:03:50 - So basically, this is like a coding game in your browser that you go along and you go through these different challenges.
+
+00:03:59 And so one of the challenges is to just like have two threads hit a lock at the same time.
+
+00:04:05 So one is blocked waiting for the other to go through, for example.
+
+00:04:08 Another one is to like understand how things that look atomic, like X plus equals one, actually break into like multiple steps and have the threads get in there and like, basically call x plus equals one, but in the end there's only one more, not two more in the value there, things like that.
+
+00:04:24 So deadlocks are really bad news in programs.
+
+00:04:28 They're super hard to debug.
+
+00:04:29 They're not fun, but I think this looks like it could be a little bit of fun.
+
+00:04:32 - Yeah, I'm looking forward to trying this.
+
+00:04:34 And at the end, there's a boss battle at the end.
+
+00:04:37 - Boss battle, that's so awesome.
+
+00:04:38 I haven't made it to the end, so I haven't seen the boss yet.
+
+00:04:41 But yeah, I mean, in the show notes, I laid out a simple little example of how you might end up doing totally normal stuff that ends up with a deadlock in your application.
+
+00:04:51 Sometimes when your app goes crazy, it's obvious the CPU level pinned 100%, at least on one core.
+
+00:04:57 But in deadlocks, it looks like your app is not doing anything.
+
+00:05:00 You're like, well, what is it doing?
+
+00:05:01 I don't know.
+
+00:05:01 It's just waiting.
+
+00:05:02 It's super frustrating and challenging.
+
+00:05:04 So I like this little game to help people explore this idea.
+
+00:05:08 If you're teaching concurrency, it seems like a really cool thing to show your students.
+
+00:05:12 And it just seems fun.
+
+00:05:13 - Are you able to deadlock with async and await?
+
+00:05:16 - Well--
+
+00:05:17 - I guess you could, if two things are waiting for each other.
+
+00:05:19 - The challenge with async and await, it's tricky, right?
+
+00:05:21 Like, normally you're doing threads, you're actually doing parallelism.
+
+00:05:24 I mean, you have the gill, but of course, if you do anything with a network, you can kind of split that up and still run into this problem.
+
+00:05:31 But with async, by default, in Python, it all runs on a single thread.
+
+00:05:36 - Okay.
+
+00:05:37 - Right, you have an async event loop, you go to where they say create get event loop, and then you queue up work to run on there, and then it interlaces in like coroutine style with the await keyword, but it doesn't actually run at the same time in multiple threads.
+
+00:05:51 So you wouldn't really run into it with like a re-entrant lock, but if you use the regular non-re-entrant version, you could.
+
+00:05:56 So not really, but the problem that you can run into is you can still get into the challenge of where you have corrupted data, and you need effectively some kind of lock.
+
+00:06:03 So it gets to be pretty tricky, actually.
+
+00:06:05 And I don't think it's really well-addressed or well laid out in the async and await world.
+
+00:06:09 Not in Python where it's on one thread.
+
+00:06:11 But yeah, this is cool.
+
+00:06:11 It's fun.
+
+00:06:12 All right, I don't even know how to transition this next one.
+
+00:06:15 You just take it.
+
+00:06:16 What are we doing with Cog here?
+
+00:06:17 - Well, Ned Batchelder of coverage fame and others, great guy, he just released an update to a little tool he's got called Cog.
+
+00:06:27 And so there's a Cog 3.0.
+
+00:06:29 And I'll just read what he says.
+
+00:06:31 "Cog, it's a small tool that finds snippets of Python "within text files," or within any, could be a Python file or another program file, but within files, executes the Python snippets and then inserts the result back into the file.
+
+00:06:46 It's kind of a bizarre little thing.
+
+00:06:48 He says it's good for adding a little bit of computational support to an otherwise static file, but it hadn't been supported for a few years.
+
+00:06:57 I mean, it worked, but it hadn't had any updates, but he just recently updated it, moved it from Bitbucket to GitHub, added Travis and AppVeyor, continuous integration, bunch of other changes.
+
+00:07:09 One of the things that's kind of fun is you added mutmut mutation testing.
+
+00:07:14 I've never heard of mutmut. I've heard of hypothesis.
+
+00:07:16 Well, yeah, it's completely different. So mutation...
+
+00:07:19 Well, we should cover it another time, but briefly, mutation testing is running your test suite and then randomly changing something about your source code and then running your test suite again and making sure that it fails.
+
+00:07:34 So if you can randomly change your code and your test suite still passes, well then there's problems with your test suite.
+
+00:07:40 It doesn't cover enough.
+
+00:07:41 >> Right, right, because changing your code should have some sort of outcome.
+
+00:07:45 >> Yeah, especially things like switching the less than operator to a greater than operator or something.
+
+00:07:51 >> Right, right, right.
+
+00:07:52 >> So one of the things that he commented on, which I've still been thinking about a place to use this, because it's a neat little tool.
+
+00:08:00 But he said, as a part of the sentence was, "Now I use it for making all my presentations." So if you had your presentations in Markdown and you had a little Python snippet, you can have the output of the snippet put somewhere else in the same presentation.
+
+00:08:19 That's very cool.
+
+00:08:20 - Yeah, that's quite cool.
+
+00:08:21 - Yeah, anyway.
+
+00:08:22 - Yeah, you know what it is?
+
+00:08:23 It reminds me of the sort of like Jupyter Notebooks for static files before Jupyter Notebooks or something like that.
+
+00:08:29 without all the dependency of a proper notebook, right?
+
+00:08:32 It can just be like a markdown file or a text file, but the output can kind of appear under the code listings live.
+
+00:08:39 - And there's people doing wacky things like generating test functions with it or sticking it in C code to generate headers for things and all sorts of stuff that is going on with this tool.
+
+00:08:51 - Oh yeah, how interesting.
+
+00:08:52 It's like almost a code gen, right?
+
+00:08:53 'Cause if it can change static files, it can change source files.
+
+00:08:56 - Yeah. - Cool.
+
+00:08:57 All right, well, that's very cool.
+
+00:08:59 Thanks for sharing that.
+
+00:09:00 Let me share a little bit about Datadog before we get to the next one, which is a doozy.
+
+00:09:04 So this episode, as many of them are, brought to you by Datadog.
+
+00:09:08 And so thank you to Datadog for keeping us going strong.
+
+00:09:11 Datadog's a monitoring and analytics service that takes all of your metrics and logs and distributed traces and puts them in one place.
+
+00:09:18 So it auto-instruments things like async libraries, like async I/O and frameworks like Django and Tornado, and helps you visualize your app performance even across boundaries.
+
+00:09:28 So if you have like microservices and database stuff and all that going on, which a lot of us do, you can like get a view of a single request across all that, which is pretty awesome.
+
+00:09:37 So get started for free with a 14 day trial at pythonbytes.fm/datadog and get a cool t-shirt as well.
+
+00:09:44 So definitely recommend them and they're a big supporter of the show.
+
+00:09:48 So thanks to that.
+
+00:09:48 - Yeah, thank you very much.
+
+00:09:49 - Brian. - Are you a developer?
+
+00:09:50 - I am a developer.
+
+00:09:52 I've been surveyed.
+
+00:09:53 Have you been surveyed?
+
+00:09:54 - Yes, I always take the stack overflow.
+
+00:09:57 Wait, I don't know if I do this.
+
+00:09:58 - Yeah, Stack Overflow Survey.
+
+00:10:00 Usually do the Python.
+
+00:10:01 Is that the same one?
+
+00:10:02 - This is a different one.
+
+00:10:03 - Okay.
+
+00:10:04 - But they're both good and they both have good things to say about Python.
+
+00:10:06 They just have a different focus a little bit.
+
+00:10:08 So I am a huge fan of the Stack Overflow Developer Survey.
+
+00:10:12 I do kind of like voting.
+
+00:10:14 I see it as like my civic duty in the community to go and fill this thing out when it comes out.
+
+00:10:20 'Cause it really is the best view, I think, of the developer, the state of developers and technology for, that's out there, right, that I've seen anyway.
+
+00:10:29 So the big news is the survey was a while ago, but the results and the analysis are out.
+
+00:10:35 And would you be surprised, Brian, to hear there's good news for Python in here?
+
+00:10:38 - Well, I'm hoping.
+
+00:10:40 Is there?
+
+00:10:40 - Yeah, there definitely is.
+
+00:10:41 So there's a lot of good news.
+
+00:10:42 Last year we spoke about the incredible growth of Python, which is a data science report done by Stack Overflow talking about how it's shooting towards the top and gonna just blow past all the other languages.
+
+00:10:53 Well, that is now moving forward.
+
+00:10:55 You know, we're one year into that trend and it's definitely looking like it.
+
+00:10:59 So we've already seen a language fall, a popular language fall victim to Python in a sense of it's not as popular.
+
+00:11:06 So I guess a couple things to call out about this that are interesting.
+
+00:11:09 One is there's a lot of gender inequity focus in this report, like much more than there has been in the past.
+
+00:11:16 I would say, especially at the beginning, they talk a lot about that.
+
+00:11:19 And there's a lot of analysis you can read into it.
+
+00:11:21 I'll have a few comments on it, but not too much.
+
+00:11:24 Let's start with, I have about six or seven little topics I pulled out that I think are worth covering in this format.
+
+00:11:29 So one is, they ask people, do you contribute to open source?
+
+00:11:33 And they learned that about 65% of professional developers on Stack Overflow contribute to open source projects at least once a year.
+
+00:11:40 That's pretty good, right?
+
+00:11:41 - Yeah, yeah, higher than I was expecting.
+
+00:11:43 - Yeah, I mean, you would say, of course, well, everyone should, but everyone's busy, maybe they don't have a project they're skilled in, right, they work at a place where they're not allowed to.
+
+00:11:51 So 65%, that's over half.
+
+00:11:53 That's pretty good.
+
+00:11:54 They also broke it out by language.
+
+00:11:55 It said, "Developers who work with Rust, WebAssembly, "and Elixir contribute to open source at the highest rate, "while those who work with VBA, C#, and SQL "do so at the lowest rate." (laughing)
+
+00:12:08 - Sorry.
+
+00:12:09 - So take that to mean what you want.
+
+00:12:10 - Yeah, I haven't seen a lot of VBA open source projects lately.
+
+00:12:14 - Oh yeah, that killer macro, it's out there.
+
+00:12:16 That macro framework.
+
+00:12:17 All right, yeah, I mean, some of it, It just doesn't really lend itself so much.
+
+00:12:21 So this one has to do kind of with that equity thing, which you spoke about this before when you talked about getting a job or growing in your career, which was a really interesting thing you covered on the show.
+
+00:12:31 And this one was under the title of competence and experience.
+
+00:12:35 And they have a graph that basically graphs imposter syndrome year over year, broken out by gender.
+
+00:12:42 - Oh, wow.
+
+00:12:43 - Which is pretty interesting, okay?
+
+00:12:44 - Yeah.
+
+00:12:44 - So we talked about resumes before and how men are more likely to apply when they're half qualified, they're like, I don't really have all these things, but hey, I know this part of it really well and I'll learn the rest, so forget it, I'm applying to this job.
+
+00:12:55 And women more, statistically speaking, are more likely to wait until they have all of the requirements met before they'll jump in and throw their name in the hat, right?
+
+00:13:04 Kind of the same thing here in this graph.
+
+00:13:07 So the idea is, how experienced do you judge yourself to be?
+
+00:13:11 So do you feel like you're a very qualified developer, you're still kind of a newbie, whatever, things like that.
+
+00:13:17 So they found that the curve for qualified self-assessment of men is much higher, especially white guys, I think, much higher than for women.
+
+00:13:27 So regardless of the years, like if they have the same amount of experience and stuff, which I think is also just kind of like touching on this same difference, right, for better or worse.
+
+00:13:37 So I think that's pretty interesting.
+
+00:13:39 But on the tech side, we've got the programming and scripting and markup languages.
+
+00:13:43 And I told you that another language falls victim to Python.
+
+00:13:45 Well, Python is ranked fourth as the most popular programming language.
+
+00:13:50 But it doesn't really count, because two of those are HTML and SQL, which nobody can go write a whole app in HTML or a whole app in SQL.
+
+00:14:00 It's a complementary thing you use alongside real languages.
+
+00:14:04 So if you factor those out, there's JavaScript, Python, and Java.
+
+00:14:08 And it used to be JavaScript, Java, Python.
+
+00:14:11 So that switch where Python now edges out Java as the second most popular actual programming language.
+
+00:14:16 So that's pretty cool, right?
+
+00:14:17 Yeah.
+
+00:14:18 It'll be great when Java's just gone so we don't have this confusion of Java JavaScript.
+
+00:14:23 You know what's so ironic is you're talking about this language that was developed in like 10 days to throw a little scripting onto a web browser Netscape, I think, and then only grabbed the JavaScript name because Java was hot at the time, displacing Java.
+
+00:14:38 That's kind of rough.
+
+00:14:40 But no, it's true.
+
+00:14:41 It's totally true, but funny.
+
+00:14:43 So databases, if you talk about popular ones, it was MySQL, Postgres, Microsoft SQL Server, SQLite, and MongoDB were in the top five.
+
+00:14:52 And then I love the dreaded and loved and wanted things.
+
+00:14:56 What language is dreaded?
+
+00:14:57 What databases loved and so on?
+
+00:14:59 So for languages, we have the most loved is Rust and Python.
+
+00:15:03 The most wanted is Python and JavaScript.
+
+00:15:06 And the most dreaded ties into our opening statement, VPA and Objective-C.
+
+00:15:11 So what do you think?
+
+00:15:12 Does that sound right to you?
+
+00:15:13 - Yeah, definitely.
+
+00:15:14 People programming Objective-C because they have to.
+
+00:15:18 - Yeah, I mean, even if you're doing iOS stuff, Swift at least, at least.
+
+00:15:22 There's other options as well, but Objective-C's a funky one.
+
+00:15:26 All right, in terms of loved databases and wanted, so most loved is Postgres, most wanted is MongoDB.
+
+00:15:33 Development environments, they have a graph of like who's using what.
+
+00:15:37 Oh my gosh, Visual Studio Code is crushing it.
+
+00:15:39 It's like 50% and then everything else.
+
+00:15:41 - Wow.
+
+00:15:42 - Which Visual Studio Code is only a couple years old, so that's a pretty big deal.
+
+00:15:45 - Yeah.
+
+00:15:46 - And then finally, one thing I want to point you at, point people at, is this thing that says how technologies are connected.
+
+00:15:52 So there's a really cool graph there, and if you go there and you find Python and you follow the graph out, like, it seems like it makes a lot of sense to me.
+
+00:15:59 It seems like, yeah, these other technologies are often used together with Python, and it's pretty cool.
+
+00:16:05 All right, well, that's the survey.
+
+00:16:06 I'm linking to the whole survey, and people can go check it out, because there's a lot to it, And these are just some of the interesting bits I decided to pull out for us.
+
+00:16:14 - Yeah, I'm definitely gonna check this out.
+
+00:16:15 Looks neat. - Yeah, it's a cool one.
+
+00:16:17 All right, earlier you mentioned mutmut and mutation testing and changing your code and the fact that if you can change your code, especially things like less than to greater than on some kind of test, that should make a difference.
+
+00:16:29 And the problem was you didn't have potentially code coverage.
+
+00:16:33 Well, this next one that you found is gonna help us with that, right?
+
+00:16:36 - Right, so actually I've been using the coverage.py And usually with PyTest, a lot lately actually, to make sure, I kind of mostly do it to find out where there's absolutely no coverage, which files have no, like nothing on them.
+
+00:16:50 So I can make sure I go test those.
+
+00:16:52 If I think I'm covering an API to definitely make sure that I really am.
+
+00:16:57 But a lot of the visualization, so the visualization coverage itself will output, you can tell it to output an HTML file.
+
+00:17:03 And that's what I often use to go look at things.
+
+00:17:06 But some people, sometimes it's me, like the command line a lot.
+
+00:17:10 So this is, we're gonna cover a tool called, it's C-U-V apostrophe N-E-R.
+
+00:17:17 Is it like governor?
+
+00:17:18 - I think it's, I would say governor, yeah.
+
+00:17:20 - Governor, kinda like governor with a accent or something?
+
+00:17:24 - Sounds like a southern governor.
+
+00:17:25 - Yeah. (laughs)
+
+00:17:26 So it's pretty cool.
+
+00:17:28 It does these big graphic visualizations of your coverage, but in a terminal window.
+
+00:17:33 And for better or worse, I'm still trying to learn how to interpret them, but at the very least, it's pretty cool.
+
+00:17:40 It's worth trying out, but it also does more than just the coverage graphs.
+
+00:17:44 It'll also highlight, you can do diffs, coverage diffs, to figure out where you have problems with your, which lines of code need changed, or need more coverage.
+
+00:17:54 So it'll be fun to try to play with it and work it into a workflow to be able to avoid popping up in the web browser for the coverage report.
+
+00:18:02 - Yeah, it's cool.
+
+00:18:03 It has a nice, it's like basically a nice visualization in ANSI terminal graphics, right?
+
+00:18:09 And with little histograms of what's covered and what's not covered and so on for your code.
+
+00:18:14 I like it.
+
+00:18:15 You know, I definitely, as people know, a fan of PyCharm and the tools for visualizing stuff in there is really great.
+
+00:18:20 But if you were for some reason logging into some kind of continuous integration or some reason you run it where you don't have it, this seems like a cool tool to bring into play.
+
+00:18:29 - Yeah, or if also some people like me go through days where I try to avoid using the mouse at all.
+
+00:18:36 - That's a good goal.
+
+00:18:37 (laughing)
+
+00:18:38 This next one is something that a couple people have asked for and I did have this as just an extra item I was gonna throw out there, but I thought it might be fun to dig into it because some listeners have asked for it.
+
+00:18:49 So, big news is I had just launched a set of mobile apps for my training site.
+
+00:18:55 - That's so cool.
+
+00:18:56 - Yeah, thanks.
+
+00:18:57 So you can go into your Android tablet or your phone or whatever and go to the Play Store and find the app, download it, run it.
+
+00:19:04 It's a truly native app.
+
+00:19:05 It works really well.
+
+00:19:06 But they've asked, hey, could you tell us a little bit about this app?
+
+00:19:10 Like, how did you build it?
+
+00:19:11 Show me how you did that in Python.
+
+00:19:12 Well, sadly, it's not in Python.
+
+00:19:15 I wish it were in Python.
+
+00:19:16 We talk all the time about, wouldn't it be better if we had better GUIs in Python?
+
+00:19:20 But it's not.
+
+00:19:21 So the story is, basically, I built this app along with another developer named Georgie.
+
+00:19:25 Did a great job.
+
+00:19:26 Did most of the work on the mobile side of things in C# and Xamarin, which I guess takes me back to some stuff I did long ago.
+
+00:19:33 But I looked around, I tried so many different things, the Ionic framework so I could do it in JavaScript.
+
+00:19:38 I looked at some of the Python options and they just didn't seem like they were gonna cut it for truly mobile native stuff.
+
+00:19:44 So I built all the mobile apps in C# and Xamarin and all the backend stuff is Pyramid, MongoDB, Python, of course.
+
+00:19:51 So that's pretty cool.
+
+00:19:52 What's also cool is we have about 90% code share between the iOS and the Android version.
+
+00:19:58 So make a change in one almost always applies to the other platform, which is pretty cool 'cause they both compile down to native apps, which is pretty fun.
+
+00:20:07 So yeah, I thought it was a pretty good experience in the end and yeah, I wish I could have built it all in Python, but that's just the way it goes sometimes.
+
+00:20:15 Can't do it all in Python, I guess, not yet.
+
+00:20:17 - I'm actually okay with having a multi-language environment.
+
+00:20:20 - I'm too, I just would rather be able to stick to one.
+
+00:20:23 I mean, I guess I can understand the appeal the Node.js folks wanting to just have JavaScript everywhere, except for that it's JavaScript.
+
+00:20:32 But it's all right.
+
+00:20:32 So yeah, it came out pretty good.
+
+00:20:34 And I definitely-- people are thinking about mobile apps, recommend it.
+
+00:20:37 It seems pretty well.
+
+00:20:38 I built everything on my Mac, except for the prototype.
+
+00:20:41 So I guess the way it worked is I built out a prototype on Windows as a Windows app, then used that to develop all the back end APIs that are in Python and Pyramid, and get that all just working fine.
+
+00:20:53 And then I went to a place called TopTal, and they help you find developers, which is pretty cool.
+
+00:20:58 So I found Georgie there, I'll tell you more about that in a sec, but found Georgie and gave him my C# code and a bunch of specs and he turned that into a couple of mobile apps with a little tiny bit of help from me.
+
+00:21:09 So almost all the work went to him on that, but it was a pretty good workflow to build out with some technology I know, give it to someone else, right?
+
+00:21:16 It really helped that to drive the backend services and stuff.
+
+00:21:20 So it was like maybe five weeks from start to finish, which is pretty short for a real app, I think.
+
+00:21:25 - Yeah, cool that you had the demo or a Windows prototype already done.
+
+00:21:30 - Yeah, exactly, 'cause it was C#, like it factored it, just copied over to the Xamarin project and it just kept going.
+
+00:21:36 So anyway, I had a pretty good experience with TopTile.
+
+00:21:38 If people want to check it out, I have put a referral link in there and that will give me a little bit of credit if you actually sign up.
+
+00:21:45 So you could sign up as somebody who wants some work or somebody who wants to hire somebody.
+
+00:21:49 If you use that link, it'll help support a new feature for my app, redirect that money, that credit back into more development should be cool.
+
+00:21:56 So try the apps out at training.talkbython.fm/apps and you get two free courses that, they're free on the site, but they like surface specifically in the app.
+
+00:22:05 We don't have the iOS version out, but we'll have it out soon.
+
+00:22:08 And I guess one more comment is, man, people who work on devices and app developers, you have my sympathy, right?
+
+00:22:15 There are so many wires and so many devices on my desktop here, or my desk, like my actual desk.
+
+00:22:21 It is upsetting.
+
+00:22:22 - Did you try all the app on a whole bunch of devices?
+
+00:22:25 - Yeah, I had to go, I was only doing iOS stuff, right?
+
+00:22:27 I had my iPad and whatnot, but we did a lot of work on Android, so I had to go buy all these Android devices, and now they're everywhere.
+
+00:22:34 And then the whole interaction with the App Store, oh my gosh, if anyone works at Google and has say over the App Store approval process, it was downright, I don't know what's the right word here, It was very disrespectful and very, very bad.
+
+00:22:52 For example, like the app description says something to like, take the great courses at Talk Python Training.
+
+00:23:00 It's one of the best ways to learn Python online.
+
+00:23:02 Some to that effect, right?
+
+00:23:04 The app was immediately rejected because they said, you're trying to impersonate an app called Learn Python.
+
+00:23:10 Okay, so maybe an automated system did this.
+
+00:23:12 Fine, I'll talk to the people.
+
+00:23:13 No, it was days of conversation to convince them.
+
+00:23:16 No, I'm not impersonating an app called Learn Python.
+
+00:23:19 Python is knowledge that can be learned.
+
+00:23:21 It is not a thing.
+
+00:23:24 It is a activity that you can also do here.
+
+00:23:27 And it was like eight days of stuff like this.
+
+00:23:29 It was really, really-- it was bad.
+
+00:23:31 So anyway, finally got through that, got able to launch it.
+
+00:23:34 Super fun.
+
+00:23:35 So some people ask for, like, give them the background on how the apps were created and whatnot.
+
+00:23:39 So that's the story.
+
+00:23:40 OK, cool.
+
+00:23:41 Cool.
+
+00:23:41 Yeah, well, that's it for all our main items, even the one that got promoted out from the extras.
+
+00:23:46 But what else do you got to talk about?
+
+00:23:47 You got a cool little project you finished up for us, right?
+
+00:23:50 - Yeah, I mean, this is actually a while ago.
+
+00:23:53 Both of us have Patreon pages set up so people can help sponsor the show and promote it for both Talk Python and Testing Code.
+
+00:24:02 And we've had people ask us for that for Python Bytes.
+
+00:24:05 So it is now up.
+
+00:24:07 We were just being lazy and not putting it up, and now it's up.
+
+00:24:09 There's a link in the show notes, but essentially it's patreon.com/pythonbytes with just all one word.
+
+00:24:16 - Yeah, that's cool, thanks for putting that together.
+
+00:24:18 Yeah, you know, we have had these Patreons both for our individual, personal, private podcasts or single person podcasts, but I think it's cool to have one for Python Bytes.
+
+00:24:27 If people wanna support it, they can go there.
+
+00:24:29 You know, even a dollar a week, it doesn't seem like very much, but in the end, you know, it totally adds up.
+
+00:24:35 - On our personal, our solo efforts, we have 'em both set up on a per episode.
+
+00:24:40 This one, I think I've set it up as a per month, so you can do as little as a buck a month, - Yeah, yeah, that's super cool.
+
+00:24:47 Also, there's a link in the episode pages now to that as well, I updated the site today.
+
+00:24:51 Sweet, cool, so speaking of sweet, every year I'm always super excited to go to PyCon, so much fun, going back to Cleveland.
+
+00:24:58 - Yes. - You're gonna be there, of course, yeah? - Yep, Ohio!
+
+00:25:00 - Ohio, yeah, so this year we're doing a special booth.
+
+00:25:04 We've had, we had a booth last year, and we had our own little booth, but we're trying something different this year, we'll see how it goes.
+
+00:25:11 I think it's gonna go well.
+
+00:25:12 We're doing a partnership with JetBrains, and you and me and a bunch of other folks who are doing really cool stuff.
+
+00:25:19 Dan Bader from Real Python, the PyBytes guys, some other creators, and trying to do like a sort of Python community creator thing in this big booth.
+
+00:25:30 So we have, we'll be at the booth every now and then.
+
+00:25:32 We're gonna have a theater at the booth.
+
+00:25:34 So we'll have little mini presentations during the expo times.
+
+00:25:38 We'll have like some desks where we can do like little private office hours and get togethers, a little table.
+
+00:25:43 So be sure to check us out somewhere around the JetBrains booth.
+
+00:25:47 We won't be there all the time, but much of the time.
+
+00:25:49 >> Yep, it'll be fun.
+
+00:25:50 >> Yeah, I've already got some cool presentations in mind for that little theater thing.
+
+00:25:53 So hopefully that works well.
+
+00:25:55 >> Yeah. >> So we opened this whole show with XKCD, right?
+
+00:25:59 Let's round it out with it as well.
+
+00:26:00 >> Okay. >> So there's a cool thing.
+
+00:26:02 This is a blog post by Jake VanderPlas and then some examples from somewhere else, which came to us on recommendation from Tim Harrison.
+
+00:26:08 So thanks, Tim.
+
+00:26:09 And it's XKCD plots in Matlab.
+
+00:26:12 Have you seen this?
+
+00:26:13 In Matplotlib, rather.
+
+00:26:14 - Yeah, I think it's totally fun.
+
+00:26:16 - It's so fun.
+
+00:26:17 It's like, yeah, it's really, really cool.
+
+00:26:19 So if you were gonna create graphs and plots like in the style of XKCD, well now you just go into Matplotlib and you can just tell it to do that.
+
+00:26:30 Where's the setting?
+
+00:26:31 - Yeah.
+
+00:26:32 - Yeah, I don't know.
+
+00:26:33 I don't see exactly where to set it real quick.
+
+00:26:34 But anyway, you just go in there and you say, you know, plot this, and it literally looks like this cartoony style, which seems like fun and silly.
+
+00:26:40 But also I think sometimes when you're trying to not be overly scientific, you're trying to just make a rough point, sometimes that style can be really helpful.
+
+00:26:49 - Yeah, and it has that look of like you just wrote it with a pen or something like that.
+
+00:26:53 - Yeah, I love it.
+
+00:26:54 - I'm gonna use it for serious stuff because I'm that kind of a person.
+
+00:26:57 - That's awesome, you totally should.
+
+00:26:59 Do all your weekly reports and XKCD plots.
+
+00:27:01 - We have like graphs for our like defect reports and pass/fail test results and stuff like that.
+
+00:27:08 I totally wanna get that in XKCD form.
+
+00:27:10 - Yeah, awesome.
+
+00:27:11 So another quick one, the Euro SciPy 2019 conference.
+
+00:27:16 It was announced it would be September 2nd to 6th in Bilbao, Spain.
+
+00:27:20 That's pretty awesome.
+
+00:27:21 I would definitely go if I were nearby.
+
+00:27:23 I don't know, maybe I'll still go, but no plans at the moment.
+
+00:27:25 But anyway, if you're anywhere near there and you wanna go, that I'm sure is gonna be a great conference.
+
+00:27:29 And then the last thing, a friend of mine, Llewellyn Falco, actually turned me on to this this summer.
+
+00:27:35 It was this winter, actually.
+
+00:27:37 This thing called Font Ligatures for Coding.
+
+00:27:39 Have you heard or seen these things?
+
+00:27:41 - Yeah, I don't like 'em, but tell me more.
+
+00:27:44 - All right, I'll tell you, and you can tell me why you don't like 'em.
+
+00:27:46 So basically, there are certain fonts, and the one that I'm linking to, and the one that I've been using the last couple of months called Fira Code, F-I-R-A Code, is the font, and it supports what are called font ligatures, and these are off by default in your editor.
+
+00:27:59 Probably, even if you select the font, it probably won't show these, but you can turn it on.
+
+00:28:03 You can turn on PyCharm, you can turn it on in Visual Studio Code, things like that, And it will take the actual characters you type and reinterpret them as what you would think of them as.
+
+00:28:15 So for example, if you say exclamation mark equals, it replaces that with an equal sign with a slash through it, like not equals from math.
+
+00:28:23 And if you say double equals, it has like just a regular equal sign, a little bit longer.
+
+00:28:29 But if you say triple equals, like from JavaScript, where you do an equality test, it'll actually put three vertical lines, like exactly the same for math.
+
+00:28:38 And arrows connect, and greater than is like the greater than sign you learned in elementary school where it's like a greater than and then like a little slanty equal thing at the bottom.
+
+00:28:46 Oh, yeah, for greater than equal?
+
+00:28:48 Yeah.
+
+00:28:48 So it takes a little bit to get used to.
+
+00:28:50 It doesn't actually change the code at all.
+
+00:28:53 There's a cool little comparison at the bottom where it says fear code and fear mono, right, side by side.
+
+00:28:58 And it shows you all the different things that it does and whatnot.
+
+00:29:01 So it doesn't actually change your code file to double equal slash, it just shows you a different view of it.
+
+00:29:08 So if you hit backslash on a double, like a double equal or not equals, it'll just turn into the not sign, like the exclamation mark.
+
+00:29:14 So anyway, it's pretty fun.
+
+00:29:16 People can try that out.
+
+00:29:17 And I actually have grown to really like it.
+
+00:29:19 OK.
+
+00:29:20 But you don't like it?
+
+00:29:20 No, it's not my code.
+
+00:29:22 That's not what I type.
+
+00:29:24 It's what you meant, though.
+
+00:29:25 It's what you meant.
+
+00:29:26 Only if I spent that much time in math.
+
+00:29:28 Yeah, that's probably true.
+
+00:29:30 Yeah.
+
+00:29:31 OK.
+
+00:29:32 Yeah, it's pretty funny.
+
+00:29:32 But the thing that I think is cool is it doesn't actually change the source file, so you don't have to impose it on your team.
+
+00:29:38 You can just impose it on yourself.
+
+00:29:39 >> Yeah, right.
+
+00:29:40 >> Or as a good joke on somebody who left their computer foolishly unlocked.
+
+00:29:45 >> But I will try it.
+
+00:29:46 >> I like it.
+
+00:29:46 It takes a little getting used to, but I like it now.
+
+00:29:48 >> Yeah, cool.
+
+00:29:49 >> I feel like we should, as usual, round this out with a good joke.
+
+00:29:53 >> Or at least a joke.
+
+00:29:54 >> Okay, we can't promise it's good.
+
+00:29:56 No, not that subjective, but we can promise something that we perceive to be a joke.
+
+00:30:00 >> Okay. >> All right, hit me.
+
+00:30:01 first one, when your hammer is C++ everything begins to look like a thumb.
+
+00:30:07 Your thumb mostly. Yeah. And this is one of my favorites, I don't know if we've covered it already, why don't jokes work in octal? I don't know. Because 7, 10, 11.
+
+00:30:18 Okay, if that one just totally passed by you I'm gonna make it even less funny by explaining it. So it's from the joke of why is 6 afraid of 7 because 7, 8, 9, but eight and nine in octal is 10 and 11.
+
+00:30:31 Okay.
+
+00:30:32 - Yeah, that's good.
+
+00:30:33 - But whenever we tell this, the seven, eight, nine joke, my youngest daughter always follows that up with, well, why did seven, eight, nine?
+
+00:30:39 Because he was trying to eat three square meals a day.
+
+00:30:42 - Perfect.
+
+00:30:43 - How about you?
+
+00:30:45 - I love it.
+
+00:30:46 All right, I got one real quick one here, which I feel like actually, see, you're already laughing, right?
+
+00:30:53 It's good.
+
+00:30:54 - Yeah, yeah, it's good.
+
+00:30:55 - So, 'cause you're a Vim user, a lot of people are Vim users, But Vim is like voodoo black magic keyboard stuff that happens.
+
+00:31:02 And it's really cool when you know it, but every now and then you're like, why can't I select that word or whatever?
+
+00:31:07 So the joke is, I've been using Vim for a long time now, mainly because I can't figure out how to exit.
+
+00:31:13 [LAUGHTER]
+
+00:31:15 It's perfect.
+
+00:31:17 All right, well, let's leave it there.
+
+00:31:19 Thanks, everyone, for listening, as always.
+
+00:31:21 Yeah, thank you.
+
+00:31:22 Thank you for listening to Python Bytes.
+
+00:31:24 Follow the show on Twitter via @PythonBytes.
+
+00:31:26 That's Python Bytes as in B-Y-T-E-S.
+
+00:31:29 And get the full show notes at pythonbytes.fm.
+
+00:31:32 If you have a news item you want featured, just visit pythonbytes.fm and send it our way.
+
+00:31:36 We're always on the lookout for sharing something cool.
+
+00:31:39 On behalf of myself and Brian Auken, this is Michael Kennedy.
+
+00:31:42 Thank you for listening and sharing this podcast with your friends and colleagues.
+

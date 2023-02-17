@@ -1,0 +1,564 @@
+00:00:00 Hello and welcome to Python Bytes where we deliver Python news and headlines directly to your earbuds. This is episode 123 recorded March 27th, 2019. I'm Michael Kennedy.
+
+00:00:12 I'm Brian Okken.
+
+00:00:13 This episode is brought to you by Datadog. They're a big sponsor of the show and long time supporter. Tell you more about them later.
+
+00:00:19 Brian, do you think it's a pretty cool episode number? I mean, often people say like episode 100, 500, 1000. These are big, but 1, 2, 3, that's pretty cool too.
+
+00:00:27 I was just going to comment on it.
+
+00:00:29 One, two, three is really cool.
+
+00:00:30 I like that number.
+
+00:00:31 So I think we should start maybe counted down three, two, one XKCD go.
+
+00:00:36 Yeah.
+
+00:00:38 Okay, sure.
+
+00:00:39 And it's the intent is to say like, Oh my God, Python packaging and deployment and version management is a mess.
+
+00:00:44 Like the subtitle is my Python environment has become so degraded.
+
+00:00:47 My laptop has been declared a super fun site.
+
+00:00:49 Right.
+
+00:00:50 So that's kind of the theme of it.
+
+00:00:51 Yeah.
+
+00:00:52 But I mean, it is interesting that it's that title.
+
+00:00:55 doesn't really say that the environment is terrible, but his particular laptop environment has a whole bunch of stuff on it.
+
+00:01:02 And that's kind of where there's also now, Brett Cannon wrote an article called "Deconstructing XKCD 1987," where he goes through all of the different pieces.
+
+00:01:13 So if you're looking at this, a lot of people might, especially if they're new to Python, not even know what some of these things are.
+
+00:01:21 So if you're not familiar with Anaconda or Homebrew or other things or why this comes in.
+
+00:01:27 So Brett zooms in on all the pieces and just talks about all the different environments.
+
+00:01:33 And he's honest to say, yes, some people's laptops kind of looks like this because if you were trying out different things, you're like, oh, I want to try homebrew, how to homebrew install in or this other stuff.
+
+00:01:45 You can go down this route and do all these crazy different ways to install Python and have it in your environment, but you don't have to.
+
+00:01:54 Any one of these would be sufficient and you can delete them when you're done.
+
+00:01:58 You shouldn't have just the system Python.
+
+00:02:01 You should have system Python and the thing that you're using at the very least.
+
+00:02:06 Yeah, I feel like this is a little bit like saying "GUI desktop paradigm suck" because look at my desktop.
+
+00:02:13 It's a cluttered, absolute mess of stuff piled on here.
+
+00:02:16 And that's not necessarily the problem of your OS.
+
+00:02:22 It's also one of the benefits is that you can have multiple Python versions.
+
+00:02:26 There's like, you're not going to say I've got like seven versions of Chrome on my desktop.
+
+00:02:31 No, you can only have one. I think you can only have one version installed.
+
+00:02:35 Python is something you can have multiple different versions installed. And it's, that's one of the benefits, especially for developers to be able to test against multiple versions on one machine. But it does kind of get out of hand. He also, you know, so he'll just he describes what homebrew is and and what anaconda is and all that but the I think actually it's kind of a fun article because it's a little bit of an educational history lesson into all of this stuff It looks super interesting. I love it. Well, well done Brett, and I'm glad you picked it I I'm definitely gonna go through it. You just I just saw it here on the list last minute So I haven't read it yet, but it looks really good. Yeah, nice And so, let me take you on a journey with this next one, right? Okay, so Have I talked about Google lighthouse in the show? I think so. It sounds neat yeah, like about speeding up perceived page speed and most importantly what search engines think your page speed is because Google uses your page speed somewhat as a Index on like how you rank so going down that path. I did all sorts of work to make our sites Much much faster Python bytes out of them a training site all these things. So that was great But what I realized is when I restart, like I deploy a new version of the Python app, the very first time you hit a page that hasn't been loaded by that like worker process, it has to parse up the templates and do a little bit of work.
+
+00:03:55 And so maybe the first time you hit like a landing page that might not get hit that often, maybe it's, I don't know, it takes half a second, 70, 750 milliseconds or something to load.
+
+00:04:06 After that, it's like 20, 50 milliseconds.
+
+00:04:09 super fast, but the first time you hit it, it doesn't. So I'm like, all right, well, what if I restart and I've done all this work and then that's when the search indexing happens and everything still appears slow. So what can I do to make it faster? Well, why don't I just request every page and do that in parallel as many worker processes I have so it has to hit all the worker processes? It's not perfect, but it's a decent heuristic, right? So it works. You run it one time, every request is kind of slow, the next time it's incredibly fast. So I wrote this little app And i'm like, well, I don't want to just like type python my little script against the thing What you do is you point it at a site map Of any site and it'll figure out what the urls are and it'll like warm them all up basically So I linked to this. Yeah, so I linked to this little github thing But what I wanted to do is I wanted to type I called it like warm up or wake up or something like that So I wanted to just go to my website and say wake up python bytes.fm And that was it and make that part of my like ci cd deployment pipeline. Yeah. But I'm like, well, wait a minute. How do I, how do I make a, I know there are things like piece or from Python and cookie cutter and pie test and all these things that I can run, but how do I make that invite?
+
+00:05:17 I just had never thought about that. And I think even you had sent me a message.
+
+00:05:21 And so the idea is that if you create an entry point in your setup for your package, those will become executable commands on your OS, right? So that's pretty cool.
+
+00:05:32 So what I'm going to do is I'm going to link to a thing called Python package as a CLI option.
+
+00:05:36 And this just talks you through all the steps of setting it up so that basically you create a package in the package, you set up the entry points.
+
+00:05:43 It talks about how to structure those.
+
+00:05:45 And then if you just pip install your package, then, you know, all of a sudden these commands are available to globally as if they were like full on executables in the OS.
+
+00:05:53 Yeah, nice.
+
+00:05:54 It's actually one of those also one of those things that like, I'm glad you bring it up because it's not obvious how to do it.
+
+00:06:01 But the once you know how to do it, you're like, Oh, yeah, that's how you do it.
+
+00:06:06 And then you don't think about it anymore.
+
+00:06:07 Exactly.
+
+00:06:08 It's super easy.
+
+00:06:09 Everyone's like, Oh, this is what you do.
+
+00:06:10 I'm like, I've just never even thought about that.
+
+00:06:12 But yeah, it's not super obvious.
+
+00:06:14 because you know, in other environments, the way you do that is you compile it to an executable binary and you put that in your path.
+
+00:06:20 That's not how it works in Python.
+
+00:06:21 No.
+
+00:06:21 Yeah.
+
+00:06:21 you have to have like this magic entry points thing for setup tools and then the other ones have like different versions So yeah, exactly So anyway, I linked to that little site map one thing that drove me down this path and then also to the article That talks about this. How do you do this?
+
+00:06:38 And it's you know, it's not super new but I think it's certainly relevant to people out there And I think I was inspired to do this because I wanted to have it as part of pip X So you can pip X install your thing It says here's the executables that you got when you pipx install this thing and like I want mine to have one of those Come on. Yeah. Well, I'm glad you were actually I'm gonna use your app because we've got a a new visualization tool that we're using at work and At one of the demos we demoed it and like it was super slow as like, oh my god, what what happened?
+
+00:07:08 Well, it's the intern just edited all the code right before you have the demo. Yeah, exactly and So and this will fix it if you have a site map it'll just go request every page you tell it how many worker processes It'll do it all in parallel with a sink in a way. It's beautiful It's worth mentioning I guess that that little thing is not on Pi API at least not yet unless people can convince me to do it because I'm happy to build it for myself and it's on GitHub and you can pip install it from the github link, you know with the github option But I haven't decided I haven't committed to owning that puppy as an open source thing So I just I don't want to put it necessarily on the pip just yet. I'm not sure - Okay, cool.
+
+00:07:45 Well, next I wanna talk about, we've talked about type checking and, what do we call this stuff?
+
+00:07:51 The type hints and stuff. - Type annotations, type hints, yeah.
+
+00:07:53 - Yeah, yeah.
+
+00:07:54 We've talked about MyAPI several times.
+
+00:07:57 And I actually think, I don't even feel bad for not remembering who specifically, because I think we got this suggestion from lots of people.
+
+00:08:04 There's another tool called PyRight, P-Y-R-I-G-H-T.
+
+00:08:09 And it's a Microsoft, it's from the Microsoft repo.
+
+00:08:12 and it's the Microsoft static type checker for Python.
+
+00:08:17 And it's got a little bit of an interesting twist on it.
+
+00:08:21 It's written in TypeScript.
+
+00:08:22 What is TypeScript, a JavaScript thing or?
+
+00:08:24 - That's pretty meta.
+
+00:08:25 So TypeScript is basically like the idea of adding type hints or annotations of Python, like TypeScript is that to JavaScript, but to like the nth degree.
+
+00:08:34 So like TypeScript adds concrete typing and static typing and whatnot to JavaScript.
+
+00:08:39 And then it's its own language and then it compiles to native JavaScript basically.
+
+00:08:45 So yeah, it's kind of meta that that's the way they did it.
+
+00:08:47 - Okay, so it's written in TypeScript and it runs within Node and they're very open about it.
+
+00:08:53 It's intended for large code bases.
+
+00:08:57 So they're hinting at, this isn't something for just everybody to just use on your small little project or your small open source project.
+
+00:09:04 - Probably means it's a pain to set up.
+
+00:09:06 - Maybe, maybe.
+
+00:09:07 - I don't know, I've never tried it.
+
+00:09:08 - Once you have it set up, supposedly five times faster than mypy. For a lot of people, and it has a watch feature, it can watch code bases, large code bases, so that's for people with a big code base with a lot of people getting involved in it, that might be a really great idea. Yeah, this looks like a super idea. I think typins are a good idea if not over applied and this definitely seems useful. One of their comments, I just wanted to, they're not slamming mypy at all, but they say the PyRite was created to address gaps in the existing Python type checkers like mypy.
+
+00:09:41 - Okay, that's cool.
+
+00:09:42 Yeah, it looks really great.
+
+00:09:43 It has a lot of stars on GitHub already, so happy to see them putting that out there.
+
+00:09:47 All right, before we get to the next one, let me tell everyone about Datadog.
+
+00:09:50 So this episode, as many of them are, is sponsored by Datadog, and they're a monitoring and analytics service, and they bring all of your metrics and logs and distributed traces together in one place.
+
+00:10:00 They're client auto-instruments, things like async IO for async and away and popular frameworks like Django and Tornado to help you visualize performance.
+
+00:10:09 So you can trace all your requests across service boundaries, identify bottlenecks, you've got a bunch of microservices, like how do you correlate these into one sort of call stack performance statement.
+
+00:10:21 It'll do that for you.
+
+00:10:22 So pretty awesome stuff.
+
+00:10:23 Check them out at pythonbytes.fm/datadog.
+
+00:10:26 - Nice, thanks Datadog.
+
+00:10:27 - Thank you Datadog.
+
+00:10:28 Now, it wouldn't be a show if we didn't talk about Anthony Shaw, would it?
+
+00:10:32 - Oh, is this an Anthony Shah article?
+
+00:10:34 - And a real Python thing as well.
+
+00:10:37 So this next one that I want to talk about is something I'm super passionate about, and so I'm glad Anthony wrote about it, and Dan Bader had it on real Python, is refactoring, especially for simplicity.
+
+00:10:49 So he wrote an article that I think people who maybe haven't thought too much about this lately should check out called Refactoring Python Applications for Simplicity.
+
+00:10:58 So pretty cool.
+
+00:10:59 A lot of it turns out to be about answering the question of, is my code complex?
+
+00:11:06 And that's interesting.
+
+00:11:07 I don't know, I've been working on it, it doesn't seem bad.
+
+00:11:09 Like, where is it bad?
+
+00:11:11 That part over there, I don't like to edit.
+
+00:11:12 I know that breaks a lot if I touch that, so we just don't mess with that too much.
+
+00:11:16 Things like that, right?
+
+00:11:17 But in general, how do you know?
+
+00:11:18 So he talks about different metrics for complexity.
+
+00:11:23 So if you haven't thought about that, that's pretty cool.
+
+00:11:24 So lines of code, super obvious, like it's 10,000 lines of code.
+
+00:11:29 I don't know, that can mean something or it could just mean, you know, a lot of stuff you got to do, but then a hundred is easier.
+
+00:11:34 Yeah, exactly.
+
+00:11:35 A hundred is definitely easier in general.
+
+00:11:37 So.
+
+00:11:38 Talked about cyclomatic complexity, which is pretty awesome.
+
+00:11:42 And as a tester, I think that's a pretty interesting thing to think about as well.
+
+00:11:45 It's like, so if I've got like four in loop and within that four in loop, I have an if statement, you know, maybe depending on how you've structured it, that might be like three for the cyclomatic complexity.
+
+00:11:55 Cause you could write some code that has an empty list, so you don't iterate over.
+
+00:11:58 So that's one branch of execution.
+
+00:12:01 Another one is maybe you are looping through stuff, but none of them hits that if statement, or maybe it does, right?
+
+00:12:05 So how do you basically execute each path of all the potential conditional logic and going in or not into loops and stuff like that?
+
+00:12:12 So that's cool.
+
+00:12:14 If you have a function that has 15 of those things, I don't know what it's doing, but it's wrong.
+
+00:12:20 Right?
+
+00:12:20 It should not be doing that.
+
+00:12:21 It should not be doing that much.
+
+00:12:23 You have smaller functions, probably.
+
+00:12:26 Maybe that's a little bit of a harsh blanket statement, but there is a number where, I don't know what you're doing, but it's too much.
+
+00:12:32 You know what I mean?
+
+00:12:32 Whereas lines of code, you can't really say that.
+
+00:12:35 And there's also a couple other metrics that I'm not gonna talk about that go into this thing that's like, sort of takes more of them into account called a maintainability index.
+
+00:12:44 And he also talks about Wiley, which I think we've covered on the show, which is a tool he created to compute those numbers for your Python application.
+
+00:12:52 That's pretty cool.
+
+00:12:53 So all of that is to say, is my code complex and where?
+
+00:12:56 And then he talks about, all right, how do we refactor it?
+
+00:12:58 What are the tools?
+
+00:12:59 We can use PyCharm because it has killer refactoring stuff built in, there's some plugins for things like Vim and stuff or packages you can get, also VS Code stuff.
+
+00:13:10 And then the most, I think the most important part is like, here are some anti-patterns, like highly nested code, for example, and here are ways to refactor your way to better code.
+
+00:13:20 And I think that's actually the most valuable an actionable part of this article.
+
+00:13:25 Like, do I do this?
+
+00:13:26 Yes, I do.
+
+00:13:27 That's bad.
+
+00:13:28 Oh, here's the fix.
+
+00:13:29 Let me do that.
+
+00:13:30 I think that's great.
+
+00:13:31 - Yeah, actually, this is incredible.
+
+00:13:32 I think this should be like, turn into like a chapter in a couple lessons in all computer science programs 'cause there's a lot of information in here.
+
+00:13:43 - Yeah, it's super good.
+
+00:13:44 I mean, the complexity measures is really interesting as well as the answer patterns.
+
+00:13:49 And yeah, I definitely like it.
+
+00:13:51 And it certainly, I think it probably would resonate with you as well 'cause it has this testing angle, right?
+
+00:13:55 Like how do you know it's safe to refactor your way out of anti-patterns?
+
+00:13:58 Well, if you have tests, you're good.
+
+00:14:00 - Yeah, with some of the things like Wiley and others, you can test for this.
+
+00:14:04 So it's nice. - Yeah, super cool.
+
+00:14:05 - Cool. - All right, well, check that one out if you want a refresher or on refactorator, you wanna see some of the anti-patterns.
+
+00:14:12 - Speaking of like things to learn and lessons, we had Colin Sullivan suggested that we cover FastAPI.
+
+00:14:18 So thanks, Colin.
+
+00:14:19 - Yeah, and I hadn't heard of it, but it looks cool, doesn't it?
+
+00:14:21 - Yeah, my first reaction is, okay, I'll check it out, but it's yet another API generator stuff so that you can create like REST APIs fairly quickly and easily.
+
+00:14:33 But it is super cool and they're building it as fast.
+
+00:14:37 So it's fast API, high performance, easy to learn, fast to code, ready for production.
+
+00:14:42 And yeah, I'm gonna drop in their little sales pitch.
+
+00:14:45 It's fast, fast to code, fewer bugs, supposedly more intuitive.
+
+00:14:50 And I just, this morning, I was, I just went through their tutorial on it, installed it, ran something.
+
+00:14:56 'Cause I was, I had one question is there, that has both Swagger and Redock, which are ways to document your APIs, like live, you can just go to the webpage and go to the docs and see what it is, what your API looks like.
+
+00:15:13 And I'm like, that's just automatically there.
+
+00:15:16 And sure enough, yeah, did the demo and it's right there.
+
+00:15:19 You can walk along with the demo and see the hunt through it.
+
+00:15:23 And it only took a couple of minutes for me to try this out.
+
+00:15:26 And then it's built on top of Starlet, which I hadn't heard of before, which is a project for some of the web parts of it.
+
+00:15:35 Yeah, the most important part about Starlet is that I think is that it adds the async and await capabilities and the parallelism as well.
+
+00:15:43 And then Pydantic, which is for some of the data, controlling the data structures.
+
+00:15:50 And then at the bottom of the, just the front page that only takes a few minutes to go through, it says, oh yeah, we also have this tutorial.
+
+00:15:58 And the tutorial looks like it goes through, I think like some of the best practice crash course of API best practices.
+
+00:16:06 And so I'm totally gonna go through that.
+
+00:16:08 I think I might learn a whole bunch about schemas and a whole bunch of stuff.
+
+00:16:13 - Right.
+
+00:16:14 - Just by trying that.
+
+00:16:15 - Which I use this verb and yeah, it looks, This looks super cool. And one of the things I like about, well, certainly one of the things I like is this async and await capability.
+
+00:16:23 You know, there's some talk every now and then you hear these things flare up, like, "Oh, we're switching to Go because it's not fast enough." Or, "We're switching to Node.js because I don't know." Right? You know, because it was hot and amazing.
+
+00:16:35 And they say we have super fast performance for this, like on par with Node.js and on par with Go.
+
+00:16:40 And I think largely they say thanks to Starlet and Pydantic.
+
+00:16:45 And it's also thanks to this native async IO and uviacorn and all the ASGI foundations, which is super, super nice.
+
+00:16:53 - Yeah, and uviacorn, they have me using that with just the introduction demo.
+
+00:16:58 That's cool.
+
+00:16:59 And one of the things you can, they have you doing is to try out the reload flag, which just means like, while you can just type your code and change it and it just changes on the fly and you don't have to restart your application.
+
+00:17:14 Right. Normally when you run your web map, you type UVicorn or microwizky or whatever, and it's going to just load your Python files.
+
+00:17:21 And until you restart it, it's not going to reload them. But it's like the UVicorn thing you're talking about is a watch the files. And if there's any change, it'll just automatically restart your process. So you can just type save request, type save request, and it's all good.
+
+00:17:35 Yeah, I feel smarter already just going through the little intro.
+
+00:17:38 Yeah, that's great. I'm glad you pulled that out because that's super cool.
+
+00:17:42 the API is really nice as well. Okay, so I talked about at the beginning, I don't know if I want that puppy. There's a lot of folks out there that have probably open source projects and they're just like, "Ah, there's somebody angry at me on GitHub again. I can't go back there today." So there's a project called Bleach, which is a web server foundation type thing or web framework foundation type thing. And the reason it's called Bleach is it will take link text and stuff like that and make sure that it is safe for HTML. Because if you get it from an untrusted source, there's all sorts of insanity that with Unicode, escape codes, and all sorts of bizarre stuff that you can put into links to make bad stuff happen on servers. And so the idea of this is it's supposed to apply some bleach to this user input and stop the problem. So this guy, Will Congreen, he had been maintaining this project. He picked it up from someone else. And he decided, "You know "You know what, I don't want to work on this anymore.
+
+00:18:39 Been working on it for a while and it doesn't bring me joy, so I'm going to step down." And I thought I'd just highlight this because I think it tells an interesting story that probably resonates with a lot of folks.
+
+00:18:47 He said, "Look, I picked up maintenance of this project 'cause when I was familiar with it, the current maintainer wanted to step down.
+
+00:18:53 I guess he worked for Mozilla and Mozilla was using it on a bunch of sites and he felt an obligation to make sure it didn't just drop to nowhere and he knew that he could do it.
+
+00:19:03 He didn't really like working on it 'cause it's just really tedious to sort of fight all these weird escape codes and stuff.
+
+00:19:09 And he did a bunch of work, he didn't like using it, but he felt obligated to make sure it kept going.
+
+00:19:15 So he said, is he getting paid to work on it?
+
+00:19:18 No.
+
+00:19:19 Does he like working on it?
+
+00:19:19 No.
+
+00:19:20 Seems like he shouldn't be doing it.
+
+00:19:21 So it's just basically he's stepping down, but I thought it was just kind of an interesting journal entry of that side of open source.
+
+00:19:28 - Yeah.
+
+00:19:29 - Yeah, so people are out there, they can read this and maybe it'll resonate, maybe it'll help them stay on the project.
+
+00:19:34 - No, no, no, actually I don't feel like this.
+
+00:19:35 You know, actually I am getting joy from this or whatever, or maybe they are and not.
+
+00:19:39 - Is there somebody else taking it over?
+
+00:19:42 - There's somebody else who's working on it, I think who may be taking it over.
+
+00:19:47 Last line of the article said something to the effect of, what happens to bleach?
+
+00:19:52 I'm stepping down without working on what comes next.
+
+00:19:55 I think Greg is gonna figure that out.
+
+00:19:56 I'm afraid of it, I don't know who Greg is, but he's one of the people working on it.
+
+00:19:59 So it's kind of like, someone else is gonna have to--
+
+00:20:02 - Good luck, Greg.
+
+00:20:03 (laughing)
+
+00:20:04 - Yeah, yeah, good luck.
+
+00:20:05 So anyway, not a super positive story, but also I just thought it would be kind of interesting to share, because it's an interesting look into the sort of lifecycle of maintainers of open source projects.
+
+00:20:16 - Yeah, interesting.
+
+00:20:17 - Nice, yeah.
+
+00:20:18 So Brian, you got any extras for us this week?
+
+00:20:20 Or things you wanted to start real quick?
+
+00:20:21 - So something that came up that I thought was funny, Tim Hopper sent this out, and it's called SleepSort.
+
+00:20:29 And he found another implementation of SleepSort, and then he implemented it as his in Python.
+
+00:20:35 But I think it's just hilarious.
+
+00:20:37 So the idea is, can you make a sort algorithm by just sleeping for the period of time with the number is, and then printing out the number when you're done?
+
+00:20:47 So if you're on it, just sort numbers.
+
+00:20:49 - Oh, that's awesome.
+
+00:20:50 So if I have like one, seven, and three, and I wanna print one, three, seven, I just go to all of them and sleep as long as they are and then print them out?
+
+00:20:57 - Yeah, with Async, you can just like line them all up and sleep for the amount of time that it says, and then they'll all be sorted because it's time sorting.
+
+00:21:06 - Time sorts for you, how interesting.
+
+00:21:08 Yeah, I guess it does.
+
+00:21:09 (laughing)
+
+00:21:10 - I don't think it's useful, but it's interesting.
+
+00:21:13 Anyway.
+
+00:21:14 - It's an interesting thought experiment.
+
+00:21:15 And you know, if you're in college, you're in one of these algorithm courses, and they want to talk about quicksort, bubble sort, like here's a little interesting one that people might not see coming.
+
+00:21:25 - Yeah.
+
+00:21:27 - I have a couple I want to throw out there really quick.
+
+00:21:28 First of all, Python 3.7.3 is out now.
+
+00:21:33 So that's pretty cool.
+
+00:21:34 There's a decent number of changes to it.
+
+00:21:36 I would say there's some, a decent number of changes.
+
+00:21:40 It's really hard sometimes I find on the change logs for Python to see what the point release changes are versus just the major ones.
+
+00:21:49 So you go to where they say what the changes are for Python 3.7, it says, well these are the new pips in 3.7.
+
+00:21:55 Okay, well, what about this particular one?
+
+00:21:57 I mean, anyway, so probably people can put me in a better place in the release logs, but that seems like it should include those Anyway, so if you want to stay in the latest official release of python 3.7 you can go Install python 3.7.3 or however you do that. Right don't end up like the xkcd at the beginning pick one and go with it Yeah, another one this one I didn't really think it was worth covering the whole episode but alexander lori who is a medical doctor who's learning Python, a guy I know from the podcast and also from courses and stuff, really, really great guy, sent us this thing called Stack RoboFlow. So we all know Stack Overflow.
+
+00:22:37 So Brian, click on Stack RoboFlow and see what you get. It looks like Stack Overflow. So here, let me just read like real quick, summarize what I get. So it looks like Stack Overflow, sort of, but there's obvious disclaimers. And it says, "Subversion branches related to local directory. Sometimes I need to rename a local file on my SVN repository and in remote desktop I do this.
+
+00:23:00 SVN-L. It goes in and talks about it.
+
+00:23:02 This is written by an AI.
+
+00:23:04 It's like an AI that's been trained on Stack Overflow and it knows how to ask questions and answer questions as if it were a Stack Overflow-like movie. They have the code, so if you're into machine learning and stuff, you want to check that out. It's pretty amusing. Or if you just want to to laugh to see how close can an AI get to just random stack overflow.
+
+00:23:22 I really also like the logo.
+
+00:23:24 Yeah, it's funny.
+
+00:23:25 Yeah, it's cute.
+
+00:23:26 All right, last one really quick.
+
+00:23:28 I thought this one just might be useful.
+
+00:23:30 I can't remember why I ran across this.
+
+00:23:32 I don't think it's written in Python, but it doesn't actually matter.
+
+00:23:35 It could be useful for teams writing Python.
+
+00:23:37 Called Passbolt.
+
+00:23:38 Have you heard of Passbolt?
+
+00:23:39 No.
+
+00:23:40 So Passbolt is a password manager, like one password or a last pass, something like that.
+
+00:23:46 But it's for teams, like for software teams and stuff.
+
+00:23:49 And it's free, open source, it's self-hosted, it's based on OpenPGB and stuff like that.
+
+00:23:55 So it's like your own private, personal hosted stuff for things like server passwords.
+
+00:24:00 And you know, how do I get into this GitHub and how, like, whose password goes to the mail server and like all that kind of stuff meant for teams.
+
+00:24:08 So it looks pretty cool for software teams to like keep track of that stuff.
+
+00:24:11 That's actually pretty cool.
+
+00:24:12 Yeah, it's pretty awesome.
+
+00:24:13 Maybe some folks out there can not put that on sticky notes or Excel or wherever it's right now Yeah, or in a wiki or something? Yeah or a wiki exactly. Okay, so that wraps it up for our serious topics How about something not serious? You got a joke for us? You got a pie joke for us?
+
+00:24:30 Yeah, pie joke. Thanks my joke. How many programmers does it take to kill a cockroach?
+
+00:24:35 I don't know - one to hold it and the other to install Windows on it It's pretty bad. I got one for you as well. Thanks to pie joke up eight bites walk into a bar The bartender asked can I get you anything said yeah replies the bites make us a double It's not really a joke, but it's just like serious advice from pie joke friends. Don't let friends use Python 2 7 So maybe we'll just leave it at that Yeah, definitely. All right. Okay. Well Brian, thanks for being here and finding all these things and sharing with everyone. Thank you - Thank you. - You bet. Bye.
+
+00:25:07 Thank you for listening to Python Bytes.
+
+00:25:09 Follow the show on Twitter via @PythonBytes.
+
+00:25:11 That's Python Bytes as in B-Y-T-E-S.
+
+00:25:14 And get the full show notes at pythonbytes.fm.
+
+00:25:17 If you have a news item you want featured, just visit pythonbytes.fm and send it our way.
+
+00:25:21 We're always on the lookout for sharing something cool.
+
+00:25:24 On behalf of myself and Brian Aukin, this is Michael Kennedy.
+
+00:25:27 Thank you for listening and sharing this podcast with your friends and colleagues.
+

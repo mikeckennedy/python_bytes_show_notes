@@ -1,0 +1,568 @@
+00:00:00 Hello and welcome to Python Bytes, Python news and headlines delivered directly to your earbuds.
+
+00:00:06 It's Wednesday, April 12, 2017 and this is episode 21.
+
+00:00:11 Here, I'm Michael Kennedy.
+
+00:00:13 And I'm Brian Okken.
+
+00:00:14 And we're going to tell you about all the cool things we found this week in the Python ecospace.
+
+00:00:18 But before we get to that, Brian, let's say thanks.
+
+00:00:20 Well, thank you, Michael.
+
+00:00:21 Yes, you're welcome. Thanks to Rollbar, actually.
+
+00:00:23 Oh, yeah, yeah, definitely. Thank you, Rollbar.
+
+00:00:25 Yeah, thanks. Thank you, Rollbar.
+
+00:00:27 They're sponsoring this episode again.
+
+00:00:30 And if you want to check out rollbar, get some special deals.
+
+00:00:32 It's rollbar.com/pythonbytes.
+
+00:00:33 We'll talk more about them later.
+
+00:00:35 Brian, let's talk about some profiling.
+
+00:00:38 Doug Hellman has he's the guy that did the Python module of the week.
+
+00:00:43 I don't even know when that started for Python two.
+
+00:00:47 But he has and I can't remember when he started the third one.
+
+00:00:50 But I don't know if we've mentioned it on the show yet.
+
+00:00:52 But it is.
+
+00:00:54 It's a really good resource.
+
+00:00:55 It's pymotw.com, Python module of the week.
+
+00:01:00 And he goes through a lot of the standard library and just does a little page on how to use different bits of the standard library.
+
+00:01:09 And this recently put up a profile in Pstats, and it talks about profile and cprofile for basically just for if you have a piece of your code that you think might be slow and how to profile that and figure it out.
+
+00:01:24 So I wanted to highlight that.
+
+00:01:25 Yeah, I definitely I think this is awesome. You know, Doug way to go very, very cool. And keep going with Adam, we're going to be checking out of course throughout as you roll out new ones. I definitely want to encourage people to think about profiling. I've been doing a lot of work recently on certain parts of my web app where performance is somewhat important. And things have changed, right. So for example, I switched out the database back end. And depending on how that was working, like it used to be really fast became slow in some situations, maybe I needed to restructure the way my my data was stored, maybe I needed new indexes, or whatever. And even just profiling the web application itself actually can tell you a lot about not just where your Python is slow, but where the web services you're connecting to are slow, or the databases you're talking to are slow. Or you can see something like you made 600 requests to the database during this page load, like you can really bet there's probably some sort of lazy loading problem going on, right?
+
+00:02:23 And so sometimes just a cursory glance at profiling stats will like tell you like, oh, I didn't realize I was doing that wrong.
+
+00:02:31 And you quickly fix it.
+
+00:02:32 So I definitely check that out.
+
+00:02:33 - So the built in profile stuff and C profile works great for a lot of the stuff I work on, but I'm not often working on web stuff.
+
+00:02:43 Is those, are those the right tools for something like web applications or are there other things that you search for?
+
+00:02:49 - One of the things that can be challenging about profiling web apps is there's a lot of startup code that runs and that can be like computational so you can like if you try to profile your app as it starts up it could be swamped with actual just getting the thing going traffic and then you hit a request for a page and it's small enough it doesn't show up so maybe you gotta hit it a hundred times or something to get it to happen so what I do I don't know about the other frameworks pretty sure they must have something like this, but in Pyramid, by default, there's a little red box on the right side in development mode, and you can click on it, it'll take you to, it's like called a Pyramid debug toolbar, it takes you, you go to the back there, and one of the options is to turn on profiling per page request. So you just check a box, and then request a page, and you can, it'll tell you how many milliseconds it took, and if you click on it, it'll give you the output from this just for that page. Automatically. So you don't have to do anything, yeah, it's super cool.
+
+00:03:46 >> All right. Well, thanks.
+
+00:03:47 >> Yeah, sure. Speaking of the web, so we have a new project coming out that I wanted to bring everyone's attention to.
+
+00:03:54 I don't know how old it is.
+
+00:03:56 It's like weeks, maybe months.
+
+00:03:58 I'm not sure. It's not very old, by Tom Christie.
+
+00:04:01 So you may know Tom Christie from the Django REST framework.
+
+00:04:05 He came up with something called API star, and this is an alternate REST framework.
+
+00:04:11 >> Okay.
+
+00:04:12 >> So Django REST framework has been around for like five years, It's very popular, it's well-known, it's highly used, but it's also very much wedded with the Python 2 prior web world.
+
+00:04:27 It's from five years ago, and it's based on stuff that was put in a motion before then.
+
+00:04:33 If you want to explore some new and interesting ideas, you can't really do it.
+
+00:04:36 That's what Tom was saying.
+
+00:04:38 He actually came up with this thing called API star and it is, it has got some slick features that are really worth looking at.
+
+00:04:46 It's really new, so I don't know if it's quite ready for primetime.
+
+00:04:49 I just honestly don't know.
+
+00:04:50 I'm not saying it's not.
+
+00:04:51 But the idea is he calls it a smart web API framework designed specifically for Python three.
+
+00:04:57 And it's super easy to get started.
+
+00:04:59 Just start, just pip install API star.
+
+00:05:01 You can say API star dash new and template dash minimal or dash dash template minimal, right?
+
+00:05:06 That'll get one.
+
+00:05:07 You can either run it or you can run the test straight away.
+
+00:05:08 I thought you would like that little API star space test.
+
+00:05:11 That's pretty cool.
+
+00:05:11 - Yeah, and nice interface too.
+
+00:05:13 It looks really clean.
+
+00:05:15 - Yeah, so here's where the magic comes in.
+
+00:05:18 It's all about the type annotations.
+
+00:05:20 So in Python 3, you can say, like I could define a function called like show query parameters, and I could have a thing called query parameters.
+
+00:05:27 I wanted it to be of type HTTP.queryparams.
+
+00:05:31 I would say colon HTTP type query params.
+
+00:05:34 that tells Python, not at runtime, but at design time or development time, "Hey, this thing's supposed to be a query params instance, right?" Yeah.
+
+00:05:44 Okay, that's cool.
+
+00:05:45 Okay, so now here, check this out.
+
+00:05:46 If you put a parameter on that API method and you say it is one of those, and it's available as part of the request, it will automatically come into your system, regardless of what you call it and where you put it.
+
+00:05:58 Oh, nice.
+
+00:05:59 It looks at the type, hence the type parameters.
+
+00:06:01 So the thing you're saying, this thing called query params, you want the query params?
+
+00:06:05 I have one of those in the request.
+
+00:06:06 And similarly, if you return something from there, by default you return dictionaries like all these web frameworks in Python do.
+
+00:06:14 But you can also use type annotations to say, no, this returns a response, and then return something else.
+
+00:06:19 Like actually using the type annotation to control how the processing of the request is done.
+
+00:06:26 Similarly, you can put things in like your URL.
+
+00:06:30 So write like /users/7.
+
+00:06:35 Normally that would all just come in as a string, but in this API, you can say, as a function on your rest method, you can say like user ID colon int, and it will take that thing and convert it to an int out of the URL and pass it in.
+
+00:06:48 So there's all this really cool stuff around type hinting that I just, type annotations I really love.
+
+00:06:53 And not only that, it's faster than Sanic.
+
+00:06:56 - Okay.
+
+00:06:56 - So, very, very cool.
+
+00:06:58 Good job, Tom.
+
+00:06:59 And now that I know you said that already, and I kind of went past me without me recognizing it, but the built-in testing with PyTest.
+
+00:07:07 Yay.
+
+00:07:08 Yay.
+
+00:07:08 It's awesome, right?
+
+00:07:09 Yeah.
+
+00:07:09 Definitely.
+
+00:07:10 Cool.
+
+00:07:10 Yeah.
+
+00:07:11 So it's a really new framework.
+
+00:07:12 Check it out.
+
+00:07:13 It's already got quite a few stars on GitHub.
+
+00:07:15 But yeah, API star.
+
+00:07:16 There's a link in the notes.
+
+00:07:17 And there's a little example code as well.
+
+00:07:19 All right.
+
+00:07:19 But that's about fast web frameworks.
+
+00:07:21 But sometimes we don't care if things are fast, right?
+
+00:07:24 Yeah.
+
+00:07:24 So actually, we're kicking around the idea of talking about this last week and decided not to.
+
+00:07:28 but we're putting it in now.
+
+00:07:30 It's an article called, "Yes, Python is Slow and I Don't Care." And actually, I've never really noticed that being slow for what I have it for, but basically that's kind of the point of the article, is that fast is great.
+
+00:07:47 Having Sanic and API star be super fast, of course, that's wonderful.
+
+00:07:51 But there's a lot of Python uses for Python and for other programming that the most expensive resources not your CPU. Actually, it's very seldom your CPU anymore. So therefore, you usually don't really have to care about the speed of Python. And I'd have to agree. And a big chunk of this article is you should be optimizing for your most expensive resource. And that's your people.
+
+00:08:16 Your people are way more expensive than your computer time.
+
+00:08:19 So are bugs.
+
+00:08:20 Yes, and definitely. And so are bugs. I know that myself, we have, at work, We use Python for testing and it's because we can write smaller test code.
+
+00:08:32 And the time our tests run is all in I/O time.
+
+00:08:36 It's communicating with instruments.
+
+00:08:38 It's not sitting in our computer.
+
+00:08:40 And so I can have small, elegant tests that I can read well is way more important than how fast Python is.
+
+00:08:48 Yeah, you're talking about testing devices and hardware.
+
+00:08:52 Same thing applies to the web, right?
+
+00:08:53 usually waiting on either a database, a web service, or a socket somewhere.
+
+00:08:56 And the timing usually doesn't matter, right?
+
+00:09:00 Yeah, well, I mean, of course, you want it to be fast, but that's not the slow part isn't the Python. So actually, I guess that ties in with, with the other articles we've had so far, developing an API quickly, and elegantly is going to eliminate mistakes better if you can do that with less code. Great.
+
+00:09:19 Yeah, absolutely. Well, and if things are slow, right, there's always options, right? You can could write it in C, you could write in Rust, you could write in Cython, like you could take that little bit and do something or just change, just like you started at the beginning, profile it and change your algorithm. It very well may be that that makes a huge difference. Yeah, and it might be that you think it's Python but like you said it might be your database or you're accessing some resource or something, figure that out. And then if it really is Python, which I think there's rare cases where it really is, but if it is there's options with the Scython and such or taking a look at Intel's offering or PyPy or something.
+
+00:09:57 Yeah, exactly.
+
+00:09:58 I just heard, saw some stuff that PyPy is supposed to be getting quite a bit faster still.
+
+00:10:03 And of course, they got that big grant from Mozilla to make Python 3 work much better.
+
+00:10:06 So all sorts of goodness there.
+
+00:10:08 Yeah, definitely.
+
+00:10:09 Now, before we get to the next item, let me tell you about Rollbar.
+
+00:10:12 You guys probably heard me talk about it before, but I've been using Rollbar for a long time.
+
+00:10:17 And the idea is you basically put a few lines of code into your web application.
+
+00:10:22 And if ever there's an error, it will automatically capture all the information that you need about it and ship that over to roll bar and then send you a notification, all sorts of different ways you can get notifications.
+
+00:10:33 And it comes with all almost all the context you need to actually solve the problem.
+
+00:10:37 So for example, it might have the stack trace and the local variables and the URL and all those sorts of things that you might not even have to debug your code, you can just look and go, "Oh dear, I need to check for this," or, you know, make sure that's not done or whatever, right? So if you want more reliable web apps, just be sure to check out rollbar.com/pythonbytes.
+
+00:10:57 Wonderful. Thank you, Rollbar. And we have Rollbar to thank for why Python Bytes website is always up.
+
+00:11:03 Yeah, that's right. Absolutely. It's integrated in all the sites. It's beautiful. So one of the things that I want, I kind of want to take us back to the basics for a minute, okay?
+
+00:11:13 So, one of the things that I think people, many people know about, but a lot of people don't is hashing.
+
+00:11:20 When to use hashing, how to use hashing, and things like that.
+
+00:11:23 So there's a nice article called A Quick Introduction to Hashing by Gerald Nash, and this is specifically for Python developers.
+
+00:11:32 And has some nice examples of like, if I want to hash a string, you know, using say SHA-256, or something like that for the hash, how do I do that?
+
+00:11:40 What does that look like?
+
+00:11:41 back up a second and what is a hash?
+
+00:11:44 >> Sure. So a hash is a little bit like encryption, in that you can look at the hash and you basically, it's obfuscated, you don't really know what it is.
+
+00:11:54 But unlike encryption, it can't be reversed, it can't be unhashed.
+
+00:11:58 You might take a 10 megabyte set of data and hash that into 256 characters or something like that.
+
+00:12:06 The idea is, if you have the same input and you run the hash over and over again, you should get the same output.
+
+00:12:13 >> Okay.
+
+00:12:14 >> But even if it varies slightly, you'll get a totally different output, not a little bit different, but dramatically, like unrelated type of thing.
+
+00:12:22 So it's used for verifying messages, verifying download files are not tampered with.
+
+00:12:28 But most importantly, it's used for passwords.
+
+00:12:30 Storing raw passwords in a database, not the best.
+
+00:12:33 So we typically hash them.
+
+00:12:35 But there's all sorts of other interesting uses you can use for hashing.
+
+00:12:38 So like in my websites, I have the static files, JavaScript, CSS, images, etc.
+
+00:12:45 Basically cached, like super hard.
+
+00:12:48 So they're cached for a year, at least, I think maybe possibly longer.
+
+00:12:52 So if you go to the site, and you like, come back later, it's not going to go back and look again.
+
+00:12:58 And so what I do that the technique to make sure that nothing ever shows up stale on the site, right, you don't have to wait a year for it to like come back together, is I put a little hash of the raw files at the end of the URL of every bit of static content that I have.
+
+00:13:11 And so it caches it, but it caches it with the fingerprint of it embedded.
+
+00:13:16 So if the file ever changes, it instantly generates a new file and it pulls it out.
+
+00:13:21 So hashing is used for all sorts of good stuff.
+
+00:13:23 Okay.
+
+00:13:24 Yeah.
+
+00:13:25 So anyway, it's a great little article to show you guys how to do that.
+
+00:13:26 So if you're not taking advantage of hashes, they're super easy.
+
+00:13:30 Here's a nice way to see how to do it.
+
+00:13:32 Wonderful.
+
+00:13:33 A very fun article, I forgot to write this person's name, but there's an article called Wedding at Scale, How I Used Twilio, Python, and Google to Automate My Wedding.
+
+00:13:43 - I feel like I missed this opportunity when I got married.
+
+00:13:45 - Yeah, and this is just fun.
+
+00:13:47 And actually, a modern person's problem with how to invite people.
+
+00:13:53 And I love this article, just the nerd in me likes it.
+
+00:13:58 There's no way I would have had time to figure this out when I was trying to plan my wedding.
+
+00:14:02 but if you got the time, that's great.
+
+00:14:04 So through all of the potential guests and their phone numbers into a Google spreadsheet and then used Python and a Python package called gspread to access Google spreadsheets and pull that out and with Python use Twilio and SMS people and invitation to the wedding.
+
+00:14:25 And then not only that, left URLs for people to get back to him.
+
+00:14:31 I guess there's URLs and there's also like replies to have a set up a Flask app to collect everything of all the replies to that.
+
+00:14:41 And then even goes on to sending out reminder texts and having people select which food option they wanted.
+
+00:14:49 And it's pretty incredible, this story.
+
+00:14:51 - Yeah, a real mashup of a bunch of cool technologies.
+
+00:14:53 That's awesome.
+
+00:14:54 - Yeah, it's cool.
+
+00:14:56 - Nice, I have another fun one for us for our last item here today.
+
+00:14:59 And I've got to be careful about how I speak about this device because my understanding is speaking of it causes it to do things.
+
+00:15:08 So let's call it the Amazon Virtual Assistant thing that sits on your desk, all right?
+
+00:15:13 - Okay.
+
+00:15:14 - Okay, so there's a guy who created a framework for creating what are called skills on this assistant.
+
+00:15:21 Right, so you can teach it to do new things.
+
+00:15:23 And the guy who wrote this article is Neil Stewart.
+
+00:15:27 And what I thought was really interesting was He was visiting a friend or something like that, and they had one of these assistants.
+
+00:15:34 And he thought it was really cool.
+
+00:15:36 He's like, "I'm ordering one." But he decided, "I'm gonna challenge myself "to build a new skill for it before it even arrives." So as developing for hardware, that's a pretty interesting idea, to develop for it before it exists in your hands, right?
+
+00:15:49 - Yeah, we do it all the time.
+
+00:15:50 - Yeah, right.
+
+00:15:51 So the thing that he came up with is something called VoiceOps.
+
+00:15:54 So he has a bunch of AWS accounts and whatnot, and he can ask it things like how's the status of his AWS servers and whatnot.
+
+00:16:01 It'll tell him how many running and stopped instances there are, what RDS databases are on his account, and things like that.
+
+00:16:08 So that's a pretty fun skill to add to this assistant.
+
+00:16:12 Yeah, I didn't know you could do that, add skills to it.
+
+00:16:14 That's pretty cool.
+
+00:16:14 Yeah, and apparently you can do it in Python, which is even cooler.
+
+00:16:17 So he looked around and saw that there's a few things, but he wasn't really happy with it, so he decided to create a new framework called Python, the name of the thing.
+
+00:16:26 And it's open source on GitHub.
+
+00:16:28 The article here that we have linked, this one actually has a bunch of cool examples on how to affectionate.
+
+00:16:34 He has a hello world type of thing.
+
+00:16:36 And he also linked to something called Echo Shim.
+
+00:16:40 And Echo Shim allows you to create one of these skills, put it into AWS and run it on their Lambda system on Python, and then test it in the browser without even having hardware.
+
+00:16:52 - Oh, cool.
+
+00:16:53 - Yeah, so pretty fun project.
+
+00:16:55 So if people are into that system thing, and Python, check it out.
+
+00:16:59 - I will check it out, that's neat.
+
+00:17:01 - Yeah, I haven't gotten, do you have one of those things?
+
+00:17:03 Any of those, like a Google Home, or one of those types of things?
+
+00:17:06 - No, actually that whole concept of letting some other company just listen to my house, I don't like the idea, so, anyway.
+
+00:17:14 - Yeah, I'm not there yet either.
+
+00:17:17 I'm not super crazy about privacy and whatnot, like, my locations on my smartphone and stuff, but that somehow like crosses a little bit of a line to me.
+
+00:17:25 I don't know.
+
+00:17:26 I'm sure I'll be over it someday.
+
+00:17:27 - Plus I don't really, yeah, I don't trust my kids to not just order a bunch of stuff all the time just by talking to it.
+
+00:17:33 - Yeah, like after what happened the first time I got an iPhone that had Siri on it, I know what the kids did to that thing.
+
+00:17:41 This is even more accessible to them.
+
+00:17:43 So I'm not sure I want that anywhere near my kids.
+
+00:17:45 Awesome.
+
+00:17:47 So that's it for the week.
+
+00:17:49 Brian, what do you got going on with you personally?
+
+00:17:51 I had an interview with Casey Rosenthal from Netflix on chaos engineering that I finally got edited and out last week on Test & Code.
+
+00:18:01 So that's out there.
+
+00:18:03 Oh, like Chaos Monkey, Chaos Gorilla, all that kind of stuff they do at Netflix?
+
+00:18:06 Yeah.
+
+00:18:07 And basically, we tried to talk about not just what they're doing there, but the concept of taking steady state measurements and doing experiments that might change the steady state on a system, as opposed to traditional testing methods.
+
+00:18:22 It's pretty interesting.
+
+00:18:23 - Yeah, nice.
+
+00:18:24 Oh, very cool.
+
+00:18:25 I'm definitely gonna listen to that.
+
+00:18:26 That's great.
+
+00:18:27 - How about you?
+
+00:18:28 - So I spent the weekend reworking a bunch of my web stuff around the training course, training courses, training site, and so on.
+
+00:18:35 So I rebuilt a new player 'cause I wanted to surface the closed captioning a little bit better for people, things like that.
+
+00:18:42 So I did a bunch of JavaScript and whatnot.
+
+00:18:44 And the other thing I did is I added full text search to the whole site.
+
+00:18:48 So you go there and you can search into the videos even, into the text of the videos.
+
+00:18:55 So it's beautiful.
+
+00:18:56 And this is what I was actually-- yeah, this is actually what I was thinking about when we were talking about profiling.
+
+00:19:01 So when I first wrote this, I wrote it like what you might think of as naively.
+
+00:19:05 Wrote it, and it's all backed by a bunch of text data in MongoDB.
+
+00:19:09 It's not using full text in Mongo.
+
+00:19:11 It's using something else that I've done.
+
+00:19:13 But basically, the back end is Mongo, and there's a bunch of data in there, like 10 megs, 20 megs.
+
+00:19:18 not sure exactly how much of text that I wanted to search.
+
+00:19:21 And I ran this, oh, this will be nice and fast.
+
+00:19:23 And it was like 600 milliseconds a page, which is acceptable maybe for other people.
+
+00:19:29 But for me, this is not acceptable.
+
+00:19:30 I'm like, oh, no way, this is not gonna stand.
+
+00:19:33 What is wrong with this?
+
+00:19:34 So I spent a lot of time in the profiler, and I've gotten it down to 47 milliseconds.
+
+00:19:39 - Oh, okay, cool.
+
+00:19:40 - So it's more than 10 times faster, right?
+
+00:19:43 That's like 10.5 times faster by using the profiler.
+
+00:19:46 And it was just, this part's slow, how can I do this differently?
+
+00:19:48 This part's slow, how can I do this differently?
+
+00:19:50 So just, you know, very neat.
+
+00:19:52 If you wanna see the fruits of that profiling, you can click the link at the bottom.
+
+00:19:56 - Cool, can we get text search on Python Bytes?
+
+00:20:00 - Yes, we're getting, yes, absolutely.
+
+00:20:02 We're getting full text search on Python Bytes soon.
+
+00:20:04 - Okay. - Yes.
+
+00:20:05 I think we need it though.
+
+00:20:06 I mean, we have a bunch of transcripts that we have interesting stuff in.
+
+00:20:08 We've got pretty solid show notes for this podcast.
+
+00:20:11 I think we need a full text search.
+
+00:20:13 So yeah, we'll be sure to announce it shortly.
+
+00:20:15 - Okay, great, cool.
+
+00:20:16 I need one more weekend, I guess.
+
+00:20:18 - Like adding work to you on air.
+
+00:20:20 Sorry about that.
+
+00:20:22 - That's all right, it's good.
+
+00:20:22 No, no, it's on the roadmap.
+
+00:20:23 It's on the roadmap.
+
+00:20:25 All right, well, Brian, thanks so much for finding these things and sharing them with everyone.
+
+00:20:28 - Thank you.
+
+00:20:29 - You bet, catch you next time.
+
+00:20:30 Thank you for listening to Python Bytes.
+
+00:20:34 Follow the show on Twitter via @PythonBytes.
+
+00:20:36 That's Python Bytes as in B-Y-T-E-S.
+
+00:20:39 And get the full show notes at PythonBytes.fm.
+
+00:20:43 If you have a news item you want featured, just visit PythonBytes.fm and send it our way.
+
+00:20:47 We're always on the lookout for sharing something cool.
+
+00:20:50 On behalf of myself and Brian Auchin, this is Michael Kennedy.
+
+00:20:53 Thank you for listening and sharing this podcast with your friends and colleagues.
+
