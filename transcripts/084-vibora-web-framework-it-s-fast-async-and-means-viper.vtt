@@ -1,0 +1,2520 @@
+
+00:00:00.000 --> 00:00:06.300
+Hello and welcome to Python Bytes where we deliver Python news and headlines directly to your earbuds. This is episode 84
+
+
+00:00:06.300 --> 00:00:11.480
+Recorded June 27 2018. I'm Michael Kennedy and I'm Brian Okken and Brian
+
+
+00:00:11.480 --> 00:00:17.800
+You brought a special guest along for this one. I'm so excited that we have yet another perspective here. Yeah, welcome Nina Zakarenko
+
+
+00:00:17.800 --> 00:00:19.200
+Hi, it's great to be here
+
+
+00:00:19.200 --> 00:00:23.680
+Yeah, it's really great to have you on the show and it's gonna be fun to have your perspective on all these things
+
+
+00:00:23.680 --> 00:00:28.680
+So let's get started before we get into the topics just want to say thank you to DigitalOcean
+
+
+00:00:29.160 --> 00:00:30.400
+DigitalOcean is great.
+
+
+00:00:30.400 --> 00:00:32.640
+If you want to try some of their cloud hosting,
+
+
+00:00:32.640 --> 00:00:35.080
+just go to pythonbytes.fm/digitalocean.
+
+
+00:00:35.080 --> 00:00:37.080
+And for new users, you get $100 credit.
+
+
+00:00:37.080 --> 00:00:38.400
+That's pretty sweet.
+
+
+00:00:38.400 --> 00:00:41.960
+Hey, Brian, we've talked a lot about Python packaging, right?
+
+
+00:00:41.960 --> 00:00:44.320
+- We have, and I'm going to talk about it more today.
+
+
+00:00:44.320 --> 00:00:45.880
+- We were trying to talk about how to do it right,
+
+
+00:00:45.880 --> 00:00:48.400
+but sometimes it might go wrong, right?
+
+
+00:00:48.400 --> 00:00:50.760
+- Yeah, so one of the fun things is,
+
+
+00:00:50.760 --> 00:00:53.680
+well, I've tried to, I'm working on switching packages
+
+
+00:00:53.680 --> 00:00:56.760
+to use Markdown versions of READMES,
+
+
+00:00:56.760 --> 00:00:59.080
+but a lot of them are in restructured text,
+
+
+00:00:59.080 --> 00:01:04.560
+And sometimes really either any one of them, sometimes you can get the documentation.
+
+
+00:01:04.560 --> 00:01:08.720
+It can be kind of a little mucked up, but it might look fine on your computer, but
+
+
+00:01:08.720 --> 00:01:14.000
+you, you push everything up all the way up to PyPI and it doesn't look good.
+
+
+00:01:14.000 --> 00:01:15.120
+Something's messed up.
+
+
+00:01:15.120 --> 00:01:19.700
+And so somebody wrote a document called correct or a article called correcting
+
+
+00:01:19.700 --> 00:01:22.800
+documentation for a deployed Python package.
+
+
+00:01:22.800 --> 00:01:25.760
+And, the answer there's a couple answers.
+
+
+00:01:25.760 --> 00:01:29.600
+one of them is to try to prevent it first by checking your documentation first.
+
+
+00:01:29.600 --> 00:01:33.760
+And there was a recommendation of a tool called RestView,
+
+
+00:01:33.760 --> 00:01:40.400
+which is a way to view your long description of your package before you push it up.
+
+
+00:01:40.400 --> 00:01:45.040
+But even after then, if you don't do that or if it's still messed up,
+
+
+00:01:45.040 --> 00:01:50.400
+to use post version numbers, which I knew about these things, but I didn't know what they were for.
+
+
+00:01:50.400 --> 00:01:54.320
+So let's say your package is on version 0.3.2.
+
+
+00:01:54.960 --> 00:01:56.520
+And it's messed up.
+
+
+00:01:56.520 --> 00:01:59.040
+Well, you can't just fix the documentation,
+
+
+00:01:59.040 --> 00:02:00.200
+push it back up again.
+
+
+00:02:00.200 --> 00:02:03.800
+PyPI doesn't let you push up the same version again.
+
+
+00:02:03.800 --> 00:02:05.200
+- Yeah, they're basically immutable
+
+
+00:02:05.200 --> 00:02:06.200
+once they're published, right?
+
+
+00:02:06.200 --> 00:02:10.480
+- Yeah, so if you push up 0.3.3
+
+
+00:02:10.480 --> 00:02:12.120
+with the fixed documentation,
+
+
+00:02:12.120 --> 00:02:13.840
+there's like nothing changed.
+
+
+00:02:13.840 --> 00:02:16.680
+Nobody really has to download the new one.
+
+
+00:02:16.680 --> 00:02:19.360
+But that's, I guess, what the post version numbers are.
+
+
+00:02:19.360 --> 00:02:24.360
+So you can say 0.3.2.post1 and post2 and post3.
+
+
+00:02:24.880 --> 00:02:29.320
+And these don't cause people to have to re-download if pip is,
+
+
+00:02:29.320 --> 00:02:31.520
+if it's a pip dependency or something like that.
+
+
+00:02:31.520 --> 00:02:34.480
+But it allows you to push up new documentation.
+
+
+00:02:34.480 --> 00:02:35.360
+And I thought that was cool.
+
+
+00:02:35.360 --> 00:02:36.000
+That's interesting.
+
+
+00:02:36.000 --> 00:02:40.920
+So the posts on the end means like if I do a dash U or dash dash upgrade in PIP,
+
+
+00:02:40.920 --> 00:02:43.840
+it's not going to do anything, but it'll still let you update it?
+
+
+00:02:43.840 --> 00:02:45.920
+Yeah, it still pushes up a new version.
+
+
+00:02:45.920 --> 00:02:51.720
+And I don't actually know if it prevents the pip install stuff, but at least in
+
+
+00:02:51.720 --> 00:02:53.820
+your version, your change log and stuff.
+
+
+00:02:53.820 --> 00:02:57.860
+You can actually, I don't know all the details, but it's a cool trick.
+
+
+00:02:57.860 --> 00:02:59.280
+Yeah, it's definitely a cool trick.
+
+
+00:02:59.280 --> 00:03:02.380
+The other thing I wanted to bring up since we're talking about packaging is I was
+
+
+00:03:02.380 --> 00:03:06.260
+pushing up a different, going through the release process of pushing up a new
+
+
+00:03:06.260 --> 00:03:10.060
+package just the other day, and I was trying out the test.
+
+
+00:03:10.060 --> 00:03:13.580
+For some reason, I was having trouble with the test PyPI.
+
+
+00:03:13.580 --> 00:03:18.060
+So before you push it to the real one, you can test things out on the test server.
+
+
+00:03:18.600 --> 00:03:26.100
+But for some reason, even though the packaging instructions are really pretty clear, I couldn't get it right.
+
+
+00:03:26.100 --> 00:03:34.900
+So the Python Package Authority has a document called "Using Test API" that is a little more detailed and it helped me and it was nice.
+
+
+00:03:34.900 --> 00:03:36.400
+So check that out also.
+
+
+00:03:36.400 --> 00:03:38.600
+Yeah, that'll help all the package maintainers out there.
+
+
+00:03:38.600 --> 00:03:42.300
+Nina, do you have any packages you have to maintain or take care of?
+
+
+00:03:42.300 --> 00:03:43.900
+I'm very lucky I don't.
+
+
+00:03:43.900 --> 00:03:45.860
+(laughing)
+
+
+00:03:45.860 --> 00:03:47.700
+- I think it's probably a blessing and a curse
+
+
+00:03:47.700 --> 00:03:49.540
+to have a really popular project.
+
+
+00:03:49.540 --> 00:03:53.140
+You just think of the people who create a Django
+
+
+00:03:53.140 --> 00:03:55.620
+or requests or something like that.
+
+
+00:03:55.620 --> 00:03:59.700
+And on one hand, it's like sort of geek stardom in a sense,
+
+
+00:03:59.700 --> 00:04:02.020
+but on the other, all these people are asking you
+
+
+00:04:02.020 --> 00:04:05.020
+for changes and maintenance and all kinds of stuff
+
+
+00:04:05.020 --> 00:04:07.700
+that you're like, I've got another life to live.
+
+
+00:04:07.700 --> 00:04:09.100
+This is the only thing I do, right?
+
+
+00:04:09.100 --> 00:04:11.380
+So yeah, maybe it goes both ways.
+
+
+00:04:11.380 --> 00:04:12.940
+- It's definitely a blessing and a curse.
+
+
+00:04:12.940 --> 00:04:14.160
+- Yeah, for sure.
+
+
+00:04:14.160 --> 00:04:17.020
+So, Nina, what's the item that you wanna talk about first?
+
+
+00:04:17.020 --> 00:04:20.500
+- I wanna chat about something that's not particularly new.
+
+
+00:04:20.500 --> 00:04:22.380
+It's been around for a long time,
+
+
+00:04:22.380 --> 00:04:25.180
+but it's gotten an update in the past year,
+
+
+00:04:25.180 --> 00:04:30.020
+and that's the Flask Mega Tutorial by Miguel Grinberg.
+
+
+00:04:30.020 --> 00:04:30.980
+Have you guys heard of that?
+
+
+00:04:30.980 --> 00:04:32.700
+- Yeah, that's a great one.
+
+
+00:04:32.700 --> 00:04:34.240
+You're right, he had that around for a while,
+
+
+00:04:34.240 --> 00:04:37.340
+and he actually did a Kickstarter to revitalize it,
+
+
+00:04:37.340 --> 00:04:38.500
+which I thought was awesome.
+
+
+00:04:38.500 --> 00:04:39.780
+- He used that Kickstarter money
+
+
+00:04:39.780 --> 00:04:44.000
+put out a great ebook format of the tutorial as well.
+
+
+00:04:44.000 --> 00:04:45.900
+And for those of you who are listening
+
+
+00:04:45.900 --> 00:04:48.620
+and don't know about the Flask Mega tutorial,
+
+
+00:04:48.620 --> 00:04:51.080
+it's a, I have the page open right now,
+
+
+00:04:51.080 --> 00:04:54.280
+a 23 chapter Flask tutorial.
+
+
+00:04:54.280 --> 00:04:56.280
+And it's come up for me several times
+
+
+00:04:56.280 --> 00:04:59.140
+in the past few weeks because I get a lot of questions
+
+
+00:04:59.140 --> 00:05:02.600
+with, from beginners about how to learn Python,
+
+
+00:05:02.600 --> 00:05:04.320
+how to really learn Python.
+
+
+00:05:04.320 --> 00:05:07.000
+They maybe have a good grasp on the language,
+
+
+00:05:07.000 --> 00:05:09.040
+but they're stuck on what to do next
+
+
+00:05:09.040 --> 00:05:11.940
+or they want to learn about web apps
+
+
+00:05:11.940 --> 00:05:14.540
+and they kind of don't really know where to go.
+
+
+00:05:14.540 --> 00:05:17.780
+And I always point them at the Flask Megatutorial.
+
+
+00:05:17.780 --> 00:05:18.780
+- Oh yeah, that's really great.
+
+
+00:05:18.780 --> 00:05:20.180
+It's so comprehensive.
+
+
+00:05:20.180 --> 00:05:21.540
+I mean, you're right.
+
+
+00:05:21.540 --> 00:05:23.380
+It has three chapters on deployment.
+
+
+00:05:23.380 --> 00:05:25.220
+One for straight virtual machines,
+
+
+00:05:25.220 --> 00:05:27.780
+one for Heroku, and one for Docker.
+
+
+00:05:27.780 --> 00:05:29.820
+Yeah, Miguel did a great job on this.
+
+
+00:05:29.820 --> 00:05:33.800
+And I feel like, you know, you talked about new users
+
+
+00:05:33.800 --> 00:05:36.420
+or developers coming in and learning Python.
+
+
+00:05:36.420 --> 00:05:38.560
+There's just so many layers to what you have to do
+
+
+00:05:38.560 --> 00:05:39.400
+as a developer, right?
+
+
+00:05:39.400 --> 00:05:41.400
+Like, well, I learned Python really well.
+
+
+00:05:41.400 --> 00:05:42.880
+Well, now you have to learn about databases.
+
+
+00:05:42.880 --> 00:05:44.240
+Oh, okay, great, I'll go learn about that.
+
+
+00:05:44.240 --> 00:05:45.440
+All right, now I know about databases.
+
+
+00:05:45.440 --> 00:05:46.320
+All right, I want to put it on the web.
+
+
+00:05:46.320 --> 00:05:47.160
+How do I do that?
+
+
+00:05:47.160 --> 00:05:49.160
+Well, you got to go learn about Flask and HTML.
+
+
+00:05:49.160 --> 00:05:50.560
+And okay, great, I did all that.
+
+
+00:05:50.560 --> 00:05:52.280
+Like, now how do I get it on the web?
+
+
+00:05:52.280 --> 00:05:54.360
+Like, well, now you got to learn about Linux or whatever,
+
+
+00:05:54.360 --> 00:05:55.200
+right?
+
+
+00:05:55.200 --> 00:05:57.000
+Just like so many layers and having this
+
+
+00:05:57.000 --> 00:05:57.840
+is definitely helpful.
+
+
+00:05:57.840 --> 00:05:59.760
+- Now you have to figure out how to maintain
+
+
+00:05:59.760 --> 00:06:01.920
+and deploy the thing.
+
+
+00:06:01.920 --> 00:06:04.920
+Yeah, there's a chapter in this tutorial about databases,
+
+
+00:06:04.920 --> 00:06:07.080
+but there's also one about dates and times,
+
+
+00:06:07.080 --> 00:06:10.780
+which is super important and internationalization.
+
+
+00:06:10.780 --> 00:06:11.620
+And then--
+
+
+00:06:11.620 --> 00:06:14.960
+- So, I had one of the questions I had for you about this
+
+
+00:06:14.960 --> 00:06:17.920
+was I'm looking at a couple of different ones
+
+
+00:06:17.920 --> 00:06:20.720
+and Miguel does recommend some,
+
+
+00:06:20.720 --> 00:06:22.480
+as he's going through the different topics,
+
+
+00:06:22.480 --> 00:06:25.880
+some different extant flask extensions.
+
+
+00:06:25.880 --> 00:06:28.240
+And have you found that his recommendations
+
+
+00:06:28.240 --> 00:06:31.840
+are fairly spot on for what you should be using?
+
+
+00:06:31.840 --> 00:06:35.520
+- So, I actually did go through this tutorial
+
+
+00:06:35.520 --> 00:06:37.840
+back in the day when I was learning Flask,
+
+
+00:06:37.840 --> 00:06:42.160
+but it was the version that was four or five years old.
+
+
+00:06:42.160 --> 00:06:43.000
+- Oh, okay.
+
+
+00:06:43.000 --> 00:06:47.000
+- So I'm not fully up to date with what he recommends now.
+
+
+00:06:47.000 --> 00:06:48.760
+What extensions does he mention?
+
+
+00:06:48.760 --> 00:06:51.560
+- Oh, like for instance, Flask login
+
+
+00:06:51.560 --> 00:06:56.260
+for dealing with the user data or user login stuff,
+
+
+00:06:56.260 --> 00:07:01.260
+and Flask migrate for migrating databases, things like that.
+
+
+00:07:01.260 --> 00:07:03.960
+- I haven't used either of those.
+
+
+00:07:03.960 --> 00:07:05.120
+- Okay, Michael?
+
+
+00:07:05.120 --> 00:07:06.320
+I haven't used a ton of them.
+
+
+00:07:06.320 --> 00:07:08.760
+I know he's doing some interesting stuff
+
+
+00:07:08.760 --> 00:07:10.580
+with like some forms, extensions,
+
+
+00:07:10.580 --> 00:07:12.360
+and I've gone through his tutorial somewhat.
+
+
+00:07:12.360 --> 00:07:13.600
+It's really nice.
+
+
+00:07:13.600 --> 00:07:15.320
+But I mostly write in Pyramid,
+
+
+00:07:15.320 --> 00:07:17.120
+so I haven't been looking too closely,
+
+
+00:07:17.120 --> 00:07:18.840
+but I definitely do a little flask,
+
+
+00:07:18.840 --> 00:07:22.360
+and it's good to definitely experience all the frameworks.
+
+
+00:07:22.360 --> 00:07:24.220
+And I have another one for you guys later,
+
+
+00:07:24.220 --> 00:07:25.080
+a pretty awesome one.
+
+
+00:07:25.080 --> 00:07:26.360
+So there'll be more to learn.
+
+
+00:07:26.360 --> 00:07:27.960
+There's always more to learn.
+
+
+00:07:27.960 --> 00:07:29.160
+- Yeah. - Exciting.
+
+
+00:07:29.160 --> 00:07:30.000
+- Yeah.
+
+
+00:07:30.000 --> 00:07:32.600
+So one of the things I think is cool about Python
+
+
+00:07:32.600 --> 00:07:36.280
+is it's not like a compile, full on compiled language
+
+
+00:07:36.280 --> 00:07:39.160
+that lets you sort of work directly with memory.
+
+
+00:07:39.160 --> 00:07:41.840
+And that means that there's no security vulnerabilities
+
+
+00:07:41.840 --> 00:07:42.820
+in Python, right?
+
+
+00:07:42.820 --> 00:07:45.120
+- There's some, there's a few, they come up.
+
+
+00:07:45.120 --> 00:07:46.160
+(laughing)
+
+
+00:07:46.160 --> 00:07:48.800
+- So actually, so the thing that I wanna talk about
+
+
+00:07:48.800 --> 00:07:52.900
+is a show by, an article by Anthony Shaw.
+
+
+00:07:52.900 --> 00:07:54.100
+Of course, it wouldn't be a show
+
+
+00:07:54.100 --> 00:07:56.520
+without mentioning Anthony Shaw doing something or other.
+
+
+00:07:56.520 --> 00:07:59.320
+It called 10 Common Security Gotchas in Python
+
+
+00:07:59.320 --> 00:08:00.440
+and how to avoid them.
+
+
+00:08:00.440 --> 00:08:04.200
+So he's done some really cool research here
+
+
+00:08:04.200 --> 00:08:07.800
+and talked about 10 things, maybe more than 10 things,
+
+
+00:08:07.800 --> 00:08:10.880
+10 categories, let's say, of errors you can run into
+
+
+00:08:10.880 --> 00:08:13.120
+in Python that are super bad,
+
+
+00:08:13.120 --> 00:08:14.560
+can get your company in the headlines
+
+
+00:08:14.560 --> 00:08:16.640
+in the way you don't want it in the headlines.
+
+
+00:08:16.640 --> 00:08:19.680
+So I'll run through these and you guys let me know
+
+
+00:08:19.680 --> 00:08:22.140
+if they're familiar or if you've seen examples
+
+
+00:08:22.140 --> 00:08:23.200
+or anything like that.
+
+
+00:08:23.200 --> 00:08:25.680
+So the first one, probably the most common one,
+
+
+00:08:25.680 --> 00:08:27.760
+is some form of injection attack.
+
+
+00:08:27.760 --> 00:08:30.240
+And when I think about injection attack,
+
+
+00:08:30.240 --> 00:08:32.280
+I think about Little Bobby Tables.
+
+
+00:08:32.280 --> 00:08:33.760
+Have you seen Little Bobby Tables?
+
+
+00:08:33.760 --> 00:08:35.600
+- Absolutely, it's a classic.
+
+
+00:08:35.600 --> 00:08:36.540
+- Oh, he's a classic.
+
+
+00:08:36.540 --> 00:08:38.200
+He's a trouble student.
+
+
+00:08:38.200 --> 00:08:40.160
+So Little Bobby Tables is like a cartoon,
+
+
+00:08:40.160 --> 00:08:42.800
+XKCD about SQL injection attacks.
+
+
+00:08:42.800 --> 00:08:47.000
+But there's also process injection attacks in Python
+
+
+00:08:47.000 --> 00:08:49.080
+that if you use process, P open and things like that,
+
+
+00:08:49.080 --> 00:08:50.920
+that you can actually do all sorts of badness
+
+
+00:08:50.920 --> 00:08:55.680
+by escaping or getting out of the various commands
+
+
+00:08:55.680 --> 00:08:57.760
+and sending multiple commands to the shell,
+
+
+00:08:57.760 --> 00:08:59.800
+which might also be super bad.
+
+
+00:08:59.800 --> 00:09:02.860
+So there's that parsing XML, there's basically denial of
+
+
+00:09:02.860 --> 00:09:06.780
+surface attacks you can do by having a self referential XML
+
+
+00:09:06.780 --> 00:09:09.980
+entity that refers back to itself that refers to itself
+
+
+00:09:09.980 --> 00:09:12.700
+that'll just destroy your memory and a couple of things like
+
+
+00:09:12.700 --> 00:09:16.360
+that. But there's also ways to get around firewalls with
+
+
+00:09:16.360 --> 00:09:20.780
+linking in XML documents. So there's some interesting fixes,
+
+
+00:09:20.780 --> 00:09:23.980
+different libraries, you can drop in as replacements that get
+
+
+00:09:23.980 --> 00:09:27.860
+around those attacks, assert. So sometimes people might think
+
+
+00:09:27.860 --> 00:09:31.580
+assert that you are an admin before I let me,
+
+
+00:09:31.580 --> 00:09:34.220
+before I run the admin command, things like that.
+
+
+00:09:34.220 --> 00:09:36.920
+But in production, you can turn off
+
+
+00:09:36.920 --> 00:09:38.340
+the assert statements in Python.
+
+
+00:09:38.340 --> 00:09:41.260
+So that could be, well, you're error checking just left.
+
+
+00:09:41.260 --> 00:09:42.540
+Right, that'd be bad.
+
+
+00:09:42.540 --> 00:09:45.420
+Timing attack, some really interesting ones
+
+
+00:09:45.420 --> 00:09:47.300
+that we've sort of touched on a little bit, Brian,
+
+
+00:09:47.300 --> 00:09:50.380
+previously is with polluted site packages.
+
+
+00:09:50.380 --> 00:09:52.460
+- Yeah. - Or things like that, right?
+
+
+00:09:52.460 --> 00:09:56.060
+Like if I pip install requests
+
+
+00:09:56.060 --> 00:09:59.860
+and I like switch, I don't know, just misspell it somehow.
+
+
+00:09:59.860 --> 00:10:02.460
+Somebody could publish an evil request, right?
+
+
+00:10:02.460 --> 00:10:03.820
+We've covered a few examples of that
+
+
+00:10:03.820 --> 00:10:05.620
+actually happening on PyPI.
+
+
+00:10:05.620 --> 00:10:08.180
+Let's see, temporary files, yaml.load,
+
+
+00:10:08.180 --> 00:10:11.060
+pickling, pickling is evil.
+
+
+00:10:11.060 --> 00:10:13.900
+So I don't know, do you guys use pickle for anything?
+
+
+00:10:13.900 --> 00:10:16.340
+- No, but it's still surprising to me
+
+
+00:10:16.340 --> 00:10:19.020
+that it shows up in a lot of tutorials
+
+
+00:10:19.020 --> 00:10:20.500
+on how to learn Python.
+
+
+00:10:20.500 --> 00:10:23.060
+- I know, every time I see it, I'm just like, oh boy.
+
+
+00:10:23.060 --> 00:10:25.340
+There's gotta be, couldn't we just do JSON?
+
+
+00:10:25.340 --> 00:10:27.420
+- The short version of the pickle, go ahead Nina.
+
+
+00:10:27.420 --> 00:10:29.720
+- I was gonna say, I have not come across
+
+
+00:10:29.720 --> 00:10:31.820
+any tutorial with pickle in it, so.
+
+
+00:10:31.820 --> 00:10:32.660
+- That's good.
+
+
+00:10:32.660 --> 00:10:34.920
+- I don't know where you get your material, Brian.
+
+
+00:10:34.920 --> 00:10:37.340
+- Really old books.
+
+
+00:10:37.340 --> 00:10:38.920
+- Yeah, it's like, oh, we can just save that.
+
+
+00:10:38.920 --> 00:10:39.760
+We'll just pickle that.
+
+
+00:10:39.760 --> 00:10:41.200
+There's so many things wrong with it,
+
+
+00:10:41.200 --> 00:10:43.260
+but security is one, because there's basically
+
+
+00:10:43.260 --> 00:10:46.260
+a step where arbitrary code is run on deserialization,
+
+
+00:10:46.260 --> 00:10:47.620
+and that's not amazing.
+
+
+00:10:47.620 --> 00:10:49.500
+And then of course, patching your runtime
+
+
+00:10:49.500 --> 00:10:50.540
+and patching your dependencies.
+
+
+00:10:50.540 --> 00:10:52.980
+So these are all just a handful of things
+
+
+00:10:52.980 --> 00:10:54.820
+to check your code for,
+
+
+00:10:54.820 --> 00:10:57.500
+to make sure you don't do to check your infrastructure for and so on.
+
+
+00:10:57.500 --> 00:10:58.980
+Yeah, none of these were obvious to me.
+
+
+00:10:58.980 --> 00:11:04.220
+I was expecting like the obvious one of don't use the eval statement on user data.
+
+
+00:11:04.220 --> 00:11:06.220
+But maybe that's just too obvious.
+
+
+00:11:06.220 --> 00:11:07.220
+Yeah, maybe.
+
+
+00:11:07.220 --> 00:11:09.820
+I mean, that one definitely should be thrown in there, right?
+
+
+00:11:09.820 --> 00:11:14.060
+That's definitely one that's sort of along the same thing as pickles, maybe even worse
+
+
+00:11:14.060 --> 00:11:16.100
+than pickles, to be honest.
+
+
+00:11:16.100 --> 00:11:20.180
+But yeah, I think there's a lot of non obvious things here that people who have been doing
+
+
+00:11:20.180 --> 00:11:24.580
+Python for a long time, like I had no idea that yaml files could be evil, but they can
+
+
+00:11:24.580 --> 00:11:25.580
+be really evil.
+
+
+00:11:25.580 --> 00:11:29.140
+And one of the things that I really liked was his fixes are pretty easy.
+
+
+00:11:29.140 --> 00:11:31.820
+Just learn about these, use these fixes, and it's good.
+
+
+00:11:31.820 --> 00:11:36.420
+I didn't know about the, that you can turn off assert statements in production.
+
+
+00:11:36.420 --> 00:11:41.860
+I tend not to use them in code outside of testing, but that was a surprise to me and
+
+
+00:11:41.860 --> 00:11:44.020
+I've been doing Python for quite a long time.
+
+
+00:11:44.020 --> 00:11:46.500
+It would be bad to, why is it not checking?
+
+
+00:11:46.500 --> 00:11:47.700
+I know the check is here.
+
+
+00:11:47.700 --> 00:11:48.700
+I could see it in the code.
+
+
+00:11:48.700 --> 00:11:50.580
+Yeah, no, it just doesn't do anything.
+
+
+00:11:50.580 --> 00:11:53.500
+Yeah, so if you're running any Python
+
+
+00:11:53.500 --> 00:11:56.480
+that is basically exposed to the world in any way,
+
+
+00:11:56.480 --> 00:11:58.380
+you probably wanna skim through Anthony's article.
+
+
+00:11:58.380 --> 00:11:59.220
+It's a good one.
+
+
+00:11:59.220 --> 00:12:00.040
+All right, before we move on,
+
+
+00:12:00.040 --> 00:12:01.620
+let me tell you all about DigitalOcean.
+
+
+00:12:01.620 --> 00:12:04.260
+So DigitalOcean is a big supporter of the show.
+
+
+00:12:04.260 --> 00:12:06.800
+Our infrastructure runs on DigitalOcean as well.
+
+
+00:12:06.800 --> 00:12:09.100
+So we're both, they're sponsors,
+
+
+00:12:09.100 --> 00:12:10.980
+and we're both happy customers at the same time.
+
+
+00:12:10.980 --> 00:12:13.580
+So you can go from zero to a server up and running
+
+
+00:12:13.580 --> 00:12:16.700
+in 60 seconds, probably more like 30, 35 seconds.
+
+
+00:12:16.700 --> 00:12:17.580
+It's super easy.
+
+
+00:12:17.580 --> 00:12:20.260
+You just go pick your Linux distribution.
+
+
+00:12:20.260 --> 00:12:23.380
+If you want it pre-installed with something like Mongo
+
+
+00:12:23.380 --> 00:12:26.380
+or Ghost, you can check a box and it'll just do that.
+
+
+00:12:26.380 --> 00:12:29.400
+Up and running, SSH in and you're off to the races.
+
+
+00:12:29.400 --> 00:12:32.460
+Really super reliable, super bulletproof,
+
+
+00:12:32.460 --> 00:12:35.060
+lots of data centers, big fan.
+
+
+00:12:35.060 --> 00:12:37.700
+If you go to pythonbytes.fm/digitalocean,
+
+
+00:12:37.700 --> 00:12:41.140
+you can get $100 to get started if you're a new user.
+
+
+00:12:41.140 --> 00:12:43.340
+So check them out and tell them thanks
+
+
+00:12:43.340 --> 00:12:44.220
+for supporting the show.
+
+
+00:12:44.220 --> 00:12:45.420
+- Once your server's up and running,
+
+
+00:12:45.420 --> 00:12:47.460
+go back and read Anthony's article
+
+
+00:12:47.460 --> 00:12:49.380
+to make sure that it's secure.
+
+
+00:12:49.380 --> 00:12:51.140
+First thing you do is you patch your Python.
+
+
+00:12:51.140 --> 00:12:51.980
+That's right.
+
+
+00:12:51.980 --> 00:12:53.940
+So one thing that I don't use at all
+
+
+00:12:53.940 --> 00:12:55.680
+that I feel like I probably should learn more about
+
+
+00:12:55.680 --> 00:12:57.820
+are pre-commit hooks and get--
+
+
+00:12:57.820 --> 00:12:58.800
+- I'm on the same boat.
+
+
+00:12:58.800 --> 00:13:03.540
+I wanna try to, we're using some things like linters
+
+
+00:13:03.540 --> 00:13:06.580
+and other tools like PyLint and Flake 8,
+
+
+00:13:06.580 --> 00:13:08.640
+things like that at work now,
+
+
+00:13:08.640 --> 00:13:10.720
+but I wanna make sure that they're,
+
+
+00:13:10.720 --> 00:13:13.580
+wanna get into a use model where they're just used
+
+
+00:13:13.580 --> 00:13:16.320
+all the time before it gets committed.
+
+
+00:13:16.320 --> 00:13:18.120
+And so I came across this,
+
+
+00:13:18.120 --> 00:13:23.280
+I'm not sure who referenced it, but a project called pre-commit, which is built in Python,
+
+
+00:13:23.280 --> 00:13:25.900
+but it's not Python only.
+
+
+00:13:25.900 --> 00:13:31.900
+It's a tool that can start easily hook up a lot of these Git pre-commit hooks for you
+
+
+00:13:31.900 --> 00:13:38.940
+so you can run things like Lint or Black or other things before you check in.
+
+
+00:13:38.940 --> 00:13:41.760
+And it's got some nice features for it.
+
+
+00:13:41.760 --> 00:13:45.160
+It's a YAML based, so it's really easy to read the setup.
+
+
+00:13:45.160 --> 00:13:50.920
+does all the hooking up into Git for you. And I'm not sure, I'm guessing everybody individually has
+
+
+00:13:50.920 --> 00:13:55.800
+to do it once they check out a repo, but I'm not sure about that. I'm just getting into this.
+
+
+00:13:55.800 --> 00:14:00.680
+But also one of the things I wanted to make sure I could do was to every step of my pre-commit,
+
+
+00:14:00.680 --> 00:14:05.400
+like if I wanted to run Black or Pylint or something, I could test that out. And it does,
+
+
+00:14:05.400 --> 00:14:11.880
+it has the ability to just run each individual hook by itself. So this is something fun that
+
+
+00:14:11.880 --> 00:14:12.800
+that I'm looking into.
+
+
+00:14:12.800 --> 00:14:14.080
+- Oh yeah, that looks really fun.
+
+
+00:14:14.080 --> 00:14:15.680
+- Pre-commit hooks are awesome.
+
+
+00:14:15.680 --> 00:14:16.920
+- Oh yeah, are you using them?
+
+
+00:14:16.920 --> 00:14:19.320
+- Yeah, I actually use them pretty heavily
+
+
+00:14:19.320 --> 00:14:24.040
+in my last project and they've saved my butt multiple times.
+
+
+00:14:24.040 --> 00:14:25.920
+One of my favorite pre-commit hooks
+
+
+00:14:25.920 --> 00:14:27.840
+looks for debugger statements.
+
+
+00:14:27.840 --> 00:14:28.680
+- Okay.
+
+
+00:14:28.680 --> 00:14:29.960
+- Yeah, so if you have a PDB.
+
+
+00:14:29.960 --> 00:14:32.080
+- Yeah, like triggering a breakpoint or something like that?
+
+
+00:14:32.080 --> 00:14:33.720
+- Yeah, exactly.
+
+
+00:14:33.720 --> 00:14:35.620
+- Oh, that's a really smart one, yeah.
+
+
+00:14:35.620 --> 00:14:38.520
+I guess you could do all sorts of checks, right?
+
+
+00:14:38.520 --> 00:14:42.080
+like check for to do or, you know, not implemented,
+
+
+00:14:42.080 --> 00:14:44.080
+all kinds of stuff that the people might put there,
+
+
+00:14:44.080 --> 00:14:46.560
+like actually, you probably shouldn't check that in.
+
+
+00:14:46.560 --> 00:14:49.000
+- Yeah, and it's nice having kind of global,
+
+
+00:14:49.000 --> 00:14:52.280
+team-wide pre-commit hooks where everyone's on the same page
+
+
+00:14:52.280 --> 00:14:56.080
+with things like checking for debugger statements,
+
+
+00:14:56.080 --> 00:14:58.520
+linting, any other sort of,
+
+
+00:14:58.520 --> 00:15:01.520
+maybe you have a line length rule that you wanna follow,
+
+
+00:15:01.520 --> 00:15:02.640
+and then breaking that down
+
+
+00:15:02.640 --> 00:15:04.480
+and having individual pre-commit hooks.
+
+
+00:15:04.480 --> 00:15:07.720
+So maybe checking for to do and your initials
+
+
+00:15:07.720 --> 00:15:10.560
+or whatever scratch code that you tend to put in
+
+
+00:15:10.560 --> 00:15:12.840
+and don't want to check into the greater project.
+
+
+00:15:12.840 --> 00:15:15.380
+- Yeah, I see the real value of the pre-commit hooks
+
+
+00:15:15.380 --> 00:15:17.720
+being for team work.
+
+
+00:15:17.720 --> 00:15:20.840
+Obviously, it's valuable for individuals as well, right?
+
+
+00:15:20.840 --> 00:15:22.760
+Even individuals don't want to ship a web app
+
+
+00:15:22.760 --> 00:15:24.520
+that has a breakpoint in it.
+
+
+00:15:24.520 --> 00:15:26.880
+But, you know, it seems like the value's amplified
+
+
+00:15:26.880 --> 00:15:28.320
+when you have a team and you can all agree
+
+
+00:15:28.320 --> 00:15:30.280
+upon the way it works and that just gets automated.
+
+
+00:15:30.280 --> 00:15:31.880
+- Absolutely.
+
+
+00:15:31.880 --> 00:15:35.880
+Yeah, I'm a big proponent of having a code style document
+
+
+00:15:35.880 --> 00:15:37.800
+where everyone's on the same page
+
+
+00:15:37.800 --> 00:15:41.040
+and where if a team is working on a code base
+
+
+00:15:41.040 --> 00:15:44.560
+as they commit code, it looks like one person is doing it
+
+
+00:15:44.560 --> 00:15:46.560
+and you can't just point in a chunk and say,
+
+
+00:15:46.560 --> 00:15:50.000
+oh, Michael wrote that, it's got his star on it.
+
+
+00:15:50.000 --> 00:15:52.560
+- It's got that weird triple-list comprehension
+
+
+00:15:52.560 --> 00:15:54.920
+with an internal dictionary comprehension.
+
+
+00:15:54.920 --> 00:15:55.760
+We don't do that.
+
+
+00:15:55.760 --> 00:15:56.680
+- Right. - Yeah, yeah, no,
+
+
+00:15:56.680 --> 00:15:57.520
+that's awesome.
+
+
+00:15:57.520 --> 00:16:00.320
+So we have kind of a big piece of news
+
+
+00:16:00.320 --> 00:16:02.800
+theoretically coming today, right?
+
+
+00:16:02.800 --> 00:16:03.760
+- That's right.
+
+
+00:16:03.760 --> 00:16:06.940
+Python 3.7 should be released today.
+
+
+00:16:06.940 --> 00:16:10.120
+So by the time you're listening to this podcast,
+
+
+00:16:10.120 --> 00:16:11.380
+you'll have it.
+
+
+00:16:11.380 --> 00:16:12.280
+- Fingers crossed.
+
+
+00:16:12.280 --> 00:16:14.340
+So if you go check out PEP 5.3.7,
+
+
+00:16:14.340 --> 00:16:17.020
+this is the release schedule for Python 3.7.
+
+
+00:16:17.020 --> 00:16:20.140
+It says expected on the schedule
+
+
+00:16:20.140 --> 00:16:24.460
+is 3.7.0 finals June 27th, 2018.
+
+
+00:16:24.460 --> 00:16:25.540
+That's today.
+
+
+00:16:25.540 --> 00:16:27.580
+So assuming everything lines up right,
+
+
+00:16:27.580 --> 00:16:30.420
+you should be able to go and download Python 3.7.
+
+
+00:16:30.420 --> 00:16:33.460
+If not, just pause the show for a day or two
+
+
+00:16:33.460 --> 00:16:35.200
+and come check again.
+
+
+00:16:35.200 --> 00:16:36.380
+Yeah, what are some of the features
+
+
+00:16:36.380 --> 00:16:38.060
+that you're finding really awesome there?
+
+
+00:16:38.060 --> 00:16:40.640
+- So now there's a breakpoint function.
+
+
+00:16:40.640 --> 00:16:45.260
+No more import PDB colon set trace.
+
+
+00:16:45.260 --> 00:16:48.100
+There's just a breakpoint function that you can drop in.
+
+
+00:16:48.100 --> 00:16:48.940
+- Yeah, that's cool.
+
+
+00:16:48.940 --> 00:16:50.520
+When I first heard about that, I was like,
+
+
+00:16:50.520 --> 00:16:53.460
+well, okay, that's nice-er, right?
+
+
+00:16:53.460 --> 00:16:55.340
+But how much does it really help?
+
+
+00:16:55.340 --> 00:16:57.620
+And then the more I looked into it,
+
+
+00:16:57.620 --> 00:17:00.640
+I realized actually the PDB trick
+
+
+00:17:00.640 --> 00:17:03.180
+is tied to the PDB debugger.
+
+
+00:17:03.180 --> 00:17:07.180
+But there are many other types of debuggers you may want to use in Python.
+
+
+00:17:07.180 --> 00:17:11.500
+And this breakpoint thing lets you configure your environment to, when you say breakpoint,
+
+
+00:17:11.500 --> 00:17:14.140
+trigger a breakpoint in that debugger, which is kind of cool.
+
+
+00:17:14.140 --> 00:17:17.460
+I personally use and love IPDB.
+
+
+00:17:17.460 --> 00:17:20.660
+It's kind of more interactive version of PDB.
+
+
+00:17:20.660 --> 00:17:25.580
+But the limitation in both that I maybe maybe there's a way but I never quite figured it
+
+
+00:17:25.580 --> 00:17:31.780
+out was you could only type in one line statements, you could put in semicolons and a few other
+
+
+00:17:31.780 --> 00:17:36.540
+things, but you were really kind of limited, you couldn't paste in functions or anything
+
+
+00:17:36.540 --> 00:17:38.020
+too complex.
+
+
+00:17:38.020 --> 00:17:44.180
+Now with the new breakpoint function in Python 3.7, you can just open up an IPDB shell and
+
+
+00:17:44.180 --> 00:17:45.580
+do whatever you want.
+
+
+00:17:45.580 --> 00:17:46.580
+That's so exciting.
+
+
+00:17:46.580 --> 00:17:48.420
+Yeah, that's, yeah, that's really awesome.
+
+
+00:17:48.420 --> 00:17:49.940
+I think that's great.
+
+
+00:17:49.940 --> 00:17:54.900
+Certainly makes building better tools that plug in for that in place of PDB.
+
+
+00:17:54.900 --> 00:17:55.900
+It's good.
+
+
+00:17:55.900 --> 00:17:56.900
+Nice.
+
+
+00:17:56.900 --> 00:17:58.220
+We also have some new board members, right?
+
+
+00:17:58.220 --> 00:17:59.220
+That's right.
+
+
+00:17:59.220 --> 00:18:03.380
+The PSF board member elections just finished two days ago
+
+
+00:18:03.380 --> 00:18:06.500
+and there are now four new board members.
+
+
+00:18:06.500 --> 00:18:08.920
+I have not practiced saying their last names out loud,
+
+
+00:18:08.920 --> 00:18:12.460
+so if I butcher them, I fully apologize.
+
+
+00:18:12.460 --> 00:18:15.740
+But we have four new members there,
+
+
+00:18:15.740 --> 00:18:20.740
+Anna Ossowiski, Christopher Nugabower,
+
+
+00:18:20.740 --> 00:18:24.900
+that's gonna be my final guess,
+
+
+00:18:24.900 --> 00:18:27.060
+Jeff Triplett, and then Katie McLoughlin.
+
+
+00:18:27.060 --> 00:18:28.900
+- Oh, awesome, yeah, it's great to hear
+
+
+00:18:28.900 --> 00:18:30.420
+some of those folks in there.
+
+
+00:18:30.420 --> 00:18:31.940
+Congratulations everybody on that.
+
+
+00:18:31.940 --> 00:18:35.420
+And I know a number of us have voted
+
+
+00:18:35.420 --> 00:18:37.980
+and it's great to see the community
+
+
+00:18:37.980 --> 00:18:40.000
+sort of putting in place these structures
+
+
+00:18:40.000 --> 00:18:40.900
+to keep it vibrant.
+
+
+00:18:40.900 --> 00:18:41.860
+- Yeah, I voted.
+
+
+00:18:41.860 --> 00:18:45.660
+There was a 47% voter turnout for this election.
+
+
+00:18:45.660 --> 00:18:46.780
+- That's pretty good, really.
+
+
+00:18:46.780 --> 00:18:47.620
+- Yeah.
+
+
+00:18:47.620 --> 00:18:48.540
+- I guess we could go for 100%,
+
+
+00:18:48.540 --> 00:18:50.780
+but 47, it seems like probably a lot of people
+
+
+00:18:50.780 --> 00:18:52.740
+don't check their mail and the announcements
+
+
+00:18:52.740 --> 00:18:53.860
+just go right by, right?
+
+
+00:18:53.860 --> 00:18:56.220
+- Yeah, I'm super excited for them.
+
+
+00:18:56.220 --> 00:18:57.340
+- Yeah, that's cool, awesome.
+
+
+00:18:57.340 --> 00:19:00.860
+Congratulations and I'm really looking forward to installing Python 3.7.
+
+
+00:19:00.860 --> 00:19:01.860
+That'll be fun.
+
+
+00:19:01.860 --> 00:19:08.700
+So we talked about Flask and one of the big, I feel like one of the big blockades that's
+
+
+00:19:08.700 --> 00:19:13.220
+going to crack loose and really sort of change things in the Python web space is this async
+
+
+00:19:13.220 --> 00:19:14.300
+stuff.
+
+
+00:19:14.300 --> 00:19:17.580
+And there've been a couple of attempts at it.
+
+
+00:19:17.580 --> 00:19:24.060
+We've had Sanic, we've had Gepronto, we've got Quart, which is basically Flask directly
+
+
+00:19:24.060 --> 00:19:29.740
+converted to be a sync awaitable, which can give it really good performance benefits.
+
+
+00:19:29.740 --> 00:19:35.500
+But there's a new framework that is just going like gangbusters called fibora fibora web
+
+
+00:19:35.500 --> 00:19:36.500
+framework.
+
+
+00:19:36.500 --> 00:19:37.500
+Have either you heard of this?
+
+
+00:19:37.500 --> 00:19:38.500
+I have not.
+
+
+00:19:38.500 --> 00:19:39.500
+New.
+
+
+00:19:39.500 --> 00:19:40.500
+It's shiny new.
+
+
+00:19:40.500 --> 00:19:43.420
+So I went to the GitHub repository, and it's only 14 days old.
+
+
+00:19:43.420 --> 00:19:47.660
+But it already has 21 contributors and over 2000 GitHub stars.
+
+
+00:19:47.660 --> 00:19:49.600
+Whoa, that's pretty intense, right?
+
+
+00:19:49.600 --> 00:19:52.660
+So it's basically flask like, right?
+
+
+00:19:52.660 --> 00:19:56.860
+super inspired by flask but it's from scratch re-implementation or
+
+
+00:19:56.860 --> 00:20:01.660
+implementation of something like a asynchronous version of flask.
+
+
+00:20:01.660 --> 00:20:05.960
+Alright, so if you want to create like a function that is asynchronous,
+
+
+00:20:05.960 --> 00:20:09.560
+you just say app.route, you know, decorate app.route, give it the URL,
+
+
+00:20:09.560 --> 00:20:12.960
+async def index and then return some kind of response.
+
+
+00:20:12.960 --> 00:20:17.960
+So really, really nice to create these, you know, async await enabled functions
+
+
+00:20:17.960 --> 00:20:21.860
+and that has some interesting performance benefits.
+
+
+00:20:21.860 --> 00:20:27.100
+So if you go look at vibora.io, they have some nice graphs.
+
+
+00:20:27.100 --> 00:20:35.340
+So they've got like flask running around 30,000 requests per second pyramid running 35, Sanic
+
+
+00:20:35.340 --> 00:20:41.620
+60, vibora 150,000 requests per second on the same, doing the same processing on the
+
+
+00:20:41.620 --> 00:20:43.540
+same infrastructure.
+
+
+00:20:43.540 --> 00:20:48.220
+And I suspect the scalability is even better in terms of like, heavily IO bound things
+
+
+00:20:48.220 --> 00:20:51.740
+like I talked to a database, I talked to a web service, things like that.
+
+
+00:20:51.740 --> 00:20:53.020
+- This is really impressive.
+
+
+00:20:53.020 --> 00:20:53.860
+- Yeah.
+
+
+00:20:53.860 --> 00:20:56.980
+- It looks like it's got WebSec that's built into it also.
+
+
+00:20:56.980 --> 00:20:58.460
+- Yeah, and because of the async stuff,
+
+
+00:20:58.460 --> 00:21:00.420
+it's super easy for it to do without, you know,
+
+
+00:21:00.420 --> 00:21:03.020
+blocking and consuming threads and things like that.
+
+
+00:21:03.020 --> 00:21:03.940
+I think this is great.
+
+
+00:21:03.940 --> 00:21:08.140
+It's got a bunch of things that were written from scratch
+
+
+00:21:08.140 --> 00:21:11.620
+for performance considerations and to make sure
+
+
+00:21:11.620 --> 00:21:14.420
+that async is first class, like schema validation,
+
+
+00:21:14.420 --> 00:21:17.500
+the template engine, sessions, all sorts of cool stuff.
+
+
+00:21:17.500 --> 00:21:20.000
+It takes advantage of multiple CPU cores.
+
+
+00:21:20.000 --> 00:21:21.340
+It uses UV loop.
+
+
+00:21:21.340 --> 00:21:24.040
+That's the same thing Sanic is based on and other C speed ups.
+
+
+00:21:24.040 --> 00:21:27.660
+It also has a really interesting thing that I haven't seen in a lot of frameworks called
+
+
+00:21:27.660 --> 00:21:29.460
+virtual hosts.
+
+
+00:21:29.460 --> 00:21:34.980
+So in like flask or pyramid, I can say the URL is forward slash, episode slash seven
+
+
+00:21:34.980 --> 00:21:37.260
+to get the episode seven or whatever.
+
+
+00:21:37.260 --> 00:21:39.380
+But in here, you can actually have different domains.
+
+
+00:21:39.380 --> 00:21:46.180
+So you can have like docs.pythonbytes.fm and episodes.pythonbytes.fm within the same web
+
+
+00:21:46.180 --> 00:21:47.180
+app.
+
+
+00:21:47.180 --> 00:21:48.180
+Interesting.
+
+
+00:21:48.180 --> 00:21:49.180
+Yeah, it's interesting, right?
+
+
+00:21:49.180 --> 00:21:50.860
+And deployment is pretty easy.
+
+
+00:21:50.860 --> 00:21:52.340
+It actually comes with its own server
+
+
+00:21:52.340 --> 00:21:54.980
+because WSGI is part of the problem.
+
+
+00:21:54.980 --> 00:21:56.820
+WSGI, like the foundational server bits
+
+
+00:21:56.820 --> 00:22:00.080
+and most of these things are, is a synchronous interface.
+
+
+00:22:00.080 --> 00:22:02.220
+And so there's no way to squeeze async in between it.
+
+
+00:22:02.220 --> 00:22:03.460
+So it's pretty cool.
+
+
+00:22:03.460 --> 00:22:04.780
+Anyway, the docs need a little help,
+
+
+00:22:04.780 --> 00:22:06.380
+but it's only 14 days old.
+
+
+00:22:06.380 --> 00:22:08.260
+So I guess we should give them a little slack.
+
+
+00:22:08.260 --> 00:22:11.260
+- Yeah, I just added a new start to their tally.
+
+
+00:22:11.260 --> 00:22:12.460
+- Oh, awesome.
+
+
+00:22:12.460 --> 00:22:14.260
+Yeah, they've just got a few more.
+
+
+00:22:14.260 --> 00:22:15.180
+It's cool though, right?
+
+
+00:22:15.180 --> 00:22:16.420
+I mean, it's very much like Flask,
+
+
+00:22:16.420 --> 00:22:18.620
+but it's kind of a modernized version.
+
+
+00:22:18.620 --> 00:22:21.980
+I was gonna say, I was wondering about the name, Vybora,
+
+
+00:22:21.980 --> 00:22:24.140
+but they explain that on their GitHub page.
+
+
+00:22:24.140 --> 00:22:26.420
+It means viper in Portuguese.
+
+
+00:22:26.420 --> 00:22:27.920
+- Ah, viper, okay.
+
+
+00:22:27.920 --> 00:22:29.840
+I guess vipers are fast, I don't know.
+
+
+00:22:29.840 --> 00:22:31.040
+I mean, but they can strike fast.
+
+
+00:22:31.040 --> 00:22:33.060
+I don't know about their actual motion.
+
+
+00:22:33.060 --> 00:22:34.340
+Vybora, okay, cool.
+
+
+00:22:34.340 --> 00:22:36.420
+- And you forgot to mention the best part.
+
+
+00:22:36.420 --> 00:22:38.980
+On their page, the benchmark title
+
+
+00:22:38.980 --> 00:22:40.540
+has a rocket next to it.
+
+
+00:22:40.540 --> 00:22:43.940
+I'm a fan of anything with rockets.
+
+
+00:22:43.940 --> 00:22:46.940
+- I know, a testing rocket for sure.
+
+
+00:22:48.040 --> 00:22:49.760
+- Nice, so people who are doing web stuff,
+
+
+00:22:49.760 --> 00:22:51.980
+this is a new one to keep your eye on
+
+
+00:22:51.980 --> 00:22:55.320
+in terms of the shiny new frameworks for Python.
+
+
+00:22:55.320 --> 00:22:58.440
+Oh, another interesting thing is this is a Python,
+
+
+00:22:58.440 --> 00:23:00.560
+not just a Python 3 only framework,
+
+
+00:23:00.560 --> 00:23:02.960
+it's Python 3.6 or above.
+
+
+00:23:02.960 --> 00:23:04.240
+None of that legacy stuff.
+
+
+00:23:04.240 --> 00:23:06.240
+- I'm on board with that.
+
+
+00:23:06.240 --> 00:23:07.520
+- Whoa. - That's crazy.
+
+
+00:23:07.520 --> 00:23:08.800
+Yeah, that's bold, that's awesome.
+
+
+00:23:08.800 --> 00:23:11.400
+All right, well, that's it for our items this week.
+
+
+00:23:11.400 --> 00:23:13.960
+I did wanna give a quick shout out to one other thing
+
+
+00:23:13.960 --> 00:23:15.400
+because Brian, we kind of,
+
+
+00:23:15.400 --> 00:23:17.000
+have we talked about GUIs on this show yet?
+
+
+00:23:17.000 --> 00:23:17.960
+- I think so.
+
+
+00:23:17.960 --> 00:23:21.280
+I think we did maybe it was a while, a couple, a couple times.
+
+
+00:23:21.280 --> 00:23:22.320
+So we've gone around and around.
+
+
+00:23:22.320 --> 00:23:28.880
+So one of the major things coming for Python GUI space is Qt, the new version, the Qt for
+
+
+00:23:28.880 --> 00:23:31.460
+Python that's like PySide 2 reborn.
+
+
+00:23:31.460 --> 00:23:35.920
+So they have a webinar coming up where they're introducing all the features and stuff as
+
+
+00:23:35.920 --> 00:23:36.920
+it launches.
+
+
+00:23:36.920 --> 00:23:38.600
+I think that's in August.
+
+
+00:23:38.600 --> 00:23:41.320
+And so I put the link to sign up for the webinar if you want.
+
+
+00:23:41.320 --> 00:23:42.320
+Yeah, I'm already signed up.
+
+
+00:23:42.320 --> 00:23:43.320
+Yeah, me too.
+
+
+00:23:43.320 --> 00:23:44.320
+I'll see you there.
+
+
+00:23:44.320 --> 00:23:45.320
+Nina.
+
+
+00:23:45.320 --> 00:23:47.480
+Yeah, Nina, you got anything else going on you want to tell people about?
+
+
+00:23:47.480 --> 00:23:51.960
+- Yeah, if you are gonna be doing the Flask mega tutorial
+
+
+00:23:51.960 --> 00:23:54.600
+and you're not super happy with your IDE
+
+
+00:23:54.600 --> 00:23:57.120
+and you haven't checked out VS Code yet,
+
+
+00:23:57.120 --> 00:24:00.080
+there's a Python extension for VS Code
+
+
+00:24:00.080 --> 00:24:03.420
+that makes working in Flask really easy.
+
+
+00:24:03.420 --> 00:24:07.300
+And full disclosure, I work for Microsoft,
+
+
+00:24:07.300 --> 00:24:10.120
+but I also use it and enjoy it.
+
+
+00:24:10.120 --> 00:24:11.560
+So if you wanna check it out,
+
+
+00:24:11.560 --> 00:24:13.200
+I can include a link in the show notes.
+
+
+00:24:13.200 --> 00:24:14.160
+- Yeah, sure, drop it in there.
+
+
+00:24:14.160 --> 00:24:17.320
+I use VS Code periodically when I'm working on
+
+
+00:24:17.320 --> 00:24:18.400
+like individual files.
+
+
+00:24:18.400 --> 00:24:19.460
+And I know it does more than that,
+
+
+00:24:19.460 --> 00:24:21.600
+but I use PyCharm for some stuff,
+
+
+00:24:21.600 --> 00:24:23.140
+and then definitely VS Code,
+
+
+00:24:23.140 --> 00:24:24.940
+and it is getting much better.
+
+
+00:24:24.940 --> 00:24:27.480
+It's getting like the auto-completion
+
+
+00:24:27.480 --> 00:24:28.640
+and all sorts of the linting.
+
+
+00:24:28.640 --> 00:24:29.800
+It's getting quite nice.
+
+
+00:24:29.800 --> 00:24:31.480
+- If you think that stuff is nice,
+
+
+00:24:31.480 --> 00:24:33.720
+we have some really exciting announcements
+
+
+00:24:33.720 --> 00:24:36.120
+coming up just before EuroPython.
+
+
+00:24:36.120 --> 00:24:37.000
+- Okay, awesome.
+
+
+00:24:37.000 --> 00:24:38.840
+You'll have to shoot us a note and we'll talk about 'em.
+
+
+00:24:38.840 --> 00:24:41.120
+- It's something that no one else has,
+
+
+00:24:41.120 --> 00:24:43.920
+and that's about as much as I can say right now.
+
+
+00:24:43.920 --> 00:24:45.840
+- Oh, that sounds exciting.
+
+
+00:24:45.840 --> 00:24:49.320
+I think I can guess what it's going to be, but I won't speculate.
+
+
+00:24:49.320 --> 00:24:50.320
+I'll let you do the announcement.
+
+
+00:24:50.320 --> 00:24:51.320
+Awesome.
+
+
+00:24:51.320 --> 00:24:52.320
+And then anything else?
+
+
+00:24:52.320 --> 00:24:53.320
+That's it for me.
+
+
+00:24:53.320 --> 00:24:54.320
+All right.
+
+
+00:24:54.320 --> 00:24:55.320
+Well, that's good.
+
+
+00:24:55.320 --> 00:24:56.320
+And Brian, you?
+
+
+00:24:56.320 --> 00:24:57.320
+No.
+
+
+00:24:57.320 --> 00:24:58.320
+It's good.
+
+
+00:24:58.320 --> 00:24:59.920
+Although I do have a, it's a lot out.
+
+
+00:24:59.920 --> 00:25:03.680
+I've got a whole bunch of interviews stacked up.
+
+
+00:25:03.680 --> 00:25:08.000
+I'm finally getting some time to do some editing and pushing out for testing code.
+
+
+00:25:08.000 --> 00:25:09.400
+And Nina's one of the people.
+
+
+00:25:09.400 --> 00:25:15.000
+So I've got an interview with Nina that, who knows when it'll come out and maybe in a few
+
+
+00:25:15.000 --> 00:25:16.000
+Awesome.
+
+
+00:25:16.000 --> 00:25:17.000
+Yeah.
+
+
+00:25:17.000 --> 00:25:24.160
+Maybe if you all email and tweet it at Brian, he can be hired to chop the audio up a little
+
+
+00:25:24.160 --> 00:25:25.160
+sooner.
+
+
+00:25:25.160 --> 00:25:27.320
+There you go.
+
+
+00:25:27.320 --> 00:25:31.600
+Or better yet, write a bot that every 30 minutes just tweets at Brian.
+
+
+00:25:31.600 --> 00:25:32.600
+Yeah.
+
+
+00:25:32.600 --> 00:25:39.280
+Sorry, did I say that out loud?
+
+
+00:25:39.280 --> 00:25:40.680
+It just tweets the number of days.
+
+
+00:25:40.680 --> 00:25:41.680
+No, just kidding.
+
+
+00:25:41.680 --> 00:25:42.680
+I'm going to stop right now.
+
+
+00:25:42.680 --> 00:25:45.020
+- Days since last episode.
+
+
+00:25:45.020 --> 00:25:47.220
+- That was what I was thinking, that's right.
+
+
+00:25:47.220 --> 00:25:50.820
+I myself, I'm a little bit slow on this week,
+
+
+00:25:50.820 --> 00:25:53.580
+on mine as well, so I'm not gonna throw stones.
+
+
+00:25:53.580 --> 00:25:54.420
+- Okay.
+
+
+00:25:54.420 --> 00:25:55.960
+- All right, well, Nina, thank you so much
+
+
+00:25:55.960 --> 00:25:56.800
+for being on the show.
+
+
+00:25:56.800 --> 00:25:58.300
+It's been a pleasure to talk with you,
+
+
+00:25:58.300 --> 00:25:59.740
+and Brian, thanks as always.
+
+
+00:25:59.740 --> 00:26:00.580
+- Thank you.
+
+
+00:26:00.580 --> 00:26:01.700
+- Thank you both so much.
+
+
+00:26:01.700 --> 00:26:02.540
+- Yep, bye.
+
+
+00:26:02.540 --> 00:26:03.360
+- Bye.
+
+
+00:26:03.360 --> 00:26:05.940
+- Thank you for listening to Python Bytes.
+
+
+00:26:05.940 --> 00:26:08.460
+Follow the show on Twitter via @PythonBytes.
+
+
+00:26:08.460 --> 00:26:11.660
+That's Python Bytes as in B-Y-T-E-S.
+
+
+00:26:11.660 --> 00:26:15.020
+and get the full show notes at pythonbytes.fm.
+
+
+00:26:15.020 --> 00:26:16.620
+If you have a news item you want featured,
+
+
+00:26:16.620 --> 00:26:19.060
+just visit pythonbytes.fm and send it our way.
+
+
+00:26:19.060 --> 00:26:22.220
+We're always on the lookout for sharing something cool.
+
+
+00:26:22.220 --> 00:26:24.060
+On behalf of myself and Brian Aukin,
+
+
+00:26:24.060 --> 00:26:25.580
+this is Michael Kennedy.
+
+
+00:26:25.580 --> 00:26:27.580
+Thank you for listening and sharing this podcast
+
+
+00:26:27.580 --> 00:26:29.220
+with your friends and colleagues.
+

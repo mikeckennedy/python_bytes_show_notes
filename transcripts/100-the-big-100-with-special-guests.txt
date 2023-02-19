@@ -1,0 +1,1006 @@
+00:00:00 Hello and welcome to Python Bytes where we deliver Python news and headlines directly to your earbuds. This is episode 100 very exciting very exciting episode 100 Recorded October 10th 2018. I'm Michael Kennedy and I'm Brian Arkin. Hey Brian. It's not just us this time is it?
+
+00:00:17 No, we've got some wonderful guests. Yeah, so I want to welcome Anthony Shaw Dan Bader Brett Cannon and Nina to the show, all of whom have been on the show before, but have come here to help us celebrate.
+
+00:00:31 Hello everyone.
+
+00:00:31 - Hey, and congratulations.
+
+00:00:33 - Hi.
+
+00:00:34 - Hi.
+
+00:00:35 Thank you, thank you, Dan.
+
+00:00:36 It's great to have you all here to celebrate this big episode and go a little bit deeper on some of the topics.
+
+00:00:42 It's gonna be a lot of fun.
+
+00:00:43 So before we get to the first topic, really quickly wanna say thank you to DigitalOcean who helped us reach this milestone.
+
+00:00:49 Check them out at pythonbytes.fm/digitalocean.
+
+00:00:51 get a $100 credit for new users.
+
+00:00:54 Brian, you wanna kick off our first item with something poetic?
+
+00:00:58 - Yeah, definitely.
+
+00:01:00 Poetry is a Python project that a lot of people have, since we've talked about packaging quite a few times, a lot of people have said, "Hey, you should check out Poetry." And I just finally got a chance to.
+
+00:01:13 I've been taking a look at it this week, and it's kinda cool, but it's a big, This topic is actually kind of a can of worms.
+
+00:01:22 There's essentially Poetry on its tagline.
+
+00:01:25 It says Poetry is a tool to handle dependency installation as well as building and packaging of Python packages.
+
+00:01:32 And it all does it with one file, the pyproject.toml file.
+
+00:01:37 So that replaces the setup.py, the requirements.txt, setup.cfg, manifests, and even pip file.
+
+00:01:44 And that's where the can of worms comes in.
+
+00:01:47 So this is sort of like pipenv, but with a completely different file structure behind it.
+
+00:01:53 It does do virtual environment support as well.
+
+00:01:56 So it does a lot.
+
+00:01:58 I'm not sure.
+
+00:01:59 I was surprised that you can build packages and put them up on PyPI without a setup.py file anymore.
+
+00:02:06 Those aren't required, I don't think.
+
+00:02:09 And I was surprised that, so these are also related to PEP 517 and 518.
+
+00:02:15 And surprisingly enough, I was surprised to find that Brett Cannon was part of those as well.
+
+00:02:22 So I actually, I'd like to get Brett or somebody else's opinion or information about this.
+
+00:02:28 - Yeah, so the peps that Brian's talking about, pep 517, 518, 518 actually got finished first.
+
+00:02:35 And that's what's defined the pyproject.toml file, which is originally written to provide a structured file for information required to build a package.
+
+00:02:47 So something you would upload to PyPI.
+
+00:02:48 It was not originally intended for projects, so not like your website or web app or something like that.
+
+00:02:56 And then subsequently, PEP 517 standardized what could go in the pyproject.toml to specify how to build your package.
+
+00:03:03 So this is why, Brian, you don't need setup.py anymore.
+
+00:03:06 These two PEPs basically supersede the need for that by standardizing because setup.py has a problem of being executable code and being fairly tied to setup tools.
+
+00:03:17 This completely makes it independent, which lets you use projects such as flit or poetry to actually build your libraries.
+
+00:03:23 - That's really interesting because when you do a pip install, Brett, you're basically executing the setup.py, which like you said, it could just be, here are my dependencies, please register them.
+
+00:03:34 It could be, install this horrible thing and format my hard drive, right?
+
+00:03:38 So now we have a safe way to pick up and install a thing.
+
+00:03:42 Do you foresee a thing marking a package as having no executable code on install?
+
+00:03:48 - Well, so you actually already have that anytime you install a wheel.
+
+00:03:51 So wheels are specifically designed that it's essentially a unzipping and copying some files around.
+
+00:03:57 There is no actual code executed as part of the build.
+
+00:04:00 So only source distributions are the only time you ever actually are executing code like that.
+
+00:04:06 And you are right, there is a potential security risk.
+
+00:04:08 Honestly though, the really big benefit of moving away from executable code in a setup.py to something like a pyproject.toml is it allows for better introspection.
+
+00:04:17 Because before this, if you wanted to take a package as this file, for instance, and figure out what dependencies it had, if you had the wheel, that's in a metadata file, it doesn't make a big deal.
+
+00:04:26 But if you only had the setup.py, you basically had to shim out setup tools, or run setup tools, and not have it run its install step to find out what dependencies were programmatically.
+
+00:04:37 But with PyProject.toml and this sort of specification, it allows you to get away from that.
+
+00:04:41 Interesting.
+
+00:04:42 And one of the things I wanted to mention was just that if people are considering whether to use pipenv or in that route or poetry, they're just, they're different workflows.
+
+00:04:52 And I would recommend people just try both of them out and see which workflow fits better for you.
+
+00:04:58 As far as I can tell from Brett's comments offline is that both of these peps are provisional, but they're probably not going to go away.
+
+00:05:05 Is it safe for me to convert my project to away from setup.py and use pyproject.toml now or is there a risk that that'll go away?
+
+00:05:14 >> No, there's absolutely no risk it's going to go away.
+
+00:05:16 This is the future of packaging in Python to the point that I actually updated pet518 maybe two months ago to take away the specification that it was meant for libraries, and just to say it's a configuration file.
+
+00:05:27 Because actually when Poetry started using pyproject.toml, it kind of did it against the recommendation of the PEP because the PEP originally said it was designed for libraries and packages, not for applications. And they started to use it that way.
+
+00:05:40 And other people such as Black, which I believe we'll maybe touch on later, also started to integrate with it and such.
+
+00:05:47 And various other projects have. So we actually took away that wording.
+
+00:05:50 But the provisional just basically means we reserve the right to maybe tweak some of the wording requirements.
+
+00:05:57 but this is very squarely the future of Python packaging, so they're definitely not going anywhere.
+
+00:06:02 Okay, wonderful.
+
+00:06:03 Yeah, very cool.
+
+00:06:04 Does that mean that the person installing the package needs to have a specific version of pip?
+
+00:06:10 Like, to support the...
+
+00:06:14 Because setup.py is cool because it can work with a really, really old version of pip, which is pretty common.
+
+00:06:20 So the new Toml file, does it need the users to actually have a newer version of pip to work?
+
+00:06:27 Yes, only though, once again, if you're installing from a source distribution, which is once again, why wheels are so important, that if you had a wheel, all of this is completely mute.
+
+00:06:36 I mean, basically, this is just how to build a wheel.
+
+00:06:38 And even the way Pip's workflow now is structured, is pip basically takes the SDist, builds a wheel, and then installs that wheel.
+
+00:06:45 And that's actually what pip 5.17 specifies is an API to call into Python code of how to ask a build tool such as Flit, for instance, or Poetry, "Hey, can you build me a wheel?" "Okay, now that you have a wheel, can you help me install a potential?" Or what have you.
+
+00:07:00 So it is only in the newer PIPs.
+
+00:07:03 I believe it was pip either 10 or 18, 'cause they changed their numbering scheme recently.
+
+00:07:09 They added the support, so it's only within the last two versions that they've had it.
+
+00:07:13 But once again, if you have wheels, it's completely unnecessary technical detail.
+
+00:07:17 - Dan, you were trying to jump in there.
+
+00:07:18 - You know, I've never really heard before of the TOML format, and even the name is hilarious.
+
+00:07:24 I think it's like, isn't it like Tom's format or something like that?
+
+00:07:26 It has like the name of the inventor in there somewhere.
+
+00:07:29 And this is curious if this is something, I don't know, established or where, for me, it's sort of like out of the left field kind of format.
+
+00:07:36 And I was just wondering, you know, if this is something, what makes it so awesome by comparison to JSON or YAML or whatever the other options were, I guess a plain any file or something like that.
+
+00:07:46 I will say that there's a very long section in the PEP explaining all the reasons we did this.
+
+00:07:53 - So we actually don't-- - I was going to ask.
+
+00:07:55 Sorry, have you seen a Toml file?
+
+00:07:58 I just started using Black more heavily, pretty much everywhere, and it required me to set up a Toml file.
+
+00:08:04 I was like, "Yeah, okay, it's pretty nice, pretty straightforward.
+
+00:08:07 Feels like an .ini file, but it seems like it's a little bit different." So I was just curious.
+
+00:08:11 Yeah, I mean, compared to JSON with all the extra curly brackets or even YAML gets pretty messy, I think it's a really nice format for configuration.
+
+00:08:21 Yeah, and one of the reasons we chose it is Rust has standardized on TOML for all their packaging details.
+
+00:08:26 So we actually reached out to them before we did this and said, "Hey, we noticed you've been using TOML," which some people called the only markup language to take the creator's name out of it.
+
+00:08:36 And they said they had no regrets. They really liked using it.
+
+00:08:40 And it was basically readable without any ambiguous corner cases.
+
+00:08:47 And that was basically it, really.
+
+00:08:50 It was, as Nina said, JSONs can be really messy to read if you don't format it well.
+
+00:08:55 YAML is decent, but there's also some execution problems if you're not careful.
+
+00:09:00 INI files are underspecified and really not specified in any way other than what the module in the standard library happens to say in INI files, at least in the Python community.
+
+00:09:10 And then Toml just happens to be more well established and specified.
+
+00:09:14 I for one am excited about a new text format that doesn't let you execute Python code just by putting exclamation marks or something in it.
+
+00:09:21 Safe load. Safe load all the way.
+
+00:09:25 Yes, exactly.
+
+00:09:26 Or load safe.
+
+00:09:27 Nina, do you use pip, inf, or poetry, or are you just a straight pip and virtual environments person?
+
+00:09:36 I actually have not heard about poetry before today, so I'll definitely be checking it out.
+
+00:09:41 But I use a mix of requirements.txt for simpler projects and pipenv when things get more complex.
+
+00:09:47 Yeah, cool. I still haven't got my mind around pipenv, so I'm starting to wonder if maybe I should just learn poetry instead.
+
+00:09:53 So I'm pretty excited about this, actually.
+
+00:09:55 There's a pipenv integration in VS Code, and it's pretty nice. It takes a lot of the thinking out of it.
+
+00:10:01 Oh, that's awesome. Yeah, very cool.
+
+00:10:03 Anthony, so you found a way to relate llamas to Python, is this correct?
+
+00:10:09 Yeah, so I've been looking into tools for measuring code complexity.
+
+00:10:16 So I guess the idea is that less is more. So as an application grows, as a code base grows over time, you end up adding all these edge cases and unique customer requirements and stuff like that.
+
+00:10:30 and the code can get more and more unmaintainable and complicated.
+
+00:10:34 So there's a few ways of measuring the complexity of your code.
+
+00:10:40 And one tool that I came across was called Radon.
+
+00:10:43 And it's a Python tool that leverages the AST, I guess the thing which is built into Python, which turns your code into a tree that it then executes.
+
+00:10:55 And one of the stats is called cyclomatic complexity, which is not unique to Python. It's used in other languages as well, but it kind of measures the number of decisions within your code base by iterating through the tree, which is really cool.
+
+00:11:11 That's cool. One way I like to think of cyclomatic complexity is like, if I'm going to test this code, what is the minimum number of unit tests I have to have to actually test all the parts? It's not exactly true, but it's sort of true because you got to go go down each path, right?
+
+00:11:24 - Yeah, the way I always think of it is when you go driving somewhere, how you always try and pick the route which requires the fewest number of left or right turns.
+
+00:11:34 So just going, even if it takes longer, just it's an easier drive if you can just pick one road and stick to it rather than taking all these back roads and having to remember all the paths and stuff.
+
+00:11:45 So that's how I kind of think of cyclomatic complexity.
+
+00:11:48 And the other one that they've got is a maintainability index, which is a combination of the number of lines of code that you have, and also something called the Halsted, which is the number of operations in your AST.
+
+00:12:01 So yeah, basically Radon is a tool that you can run over your code base, and it'll tell you how complex the code is, or a part of your code, by adding a special visitor to the AST, which is really cool.
+
+00:12:12 - And that's really cool.
+
+00:12:14 So I have no experience with the Radon.
+
+00:12:15 I know it as a gas that leaks out of the ground, that can be radioactive, but that doesn't have anything to do with llamas.
+
+00:12:21 - What's the PyLlama?
+
+00:12:22 - The Llama, so the Llama is another tool that I found which brings together Radon and a whole bunch of other tools used for looking at the quality of your code in air quotes.
+
+00:12:35 So PyCode style, PyFlakes.
+
+00:12:38 It also includes GJS Lint, which is a fork of JS Lint, which is a JavaScript linter.
+
+00:12:45 I'm not sure why it includes a JavaScript linter.
+
+00:12:48 I think the idea is that you run it over Django and other projects where you've got sort of nested JavaScript in your code, and it can basically go and give you linting in your web applications on not just the Python, but on the JavaScript as well.
+
+00:13:03 And it also includes another tool called McCabe, which is a project that Ned Batchelder put together, which is another way of measuring complexity by looking at the number of branches.
+
+00:13:13 So that's pretty cool.
+
+00:13:15 Yeah, my sort of final goal was to actually write a pytest plugin that kind of benchmarks the complexity of your code in order to pass the tests.
+
+00:13:25 And then the idea was that you could make the code, the tests fail if someone has basically made the behavior the same but the code more complicated.
+
+00:13:34 That's really cool. I love it.
+
+00:13:35 So like if cyclomatic complexity of any function gets above 10, just boom, fail the build. That's what you're thinking?
+
+00:13:41 I feel like it's more than it was before.
+
+00:13:45 It would be really funny to plug this into a pre-commit hook where you just can't even commit your code.
+
+00:13:50 We reject it, it's too complicated.
+
+00:13:55 So have you run this on one of your existing code bases?
+
+00:13:59 I have done on previous tools and some other code bases.
+
+00:14:03 It's kind of, yeah, how about you, Nina?
+
+00:14:07 Oh, throwing it back.
+
+00:14:09 I have not.
+
+00:14:10 Kind of just spews out a number and you're like, okay, that's interesting.
+
+00:14:15 Is that good or bad?
+
+00:14:16 So it doesn't really mean anything unless you look at it historically, is what I found.
+
+00:14:22 And I've run a similar tool like this on .NET code bases and Java code bases, which can get extremely complicated, especially because like every feature that ends up getting added is basically just adding another if statement somewhere to deal with some weird edge case.
+
+00:14:37 Yeah, this is a really interesting one.
+
+00:14:40 I would like to propose another measure of complexity is the number of types involved in any particular function as well.
+
+00:14:47 But yeah, it's cool.
+
+00:14:49 Brett, have you got any experience with any of this?
+
+00:14:51 - Not beyond the fact that PyLama is supported by the Python extension for VS Code.
+
+00:14:55 - Ooh, nice, yeah, so built right into the editor there.
+
+00:14:58 That's cool.
+
+00:14:58 Nice.
+
+00:15:01 So Nina, the topic you wanna cover is around teaching Python, which I think everybody on this call in some way or another is pretty actively involved in that. So tell us about your thing.
+
+00:15:14 Yeah, I'm going to be teaching a two-day workshop in spring of next year.
+
+00:15:18 And I was having a hard time deciding on what tool I wanted to use and what workflow I wanted to use because when someone's just getting started with Python, it comes with a lot of hurdles like the virtual environments, installing Python 3, explaining why the Python that comes with your system isn't good enough, and pip, and working with the command line and all this stuff.
+
+00:15:38 I put out a call on Twitter asking what software and tools people use to teach Python.
+
+00:15:43 I will link to that in the show notes, but there were about 50 responses, 414 votes, and I learned about a lot of new tools from that thread.
+
+00:15:53 Of the 414 votes, 27% said they use Python or iPython in a Ruple.
+
+00:15:56 Another 13% use the built-in IDLE, which I feel like a lot of people don't even know about.
+
+00:16:04 Yeah, that's true.
+
+00:16:06 There is a tool, it's janky, and it's baked into Python.
+
+00:16:10 39% said they use an IDE or some other editor, Visual Studio Code, PyCharm, Atom.
+
+00:16:15 And then 21% used other, so a mix of local and hosted Jupyter notebooks, and a handful of other responses.
+
+00:16:23 So I just want to cover a few tools that I learned about and a few tools that I got reminded of.
+
+00:16:30 The first is the mu editor have any of you used it?
+
+00:16:34 Yeah, it's really cool Yeah, so it's just like a really simple python editor really great for those who are completely new to programming It's just an editor and then really large buttons at the top with some common actions It's got support for a bunch of educational platforms like the adafruit circuit playground the micro bit pi game There's a lot of really awesome tutorials On the other side of the complexity scale, a few people clued me into the Neuron plugin for VS Code and the Hydrogen plugin for Atom.
+
+00:17:03 It makes this really cool interactive coding environment in your editor.
+
+00:17:08 Little bits of Jupyter Notebooks, you can interactively run commands and see the output.
+
+00:17:14 You can have interactive charts and graphs displayed in your editor, import to and from Jupyter Notebooks.
+
+00:17:21 That one is geared a little bit more towards data scientists.
+
+00:17:24 - I really like that one.
+
+00:17:25 I had never heard of Neuron.
+
+00:17:26 I've heard of Hydrogen for Atom, and I was excited about it, but I didn't do anything.
+
+00:17:31 It's like, "I don't really use Atom," but I do use VS Code sometimes, and I'm like, "Oh, this is pretty cool." So it's like, it's sort of the general editing, the standard editing you have in a regular text editor, but then Jupyter-like things pop out of it, right?
+
+00:17:44 Like a graph or something.
+
+00:17:45 - Yeah, and like a lot of interactivity.
+
+00:17:48 It looks really good.
+
+00:17:49 - Yeah, it does.
+
+00:17:50 Nice.
+
+00:17:51 What else?
+
+00:17:52 Someone else told me about REPL.IT, REPL.IT.
+
+00:17:56 And they have a project goal for zero effort setup.
+
+00:17:58 And they actually sent me a really interesting tweet that I liked.
+
+00:18:00 So I'll read it out to you.
+
+00:18:02 They said that we believe that the initial experience of programming should be the joy of writing and running code.
+
+00:18:06 And delaying the setup pain is a good way to hook people and retain them to want to install locally.
+
+00:18:10 Because after all, setup is merely accidental complexity that we accept it as reality.
+
+00:18:14 That is cool.
+
+00:18:16 Yeah, very cool.
+
+00:18:18 That is good.
+
+00:18:20 That is cool.
+
+00:18:21 Yeah, very cool.
+
+00:18:22 It's good, right?
+
+00:18:23 Open source hosted cloud REPL.
+
+00:18:25 The free tier is pretty reasonable.
+
+00:18:27 You don't have to log in or do anything.
+
+00:18:29 You can go to this site and get started right away.
+
+00:18:32 There's three vertical panes.
+
+00:18:33 There's one for files, one's your editor, and the next is your REPL.
+
+00:18:38 And then it's got some other really cool stuff built in.
+
+00:18:41 Visual package installation, so you don't have to use pip.
+
+00:18:44 You can search in a little text box and just click install, which is really nice.
+
+00:18:48 - Great for new users. - Once that happens, right? It automatically generates a requirements.txt.
+
+00:18:54 Like, that's pretty cool. And then it also includes a debugger, which, I don't know. I don't know how they make it work, but I love it. - It's nice. Wow. Very cool. - Yeah. And the last one is bpython. So it's a different kind of command line interactive REPL. I used it years ago, and I was surprised to hear that that it was still an active project.
+
+00:19:17 But what BPython is, is a fancy curses interface to the Python interpreter.
+
+00:19:22 So you can get little pop-up boxes in your terminal and a lot of kind of really fancy UI elements, which is nice.
+
+00:19:30 It also supports type hints, expected parameter lists, and then you can do things like really easily reload imported modules.
+
+00:19:38 You can also rewind your session.
+
+00:19:40 And what that does is it pops the last line and then reruns the entire session and reevaluates it.
+
+00:19:47 But those are really cool features that I haven't seen anywhere else.
+
+00:19:50 - That's a super cool one.
+
+00:19:51 Then you have some honorable mentions as well, right?
+
+00:19:54 - I do.
+
+00:19:54 So I saw a talk at EuroPython from Joshua Lowe.
+
+00:19:59 Have any of you met him?
+
+00:20:00 - I've not met him.
+
+00:20:01 - Yeah, we met him at the last PyCon.
+
+00:20:03 - Nice.
+
+00:20:04 - Okay.
+
+00:20:05 Yeah, he is 14 years old, which is amazing, but he's a brilliant developer and he made this open source tool called EdgyBlocks, which is kind of a Python version of Scratch.
+
+00:20:17 It's a tool for kids that lets you drag and drop code blocks and see it executed instantly.
+
+00:20:24 Open source, contribute to it, check out his website.
+
+00:20:27 I really love that project.
+
+00:20:28 - Yeah, that's very cool, very cool.
+
+00:20:30 All right, before we get to the next one, Dan, I wanna just tell you all about our sponsor, DigitalOcean.
+
+00:20:35 Thank you to DigitalOcean for making this show possible.
+
+00:20:38 Like I said, previously, they've sponsored this entire show for the rest of the year.
+
+00:20:43 So thank you to them.
+
+00:20:44 That's great.
+
+00:20:45 And one of the features I want to tell you about that they're promoting these days is to bring your own image to DigitalOcean.
+
+00:20:52 You've heard about bringing your own device.
+
+00:20:54 Well, in the cloud world, that's bringing your own image.
+
+00:20:56 So you can go and create a virtual machine, some kind of Linux distribution, exactly like you want it, and then just upload that image, and then press a button and create new droplets based on that.
+
+00:21:06 So really cool.
+
+00:21:07 Check them out at pythonbytes.fm/digitalocean.
+
+00:21:09 Get $100 credit from the users.
+
+00:21:11 And yeah, it's great.
+
+00:21:13 It's been working well for us, and definitely recommend them.
+
+00:21:17 So Dan, the one that you'd like to bring up has already got a little bit of a cameo earlier, right?
+
+00:21:22 Yeah, I just love this tool.
+
+00:21:24 So I've become a huge fan of the Black Code Formatter by Lukas Lange.
+
+00:21:30 And well, what's a code formatter?
+
+00:21:32 It's basically a tool you run on a Python source file, and it reformats it according to a built-in code style.
+
+00:21:40 It's sort of like PEP 8, but PEP 8 isn't super comprehensive, so it's ambiguous to a certain degree.
+
+00:21:49 So Black just makes a decision for you and reformats your code.
+
+00:21:53 You know, with this sort of tool, it's always like a love and hate relationship, I think, because if you agree with the reformatting, then it can be great, right?
+
+00:22:02 It's awesome.
+
+00:22:03 You just write your code however you like, and then you reformat it, boom, it looks consistent at least.
+
+00:22:08 But if you don't like it or you have other idiosyncrasies that you want to keep, then that doesn't work out so great.
+
+00:22:14 And so with Black, I found that it's actually the first tool that I have sort of developed this blind trust for.
+
+00:22:21 So I pretty much started using it for everything now.
+
+00:22:24 And I like the way it formats my code.
+
+00:22:27 It pretty much always figures out some formatting solution that I like.
+
+00:22:32 And it's just a really, really cool tool.
+
+00:22:35 And I think it just came out in 2018.
+
+00:22:37 I actually heard about it on Python Bytes earlier this year.
+
+00:22:42 And I think Brian, you found it in episode 73.
+
+00:22:45 Got my notes here.
+
+00:22:47 And it's, yeah, it's just an amazing tool.
+
+00:22:49 And the nice thing is, besides all of the auto-formatting business, you can also use it to check the formatting of an existing project or just a single file.
+
+00:22:59 So where this is nice, and this kind of touches on some of the code quality tools that we had talked about earlier, is that you can integrate that with your continuous integration pipeline, and then make sure that any new code that gets committed is consistent with the formatting that Black generates.
+
+00:23:19 So if you have multiple developers working on a code base, this just takes away all of the formatting back and forth, you know, it's so easy to get sucked into a conversation of like, "Oh, I'm reviewing your code here." Actually, I think this works really well. You know, your 5000 line change, it's awesome. But I would really change all of these, the single quote strings to double quotes or something like that. It just gets rid of all of these non productive conversations. And just make sure everybody uses the same formatting. I love it. Yeah, that's awesome. Another one of the problems you have in these teams is if you have different formatting rules, and you can run, you know, like format my code options, like VS code or PyCharm or something, and you have different ones, they can fight inversion control, right?
+
+00:23:58 Like this one changes, this one changes it back, this one changes it, this one changes it back.
+
+00:24:02 So I can just hear Nina's voice say, "That should be a pre-commit hook." And then everyone's is the same, right?
+
+00:24:07 What do you think, Nina?
+
+00:24:08 Should it be a pre-commit hook?
+
+00:24:09 Yeah, I love pre-commit hooks.
+
+00:24:11 Absolutely.
+
+00:24:12 That's awesome.
+
+00:24:13 Brett, I wanted to ask you, what do you guys do on the core dev team for this problem?
+
+00:24:19 Lots of handwork.
+
+00:24:22 It's all manual.
+
+00:24:23 Well, basically, we don't have any tools specifically to actually maintain this.
+
+00:24:28 More or less, all the core devs have just internalized Pep8 almost as much as you possibly can.
+
+00:24:34 You can just spot code that doesn't quite meet it, even though Pep8 is not as rigorously defined as it potentially could be.
+
+00:24:40 The idea has come up about actually adopting Black as an official formatter, but due to the current governance situation, that hasn't really gone anywhere.
+
+00:24:49 But I wouldn't be shocked if Lukasz, who is a core dev, brings that up in the future as a way to kind of make black more or less official formatter for language somehow.
+
+00:24:57 Yeah, that's cool, especially since Lukasz is actually, you know, he created black and he's a core developer, he's very active.
+
+00:25:03 It would be not unreasonable to say we just run black against everything.
+
+00:25:07 Yeah, it's just the trick of can you get enough core developers to say blacks output is pretty instead of ugly.
+
+00:25:15 And you can probably pull that off.
+
+00:25:17 But obviously formatting, much like naming, is a very opinionated subject, and it's hard to get agreement on that.
+
+00:25:23 - It's like asking everybody to use the same editor.
+
+00:25:26 - Mm-hmm, exactly.
+
+00:25:28 - Somebody will be happy, but you know, somebody's gonna be really unhappy about that.
+
+00:25:31 - One really nice thing about these tools like Black is because they're external to specific editors, being able to standardize them does help allow people to use whatever tool or editor that they want.
+
+00:25:40 - Yeah, absolutely, absolutely.
+
+00:25:42 Very cool.
+
+00:25:43 Well, one of the themes of the last PyCon, Brett, was one of the places where Python belongs, but is not really, is on the web, on the client side of the web, right?
+
+00:25:52 - Yeah, Dan Callahan had a whole keynote kind of talking about Python and where it's been and where it could potentially go, and one of his key points was Python was not really on the web as I think some of us wish it could be.
+
+00:26:05 - Yeah, but you have, your next item is about trying to make that a bit more of a reality, right?
+
+00:26:11 - Yeah, so at PyCon Australia, Russell Keith-Magee, who heads up the P-Ware project gave a whole talk entitled "A Web Without JavaScript," where Russell basically points out that JavaScript more or less has a monopoly on client-side programming, which is always a not great thing because you never want a specific monopoly because it's highly restrictive.
+
+00:26:35 It makes innovation and growth hard in various other usual regions you don't want it.
+
+00:26:39 So Russell gave a whole talk about the various approaches that currently exist for trying to get Python into the browser.
+
+00:26:44 And he did it by using an example all the way through his talk where he implemented what's called I think you pronounce it the Loon algorithm. It's basically a way to check some credit card numbers.
+
+00:26:54 And when he implemented it, it was only like 0.4 kilobytes. So really small.
+
+00:26:59 And then he just subsequently wrote it in Python and ran through all the ways you can do it.
+
+00:27:04 and it ranged from 32 kilobytes for transcript, which transpels Python into JavaScript, to Brython, which is a Python compiler written in JavaScript, which had 0.5 kilobytes for source, 'cause it's just Python, but it had a 646 kilobyte bootstrap.
+
+00:27:23 Batavia, which is Russell's project that basically implements the eval loop for Python, which had a 1.2 kilobyte bytecode size, 'cause it literally executes Python bytecode, but it has a five megabyte bootstrap.
+
+00:27:35 And then PyOdyed, which is the CPython compiled down to Wasm, which is WebAssembly, which is kind of being viewed by some as the future way of handling this kind of problem.
+
+00:27:45 - I'm very excited about PyOdyed.
+
+00:27:47 - Yeah, well, it's a really cool idea.
+
+00:27:48 Unfortunately, while the code was still just 0.5 kilobytes for the Python code, the bootstrap's three megabytes, so it's still kind of large.
+
+00:27:56 But it is a nice way to short circuit getting going, because if you can just take CPython is literally compile it straight to WebAssembly.
+
+00:28:04 There's no reimplementation of anything, right?
+
+00:28:06 Like Vitavia and Brython and Transcript are all big projects that are having to basically reimplement Python in one way or the other, while Pyotr just said like, well, let's just take CPython and just make it work.
+
+00:28:16 - Right, compile it to Wasm and then ship it.
+
+00:28:18 - Exactly, which I think is why some people at least are hopeful Wasm could somehow do this, whether that's writing a Python compiler straight to Wasm so we can maybe ditch the bootstrap situation or what, I don't know.
+
+00:28:30 The other thing for me is my interest in this is as a VS Code extension developer, because that's all in TypeScript.
+
+00:28:38 So this and VS Code is an Electron app.
+
+00:28:42 So for situations where download size isn't quite as critical, something like Pyodide actually starts to become potentially feasible because shipping three megs as part of a hundreds of megabyte app is not a big deal.
+
+00:28:53 Yeah, that's where you're right.
+
+00:28:54 That's where it gets super exciting.
+
+00:28:56 Because these things were like you say, where you say, oh, that's three megs, that's five of JavaScript, that's way too much.
+
+00:29:02 That's true when you're getting it off the web per request, at least per session, but if it's, like you said, shipped, and it just runs in the Chrome that powers the whole Electron system, well then it's no big deal, right?
+
+00:29:16 - Exactly, and then at that point, it's a question of which one gives the best Python to JavaScript bridge and vice versa, and they all have different levels for that based on how they're implemented, But for me, I think there's an opportunity here to not only come up with a solution that has good bridging, that can work in a Electron or Node situation to get Python there, but then also to potentially look at WebAssembly and see if there's a way to do a Python compiler straight to WebAssembly, and then have that be the way we target Python on client side and try to keep that number down.
+
+00:29:50 - Yeah, that's super cool.
+
+00:29:51 Have you heard about Python Electron, Electron Python?
+
+00:29:54 I can't remember which way it goes.
+
+00:29:55 - Yes, I have passively seen it 'cause I've asked on Twitter a couple times, like, I really want this.
+
+00:30:02 Like, I want to write the Python extension of VS Code in Python someday.
+
+00:30:07 So, Eric Snow, who's the core dev and also a teammate of mine, we occasionally bounce this idea back and forth and it sometimes leaks onto Twitter and we dream in blue skies.
+
+00:30:17 And yeah, people have brought up Python Electron before.
+
+00:30:21 - Very cool.
+
+00:30:22 How about the rest of you folks?
+
+00:30:23 Have you heard about Pyodide or people doing interesting things with some of these others?
+
+00:30:27 What are your thoughts?
+
+00:30:29 We recently added interactive coding exercises to real Python.
+
+00:30:33 So there's quizzes and parts of them are, you know, solve this, like implement this little loop or whatever.
+
+00:30:38 And that's actually implemented in Brython.
+
+00:30:41 And so it compiles your Python code to JavaScript locally on the client and then runs that.
+
+00:30:46 And it's actually been a pretty cool experience.
+
+00:30:49 not 100% compatible. So it's sort of like Python 3.7-ish. And so you run into these funny edge cases, which is interesting because, well, people are trying to learn Python and what are they really learning with these exercises? But for the most part, it's pretty accurate. And performance wise, it works pretty well too. So on a fast connection, when that bootstrap doesn't hit you that hard, it works quite well on mobile too. The only thing I found where it's really starting to just churn the CPU is when you load in a bunch of stuff from their standard library. So we have the option to validate your code using regexis. And when you import RE, then it can take, I don't know, you know, five seconds on even on a notebook. And that's not ideal. But I think for a use case like that, where you have to user type in code, for us, it works really quite well. I'm not sure if I would want to rewrite like, all of the front end JavaScript, just a part of that's part of the the website but for a code runner or code exercise tool I think it works quite well.
+
+00:31:50 Yeah that sounds like a really cool use and you don't have to worry about the security it's not like I'm taking their code and running it and trying to do that in Docker or something like just hope my server doesn't get messed up from this we'll try it.
+
+00:32:01 The only thing you can break is your browser.
+
+00:32:03 I've hacked myself I'm a hacker.
+
+00:32:06 How about the rest of you?
+
+00:32:08 No I've not checked it out but there's a couple of other links that I'd recommend people look at. One is Scott Hanselman's blog post on JavaScript as the assembly of the web, which is really interesting and paints some good context. And then also from Scott, there's an interview on Hanselman, it's podcast between him and Patricia Oss. And that kind of covers off like the history of JavaScript engines and runtimes and also helps kind of explain why things the way are the way they are, which is really interesting to give you context as well.
+
+00:32:41 - That's cool, and speaking of Scott Hanselman, they're doing really interesting stuff with WebAssembly and the .NET CLR with Blazor.
+
+00:32:48 I mean, if the Python community could just do that same thing, and it looks like Pyodite is very close, but that's more focused on data science instead of Spah's front-end JavaScript stuff.
+
+00:32:58 So there's definitely some interesting stuff happening there.
+
+00:33:01 - I'd also recommend, if you haven't watched Dan Callahad's keynote from PyCon, that you do.
+
+00:33:05 It's really good.
+
+00:33:06 - Yeah, that's a great recommendation.
+
+00:33:08 All right, WebAssembly, it's gonna make things amazing.
+
+00:33:11 I'm looking forward to it.
+
+00:33:13 All right, so we're down to our last item, and this one is mine, so I'll kick it off.
+
+00:33:18 So you all have heard of Selenium, right?
+
+00:33:20 You can automate browsers and do web testing and stuff with it? - Yeah.
+
+00:33:24 - Yeah, so if I wanted to use that in an async and await, in an async method, as in async def, I'm gonna call a Selenium thing, there is no async option for that.
+
+00:33:33 And they actually talked about it on GitHub and decided they weren't going to do it because there's this other project, which I had never heard of, called Arsenic, I guess, something like that.
+
+00:33:43 And it's an async version of, well, basically, Selenium.
+
+00:33:47 So if you're writing any async code, code that you're interacting with a bunch of sites, you're testing them or something like this, you could do it in an async IO event loop very easily with this other project.
+
+00:33:58 So it's quite cool.
+
+00:33:59 - I'm gonna definitely have to check that out.
+
+00:34:01 That is interesting.
+
+00:34:02 - Yeah, so I come in here, like I could create one of these sessions, and say I'd like to use the Firefox browser to do this, and then I'm going to await getting a page, and then I could actually say like, await session.waitForElement, like h1.
+
+00:34:16 And so you can say, you know, sort of put your part of the event loop to sleep until the element, you know, h1 appears, and you can get the title from it and stuff.
+
+00:34:23 It's really quite neat.
+
+00:34:24 Yeah.
+
+00:34:25 So they say, you know, this is good for load testing, good for automated testing websites.
+
+00:34:29 You know, if you wanna say like, well, we have the CMS, and people can just type stuff into it, but let's make sure there's no broken links, right?
+
+00:34:35 Something like that.
+
+00:34:36 And it uses real web browsers, so it's really using Firefox in a hidden form to do this.
+
+00:34:41 So it's pretty cool, very nice for testing, I think.
+
+00:34:44 - Yeah, headless browsers are awesome.
+
+00:34:45 And it has a PyTest, it works with PyTest, that's cool.
+
+00:34:48 - Yeah, it has a special PyTest support, which is cool.
+
+00:34:50 So I guess this is an interesting thing for people who wanna automate the web and they're doing it asynchronously, and often that's one of the times where AsyncIO is really helpful because you're just waiting on other servers anyway, so you can blaze through that.
+
+00:35:02 But maybe just throw it out to you all.
+
+00:35:04 What are your thoughts on async these days?
+
+00:35:06 Async and await and all that stuff.
+
+00:35:08 Brett, maybe start with you 'cause you're on the inside.
+
+00:35:11 And I know you've blogged on this.
+
+00:35:12 - Yeah, I was gonna say, which makes me obviously extremely biased on the topic.
+
+00:35:15 So I think async's great.
+
+00:35:18 I appreciate personally how we designed it because we haven't tied ourselves to a specific event loop, which has allowed some experimentation, such as Trio and Curio.
+
+00:35:29 - And UVL, yeah.
+
+00:35:30 - Yeah. - Async.io has continued to evolve and learn from them.
+
+00:35:33 Like I know Yuri Slyanov has pulled a lot of ideas from Nathaniel Smith, a trio, into Async.io.
+
+00:35:40 So there's been a nice feedback loop on that level of experimentation.
+
+00:35:45 So I'm very positive on it.
+
+00:35:46 I wrote an entire GitHub API library based on Async because I thought it was so great.
+
+00:35:52 - Yeah, that's right, and we've covered that in the show before, but I don't remember the number, I'm afraid.
+
+00:35:56 - I don't know, I think Dan brought it up.
+
+00:35:58 - Oh yeah, that's right. - That's right, Dan did bring it up.
+
+00:35:59 I can't remember the number either though, but man, so many episodes.
+
+00:36:02 I'll tell you it's less than 100.
+
+00:36:04 It's either 99 or below that.
+
+00:36:05 We should bound on it.
+
+00:36:06 How's this?
+
+00:36:07 What do you think the rest of you guys?
+
+00:36:09 No, nothing.
+
+00:36:10 I still find Async in a way very confusing and the attempts that I've had at using it, I've just ended up making a mess and causing bugs that I don't understand and can't debug.
+
+00:36:21 So I just kind of gave up, which is pretty sad, but I'm going to watch your course, Mike, at some point.
+
+00:36:26 Thanks.
+
+00:36:27 I need to allocate the time.
+
+00:36:28 There you go.
+
+00:36:29 threading world, there's a phrase for the bugs that are like race condition stuff called Heisenbugs, and I just love that terminology.
+
+00:36:36 - I've run into a few of those.
+
+00:36:38 So for those who don't know, a Heisenbug only appears when you're not looking at it.
+
+00:36:45 - That's right, you absorb it, it changes it too.
+
+00:36:46 - Yeah.
+
+00:36:47 - Yeah, very cool.
+
+00:36:48 All right, well, people out there, if you need to do some sort of automation and you were gonna use selenium, definitely check out arsenic because you can do it more in parallel if you're doing more than one that sort of flow through your tests.
+
+00:37:00 It does say be careful though, because while you can asynchronously start calling functions you're interacting with like a hidden real browser, which itself can't do more than one thing at a time.
+
+00:37:10 And so, you know, it's more for I wanna test a bunch of links or a bunch of paths, not I'm trying to make this one sequence of events go faster, that probably won't work so well.
+
+00:37:19 - Yeah, check out Selenium Grid if you wanna do that.
+
+00:37:21 If you wanna do multiple machines and multiple browsers at the same time.
+
+00:37:25 - Is that grid computing for Selenium?
+
+00:37:27 - Kind of, yeah.
+
+00:37:27 (laughing)
+
+00:37:28 - Oh man, that's pretty awesome.
+
+00:37:30 All right, well, let's leave it there for our main topic.
+
+00:37:33 So thank you everyone for bringing these and sharing them with everyone.
+
+00:37:36 They were super interesting.
+
+00:37:37 Normally, I just ask Brian if he has anything else to share, but I know we got more than that.
+
+00:37:42 So we'll just go down the list here.
+
+00:37:43 I'll throw mine out first.
+
+00:37:45 So hopefully this is not out too late to make this useful, but the PSF and JetBrains last year teamed up to do the most comprehensive survey of the Python community they could.
+
+00:37:57 And that is now happening again this year.
+
+00:38:00 So just visit talkbython.fm/survey2018 and take that.
+
+00:38:05 But if you hear this, do that as soon as possible 'cause there's only a week or two left of it being open.
+
+00:38:10 So, all right, Anthony, you got one you'd like to share.
+
+00:38:12 - Yeah, 3.7.1 is around the corner.
+
+00:38:14 And the first release candidate came out a week ago.
+
+00:38:18 So if you're running on 3.7 and you wanna try to see if any of the bugs that you may have come across have been fixed, take a look through the release notes.
+
+00:38:27 And then the next one is that on the topic of Python packaging, there's a great article that I've linked to in the notes, and talking about the whole landscape and the comparisons with Flit and Poetry and Pipend and the reasons behind them.
+
+00:38:41 It's a really in-depth piece, and I think it's worth a good read.
+
+00:38:44 - That's awesome, I definitely think some comparison and exploration is needed, 'cause there's just so many ways to start solving this problem these days.
+
+00:38:51 But I think something will emerge, and I'm kind of hopeful for Poetry, actually.
+
+00:38:54 Nina, how about you?
+
+00:38:55 - I have a few things as well.
+
+00:38:56 We brought up VS Code a few times during the podcast and there's a new September release of the Python extension for VS Code and there are lots of new features, automatic environment activation in the terminal, some debugging improvements and a lot more.
+
+00:39:11 So you can check out the blog post in the show notes for some more information.
+
+00:39:15 Brett, I don't know why you're being so shy.
+
+00:39:18 - Tootie layout, all right.
+
+00:39:20 - You should be the one bringing this up.
+
+00:39:22 That's fine.
+
+00:39:24 And then there's one more thing I wanted to mention.
+
+00:39:26 PyCascades is a really nice, smaller Python conference that's happening February of 2019 in Seattle.
+
+00:39:34 And right now the call for proposals is open.
+
+00:39:37 It closes on October 21st, so you should still hopefully have a little bit of time.
+
+00:39:42 And they're doing something great that I haven't seen from too many conferences before, which is offering mentorship.
+
+00:39:48 - Yeah, this is for like new speakers and stuff who maybe wanna speak, but they're like, eh, I've never done this, I'm a little unsure that this is actually a good idea, could really use some help, that type of thing?
+
+00:39:57 - Yeah.
+
+00:39:57 - Yeah, that's awesome.
+
+00:39:58 - Yeah, it's really great.
+
+00:39:59 I've been volunteering as a mentor and it's been a really rewarding experience to kind of coach people through all their fears because at the end of the day, we can all speak at a Python conference.
+
+00:40:09 - Yeah, absolutely.
+
+00:40:10 That's awesome, I'm glad you brought those up.
+
+00:40:11 I've already booked my travel and submitted three talks and I even put Brian's name on one, so he has to come now too.
+
+00:40:16 (laughing)
+
+00:40:19 - I'll send my channel policy.
+
+00:40:19 - I'll say last year was my favorite conference, probably, potentially ever, was the Inaugural Pike Cascades.
+
+00:40:25 So you should definitely go if you can make it.
+
+00:40:27 - I agree, that was up in Vancouver, where you and Dan are, but this time it's moving down to Seattle, and then later it comes to visit us here in Portland.
+
+00:40:34 So I think it's a great one as well, Brett.
+
+00:40:36 - That's right, 2020.
+
+00:40:38 - That's right, it'll be here, I'll drive.
+
+00:40:40 We'll have to stay at a hotel, it'll be great.
+
+00:40:42 All right, the rest of you, anything else?
+
+00:40:44 Dan, Brian, you wanna share anything before we hit the road?
+
+00:40:47 - Just wanna say the upcoming, I've got a recording with a guy named Anthony Shaw.
+
+00:40:52 - Oh, that guy, yeah, I've heard he's good on the podcast.
+
+00:40:54 - Yeah, we're gonna talk about flaky tests on Testing Code, so that should be fun.
+
+00:40:58 - Right on.
+
+00:40:59 Dan, anything?
+
+00:41:00 - No, I got nothing.
+
+00:41:01 I hope you invite me back for episode 200.
+
+00:41:03 - Yeah, you all already have an invite.
+
+00:41:06 We'll be there in just about two years, so you all hang in there, and we'll do this again.
+
+00:41:10 Thank you all for coming, this was really great, and thanks for help with the show throughout the last two years, and today, of course.
+
+00:41:17 - Thanks for having us.
+
+00:41:18 - Yeah, thanks for doing this.
+
+00:41:19 - And congrats again.
+
+00:41:20 - Thanks, bye, everyone.
+
+00:41:21 And Brian, special thanks.
+
+00:41:23 You've been here for all 100 of them.
+
+00:41:25 Well maybe 99 because we each bowed out at one or two, but that's all good.
+
+00:41:28 Yeah.
+
+00:41:29 All right.
+
+00:41:30 Thanks, man.
+
+00:41:31 Bye, everyone.
+
+00:41:32 Thanks.
+
+00:41:33 Bye.
+
+00:41:34 Bye.
+
+00:41:35 Bye.
+
+00:41:36 Thank you for listening to Python Bytes.
+
+00:41:37 Follow the show on Twitter via @PythonBytes.
+
+00:41:39 That's Python Bytes as in B-Y-T-E-S.
+
+00:41:42 And get the full show notes at PythonBytes.fm.
+
+00:41:45 If you have a news item you want featured, just visit PythonBytes.fm and send it our way.
+
+00:41:50 the lookout for sharing something cool.
+
+00:41:53 On behalf of myself and Brian Aukin, this is Michael Kennedy.
+
+00:41:56 Thank you for listening and sharing this podcast with your friends and colleagues.
+
