@@ -1,0 +1,2188 @@
+
+00:00:00.000 --> 00:00:05.400
+Hello and welcome to Python Bytes where we deliver Python news and headlines directly to your earbuds.
+
+
+00:00:05.400 --> 00:00:10.700
+This is episode 59, recorded January 4th, 2018.
+
+
+00:00:10.700 --> 00:00:11.600
+I'm Michael Kennedy.
+
+
+00:00:11.600 --> 00:00:12.500
+And I'm Brian Okken.
+
+
+00:00:12.500 --> 00:00:18.200
+And we got a bunch of awesome stuff lined up for you in this very first episode of 2018.
+
+
+00:00:18.200 --> 00:00:22.200
+So, let's say thank you and happy new year to DigitalOcean.
+
+
+00:00:22.200 --> 00:00:25.900
+Yeah, thanks and definitely happy new year. It's exciting to be back.
+
+
+00:00:25.900 --> 00:00:30.540
+It's very exciting to be back. And we, you know, the Python news doesn't stop coming. I think if
+
+
+00:00:30.540 --> 00:00:34.940
+anything, it's just picking up speed. I'm afraid we might scare people a little bit with some of
+
+
+00:00:34.940 --> 00:00:42.060
+your picks this this time, Brian. What? The stuff near the end, the stuff near the end. So yeah.
+
+
+00:00:42.060 --> 00:00:45.340
+Another thing that's kind of scary is turning off garbage collection.
+
+
+00:00:45.340 --> 00:00:49.980
+Seems like that might be bad, right? Right. Well, I was actually surprised and very interested when
+
+
+00:00:49.980 --> 00:00:53.500
+when I was listening to the Instagram talk at PyCon
+
+
+00:00:53.500 --> 00:00:55.660
+about turning off garbage collection.
+
+
+00:00:55.660 --> 00:00:58.780
+And there's an article that they put out again,
+
+
+00:00:58.780 --> 00:01:02.440
+they said that they had turned it off last year
+
+
+00:01:02.440 --> 00:01:04.740
+and then they wanted to sort of,
+
+
+00:01:04.740 --> 00:01:06.460
+they were having memory problems,
+
+
+00:01:06.460 --> 00:01:08.900
+so they wanted to try to turn it back on a little bit,
+
+
+00:01:08.900 --> 00:01:10.540
+but they still have concerns.
+
+
+00:01:10.540 --> 00:01:11.980
+- Yeah, so maybe we should take a moment,
+
+
+00:01:11.980 --> 00:01:13.580
+just a step back and say,
+
+
+00:01:13.580 --> 00:01:15.140
+you described the original thing,
+
+
+00:01:15.140 --> 00:01:17.100
+so why did they start down this path
+
+
+00:01:17.100 --> 00:01:19.260
+of turning off garbage collection in the first place?
+
+
+00:01:19.260 --> 00:01:22.340
+What they found was they were running many instances
+
+
+00:01:22.340 --> 00:01:25.060
+of their, the largest Django deployment
+
+
+00:01:25.060 --> 00:01:26.520
+on Python in the world.
+
+
+00:01:26.520 --> 00:01:27.980
+So they're running lots of servers with us.
+
+
+00:01:27.980 --> 00:01:30.940
+And they found that the shared memory
+
+
+00:01:30.940 --> 00:01:34.640
+across multiple processes running that on a single server
+
+
+00:01:34.640 --> 00:01:36.580
+was completely falling apart
+
+
+00:01:36.580 --> 00:01:39.020
+because garbage collection was shifting stuff around.
+
+
+00:01:39.020 --> 00:01:41.140
+They said, well, could we turn it off?
+
+
+00:01:41.140 --> 00:01:42.300
+And it turned out that they could,
+
+
+00:01:42.300 --> 00:01:44.780
+but they then, this article you're referring to says
+
+
+00:01:44.780 --> 00:01:46.820
+they basically were losing those gains again.
+
+
+00:01:46.820 --> 00:01:49.660
+- And we'd talked about this, I guess, a couple times
+
+
+00:01:49.660 --> 00:01:52.340
+of if you turn it off, then you can,
+
+
+00:01:52.340 --> 00:01:55.220
+eventually will run out, but if you're restarting tasks
+
+
+00:01:55.220 --> 00:01:58.100
+every once in a while, that completely cleans it up.
+
+
+00:01:58.100 --> 00:01:58.940
+- Yeah, exactly.
+
+
+00:01:58.940 --> 00:02:00.740
+- They were losing some of those gains,
+
+
+00:02:00.740 --> 00:02:03.240
+but they wanted, so they wanted to get some of those back.
+
+
+00:02:03.240 --> 00:02:05.540
+This is a really interesting, and I had to read it,
+
+
+00:02:05.540 --> 00:02:07.060
+read this article about three times,
+
+
+00:02:07.060 --> 00:02:09.660
+but it's called Copy on Write Friendly
+
+
+00:02:09.660 --> 00:02:12.100
+Python Garbage Collection.
+
+
+00:02:12.100 --> 00:02:13.820
+And it's a pretty interesting story,
+
+
+00:02:13.820 --> 00:02:18.100
+but the end punchline is that they've got a new addition
+
+
+00:02:18.100 --> 00:02:21.220
+to Python that's gonna go into Python 3.7,
+
+
+00:02:21.220 --> 00:02:25.500
+or it's already in there, that is called GC freeze,
+
+
+00:02:25.500 --> 00:02:28.900
+which what happens is they get their main stuff running
+
+
+00:02:28.900 --> 00:02:31.340
+with all the shared objects,
+
+
+00:02:31.340 --> 00:02:34.260
+but before they like fork off a bunch of threads,
+
+
+00:02:34.260 --> 00:02:36.660
+they call this GC freeze and all the stuff
+
+
+00:02:36.660 --> 00:02:38.660
+that's in memory right now at this point
+
+
+00:02:38.660 --> 00:02:40.200
+doesn't get garbage collected,
+
+
+00:02:40.200 --> 00:02:43.800
+but everything from now, from like this point in time on,
+
+
+00:02:43.800 --> 00:02:47.040
+will be garbage collected, which is pretty interesting.
+
+
+00:02:47.040 --> 00:02:50.040
+Yeah, that's really, it's really interesting. So
+
+
+00:02:50.040 --> 00:02:53.740
+Python memory management is a little, I think it's a little
+
+
+00:02:53.740 --> 00:02:56.700
+obscure. People don't talk about it very much. And I don't
+
+
+00:02:56.700 --> 00:02:59.460
+think there's a lot of good write ups. You actually found a
+
+
+00:02:59.460 --> 00:03:01.460
+really fantastic write up on the
+
+
+00:03:01.460 --> 00:03:04.700
+intricate details of Python memory management. The short
+
+
+00:03:04.700 --> 00:03:08.040
+version is most things are cleaned up through reference
+
+
+00:03:08.040 --> 00:03:10.780
+counting. So number of things pointed at it, when that goes
+
+
+00:03:10.780 --> 00:03:13.440
+to zero, it goes away. But the problem with reference counting
+
+
+00:03:13.440 --> 00:03:18.560
+is cycles. I have one object that points at another that object points back at the first,
+
+
+00:03:18.560 --> 00:03:22.640
+they both have a count of one or higher forever, and they get leaked. And so there's this
+
+
+00:03:22.640 --> 00:03:29.280
+secondary garbage collection phase that goes through and looks at these items, cleans them up,
+
+
+00:03:29.280 --> 00:03:35.280
+and so on. So this GC freeze says, let's take all the stuff that exists now, and just tell the
+
+
+00:03:35.280 --> 00:03:39.520
+garbage collector to ignore it, don't touch it, don't mess with it, leave it alone, right. And so
+
+
+00:03:39.520 --> 00:03:42.880
+So you get like, basically your app into its normal working state
+
+
+00:03:42.880 --> 00:03:44.880
+and then freeze it one time.
+
+
+00:03:44.880 --> 00:03:48.880
+And then all the new stuff that would make the memory grow and grow and grow over time
+
+
+00:03:48.880 --> 00:03:50.880
+is going to be continually GC'd.
+
+
+00:03:50.880 --> 00:03:52.880
+But the core essence of your app,
+
+
+00:03:52.880 --> 00:03:55.520
+Python runtime and a bunch of things to get started,
+
+
+00:03:55.520 --> 00:03:57.520
+should be kind of fixed, right?
+
+
+00:03:57.520 --> 00:03:59.520
+Yeah, and I think that's a pretty cool idea
+
+
+00:03:59.520 --> 00:04:01.520
+because that's a common model for applications
+
+
+00:04:01.520 --> 00:04:03.520
+to get connections up
+
+
+00:04:03.520 --> 00:04:05.520
+and get your normal
+
+
+00:04:05.520 --> 00:04:07.520
+like, sitting state, idle state,
+
+
+00:04:07.520 --> 00:04:14.200
+state running and then before you get requests in and and spawning stuff just at that point
+
+
+00:04:14.200 --> 00:04:18.280
+you're like well this is all the shared stuff let's just we don't need to move this stuff
+
+
+00:04:18.280 --> 00:04:23.840
+around it's always going to be there anyway it's a cool idea and apparently it saved them
+
+
+00:04:23.840 --> 00:04:29.000
+they were at linear linear memory growth and they slowed that down quite a bit yeah it
+
+
+00:04:29.000 --> 00:04:33.560
+looks really really interesting Instagram is doing amazing stuff I think in the Python
+
+
+00:04:33.560 --> 00:04:38.440
+space and the web space. And if any of those guys are out there listening, want to come talk about
+
+
+00:04:38.440 --> 00:04:43.480
+Python and Instagram on Talk Python, I'm more than welcome to any other more than welcome to come
+
+
+00:04:43.480 --> 00:04:48.040
+over. It'd be fun. And I definitely appreciate that they're very open about this to say, Hey,
+
+
+00:04:48.040 --> 00:04:53.000
+this is what we're trying. It's not like perfect yet. But it's better. Yeah, it's super cool.
+
+
+00:04:53.000 --> 00:04:58.840
+Do you know if GC freeze is approved or just proposed for three, seven. So we have a link to
+
+
+00:04:58.840 --> 00:05:02.400
+the pull request that looks like it's already in.
+
+
+00:05:02.400 --> 00:05:04.440
+>> Oh, it is merged. Yes, it is merged.
+
+
+00:05:04.440 --> 00:05:08.400
+This is pretty awesome. We have CPython on
+
+
+00:05:08.400 --> 00:05:11.820
+GitHub with a pull request merged in with its comment history.
+
+
+00:05:11.820 --> 00:05:15.920
+That's new. That's the 2017 bit of magic that it's on GitHub.
+
+
+00:05:15.920 --> 00:05:16.400
+>> Yeah.
+
+
+00:05:16.400 --> 00:05:19.520
+>> Cool. So nice that we can actually track that.
+
+
+00:05:19.520 --> 00:05:22.960
+The next thing that I want to talk about is a little bit different.
+
+
+00:05:22.960 --> 00:05:27.240
+I think this will be mostly of interest for data science folks.
+
+
+00:05:27.240 --> 00:05:29.800
+This is a little bit lower level maybe than it sounds,
+
+
+00:05:29.800 --> 00:05:31.800
+but this thing's called SpeechPy.
+
+
+00:05:31.800 --> 00:05:33.440
+So Speech P-Y.
+
+
+00:05:33.440 --> 00:05:37.160
+It's a library for speech processing and recognition.
+
+
+00:05:37.160 --> 00:05:41.400
+So this is a pretty interesting Python project.
+
+
+00:05:41.400 --> 00:05:44.520
+You can come along and basically give it some,
+
+
+00:05:44.520 --> 00:05:45.760
+you know, spoken words,
+
+
+00:05:45.760 --> 00:05:48.880
+and it can pull out various effects
+
+
+00:05:48.880 --> 00:05:51.500
+and things that are sort of the essence
+
+
+00:05:51.500 --> 00:05:54.280
+of what you need to do speech recognition.
+
+
+00:05:54.280 --> 00:05:55.280
+I think this works a little,
+
+
+00:05:55.280 --> 00:05:56.280
+you don't just feed it like,
+
+
+00:05:56.280 --> 00:06:01.960
+here's a say a wave file and out pops text of what it said, but it gives you
+
+
+00:06:01.960 --> 00:06:05.160
+what you would need to feed to a machine learning system.
+
+
+00:06:05.160 --> 00:06:11.280
+Basically takes the spoken words into a representation you can feed to some kind of algorithm to actually get the text.
+
+
+00:06:11.280 --> 00:06:19.400
+So I think that was pretty cool. And one of the things that I wanted to bring this up for is they have a really nice citation statement.
+
+
+00:06:19.400 --> 00:06:23.240
+So if you look at the GitHub repo, like kind of near the top, it says,
+
+
+00:06:23.240 --> 00:06:28.440
+If you're going to use this package, please cite it as follows.
+
+
+00:06:28.440 --> 00:06:33.940
+And that's interesting because there's been some talk in the scientific space,
+
+
+00:06:33.940 --> 00:06:39.240
+more true science, not data science, around people want to publish their software
+
+
+00:06:39.240 --> 00:06:44.340
+and they want to work on advancing software, but in the academic space, you have to publish articles
+
+
+00:06:44.340 --> 00:06:47.040
+or, you know, the whole publish or perish type of thing.
+
+
+00:06:47.040 --> 00:06:52.840
+And the way you get credit for your work is to be cited in other articles.
+
+
+00:06:52.840 --> 00:07:01.160
+And so this is sort of showing a way to cite this work, which is not a paper, but which is an open source project,
+
+
+00:07:01.160 --> 00:07:07.800
+in the same sense that the person, the people who created it might get the same level of academic credit
+
+
+00:07:07.800 --> 00:07:10.280
+for their thing being cited. So I think that's pretty cool.
+
+
+00:07:10.280 --> 00:07:12.280
+Yeah, I don't get the syntax.
+
+
+00:07:12.280 --> 00:07:15.080
+It must mean something. I have no idea what it is.
+
+
+00:07:15.080 --> 00:07:16.040
+Okay.
+
+
+00:07:16.040 --> 00:07:20.440
+I thought it's kind of neat if you're doing machine learning, you need to turn
+
+
+00:07:20.440 --> 00:07:24.280
+waveforms into something you can process. This is pretty cool.
+
+
+00:07:24.280 --> 00:07:27.680
+And the other thing that's kind of nice is if you look at it here,
+
+
+00:07:27.680 --> 00:07:30.480
+and I think it's in the documentation or the tutorial,
+
+
+00:07:30.480 --> 00:07:34.380
+they actually show you how to process wave files from SciPy,
+
+
+00:07:34.380 --> 00:07:36.540
+which is also maybe cool and handy at some point.
+
+
+00:07:36.540 --> 00:07:41.140
+Yeah, it's actually something I need to be doing some wave file processing.
+
+
+00:07:41.140 --> 00:07:43.140
+Well, SciPy apparently has it.
+
+
+00:07:43.140 --> 00:07:46.240
+Nice. How about the next one?
+
+
+00:07:46.240 --> 00:07:50.040
+Well, next up we've got our friends at PyBytes.
+
+
+00:07:50.040 --> 00:07:51.640
+Is that what they're called?
+
+
+00:07:51.640 --> 00:07:53.140
+-PyBytes. -Yeah, PyBytes.
+
+
+00:07:53.140 --> 00:07:53.740
+That's right.
+
+
+00:07:53.740 --> 00:07:56.140
+They've got a new platform.
+
+
+00:07:56.140 --> 00:07:59.440
+And I suddenly forgot the URL, but it's...
+
+
+00:07:59.440 --> 00:08:00.440
+There it is.
+
+
+00:08:00.440 --> 00:08:03.640
+CodeChallenges, but the ES is after the dot.
+
+
+00:08:03.640 --> 00:08:06.440
+So, CodeChallenge.es.
+
+
+00:08:06.440 --> 00:08:07.440
+[laughs]
+
+
+00:08:07.440 --> 00:08:08.640
+No, clever though.
+
+
+00:08:08.640 --> 00:08:09.840
+But it's...
+
+
+00:08:09.840 --> 00:08:11.840
+We've covered other things before.
+
+
+00:08:11.840 --> 00:08:13.140
+Like, there's a...
+
+
+00:08:13.140 --> 00:08:14.140
+I should have looked this up.
+
+
+00:08:14.140 --> 00:08:15.940
+There's a game one that's...
+
+
+00:08:15.940 --> 00:08:18.440
+They're like going through a game and doing code challenges.
+
+
+00:08:18.440 --> 00:08:21.120
+and there's code katas around.
+
+
+00:08:21.120 --> 00:08:22.400
+This is a similar sort of thing.
+
+
+00:08:22.400 --> 00:08:28.640
+So you are able to do these little code challenges and they say, it's called bytes of Python,
+
+
+00:08:28.640 --> 00:08:34.920
+bytes of pi, and are their self contained 20 to 60 minute code challenges.
+
+
+00:08:34.920 --> 00:08:38.000
+And you can write them and verify them in the browser.
+
+
+00:08:38.000 --> 00:08:41.920
+And I had I did two of them this morning and I had kind of a lot of fun with it.
+
+
+00:08:41.920 --> 00:08:42.920
+It was fun.
+
+
+00:08:42.920 --> 00:08:43.920
+Thanks.
+
+
+00:08:43.920 --> 00:08:45.820
+And you verify them by writing pi test unit test, right?
+
+
+00:08:45.820 --> 00:08:46.820
+You don't write it.
+
+
+00:08:46.820 --> 00:08:51.280
+pre-written PyTest code that checks your answers.
+
+
+00:08:51.280 --> 00:08:53.280
+- I see, so you've got to do some sort of thing
+
+
+00:08:53.280 --> 00:08:55.640
+and then you check it in and it runs basically
+
+
+00:08:55.640 --> 00:08:57.840
+the test against your code and says thumbs up, thumbs down?
+
+
+00:08:57.840 --> 00:08:59.680
+- Yeah, like for instance, on the second challenge,
+
+
+00:08:59.680 --> 00:09:01.560
+you have to write three different functions
+
+
+00:09:01.560 --> 00:09:04.000
+to manipulate a list of names.
+
+
+00:09:04.000 --> 00:09:06.920
+And it has tests for all of these.
+
+
+00:09:06.920 --> 00:09:10.000
+I went ahead and just solved one of it at a time,
+
+
+00:09:10.000 --> 00:09:12.040
+for instance, so I tried to solve the first one
+
+
+00:09:12.040 --> 00:09:15.520
+and then ran the test and noticed that the first one passed
+
+
+00:09:15.520 --> 00:09:18.240
+and then just did that and looking at the,
+
+
+00:09:18.240 --> 00:09:20.200
+with the help of the test output
+
+
+00:09:20.200 --> 00:09:22.160
+was helped me solve the rest of them.
+
+
+00:09:22.160 --> 00:09:23.000
+- That's really cool.
+
+
+00:09:23.000 --> 00:09:24.320
+And I also learned something
+
+
+00:09:24.320 --> 00:09:25.880
+by the transitive property through you.
+
+
+00:09:25.880 --> 00:09:26.840
+- You did?
+
+
+00:09:26.840 --> 00:09:27.680
+- I did.
+
+
+00:09:27.680 --> 00:09:31.040
+I learned what you learned in that min takes a key
+
+
+00:09:31.040 --> 00:09:33.240
+like sort and sorted does.
+
+
+00:09:33.240 --> 00:09:35.080
+That way you could sort some complex object
+
+
+00:09:35.080 --> 00:09:36.880
+based on like a attribute of it.
+
+
+00:09:36.880 --> 00:09:38.040
+- I didn't know that.
+
+
+00:09:38.040 --> 00:09:40.560
+I had just discovered that this morning.
+
+
+00:09:40.560 --> 00:09:42.820
+So my solution for one of the challenges
+
+
+00:09:42.820 --> 00:09:47.420
+is to try to find the name with the shortest first name.
+
+
+00:09:47.420 --> 00:09:49.820
+And I went ahead and sorted the list
+
+
+00:09:49.820 --> 00:09:52.200
+by the length of the first name,
+
+
+00:09:52.200 --> 00:09:54.180
+and then just picked the first element.
+
+
+00:09:54.180 --> 00:09:59.180
+Their solution uses min instead of sorting the list.
+
+
+00:09:59.180 --> 00:10:02.420
+You can just find the min length, which is pretty cool.
+
+
+00:10:02.420 --> 00:10:03.420
+- Yeah, that's really awesome.
+
+
+00:10:03.420 --> 00:10:05.860
+That's gotta be quicker than a full-on sort.
+
+
+00:10:05.860 --> 00:10:06.700
+- One of the things I like
+
+
+00:10:06.700 --> 00:10:08.500
+about these sorts of quick challenges
+
+
+00:10:08.500 --> 00:10:11.300
+is you can probably do them like on your lunch break
+
+
+00:10:11.300 --> 00:10:13.780
+or a couple of lunch breaks to do one of them.
+
+
+00:10:13.780 --> 00:10:15.740
+And they just take a browser,
+
+
+00:10:15.740 --> 00:10:17.180
+so you can just do it on your laptop.
+
+
+00:10:17.180 --> 00:10:18.000
+It's pretty fun.
+
+
+00:10:18.000 --> 00:10:18.840
+- Yep, that's cool.
+
+
+00:10:18.840 --> 00:10:20.780
+You could maybe even do it on an iPad or something
+
+
+00:10:20.780 --> 00:10:21.620
+if you really wanted.
+
+
+00:10:21.620 --> 00:10:22.620
+- Yeah, well, I don't know.
+
+
+00:10:22.620 --> 00:10:23.900
+I haven't tried that, probably.
+
+
+00:10:23.900 --> 00:10:26.180
+- If it runs in the browser, I bet it would.
+
+
+00:10:26.180 --> 00:10:28.180
+Nice, so yeah, that's really cool.
+
+
+00:10:28.180 --> 00:10:29.860
+Do you like that you learn these little things,
+
+
+00:10:29.860 --> 00:10:31.540
+like wait, men takes a key?
+
+
+00:10:31.540 --> 00:10:32.580
+I didn't know that.
+
+
+00:10:32.580 --> 00:10:33.740
+You know, that's just,
+
+
+00:10:33.740 --> 00:10:34.620
+you wouldn't think you'd pick up
+
+
+00:10:34.620 --> 00:10:35.700
+these little things so quickly,
+
+
+00:10:35.700 --> 00:10:38.200
+but you know, these little challenges are nice like that.
+
+
+00:10:38.200 --> 00:10:39.580
+So before we get to the next item,
+
+
+00:10:39.580 --> 00:10:41.580
+I want to say thank you to DigitalOcean.
+
+
+00:10:41.580 --> 00:10:44.140
+They're sponsoring this episode and many, many other episodes.
+
+
+00:10:44.140 --> 00:10:46.380
+They're really a big supporter of Python Bytes.
+
+
+00:10:46.380 --> 00:10:51.420
+So as many of you know, many of our bits of code,
+
+
+00:10:51.420 --> 00:10:56.380
+our stuff on the web and our files or MP3 files that get sent down to you all go
+
+
+00:10:56.380 --> 00:10:57.700
+through DigitalOcean.
+
+
+00:10:57.700 --> 00:11:02.140
+So Python Bytes is basically delivered in all of its forms to you through
+
+
+00:11:02.140 --> 00:11:04.380
+DigitalOcean. Have a bunch of servers there.
+
+
+00:11:04.380 --> 00:11:07.140
+They're super easy to work with, very quick, very reliable.
+
+
+00:11:07.140 --> 00:11:09.140
+You can create a new server, a new droplet, they call it,
+
+
+00:11:09.140 --> 00:11:10.820
+in probably 30 seconds.
+
+
+00:11:10.820 --> 00:11:13.540
+And then you SSH in, and you're off to the races.
+
+
+00:11:13.540 --> 00:11:15.620
+So really, really nice and affordable.
+
+
+00:11:15.620 --> 00:11:18.820
+And check them out at do.co/python,
+
+
+00:11:18.820 --> 00:11:22.460
+and let them know that you heard about it on Python Bytes.
+
+
+00:11:22.460 --> 00:11:24.780
+So this end of the year thing, Brian,
+
+
+00:11:24.780 --> 00:11:26.420
+this is kind of when,
+
+
+00:11:26.420 --> 00:11:28.320
+I mean, we're sort of on the other side of it,
+
+
+00:11:28.320 --> 00:11:30.500
+but this is when you get together with your family, right?
+
+
+00:11:30.500 --> 00:11:31.940
+People maybe you didn't even know, like,
+
+
+00:11:31.940 --> 00:11:34.100
+"Wait, I have a second cousin?"
+
+
+00:11:34.100 --> 00:11:35.740
+From where?
+
+
+00:11:35.740 --> 00:11:36.660
+Python's like that, right?
+
+
+00:11:36.660 --> 00:11:37.660
+- Yeah. - Yeah.
+
+
+00:11:37.660 --> 00:11:40.300
+You were talking about like what is the place
+
+
+00:11:40.300 --> 00:11:43.260
+where you can like do sort of gamified code challenges,
+
+
+00:11:43.260 --> 00:11:44.460
+and that's Check.io.
+
+
+00:11:44.460 --> 00:11:46.700
+So the reason that's relevant, I'm coming back to it,
+
+
+00:11:46.700 --> 00:11:49.020
+is there's an article by the guys at Check.io
+
+
+00:11:49.020 --> 00:11:51.460
+called "How Big is the Python Family?"
+
+
+00:11:51.460 --> 00:11:52.720
+So this is really nice.
+
+
+00:11:52.720 --> 00:11:54.740
+And you know, some of you I'm sure are aware of it,
+
+
+00:11:54.740 --> 00:11:57.260
+but many people I don't really think are aware
+
+
+00:11:57.260 --> 00:12:02.260
+of how varied Python is as a platform.
+
+
+00:12:02.260 --> 00:12:05.220
+So when you say Python, typically you mean CPython.
+
+
+00:12:05.220 --> 00:12:11.260
+And hopefully you mean modern Python 3.6, not legacy 2.7 Python.
+
+
+00:12:11.260 --> 00:12:13.500
+But we'll let that slide for now.
+
+
+00:12:13.500 --> 00:12:16.540
+There's also things like Jython.
+
+
+00:12:16.540 --> 00:12:22.140
+And Jython will let you write Python code, but execute it on the JVM and interact with
+
+
+00:12:22.140 --> 00:12:23.980
+Java objects.
+
+
+00:12:23.980 --> 00:12:27.200
+Iron Python is the same thing for .NET.
+
+
+00:12:27.200 --> 00:12:32.940
+There's also Python 4.NET, which I think is a more up-to-date modern variant on the same
+
+
+00:12:32.940 --> 00:12:33.940
+thing.
+
+
+00:12:33.940 --> 00:12:36.940
+which is compiled slightly different Python.
+
+
+00:12:36.940 --> 00:12:38.940
+There's PyPy, which is a JIT version.
+
+
+00:12:38.940 --> 00:12:40.940
+MicroPython, which is Python as an--
+
+
+00:12:40.940 --> 00:12:44.940
+your app is an operating system in Python on microchips, basically.
+
+
+00:12:44.940 --> 00:12:48.940
+And on Talk Python, you and I talked about Grumpy, right?
+
+
+00:12:48.940 --> 00:12:50.940
+Yeah, which is on Go.
+
+
+00:12:50.940 --> 00:12:53.940
+Yeah, so Grumpy is from the YouTube guys,
+
+
+00:12:53.940 --> 00:12:56.940
+which is instead of using C to implement CPython,
+
+
+00:12:56.940 --> 00:12:59.940
+they said, "Well, what if we wrote the same thing but in Go?"
+
+
+00:12:59.940 --> 00:13:01.940
+And that's kind of an interesting thing.
+
+
+00:13:01.940 --> 00:13:06.040
+So I thought this is just a nice grouping of all of these ideas,
+
+
+00:13:06.040 --> 00:13:08.040
+a quick paragraph or two on each of them.
+
+
+00:13:08.040 --> 00:13:11.140
+You know, if you're bringing people onto your team and you're like,
+
+
+00:13:11.140 --> 00:13:14.540
+"Well, wait a minute, there's actually a lot of types of Python here, check this out," right?
+
+
+00:13:14.540 --> 00:13:16.540
+And also maybe a reminder to like,
+
+
+00:13:16.540 --> 00:13:17.940
+give PyPy a try.
+
+
+00:13:17.940 --> 00:13:21.140
+Like they just had a big release for both Python 2 and Python 3 versions.
+
+
+00:13:21.140 --> 00:13:23.940
+One of the things I like about this write-up that they did is
+
+
+00:13:23.940 --> 00:13:27.140
+it reminds you why some of these are around.
+
+
+00:13:27.140 --> 00:13:30.540
+Like, if you had to work with .NET,
+
+
+00:13:30.540 --> 00:13:33.980
+then working with like Iron Python or Python.net
+
+
+00:13:33.980 --> 00:13:38.140
+might be like a better thing than just trying to do it other ways.
+
+
+00:13:38.140 --> 00:13:40.820
+>> Yeah. One of the advantages there might be,
+
+
+00:13:40.820 --> 00:13:42.300
+if you're working on a.net app,
+
+
+00:13:42.300 --> 00:13:43.860
+but you want to add scripting.
+
+
+00:13:43.860 --> 00:13:44.220
+>> Yeah.
+
+
+00:13:44.220 --> 00:13:46.780
+>> What are your choices? You probably don't want to give them C#.
+
+
+00:13:46.780 --> 00:13:48.020
+Even if you did,
+
+
+00:13:48.020 --> 00:13:52.020
+like it requires full on compilation and how do you deal with that?
+
+
+00:13:52.020 --> 00:13:54.020
+This could be a really nice way to plug in
+
+
+00:13:54.020 --> 00:13:57.460
+scriptability into your enterprise app, which would be pretty cool.
+
+
+00:13:57.460 --> 00:14:01.120
+And one more thing I wanted to throw in on this conversation is,
+
+
+00:14:01.120 --> 00:14:03.820
+a lot of times I'll say Python runtime,
+
+
+00:14:03.820 --> 00:14:06.460
+and I know often people say Python interpreter.
+
+
+00:14:06.460 --> 00:14:09.860
+This is what the Python interpreter does. It does this and that.
+
+
+00:14:09.860 --> 00:14:13.060
+Well, if you look at how the whole Python family,
+
+
+00:14:13.060 --> 00:14:15.320
+only some of them are interpreters.
+
+
+00:14:15.320 --> 00:14:20.060
+Some of them are compiled execution engines, right? Like the JVM.
+
+
+00:14:20.060 --> 00:14:24.660
+That's actually not a great example, but say PyPy, for example, or Cython.
+
+
+00:14:24.660 --> 00:14:30.760
+Those two definitely are not interpreted in the traditional sense.
+
+
+00:14:30.760 --> 00:14:35.160
+PyPy starts out that way, but it converts to a JIT version for the hotspots.
+
+
+00:14:35.160 --> 00:14:38.360
+I often say Python runtime because I kind of feel like,
+
+
+00:14:38.360 --> 00:14:40.860
+you know, when you say interpreter, you really just
+
+
+00:14:40.860 --> 00:14:44.760
+got the mindset of CPython, which is the most popular, but not always.
+
+
+00:14:44.760 --> 00:14:45.760
+What do you say?
+
+
+00:14:45.760 --> 00:14:48.160
+I don't usually say either.
+
+
+00:14:48.160 --> 00:14:50.160
+I just say Python.
+
+
+00:14:50.160 --> 00:14:51.860
+Yeah, there you go.
+
+
+00:14:51.860 --> 00:14:55.860
+Cool, so anyway, I think this is a nice write up and good to have it all in one place.
+
+
+00:14:55.860 --> 00:14:58.860
+So, I like the one that you have coming up next.
+
+
+00:14:58.860 --> 00:15:02.360
+One of the problems I often see is I want to do some work,
+
+
+00:15:02.360 --> 00:15:03.860
+but I don't care if it happens right now.
+
+
+00:15:03.860 --> 00:15:05.860
+I just want to like start it and let it go somewhere.
+
+
+00:15:05.860 --> 00:15:07.360
+I don't usually have a great answer for that.
+
+
+00:15:07.360 --> 00:15:12.360
+Task processing stuff and one of the common things is often people bring up is celery.
+
+
+00:15:12.360 --> 00:15:16.860
+And to be honest, I've tried to get into celery a couple times,
+
+
+00:15:16.860 --> 00:15:19.360
+but kind of the learning curve on it, maybe it's just me,
+
+
+00:15:19.360 --> 00:15:22.480
+me, but I had a little bit of trouble getting into it.
+
+
+00:15:22.480 --> 00:15:27.240
+I was interested when I heard an interview on podcast.init about a
+
+
+00:15:27.240 --> 00:15:29.640
+library called dramatic or dramatic.
+
+
+00:15:29.640 --> 00:15:32.960
+I'm not sure it's D-R-A-M-A-T-I-Q.
+
+
+00:15:32.960 --> 00:15:39.040
+But it's a very, I'm sure since it's task scheduling, it's a quite
+
+
+00:15:39.040 --> 00:15:44.760
+complicated internals, I'm sure you just like declare an actor for on some code
+
+
+00:15:44.760 --> 00:15:46.800
+and it's pretty easy to get started.
+
+
+00:15:46.800 --> 00:15:48.400
+And I thought I'd point people to it.
+
+
+00:15:48.480 --> 00:15:52.240
+Yeah, it's quite cool. You basically put a decorator onto a method,
+
+
+00:15:52.240 --> 00:15:56.480
+and then that method, instead of running locally, you can like send work to it.
+
+
+00:15:56.480 --> 00:16:02.400
+And that send work actually kicks it off on, the example they had was RabbitMQ, I think.
+
+
+00:16:02.400 --> 00:16:06.800
+And that there's like a producer of the work. And then there's another process that just hangs out
+
+
+00:16:06.800 --> 00:16:09.360
+and consumes anything that lands on the queue. It's pretty cool.
+
+
+00:16:09.360 --> 00:16:15.920
+Yeah, so that you can configure like what your defaults to RabbitMQ, I think. And there's just
+
+
+00:16:15.920 --> 00:16:20.200
+good defaults that work right off the, just if you don't care.
+
+
+00:16:20.200 --> 00:16:24.840
+And then there's a, you can configure it to use other things if you need to.
+
+
+00:16:24.840 --> 00:16:30.960
+It apparently is well, the person and during, I forget his name, that developed
+
+
+00:16:30.960 --> 00:16:34.080
+this, it's used on quite significant projects.
+
+
+00:16:34.080 --> 00:16:38.720
+I mean, it, it isn't a toy project, but it's pretty easy to get started and you
+
+
+00:16:38.720 --> 00:16:41.960
+can configure it to be all sorts of fancy stuff if you need it to be.
+
+
+00:16:42.480 --> 00:16:45.480
+But one of the things I liked about the conversation is he,
+
+
+00:16:45.480 --> 00:16:52.000
+he brought up that he intentionally kept the documentation and the fairly terse
+
+
+00:16:52.000 --> 00:16:55.680
+and small so that when you're looking for something that you think you saw
+
+
+00:16:55.680 --> 00:16:57.880
+before, it's pretty easy to find again.
+
+
+00:16:57.880 --> 00:16:58.880
+So that's cool.
+
+
+00:16:58.880 --> 00:16:59.320
+Okay.
+
+
+00:16:59.320 --> 00:16:59.520
+Yeah.
+
+
+00:16:59.520 --> 00:17:00.480
+That's an interesting point.
+
+
+00:17:00.480 --> 00:17:01.280
+Yeah.
+
+
+00:17:01.280 --> 00:17:04.960
+And it looks like you can run it on top of rapid MQ or Redis.
+
+
+00:17:04.960 --> 00:17:05.760
+Take your pick.
+
+
+00:17:05.760 --> 00:17:09.600
+One final thing I want to point out that I thought was interesting is it's licensed
+
+
+00:17:09.640 --> 00:17:16.040
+under a GPL, but it also has commercial licenses available upon request,
+
+
+00:17:16.040 --> 00:17:19.240
+which, you know, people are always looking for ways to fund,
+
+
+00:17:19.240 --> 00:17:21.340
+basically fund their open source work.
+
+
+00:17:21.340 --> 00:17:24.940
+And I thought that was an interesting variation that I saw going through it.
+
+
+00:17:24.940 --> 00:17:26.940
+Really? Okay, so I didn't pay attention to that.
+
+
+00:17:26.940 --> 00:17:29.740
+So I'm not sure what the a GPL is.
+
+
+00:17:29.740 --> 00:17:30.840
+Yeah, I actually don't know either.
+
+
+00:17:30.840 --> 00:17:34.540
+But apparently you might want a commercial license instead.
+
+
+00:17:34.540 --> 00:17:37.540
+Okay, so the last one I want to talk about
+
+
+00:17:37.540 --> 00:17:39.540
+is a little bit similar to what you're talking about
+
+
+00:17:39.540 --> 00:17:41.540
+running async work.
+
+
+00:17:41.540 --> 00:17:43.540
+But it's sort of the
+
+
+00:17:43.540 --> 00:17:45.540
+the challenge of
+
+
+00:17:45.540 --> 00:17:47.540
+taking advantage of async things
+
+
+00:17:47.540 --> 00:17:49.540
+but not making that
+
+
+00:17:49.540 --> 00:17:51.540
+a problem for people
+
+
+00:17:51.540 --> 00:17:53.540
+trying to consume it who don't want to think of things
+
+
+00:17:53.540 --> 00:17:55.540
+that way. So this article is called
+
+
+00:17:55.540 --> 00:17:57.540
+Controlling Python Async Creep
+
+
+00:17:57.540 --> 00:17:59.540
+from friend of the show, Kristen Medina.
+
+
+00:17:59.540 --> 00:18:01.540
+And
+
+
+00:18:01.540 --> 00:18:03.540
+he says basically if you've got some library
+
+
+00:18:03.540 --> 00:18:05.540
+that is written in an async way
+
+
+00:18:05.540 --> 00:18:08.040
+you're supposed to await it.
+
+
+00:18:08.040 --> 00:18:11.540
+But anybody who's going to call that and take advantage of that,
+
+
+00:18:11.540 --> 00:18:14.540
+that caller has to also be async.
+
+
+00:18:14.540 --> 00:18:16.040
+And then the caller of that has to be async.
+
+
+00:18:16.040 --> 00:18:19.040
+So maybe way, way down somewhere, you're trying to do something async,
+
+
+00:18:19.040 --> 00:18:22.040
+and it creates this sort of chain reaction of,
+
+
+00:18:22.040 --> 00:18:23.540
+well, the callers of this have to be async.
+
+
+00:18:23.540 --> 00:18:26.040
+Well, the caller of those things have to be async, and so on.
+
+
+00:18:26.040 --> 00:18:28.540
+It can become quite a problem.
+
+
+00:18:28.540 --> 00:18:33.040
+So he wrote this nice article basically going through three examples
+
+
+00:18:33.040 --> 00:18:36.160
+of where you can sort of put a stopgap and say,
+
+
+00:18:36.160 --> 00:18:39.120
+okay, at this level, we're no longer worried about async,
+
+
+00:18:39.120 --> 00:18:41.760
+but we're still taking advantages of it internally.
+
+
+00:18:41.760 --> 00:18:43.720
+So one way you can do that is you can wait
+
+
+00:18:43.720 --> 00:18:45.180
+for blocks of async code.
+
+
+00:18:45.180 --> 00:18:49.040
+So if you got a contact, you know, a database,
+
+
+00:18:49.040 --> 00:18:51.340
+two web services, read something from the file system,
+
+
+00:18:51.340 --> 00:18:53.000
+you want to do that sort of asynchronously,
+
+
+00:18:53.000 --> 00:18:55.200
+you could create those pieces of work,
+
+
+00:18:55.200 --> 00:18:56.600
+but then wait on them as a group.
+
+
+00:18:56.600 --> 00:18:58.480
+And there's some built in ways in async.io
+
+
+00:18:58.480 --> 00:19:00.300
+how to do that, which is really cool.
+
+
+00:19:00.300 --> 00:19:02.160
+It's got some nice examples on that.
+
+
+00:19:02.160 --> 00:19:07.560
+So you could just use a thread and then let that thread's main bit of work be the async thing,
+
+
+00:19:07.560 --> 00:19:09.160
+but you don't have to deal with it.
+
+
+00:19:09.160 --> 00:19:13.860
+And the most interesting, I think, is mixing async and synchronous calls.
+
+
+00:19:13.860 --> 00:19:20.560
+And what he does is he actually detects by looking at the traceback, I think,
+
+
+00:19:20.560 --> 00:19:26.560
+detects whether the caller is calling it as an async function or as a regular function
+
+
+00:19:26.560 --> 00:19:29.360
+and implements an async behavior
+
+
+00:19:29.360 --> 00:19:31.360
+or a synchronous behavior
+
+
+00:19:31.360 --> 00:19:32.720
+the same.
+
+
+00:19:32.720 --> 00:19:34.720
+So you could write a single library
+
+
+00:19:34.720 --> 00:19:37.920
+and if somebody in Python 3.6 wants to use it in a fancy async way,
+
+
+00:19:37.920 --> 00:19:40.280
+it becomes magically async.
+
+
+00:19:40.280 --> 00:19:42.280
+But if somebody from 2.7 calls it
+
+
+00:19:42.280 --> 00:19:45.760
+or something like that, an older version, or they just don't call it in this async way,
+
+
+00:19:45.760 --> 00:19:48.720
+it just magically is a synchronous call, it doesn't use that whole stuff.
+
+
+00:19:48.720 --> 00:19:49.220
+Okay.
+
+
+00:19:49.220 --> 00:19:52.600
+This is really an interesting way to make it possible to bring async
+
+
+00:19:52.600 --> 00:19:54.920
+into your package or your libraries
+
+
+00:19:54.920 --> 00:20:00.520
+without having the consumer of your libraries have to care about the fact that it's async.
+
+
+00:20:00.520 --> 00:20:03.400
+But still make it something they can take advantage of.
+
+
+00:20:03.400 --> 00:20:06.920
+That's great. I'm going to have to read this. This reminds me of the,
+
+
+00:20:06.920 --> 00:20:13.080
+I guess, the learning hurdle that people go through in the C++, C and C++ world when you go from
+
+
+00:20:13.080 --> 00:20:17.960
+single threaded applications to multi-threaded applications. You have to look in all the corners.
+
+
+00:20:17.960 --> 00:20:21.720
+Yeah, it's definitely a mind shift. Yeah, this is very much like that.
+
+
+00:20:21.720 --> 00:20:25.720
+But yeah, Christian did a great job on this, and I really like his solution at the end.
+
+
+00:20:25.720 --> 00:20:27.880
+And actually, he has it done in if statements.
+
+
+00:20:27.880 --> 00:20:33.080
+I feel like you could create a decorator that would basically wrap that up and just like a magic, like,
+
+
+00:20:33.080 --> 00:20:35.880
+a syncable or a waitable decorator.
+
+
+00:20:35.880 --> 00:20:39.880
+It's really, really close to having some sort of decorator magic making this even better.
+
+
+00:20:39.880 --> 00:20:40.840
+Yeah, okay.
+
+
+00:20:40.840 --> 00:20:43.880
+All right, well, that's all our news for the week, except for that it's not.
+
+
+00:20:43.880 --> 00:20:45.240
+Well, yeah.
+
+
+00:20:45.240 --> 00:20:46.360
+We have an extra one.
+
+
+00:20:46.360 --> 00:20:52.020
+Really quick, I just want to let people know that the Pi Tennessee conference in Nashville is coming up
+
+
+00:20:52.020 --> 00:20:57.900
+in almost a month from now. So if you're in the Nashville area or willing to travel there,
+
+
+00:20:57.900 --> 00:21:03.940
+February 10th and 11th, they've got their schedule out, the tickets are on sale and things like that.
+
+
+00:21:03.940 --> 00:21:06.900
+And they even made a special discount code for Python bytes.
+
+
+00:21:06.900 --> 00:21:09.400
+If we, you know, said, "Are you going to tell us about it?"
+
+
+00:21:09.400 --> 00:21:11.400
+Then definitely, here's the code.
+
+
+00:21:11.400 --> 00:21:15.700
+So if you want to go to Python C, you can use the discount code
+
+
+00:21:15.700 --> 00:21:19.500
+PythonBytes, no spaces, capital P, capital B,
+
+
+00:21:19.500 --> 00:21:20.500
+and you get 10% off.
+
+
+00:21:20.500 --> 00:21:22.300
+- Cool. - Yeah, very cool.
+
+
+00:21:22.300 --> 00:21:23.900
+You have some pretty interesting news.
+
+
+00:21:23.900 --> 00:21:28.200
+It's not directly Python related, but it very much affects all of us.
+
+
+00:21:28.200 --> 00:21:30.600
+- Yeah. - Right, codes on server, especially in the cloud.
+
+
+00:21:30.600 --> 00:21:32.800
+I thought I'd, I don't know what to do about this,
+
+
+00:21:32.800 --> 00:21:34.500
+but I saw it this morning, I thought we just,
+
+
+00:21:34.500 --> 00:21:36.800
+it's important enough to not ignore it.
+
+
+00:21:36.800 --> 00:21:38.400
+So I thought I'd drop a link.
+
+
+00:21:38.400 --> 00:21:40.300
+What do you think? Like unplug all the internet,
+
+
+00:21:40.300 --> 00:21:42.420
+just go hide in a corner, something like that.
+
+
+00:21:42.420 --> 00:21:44.520
+- It's like one of those things like
+
+
+00:21:44.520 --> 00:21:46.840
+having the credit services get hacked.
+
+
+00:21:46.840 --> 00:21:49.700
+You just, I guess, be aware of it and pay attention.
+
+
+00:21:49.700 --> 00:21:51.700
+- It's very much like the Experian,
+
+
+00:21:51.700 --> 00:21:52.820
+what was that credit service?
+
+
+00:21:52.820 --> 00:21:53.660
+- Equifax, maybe?
+
+
+00:21:53.660 --> 00:21:54.500
+- Equifax.
+
+
+00:21:54.500 --> 00:21:57.000
+I'm not gonna say it, 'cause I don't wanna say the wrong one,
+
+
+00:21:57.000 --> 00:21:59.660
+but the eCredit Agency,
+
+
+00:21:59.660 --> 00:22:00.900
+I totally for some reason forget it.
+
+
+00:22:00.900 --> 00:22:02.060
+I think you're right.
+
+
+00:22:02.060 --> 00:22:04.580
+But yeah, like basically you're told,
+
+
+00:22:04.580 --> 00:22:06.100
+your world is crashing down.
+
+
+00:22:06.100 --> 00:22:07.580
+We're sorry.
+
+
+00:22:07.580 --> 00:22:08.700
+Moving on now.
+
+
+00:22:08.700 --> 00:22:09.580
+And this is kind of like that.
+
+
+00:22:09.580 --> 00:22:11.900
+Let me read from what you quote a couple articles.
+
+
+00:22:11.900 --> 00:22:15.140
+Let me read what they said in the New York Times here.
+
+
+00:22:15.140 --> 00:22:16.540
+It said, "Basically, there's two problems
+
+
+00:22:16.540 --> 00:22:18.460
+called meltdown and spectra.
+
+
+00:22:18.460 --> 00:22:21.300
+Could allow hackers to steal the entire memory contents
+
+
+00:22:21.300 --> 00:22:24.380
+of computers, including mobile devices, personal computers,
+
+
+00:22:24.380 --> 00:22:27.260
+and servers running in so-called cloud computer networks.
+
+
+00:22:27.260 --> 00:22:29.260
+There's no easy fix for spectra,
+
+
+00:22:29.260 --> 00:22:31.940
+which could require a redesign of the processors,
+
+
+00:22:31.940 --> 00:22:33.500
+according to researchers.
+
+
+00:22:33.500 --> 00:22:36.460
+As for meltdown, the software patch needed to fix the issue
+
+
+00:22:36.460 --> 00:22:40.020
+could slow down computers by as much as 30%.
+
+
+00:22:40.020 --> 00:22:43.860
+So, you know, your AWS, DigitalOcean, whatever,
+
+
+00:22:43.860 --> 00:22:46.540
+server may just get 30% slower now.
+
+
+00:22:46.540 --> 00:22:47.380
+Wonderful.
+
+
+00:22:47.380 --> 00:22:49.700
+- Yeah, so most of the places,
+
+
+00:22:49.700 --> 00:22:52.060
+I think Google, Amazon, and Microsoft
+
+
+00:22:52.060 --> 00:22:56.700
+have all said that the servers are pretty much changed
+
+
+00:22:56.700 --> 00:23:00.260
+to deal with meltdown, but Spectre's still a problem.
+
+
+00:23:00.260 --> 00:23:03.700
+- I don't think there's a ton of concrete details here,
+
+
+00:23:03.700 --> 00:23:05.620
+at least not that I ran across.
+
+
+00:23:05.620 --> 00:23:07.620
+It's sort of vague.
+
+
+00:23:07.620 --> 00:23:11.720
+Apparently, not all the details about the exploit are out.
+
+
+00:23:11.720 --> 00:23:15.680
+But I'd recommend people check out Risky.biz,
+
+
+00:23:15.680 --> 00:23:18.920
+which is my favorite developer security podcast.
+
+
+00:23:18.920 --> 00:23:19.920
+It's super, super good.
+
+
+00:23:19.920 --> 00:23:24.680
+And those guys are going to definitely have an insightful conversation
+
+
+00:23:24.680 --> 00:23:26.880
+on this next time they're on deck.
+
+
+00:23:26.880 --> 00:23:29.220
+In case we were too vague about it,
+
+
+00:23:29.220 --> 00:23:32.760
+it was a design flaw found in all microprocessors
+
+
+00:23:32.760 --> 00:23:36.560
+that allow attackers to read the entire memory of a computer.
+
+
+00:23:36.560 --> 00:23:38.560
+Yeah. So, bummer.
+
+
+00:23:38.560 --> 00:23:41.560
+I hope you don't do anything on the internet. Carry on now.
+
+
+00:23:41.560 --> 00:23:43.560
+Okay.
+
+
+00:23:43.560 --> 00:23:45.960
+So, yeah, so the last thing,
+
+
+00:23:45.960 --> 00:23:48.960
+this is a more positive thing, I think of it at least.
+
+
+00:23:48.960 --> 00:23:50.760
+I just announced all my courses,
+
+
+00:23:50.760 --> 00:23:52.760
+not all of them actually, only a few of them,
+
+
+00:23:52.760 --> 00:23:55.360
+for 2018, but I announced this
+
+
+00:23:55.360 --> 00:23:57.860
+new deal that I'm having for all the Talk Python courses
+
+
+00:23:57.860 --> 00:23:59.260
+called the Everything Bundle.
+
+
+00:23:59.260 --> 00:24:02.260
+So, talkpython.fm/everything.
+
+
+00:24:02.260 --> 00:24:07.760
+and it gets you what will be probably 120 hours of Python course awesomeness,
+
+
+00:24:07.760 --> 00:24:12.600
+including some new ones, Mastering PyCharm, Python 3 and Illustrated Tour,
+
+
+00:24:12.600 --> 00:24:14.600
+Introduction to Ansible and tons more coming.
+
+
+00:24:14.600 --> 00:24:18.820
+So I just got, I was just finishing some of the videos for the PyCharm course
+
+
+00:24:18.820 --> 00:24:21.100
+right before we chatted, so it's almost done.
+
+
+00:24:21.100 --> 00:24:24.060
+Cool. So is that going to be out this month then? Or soon?
+
+
+00:24:24.060 --> 00:24:26.260
+That is going to be out probably next week.
+
+
+00:24:26.260 --> 00:24:27.100
+Okay, cool.
+
+
+00:24:27.100 --> 00:24:28.460
+Definitely soon, definitely soon.
+
+
+00:24:28.460 --> 00:24:30.960
+It's so fun to create these courses and just, you know,
+
+
+00:24:30.960 --> 00:24:35.440
+keep exploring the different areas and helping people get better with them. So lots of fun.
+
+
+00:24:35.440 --> 00:24:39.200
+Yeah, and you do things like working with companies if they want to like
+
+
+00:24:39.200 --> 00:24:43.600
+get access to these for like everybody that works there or a handful of people.
+
+
+00:24:43.600 --> 00:24:48.240
+I definitely have special programs for like site licenses, things like that. I've even
+
+
+00:24:48.240 --> 00:24:52.640
+talked to some universities about having the courses for like all of their students or
+
+
+00:24:52.640 --> 00:24:56.800
+something like that. That would be wild. Still talking.
+
+
+00:24:56.800 --> 00:24:58.960
+You'll have to increase the price for them, I guess.
+
+
+00:24:58.960 --> 00:25:01.960
+I guess, but they're students, you know.
+
+
+00:25:01.960 --> 00:25:02.960
+Cool.
+
+
+00:25:02.960 --> 00:25:03.960
+All right, cool.
+
+
+00:25:03.960 --> 00:25:06.200
+Well, Brian, thanks for sharing all your news.
+
+
+00:25:06.200 --> 00:25:07.520
+And yeah, thank you.
+
+
+00:25:07.520 --> 00:25:11.280
+Nice to be back together after the whole holiday time off.
+
+
+00:25:11.280 --> 00:25:12.280
+Yes.
+
+
+00:25:12.280 --> 00:25:13.280
+All right.
+
+
+00:25:13.280 --> 00:25:14.280
+Catch you later.
+
+
+00:25:14.280 --> 00:25:15.920
+Thank you for listening to Python Bytes.
+
+
+00:25:15.920 --> 00:25:18.440
+Follow the show on Twitter via @PythonBytes.
+
+
+00:25:18.440 --> 00:25:21.560
+That's Python Bytes as in B-Y-T-E-S.
+
+
+00:25:21.560 --> 00:25:24.860
+And get the full show notes at PythonBytes.fm.
+
+
+00:25:24.860 --> 00:25:28.560
+If you have a news item you want featured, just visit PythonBytes.fm and send it our
+
+
+00:25:28.560 --> 00:25:32.040
+We're always on the lookout for sharing something cool.
+
+
+00:25:32.040 --> 00:25:35.480
+On behalf of myself and Brian Okken, this is Michael Kennedy.
+
+
+00:25:35.480 --> 00:25:38.520
+Thank you for listening and sharing this podcast with your friends and colleagues.
+

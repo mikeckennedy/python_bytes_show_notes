@@ -1,0 +1,396 @@
+00:00:00 Hello and welcome to Python Bytes where we deliver Python news and headlines directly to your earbuds.
+
+00:00:05 This is episode 58 recorded December 19th, 2017.
+
+00:00:10 I'm Michael Kennedy.
+
+00:00:11 And I'm Brian Okken.
+
+00:00:12 And we have a bunch of awesome stuff to share with you.
+
+00:00:14 First I want to say this episode is brought to you by DigitalOcean.
+
+00:00:16 So thank you DigitalOcean.
+
+00:00:17 Yeah, thanks DigitalOcean.
+
+00:00:20 Yes, thank you DigitalOcean.
+
+00:00:22 Indeed.
+
+00:00:23 Love their stuff.
+
+00:00:23 Talk more about it later.
+
+00:00:24 Let's start with monkeying around a bit.
+
+00:00:27 I like them.
+
+00:00:27 There's so much monkey.
+
+00:00:28 I'm not sure why in Python.
+
+00:00:30 Here's a lot of monkey, you're right.
+
+00:00:31 Yeah, we got monkey patching and stuff.
+
+00:00:33 But this is monkey type from Instagram.
+
+00:00:37 And in episode 54, we talked about pyannotate, which is a way to add type annotations to your code while it's running.
+
+00:00:47 But it was from Dropbox, but it was only Python 2 at the moment.
+
+00:00:51 This one is a similar sort of thing, but it's from Instagram, and it's Python 3 only.
+
+00:00:57 and it doesn't do the comments, it does the Python 3 style type annotations.
+
+00:01:02 So I'm kind of really excited to try this out.
+
+00:01:04 Yeah, that sounds really cool.
+
+00:01:06 You know, I'm definitely heartened to see a lot of people who have large code bases, Dropbox, Instagram, and so on, making these tools, they're going to bring everybody along to modern Python really nicely.
+
+00:01:18 It's very good, and I like the way the types are moving.
+
+00:01:23 I was kind of lukewarm on types for Python at first, but using it to try to solidify the quality of your code base for large code bases makes total sense.
+
+00:01:34 And I like what they're doing with it.
+
+00:01:36 I really like adding the type hints just in a couple of places where the autocomplete falls down like, you know, last week we talked about Mongo engine.
+
+00:01:46 You do a query for Mongo engine, and as far as the tooling, it's just like that's a random thing that came back.
+
+00:01:52 It has no idea what it is.
+
+00:01:53 But if you add just a few type hints, the rest of your application can automatically, well, editor can detect the rest of your applications working with one of these concrete types.
+
+00:02:02 So just a little type hint here and there will go a long ways.
+
+00:02:05 And I guess that's probably for new code, right?
+
+00:02:07 But for older code, you want to switch to Python 3 from Python 2, having that as a solid foundation.
+
+00:02:14 So you really know what you're working with as you move it around.
+
+00:02:17 I think that that's even really valuable right there on its own.
+
+00:02:20 The article we link to is one of the things it talks about is what happens is you're actually running your code and it pays attention to which types are going through different parts of your code.
+
+00:02:30 And the little, you can run it through while you're running tests, but it did have a note which I thought was interesting to say, if you have this style of testing where you're using a lot of mock objects, the types are going to be all messed up. So be aware of that and you may want to generate your type some other way.
+
+00:02:49 Oh, right, because it will see the mock and it will think that's what's supposed to go there, not the thing it is mocking.
+
+00:02:54 Yeah, exactly.
+
+00:02:56 Interesting. Cool.
+
+00:02:57 So, sometimes you can make your code fast by optimizing it.
+
+00:03:02 Maybe it talks to a database and you're going to put the right kind of indexes in there and of course that should be fast, but other times you're working with things that are out of your control.
+
+00:03:12 You need to call a web service to get some kind of stock quote or whatever, and you can only be as fast as that web service or whatever.
+
+00:03:20 Unless you're willing to hang on to it for a little bit and do some caching, right?
+
+00:03:24 - Yeah.
+
+00:03:25 - So Python, I don't know how many people know, but there's something called FuncTools in Python, and in there there's a decorator called lru_cache.
+
+00:03:35 And you can put that on to any function, and it will look at the arguments going in there, and if it sees that argument series again, and it can have multiple arguments.
+
+00:03:45 If it sees all the same arguments it's seen before, it will just return that value instantly.
+
+00:03:50 So that's pretty cool, right?
+
+00:03:51 >> I did not know that. That is cool. Yeah.
+
+00:03:54 >> Yeah. So suppose I'm calling like a weather API, and I'm doing it from my website, and I've got all these different people coming in and calling it, and it turns out to be slow.
+
+00:04:04 I could actually throw that onto it, and it would say if two people ask for the same zip code, potentially it's just going to return that instantly just out of memory.
+
+00:04:12 So that's really cool, but it only works in certain ways.
+
+00:04:16 For example, if that method takes a list, well, lists are not hashable, LRU cache thing, decorator requires all the stuff it's gonna hold to be cacheable, for example.
+
+00:04:27 So it's cool, but it's kind of limited in a certain way.
+
+00:04:31 So there's this other project that's kind of inspired by this idea, and it goes much further and has a lot more options called cache tools.
+
+00:04:39 I'm guessing you probably haven't heard of cache tools if you haven't heard of LRU cache.
+
+00:04:42 So this is a project that has a bunch of different cache implementations, as well as a more flexible decorator, actually a couple of decorators you can use in exactly the same way.
+
+00:04:54 So it defines like a basic cache, an LFU cache, so least frequently used, because eventually your cache may run, you know, get full and run out of memory, or you can say only hold 100 items.
+
+00:05:05 Well, when you get to 101, which one do you throw away?
+
+00:05:08 Well, you can use the LFU cache and throw away the one that was least frequently used, and LRU cache, the one that was least recently used, or have what's called a TTL cache, which is a time to live, like, cache everything for five minutes. I'm sure we have the memory for this. How could that be bad, right?
+
+00:05:23 Yeah.
+
+00:05:26 And then you get that call in the middle of the night.
+
+00:05:28 Server's down.
+
+00:05:29 The TTL cache, that seems like, like, for instance, your example of grabbing some weather data or something, I mean, you could hold on to the weather data for at least a few minutes before refreshing that.
+
+00:05:41 Right, and what's really cool about the TTL one is it naturally expires the data in a way that you can predict and might understand.
+
+00:05:49 So if you're like, look, the weather is not going to change that much in 10 minutes, just cache everything for 10 minutes.
+
+00:05:54 And it automatically will go get a new one after the 11th minute, right?
+
+00:05:58 So that's a really nice way to do it.
+
+00:06:00 So these are cache implementations, and then there's what's called a memoizing.
+
+00:06:04 So memoization is this concept that we've been talking about.
+
+00:06:07 Memoizing decorators, cacheUtils.cache, which is like the one we talked about before.
+
+00:06:13 But you can plug in all sorts of stuff.
+
+00:06:14 You can plug in any of the cache implementations we've talked about, or even a straight dictionary.
+
+00:06:20 It takes a function that will generate the hash so it can cache non-hashable things because you could generate some kind of indicator like an ID out of a database object or something.
+
+00:06:29 You could pass interesting things like a weak value, a weak ref.weakvalue dictionary, so you don't actually hold on to the memory of the things, which is pretty cool.
+
+00:06:38 And even has like a locking object you can pass for thread safety if you got to recreate stuff in the hash and stuff.
+
+00:06:46 So really it's like the idea of the LRU cache and func tools, but way more flexible and configurable.
+
+00:06:51 - This is nice. - It's insanely easy to use them, right?
+
+00:06:54 You just throw a decorator on a slow function and now it's a fast function.
+
+00:06:57 Just make sure you understand what that means.
+
+00:06:59 Yeah, so definitely in conjunction with safe measure before you prematurely optimize.
+
+00:07:06 Yeah, it's cool though.
+
+00:07:08 Speaking of going fast.
+
+00:07:09 Yeah, speaking of going fast, one of the things that people often start with a new project is to use for a database instead of deciding which one they're going to use down the road, they'll throw SQLite in, or SQLite, I don't know how you pronounce that.
+
+00:07:25 But since it's built into Python and you don't have to install anything extra, I guess Python calls it SQLite 3.
+
+00:07:33 I don't know whether two of them before that.
+
+00:07:35 >> Yeah, I guess so.
+
+00:07:35 >> That's something folks use and then they sometimes migrate to something else.
+
+00:07:40 Sometimes there's a lot of applications that stick with it.
+
+00:07:42 There's an article called Going Fast with SQLite and Python that talks about some of the ways this fellow came up with to make it quickly.
+
+00:07:51 Make it run faster.
+
+00:07:53 Yeah, that's great. So, SQLite is really awesome.
+
+00:07:55 Like, it's an embedded database that ships with Python.
+
+00:07:58 You don't have to do anything to have it. You just have it.
+
+00:08:01 It runs in process, so there's like zero latency over the network or overhead or anything like that.
+
+00:08:06 It's actually really powerful if you're willing to, you know, have a sort of in-process databases.
+
+00:08:12 Yeah, and I had the impression that it was simpler than it is, but it does quite a bit of cool things as I was reading through this.
+
+00:08:20 Like, I didn't know you could do user defined functions and you've got control over transactions and auto commits and things like that.
+
+00:08:28 It's gotten to be pretty feature rich. It's cool.
+
+00:08:31 It's a pretty dense article, but I think it's a good throw yourself into the deep end if you want to jump into SQLite 3.
+
+00:08:38 Yeah, it's definitely cool.
+
+00:08:39 It's certainly a good way to get started so you don't have to worry about extra servers and network connectivity and keeping that safe and all that.
+
+00:08:46 Very cool. So, before we get on to the next item, I want to talk quickly about DigitalOcean.
+
+00:08:51 This website that hosts the podcast, delivers the podcast feed, and a lot of the other stuff that I'm doing online runs on DigitalOcean.
+
+00:08:59 Very, very nice experience.
+
+00:09:02 They've got incredibly fast, reliable, and cheap servers.
+
+00:09:05 Five, ten dollars, you can have servers based on SSDs.
+
+00:09:09 Really up and running in 30 seconds, you just SSH in, get them all set up and ready to roll.
+
+00:09:15 So if you want nice, fast servers, check them out.
+
+00:09:19 at digitalocean.com and let them know that we sent you their way.
+
+00:09:22 And they've been really good about sponsoring the show and I really appreciate that.
+
+00:09:25 It's great.
+
+00:09:26 Yeah, definitely. Thank you. Thank you, DigitalOcean.
+
+00:09:28 One of the things I think many people got their first programming experience on is a graphing calculator, right?
+
+00:09:36 Remember back in your middle school or something, you had like a TI, whatever, you could make it do dumb things.
+
+00:09:42 Well, yeah, I even started programming my HP calculator.
+
+00:09:46 It didn't even graph. So I was programming that.
+
+00:09:48 Yeah, exactly. So HP or TI instruments or whatever.
+
+00:09:52 So one of the really cool finds we've dug up recently is this graphing calculator by this company called NumWorks.
+
+00:10:02 And you might think, "Okay, why is this graphing calculator very interesting?" Well, the way that you program it is you program it in Python.
+
+00:10:12 Yeah, that's cool.
+
+00:10:13 It's really cool. So the programming language literally is Python.
+
+00:10:17 and it will do sort of visual math.
+
+00:10:20 It's got even a free emulator, so you can run it on your Mac or your PC and check it out there.
+
+00:10:26 It does graphing, all kinds of stuff.
+
+00:10:29 And then it even has a way for you to work with the hardware through, gives you like some stats on 3D printing and things like that if you want to do other more hardware oriented things with it.
+
+00:10:42 But definitely this concept of a full blown graphing calculator where you program it in Python.
+
+00:10:48 That's awesome.
+
+00:10:49 - And hackable and all.
+
+00:10:50 And yet it's still supposedly, it's gonna be okay for use on the SAT even in August next year.
+
+00:10:58 - Yeah, that's actually a big deal.
+
+00:11:00 Like I know some of the graphing calculators are banned 'cause people use them to cheat or they do too much or whatever.
+
+00:11:04 At least for now, until they figure out how pip install SAT helper.
+
+00:11:09 - Yeah, exactly.
+
+00:11:11 - Nice, but that's pretty fun.
+
+00:11:12 Check that out.
+
+00:11:13 It's nice to see that showing up in the calculator space 'cause that really is like the first programmable thing lots of kids really have to interact with.
+
+00:11:19 - We don't really see it too much anymore, but there's, well, in consumer things, but in test and measurement, we see some programmable features show up in different sorts of devices, and having the programmable language be Python in more places is good.
+
+00:11:34 - Yeah, definitely.
+
+00:11:35 We talked about last week having Python be the programming language of Excel, right, for example.
+
+00:11:40 - Right, yeah.
+
+00:11:41 - It seems like a really, really great choice for, if you want to add a little programmability to whatever it is you're doing, Python seems like a great choice for that language.
+
+00:11:50 So, nice to see it here as well.
+
+00:11:51 - It's nice.
+
+00:11:52 - One of the problems you might have with the data science space, if you work with a Jupyter notebook and you just have access to the notebook, but you need a library that's not on the server, what are you going to do?
+
+00:12:02 - I didn't know this was a problem, actually.
+
+00:12:04 I haven't been using Jupyter notebooks enough to run into this issue, but a lot of people get their Python and Jupyter from installing like a conda package or some other bundled thing.
+
+00:12:19 And you can't just go off and pip install.
+
+00:12:22 I didn't know you couldn't.
+
+00:12:23 But Jake Vanderplass, Vanderplass?
+
+00:12:27 He wrote up this article on installing Python packages and there's a couple, I'm not even gonna try to write this, but I pulled out some of the cheats for pip and conda and on how to install from within it.
+
+00:12:40 And there's some magical incantations.
+
+00:12:42 But the article also goes through about all the different reasons why you have to do this.
+
+00:12:46 - Yeah, and they're not obvious at all.
+
+00:12:48 Like I would have never figured those out.
+
+00:12:50 - Yeah, so it's good that somebody figured it out.
+
+00:12:53 - Yes, thank you, Jake.
+
+00:12:54 That's awesome.
+
+00:12:56 So if you're doing data science and Jupyter Notebooks, this is really, really cool.
+
+00:12:59 So last thing I wanna share for us is the videos from PyCon DE, as in Deutschland, 2017 are online.
+
+00:13:08 So Miroslav let us know on Twitter about this and there are a ton of interesting talks over here.
+
+00:13:15 So quite a bunch of cool talks.
+
+00:13:19 I'm not sure how many, but I would, I don't know, guess 50 or so.
+
+00:13:23 - Are they all in German?
+
+00:13:24 - Here's the thing, as far as I can tell, I've only seen English ones and I looked through a bunch of them.
+
+00:13:29 So there's a cool talk called technical lessons from Pythonic refactoring at Yelp by a woman named Yenny Chung and a bunch of other ones.
+
+00:13:41 It's kind of hard to read all the titles right here, but I've looked through and I'm definitely filling up my playlist with stuff that I need to start watching 'cause there's a lot of cool stuff here.
+
+00:13:52 Eve Hilpisch, who was on my podcast, talks about why Python has taken over in finance, for example, right?
+
+00:13:58 And we don't even have it in Excel yet.
+
+00:14:00 So there's lots of cool stuff here.
+
+00:14:02 It was in Karlsruhe in Germany, which is a lovely place.
+
+00:14:05 I wish I could have gone to the conference, but second best thing, watch it online.
+
+00:14:09 - I'm really glad that we have those.
+
+00:14:10 Can't wait.
+
+00:14:11 - Yeah, all the PyCons do such a good job of getting their content online straight away, you know, within a day or two of the presentation.
+
+00:14:18 So it really makes a big difference, especially since they sell out.
+
+00:14:21 - Yeah, definitely.
+
+00:14:22 - You were definitely gonna be at, I'm gonna be at the one in Cleveland, PyCon US.
+
+00:14:26 Are you gonna make it?
+
+00:14:27 - Yeah, I think so.
+
+00:14:28 That's the plan.
+
+00:14:29 - That's the plan, it's gonna be fun.
+
+00:14:30 All right, but for now, We'll enjoy the ones in Germany.
+
+00:14:33 Any news, end of the year?
+
+00:14:34 - End of the year, yeah, no, I'm trying to come up with some fun Python projects to work on in my free time.
+
+00:14:41 - Get a Raspberry Pi and do something with it.
+
+00:14:43 Maybe plug it in a home assistant, things like that.
+
+00:14:46 But I haven't done anything.
+
+00:14:47 - Yeah, me either.
+
+00:14:49 I've got two of them sitting there, but yeah.
+
+00:14:51 - If you could just put some code on them and make them do some cool stuff, right on.
+
+00:14:55 All right, well, Brian, thanks again for sharing the news with everyone.
+
+00:14:59 It's great to chat with you, as always.
+
+00:15:00 Yeah, thank you.
+

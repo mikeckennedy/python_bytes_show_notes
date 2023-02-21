@@ -1,0 +1,1996 @@
+
+00:00:00.000 --> 00:00:04.900
+Hello and welcome to Python Bytes where we deliver Python news and headlines directly to your earbuds.
+
+
+00:00:04.900 --> 00:00:10.500
+This is episode 61, recorded January 10th, 2018.
+
+
+00:00:10.500 --> 00:00:11.500
+I'm Michael Kennedy.
+
+
+00:00:11.500 --> 00:00:12.300
+And I'm Brian Okken.
+
+
+00:00:12.300 --> 00:00:15.700
+And we have, again, some really cool stuff we want to share with you,
+
+
+00:00:15.700 --> 00:00:18.700
+the best of what we found this week in the Python space.
+
+
+00:00:18.700 --> 00:00:21.900
+Before we get to it though, I want to say thank you to DigitalOcean,
+
+
+00:00:21.900 --> 00:00:27.800
+this podcast, these mp3 files, everything is coming to you directly out of DigitalOcean servers.
+
+
+00:00:27.800 --> 00:00:29.000
+Tell you more about that later.
+
+
+00:00:29.000 --> 00:00:38.820
+Right now i want to talk about dictionaries yeah i want to talk about dictionaries to so thanks to reamon this is a i'm gonna reference brandon roads actually for later on but.
+
+
+00:00:38.820 --> 00:00:48.840
+Raymond head and head and your head injure is probably the person that i have to thank for telling me how cool dictionaries are in the first place cuz he's talked about a minute different icons.
+
+
+00:00:48.840 --> 00:00:54.360
+In the past and basically i mean tons of python is built on top of dictionaries.
+
+
+00:00:54.780 --> 00:01:01.820
+But one of the things that I did not know was how awesome key sharing is.
+
+
+00:01:01.820 --> 00:01:08.420
+And we had one of our listeners on Twitter, Ned Letcher, keyed us in on this and said,
+
+
+00:01:08.420 --> 00:01:11.620
+"Hey, if you haven't checked it out, you should go look at Brandon Rhodes'
+
+
+00:01:11.620 --> 00:01:16.260
+'The Dictionary, Even Mightier' talk from PyCon 2017."
+
+
+00:01:16.260 --> 00:01:20.740
+And so I did, and yeah, the key sharing thing is
+
+
+00:01:20.740 --> 00:01:23.940
+like something I didn't know about, which is totally cool.
+
+
+00:01:23.940 --> 00:01:29.540
+It's kind of funky to think that it's not that way until you really think about how it works, right?
+
+
+00:01:29.540 --> 00:01:35.880
+So when you create a class, and you create an instance of it, an object, every one of those has a dunder dict, right?
+
+
+00:01:35.880 --> 00:01:42.340
+And what goes in the keys are the names of the fields of the class and what goes for the values are, well, the values, right?
+
+
+00:01:42.340 --> 00:01:47.400
+So when you say in dunder init, you say self.name equals this, self.id equals that.
+
+
+00:01:47.400 --> 00:01:50.220
+Those are putting entries in that dictionary, right?
+
+
+00:01:50.220 --> 00:01:50.620
+Yeah.
+
+
+00:01:50.620 --> 00:01:53.580
+But the thing is, if I create a million of those,
+
+
+00:01:53.580 --> 00:01:58.220
+I have a million times the string name as the key
+
+
+00:01:58.220 --> 00:02:01.420
+and a million times the string ID as the ID.
+
+
+00:02:01.420 --> 00:02:07.220
+So basically, every instance you create stores a separate copy of the names,
+
+
+00:02:07.220 --> 00:02:09.220
+not just the values, but the names of the fields,
+
+
+00:02:09.220 --> 00:02:11.020
+which can be super problematic, right?
+
+
+00:02:11.020 --> 00:02:14.420
+The names of the fields are, and in Brandon's talk, he talks about,
+
+
+00:02:14.420 --> 00:02:20.320
+since it's a dictionary, there can be hash collisions for figuring out where to put it.
+
+
+00:02:20.320 --> 00:02:24.760
+And so each of that happens for every single object has to figure that out.
+
+
+00:02:24.760 --> 00:02:31.000
+I think it was what Python 3.3, 3.4, where they changed it to where.
+
+
+00:02:31.000 --> 00:02:31.880
+So here's the trick.
+
+
+00:02:31.880 --> 00:02:37.520
+As long as you put all of the fields that you're going to use for your class objects,
+
+
+00:02:37.520 --> 00:02:47.040
+you initialize them with something in your init function, then all of your objects can share the same dictionary for the key lookup.
+
+
+00:02:47.040 --> 00:02:48.160
+Yeah, that's really cool.
+
+
+00:02:48.200 --> 00:02:52.900
+So I think that's quite awesome and should really help with performance as well, especially memory wise.
+
+
+00:02:52.900 --> 00:02:57.900
+Yeah, it's a little bit of a little weird thing of like you have to kind of think about how this is implemented.
+
+
+00:02:57.900 --> 00:03:04.240
+But Brandon does a really good job of walking you through it and so that it's obvious how the savings is.
+
+
+00:03:04.240 --> 00:03:11.200
+And apparently from the PEP 412 that this was started with, for object oriented programs,
+
+
+00:03:11.200 --> 00:03:16.160
+the memory reduction is like 10 to 20% less using quite a bit less memory.
+
+
+00:03:16.160 --> 00:03:17.540
+So that's definitely worth it.
+
+
+00:03:17.540 --> 00:03:19.860
+Oh yeah, that's always a nice benefit there.
+
+
+00:03:19.860 --> 00:03:27.260
+So I have an interesting project recommended by a listener as well called Python Hunter.
+
+
+00:03:27.260 --> 00:03:28.340
+Have you heard of this?
+
+
+00:03:28.340 --> 00:03:31.740
+Well, just because it was recommended to us, but I haven't looked at it yet.
+
+
+00:03:31.740 --> 00:03:36.620
+Yeah, so it's pretty interesting. The idea is it's a little bit like code coverage.
+
+
+00:03:36.620 --> 00:03:41.780
+And it's a little bit like a debugger, in that you like enable it on your code.
+
+
+00:03:41.780 --> 00:03:46.780
+And then as you interact with the code, you get a report. But what you actually get here
+
+
+00:03:47.260 --> 00:03:52.460
+is it will give you, basically, as your program runs,
+
+
+00:03:52.460 --> 00:03:55.060
+it'll show you the internals
+
+
+00:03:55.060 --> 00:03:59.740
+of basically any module or package you want to point it at
+
+
+00:03:59.740 --> 00:04:01.260
+as it executes.
+
+
+00:04:01.260 --> 00:04:06.060
+So there's an example where they turn it on and they call os.path.join,
+
+
+00:04:06.060 --> 00:04:10.660
+and it shows you basically all the internal implementation running,
+
+
+00:04:10.660 --> 00:04:14.060
+like printed into the console intermixed with your output.
+
+
+00:04:14.060 --> 00:04:15.160
+Oh, interesting.
+
+
+00:04:15.160 --> 00:04:20.300
+Yeah, so if you were like, I would like to explore what this does when I call this function,
+
+
+00:04:20.300 --> 00:04:24.760
+and I don't want to root through all the source code and try to figure out what piece this is referring to,
+
+
+00:04:24.760 --> 00:04:29.680
+you can just turn this on, call the function, and it'll show you the path through the external code it took.
+
+
+00:04:29.680 --> 00:04:30.800
+- Okay. - Yeah.
+
+
+00:04:30.800 --> 00:04:36.380
+So pretty interesting. It has some integration with debuggers and things like that.
+
+
+00:04:36.380 --> 00:04:38.140
+So you can also overwrite it.
+
+
+00:04:38.140 --> 00:04:40.100
+And it doesn't happen for every bit of code you call.
+
+
+00:04:40.100 --> 00:04:44.760
+You point it at a module, like say, I'm trying to work on,
+
+
+00:04:44.760 --> 00:04:46.760
+let's say, POSIX path.
+
+
+00:04:46.760 --> 00:04:49.520
+I want to understand my interaction with that module.
+
+
+00:04:49.520 --> 00:04:51.840
+Then you call os.path.join, and off it goes.
+
+
+00:04:51.840 --> 00:04:53.560
+So, yeah, pretty sweet, actually.
+
+
+00:04:53.560 --> 00:04:56.840
+Like, for instance, if I want to mock out my request
+
+
+00:04:56.840 --> 00:05:00.480
+interaction to external databases or external sites,
+
+
+00:05:00.480 --> 00:05:02.480
+I could point it at requests, for instance,
+
+
+00:05:02.480 --> 00:05:06.440
+to find out exactly what my application is doing with requests.
+
+
+00:05:06.440 --> 00:05:09.840
+Yes, exactly. And you would say, "Oh, this is the part where it goes to the network.
+
+
+00:05:09.840 --> 00:05:12.080
+That's the one thing I have to mock out.
+
+
+00:05:12.080 --> 00:05:13.520
+The rest I can just ignore."
+
+
+00:05:13.520 --> 00:05:16.240
+That would be a great tool for, especially for people that are trying to
+
+
+00:05:16.240 --> 00:05:18.240
+isolate bits of their application.
+
+
+00:05:18.240 --> 00:05:20.740
+Yeah, that's cool. So this was recommended to us by Even Page.
+
+
+00:05:20.740 --> 00:05:25.580
+So thank you for that. And it's also kind of interesting that it is built on Cython.
+
+
+00:05:25.580 --> 00:05:27.580
+So it's nice high performance.
+
+
+00:05:27.580 --> 00:05:30.380
+It's always cool to see Cython making an appearance.
+
+
+00:05:30.380 --> 00:05:32.380
+Nice. So
+
+
+00:05:32.380 --> 00:05:36.580
+you know, I always feel like when I'm working with Bash, I could do a better job.
+
+
+00:05:36.580 --> 00:05:40.260
+And in fact, I don't use Bash that much these days. I use OhMyZSH.
+
+
+00:05:40.260 --> 00:05:43.260
+But same thing, there's all this stuff about the shell I could do better.
+
+
+00:05:43.260 --> 00:05:44.340
+You use ZSH?
+
+
+00:05:44.340 --> 00:05:46.100
+I use OhMyZSH. I love it.
+
+
+00:05:46.100 --> 00:05:46.700
+OhMy?
+
+
+00:05:46.700 --> 00:05:47.220
+OhMy.
+
+
+00:05:47.220 --> 00:05:47.780
+Oh, okay.
+
+
+00:05:47.780 --> 00:05:50.940
+Yeah, it's really got some nice integration with Git,
+
+
+00:05:50.940 --> 00:05:53.820
+the history and the search and the autocomplete,
+
+
+00:05:53.820 --> 00:05:56.580
+like a tabbed selection of various things.
+
+
+00:05:56.580 --> 00:05:59.020
+If you have like, you type a few characters and hit tab,
+
+
+00:05:59.020 --> 00:06:02.180
+it'll show you the list of all the things that you've done involving that.
+
+
+00:06:02.180 --> 00:06:02.820
+It's kind of cool.
+
+
+00:06:02.820 --> 00:06:04.820
+Okay. I'll have to check that out sometime.
+
+
+00:06:04.820 --> 00:06:06.580
+But I think more people use Bash, actually.
+
+
+00:06:06.580 --> 00:06:10.700
+So I went through a phase where I started out learning KSH
+
+
+00:06:10.700 --> 00:06:16.940
+when in college and in my first job and then i tried bash and i went to z shell for a while
+
+
+00:06:16.940 --> 00:06:22.860
+but it had support issues on whatever operating system i was using at the time so bash is just
+
+
+00:06:22.860 --> 00:06:28.540
+everywhere so we can just use it as is the place where you have to jump through a few hoops is on
+
+
+00:06:28.540 --> 00:06:33.820
+windows so i wanted to bring up before we get into this article there's an article called 10 things
+
+
+00:06:33.820 --> 00:06:40.300
+i wish i'd known about bash which is a really great little quick start on things that might
+
+
+00:06:40.300 --> 00:06:44.780
+might speed up. It's just some fun things. There's a somebody trying to sell a book also
+
+
+00:06:44.780 --> 00:06:49.020
+in it, but it's only like five bucks. So go for it, dude. But kind of things that I'd
+
+
+00:06:49.020 --> 00:06:54.340
+always wanted to know, like what the difference is between back ticks or the dollar sign per
+
+
+00:06:54.340 --> 00:06:59.480
+end replacing bits in your command. Just if it is, is they're identical. It's just one's
+
+
+00:06:59.480 --> 00:07:03.580
+a lot easier to read if you have a whole bunch of them. Yeah, okay, very cool. And then,
+
+
+00:07:03.580 --> 00:07:08.740
+you know, like globbing versus regular expressions. That's something that confused me at first.
+
+
+00:07:08.740 --> 00:07:10.300
+So that's a good thing.
+
+
+00:07:10.300 --> 00:07:11.940
+Dealing with exit codes.
+
+
+00:07:11.940 --> 00:07:14.220
+The number four is the one I really like the most
+
+
+00:07:14.220 --> 00:07:16.860
+because that one confused me is when you're using
+
+
+00:07:16.860 --> 00:07:19.100
+if statements, what's the difference between bracket
+
+
+00:07:19.100 --> 00:07:20.980
+and bracket bracket?
+
+
+00:07:20.980 --> 00:07:22.720
+And I'm not gonna talk about it here,
+
+
+00:07:22.720 --> 00:07:24.860
+but these are some good things.
+
+
+00:07:24.860 --> 00:07:27.540
+I also wanted to bring up, I spend a lot of time
+
+
+00:07:27.540 --> 00:07:32.540
+trying to hunt for a good Bash application for Windows.
+
+
+00:07:32.540 --> 00:07:36.680
+And right now what I'm using the most is Git for Windows.
+
+
+00:07:36.680 --> 00:07:39.600
+and it has Git Bash is embedded in it.
+
+
+00:07:39.600 --> 00:07:41.380
+I think that's great, even for people
+
+
+00:07:41.380 --> 00:07:45.420
+that are not using Git, because it's just a good bundle
+
+
+00:07:45.420 --> 00:07:48.980
+of all of your Bash tools, and it just always works.
+
+
+00:07:48.980 --> 00:07:50.980
+So I'm pointing everybody at that now,
+
+
+00:07:50.980 --> 00:07:52.480
+even if they're not using Git.
+
+
+00:07:52.480 --> 00:07:54.900
+We did have a recommendation from one of our listeners
+
+
+00:07:54.900 --> 00:07:58.420
+a long time ago about a tool called Commander, I think.
+
+
+00:07:58.420 --> 00:07:59.820
+- Yeah, I'd say Commander, yeah.
+
+
+00:07:59.820 --> 00:08:02.340
+- Yeah, C-M-D-E-R dot net.
+
+
+00:08:02.340 --> 00:08:04.980
+And I think there's a reference on here
+
+
+00:08:04.980 --> 00:08:07.980
+that I think it's related to Git for Windows somehow.
+
+
+00:08:07.980 --> 00:08:12.260
+So not sure, but if you don't really use all the,
+
+
+00:08:12.260 --> 00:08:13.700
+if you don't want to try Git for Windows,
+
+
+00:08:13.700 --> 00:08:16.760
+but you still want some emulator working on Windows,
+
+
+00:08:16.760 --> 00:08:18.460
+check out Commander also.
+
+
+00:08:18.460 --> 00:08:21.260
+>>Yeah, and it has the Monokai theme
+
+
+00:08:21.260 --> 00:08:22.100
+and actually looks really nice.
+
+
+00:08:22.100 --> 00:08:23.180
+Commander looks quite cool.
+
+
+00:08:23.180 --> 00:08:25.340
+I saw it on my Windows 10 machine.
+
+
+00:08:25.340 --> 00:08:27.980
+One more thing I'll throw on your list here
+
+
+00:08:27.980 --> 00:08:29.820
+while you're talking about these is,
+
+
+00:08:29.820 --> 00:08:32.940
+I don't even remember what version of Windows 10 has this.
+
+
+00:08:32.940 --> 00:08:36.540
+It's not the original, but maybe the one last fall.
+
+
+00:08:36.540 --> 00:08:37.620
+I can't remember what came out,
+
+
+00:08:37.620 --> 00:08:41.700
+but they've added the Ubuntu subsystem for Windows,
+
+
+00:08:41.700 --> 00:08:43.100
+which is pretty cool.
+
+
+00:08:43.100 --> 00:08:44.300
+But you have to turn that on
+
+
+00:08:44.300 --> 00:08:46.740
+in the turn Windows features on and off.
+
+
+00:08:46.740 --> 00:08:47.780
+It's off by default.
+
+
+00:08:47.780 --> 00:08:48.980
+- And I'm glad you brought that up
+
+
+00:08:48.980 --> 00:08:50.700
+'cause I want to try to revisit that.
+
+
+00:08:50.700 --> 00:08:53.300
+I did try those and I had issues
+
+
+00:08:53.300 --> 00:08:56.740
+with being able to launch external applications.
+
+
+00:08:56.740 --> 00:08:58.500
+- Yeah, they're really isolated.
+
+
+00:08:58.500 --> 00:09:01.060
+Like the Ubuntu part and the Windows part,
+
+
+00:09:01.060 --> 00:09:03.100
+they don't really communicate very well.
+
+
+00:09:03.100 --> 00:09:05.380
+And so it's not the same, I don't think.
+
+
+00:09:05.380 --> 00:09:07.340
+- It's not like you have to do that a lot,
+
+
+00:09:07.340 --> 00:09:10.140
+but I often just want to open up my text editor
+
+
+00:09:10.140 --> 00:09:11.500
+from the command line.
+
+
+00:09:11.500 --> 00:09:12.420
+- Yeah, exactly.
+
+
+00:09:12.420 --> 00:09:13.240
+- Things like that.
+
+
+00:09:13.240 --> 00:09:14.080
+- Cool, all right, yeah,
+
+
+00:09:14.080 --> 00:09:15.180
+those are all nice things to check out,
+
+
+00:09:15.180 --> 00:09:16.160
+especially on Windows.
+
+
+00:09:16.160 --> 00:09:19.740
+It needs the most help with the shell, actually.
+
+
+00:09:19.740 --> 00:09:21.540
+Cool, so before we get to the next one,
+
+
+00:09:21.540 --> 00:09:23.020
+which is a bunch of pretty pictures
+
+
+00:09:23.020 --> 00:09:25.340
+that I hope will help people understand
+
+
+00:09:25.340 --> 00:09:26.900
+the definition of micro frameworks
+
+
+00:09:26.900 --> 00:09:30.700
+versus batteries included frameworks, things like that.
+
+
+00:09:30.700 --> 00:09:32.840
+I just want to tell people about DigitalOcean.
+
+
+00:09:32.840 --> 00:09:37.840
+Those guys are doing awesome work over at do.co/python.
+
+
+00:09:37.840 --> 00:09:40.140
+So check that out there.
+
+
+00:09:40.140 --> 00:09:41.900
+This is where I have all my servers.
+
+
+00:09:41.900 --> 00:09:44.200
+I probably have eight servers for the various things
+
+
+00:09:44.200 --> 00:09:45.460
+all working together now,
+
+
+00:09:45.460 --> 00:09:48.240
+failover and database servers and whatnot.
+
+
+00:09:48.240 --> 00:09:51.440
+But yeah, it's great, super easy, 30 seconds.
+
+
+00:09:51.440 --> 00:09:53.620
+You got a Buntu machine or what other,
+
+
+00:09:53.620 --> 00:09:55.340
+there's a bunch of different distributions
+
+
+00:09:55.340 --> 00:09:57.740
+and pre-configured servers.
+
+
+00:09:57.740 --> 00:09:59.020
+Go over there, set them up, check it out.
+
+
+00:09:59.020 --> 00:10:00.460
+They're doing a bunch of great stuff.
+
+
+00:10:00.460 --> 00:10:02.900
+and it's definitely affordable and reliable and fast.
+
+
+00:10:02.900 --> 00:10:03.740
+- Awesome.
+
+
+00:10:03.740 --> 00:10:04.560
+- Yeah, cool.
+
+
+00:10:04.560 --> 00:10:07.900
+So there's this thing called Snakefood,
+
+
+00:10:07.900 --> 00:10:11.100
+which is a tool written by Martin Blaise,
+
+
+00:10:11.100 --> 00:10:14.040
+and it creates Python dependency graphs.
+
+
+00:10:14.040 --> 00:10:17.600
+So I've got one package or one module
+
+
+00:10:17.600 --> 00:10:20.540
+or one class that depends upon some other thing,
+
+
+00:10:20.540 --> 00:10:23.200
+and it'll put them in a graph and draw lines between them.
+
+
+00:10:23.200 --> 00:10:24.760
+So that's pretty cool.
+
+
+00:10:24.760 --> 00:10:26.300
+I haven't done a whole lot with it.
+
+
+00:10:26.300 --> 00:10:28.220
+You can combine that with GraphViz,
+
+
+00:10:28.220 --> 00:10:30.660
+and it'll create these nice visualizations
+
+
+00:10:30.660 --> 00:10:32.180
+of Python code bases.
+
+
+00:10:32.180 --> 00:10:33.300
+- Hmm, nice.
+
+
+00:10:33.300 --> 00:10:34.140
+- So that's pretty cool.
+
+
+00:10:34.140 --> 00:10:35.520
+And this is not a brand new item,
+
+
+00:10:35.520 --> 00:10:37.800
+but I had seen it a while ago.
+
+
+00:10:37.800 --> 00:10:39.460
+It's from the Grok code guys.
+
+
+00:10:39.460 --> 00:10:41.260
+I think I had them on Talk Python,
+
+
+00:10:41.260 --> 00:10:43.220
+like episode eight or something.
+
+
+00:10:43.220 --> 00:10:44.060
+So it's been a while.
+
+
+00:10:44.060 --> 00:10:44.880
+It wasn't about this,
+
+
+00:10:44.880 --> 00:10:49.140
+but they took this snake food plus graph viz,
+
+
+00:10:49.140 --> 00:10:51.800
+and they turned it on a variety of the frameworks
+
+
+00:10:51.800 --> 00:10:53.460
+that we know and love.
+
+
+00:10:53.460 --> 00:10:56.620
+And it's really interesting to pull up the pictures
+
+
+00:10:56.620 --> 00:10:59.120
+and just look at the relative complexity.
+
+
+00:10:59.120 --> 00:11:01.040
+So if somebody tells you, well, bottle is fast
+
+
+00:11:01.040 --> 00:11:03.960
+because it's simple, but it doesn't do very much for you,
+
+
+00:11:03.960 --> 00:11:06.040
+so you gotta bring a lot of pieces in.
+
+
+00:11:06.040 --> 00:11:10.480
+Django is much more full-featured and more complex,
+
+
+00:11:10.480 --> 00:11:12.000
+but it has a lot of things built in.
+
+
+00:11:12.000 --> 00:11:13.360
+And Flask is somewhere in the middle,
+
+
+00:11:13.360 --> 00:11:15.520
+and Pyramid, just a little more than that.
+
+
+00:11:15.520 --> 00:11:17.560
+You can look at these pictures and get a sense.
+
+
+00:11:17.560 --> 00:11:18.600
+Do you have the pictures pulled up?
+
+
+00:11:18.600 --> 00:11:21.520
+- Yeah, and definitely, you can totally see
+
+
+00:11:21.520 --> 00:11:22.440
+that that's the case.
+
+
+00:11:22.440 --> 00:11:24.400
+- Bottle is like incredibly simple.
+
+
+00:11:24.400 --> 00:11:27.360
+I'm actually blown away that it is as simple as it is.
+
+
+00:11:27.360 --> 00:11:29.320
+But you can just tell straight away by looking at it.
+
+
+00:11:29.320 --> 00:11:31.780
+>> It's so elegant. There's no cycles.
+
+
+00:11:31.780 --> 00:11:33.060
+>> Yeah, there's no cycle.
+
+
+00:11:33.060 --> 00:11:35.080
+It's an acyclic directed craft.
+
+
+00:11:35.080 --> 00:11:36.500
+That's quite interesting, isn't it?
+
+
+00:11:36.500 --> 00:11:36.880
+>> Yeah.
+
+
+00:11:36.880 --> 00:11:40.640
+>> Cool. Then Django, how would you describe Django?
+
+
+00:11:40.640 --> 00:11:45.100
+>> It's like if you clean out a comb after it's been used for a year,
+
+
+00:11:45.100 --> 00:11:46.480
+that's what it looks like.
+
+
+00:11:46.480 --> 00:11:49.320
+>> Yeah, it's a little bit like one of those inkblot tests.
+
+
+00:11:49.320 --> 00:11:49.840
+>> Yeah.
+
+
+00:11:49.840 --> 00:11:52.080
+>> Flask and Pyramid,
+
+
+00:11:52.080 --> 00:11:53.480
+they're on the same scale.
+
+
+00:11:53.480 --> 00:11:55.180
+Pyramid's got a little bit more going on,
+
+
+00:11:55.180 --> 00:11:57.100
+but they're definitely not simple,
+
+
+00:11:57.100 --> 00:11:58.400
+but they're not insane, right?
+
+
+00:11:58.400 --> 00:12:01.020
+They're not like Django level of interaction.
+
+
+00:12:01.020 --> 00:12:04.760
+Then they go and they do this for Celery and RQ as well.
+
+
+00:12:04.760 --> 00:12:07.920
+And you could tell Celery is way more complicated.
+
+
+00:12:07.920 --> 00:12:10.700
+It's more complicated than Pyramid or Flask, by the way.
+
+
+00:12:10.700 --> 00:12:14.560
+But it's also more complicated by a ways than RQ.
+
+
+00:12:14.560 --> 00:12:15.640
+Let's see, what else do they cover?
+
+
+00:12:15.640 --> 00:12:18.400
+They cover Twisted, and Twisted is pretty insane.
+
+
+00:12:18.400 --> 00:12:23.320
+It's just, it's probably more tied together than Django.
+
+
+00:12:23.320 --> 00:12:24.240
+I would say.
+
+
+00:12:24.240 --> 00:12:26.640
+Mercurial, quite interesting as well.
+
+
+00:12:26.640 --> 00:12:27.640
+Request is in here.
+
+
+00:12:27.640 --> 00:12:30.040
+Request has got some pretty nice look, actually.
+
+
+00:12:30.040 --> 00:12:32.360
+- Yeah, it's oddly elegant and pleasing.
+
+
+00:12:32.360 --> 00:12:33.200
+- It is.
+
+
+00:12:33.200 --> 00:12:34.200
+IPython, not so pleasing.
+
+
+00:12:34.200 --> 00:12:35.640
+- No.
+
+
+00:12:35.640 --> 00:12:38.560
+- Anyway, I recommend people pull up this snakefooding link
+
+
+00:12:38.560 --> 00:12:40.640
+and just have a quick glance through the pictures.
+
+
+00:12:40.640 --> 00:12:41.840
+I think it's quite insightful.
+
+
+00:12:41.840 --> 00:12:43.400
+And, you know, it gives you the technique
+
+
+00:12:43.400 --> 00:12:45.800
+for applying this to other codebases as well.
+
+
+00:12:45.800 --> 00:12:48.920
+- Yeah, these would be fun things to just print on your wall
+
+
+00:12:48.920 --> 00:12:51.640
+and tell people that you're using it as a reference.
+
+
+00:12:51.640 --> 00:12:52.800
+- Yeah, absolutely.
+
+
+00:12:52.800 --> 00:12:54.240
+- Pretty cool.
+
+
+00:12:54.240 --> 00:12:55.520
+Yeah, I just follow the graph
+
+
+00:12:55.520 --> 00:12:57.440
+when I need to know how things work.
+
+
+00:12:57.440 --> 00:12:58.280
+- Yeah.
+
+
+00:12:58.280 --> 00:13:04.240
+- Your next item is about being a good senior engineer.
+
+
+00:13:04.240 --> 00:13:06.760
+- The new year, it's 2018 now.
+
+
+00:13:06.760 --> 00:13:08.840
+There was somebody that posted on Twitter
+
+
+00:13:08.840 --> 00:13:11.080
+that I'm terrible about references, said,
+
+
+00:13:11.080 --> 00:13:13.380
+"Hey, it's the new year, you should go read this again."
+
+
+00:13:13.380 --> 00:13:16.760
+So this is a 2012 article called
+
+
+00:13:16.760 --> 00:13:18.720
+On Being a Senior Engineer.
+
+
+00:13:18.720 --> 00:13:22.120
+It's from a website called Kitchen Soap, which is funny.
+
+
+00:13:22.120 --> 00:13:25.440
+But anyway, I think there's just a lot of really good advice.
+
+
+00:13:25.440 --> 00:13:27.900
+And I just went through and pulled out
+
+
+00:13:27.900 --> 00:13:31.200
+a bunch of the headlines, but it's some things
+
+
+00:13:31.200 --> 00:13:33.800
+that I've been thinking about lately
+
+
+00:13:33.800 --> 00:13:37.000
+as I'm hiring people and thinking about,
+
+
+00:13:37.000 --> 00:13:40.040
+you know, always with evaluations and stuff like that.
+
+
+00:13:40.040 --> 00:13:40.880
+What does it mean?
+
+
+00:13:40.880 --> 00:13:44.160
+What does an engineer versus a senior engineer mean?
+
+
+00:13:44.160 --> 00:13:47.200
+And these, a lot of traits, I think, fit well.
+
+
+00:13:47.200 --> 00:13:49.400
+- I think these are all really, really good.
+
+
+00:13:49.400 --> 00:13:51.620
+I mean, maybe you don't, I should cover them all,
+
+
+00:13:51.620 --> 00:13:54.900
+but like don't practice C-Y-A-E.
+
+
+00:13:54.900 --> 00:13:56.700
+- Yeah, cover your ass engineering.
+
+
+00:13:56.700 --> 00:13:57.660
+- Exactly. - Oh, sorry.
+
+
+00:13:57.660 --> 00:13:59.420
+- No, no, exactly, that's good.
+
+
+00:13:59.420 --> 00:14:01.140
+So I mean, I think that's a really good point.
+
+
+00:14:01.140 --> 00:14:04.180
+Like a lot of people who, when they're starting out,
+
+
+00:14:04.180 --> 00:14:06.380
+they're trying to like make sure they're never perceived
+
+
+00:14:06.380 --> 00:14:08.500
+as not knowing everything, right?
+
+
+00:14:08.500 --> 00:14:09.340
+- Right.
+
+
+00:14:09.340 --> 00:14:10.160
+- By the time you're a senior engineer,
+
+
+00:14:10.160 --> 00:14:12.220
+you've been beaten with the fact that you don't know stuff
+
+
+00:14:12.220 --> 00:14:13.340
+and new stuff is coming along
+
+
+00:14:13.340 --> 00:14:15.580
+that you also don't know continuously, right?
+
+
+00:14:15.580 --> 00:14:18.460
+- One of the top ones is seek out constructive criticism
+
+
+00:14:18.460 --> 00:14:19.980
+of your designs.
+
+
+00:14:19.980 --> 00:14:22.960
+And yeah, you're just trying to find other perspectives
+
+
+00:14:22.960 --> 00:14:25.100
+to make sure you haven't missed something.
+
+
+00:14:25.100 --> 00:14:27.060
+- One of the I really like is lift the skills
+
+
+00:14:27.060 --> 00:14:29.060
+and expertise of those around you.
+
+
+00:14:29.060 --> 00:14:31.660
+- Yeah, well, you and I are definitely trying to do that.
+
+
+00:14:31.660 --> 00:14:32.500
+So that's good.
+
+
+00:14:32.500 --> 00:14:33.980
+- I think a lot of people also try to like
+
+
+00:14:33.980 --> 00:14:36.860
+keep the recognition for themselves when they're new.
+
+
+00:14:36.860 --> 00:14:37.700
+All right.
+
+
+00:14:37.700 --> 00:14:41.260
+But I think one of the biggest skills someone can be
+
+
+00:14:41.260 --> 00:14:43.700
+providing on a team is actually,
+
+
+00:14:43.700 --> 00:14:45.060
+anytime someone's get stuck,
+
+
+00:14:45.060 --> 00:14:46.600
+they kind of float over to that group
+
+
+00:14:46.600 --> 00:14:48.020
+and help them keep that part of the group
+
+
+00:14:48.020 --> 00:14:49.900
+and help that person keep moving.
+
+
+00:14:49.900 --> 00:14:53.260
+They can almost write no code, but sort of float around
+
+
+00:14:53.260 --> 00:14:55.300
+and make sure nobody's stuck and everyone's productive,
+
+
+00:14:55.300 --> 00:14:57.540
+and that could be a massive boost to the team.
+
+
+00:14:57.540 --> 00:15:01.460
+- Some of the things, like bringing up a couple more items,
+
+
+00:15:01.460 --> 00:15:03.380
+estimating how long something's gonna take
+
+
+00:15:03.380 --> 00:15:05.380
+or how much work it is, that's hard.
+
+
+00:15:05.380 --> 00:15:06.660
+It's always hard.
+
+
+00:15:06.660 --> 00:15:08.100
+You know, as you grow in your career,
+
+
+00:15:08.100 --> 00:15:09.820
+you realize that you can't avoid it,
+
+
+00:15:09.820 --> 00:15:12.300
+so you just need to embrace it and be okay
+
+
+00:15:12.300 --> 00:15:14.740
+with giving ballpark estimates to people.
+
+
+00:15:14.740 --> 00:15:16.100
+And then trying to get better at it,
+
+
+00:15:16.100 --> 00:15:18.860
+keep track of what you did and try to improve.
+
+
+00:15:18.860 --> 00:15:21.260
+The other one that's difficult is trade-offs.
+
+
+00:15:21.260 --> 00:15:23.500
+You know that you can't get all the information
+
+
+00:15:23.500 --> 00:15:26.220
+before you start working, so making good trade-offs
+
+
+00:15:26.220 --> 00:15:30.180
+between information and just risks and benefits
+
+
+00:15:30.180 --> 00:15:31.620
+and making good judgments,
+
+
+00:15:31.620 --> 00:15:33.780
+those are things you just have to practice.
+
+
+00:15:33.780 --> 00:15:36.340
+Another thing that I wanted to bring up is the,
+
+
+00:15:36.340 --> 00:15:38.100
+there's a list of cognitive biases,
+
+
+00:15:38.100 --> 00:15:41.340
+so just knowing that when you're making a decision,
+
+
+00:15:41.340 --> 00:15:43.820
+there are biases in yourself that you will,
+
+
+00:15:43.820 --> 00:15:46.340
+you need to be aware of and try to, you know,
+
+
+00:15:46.340 --> 00:15:49.220
+make sure those are there and compensate somehow.
+
+
+00:15:49.220 --> 00:15:50.260
+- Yeah, these are all really good.
+
+
+00:15:50.260 --> 00:15:52.920
+I like to understand that not all projects
+
+
+00:15:52.920 --> 00:15:55.460
+are filled with rock star on the stage work, right?
+
+
+00:15:55.460 --> 00:15:56.780
+Like you gotta become a finisher,
+
+
+00:15:56.780 --> 00:15:58.620
+and a lot of times there's a bunch of just
+
+
+00:15:58.620 --> 00:16:00.820
+little details nobody likes that are part of that.
+
+
+00:16:00.820 --> 00:16:02.260
+- Probably the first half of my career,
+
+
+00:16:02.260 --> 00:16:05.140
+most of my job usually was,
+
+
+00:16:05.140 --> 00:16:07.340
+I would be taking on the things that everybody else
+
+
+00:16:07.340 --> 00:16:09.140
+didn't wanna work on and forgot about,
+
+
+00:16:09.140 --> 00:16:11.300
+and just, and wrapping 'em up and finishing.
+
+
+00:16:11.300 --> 00:16:13.220
+But then it looked like I was getting,
+
+
+00:16:13.220 --> 00:16:16.020
+often getting credit for finishing projects
+
+
+00:16:16.020 --> 00:16:17.900
+that most of the work was done by other people,
+
+
+00:16:17.900 --> 00:16:18.940
+they just didn't finish it.
+
+
+00:16:18.940 --> 00:16:20.900
+- Yeah, become a finisher, it's good stuff.
+
+
+00:16:20.900 --> 00:16:22.880
+And then there's finally the 10 commandments
+
+
+00:16:22.880 --> 00:16:24.380
+of ego-less programming.
+
+
+00:16:24.380 --> 00:16:25.540
+Wanna take us quickly through 'em?
+
+
+00:16:25.540 --> 00:16:28.720
+- Understand and accept that you will make mistakes.
+
+
+00:16:28.720 --> 00:16:30.260
+You are not your code.
+
+
+00:16:30.260 --> 00:16:32.580
+Each of these could be episodes in themselves.
+
+
+00:16:32.580 --> 00:16:34.440
+No matter how much karate you know,
+
+
+00:16:34.440 --> 00:16:36.660
+someone else always knows more.
+
+
+00:16:36.660 --> 00:16:39.880
+Don't rewrite code without consultation.
+
+
+00:16:39.880 --> 00:16:41.820
+Oh, I'm guilty of that, definitely.
+
+
+00:16:41.820 --> 00:16:43.500
+Treat people who know less than you
+
+
+00:16:43.500 --> 00:16:46.340
+with respect, deference, and patience.
+
+
+00:16:46.340 --> 00:16:48.780
+The only constant in the world is change.
+
+
+00:16:48.780 --> 00:16:52.060
+The only authority stems from knowledge, not from position.
+
+
+00:16:52.060 --> 00:16:55.300
+Fight for what you believe, but gracefully accept defeat.
+
+
+00:16:55.300 --> 00:16:57.520
+Don't be the coder in the corner,
+
+
+00:16:57.520 --> 00:17:01.180
+and critique code instead of people.
+
+
+00:17:01.180 --> 00:17:03.420
+Be kind to the coder, but not to the code.
+
+
+00:17:03.420 --> 00:17:04.260
+These are good.
+
+
+00:17:04.260 --> 00:17:05.080
+- Yeah, these are all great.
+
+
+00:17:05.080 --> 00:17:06.860
+So yeah, I really connect with a lot of these.
+
+
+00:17:06.860 --> 00:17:08.500
+These are great, so I'm glad you brought this up.
+
+
+00:17:08.500 --> 00:17:11.340
+- And nowhere in here it says, don't make fun of PHP.
+
+
+00:17:11.340 --> 00:17:13.540
+- No, you could totally make fun of PHP all day long.
+
+
+00:17:13.540 --> 00:17:14.920
+- Yeah. (laughs)
+
+
+00:17:14.920 --> 00:17:16.780
+- But you could also kind of make fun of Python,
+
+
+00:17:16.780 --> 00:17:19.180
+unfortunately, a little bit for its lack of UI frameworks.
+
+
+00:17:19.180 --> 00:17:21.220
+Like we talked about that last week, right?
+
+
+00:17:21.220 --> 00:17:24.780
+How that's kind of one of its last remaining places
+
+
+00:17:24.780 --> 00:17:28.180
+where it really quite a bit could be better.
+
+
+00:17:28.180 --> 00:17:29.860
+One of the things that we didn't read above
+
+
+00:17:29.860 --> 00:17:32.220
+was no empty complaints.
+
+
+00:17:32.220 --> 00:17:36.540
+And one of my rules is I don't like criticizing stuff
+
+
+00:17:36.540 --> 00:17:38.260
+without offering a better alternative
+
+
+00:17:38.260 --> 00:17:39.660
+or at least some kind of constructive thing.
+
+
+00:17:39.660 --> 00:17:43.100
+So here's my attempt to backfill my criticism
+
+
+00:17:43.100 --> 00:17:44.620
+of the lack of UI frameworks with,
+
+
+00:17:44.620 --> 00:17:46.220
+well, here's where we are,
+
+
+00:17:46.220 --> 00:17:48.340
+and here's some things that seem like they're working,
+
+
+00:17:48.340 --> 00:17:49.500
+and a little bit of constructiveness.
+
+
+00:17:49.500 --> 00:17:50.540
+So I went through and I said,
+
+
+00:17:50.540 --> 00:17:52.280
+all right, well, what are the options
+
+
+00:17:52.280 --> 00:17:53.900
+for Python UI frameworks, right?
+
+
+00:17:53.900 --> 00:17:57.940
+Like, I'm not loving what's available right now
+
+
+00:17:57.940 --> 00:18:00.140
+in a lot of different angles, but what can we do?
+
+
+00:18:00.140 --> 00:18:03.220
+We talked TKInter, not super amazing.
+
+
+00:18:03.220 --> 00:18:05.300
+Like, I have a link to an example.
+
+
+00:18:05.300 --> 00:18:06.340
+Brian, pull that up and tell me
+
+
+00:18:06.340 --> 00:18:08.060
+how you feel about that application.
+
+
+00:18:08.060 --> 00:18:14.060
+But that like, does that look like a classy new app from 2018?
+
+
+00:18:14.060 --> 00:18:15.960
+No, it looks like it's running on Windows 95.
+
+
+00:18:15.960 --> 00:18:17.960
+Yeah, it's like Battleship Gray.
+
+
+00:18:17.960 --> 00:18:19.960
+Looks like it could have easily come off of it.
+
+
+00:18:19.960 --> 00:18:25.460
+It looks like whoever built the original Minesweeper in Windows 3.1.1, they built this.
+
+
+00:18:25.460 --> 00:18:31.760
+Right? And so that's kind of what the current UI looks like in Python, which is, it's a problem, right?
+
+
+00:18:31.760 --> 00:18:35.760
+So what are the options? So we have that, but we have PySide and Qt.
+
+
+00:18:35.760 --> 00:18:39.200
+And actually Qt is pretty nice in terms of how it looks like.
+
+
+00:18:39.200 --> 00:18:41.600
+It really looks like it belongs on the platforms.
+
+
+00:18:41.600 --> 00:18:46.000
+There's a designer for it, a draggy droppy designer type thing, which is pretty good.
+
+
+00:18:46.000 --> 00:18:48.480
+But the license is a little weird. It's like,
+
+
+00:18:48.480 --> 00:18:51.600
+PyQt is GPL.
+
+
+00:18:51.600 --> 00:18:55.880
+PySide is like an LGPL way to try to go around it.
+
+
+00:18:55.880 --> 00:18:58.400
+But PySide I think is slightly out of version with Qt.
+
+
+00:18:58.400 --> 00:19:00.640
+There's just like real messiness around it.
+
+
+00:19:00.640 --> 00:19:02.640
+But it's still a pretty nice thing.
+
+
+00:19:02.640 --> 00:19:05.280
+There's Kivy, and there's PyGame.
+
+
+00:19:05.280 --> 00:19:07.280
+There's also pyopengl.
+
+
+00:19:07.280 --> 00:19:10.780
+But to me, if you go to like Kivy and you look at the
+
+
+00:19:10.780 --> 00:19:15.420
+showcase or the examples of people, what they built, they all look like
+
+
+00:19:15.420 --> 00:19:19.420
+AR type things or games or other types of simulation stuff.
+
+
+00:19:19.420 --> 00:19:22.160
+And I know you said people have created a few things that are not quite like that.
+
+
+00:19:22.160 --> 00:19:24.660
+But it's not really the focus of the platform, right?
+
+
+00:19:24.660 --> 00:19:27.460
+One that actually looks pretty good is wxpython.
+
+
+00:19:27.460 --> 00:19:28.780
+Click on the example for that.
+
+
+00:19:28.780 --> 00:19:30.620
+That's one that I've used before.
+
+
+00:19:30.620 --> 00:19:31.720
+Yeah, this looks pretty good, right?
+
+
+00:19:31.720 --> 00:19:35.680
+This could certainly be at least circa 2005 on Windows.
+
+
+00:19:35.680 --> 00:19:38.200
+It looks pretty different.
+
+
+00:19:38.200 --> 00:19:41.400
+And it has a couple of GUI designers.
+
+
+00:19:41.400 --> 00:19:42.240
+It has these widgets.
+
+
+00:19:42.240 --> 00:19:43.800
+That's pretty cool.
+
+
+00:19:43.800 --> 00:19:45.920
+Yeah, and then there's all the ElectronJS stuff.
+
+
+00:19:45.920 --> 00:19:48.040
+So ElectronJS is basically Node.js
+
+
+00:19:48.040 --> 00:19:50.720
+plus hosted headless Chrome
+
+
+00:19:50.720 --> 00:19:54.160
+plus JavaScript and HTML for the front end.
+
+
+00:19:54.160 --> 00:19:57.260
+So there's actually a couple of attempts to create a,
+
+
+00:19:57.260 --> 00:20:00.200
+what I really think should be called proton.py
+
+
+00:20:00.200 --> 00:20:01.520
+instead of electron.js.
+
+
+00:20:01.520 --> 00:20:05.760
+a Python equivalent, where the running back end is Python.
+
+
+00:20:05.760 --> 00:20:08.320
+And you could use like Sculpt or something
+
+
+00:20:08.320 --> 00:20:10.720
+to actually make the JavaScript side also Python,
+
+
+00:20:10.720 --> 00:20:12.560
+like the Anvil guys are doing, which is pretty cool.
+
+
+00:20:12.560 --> 00:20:14.720
+So there's this thing called Eel,
+
+
+00:20:14.720 --> 00:20:18.320
+which is a library for making electron-like offline
+
+
+00:20:18.320 --> 00:20:20.960
+HTML, JavaScript, GUI apps.
+
+
+00:20:20.960 --> 00:20:22.720
+And like I said, you could put Python in the front end
+
+
+00:20:22.720 --> 00:20:24.480
+with that Sculpt bit.
+
+
+00:20:24.480 --> 00:20:25.840
+And that looks pretty interesting.
+
+
+00:20:25.840 --> 00:20:29.040
+So you get basically like a local app packaged up
+
+
+00:20:29.040 --> 00:20:30.940
+as a .app or .exe.
+
+
+00:20:30.940 --> 00:20:36.780
+but it's more or less like a web front end that can do local machine Python capabilities.
+
+
+00:20:36.780 --> 00:20:37.580
+So that's pretty cool.
+
+
+00:20:37.580 --> 00:20:41.780
+And then there's a bigger version called CEF Python.
+
+
+00:20:41.780 --> 00:20:46.220
+That name is not amazing, but it's like Chrome Embedded Framework Python.
+
+
+00:20:46.220 --> 00:20:49.220
+And it's the same type of thing. It's a little more advanced,
+
+
+00:20:49.220 --> 00:20:52.100
+but it's also a little less obvious how to get started with it, I think.
+
+
+00:20:52.100 --> 00:20:56.140
+But both of those look like interesting ElectronJS-like things.
+
+
+00:20:56.140 --> 00:20:59.060
+These are people trying to solve the problem we have, so that's good.
+
+
+00:20:59.060 --> 00:21:01.060
+Yeah, it's good to see them, see them do it.
+
+
+00:21:01.060 --> 00:21:05.220
+And, yeah, last week we talked about possibly having an open session
+
+
+00:21:05.220 --> 00:21:07.780
+at PyCon in Cleveland in May about this.
+
+
+00:21:07.780 --> 00:21:10.460
+So it'd be really fun for people to get together and join us there.
+
+
+00:21:10.460 --> 00:21:13.500
+I think Paul Hilderbrand is kicking that off, but
+
+
+00:21:13.500 --> 00:21:15.380
+we can all go and be part of it.
+
+
+00:21:15.380 --> 00:21:20.300
+- Definitely. - Awesome. Well, anyway, here's my research bit I did on Python UI frameworks.
+
+
+00:21:20.300 --> 00:21:22.740
+None of them are like, "Yes, this is the answer," but
+
+
+00:21:22.740 --> 00:21:25.900
+maybe they'll spark some thinking and get us going in the right direction.
+
+
+00:21:25.900 --> 00:21:27.900
+All right, well, that's all I got for you this week, Brian.
+
+
+00:21:27.900 --> 00:21:28.900
+Anything else from you?
+
+
+00:21:28.900 --> 00:21:30.900
+No, that was a fast six items.
+
+
+00:21:30.900 --> 00:21:32.900
+It was, it's because they're so fun.
+
+
+00:21:32.900 --> 00:21:35.900
+I really like the one that you got about the senior developer stuff.
+
+
+00:21:35.900 --> 00:21:40.900
+It's not totally from 2018, but it's that evergreen material that just lasts, right?
+
+
+00:21:40.900 --> 00:21:47.900
+We talked about quite a bit of those, but every single item that we talked about has a paragraph or more of discussion on the article.
+
+
+00:21:47.900 --> 00:21:49.900
+So please go read that, everybody.
+
+
+00:21:49.900 --> 00:21:50.900
+It'll make you a better person.
+
+
+00:21:50.900 --> 00:21:51.900
+Absolutely. Very cool.
+
+
+00:21:51.900 --> 00:21:53.900
+All right, well, Brian, thanks for sharing this with everyone.
+
+
+00:21:53.900 --> 00:21:54.900
+Thank you. Bye.
+
+
+00:21:54.900 --> 00:21:55.900
+Yep, bye.
+
+
+00:21:56.900 --> 00:22:01.380
+Thank you for listening to Python Bytes. Follow the show on Twitter via @PythonBytes.
+
+
+00:22:01.380 --> 00:22:07.740
+That's Python Bytes as in B-Y-T-E-S. And get the full show notes at PythonBytes.fm.
+
+
+00:22:07.740 --> 00:22:12.060
+If you have a news item you want featured, just visit PythonBytes.fm and send it our way.
+
+
+00:22:12.060 --> 00:22:17.020
+We're always on the lookout for sharing something cool. On behalf of myself and Brian Okken,
+
+
+00:22:17.020 --> 00:22:21.900
+this is Michael Kennedy. Thank you for listening and sharing this podcast with your friends and colleagues.
+

@@ -1,0 +1,616 @@
+00:00:00 Hello and welcome to Python Bytes where we deliver Python news and headlines directly to your earbuds.
+
+00:00:05 This is episode 72 recorded April 4th 2018.
+
+00:00:10 I'm Michael Kennedy.
+
+00:00:10 And I'm Brian Okken.
+
+00:00:11 And we got some awesome stuff for you.
+
+00:00:13 Before we get to it, Brian, I want to say thank you to Datadog.
+
+00:00:16 Check out what they're offering over at talkpython.fm/datadog.
+
+00:00:20 And they've got a bunch of cool stuff including a cute little doggy t-shirt.
+
+00:00:24 I still need to get one of those.
+
+00:00:25 I know. I don't have a shirt either.
+
+00:00:26 I really need to do that.
+
+00:00:28 Alright, I guess the first thing we should talk about is versioning.
+
+00:00:32 Like, when I normally look at commercial software, they have numbers in the front, like version 6 or 12 or version 3 of this software.
+
+00:00:43 It's pretty rare to have 3.anything in open source, isn't it?
+
+00:00:48 I don't know if it's rare, but there sure is a lot of stuff that's still...
+
+00:00:52 We think of stuff that starts with a 0 as being in beta, and it's not...
+
+00:00:57 Well, like for instance, with semantic versioning, once it's at 1.0, the interface is pretty solid and you can depend on it.
+
+00:01:06 But there was a website put up this month called ZeroVer to talk about zero-based versioning.
+
+00:01:14 And it's sort of tongue-in-cheek.
+
+00:01:16 It's from one of our friends, Mahmoud Hashemi, and some others that started it.
+
+00:01:22 But they kind of wanted to call out a bunch of Python projects and other projects that are like perpetually starting with zero by putting up this sort of mock website to say that you don't need to do anything other than zero-based versioning.
+
+00:01:37 It really helps you.
+
+00:01:39 It gives it like it starts out with a down-to-earth demo.
+
+00:01:41 It's pretty awesome.
+
+00:01:42 So it has like some versions and says, yes, these are good.
+
+00:01:46 0.0.1, 0.1.0.dev, 0.4.0, and then no, 1.0, 1.0.0, 1.0.0, 18.0, 2018.04.0, like none of these are okay.
+
+00:01:59 - Right.
+
+00:02:00 And yeah, so if you haven't figured it out, it is a joke, but it is, like for instance, I guess I hadn't realized this, Flask is one of the ones that was called out as it's currently 0.12.2.
+
+00:02:14 Come on, it's been eight years.
+
+00:02:16 I think that maybe you can go to a 1.0.
+
+00:02:19 - I have a new solution here, a new way to solve this problem.
+
+00:02:24 Just whenever you print or look at the version number, just strip off all the left zeros and dots.
+
+00:02:30 So it's like 12.2 is basically what Flask is.
+
+00:02:35 - You know, there's some pretty, ones that are very dependent on by a bunch of people that if they completely changed the interface, the API, that would be bad.
+
+00:02:44 So there's the point where they could bump to a 1.0.
+
+00:02:48 - Yeah, I think eight years, absolutely, is a time frame where you could say, you know, we're pretty stable at this point, right?
+
+00:02:56 Like also Panda's in here with a 0.23, and it's 7.1 years.
+
+00:03:00 So, and also they count the releases, right?
+
+00:03:03 Like 21 releases of Flask, 75 releases of Pandas, and it's still on a zero.
+
+00:03:08 One thing I would like to point out is, If you go and you look at a lot of the sort of manager folks at more commercial oriented enterprise software groups, so people that use like .NET or other non-open source development ecosystems, when they see things like 0.1, they're like, "Oh, this thing is not ready for us to use.
+
+00:03:31 "We can't use this at our company." And I think it actually sends a bit of a message that this thing's not quite ready.
+
+00:03:38 I mean, I know, obviously looking at this list, it doesn't mean that, but a significant number of people I think interpret it that way.
+
+00:03:45 And so I think it's worth considering maybe saying, all right, we're actually at a version where we're gonna call it 1.0.
+
+00:03:51 Like Flask is probably fully ready for 1.0.
+
+00:03:54 - Anything that starts with, it's just the dots and it's not date-based, people kind of assume it's a semantic versioning.
+
+00:04:01 So I think semantic versioning is the way to go.
+
+00:04:04 It's not an easy thing though, and that's part of the reason why they're being a little gentle with it.
+
+00:04:09 If you check out the about page, it talks about, on here it talks about really what you should do about it.
+
+00:04:14 But when you're actually running a project, it's hard to decide when, what's something that's big enough to go to flip the major digit.
+
+00:04:22 - Django's doing that pretty well, I think, right?
+
+00:04:25 They had their 1.0, and that was stable for a long time.
+
+00:04:28 They said, "We're gonna make a major break and change, "so we're flipping to 2.0," right?
+
+00:04:32 The Drop Python 2 support and all that kind of stuff.
+
+00:04:34 So Django is one that's not following Mamoog's recommendation.
+
+00:04:38 - Recommendation, yeah.
+
+00:04:40 - Yeah, I love it.
+
+00:04:41 I love it how he branded that, him and all the folks involved.
+
+00:04:43 It's very cool.
+
+00:04:45 So when we build these projects in Python and any open source system really, you basically layer on a whole bunch of external dependencies and packages and stuff.
+
+00:04:55 How do you know when something has gone terribly wrong?
+
+00:04:59 Like suppose you depend on Vexig in Flask and there's some huge security vulnerability in that dependency.
+
+00:05:07 Do you get notified?
+
+00:05:08 How do you know?
+
+00:05:08 - No, I don't know.
+
+00:05:09 - You don't know, right.
+
+00:05:10 And so this is actually a really big problem.
+
+00:05:12 It's like, when you think about problems or security issues with your application, it's not just what you have, it's the stuff you're built upon.
+
+00:05:20 I mean, the whole Equifax thing was a vulnerability in the, was it Swing?
+
+00:05:26 Swing, I don't know, some foundational library in Java.
+
+00:05:29 And they just didn't patch it in time, right?
+
+00:05:32 So getting notified of these things is really important.
+
+00:05:34 And so much of our code lives on GitHub, GitHub decided they're gonna take some responsibility for this and try to help people.
+
+00:05:39 So there's a nice article that says, GitHub Security Alerts detected over four million vulnerabilities last year, I think it was in the year.
+
+00:05:49 Or actually it's not even the year, it's since like November of last year or something.
+
+00:05:52 So that's pretty insane.
+
+00:05:54 So they launched this thing called GitHub Security Alerts.
+
+00:05:57 Initially it's only for Ruby and JavaScript, which is lame, but they have Python support coming, which is why I'm talking about this.
+
+00:06:05 And what it does is it looks at your GitHub repo and it says, are you using a certain dependency?
+
+00:06:10 Does that dependency have a known security vulnerability?
+
+00:06:12 If it does, then right at the top of your repo, you get this great scary warning that says, your application is insecure because it depends on this thing that is insecure.
+
+00:06:21 - Yeah, actually that's a great idea.
+
+00:06:22 - Yeah, I don't know if you get an email notice, but certainly your repo looks scary when that's the case.
+
+00:06:28 This happened to one of my courses and it just came back again because one of my courses, The PyCharm course demonstrates using ElectronJS, editing an ElectronJS app, and ElectronJS had some security vulnerability.
+
+00:06:41 It's not actually used, but you know, whatever.
+
+00:06:43 It still says your app, it depends upon ElectronJS, and it's got this issue.
+
+00:06:47 So that's pretty cool.
+
+00:06:48 And then there's some good numbers and whatnot here.
+
+00:06:51 It says nearly half of all the displayed alerts were responded to within a week, and 30% were fixed within the first seven days.
+
+00:07:02 - Oh, that's great.
+
+00:07:03 - That's a good thing that they're adding that.
+
+00:07:05 And it does, so you said it's coming for Python and I see that it is planned for this year for 2018.
+
+00:07:11 So that's good.
+
+00:07:12 - Yeah, there's not a whole lot of details about exactly when it's coming, but yeah, that will be great.
+
+00:07:16 They said if you look at repositories that have had a contribution in the last 90 days, so things that are active, it says 98% of such repositories were patched within fewer than seven days.
+
+00:07:28 Like that's insane, that's a really big deal.
+
+00:07:30 - Yeah. - Yeah.
+
+00:07:31 So they said they found over half a million repositories that had some kind of security vulnerability and were pretty much fixed up.
+
+00:07:37 So anyway, that's all really good.
+
+00:07:39 I just wanna give a shout out to pyup as well, P-Y-U-P dot I-O.
+
+00:07:43 I use that for my stuff and it basically does the same thing and more for Python already.
+
+00:07:50 So you link it to your GitHub repo, it'll like look at your requirements.txt.
+
+00:07:53 If there's a new version, it'll send you a PR to upgrade your dependencies.
+
+00:07:57 And if there's a security alert, it'll tell you.
+
+00:07:59 I don't really want to get on this tangent too far, but I started using PyUp for the cards project that I started recently.
+
+00:08:07 Since I'm sort of doing this project, I can't remember who I read it from, but the packages that are intended to be used by other applications probably shouldn't have their versions pegged.
+
+00:08:19 So if I unpegged all my versions in a package, then pyup.io kind of complains about that.
+
+00:08:24 - Yeah, that's a little bit, it does require you to more or less pin your versions.
+
+00:08:28 And you can do expressions, like I want it to be this version or higher.
+
+00:08:32 And I think maybe it'll upgrade it.
+
+00:08:34 I don't know.
+
+00:08:35 There's a little flexibility.
+
+00:08:36 It's not perfect.
+
+00:08:37 But for like fixed apps, like my web apps, I'll have the stuff pinned and it just automatically updates because nothing depends upon it.
+
+00:08:43 It's fine.
+
+00:08:44 Yeah.
+
+00:08:45 Yeah.
+
+00:08:46 Pretty nice.
+
+00:08:47 And it's free for stuff.
+
+00:08:48 So for open source.
+
+00:08:49 Yeah, it's pretty nice.
+
+00:08:50 Great.
+
+00:08:51 Speaking of open source, PyPI is the place where it lives.
+
+00:08:52 And now you can describe it better, right?
+
+00:08:54 Yes.
+
+00:08:55 excited about this because like the cards project I was working on, I was sort of bummed that I had to put the readme in rest in or not rest but restructured text. And and now you don't anymore. So readme.md and a couple other variants of that extension are now supported on pypi.org. And we're linking to a couple articles, one of them, basically describing all the steps you have to do, there's a, there's a little bit of changes you have to do to your setup.py file and a couple other things and update all your tools.
+
+00:09:28 But for the most part, it just works and that's awesome.
+
+00:09:31 And then also, just recently, GitHub Flavored Markdown has been added.
+
+00:09:37 - Oh yeah, that's nice.
+
+00:09:38 GitHub Flavored Markdown has a little bit more, I think, from the stuff that I played with.
+
+00:09:42 - Like tables and cross-- - Yes, tables.
+
+00:09:45 - Markthrough and stuff.
+
+00:09:46 So that's nice and I'm looking forward a change in a couple projects to utilize that.
+
+00:09:52 And now the old legacy PyPI, which I think maybe they've taken from your legacy Python.
+
+00:09:59 - I love it.
+
+00:10:00 - Yeah, it still renders the descriptions as plain text, but they comment, don't worry, it's going away real soon.
+
+00:10:07 - Yeah, I was just talking to Ernest, who's doing some of the work there, and they're really, really close to just saying PyPI.org is where you go and doing a redirect.
+
+00:10:18 He said, you know that little scary bar across the top?
+
+00:10:20 He said, you can now dismiss that.
+
+00:10:22 But I wanted to just go away automatically.
+
+00:10:24 When does this happen?
+
+00:10:25 So it's really, PyPI.org is really close to being the thing, so maybe this will just hasten the move away from legacy PyPI with the descriptions looking funky.
+
+00:10:35 - Yeah, so hopefully.
+
+00:10:36 - Yeah, awesome, I'm really excited to see PyPI making some progress.
+
+00:10:39 It felt kind of stale for a little while, and it seems like it's really been rockin' the last nine months.
+
+00:10:43 - To be fair, even if your markdown gets displayed plain text on legacy pipe BI, that's the point of Markdown is it's still readable.
+
+00:10:52 So that's okay. Exactly. If it were HTML with lots of styles that have been different. That's right. Yeah. Nice. All right. So before we get to the next one, let me tell you about Datadog. It's a monitoring solution provides like deep visibility and tracking into your distributed apps. So your application, your data layer, your servers, your services, everything. So within minutes you'll be able to investigate bottlenecks and actually see where they are throughout your entire distributed app, which is pretty cool to put it together.
+
+00:11:19 So if you want to visualize your Python performance today, get started with a free trial.
+
+00:11:24 And also get that cool data dog t shirt visit Python bytes that FM slash data dog.
+
+00:11:28 Earlier I said talk Python, they both work but Python bytes that FM slash data dog.
+
+00:11:33 Speaking of web apps and distributed things and whatnot, I think there's a really interesting new web server that people should start paying attention to in the Python space.
+
+00:11:43 So you've probably heard of Nginx, right Brian?
+
+00:11:46 I know you don't do a ton of web stuff, but--
+
+00:11:47 - Yeah, definitely.
+
+00:11:48 - Nginx is kind of like the static front end server and load balancer thing for many web apps.
+
+00:11:54 Like on my sites I have Nginx hitting, like it takes all the requests, does the SSL stuff, any static resources, CSS, JavaScript, images, that just gets sent straight back and only the sort of data driven stuff makes its way back to the Python web server, which in my case is MicroWizky.
+
+00:12:13 And microWISGY is really nice, but the NGINX folks have come up with this thing called NGINX Unit.
+
+00:12:20 And so the thing I wanna link to is this performance comparison between NGINX Unit and microWISGY.
+
+00:12:27 So microWISGY is written in C++.
+
+00:12:30 It's like one of the best high-performance things that will run and farm out your Python application, Pyramid, Flask, whatever.
+
+00:12:37 And it works really well, but NGINX Unit is a little more flexible And for example, you can configure it over a RESTful API instead of just config files.
+
+00:12:49 It'll run multiple languages and versions at the same time, improve TLS support, HTTP/2, which is cool.
+
+00:12:57 It'll run Python, multiple versions.
+
+00:13:00 It'll run Go, Ruby, JavaScript, whatever, right?
+
+00:13:03 So it'll run all these things in this one server.
+
+00:13:05 It's not just, I'm gonna run one flavor of Python.
+
+00:13:09 So anyway, it's pretty cool.
+
+00:13:10 And the thing I wanted to look at was this comparison.
+
+00:13:13 So there's this, I don't know who did it actually, a group that put together sort of a performance analysis and said we're going to slowly add more and more traffic, concurrent traffic, to both of these things running more or less a Hello World Flask app, right?
+
+00:13:29 And so pull up the pictures, and those of you who are listening, there's a little link, you can pull up the pictures, and this really tells it all.
+
+00:13:35 - Okay.
+
+00:13:36 - Do you got the pictures, Brian?
+
+00:13:36 - Yeah.
+
+00:13:37 - So if you look at that, there's like a line that's pretty much flat across this Nginx unit as you go from zero to 500 concurrent users doing 10,000 requests per second.
+
+00:13:47 And it's just kind of like, got it, no problem.
+
+00:13:49 MicroWSGI or micro, with or without threads, it's sort of a linear slope equals one downward trend of performance as you add more and more traffic.
+
+00:13:58 Like, soon as you get to a couple hundred users, it just really becomes, it goes from handling like 7,500 requests to handling 50 per second.
+
+00:14:10 I mean, it really falls over.
+
+00:14:12 So I thought that was pretty interesting.
+
+00:14:13 This whole Nginx unit thing seems like it might be a really powerful and new way to run some nice backend stuff.
+
+00:14:20 - Okay, so the high numbers are better.
+
+00:14:22 You wanna keep--
+
+00:14:22 - Yeah, those are requests per second, basically.
+
+00:14:24 Yeah, so it just, once you do 100,000 requests, it goes to zero on Microwave's game where it's still basically flat on Nginx unit.
+
+00:14:32 So really, really cool.
+
+00:14:33 I think that's quite promising in terms of making Python faster and scale better, which is super important because people move to other languages, Go or whatever, 'cause like, well, we need this concurrency.
+
+00:14:46 Or you could just run something that runs it better.
+
+00:14:48 - Well, so they have a little note that says it's still in beta, not for production.
+
+00:14:52 - Yeah, it's pretty new.
+
+00:14:53 It's not quite ready.
+
+00:14:54 So my message, my takeaway is I'm gonna start paying attention to this thing.
+
+00:14:58 Maybe switch to it at some point, but yeah, don't switch to it yet.
+
+00:15:01 - I wonder what version number it is.
+
+00:15:03 Doesn't say.
+
+00:15:04 - It's gotta be zero something, right?
+
+00:15:05 (both laughing)
+
+00:15:08 - Yeah, I don't know either what version number it is.
+
+00:15:10 That's a good question.
+
+00:15:11 - Okay. - Cool, very funny.
+
+00:15:13 All right, awesome.
+
+00:15:14 You've got something on looping, right?
+
+00:15:15 - Trey Hunter, who was on the show last week, didn't he do last week?
+
+00:15:19 - He was your stand-in, your impersonator last week.
+
+00:15:22 - Well, he's got an article, which is a really good read, and I'm gonna not do it justice, but it's called "Loop Better, a Deeper Look at Iteration in Python." And I'm glancing through this, I'm thinking, you know, I already know how to loop in Python.
+
+00:15:38 But the general, he shows a few gotcha examples of generators used in loops, and generators are, like for instance, even a list comprehension is a generator.
+
+00:15:49 You can't loop twice.
+
+00:15:51 And if you use containment check, like is nine in my generator, it'll work once and then it won't work the next time.
+
+00:16:00 >>But it's not in there anymore.
+
+00:16:01 And your collection's half the size.
+
+00:16:04 And it's a little strange and it just behaves weird.
+
+00:16:08 I mean, I don't know if I've ever run into these, but it hurt my head at first trying to figure out, I didn't know why these weren't working.
+
+00:16:16 So then the article goes on to describe in detail, really the iterator protocol and what iterators, iterable sequences and generators and all that good stuff is.
+
+00:16:27 And then go back and look at those gotchas again and explain with that information why they behave as they do.
+
+00:16:33 And I think this is just a well-written article that'll be gonna make you a smarter Python programmer to read it.
+
+00:16:40 - Yeah, it's cool.
+
+00:16:41 Definitely covers a lot.
+
+00:16:42 Well done, Trey.
+
+00:16:43 I think this is one of those concepts where if you come from a language that doesn't have generators, this concept of generators, or maybe if you just never really use them, the stuff that comes out of these generators, it looks like you just treat it like a normal collection.
+
+00:16:59 But you're right, they definitely don't behave like normal collections in a lot of ways.
+
+00:17:03 and you can find these subtle bugs.
+
+00:17:04 So nice to have them all covered like that.
+
+00:17:06 - Yeah, and one of the things, I guess I'll go a little bit, is that generators, it's this iterator protocol, and you keep it internally in a loop, Python will call the next operator, and then eventually it gets to the end.
+
+00:17:20 There's not a way to reset them.
+
+00:17:22 So they--
+
+00:17:23 - Yeah, they're done.
+
+00:17:24 - They're done, and you gotta generate, but you can generate, however you generated them, you can generate another one.
+
+00:17:29 - Yeah, pretty cool.
+
+00:17:30 So the final thing that I wanna cover is a little bit like the first one.
+
+00:17:34 It's a bit of a warning, but this is not an automated system like GitHub saying, "Hey, there's all these repos.
+
+00:17:40 "We're gonna tell you there's this problem." It's just something people should be aware of.
+
+00:17:45 So in Django, there's these configuration files, and there's this part we can set debug true or false, and there's like a little comment by it that says, "Do not set this to be true in production." However, do you think everyone goes into it, the big long config file, and fixes that before they push it out?
+
+00:18:00 No, no, they don't.
+
+00:18:01 So the article is called, "Misconfigured Django apps are exposing secret API keys and database passwords." That sounds about right. - Oh no!
+
+00:18:11 - No! - Yeah.
+
+00:18:12 - So it says, "Researchers have begun stumbling upon misconfigured Django apps that are exposing information like these API keys," could be your Stripe key, whatever.
+
+00:18:20 "In just like a week, they discovered 28,000 Django apps where the admin left the debug mode enabled." And then you see, it'll be like screenshots of pulling up just random apps on the internet.
+
+00:18:33 Here's the AWS secret key, here's the database password, et cetera, et cetera, just listed in the debug tools.
+
+00:18:40 So that sounds bad, right?
+
+00:18:42 - Yeah, well, especially you probably leave that on while you're developing it so that you can look at all that stuff.
+
+00:18:48 - Yeah, it sounds really bad, and it pretty much is.
+
+00:18:51 It says, just skimming through a few servers, researchers found debug mode were exposing extremely sensitive information that would allow malicious actor full access to the app owners data.
+
+00:19:01 But they were really, I like that they were really clear to emphasize this is not a failure on the Django side.
+
+00:19:08 But in fact, you're just not supposed to do this in production.
+
+00:19:11 And somebody on Twitter was like, it would be so awesome if there was like a comment or like a little note in Django that said, don't put this in production.
+
+00:19:17 And then of course, right under there's a screenshot of never run this in production in debug mode.
+
+00:19:23 It's not supposedly not Django's fault.
+
+00:19:25 However, maybe there needs to be more than just on or off.
+
+00:19:29 Maybe there needs to be a, I'm debugging my app, but I don't want to expose all the API keys mode or something.
+
+00:19:35 - Yeah, for sure, I think.
+
+00:19:38 Or maybe just the debug stuff is off by default, and you have to turn it on.
+
+00:19:42 And the act of turning it on, you go to the section and you read that.
+
+00:19:45 But you might never go and read that part of the config file, so you just don't know, right?
+
+00:19:49 I mean, Django is famous for just getting stuff up really easy, I don't have to be a super developer.
+
+00:19:54 So maybe you just don't know, right?
+
+00:19:56 Sort of make things worse, a security researcher, Victor Givas, Givas, said some of these apps running Django have already been compromised.
+
+00:20:05 And he found one server running the Weebly web shell.
+
+00:20:09 That's bad.
+
+00:20:10 I mean, they were somehow able to entirely take over the computer and just SSH into it.
+
+00:20:15 And so he said, "I've been notifying server owners "about their leaky Django apps.
+
+00:20:19 "At the moment, we've reported 1,822 servers.
+
+00:20:23 Well, 143 were fixed.
+
+00:20:24 (laughing)
+
+00:20:26 Not so many, right?
+
+00:20:27 - Yeah, or taken offline, which the taken offline tells me that there's some people out there that just don't know how to do that yet, so they'll just take it down.
+
+00:20:36 - Yeah, they're just like, you know what?
+
+00:20:37 My little toy site is not worth getting hacked, I'm just taking it off.
+
+00:20:40 Right, right, right.
+
+00:20:41 Well, so I guess, takeaway, if you're running Django, site, make sure it's not in debug mode, or you could be a statistic.
+
+00:20:48 Don't be a statistic.
+
+00:20:49 - Yes, don't be a statistic.
+
+00:20:52 All right, that's it for our official six items.
+
+00:20:55 Brian, you got anything else?
+
+00:20:56 - Yeah, I wanted to, I just got pinged today to tell me that in episode 70 we covered Wagtail, which is a CMS written in Python.
+
+00:21:06 But the Wagtail team is trying to get some new features out and they're running a Kickstarter campaign to try to fund that.
+
+00:21:15 So I think it's a good thing.
+
+00:21:16 They're not looking for that much money, so if everybody pitches in a little bit, it'd be good.
+
+00:21:20 So we've got a link.
+
+00:21:21 - Yeah, they're pretty close to their goal, right?
+
+00:21:24 They got 10 days left.
+
+00:21:25 They need, they're about halfway there.
+
+00:21:27 - They should get there, hopefully.
+
+00:21:28 - Yeah, Wagtail's one of the really nice CMSs that's based on Django.
+
+00:21:31 Hopefully, it's a bug mode equals false.
+
+00:21:34 Yeah, pretty nice stuff.
+
+00:21:35 So yeah, if you care at all about Wagtail or the CMSs, you know, go in there and help them out a bit.
+
+00:21:40 - I wanted to mention, I've had a lot of great feedback on testing code.
+
+00:21:44 I've been doing a kind of a series of getting an open source project out and all of the sort of the testing requirements around it and talking about some of the common test design patterns.
+
+00:21:57 And that's been going well.
+
+00:21:58 And I've actually been learning a lot about running an open source.
+
+00:22:02 I thought, you know, lately I've just been using GitHub for just like a revision control, but actually running an open source project, even if it's just got a couple of contributors, you learn a lot.
+
+00:22:13 So hopefully I'll get some of those learnings written up sometime soon.
+
+00:22:16 >>You definitely should.
+
+00:22:17 That's a really cool project you're doing.
+
+00:22:18 So keep it up.
+
+00:22:19 Yeah. You got any news?
+
+00:22:20 No news right now.
+
+00:22:21 Nothing to report, but I'm always working on new projects.
+
+00:22:25 I will let you know soon.
+
+00:22:26 All right.
+
+00:22:27 Well, thanks a lot for today.
+
+00:22:28 Yeah, you bet.
+
+00:22:29 Thank you for listening to Python Bytes.
+
+00:22:31 Follow the show on Twitter via @PythonBytes.
+
+00:22:34 That's Python Bytes as in B-Y-T-E-S.
+
+00:22:37 And get the full show notes at pythonbytes.fm.
+
+00:22:40 If you have a news item you want featured, just visit pythonbytes.fm and send it our way.
+
+00:22:44 We're always on the lookout for sharing something cool.
+
+00:22:48 On behalf of myself and Brian Okken, this is Michael Kennedy.
+
+00:22:51 Thank you for listening and sharing this podcast with your friends and colleagues.
+

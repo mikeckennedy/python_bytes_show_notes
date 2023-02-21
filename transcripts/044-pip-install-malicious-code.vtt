@@ -1,0 +1,2332 @@
+
+00:00:00.000 --> 00:00:05.200
+Hello and welcome to Python Bytes where we deliver Python news and headlines directly to your earbuds.
+
+
+00:00:05.200 --> 00:00:12.560
+This is episode 44 recorded on September 19th, 2017. I'm Michael Kennedy.
+
+
+00:00:12.560 --> 00:00:13.520
+And I'm Brian Okken.
+
+
+00:00:13.520 --> 00:00:16.800
+And it's been a big news for a big week news as a man, Brian.
+
+
+00:00:16.800 --> 00:00:17.680
+Yeah, very big.
+
+
+00:00:17.680 --> 00:00:20.160
+Yeah, we've got, I would say the most
+
+
+00:00:20.160 --> 00:00:25.120
+listener feedback and requests to cover a particular topic, which we're going to jump
+
+
+00:00:25.120 --> 00:00:30.120
+right into as the first thing. But before we do, let's just say thanks to Datadog. They
+
+
+00:00:30.120 --> 00:00:34.200
+are sponsoring this episode, and they have some others and they've got some great tools
+
+
+00:00:34.200 --> 00:00:38.440
+and even a way to get a free t shirt at Python by stuff m slash data dogs. So we'll talk
+
+
+00:00:38.440 --> 00:00:42.400
+more about them later. Why don't you tell everyone what the big news is, apparently
+
+
+00:00:42.400 --> 00:00:48.080
+there's malicious libraries found on pipe. Yeah, right. So pip install virus not so joyful
+
+
+00:00:48.080 --> 00:00:51.940
+as the Pippin saw anti gravity would make it right. It actually I think scared people
+
+
+00:00:51.940 --> 00:00:55.580
+more than than the real threat. But let's talk about it. Yeah,
+
+
+00:00:55.580 --> 00:01:00.220
+you know what, I didn't see what the actual code vulnerabilities
+
+
+00:01:00.220 --> 00:01:04.060
+what the thing was other than sort of a proof of concept
+
+
+00:01:04.060 --> 00:01:07.620
+stuff. So I don't know how big of a deal this is in terms of
+
+
+00:01:07.620 --> 00:01:12.500
+actual viruses and malicious code. But it certainly shows the
+
+
+00:01:12.500 --> 00:01:15.980
+door is open for somebody to sling in some very bad things.
+
+
+00:01:15.980 --> 00:01:20.980
+So the story is that there were a number of malicious libraries
+
+
+00:01:20.980 --> 00:01:29.220
+found on PyPI. So these are basically packages that you would pip install, but they either did
+
+
+00:01:29.220 --> 00:01:34.900
+some sort of typo squatting, or they grabbed the name of something that was already in the standard
+
+
+00:01:34.900 --> 00:01:41.780
+library. So for example, people might try to use URL lib and didn't import it, right? And so they
+
+
+00:01:41.780 --> 00:01:48.180
+get an error cannot find library URL lib. And so then they go type pip install URL lib. Well, guess
+
+
+00:01:48.180 --> 00:01:53.280
+guess what? That actually goes out to PyPI and grabs a thing. And I think there's a misspelling
+
+
+00:01:53.280 --> 00:01:58.300
+like URL lib with one l not two, but they would grab those things and they would put
+
+
+00:01:58.300 --> 00:02:02.680
+those packages up there. And to be even more devious, what they did is they actually took
+
+
+00:02:02.680 --> 00:02:08.640
+the implementation and put it into those libraries, so that it would actually work like it should.
+
+
+00:02:08.640 --> 00:02:11.960
+But it was so you you might not notice, right? You pip install the thing, you import the
+
+
+00:02:11.960 --> 00:02:19.720
+thing it works. But the problem is that the setup PY the actual setup code that installs
+
+
+00:02:19.720 --> 00:02:25.380
+or executes during setup, like when this is installing, that was where the viruses or
+
+
+00:02:25.380 --> 00:02:31.400
+the malicious code lived. And so that's bad. I look into it that the code that they were
+
+
+00:02:31.400 --> 00:02:36.640
+putting in there, there was this little it said, proof of concept, no harm, no foul or
+
+
+00:02:36.640 --> 00:02:44.640
+But it was collecting a username and your host IP address and sending that to some server in China.
+
+
+00:02:44.640 --> 00:02:52.640
+Absolutely. So I think what the best write up on this was done by Dan Goodwin, I think, on Ars Technica.
+
+
+00:02:52.640 --> 00:02:56.640
+So that's the primary link here to that article and the conversation.
+
+
+00:02:56.640 --> 00:03:01.640
+I find Ars Technica to be the best place for the comments to actually be really meaningful.
+
+
+00:03:01.640 --> 00:03:06.520
+meaningful. So there's a great bunch of things in there. But let's let's cover a little bit more of
+
+
+00:03:06.520 --> 00:03:12.720
+the details. There's a Slovak security authority that actually discovered these packages, they
+
+
+00:03:12.720 --> 00:03:18.000
+discovered these packages, and then send a message to the Python package authority, and they took
+
+
+00:03:18.000 --> 00:03:23.480
+those down right away. Alright, so those are supposed to be gone. But that doesn't obviously
+
+
+00:03:23.480 --> 00:03:28.480
+get them off of your servers, get them off of your developer workstation, if you pip installed
+
+
+00:03:28.480 --> 00:03:29.480
+something bad.
+
+
+00:03:29.480 --> 00:03:30.480
+Right.
+
+
+00:03:30.480 --> 00:03:34.080
+And there's actually a message from the PSF, they did an official response to this.
+
+
+00:03:34.080 --> 00:03:39.480
+And, you know, we talked several times about the fragility of PyPI.
+
+
+00:03:39.480 --> 00:03:42.640
+And just how we're depending upon this thing that there's really not a lot of resources
+
+
+00:03:42.640 --> 00:03:43.640
+put into.
+
+
+00:03:43.640 --> 00:03:46.840
+All right, we talked about Donald stuffed, and I've had him on talk Python and things
+
+
+00:03:46.840 --> 00:03:47.840
+like that.
+
+
+00:03:47.840 --> 00:03:51.960
+And so the PSF said, this is just a part of what they said is unlike some language packaging
+
+
+00:03:51.960 --> 00:03:56.600
+management systems, PyPI does not have any full time staff devoted to it.
+
+
+00:03:56.600 --> 00:03:59.720
+It's a volunteer run project with only two active admins.
+
+
+00:03:59.720 --> 00:04:01.720
+As such, it doesn't currently have the resources
+
+
+00:04:01.720 --> 00:04:04.040
+for some of the proposed solutions,
+
+
+00:04:04.040 --> 00:04:07.220
+such as actively monitoring new projects,
+
+
+00:04:07.220 --> 00:04:10.000
+like inspecting code as it gets uploaded.
+
+
+00:04:10.000 --> 00:04:11.760
+Historically, and by necessity,
+
+
+00:04:11.760 --> 00:04:13.880
+we've relied on a reactive system
+
+
+00:04:13.880 --> 00:04:15.920
+to take down potentially malicious projects
+
+
+00:04:15.920 --> 00:04:17.840
+as we've become aware of them.
+
+
+00:04:17.840 --> 00:04:18.960
+Does that make you feel better, Brian?
+
+
+00:04:18.960 --> 00:04:20.520
+- Not really, no.
+
+
+00:04:20.520 --> 00:04:22.520
+- No, it doesn't make me feel very good either.
+
+
+00:04:22.520 --> 00:04:24.480
+It's like, well, if someone notices a virus,
+
+
+00:04:24.480 --> 00:04:25.560
+of course we'll take that down.
+
+
+00:04:25.560 --> 00:04:29.440
+But other than that, like, good luck is basically what they're saying.
+
+
+00:04:29.440 --> 00:04:33.520
+So there's some interesting comments, like I said, on that, that ars technica article,
+
+
+00:04:33.520 --> 00:04:35.640
+and I've linked to four of them.
+
+
+00:04:35.640 --> 00:04:38.640
+One of them, this is actually, I've been thinking about how you deal with this, like, do you
+
+
+00:04:38.640 --> 00:04:40.200
+digitally sign these things?
+
+
+00:04:40.200 --> 00:04:41.960
+And then, like, everyone's gonna get a key.
+
+
+00:04:41.960 --> 00:04:46.040
+And then how do you know what a bad actors key gets used, which regenerate it, get it,
+
+
+00:04:46.040 --> 00:04:51.600
+there's a lot of issues with getting like trusted keys, right, sort of SSL style.
+
+
+00:04:51.600 --> 00:04:59.000
+But this guy, girl goes by Hugh Hugh Hugh says, what if pip gets more paranoid?
+
+
+00:04:59.000 --> 00:05:05.320
+So if you say pip install the thing, and there's a very slight misspelling or slight change
+
+
+00:05:05.320 --> 00:05:10.280
+to that, that is more much more popular, it'll actually instead of just install it, give
+
+
+00:05:10.280 --> 00:05:14.080
+you a list of things and say, it looks like you might be trying to install this other
+
+
+00:05:14.080 --> 00:05:16.280
+thing that's way more popular than this thing.
+
+
+00:05:16.280 --> 00:05:17.680
+And that might be really interesting.
+
+
+00:05:17.680 --> 00:05:19.740
+Like if the thing you're installing has two downloads
+
+
+00:05:19.740 --> 00:05:21.940
+and the thing you were trying to get
+
+
+00:05:21.940 --> 00:05:23.820
+had half a million downloads,
+
+
+00:05:23.820 --> 00:05:25.060
+maybe it will just say like error,
+
+
+00:05:25.060 --> 00:05:28.480
+you need to say like force it or something to that effect.
+
+
+00:05:28.480 --> 00:05:30.460
+So what do you think about that?
+
+
+00:05:30.460 --> 00:05:32.380
+- I'm a little uneasy with that.
+
+
+00:05:32.380 --> 00:05:34.220
+Giving preference to popular projects
+
+
+00:05:34.220 --> 00:05:35.960
+just because they're popular,
+
+
+00:05:35.960 --> 00:05:36.940
+I don't know if that's the,
+
+
+00:05:36.940 --> 00:05:38.260
+maybe we're swinging too far.
+
+
+00:05:38.260 --> 00:05:39.500
+- Yeah, possibly.
+
+
+00:05:39.500 --> 00:05:41.420
+There's actually some stats on all the downloads
+
+
+00:05:41.420 --> 00:05:42.820
+of the bad packages.
+
+
+00:05:42.820 --> 00:05:43.740
+They were not really bad,
+
+
+00:05:43.740 --> 00:05:46.100
+they were like really quite small numbers,
+
+
+00:05:46.100 --> 00:05:47.860
+There's some graphs and stuff.
+
+
+00:05:47.860 --> 00:05:52.140
+There's a person on the comment section that said their name was Stestag.
+
+
+00:05:52.140 --> 00:05:57.860
+He said, "I'm sitting on a lot of the misspellings of common package names."
+
+
+00:05:57.860 --> 00:05:58.860
+So that's pretty cool.
+
+
+00:05:58.860 --> 00:06:03.200
+Apparently, I've created packages that do nothing, that are like typos.
+
+
+00:06:03.200 --> 00:06:06.740
+So typo squatters can actually do various stuff with it.
+
+
+00:06:06.740 --> 00:06:11.700
+There's an undergrad, I think in Germany, who studied this capability and said, "Actually,
+
+
+00:06:11.700 --> 00:06:12.700
+there's this problem."
+
+
+00:06:12.700 --> 00:06:17.700
+it was like a year ago, they had sort of said, look, this can be a real problem. But you
+
+
+00:06:17.700 --> 00:06:22.100
+know, we can, I guess feel a little bit better in that he also did the same thing to Ruby.
+
+
+00:06:22.100 --> 00:06:28.220
+And he also did the thing, same thing to NPM for node j s. So it's kind of a common theme
+
+
+00:06:28.220 --> 00:06:34.100
+that there's this challenge across all the official package repositories. Yeah. And the
+
+
+00:06:34.100 --> 00:06:39.960
+one of the notes also was that people like trying to install a something that's part
+
+
+00:06:39.960 --> 00:06:42.360
+of the standard library, it shouldn't come from PyPI.
+
+
+00:06:42.360 --> 00:06:43.200
+- Absolutely.
+
+
+00:06:43.200 --> 00:06:45.520
+- So there has been a change to the warehouse
+
+
+00:06:45.520 --> 00:06:49.160
+to not allow new, or have new packages
+
+
+00:06:49.160 --> 00:06:51.760
+that have the same name as standard library packages
+
+
+00:06:51.760 --> 00:06:54.680
+have to go through the approval process for that.
+
+
+00:06:54.680 --> 00:06:57.800
+- Yeah, and you link to a PR pull request
+
+
+00:06:57.800 --> 00:07:01.920
+to 409 on PyPI/warehouse.
+
+
+00:07:01.920 --> 00:07:05.180
+And that's pretty interesting, that conversation.
+
+
+00:07:05.180 --> 00:07:07.880
+So I see how people are talking about solving the problem,
+
+
+00:07:07.880 --> 00:07:09.840
+which ones are there, how to deal with ones
+
+
+00:07:09.840 --> 00:07:13.680
+that are already there, but those are actual backports of say, like, somebody
+
+
+00:07:13.680 --> 00:07:17.880
+wants to bring async IO to Python two or to like a lower version of Python three,
+
+
+00:07:17.880 --> 00:07:21.620
+then maybe they put that package up there and it's, it would look like
+
+
+00:07:21.620 --> 00:07:25.320
+one of these bad named things, but they said the solution that they're
+
+
+00:07:25.320 --> 00:07:29.160
+considering is basically you can't create new ones without some sort of
+
+
+00:07:29.160 --> 00:07:32.200
+admin being involved to say, yeah, I see what you're doing and it's okay.
+
+
+00:07:32.200 --> 00:07:34.800
+But the ones that exist, they won't like kill them off or anything.
+
+
+00:07:34.800 --> 00:07:35.120
+Yeah.
+
+
+00:07:35.120 --> 00:07:41.360
+And one of the big example of that is, for instance, mock is in the standard library
+
+
+00:07:41.360 --> 00:07:45.000
+as of Python 3, but in Python 2, it was separate.
+
+
+00:07:45.000 --> 00:07:48.040
+So I guess mock is really part of the unit test library.
+
+
+00:07:48.040 --> 00:07:52.200
+Right, but it has a legitimate place both in the standard library for Python 3 and on
+
+
+00:07:52.200 --> 00:07:53.200
+PyPI.
+
+
+00:07:53.200 --> 00:07:56.120
+Yeah, there are some legitimate backports that show up.
+
+
+00:07:56.120 --> 00:07:58.900
+So there's legitimate reasons to have the same name.
+
+
+00:07:58.900 --> 00:08:05.740
+So that's a pretty nice segue to this news that Jonas Newbert sent us about the new version
+
+
+00:08:05.740 --> 00:08:10.860
+of PyPI, which is called Warehouse, and it might be finally moving.
+
+
+00:08:10.860 --> 00:08:13.700
+Yeah, and actually, so this was great.
+
+
+00:08:13.700 --> 00:08:18.700
+Jonas sent us an email and essentially he did almost all of my research for me, which
+
+
+00:08:18.700 --> 00:08:19.700
+I love that.
+
+
+00:08:19.700 --> 00:08:20.700
+Thank you, Jonas.
+
+
+00:08:20.700 --> 00:08:21.700
+Feel free to do that, anybody.
+
+
+00:08:21.700 --> 00:08:26.540
+So he was writing an article, he was talking about the research he did for a topic when
+
+
+00:08:26.540 --> 00:08:32.120
+he wrote a blog post which we have a link to called "Publishing your first PyPI package
+
+
+00:08:32.120 --> 00:08:35.000
+by and for the absolute beginner."
+
+
+00:08:35.000 --> 00:08:38.080
+And it's a pretty nice quick article.
+
+
+00:08:38.080 --> 00:08:42.580
+It talks about, well anyway, one of the things he talked about when he emailed us is things
+
+
+00:08:42.580 --> 00:08:47.540
+have changed and so a lot of the tutorials that are out there aren't valid anymore.
+
+
+00:08:47.540 --> 00:08:53.260
+For instance, let's see, the pypi.org is no longer, it used to be read-only when we were
+
+
+00:08:53.260 --> 00:08:54.540
+we're just playing with it.
+
+
+00:08:54.540 --> 00:08:57.340
+But now it's really where you go through
+
+
+00:08:57.340 --> 00:09:00.340
+to publish packages, you write to there.
+
+
+00:09:00.340 --> 00:09:05.340
+The old APIs at pypi.python.org/pypi are disabled,
+
+
+00:09:05.340 --> 00:09:07.900
+so you have to use the new one.
+
+
+00:09:07.900 --> 00:09:12.460
+- Right, and if you have one of those hidden .pypirc files
+
+
+00:09:12.460 --> 00:09:15.100
+that you can configure like your package,
+
+
+00:09:15.100 --> 00:09:16.980
+username, password, URL, and so on,
+
+
+00:09:16.980 --> 00:09:18.600
+you have to change that URL, right?
+
+
+00:09:18.600 --> 00:09:21.540
+- If you're already done packages and pushed them up before,
+
+
+00:09:21.540 --> 00:09:23.260
+some of this will make sense and some of it won't,
+
+
+00:09:23.260 --> 00:09:26.620
+but if you read Jonas's article, all of it will make sense.
+
+
+00:09:26.620 --> 00:09:27.780
+- Yeah, absolutely.
+
+
+00:09:27.780 --> 00:09:29.180
+And I also had some good news,
+
+
+00:09:29.180 --> 00:09:30.900
+like things like Markdown support is coming
+
+
+00:09:30.900 --> 00:09:34.260
+for the readme.md files, yeah.
+
+
+00:09:34.260 --> 00:09:36.020
+- That would be great, yeah.
+
+
+00:09:36.020 --> 00:09:38.040
+I'm looking forward to,
+
+
+00:09:38.040 --> 00:09:40.340
+I refuse to write restructured text,
+
+
+00:09:40.340 --> 00:09:42.740
+so when I need it, I convert it from Markdown.
+
+
+00:09:42.740 --> 00:09:44.060
+- There you go.
+
+
+00:09:44.060 --> 00:09:44.900
+Yeah, yeah, that's great.
+
+
+00:09:44.900 --> 00:09:46.220
+So this is good news.
+
+
+00:09:46.220 --> 00:09:47.060
+- A couple of things,
+
+
+00:09:47.060 --> 00:09:48.660
+one of the other things that I thought was interesting
+
+
+00:09:48.660 --> 00:09:50.180
+is that apparently, I didn't know this,
+
+
+00:09:50.180 --> 00:09:55.180
+that you could change some aspects on the old PyPI,
+
+
+00:09:55.180 --> 00:09:56.620
+some aspects of your project,
+
+
+00:09:56.620 --> 00:09:57.920
+like the description or something.
+
+
+00:09:57.920 --> 00:10:01.780
+There was a way to change that through the web interface
+
+
+00:10:01.780 --> 00:10:04.780
+or through the API without changing your package itself.
+
+
+00:10:04.780 --> 00:10:06.660
+And a lot of those have been closed down
+
+
+00:10:06.660 --> 00:10:09.840
+and you really have to just re-upload your stuff
+
+
+00:10:09.840 --> 00:10:12.340
+if you wanna make quite a few changes.
+
+
+00:10:12.340 --> 00:10:14.780
+And I actually think that's the way you should do it anyway.
+
+
+00:10:14.780 --> 00:10:16.420
+So that's all right.
+
+
+00:10:16.420 --> 00:10:18.460
+- Yeah, that sounds good to me.
+
+
+00:10:18.460 --> 00:10:23.140
+I've been long waiting for pypi.org to be the thing.
+
+
+00:10:23.140 --> 00:10:25.180
+And it's just a nicer interface.
+
+
+00:10:25.180 --> 00:10:26.920
+It's built in Pyramid, which is kind of cool.
+
+
+00:10:26.920 --> 00:10:29.400
+And I know that it's like a huge revision
+
+
+00:10:29.400 --> 00:10:31.720
+of a very, very old and sort of kludgy code.
+
+
+00:10:31.720 --> 00:10:36.460
+So it will also open up PyPI for more contributions
+
+
+00:10:36.460 --> 00:10:38.280
+and collaboration with other people.
+
+
+00:10:38.280 --> 00:10:40.220
+- Yeah, and I'd really like for them to,
+
+
+00:10:40.220 --> 00:10:41.720
+I think it's totally usable now.
+
+
+00:10:41.720 --> 00:10:43.580
+I'd really like to have them take down
+
+
+00:10:43.580 --> 00:10:45.940
+the red notification at the top
+
+
+00:10:45.940 --> 00:10:47.620
+that makes it look like a warning.
+
+
+00:10:47.620 --> 00:10:49.980
+I don't think we need that anymore.
+
+
+00:10:49.980 --> 00:10:52.180
+- Yeah, it feels like it's gonna go pretty soon.
+
+
+00:10:52.180 --> 00:10:54.500
+But yeah, definitely that should move to the old one
+
+
+00:10:54.500 --> 00:10:55.860
+and it should just stay,
+
+
+00:10:55.860 --> 00:10:57.700
+it should be gone from the new one, right?
+
+
+00:10:57.700 --> 00:10:59.060
+I'm ready for the switch to happen.
+
+
+00:10:59.060 --> 00:11:02.100
+I understand that pip actually references, you know,
+
+
+00:11:02.100 --> 00:11:05.540
+pipi.org and such for its URLs internally on something.
+
+
+00:11:05.540 --> 00:11:08.860
+So it's kind of there anyway, but it's not,
+
+
+00:11:08.860 --> 00:11:11.220
+I don't know, it feels a little gradual.
+
+
+00:11:11.220 --> 00:11:13.980
+- And apparently the one holdout is you have to,
+
+
+00:11:13.980 --> 00:11:16.160
+right, currently still you have to create
+
+
+00:11:16.160 --> 00:11:20.080
+your user account on the old website.
+
+
+00:11:20.080 --> 00:11:21.680
+- Maybe that's why that red bar is still there.
+
+
+00:11:21.680 --> 00:11:22.520
+- Maybe. - Maybe.
+
+
+00:11:22.520 --> 00:11:25.200
+All right, so last week we had a lot of fun
+
+
+00:11:25.200 --> 00:11:28.400
+talking about David Beasley's fun of Reinvention, right?
+
+
+00:11:28.400 --> 00:11:29.360
+- Yeah, I love that.
+
+
+00:11:29.360 --> 00:11:30.520
+Yeah, I love to talk too.
+
+
+00:11:30.520 --> 00:11:32.720
+If anybody hasn't watched that, go back and watch that.
+
+
+00:11:32.720 --> 00:11:34.240
+- Yeah, we're basically linking to it again
+
+
+00:11:34.240 --> 00:11:35.120
+'cause it was awesome.
+
+
+00:11:35.120 --> 00:11:36.680
+- One of the things he did really well
+
+
+00:11:36.680 --> 00:11:38.680
+was he had these really cool live,
+
+
+00:11:38.680 --> 00:11:40.960
+he was live coding during the presentation
+
+
+00:11:40.960 --> 00:11:44.160
+and he had some cool backgrounds and stuff
+
+
+00:11:44.160 --> 00:11:47.700
+and we have no idea how to do what David did.
+
+
+00:11:47.700 --> 00:11:49.500
+We asked him and he won't share it yet.
+
+
+00:11:49.500 --> 00:11:50.820
+- Yeah, and if anyone knows,
+
+
+00:11:50.820 --> 00:11:54.440
+go to pythonbytes.fm/44 and add a comment at the bottom
+
+
+00:11:54.440 --> 00:11:56.760
+so we can all figure out how that cool trick was done.
+
+
+00:11:56.760 --> 00:11:57.820
+- Yeah, definitely.
+
+
+00:11:57.820 --> 00:12:00.100
+But for now, you can do live coding.
+
+
+00:12:00.100 --> 00:12:01.780
+I like live coding in a presentation,
+
+
+00:12:01.780 --> 00:12:04.700
+but it can go wrong if things go wrong.
+
+
+00:12:04.700 --> 00:12:07.740
+So I went out, I have a presentation that's coming up
+
+
+00:12:07.740 --> 00:12:10.340
+and I was thinking about whether I wanted to do this.
+
+
+00:12:10.340 --> 00:12:14.220
+And so I found a few links talking about it, about advice.
+
+
+00:12:14.220 --> 00:12:17.540
+One of them is basically advice for live coding
+
+
+00:12:17.540 --> 00:12:22.100
+and it's basically practice a lot and have a backup plan.
+
+
+00:12:22.100 --> 00:12:24.820
+I guess that's the real meat of it.
+
+
+00:12:24.820 --> 00:12:28.300
+And then also one thing is while you're coding a lot,
+
+
+00:12:28.300 --> 00:12:30.020
+it might be fun for you just to code
+
+
+00:12:30.020 --> 00:12:31.780
+but you have to talk at the same time.
+
+
+00:12:31.780 --> 00:12:33.700
+So if you can't talk and code at the same time,
+
+
+00:12:33.700 --> 00:12:34.900
+maybe it's not for you.
+
+
+00:12:34.900 --> 00:12:38.240
+So if you wanna have the same effect but not live code,
+
+
+00:12:38.240 --> 00:12:40.000
+So there's a couple other articles called
+
+
+00:12:40.000 --> 00:12:43.480
+Not Quite Live Coding and Avoiding Live Coding.
+
+
+00:12:43.480 --> 00:12:44.760
+They're kind of cool.
+
+
+00:12:44.760 --> 00:12:46.920
+They're talks about basically how you can do
+
+
+00:12:46.920 --> 00:12:50.880
+like GitHub labels or get labels to pull in
+
+
+00:12:50.880 --> 00:12:53.400
+new parts of your code if you want to watch it.
+
+
+00:12:53.400 --> 00:12:54.480
+And my favorite.
+
+
+00:12:54.480 --> 00:12:56.080
+- Right, you can basically go from like
+
+
+00:12:56.080 --> 00:12:58.720
+tag to tag to tag and then talk about
+
+
+00:12:58.720 --> 00:13:01.000
+the new code that's appeared without actually typing it.
+
+
+00:13:01.000 --> 00:13:03.560
+Although I'm with you, I'm for the live coding.
+
+
+00:13:03.560 --> 00:13:05.680
+That is the most legit, but like,
+
+
+00:13:05.680 --> 00:13:07.560
+these are fallbacks and I think that's not bad.
+
+
+00:13:07.560 --> 00:13:10.240
+The last one is supposedly a bit of work.
+
+
+00:13:10.240 --> 00:13:13.160
+I'm going to have to try this out, is doing a fade in.
+
+
+00:13:13.160 --> 00:13:16.440
+So you've got all your code showing up on a slide.
+
+
+00:13:16.440 --> 00:13:19.240
+But instead of showing a huge eye diagram
+
+
+00:13:19.240 --> 00:13:21.920
+of a whole bunch of code, and nobody knows really--
+
+
+00:13:21.920 --> 00:13:24.320
+are they supposed to just read all the code at once?
+
+
+00:13:24.320 --> 00:13:28.240
+Is to fade in the code a snippet at a time,
+
+
+00:13:28.240 --> 00:13:30.560
+highlight the piece that you're talking about,
+
+
+00:13:30.560 --> 00:13:33.160
+and then for the next slide or the next fade in,
+
+
+00:13:33.160 --> 00:13:34.840
+fade in the new piece of code.
+
+
+00:13:34.840 --> 00:13:38.300
+And I hadn't actually seen how to do that before,
+
+
+00:13:38.300 --> 00:13:41.680
+but it talks about using reveal.js
+
+
+00:13:41.680 --> 00:13:43.280
+and some other tricks to do that.
+
+
+00:13:43.280 --> 00:13:44.480
+- Yeah, that's a really nice effect.
+
+
+00:13:44.480 --> 00:13:46.080
+If you're gonna have code up there
+
+
+00:13:46.080 --> 00:13:49.340
+or even lots of text in any sort of presentation,
+
+
+00:13:49.340 --> 00:13:51.920
+definitely don't just blast it all up there.
+
+
+00:13:51.920 --> 00:13:54.040
+Let it come in piece by piece
+
+
+00:13:54.040 --> 00:13:55.960
+or somehow indicate the little sections
+
+
+00:13:55.960 --> 00:13:56.800
+you're talking about,
+
+
+00:13:56.800 --> 00:14:01.320
+and that definitely makes it more engaging, for sure.
+
+
+00:14:01.320 --> 00:14:03.120
+- I brought this up also today
+
+
+00:14:03.120 --> 00:14:05.200
+'cause I was curious about your choice.
+
+
+00:14:05.200 --> 00:14:06.920
+It sounds like you like live coding as well,
+
+
+00:14:06.920 --> 00:14:07.880
+watching that at least.
+
+
+00:14:07.880 --> 00:14:09.680
+- Yeah, I'm definitely for the live coding.
+
+
+00:14:09.680 --> 00:14:12.240
+Like if people do it well, like when it goes bad,
+
+
+00:14:12.240 --> 00:14:14.060
+it kind of makes me squirm and be uncomfortable,
+
+
+00:14:14.060 --> 00:14:15.760
+but done well, I think like,
+
+
+00:14:15.760 --> 00:14:18.920
+you as an audience member,
+
+
+00:14:18.920 --> 00:14:21.760
+if you see something being presented
+
+
+00:14:21.760 --> 00:14:23.880
+and then you actually saw every step of it
+
+
+00:14:23.880 --> 00:14:25.600
+and then in the end you see the outcome,
+
+
+00:14:25.600 --> 00:14:27.000
+you're like, well, I saw every bit of it.
+
+
+00:14:27.000 --> 00:14:28.520
+There was nothing that was crazy there
+
+
+00:14:28.520 --> 00:14:30.480
+and now it's doing this.
+
+
+00:14:30.480 --> 00:14:32.360
+Like I feel like I could totally do that.
+
+
+00:14:32.360 --> 00:14:35.640
+There's nothing sort of scary about it anymore
+
+
+00:14:35.640 --> 00:14:37.680
+once you see it done live.
+
+
+00:14:37.680 --> 00:14:40.040
+And I think a lot of times you can skip over that
+
+
+00:14:40.040 --> 00:14:42.240
+and just sort of like fling pieces of code together
+
+
+00:14:42.240 --> 00:14:45.120
+and then you're like, well, yeah, but those are slides.
+
+
+00:14:45.120 --> 00:14:47.080
+Maybe this is way harder than it sounds.
+
+
+00:14:47.080 --> 00:14:48.300
+You know, if you see it done live,
+
+
+00:14:48.300 --> 00:14:49.600
+you kind of know how hard it is.
+
+
+00:14:49.600 --> 00:14:50.780
+- Yeah, I agree.
+
+
+00:14:50.780 --> 00:14:55.200
+I think I'm gonna opt for something almost there at first.
+
+
+00:14:55.200 --> 00:14:56.340
+- Yeah, of course.
+
+
+00:14:56.340 --> 00:14:59.440
+- And I'd also like to hear from my listeners
+
+
+00:14:59.440 --> 00:15:02.460
+to see, I'd like to hear like some live coding horror
+
+
+00:15:02.460 --> 00:15:07.180
+stories, and also some tips for how to do some Python
+
+
+00:15:07.180 --> 00:15:09.820
+live coding if anybody has any cool tools to share,
+
+
+00:15:09.820 --> 00:15:10.660
+that'd be great.
+
+
+00:15:10.660 --> 00:15:12.160
+- Yeah, sounds awesome.
+
+
+00:15:12.160 --> 00:15:14.100
+All right, before we get to our next topic,
+
+
+00:15:14.100 --> 00:15:15.660
+let's talk about Datadog.
+
+
+00:15:15.660 --> 00:15:17.940
+So they're sponsoring the show and they're doing
+
+
+00:15:17.940 --> 00:15:18.780
+really cool stuff.
+
+
+00:15:18.780 --> 00:15:21.560
+So if you have performance or bottlenecks in your
+
+
+00:15:21.560 --> 00:15:24.100
+application, that may be in your code, but it might be
+
+
+00:15:24.100 --> 00:15:26.500
+just somewhere in the whole stack that you're using.
+
+
+00:15:26.500 --> 00:15:29.580
+So like let's say you have a Python web framework,
+
+
+00:15:29.580 --> 00:15:32.420
+a web app running Flask and it's built upon Mongo
+
+
+00:15:32.420 --> 00:15:35.860
+and it's Skeleton on Ubuntu running Nginx and MicroWizky.
+
+
+00:15:35.860 --> 00:15:37.820
+With Datadog, you can actually monitor
+
+
+00:15:37.820 --> 00:15:40.360
+all of those pieces as a whole.
+
+
+00:15:40.360 --> 00:15:43.020
+So that's super powerful if you wanna understand
+
+
+00:15:43.020 --> 00:15:44.420
+like really why your app's slow
+
+
+00:15:44.420 --> 00:15:46.260
+and not just why your Python code is slow.
+
+
+00:15:46.260 --> 00:15:48.480
+So they have a great getting started tutorial
+
+
+00:15:48.480 --> 00:15:51.100
+and you can check that out, get a free Datadog t-shirt.
+
+
+00:15:51.100 --> 00:15:53.860
+So just visit pythonbytes.fm/datadog
+
+
+00:15:53.860 --> 00:15:55.220
+and see what they've got to offer.
+
+
+00:15:55.220 --> 00:15:56.060
+It's pretty cool.
+
+
+00:15:56.060 --> 00:15:59.420
+- Yeah, and thank you Datadog for keeping the show rolling.
+
+
+00:15:59.420 --> 00:16:01.500
+All right, let's talk, speaking of web,
+
+
+00:16:01.500 --> 00:16:03.100
+let's talk a little bit about REST.
+
+
+00:16:03.100 --> 00:16:03.940
+- Okay.
+
+
+00:16:03.940 --> 00:16:05.900
+- All right, so I mentioned Flask, I mentioned Pyramid,
+
+
+00:16:05.900 --> 00:16:07.240
+there's Django, of course.
+
+
+00:16:07.240 --> 00:16:10.620
+Those are the three sort of high-level web frameworks.
+
+
+00:16:10.620 --> 00:16:13.660
+And they're great, they're good
+
+
+00:16:13.660 --> 00:16:16.460
+for building web applications, there's extensions,
+
+
+00:16:16.460 --> 00:16:17.860
+or even they themselves are good
+
+
+00:16:17.860 --> 00:16:19.940
+for building RESTful services.
+
+
+00:16:19.940 --> 00:16:23.920
+But there's two really interesting web API frameworks
+
+
+00:16:23.920 --> 00:16:28.320
+Python that a listener suggested we talk about and I'm excited to talk about them.
+
+
+00:16:28.320 --> 00:16:32.880
+So there's these two called one is Falcon and one is Hug.
+
+
+00:16:32.880 --> 00:16:34.520
+First of all, those are pretty good names for frameworks, right?
+
+
+00:16:34.520 --> 00:16:35.520
+Yeah, they're pretty good.
+
+
+00:16:35.520 --> 00:16:37.520
+I've heard of Hug, but I've never heard of Falcon.
+
+
+00:16:37.520 --> 00:16:43.760
+Yeah, so I just had the Falcon guys on Talk Python to me last week on episode 129.
+
+
+00:16:43.760 --> 00:16:49.720
+And that is a super low level, really high performance, RESTful framework.
+
+
+00:16:49.720 --> 00:16:57.040
+So they call it a bare metal Python web API for building very fast backends and microservices.
+
+
+00:16:57.040 --> 00:16:59.880
+And they don't see it as competing with those frameworks I mentioned, but they see it as
+
+
+00:16:59.880 --> 00:17:03.680
+more complimentary, like you write your app in that and if you need like that super fast
+
+
+00:17:03.680 --> 00:17:06.040
+little service, you use this.
+
+
+00:17:06.040 --> 00:17:10.520
+And it even works on pi pi for extra extra speed boost.
+
+
+00:17:10.520 --> 00:17:11.520
+So that's cool.
+
+
+00:17:11.520 --> 00:17:13.340
+And you can use Falcon and it's really, really low level.
+
+
+00:17:13.340 --> 00:17:21.240
+And then there's hug, which is actually a web, web service restful API built upon Falcon.
+
+
+00:17:21.240 --> 00:17:27.300
+So they're sort of you want hug is using Falcon for his low level capabilities, but then hug
+
+
+00:17:27.300 --> 00:17:29.820
+is like a simplification on top of these API.
+
+
+00:17:29.820 --> 00:17:35.600
+So you can do really interesting stuff with hug, like, you just put a decorator onto a
+
+
+00:17:35.600 --> 00:17:41.800
+function and all of a sudden it becomes an API that you can work with might be a method
+
+
+00:17:41.800 --> 00:17:45.920
+on a class, but you can work with that really simply.
+
+
+00:17:45.920 --> 00:17:50.520
+And one of the unique things about it is it comes with built in self-documenting APIs,
+
+
+00:17:50.520 --> 00:17:54.260
+right, so it will like tell you can ask it what your functions are, and it'll give you
+
+
+00:17:54.260 --> 00:17:55.680
+a description.
+
+
+00:17:55.680 --> 00:17:59.520
+And they're exposed over, you can expose them in different ways.
+
+
+00:17:59.520 --> 00:18:03.400
+So maybe I have an API that I can access over HTTP.
+
+
+00:18:03.400 --> 00:18:07.240
+But I could also make that a Python package where it exposes that API and make it like
+
+
+00:18:07.240 --> 00:18:11.040
+a command line thing where it exposes that as a command line thing.
+
+
+00:18:11.040 --> 00:18:12.500
+those are all the same bits of code
+
+
+00:18:12.500 --> 00:18:13.920
+just exposed differently with Hug.
+
+
+00:18:13.920 --> 00:18:14.760
+- Oh, that's cool.
+
+
+00:18:14.760 --> 00:18:15.600
+- Yeah, that's pretty neat, right?
+
+
+00:18:15.600 --> 00:18:16.640
+- Yeah, I gotta try that out.
+
+
+00:18:16.640 --> 00:18:18.680
+- So if you're building RESTful services,
+
+
+00:18:18.680 --> 00:18:20.480
+give these two things a look
+
+
+00:18:20.480 --> 00:18:21.920
+depending on which level you wanna work at.
+
+
+00:18:21.920 --> 00:18:23.240
+They're kinda neat.
+
+
+00:18:23.240 --> 00:18:25.200
+All right, but you might wanna test those, right?
+
+
+00:18:25.200 --> 00:18:26.560
+- You should test them.
+
+
+00:18:26.560 --> 00:18:28.120
+So if you are testing them,
+
+
+00:18:28.120 --> 00:18:31.440
+you might want to test them in multiple environments.
+
+
+00:18:31.440 --> 00:18:33.320
+And so, Talks would be a good thing.
+
+
+00:18:33.320 --> 00:18:34.520
+- Yeah, we got a conversation,
+
+
+00:18:34.520 --> 00:18:36.560
+had a nice conversation with some listeners on Twitter.
+
+
+00:18:36.560 --> 00:18:37.520
+Like, "Hey, what is Talks?
+
+
+00:18:37.520 --> 00:18:38.600
+"Will you tell us what Talks is?"
+
+
+00:18:38.600 --> 00:18:40.040
+So Brian, tell me what Talks is.
+
+
+00:18:40.040 --> 00:18:42.360
+- Well, yeah, first off, we're not gonna,
+
+
+00:18:42.360 --> 00:18:45.320
+we're gonna give a little sneak peek on what TOCS is,
+
+
+00:18:45.320 --> 00:18:47.200
+but I think it does quite a bit.
+
+
+00:18:47.200 --> 00:18:51.120
+So I reached out to one of the TOCS developers,
+
+
+00:18:51.120 --> 00:18:54.320
+Oliver Bestweller, and he has agreed to come on
+
+
+00:18:54.320 --> 00:18:57.200
+Test and Code to have a longer conversation.
+
+
+00:18:57.200 --> 00:18:58.280
+We haven't scheduled that yet,
+
+
+00:18:58.280 --> 00:19:00.560
+but we'll let you know when it's up.
+
+
+00:19:00.560 --> 00:19:03.720
+But for now, TOCS, and this is a quote from Oliver,
+
+
+00:19:03.720 --> 00:19:07.480
+the name of the TOCS automation project
+
+
+00:19:07.480 --> 00:19:10.340
+derives from testing out of the box.
+
+
+00:19:10.340 --> 00:19:12.380
+I didn't know that before I read this.
+
+
+00:19:12.380 --> 00:19:16.980
+But it aims to automate and standardize testing in Python.
+
+
+00:19:16.980 --> 00:19:21.340
+It's conceptually above PyTest or whatever else you use
+
+
+00:19:21.340 --> 00:19:23.500
+and serves as a command line front end.
+
+
+00:19:23.500 --> 00:19:28.020
+I think of it similar to something like a Travis CI
+
+
+00:19:28.020 --> 00:19:29.700
+or something that you could do on the command line.
+
+
+00:19:29.700 --> 00:19:32.140
+- Right, it lets you pick different versions of Python.
+
+
+00:19:32.140 --> 00:19:36.700
+So you could say Python 2.7 and Python 3.5.
+
+
+00:19:36.700 --> 00:19:39.540
+And it basically depends upon PyTest
+
+
+00:19:39.540 --> 00:19:40.500
+or something like that, right?
+
+
+00:19:40.500 --> 00:19:43.500
+It'll orchestrate running your tests on PyTest
+
+
+00:19:43.500 --> 00:19:45.020
+in those environments, for example.
+
+
+00:19:45.020 --> 00:19:47.060
+- Yeah, and one of the things that I really like about it
+
+
+00:19:47.060 --> 00:19:49.540
+is it's when you are distributing something,
+
+
+00:19:49.540 --> 00:19:51.840
+you're not just, it's not just your code
+
+
+00:19:51.840 --> 00:19:53.900
+that you need to test, it's also the packaging
+
+
+00:19:53.900 --> 00:19:55.740
+and installation process and all of that.
+
+
+00:19:55.740 --> 00:19:57.540
+You want to make sure that all that works.
+
+
+00:19:57.540 --> 00:20:00.620
+And so essentially what it does in this normal,
+
+
+00:20:00.620 --> 00:20:02.320
+this is the normal use model,
+
+
+00:20:02.320 --> 00:20:05.420
+is to list a handful of Python versions.
+
+
+00:20:05.420 --> 00:20:10.320
+And then what Tox will do is use your setup.py file
+
+
+00:20:10.320 --> 00:20:13.200
+to create a source distribution,
+
+
+00:20:13.200 --> 00:20:15.280
+and then create a virtual environment,
+
+
+00:20:15.280 --> 00:20:16.840
+and then install dependencies,
+
+
+00:20:16.840 --> 00:20:18.060
+and then install your package,
+
+
+00:20:18.060 --> 00:20:19.640
+and then run the tests,
+
+
+00:20:19.640 --> 00:20:22.320
+and then do all of that for each of the different Pythons.
+
+
+00:20:22.320 --> 00:20:25.900
+So using different versions of Python to run the setup,
+
+
+00:20:25.900 --> 00:20:27.320
+all the way through running the tests.
+
+
+00:20:27.320 --> 00:20:28.160
+- Yeah, that's really cool.
+
+
+00:20:28.160 --> 00:20:31.160
+- And that's really, if you let it do all that,
+
+
+00:20:31.160 --> 00:20:32.000
+you have to wait for it,
+
+
+00:20:32.000 --> 00:20:33.680
+it's slower because you're creating
+
+
+00:20:33.680 --> 00:20:35.240
+that distribution every time.
+
+
+00:20:35.240 --> 00:20:37.480
+and other things.
+
+
+00:20:37.480 --> 00:20:40.520
+But there are, I left, there's a couple of links
+
+
+00:20:40.520 --> 00:20:44.840
+in the show notes on how to, on some tips and patterns
+
+
+00:20:44.840 --> 00:20:48.000
+and that are, you can speed things up if you need to,
+
+
+00:20:48.000 --> 00:20:50.360
+but just having this ability just at your desktop
+
+
+00:20:50.360 --> 00:20:52.960
+in the command line is really great for testing your stuff.
+
+
+00:20:52.960 --> 00:20:53.800
+- Yeah, that's really cool.
+
+
+00:20:53.800 --> 00:20:58.600
+And I believe there was something to do with Python 2
+
+
+00:20:58.600 --> 00:21:00.820
+and that original vulnerability stuff
+
+
+00:21:00.820 --> 00:21:03.020
+that people discovered on PyPI, right?
+
+
+00:21:03.020 --> 00:21:05.740
+like the vulnerable code only ran on Python 2
+
+
+00:21:05.740 --> 00:21:06.580
+or something, right?
+
+
+00:21:06.580 --> 00:21:07.420
+And that's how they discovered it?
+
+
+00:21:07.420 --> 00:21:09.060
+- I think that's the case.
+
+
+00:21:09.060 --> 00:21:09.900
+I don't have--
+
+
+00:21:09.900 --> 00:21:11.660
+- I don't have it pulled up either, but yeah.
+
+
+00:21:11.660 --> 00:21:15.260
+- A source to verify that, but I, like on Twitter,
+
+
+00:21:15.260 --> 00:21:17.080
+somebody said, oh yeah, and we found this
+
+
+00:21:17.080 --> 00:21:20.540
+because of talks and testing this stuff on Python 3.
+
+
+00:21:20.540 --> 00:21:22.260
+- Yeah, that's beautiful.
+
+
+00:21:22.260 --> 00:21:23.100
+All right, awesome.
+
+
+00:21:23.100 --> 00:21:25.460
+So last one, I wanna talk about Legacy Python
+
+
+00:21:25.460 --> 00:21:26.820
+a little bit as well.
+
+
+00:21:26.820 --> 00:21:29.780
+So there's Flake 8, right, which is a linter
+
+
+00:21:29.780 --> 00:21:31.140
+and talks about your code and tells you
+
+
+00:21:31.140 --> 00:21:33.820
+you're doing right and wrong, things like that.
+
+
+00:21:33.820 --> 00:21:38.340
+There's a, I think it's a plugin called Flake 8 Tidy Imports.
+
+
+00:21:38.340 --> 00:21:42.220
+And so one of our listeners said, "Hey, I added this cool feature to Tidy Imports and
+
+
+00:21:42.220 --> 00:21:44.820
+I thought it was pretty cool so I thought I'd highlight it here."
+
+
+00:21:44.820 --> 00:21:49.360
+People who are moving to Python 3, you might want to check this out.
+
+
+00:21:49.360 --> 00:21:56.620
+So you can declare Python 2 to 3 as a band module import in Flake 8.
+
+
+00:21:56.620 --> 00:22:00.700
+And then it'll go through and actually find any of the modules that would have worked
+
+
+00:22:00.700 --> 00:22:06.980
+in Python 2 but not in Python 3. For example, mock, right? So you used to say
+
+
+00:22:06.980 --> 00:22:10.820
+import mock but now you would just use import unitest.mock as mock or
+
+
+00:22:10.820 --> 00:22:13.660
+something like this, right? So it would actually give you that warning like in
+
+
+00:22:13.660 --> 00:22:17.140
+Python 3 you don't use mock anymore, you use unitest.mock and it gives you
+
+
+00:22:17.140 --> 00:22:21.620
+like a nice useful message not just this was not you shouldn't use this anymore
+
+
+00:22:21.620 --> 00:22:25.620
+but here's the thing to use instead as you do this upgrade. So it kind of shames
+
+
+00:22:25.620 --> 00:22:28.580
+people a little bit for using the old stuff which is good. Yeah, I really like
+
+
+00:22:28.580 --> 00:22:30.060
+I like it, actually I use that as well.
+
+
+00:22:30.060 --> 00:22:31.140
+- That's great.
+
+
+00:22:31.140 --> 00:22:33.340
+Very nice, and I have a bonus one for us actually.
+
+
+00:22:33.340 --> 00:22:34.340
+I wanna throw it in really quick.
+
+
+00:22:34.340 --> 00:22:35.180
+- Okay.
+
+
+00:22:35.180 --> 00:22:37.500
+- So Jesse Davis from MongoDB,
+
+
+00:22:37.500 --> 00:22:39.980
+did a PyMongo driver, stuff like that.
+
+
+00:22:39.980 --> 00:22:43.740
+He actually is the organizer for PyGotham.
+
+
+00:22:43.740 --> 00:22:46.900
+So that is the PyCon for New York City.
+
+
+00:22:46.900 --> 00:22:49.460
+And he's really into helping and mentoring people,
+
+
+00:22:49.460 --> 00:22:51.140
+especially people who are new speakers.
+
+
+00:22:51.140 --> 00:22:53.060
+So he's running this project where he's trying
+
+
+00:22:53.060 --> 00:22:56.220
+to raise money to hire a speaking coach
+
+
+00:22:56.220 --> 00:22:59.540
+to work with and mentor first-time speakers
+
+
+00:22:59.540 --> 00:23:02.700
+who he's getting to come speak at PyGotham.
+
+
+00:23:02.700 --> 00:23:04.300
+And he's trying to raise $1,200,
+
+
+00:23:04.300 --> 00:23:06.860
+and it turns out just like today,
+
+
+00:23:06.860 --> 00:23:09.420
+yeah, as of today, he's raised his goal,
+
+
+00:23:09.420 --> 00:23:11.980
+but I'm sure that he can do more if he had some more money.
+
+
+00:23:11.980 --> 00:23:14.300
+So I'm linking to his article called
+
+
+00:23:14.300 --> 00:23:16.860
+"Help Me Offer Coaching to First-Time PyGotham Speakers,"
+
+
+00:23:16.860 --> 00:23:18.500
+which I thought was a cool project,
+
+
+00:23:18.500 --> 00:23:21.020
+and I'm happy to spread the word for Jesse
+
+
+00:23:21.020 --> 00:23:22.780
+'cause it's great to have more people
+
+
+00:23:22.780 --> 00:23:24.940
+coming in to the community.
+
+
+00:23:24.940 --> 00:23:26.940
+- Yeah, I think that things like this are awesome
+
+
+00:23:26.940 --> 00:23:28.900
+and I like covering it anyway.
+
+
+00:23:28.900 --> 00:23:31.300
+And I asked him to maybe write up something
+
+
+00:23:31.300 --> 00:23:34.940
+after the conference, but I'd like to hear how that goes.
+
+
+00:23:34.940 --> 00:23:37.180
+I'd like to hear from the people that got coached
+
+
+00:23:37.180 --> 00:23:40.500
+and how the process went, if it helped things.
+
+
+00:23:40.500 --> 00:23:41.500
+- Yeah, that'd be really cool.
+
+
+00:23:41.500 --> 00:23:44.220
+Sort of retrospective, like was this actually useful?
+
+
+00:23:44.220 --> 00:23:45.200
+Like what did you learn?
+
+
+00:23:45.200 --> 00:23:46.580
+Right, like to see if it's something
+
+
+00:23:46.580 --> 00:23:48.340
+we should keep doing as a community, yeah.
+
+
+00:23:48.340 --> 00:23:50.140
+- And then other conferences,
+
+
+00:23:50.140 --> 00:23:51.380
+and I don't have any links right now,
+
+
+00:23:51.380 --> 00:23:55.460
+but some conferences do mentors
+
+
+00:23:55.460 --> 00:23:57.980
+for submitting your proposal.
+
+
+00:23:57.980 --> 00:24:01.500
+So a talk proposal, they'll have a mentor program
+
+
+00:24:01.500 --> 00:24:04.380
+so you can work with somebody to build up your proposal
+
+
+00:24:04.380 --> 00:24:05.940
+in the first place, which I think is--
+
+
+00:24:05.940 --> 00:24:06.920
+- That's kind of the first step
+
+
+00:24:06.920 --> 00:24:08.140
+to being a first-time speaker.
+
+
+00:24:08.140 --> 00:24:09.140
+- Okay, cool. - Awesome.
+
+
+00:24:09.140 --> 00:24:10.680
+Well, good job, Jesse.
+
+
+00:24:10.680 --> 00:24:12.460
+How about you, what other news you got?
+
+
+00:24:12.460 --> 00:24:13.620
+Have you forgotten about your book
+
+
+00:24:13.620 --> 00:24:15.980
+and you're just relaxing, living life again?
+
+
+00:24:15.980 --> 00:24:18.340
+- It's printing, no, I haven't forgotten.
+
+
+00:24:18.340 --> 00:24:21.140
+But I am relaxing a lot more.
+
+
+00:24:21.140 --> 00:24:22.840
+and there's sunshine outside.
+
+
+00:24:22.840 --> 00:24:25.000
+I'm going outside more, which is good.
+
+
+00:24:25.000 --> 00:24:25.840
+Not sunshine today. - You're actually
+
+
+00:24:25.840 --> 00:24:27.200
+seeing the outside.
+
+
+00:24:27.200 --> 00:24:28.600
+- Yeah, but I'm seeing the outside.
+
+
+00:24:28.600 --> 00:24:29.640
+- Yeah, that's awesome.
+
+
+00:24:29.640 --> 00:24:32.640
+- But the physical, you can order them now.
+
+
+00:24:32.640 --> 00:24:34.240
+Apparently they're printing and shipping,
+
+
+00:24:34.240 --> 00:24:35.360
+so that's awesome.
+
+
+00:24:35.360 --> 00:24:36.640
+- Yeah, very good, very good.
+
+
+00:24:36.640 --> 00:24:38.040
+That's great to hear.
+
+
+00:24:38.040 --> 00:24:40.040
+So remember last week I talked about
+
+
+00:24:40.040 --> 00:24:41.160
+adding Switch to Python,
+
+
+00:24:41.160 --> 00:24:42.840
+and I said I'll put it up on GitHub?
+
+
+00:24:42.840 --> 00:24:43.680
+- Yeah, and you did.
+
+
+00:24:43.680 --> 00:24:47.160
+- I did, and I would say about 75% of the people
+
+
+00:24:47.160 --> 00:24:49.160
+said it was awesome, so cool,
+
+
+00:24:49.160 --> 00:24:52.060
+and 25% of people said, "Please, no, don't do this."
+
+
+00:24:52.060 --> 00:24:54.400
+But you can't please everyone
+
+
+00:24:54.400 --> 00:24:55.500
+and it's not changing the language.
+
+
+00:24:55.500 --> 00:24:58.400
+It's just a package on GitHub.
+
+
+00:24:58.400 --> 00:24:59.960
+You can do whatever you want with it.
+
+
+00:24:59.960 --> 00:25:03.360
+So anyway, it was actually in the top Python trending
+
+
+00:25:03.360 --> 00:25:06.880
+packages on GitHub out of all Python packages.
+
+
+00:25:06.880 --> 00:25:07.720
+Sorry, repos.
+
+
+00:25:07.720 --> 00:25:08.540
+- Wow, really?
+
+
+00:25:08.540 --> 00:25:09.640
+- Yeah, yeah, last week it was pretty awesome.
+
+
+00:25:09.640 --> 00:25:10.480
+- That's great.
+
+
+00:25:10.480 --> 00:25:15.100
+- And it had like 175 comments on Reddit or something.
+
+
+00:25:15.100 --> 00:25:18.120
+So it's an interesting set of conversations
+
+
+00:25:18.120 --> 00:25:19.360
+that comes up around it.
+
+
+00:25:19.360 --> 00:25:22.200
+So that was a follow up to last week,
+
+
+00:25:22.200 --> 00:25:23.400
+where I talked about that.
+
+
+00:25:23.400 --> 00:25:26.360
+And then also I'm writing a free MongoDB course
+
+
+00:25:26.360 --> 00:25:29.760
+that's gonna compliment my paid MongoDB course, right?
+
+
+00:25:29.760 --> 00:25:31.940
+Like a short one that's an intro sort of thing.
+
+
+00:25:31.940 --> 00:25:34.480
+So people can, there's a link at the bottom of the show
+
+
+00:25:34.480 --> 00:25:36.120
+and those people can sign up to get notified.
+
+
+00:25:36.120 --> 00:25:37.160
+That'll probably be out.
+
+
+00:25:37.160 --> 00:25:39.960
+I finished writing that this week, like this morning,
+
+
+00:25:39.960 --> 00:25:41.840
+and I'll probably have that out in a few weeks.
+
+
+00:25:41.840 --> 00:25:42.680
+- That's great.
+
+
+00:25:42.680 --> 00:25:43.880
+- Yeah, should be fun.
+
+
+00:25:43.880 --> 00:25:46.520
+All right, well, Brian, thanks for doing all the research
+
+
+00:25:46.520 --> 00:25:48.020
+or having our listeners do some research
+
+
+00:25:48.020 --> 00:25:52.580
+for you. It was really fun to talk about this. And if you guys have thoughts, especially
+
+
+00:25:52.580 --> 00:25:59.180
+on the PyPI security thing, go to pythonbytes.fm/44 and add your thoughts at the bottom. This
+
+
+00:25:59.180 --> 00:26:00.820
+is kind of a big deal.
+
+
+00:26:00.820 --> 00:26:05.420
+>> Yeah. And thanks everybody for helping come up with ideas for the show. We always
+
+
+00:26:05.420 --> 00:26:06.420
+appreciate it.
+
+
+00:26:06.420 --> 00:26:11.220
+>> Yep. Keep it coming. Very much appreciated. All right. Bye, Brian. Bye, everyone.
+
+
+00:26:11.220 --> 00:26:15.580
+Thank you for listening to Python Bytes. Follow the show on Twitter via @PythonBytes. That's
+
+
+00:26:15.580 --> 00:26:22.620
+pythonbytes as in b-y-t-e-s. And get the full show notes at pythonbytes.fm. If you have a news item
+
+
+00:26:22.620 --> 00:26:27.500
+you want featured, just visit pythonbytes.fm and send it our way. We're always on the lookout for
+
+
+00:26:27.500 --> 00:26:32.300
+sharing something cool. On behalf of myself and Brian Aukin, this is Michael Kennedy.
+
+
+00:26:32.300 --> 00:26:35.580
+Thank you for listening and sharing this podcast with your friends and colleagues.
+
