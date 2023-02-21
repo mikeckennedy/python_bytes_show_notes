@@ -1,0 +1,524 @@
+00:00:00 Hello and welcome to Python Bytes where we deliver Python news and headlines directly to your earbuds.
+
+00:00:06 This is episode 51, recorded November 7th, 2017.
+
+00:00:11 I'm Michael Kennedy.
+
+00:00:12 And I'm Brian Okken.
+
+00:00:13 And we got a bunch of awesome Python news lined up for you as always.
+
+00:00:17 Before we get to that, though, let's just say thank you to Datadog.
+
+00:00:20 Yeah, thanks Datadog.
+
+00:00:21 Yeah, Datadog is sponsoring this episode.
+
+00:00:23 They've got some really cool sort of whole platform monitoring tools.
+
+00:00:28 a t-shirt if you do their little tutorial.
+
+00:00:29 So we'll talk more about that in a minute.
+
+00:00:31 But now I'd like to explore the United States with some data science.
+
+00:00:35 >> Yeah. So I ran across this article called Exploring United States Policing Data with Python.
+
+00:00:42 Since that's actually probably a hot topic and a lot of parsing some of that data, I thought this would be a fun thing to walk through.
+
+00:00:52 So I walked through about half of the paper.
+
+00:00:55 Anyway, but it's a it's it goes through using Jupiter and I Python and all of those fun tools like pandas and numpy To grab some publicly available data. It's in a CSV file. That's zipped and you can just import that directly and or read it directly with the appropriate tools with a Jupiter notebook and Ask some questions like the race of people that get pulled over more often and things like that that. It's I know it's a very political topic. I don't really want to get into that part of it. It is interesting, but it's mostly I think it's a very, it's a very riveting example for walking through why it's important for more and more people to be able to examine public data and be able to figure out what what's going on.
+
+00:01:44 Yeah, I think it's really interesting that you bring this up this example of working with public data, like there's a ton of data that we could be asking and answering questions about and this policing data is an example.
+
+00:01:56 Was it fun for you to play data scientists and play with Jupyter and Matplotlib and stuff like that?
+
+00:02:02 >> Yeah, it really was.
+
+00:02:03 One of the things I really actually enjoyed was that the example goes through pretty quickly because it doesn't stop to tell you exactly what all the code does.
+
+00:02:12 It just has the code snippet that you just plop into a Jupyter cell and hit "Shift+Enter", and it just runs it and plots things.
+
+00:02:24 And I know I can look that stuff up later.
+
+00:02:26 There were a few gotchas that I ran into that I'll put in the show notes.
+
+00:02:31 Since this was my first time playing with Jupyter, I didn't really know that you had to hit Shift + Enter, but I remember hearing that from somebody else to get it to run.
+
+00:02:39 - Yeah, it's kind of its own world, but it's really nice.
+
+00:02:42 - Yeah, but the example really does start with just from the beginning, if you've never run it before, you can walk through some of this.
+
+00:02:48 It's pretty cool.
+
+00:02:49 - There's some really interesting stuff you can do with police data and data science.
+
+00:02:53 I don't remember exactly the details.
+
+00:02:55 So just take this as kind of a general idea, but I think partially derivative, they had someone on talking about analyzing this kind of stuff.
+
+00:03:04 And it was something like, when there was some kind of complaint or episode of violence involving police, it was pretty frequent, like that the person, the policeman involved in that violence had previously somehow just come off of some other horrible thing.
+
+00:03:19 like policemen who went to like check on a tech to deal with a suicide and then pulled somebody over who was non-compliant was much more likely to have a violent interaction with that person at the traffic stop.
+
+00:03:33 So you can do things like say, well, let's change our policy so that people who just had some traumatic event get the rest of the day off so they can process that, right?
+
+00:03:42 I mean, these are really powerful and important things.
+
+00:03:45 - One of the things I wanna caution people for is I like I'm a I'm clearly an amateur data scientist because I just did this one thing And just follow the tutorial, but now you have that title Yeah, no, but but there is Be careful when you're drawing when you draw conclusions and plot things and show charts suddenly. It looks more legitimate and Yes, there's there's good information you can find but there's also you got to be careful as well So at the beginning in this article for instance Not all the data is filled in for all a police stops. So you have to deal with like fields that are empty What do you do with that?
+
+00:04:26 And this article deals with it by just throwing them away Like throwing away a bunch of it picks one field and says well I can fill that one in But the rest of them rest of the rows if there if there if there's any empties just throw them away I don't think that that's valid and I think there's a probably a better solution But I think that if you're going to publish something, you should discuss what you did to clean up the data also.
+
+00:04:51 >> One of the things we've talked a lot about here on the show is performance.
+
+00:04:55 Sometimes that performance comes in terms of asynchronous programming when you're waiting on the network and things like that, or other times maybe looking at things like PyPy.
+
+00:05:06 Most people know there's all these different implementations and runtimes for Python.
+
+00:05:11 But if you're a new listener, maybe new to Python, We have CPython, is what most people mean when they talk about Python.
+
+00:05:18 We also have a JIT, just-in-time compiler version of Python called PyPy.
+
+00:05:23 We have IronPython, we have Jython, we have Cython.
+
+00:05:27 There's all these different variations.
+
+00:05:28 So one of the ones that promises to take basic working Python code and make it a lot faster is PyPy.
+
+00:05:35 So you'll hear people talk about, "Hey, you could make your code five times faster with PyPy under, you know, a whole bunch of constraints." So the thing I want to talk about this time on this show is how somebody went and took their code for IoT stuff and made it 80 times faster with PyPy.
+
+00:05:51 - Yeah, that's incredible, 80 times, wow.
+
+00:05:53 - Yeah, and I don't think they even really changed the code much.
+
+00:05:56 They did change one little bit of an inner loop, but that was about it.
+
+00:05:59 All right, so here's the deal.
+
+00:06:01 This person was working on evolutionary algorithms, which they were trying to create basically a self-learning adjusting algorithm that could evolve a logic to control a quadcopter.
+
+00:06:12 - Oh, nice.
+
+00:06:13 - Right, like one of these drone things.
+
+00:06:15 It was a simulated one, but you know, it could be hooked to a real one, it doesn't really matter.
+
+00:06:19 And in order to drive the quadcopter, this object had to basically run a certain operation every, you know, so often.
+
+00:06:28 And the so often is like 100 times a second, so quite often.
+
+00:06:32 And they would input this NumPy array, they would do some processing on it, and output another one, like how much thrust goes to each motor and things like that.
+
+00:06:39 So this is happening 100 times a second, and they ran it with CPython, and their test that they ran, not just once, but a whole bunch of operations, it took about six seconds.
+
+00:06:49 And they said, "Okay, well, let's try PyPy." I heard using PyPy makes it faster.
+
+00:06:54 So they just, instead of typing Python space my program, they type PyPy space my program, and it turns out it was, wait for it, five and a half times slower.
+
+00:07:03 - Oh no.
+
+00:07:04 Yeah, that's not faster.
+
+00:07:06 - Exactly, it's like, "Oh, who sold me this bill of goods?
+
+00:07:08 "Man, I thought this was supposed to be faster." So it turns out that the integration with NumPy, which is what they're using, actually some of the C interop stuff is quite a bit slower.
+
+00:07:21 So they actually use this PyPy implementation of NumPy.
+
+00:07:25 It's called NumPyPy instead of NumPy.
+
+00:07:28 And that worked, that made it faster.
+
+00:07:30 So now it was two times faster just by switching out the imports in the library.
+
+00:07:34 So that's pretty good.
+
+00:07:35 I said, but you know, we actually think we could do better.
+
+00:07:39 And so what they did is they started profiling it, and they looked at where it was slow and said, you know, this thing, actually, we could just rewrite this algorithm just a tiny bit so it's more friendly to the JIT compiler.
+
+00:07:49 And they got it to go 80 times faster than the original CPython plus NumPy version.
+
+00:07:54 - Oh, that's nice.
+
+00:07:55 - That's awesome, right?
+
+00:07:56 And that was even 35 times faster than the native PyPy plus NumPy version.
+
+00:08:00 So I think that's a really interesting lesson.
+
+00:08:03 - Yeah, nice use of profiler, too.
+
+00:08:05 - Yeah, exactly, that's the point I was gonna make, is like, yeah, it's one thing to throw PyPy or some other technology at it, but it's not always just gonna be like this silver bullet that solves your problem, right?
+
+00:08:15 But PyPy plus a little intelligent problem solving, that made a huge difference for these guys.
+
+00:08:21 - Yeah, so I mean, you said this was a simulation?
+
+00:08:24 - Yeah, they're doing it as a simulation.
+
+00:08:25 - Okay, I wonder if you can run, I don't know whether or not you can run PyPy on a little tiny quadcopter controller.
+
+00:08:33 - I guess it depends on your definition of tiny.
+
+00:08:36 Like if it's Raspberry Pi, I think you probably could.
+
+00:08:40 If it's Adafruit-sized, maybe that might be too small.
+
+00:08:44 I actually don't know.
+
+00:08:44 - Okay, cool.
+
+00:08:45 - Yeah.
+
+00:08:46 So the next one is an interesting one I saw go by and I saw that you picked here as well.
+
+00:08:51 It has to do with the longevity of open source projects.
+
+00:08:54 - Yeah, this is actually a Wired article called "Giving Open Source Projects Life After a Developer's Death." And I hadn't really thought about that too much before, But there is, I mean, we've got more and more as the article goes on, we've got more and more critical projects using open source projects.
+
+00:09:17 And there's a lot of them that don't have that many maintainers or sometimes just a handful or one.
+
+00:09:24 So really, how do you deal with that?
+
+00:09:26 So that part of the article is just talking about this as a problem, but then also there's possibly some solutions And I was just wondering if we had any solutions.
+
+00:09:40 I also had some terrible puns I was gonna try to throw in.
+
+00:09:44 What to do after you hit your corporeal segfault and raise an end of life exception.
+
+00:09:50 - Yeah, it's definitely something that people, I guess, really wanna think of.
+
+00:09:55 I mean, if you're in business, they do talk about the like, what if so-and-so gets hit by a bus, right?
+
+00:10:02 Will that kill the business?
+
+00:10:04 Well, if this open source project is used by many businesses, it could be that that actually kills a lot of projects, a lot of companies.
+
+00:10:12 Yeah.
+
+00:10:12 So I didn't know this was out there that apparently there's a place called libraries.io that has a bus factor evaluator for different libraries.
+
+00:10:21 So you can plug in a library that you depend on and look up its bus factor.
+
+00:10:26 So how many of the core developers would have to be on a bus that got hit before the project went away?
+
+00:10:34 But one of the things that it did bring up, which I looked up some of the Python stuff, and some of them are core things that even though there's a handful of maintainers, I think it would get picked up anyway because it's part of the standard library.
+
+00:10:48 But there's definitely others that are of concern, and one person points out that perhaps we could build some more things into GitHub or PyPI or other places other places to have maybe errors put in place.
+
+00:11:04 So you could say, you know, if I don't check in for like six months, then transfer ownership to these people or something.
+
+00:11:12 >> Oh, that's a pretty cool idea.
+
+00:11:13 Almost like an escrow for open source.
+
+00:11:16 >> Yeah, like I mean, if you get a big investment account, you got a list who gets it if something happens to you.
+
+00:11:21 So maybe something ought to be like that for open source projects.
+
+00:11:24 >> It sounds like projects somebody could create and integrate with GitHub.
+
+00:11:28 >> Yeah, maybe.
+
+00:11:29 One of the other solutions that I have seen is like the PyTest community for a lot of the plugins.
+
+00:11:38 Try to encourage people to, once you get quite a few users of your plugin, to push it over to a development group on GitHub, and then anybody on the group can maintain it if necessary.
+
+00:11:50 - Yeah, that makes a lot of sense.
+
+00:11:51 I mean, you could always fork the repo and just say, "The real one is here," but I can just see a lot of skirmishes around, like, "No, your fork is not real.
+
+00:11:58 - Well, my fork is really like, you know, people could fight over ownership, right?
+
+00:12:01 - Yeah, and that's doable on GitHub, but you can't really do that on PyPI that I know of.
+
+00:12:08 I don't know how to get transfer ownership on PyPI.
+
+00:12:11 - Yeah, I think you gotta contact them directly and just lobby your case, right?
+
+00:12:15 Just didn't sound like a great long-term widespread solution.
+
+00:12:18 - I don't have that problem currently of having any super popular packages, but you know.
+
+00:12:23 - Yep, that's cool.
+
+00:12:25 Definitely worth thinking about.
+
+00:12:26 Yeah, so before we get to the next topic, Let me tell you about Datadog, right?
+
+00:12:30 So performance in bottlenecks, these don't just exist in just your application code, right?
+
+00:12:35 Like just 'cause your code is slow, well, you could be waiting on the database.
+
+00:12:38 The database could be waiting on some Linux internal behavior, who knows, right?
+
+00:12:43 So these are layers upon layers upon layers across systems that we really build our apps with.
+
+00:12:48 And Datadog lets you view all of those as like one whole thing.
+
+00:12:52 So let's say you have a Python web app running on Flask.
+
+00:12:55 It's built on Mongo, hosted on a scaled out set of Ubuntu servers running Nginx and microWSGI, Datadog will let you view and monitor all those things in one system.
+
+00:13:04 So that is really, really super awesome.
+
+00:13:06 And the more you scale out and the more diverse your system gets, the better Datadog can help you.
+
+00:13:11 They got a getting started tutorial.
+
+00:13:13 Just take a few moments.
+
+00:13:14 And if you finish it, they'll send you a sweet Datadog t-shirt.
+
+00:13:17 So check that out at pythonbytes.fm/datadog and see what you've been missing.
+
+00:13:21 - I still have to do that.
+
+00:13:22 I need that t-shirt.
+
+00:13:22 - Yeah, we've got to get our t-shirt.
+
+00:13:24 So maybe this is the wrong season here in the Northern Hemisphere.
+
+00:13:29 Maybe this is gonna resonate a little more with our Australian friends.
+
+00:13:33 But this next project I wanna talk about is a solar powered, internet connected lawn sprinkler.
+
+00:13:38 - Oh, nice.
+
+00:13:39 - Yeah, so Lenin, one of our listeners, friends of the show sent this in, said, "Hey, I've created this really cool project "and I'd like to share it with everyone." And I thought, yeah, this is actually a really neat example.
+
+00:13:48 So I thought we'd throw it in here.
+
+00:13:50 And the idea is he went and got this little tiny Adafruit Feather Huzzah board.
+
+00:13:56 And this is like a little tiny microchip type thing, but it has a wifi, so that's important.
+
+00:14:02 You can plug it in somewhere and talk to it.
+
+00:14:05 And it works with MicroPython.
+
+00:14:07 So MicroPython is the Python that works in the smallest devices.
+
+00:14:11 Like you said, the PyPy before, I'm not sure if you can get PyPy to run on this one, but MicroPython is so super level.
+
+00:14:17 It's basically is the operating system.
+
+00:14:20 Your app is basically the operating system.
+
+00:14:22 Yeah, so you can take like a Lambda function and connect it right to a hardware interrupt directly.
+
+00:14:26 Like that's how low level, that's insane, right?
+
+00:14:28 - Oh, that's nice, yeah.
+
+00:14:30 - Right?
+
+00:14:31 And he combines a couple of other interesting things.
+
+00:14:33 He combines Home Assistant, which is the biggest home automation project in Python, like a really cool app that integrates tons and tons of different IoT and smart home things.
+
+00:14:45 And he gives a really nice list of like, here's every single piece of hardware I used.
+
+00:14:50 Here's the solar board that I used.
+
+00:14:51 Here's the container for the feather Haza board.
+
+00:14:55 And it's just a really nice example of a small, compact IoT project.
+
+00:15:00 - Yeah, and useful and not creepy.
+
+00:15:02 I like it.
+
+00:15:02 - Yeah, exactly.
+
+00:15:03 The more we seem to go back and forth on these little IoT things, I really wanna create one of these that goes on my front door that uses machine learning to determine what type of person is on my front door when they ring the doorbell.
+
+00:15:13 - Yeah, or a dinosaur.
+
+00:15:14 - Yeah, or a dinosaur, that's right.
+
+00:15:16 Yeah, and also I had put a link in here to Talk Python episode 108, where I actually had the guys from Adafruit come on and talk about a whole bunch of these different projects.
+
+00:15:25 But yeah, nice job, London.
+
+00:15:27 This is a cool one.
+
+00:15:28 - Yeah, and shout out to Adafruit too for doing all sorts of cool stuff with hardware and software.
+
+00:15:33 I like that.
+
+00:15:33 - Yeah, they have a big educational aspect to them.
+
+00:15:36 Not just education education, but teaching people who want to learn about IoT.
+
+00:15:40 I'm definitely planning on playing with some of these little devices in MicroPython.
+
+00:15:44 It just seems really fun.
+
+00:15:46 - Okay, so I am going to be perfectly honest with this last one.
+
+00:15:49 I had a, my last thing I was going to talk about was going to be another packaging story, but I kind of went down a rabbit hole.
+
+00:15:58 So instead of getting into that, that's my homework for next week.
+
+00:16:02 So I've already set up what I'm going to talk about next week.
+
+00:16:05 But the, what I want to highlight is some, some books that came out.
+
+00:16:09 So we had some new Python books that came out recently.
+
+00:16:12 It's a big week for Python books.
+
+00:16:14 Yeah.
+
+00:16:15 Python tricks from Dan Bader that came out and Matt Harrison's illustrated guide to Python 3 and I have just actually just I'm gonna read at least peruse both of these I've just started Python tricks and I like the format. It's cool and and then I'm gonna take a read for Python Matt Harrison's book and I The cover is awesome and I want to try to get actually I want to have that around my office so that other people can can look up Python 3 stuff pretty easy.
+
+00:16:46 - That seems really nice, I looked through it as well, and the illustrated aspect is cool on Matt's.
+
+00:16:51 So yeah, congrats both to Dan and Matt on this, this is cool.
+
+00:16:54 - Yeah, and then the last thing is that I was on Twitter, I was talking with a handful of people, authors.
+
+00:17:00 There are some Python books out there that really could use some Amazon review love, so I'm gonna drop a link to my book and Harry Percival's Test Driven Development, which has been out for a while, but it's only got six reviews.
+
+00:17:17 And I know a lot of people have read this stuff.
+
+00:17:19 And then also--
+
+00:17:19 - Yeah, Harry's book is really great.
+
+00:17:21 Obey the Testing Goat and all that stuff.
+
+00:17:23 - And then also the Greenfield's Two Scoops of Django.
+
+00:17:27 I know a lot of people have started Django or gotten a lot better at it using this.
+
+00:17:32 So go out and show some Amazon love to these people.
+
+00:17:35 - Yeah, definitely.
+
+00:17:36 I think it really helps if you've read a book to write a review, if you've taken a class, give a review, right?
+
+00:17:43 Like these things actually make a big difference.
+
+00:17:44 - Yeah, it really does.
+
+00:17:46 And we're all trying to do things the right way and trying to support the community, so.
+
+00:17:51 - Yep. - That's cool.
+
+00:17:52 - Awesome.
+
+00:17:53 Well, the last one I wanna talk about is, sort of harkens back to the first one that you did, the data science space and the Anaconda distribution.
+
+00:18:01 So you probably know Anaconda distribution is an alternate distribution for Python.
+
+00:18:08 It's basically CPython, but instead of just being a standalone CPython where you pip install stuff, it comes packaged with most of the machine learning, data science, and popular libraries you already need pre-compiled for your machine.
+
+00:18:22 So if you want to use some weird package that requires like a Fortran compiler or something, you can just, you know, install it.
+
+00:18:29 Either it's come with Anaconda or you conda install it, and it actually downloads to the binary version.
+
+00:18:36 so there's no worries about it not installing correctly.
+
+00:18:40 >> Yeah, there's also both paid and free distributions, but even the free one is one of the few multiple package distributions that is completely legitimate to do within a company, as long as you're not reselling that itself.
+
+00:18:58 >> Yeah, that's awesome. So the news about Amaconda distribution is version 5 is released.
+
+00:19:04 So they have a hundred packages have been updated or added.
+
+00:19:07 They have JupyterLab, alpha preview included, updated MKL.
+
+00:19:11 - Nice.
+
+00:19:12 - That's the Intel high performance compiled stuff.
+
+00:19:15 So it used the Intel sort of low level speed ups for the machine learning and computational stuff.
+
+00:19:22 New compilers for Mac OS and Linux.
+
+00:19:24 So what is that?
+
+00:19:25 That's Clang and GCC respectively.
+
+00:19:27 But what's important here is they flipped the flags on the compile steps for all of these things to use the most newest and compatible flags for security.
+
+00:19:37 So the stuff that gets compiled out of here is less likely to suffer from things like buffer overflow sort of attacks and stuff.
+
+00:19:47 So that's really cool.
+
+00:19:48 The compilers are now a little safer for you.
+
+00:19:50 They've got updated conda forge and some other things.
+
+00:19:54 They're creating another channel that has to do with this new compiler thing I talked about and so on.
+
+00:19:58 So pretty cool.
+
+00:19:58 - I still have on my to-do list to go check out JupyterLab.
+
+00:20:01 Have you done any of that?
+
+00:20:02 - I have not checked out JupyterLab.
+
+00:20:04 - Okay, it looks fun.
+
+00:20:05 - Yeah, it definitely does.
+
+00:20:06 There's a lot of cool stuff happening with Jupyter and like social coding and stuff these days.
+
+00:20:11 It's exciting.
+
+00:20:12 Well, that's it for my news this week, Brian.
+
+00:20:14 Anything else you wanna add?
+
+00:20:16 - I did find out last week that the Python testing with PyTest is available on, what is that thing?
+
+00:20:23 - Safari Books Online?
+
+00:20:24 - Yeah, the Safari Online, it's now there, so.
+
+00:20:27 - That's awesome, like tons of people have that as just available to them as part of their company, right?
+
+00:20:31 So people can now get your book that way.
+
+00:20:34 - I don't think I do.
+
+00:20:35 I'm gonna check it out.
+
+00:20:37 Yeah, people can check it out.
+
+00:20:38 I have no idea how, if any of that money comes back to me with that, but I'm glad that a lot of people can read it.
+
+00:20:43 - I think one of the things that's great about creating something like a book or a course or whatever, even a podcast per se, is that people just use it and enjoy it, right?
+
+00:20:52 You put a lot of energy into creating it and if it just sat there digitally silent, that would be sad.
+
+00:20:57 - Yeah, yeah, it would be.
+
+00:20:58 - So cool, yeah, I'm glad it's out there and yet another channel for people.
+
+00:21:02 All right, well, Brian, thanks again--
+
+00:21:04 - Thank you.
+
+00:21:05 - For everything this week, and talk to you all later.
+
+00:21:07 - All right, bye.
+
+00:21:08 - Thank you for listening to Python Bytes.
+
+00:21:10 Follow the show on Twitter via @PythonBytes, that's Python Bytes as in B-Y-T-E-S, and get the full show notes at pythonbytes.fm.
+
+00:21:19 If you have a news item you want featured, just visit pythonbytes.fm and send it our way.
+
+00:21:23 We're always on the lookout for sharing something cool.
+
+00:21:26 On behalf of myself and Brian Aukin, this is Michael Kennedy.
+
+00:21:30 Thank you for listening and sharing this podcast with your friends and colleagues.
+
