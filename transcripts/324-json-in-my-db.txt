@@ -1,0 +1,1250 @@
+00:00:00 - Hello and welcome to Python Bytes, where we deliver Python news and headlines directly to your earbuds.
+
+00:00:05 This is episode 324, recorded February 21st, 2023.
+
+00:00:10 I'm Michael Kennedy.
+
+00:00:12 - And I'm Brian Okken.
+
+00:00:14 - And I'm Erin Mullaney.
+
+00:00:15 - And this episode is brought to you by Compiler, a podcast from Red Hat, tell you more about them.
+
+00:00:19 Erin, it's awesome to have you on the show.
+
+00:00:22 Thanks for joining us.
+
+00:00:23 - Thanks for asking me to be on.
+
+00:00:25 - Yeah, you bet.
+
+00:00:26 Yeah, why don't you tell folks a bit about yourself before we jump into the topics.
+
+00:00:31 - Yeah, I'm Erin Mullaney.
+
+00:00:32 I've been a web developer since around the year 2000.
+
+00:00:36 I currently work at Energy Solutions as a code base lead on a Django project there, which means that I write and review a lot of Django and Python code on a day-to-day basis.
+
+00:00:48 Energy Solutions, where I work, is an energy consulting company that's mission-driven to protect the environment through different energy things.
+
+00:00:58 to be real, not specific.
+
+00:01:00 I specifically work on a Django project that facilitates energy efficiency programs.
+
+00:01:06 And energy efficiency is actually a super powerful and cost-effective way to combat climate change.
+
+00:01:14 And that's according to the US Department of Energy.
+
+00:01:17 - Yeah, that's awesome.
+
+00:01:18 All the wasted energy and bad insulation and other things like that, that's really cool.
+
+00:01:23 That's good work.
+
+00:01:25 Really quickly before we dive into Brian's item here, How are you feeling about Django and the recent changes?
+
+00:01:29 I feel like it's picked up a lot of momentum lately.
+
+00:01:31 It's picked up some new features like async stuff.
+
+00:01:34 Is that exciting for you and your team?
+
+00:01:36 - Yeah, for sure, it's exciting.
+
+00:01:38 I am coming from a background where I was actually coding in a different web framework for years and switched over to Django.
+
+00:01:46 So I'm just happy to hear that more and more people are downloading it and using it.
+
+00:01:53 So yeah, yeah.
+
+00:01:55 - I wouldn't just stick around, 'cause I like it.
+
+00:01:58 - Yeah, absolutely.
+
+00:01:59 All right, Brian, you wanna kick us off here?
+
+00:02:01 - Sure, so this one, first one's coming from Brett Cannon.
+
+00:02:05 So he wrote an article called Use Toml for .env files, question mark.
+
+00:02:10 And so there's the question at the end, and we'll talk about that.
+
+00:02:15 But I just ran across, I mean, I don't know, because I'm not a web developer very much, I mean, I'm getting more so now, but I wasn't really familiar with the .env files until just recently.
+
+00:02:28 And so one of the great things about this article is it talks about kind of what these are.
+
+00:02:32 So what these are often is you've got settings for your application.
+
+00:02:40 And there's an idea of a 12-factor app design, which I kind of like read about many years ago and forgot about.
+
+00:02:48 But one of the ideas is you don't wanna like have too many differences between your development environment and your live environment.
+
+00:02:54 And one of the ways you do this is using environmental variables to store things like login credentials and all that sort of junk.
+
+00:03:00 And in Python, one of the ways we do that is through .env files and also through a project called python.env, which is used by Dantic and a lot of other projects.
+
+00:03:15 And what this does is it allows you to have defaults in there.
+
+00:03:18 So you have, so in your development environment, I might have something silly, some silly credentials, but then, or, you know, look him up somewhere.
+
+00:03:26 But then in your live environment, those are actually set by the production server to set those secrets.
+
+00:03:33 And so the question really is, what's the format of this?
+
+00:03:38 So, and I kind of never really thought about it before.
+
+00:03:41 And basically the problem is it's not defined.
+
+00:03:46 And it's in--
+
+00:03:48 There exists a text file that has secrets.
+
+00:03:50 (laughing)
+
+00:03:50 - Yeah, and it says it's kind of like Bash-ish files or something.
+
+00:03:56 It's by the, it's a format that's not formally specified and improves over time according to the python.env readme.
+
+00:04:04 But that's not really, what does that mean?
+
+00:04:08 It kind of means it's your application so that you can define it however you want, right?
+
+00:04:12 But maybe we should have some standardization.
+
+00:04:15 So Brett was looking further into this.
+
+00:04:19 And one of the solutions that Adafruit came up with was let's not use .env, but actually just do a settings.toml.
+
+00:04:27 It's used for the same thing, to store secrets such as passwords and API keys.
+
+00:04:32 So they're using toml.
+
+00:04:34 And then basically kind of when you just do a normal simple toml file, it looks pretty much like a normal, any other .env file that people have used.
+
+00:04:43 So really that's the question that Brett is posing is, can we just standardize on this?
+
+00:04:49 Why don't we just, you know, standardize.env as .toml, as toml format.
+
+00:04:55 And I think, why not?
+
+00:04:57 Mostly it'll work for everybody already.
+
+00:05:00 And then you could do cool things if we did toml.
+
+00:05:03 You could extend it a bit.
+
+00:05:04 So like in the VS Code code base, they're talking about like using categories and specific table to hit.
+
+00:05:11 you'd have multiple tables in there instead of just the global one.
+
+00:05:14 >> I think that's a cool idea.
+
+00:05:16 I like the ability to have multiple things like test and maybe dev or a connection string to a database or something.
+
+00:05:22 >> Yeah.
+
+00:05:23 >> It wouldn't make me sound if it was JSON as well.
+
+00:05:26 I know Aaron is going to make a KMO for JSON later, but Toml seems to be winning on these things, and I would be okay with Toml as well.
+
+00:05:36 >> So Aaron, you do web development.
+
+00:05:39 Do you use .env files or this sort of a setting?
+
+00:05:43 >> We use settings.
+
+00:05:45 We don't use .env files.
+
+00:05:49 We do have local settings.
+
+00:05:52 >> Cool. I'm not really a Django developer, so maybe is it built into Django to have some solution for this?
+
+00:05:59 >> I get it running on my machine and then I go and I code.
+
+00:06:05 >> Okay.
+
+00:06:06 >> All the OS stuff.
+
+00:06:07 Yeah, all the ON stuff is not, yeah, is not stuff I worry about unless I'm installing a new requirement or something.
+
+00:06:14 Yeah, Django does have its way of managing settings that predates this stuff, I believe, as well.
+
+00:06:19 All right.
+
+00:06:20 Yeah, that makes sense.
+
+00:06:21 Well, Michael, should we switch to Pydantic?
+
+00:06:24 I have some crazy news for you. Yeah, let's do it.
+
+00:06:27 First, huge, huge congrats over to Samuel Colvin.
+
+00:06:33 And I've had him on the show to talk about Pydantic before.
+
+00:06:36 Pydantic is one of the more exciting libraries, I think, especially in the API space.
+
+00:06:42 But also Python bytes itself is powered by Beanie, the MongoDB ORM or ODM.
+
+00:06:48 And that is uses Pydantic models as its validation and an exchange like the things that are mapped to MongoDB are Pydantic classes.
+
+00:06:57 So here's the news.
+
+00:06:58 The Sequoia, like one of the biggest VC firms in California, in the world probably, backs open source data validation, Pydantic to commercialize with cloud services.
+
+00:07:09 That's crazy, huh?
+
+00:07:10 - Yeah, wow.
+
+00:07:11 - We are a long way from the buy me a coffee, donate PayPal button that you see on the various projects in this.
+
+00:07:18 And I think it's just a sign of the open source space finding its way to support really successful projects and to support people whose time and energy and contributions to the world would be better spent to further this library than say potentially like, well, how can we get like 1% of 1% increase on ad clicks by using my library or something like that, you know, working for like companies that don't necessarily contribute so much.
+
+00:07:46 So some of the highlights here, you'll notice when I said we're long ways from buying me a cup of coffee, Pydantic Services Incorporated emerges from stealth today with 4.7 million in seed funding.
+
+00:07:59 - Wow.
+
+00:08:00 - So wait, what?
+
+00:08:01 - Big coffee.
+
+00:08:02 - That is a lot of coffee.
+
+00:08:03 You could have, that's like coffee for life.
+
+00:08:05 Some of that fancy kind, you know, the weird, weird variations and stuff.
+
+00:08:10 Yeah, anyway.
+
+00:08:11 So there's, it's not just Sequoia, it's Pear Tech, it's Irregular Expressions, it's Zapier co-founder, Brian Helmig, who's also been on, talked by them before, and some other folks, co-founder of Sentry, David Kramer, so on.
+
+00:08:24 So let me see, I wrote down some of the highlights.
+
+00:08:26 out of this whole article that I wanted to hit on. First of all, also, this comes from Mark Little, who was a guest on show 285 and also a friend of mine. So thanks, Mark, for sending that in.
+
+00:08:36 The new the whole like, so you might be wondering, okay, well, 4.7 million is amazing. It's a lot of support. It means pedantic, it's only going to get better and stronger. But what the heck, you get a gift for your 4.7 million. So the idea is that this new commercial entity, It'll incorporate a bunch of tools and services that are powered by and inspired by the pedantic library. And from what I can tell is its primary goal is to make pedantic really, really good further, right, there's already this big project for 2.0. For rewriting the core and rust. This is the last time I had Samuel on the show on top Python to talk about that, which is going to make it a lot faster. But something a little bit akin to a platform as a service, something a little bit bit like a Heroku where you can push Python code to production in simple ways, but using the validation and the data exchange and the understanding that Pydantic has for data as part of this.
+
+00:09:34 So final thing, and I'll get y'all's thoughts on this, is you're going to start with an initial team of six.
+
+00:09:40 The first three engineers are based in Montana, Chicago, and Berlin, various places.
+
+00:09:45 And so, yeah, I wish all the luck to the Pydantic team and to Samuel and folks.
+
+00:09:50 I think this is a great real thing.
+
+00:09:52 - I think this is great.
+
+00:09:54 I like the conversion to Rust.
+
+00:09:57 That's pretty exciting.
+
+00:09:59 - Yeah.
+
+00:10:00 How's this sit with you?
+
+00:10:01 Does this surprise you?
+
+00:10:02 - No, it's cool.
+
+00:10:05 It's very cool.
+
+00:10:07 I mean, I'm just Googling it because I didn't research it ahead of this talk.
+
+00:10:12 But yeah, it sounds like it can be used with any Python-based framework.
+
+00:10:16 - Yeah, it came out of fast.
+
+00:10:18 Yeah, it came out of fast API.
+
+00:10:20 and it plays many important roles in fast API.
+
+00:10:23 It's the data validation.
+
+00:10:24 It's also the type hence that does the automatic data conversion, but it also drives like the swagger, open API documentation and all those things.
+
+00:10:32 But it's been used way, way more places, for example, like Beanie, which I mentioned, or SQL model and plenty of others.
+
+00:10:39 And it's just starting to gain a ton of momentum as a really solid data exchange for Python that's not like directly talking to databases.
+
+00:10:47 So yeah, it should be good to see it grow.
+
+00:10:49 - What does that mean not directly talking to databases?
+
+00:10:53 Meaning it just reads what comes back from the API and validates that?
+
+00:10:57 - Yeah, it basically will take any JSON or if you could take a TOML document, you could turn it into a Python dictionary, then you could pass that on and have it validated.
+
+00:11:06 So you could say things like, this class has a list, which is a list of orders, and there can be no more than three orders in the list and they have to be orders, and this thing has to be a number, and just all that kind of logic gets expressed in the model there.
+
+00:11:23 So, yeah, yeah, it's cool.
+
+00:11:25 - So one, just I guess a random thing, so it's a team of six, first three engineers based in Montana, Chicago, or Berlin.
+
+00:11:32 I wonder who's in Montana?
+
+00:11:34 And I guess if you had to choose one of three places to live, would you choose Montana, Chicago, or Berlin?
+
+00:11:41 - Gosh, I could--
+
+00:11:42 - I think I'd go with Berlin, but--
+
+00:11:44 - I could make a case for Montana or Berlin.
+
+00:11:47 - They both are awesome in their own separate ways.
+
+00:11:50 What's your spare time look like, I guess?
+
+00:11:54 - Yeah, I mean, I do love the theaters in Chicago.
+
+00:11:57 The theaters in Chicago are beautiful.
+
+00:11:59 - I do too, but I'm thinking of motorcycle riding for days in Montana and the cities and all that stuff in Berlin.
+
+00:12:05 Erin, where would you live?
+
+00:12:07 - Man, between those, that's really a hard choice.
+
+00:12:10 I moved to North Carolina for shorter winters, so it seems like Chicago would be out for that reason, 'cause they have even longer--
+
+00:12:16 - I don't know, I might really be out.
+
+00:12:17 - Winters, yeah.
+
+00:12:18 So I would need to research what had the shortest winter, but also had really good vegan food.
+
+00:12:24 Like Chicago has amazing vegan food, but the winters, I just can't.
+
+00:12:28 - I think Berlin's gonna be your vet.
+
+00:12:29 - Yeah.
+
+00:12:30 - Yeah, all right, awesome.
+
+00:12:31 Well, over to you.
+
+00:12:33 What's your first topic?
+
+00:12:35 - Okay, cool.
+
+00:12:36 Yeah, and I just wanted to go back to the Tamil topic because I kind of froze on that one.
+
+00:12:40 So we are using a YAML file for our local settings, not a Tamil file.
+
+00:12:44 I haven't actually seen Tamil before.
+
+00:12:46 I don't really know how different looking it is.
+
+00:12:48 But yeah, and settings are kind of baked into Django for outside of the local environment stuff.
+
+00:12:54 - Cool. - But yeah, so my next, so my topic was, my first topic is JSON fields for performance and thinking about JSON fields in terms of what they are, which is kind of like denormalized data.
+
+00:13:07 I'm really interested in the topic of normalization and denormalization and specifically how JSON fields are basically denormalized and mutable data that's probably living in an otherwise normalized database.
+
+00:13:21 So I was interested in this topic and I searched to see if I could find it anywhere online.
+
+00:13:27 And yeah, so what we're showing here is, this was a talk given by David Stokes at PHP UK in 2019, called "How Denormalizing Your Data with JSON Can Boost Query Performance." I always mispronounce, do you guys pronounce it Jason or Jason?
+
+00:13:45 And I'm sure you've talked about this before.
+
+00:13:47 I guess I had no idea.
+
+00:13:48 I say Jay Jason like on top.
+
+00:13:51 Yeah.
+
+00:13:52 Yeah.
+
+00:13:53 But I don't.
+
+00:13:54 Brian, what do you like on this?
+
+00:13:55 I like the name Jason.
+
+00:13:56 Jason.
+
+00:13:57 Yeah.
+
+00:13:58 It is Jason.
+
+00:13:59 It's like, it's the name.
+
+00:14:00 According to the creator, it is Jason.
+
+00:14:02 Okay.
+
+00:14:03 Creator of Jason.
+
+00:14:04 Got it.
+
+00:14:05 But I will mispronounce it a lot.
+
+00:14:08 And it stands for JavaScript Objects Notation.
+
+00:14:11 But yeah, I think my Philly comes out 'cause I'm always saying JSOL.
+
+00:14:15 So, yeah, so David Stokes gave his talk.
+
+00:14:18 He is a technology evangelist.
+
+00:14:21 And a lot of the talk was about MySQL as a backend in particular.
+
+00:14:25 But the parts of the talk that I found really interesting are the history lesson.
+
+00:14:30 And I kind of have it highlighted here.
+
+00:14:32 It starts at around minute 250, where he talked about how EnderCod at IBM developed the idea of a relational data because hardware was expensive at the time.
+
+00:14:44 So having relational tables and normalized data was a way to not have duplication of data.
+
+00:14:51 And normalized data, just a quick definition is like, or example is like taking an address and breaking it down into parts.
+
+00:14:59 So experts had been saying for years at this point, normalizing data is the way to go.
+
+00:15:07 do you want to normalize your data?
+
+00:15:09 And then during this history talk, you mentioned and then no SQL came in and shook things up.
+
+00:15:14 And after that, SQL added JSON data types for a mutable data type.
+
+00:15:20 So you don't have to define and normalize your whole database.
+
+00:15:24 You can kind of have these mutable fields.
+
+00:15:27 So, okay.
+
+00:15:28 So anyway, the history lesson, I just found that super interesting as a data person.
+
+00:15:34 Do you guys find that interesting at all?
+
+00:15:35 I do.
+
+00:15:36 - I do, yeah.
+
+00:15:37 I think that this concept of mutable schema, not mutable data per se, but that the schema itself doesn't have to be as controlled and as strictly guarded by a DBA that goes through some giant process to figure out what you do, can add a ton of flexibility to the way that you evolve your app, right?
+
+00:16:01 So, there doesn't necessarily have to be a DBA.
+
+00:16:04 It could be like, "Well, how are we going to schedule the downtime so that we can do the schema migration as we roll out this new feature?" Those kinds of things can get challenging.
+
+00:16:17 If you roll out the code first and it's some kind of relational thing, you're using SQL Alchemy or something like that, it's going to crash saying that the code doesn't match the database.
+
+00:16:26 If you roll out the database first, it may no longer match what the code that's running is and there's always this, "Well, what do I do?" Having some of this more mutable schema, in this case, they're talking about MySQL, I believe it's basically the same for Postgres, where you can have columns that are JSON, and then you can, you just say to the database, the schema is JSON, but your code knows, well, it's actually a list of these things with these properties in it.
+
+00:16:52 And you wanna add a new property?
+
+00:16:54 Great, you add a new property.
+
+00:16:55 As long as your code can deal with it, super.
+
+00:16:56 So I think it's certainly something people should consider.
+
+00:16:59 It really adds a lot of flexibility.
+
+00:17:01 you don't need necessarily a normalization table because you can just put the stuff in a list, for example.
+
+00:17:07 - Yeah, and not only flexibility, but also quicker querying.
+
+00:17:13 So yeah, so I really liked starting in around minute 14, which is, this is what I was kind of looking for when I was looking for this topic.
+
+00:17:23 So I really liked that he gave this talk about it.
+
+00:17:25 He goes over an example of a music store and you have these items in a music store, like guitars and you don't want to have to add field every time.
+
+00:17:34 There's a new guitar feature.
+
+00:17:37 You have these JSON fields in your database.
+
+00:17:42 Like you said, they're available in lots of different backends.
+
+00:17:46 We use Postgres and we use JSON fields all over the place.
+
+00:17:51 >> Excellent.
+
+00:17:52 >> He has this really cool diagram where he shows reducing database dives and many too many joins, where you're diving from one index into another, into another to just to get at the data that you can get at the top level if you have it in this JSON field.
+
+00:18:07 Right.
+
+00:18:08 If you don't have to do a multi-way many to many join when it's just in there directly, right?
+
+00:18:14 Because you have more flexibility.
+
+00:18:15 It doesn't have to be tabular.
+
+00:18:16 Yeah.
+
+00:18:17 Yeah.
+
+00:18:18 So I found it really cool.
+
+00:18:19 We use JSON fields in one of our big Django projects quite a bit.
+
+00:18:23 And yeah, our data is totally, our schemas are normalized.
+
+00:18:27 we find it really helpful for also for reporting, making reporting really, really fast because of that database dive that you don't need to do.
+
+00:18:37 And also for tracking snapshots of data.
+
+00:18:41 So something happened on this date and then the relational record changed, but the JSON gives you the snapshot of what the user did on that date.
+
+00:18:52 So that's really useful too. - All right, that's a good point.
+
+00:18:53 'Cause if the snapshot doesn't match the current schema, well then how are you going to store it?
+
+00:18:57 Like that gets to be a problem, but just JSON is JSON, that's right.
+
+00:19:00 - Yeah. - Yeah.
+
+00:19:02 I guess I've taken this kind of to the far extreme in my world, so I'm a huge advocate, but I do almost all my work on MongoDB, which means it's all JSON, all the way down, all right?
+
+00:19:13 So, but I think it's an absolutely fabulous way to work.
+
+00:19:17 I love it.
+
+00:19:17 The operational side of not doing massive migrations all the time, it's really, really good.
+
+00:19:22 - Yeah, and I'm actually working on a blog, a blog article about it because I couldn't find what I specifically wanted to talk about today.
+
+00:19:30 So I'm writing up a blog article.
+
+00:19:32 It's not published.
+
+00:19:32 It'll be published next month.
+
+00:19:35 But yeah, I'll share it later with you guys.
+
+00:19:37 - Yeah. - Yeah, please do.
+
+00:19:39 And I think that's a great, actually a great thing for people to do is just there's a discussion of something and if you can't find an article that expresses what you want to express, then write one.
+
+00:19:51 It's great. - Yep.
+
+00:19:52 Indeed, all right, Brian.
+
+00:19:54 How about I tell everyone about our sponsor before we move on?
+
+00:19:57 >> Oh, that's a great idea.
+
+00:19:58 >> Yeah.
+
+00:19:59 As I said at the beginning, this episode is brought to you by the Compiler Podcast from Red Hat.
+
+00:20:04 And just like you out there listening, we're big fans of podcasts, Brian and I.
+
+00:20:10 And we're happy to share one of the most highly respected, one from the most highly respected open source companies, Compiler, original podcast from Red Hat.
+
+00:20:18 It brings together a curious team of Red Hatters to simplify tech topics, provide insight for new generation IT professionals.
+
+00:20:26 And the show covers topics like what are the components of a software stack?
+
+00:20:29 Are big mistakes that big of a deal?
+
+00:20:31 And do you have to know how to code to contribute and get started in open source?
+
+00:20:36 And not always, depends on how you're trying to contribute.
+
+00:20:39 So Compiler closes the gap between those who are new to technology and those behind the inventions and services shaping our world.
+
+00:20:47 And they bring together stories and perspectives from the industry and simplify its language, culture, and movements in a way that's fun, informative, and guilt-free.
+
+00:20:55 I recently listened to "Are We As Productive As We Think?" And that episode is really fun.
+
+00:21:00 There's a bunch of good advice in there.
+
+00:21:03 As a developer, owner of a tech company, and a technologist, these productivity hacks such as timeboxing, focusing on one task at a time, and incorporating intentional breaks into your workday all stood out as super relevant.
+
+00:21:16 They suggest that by creating an honest self-image of your productivity habits and being intentional about how you spend your time, you can reduce the overwhelm of multitasking that you have to do and increase your focus and creativity, leading to you being more successful, for sure.
+
+00:21:32 So learn more about Compiler at pythonbites.fm/compiler.
+
+00:21:35 The link is in your podcast show notes.
+
+00:21:37 Thanks to Compiler and Red Hat for keeping this podcast going strong.
+
+00:21:42 - Awesome. - All right.
+
+00:21:43 Yeah, thanks.
+
+00:21:44 Fun show.
+
+00:21:45 And tell us, you gonna take us to school, Brian?
+
+00:21:47 - Yeah, so Kevin Markham, he's a friend of the show, a friend of ours, ran into him a lot during when I was going to conferences more.
+
+00:21:57 That's hopefully coming up again.
+
+00:21:59 - What are those?
+
+00:22:00 - Yeah, conferences.
+
+00:22:01 You know, people get together in real life.
+
+00:22:03 So Kevin took a little bit of a break.
+
+00:22:07 He used to write a lot, and I guess I hadn't noticed, but there's a break between August of 2021 and then now in February of 2023.
+
+00:22:18 So copy or break and we all need that, that's fine.
+
+00:22:21 But these articles are great.
+
+00:22:22 So a couple of new articles that he has, I'm gonna pop through a couple of them.
+
+00:22:26 How to use F strings with pandas.
+
+00:22:29 So basically it's a good discussion of F strings if you're not comfortable with F strings already.
+
+00:22:36 This is a good intro to why F strings are great to pop in values.
+
+00:22:42 I don't know if it's really that panda specific, but one of the things I really loved, Although it popped up my favorite part of this article.
+
+00:22:50 So, and I forget to do this.
+
+00:22:52 So I'm glad that he points these up.
+
+00:22:54 So one of the things is you can, it's not just taking a value and putting it in brackets so that you can print it, but you can do, it's an expression in the brackets.
+
+00:23:02 So you can call like upper for a name variable so that you can print it in uppercase and not have to do that before you pass it to the F string.
+
+00:23:11 And or you could do things like, you know, some a little bit of math.
+
+00:23:14 So if you've got like his example had days completed, and he did like 365 minus that divided by, so you get a percentage.
+
+00:23:21 So this is pretty cool to think, remember if the only place you're gonna use the value is within the string, you could just do it within the expression.
+
+00:23:31 So those are good one.
+
+00:23:33 The part that I never really occurred to me to do that I wanted to highlight was, he had different columns of data within a data frame and referencing him with a string index And then using fstring to pick the index within a loop.
+
+00:23:52 And it never occurred to me to use fstrings to generate the index for string index.
+
+00:24:00 This is a cool idea.
+
+00:24:02 Yeah, that is wild.
+
+00:24:03 I like it.
+
+00:24:04 The other article is a fly-through of Jupyter keyboard shortcuts.
+
+00:24:09 And I guess I just have to say I'm a huge fan of the rocket emoji.
+
+00:24:14 I wonder why.
+
+00:24:15 (laughing)
+
+00:24:16 - Yeah.
+
+00:24:17 But the, I like, this is not overwhelming.
+
+00:24:21 So especially for people that use, I mean, if you use it a lot and you don't know keyboard shortcuts, this would be a good intro.
+
+00:24:29 But people like me that just pop in, use it every once in a while for something, these are useful just for those people too.
+
+00:24:36 It's not an overwhelming list.
+
+00:24:37 There's some great stuff like just, you know, hitting escape and enter to go back and forth between command mode and edit mode, for instance.
+
+00:24:44 And then I'm gonna tell you, gonna remember this one, A and B for create a cell above or below the current cell.
+
+00:24:50 So these are just some really great little Jupyter tricks to make yourself more productive and not have to touch the mouse as much.
+
+00:25:00 So anyway, some good things here.
+
+00:25:02 - I think it's great.
+
+00:25:02 I wish actually Jupyter had more hotkeys.
+
+00:25:05 There's really a lot more they could do there.
+
+00:25:08 But knowing the ones that are there, I think it's pretty excellent.
+
+00:25:11 Yeah, for me, I often try to use Vim shortcuts and it's just not, it doesn't work.
+
+00:25:17 It's just not going to have it.
+
+00:25:18 Aaron, what are your thoughts here?
+
+00:25:21 The fstring article was really nice.
+
+00:25:25 Yeah, it's just nice.
+
+00:25:28 It's hard to find a good fstring article that tells you all these different things you can do.
+
+00:25:32 So I was just scanning through it and we use fstrings quite a bit.
+
+00:25:36 And if we have old format Python strings that are in the code that we're updating in a pull request, we always ask the developer to please update those old ones.
+
+00:25:47 So use AppString as well.
+
+00:25:49 They're just so much more readable.
+
+00:25:51 As you're going through it, go ahead and fix them.
+
+00:25:53 Yeah.
+
+00:25:54 Yeah.
+
+00:25:55 Instead of like fixing them all, just go through and fix the ones that you're touching.
+
+00:25:57 Does PyUpgrade do that?
+
+00:25:59 Or I can't remember.
+
+00:26:00 I can tell you that Flint does.
+
+00:26:01 Flint.
+
+00:26:02 Yeah, that's it.
+
+00:26:03 Flint.
+
+00:26:04 I've taken Flint and run it against like large projects that I've done in it.
+
+00:26:09 In the early days, it introduced one bug out of 20,000 lines of code, but it, it wrote, rewrote like a thousand print or string formats of various versions.
+
+00:26:19 And I found it to be really helpful.
+
+00:26:21 So.
+
+00:26:21 And that's F L Y N T.
+
+00:26:23 Just for the podcast listeners.
+
+00:26:26 Exactly.
+
+00:26:27 Thank you.
+
+00:26:28 Yeah.
+
+00:26:29 So this is really good too.
+
+00:26:30 You know, if you, if you ask people to do that, you could suggest like, and you could try just running this on your code.
+
+00:26:35 Start and just make sure it doesn't break anything, but it's been pretty stable since the oddities that hit.
+
+00:26:41 That's cool.
+
+00:26:41 Check that.
+
+00:26:42 We'll check that out.
+
+00:26:42 Cool.
+
+00:26:43 Indeed.
+
+00:26:43 All right, Brian, you all done with yours?
+
+00:26:44 Yeah.
+
+00:26:45 and I just did look it up.
+
+00:26:47 I think the PyUpgrade also does it.
+
+00:26:49 Oh no.
+
+00:26:50 Anthony Lister out there in the audience is just, just trying to egg us on single quotes or double quotes with those F strings.
+
+00:26:56 It's the last episode.
+
+00:26:59 Yeah, exactly.
+
+00:27:00 That's the whole debate last episode.
+
+00:27:01 All right.
+
+00:27:02 My next item is bio GPT.
+
+00:27:06 And so we've heard about ChatGPT and this is similar stuff, but applied to biology.
+
+00:27:13 So, right.
+
+00:27:14 You create a cat that barks.
+
+00:27:16 Exactly.
+
+00:27:17 And now make it mutate into a snake.
+
+00:27:19 how many generations will this take?
+
+00:27:23 Three.
+
+00:27:23 All right.
+
+00:27:24 So I want to just, as a, as a way to, you know, it's not really easy for me to demo So like, let me, as a way of motivation, just show you like a chat TV thing, since you were just asking about Brian.
+
+00:27:33 Check this out. Here's a, here's a cool program that talks about how you should never write insanely nested code.
+
+00:27:40 You should instead use, so the, for people listening, this is like, it says, is this a platypus?
+
+00:27:46 If self.isManimal, and then if self.hasFert, then if self.hasBeak, and so on and so on.
+
+00:27:52 It's like nested over so the code starts in the middle, maybe a bit to the right of the screen.
+
+00:27:57 And it says return true, right?
+
+00:27:58 Like you shouldn't do that.
+
+00:27:59 What should you do?
+
+00:28:00 You should write guarding clauses.
+
+00:28:01 So check this out, Brian.
+
+00:28:02 If I go over to chat GP and say, I'm going to give you a program in Python.
+
+00:28:08 I want you to name it arrow and it'll say, sure.
+
+00:28:12 Arrow sounds like a great name.
+
+00:28:13 And I give it this and it talks about what it does.
+
+00:28:16 It checks whether it's a platypus and say, rewrite arrow to be less nested using guarding clauses.
+
+00:28:24 Certainly.
+
+00:28:24 Here you go.
+
+00:28:25 It says, and what is it right?
+
+00:28:27 Exactly the new pattern that you should have used.
+
+00:28:30 Is that insane?
+
+00:28:31 What do you think Brian?
+
+00:28:31 Aaron?
+
+00:28:32 I wouldn't write the code like this anyway, but okay.
+
+00:28:37 All right.
+
+00:28:37 Now that, so arrow checks or a platypus.
+
+00:28:43 What?
+
+00:28:44 Plant, plant.
+
+00:28:45 Fix it.
+
+00:28:46 Whatever.
+
+00:28:47 Oh, here, hold on.
+
+00:28:48 Platypus.
+
+00:28:49 Rewrite it to check for, crocodiles.
+
+00:28:54 Look at this.
+
+00:28:55 So sure.
+
+00:28:56 No problem.
+
+00:28:57 We're going to write, is it a crocodile?
+
+00:28:58 And look, the tests are, is it a reptile?
+
+00:29:00 Has scales?
+
+00:29:01 Does it have jaws?
+
+00:29:03 Does it have a four chamber heart?
+
+00:29:04 Is that insane?
+
+00:29:07 And all I did is I'm going to give you this code and just start asking questions.
+
+00:29:11 So, okay.
+
+00:29:12 So impressive.
+
+00:29:13 Right?
+
+00:29:13 So back to chat, a bio GPT.
+
+00:29:15 Think of what this can do for doctors and nurses and people trying to understand like written text of this.
+
+00:29:23 So it contains this bio GPT contains a implementation specifically trained for like medical analysis.
+
+00:29:33 Kind of like chat GP is a general analysis tool.
+
+00:29:36 This one is like specifically for medicine.
+
+00:29:39 Okay.
+
+00:29:39 So pretty cool.
+
+00:29:41 Apparently it can do pub med QA tests.
+
+00:29:44 I have no idea what that is, but if I was a doctor, I'm sure this is like, how, how good are you at answering questions with 81% accuracy, which might sound like, "Well, that's 19% not good enough, "but I bet you doctors don't do it at 100% accuracy either." You know, there's a lot of examples where AI is predicting cancer sooner or better or more accurately than--
+
+00:30:05 - Right, and I bet it's better than like Dr. Google and looking up your symptoms and thinking you have the worst thing.
+
+00:30:13 - Yeah, yeah, exactly.
+
+00:30:14 - Well, that's what I was curious about, if it was named like, what am I dying of today?
+
+00:30:18 (both laughing)
+
+00:30:19 - Will I die, GPT?
+
+00:30:21 - I got one in the mouth.
+
+00:30:23 - Oh, it seems grumpy, I don't know.
+
+00:30:25 So it comes with different models.
+
+00:30:26 It has the GP, the BioGPT one, but it also has the large one.
+
+00:30:30 And my experience with this stuff is the large models are where it's at.
+
+00:30:33 The regular ones are quick, but they're not very accurate.
+
+00:30:36 You wanna go for the large model.
+
+00:30:37 So there's a bunch of different ones, like one trained for a fine-tuned for relation extraction task on KD-DTI, which is a certain type of data set or other ones.
+
+00:30:49 so you can pick which ones it is.
+
+00:30:51 And then you just start writing Python code.
+
+00:30:53 So you can either use a PyTorch style of programming, or I think down here there's a hugging face variant as well.
+
+00:31:00 So it seems a little bit cleaner, a little bit nicer.
+
+00:31:03 So you just, your model is from pre-trained Microsoft slash BioGPT.
+
+00:31:08 And there's even a thing where you can try it out down here.
+
+00:31:11 There's like a live, yeah, some answering questions, for example, here you can pull this up you can ask it questions. For example, this one, "Should chest wall irradiation be included after..." Yes. It's just yes. I don't know. People can play around with the examples.
+
+00:31:30 Like I said, I'm not a doctor. I don't really know reasonable things to ask it. But it's a weird world that we live in, and it has lots of positives and lots of negatives, I'm sure, that we're going to come to learn about. But BioGPT, if you're working on analyzing medical texts, check this out. It's from Microsoft.
+
+00:31:45 I think anything that would reduce the amount of time doctors and medical professionals have to spend on the computer is probably good.
+
+00:31:52 So if this means they need to enter less things in because it's just like figuring stuff out for them, that would be really powerful.
+
+00:32:00 But if it's just another tool that they have to use on the internet that makes them not get to be face to face with their patients, then I'm just kind of skeptical of it.
+
+00:32:09 Yeah, I feel like you could ask it questions like, we gave this person, here's their symptoms, we gave them this diagnosis, is that consistent with, you know, historical things, and it could do a lot of comparisons and analysis, or do you think this person has this disease, instead of just yes or no, it's like, why do you think that?
+
+00:32:26 You know, you could have this conversation with it, and it may be able to tell you.
+
+00:32:29 - Yeah, that's really cool.
+
+00:32:30 - Indeed, all right.
+
+00:32:32 - Well, I guess, I was joking about it a little bit, but I think there's a lot of power there.
+
+00:32:37 I mean, like you said, I don't know, if we can get doctors actually seeing people more, but also maybe a 911 call could like, if we determine it's not an emergency yet, but maybe we could direct the person to the right place faster.
+
+00:32:53 I mean, there's lots of places where maybe somebody not with the full degree, but somebody that's still pretty involved with medicine can utilize this to ask better questions and get somebody to somewhere faster.
+
+00:33:06 - Right, or even highlight, what were the key takeaways from this visit with the doctor?
+
+00:33:11 - Yeah. - Right.
+
+00:33:12 Yeah, so, yeah, anyway, it's cool.
+
+00:33:15 - Yep, all right, one more bit of feedback out there.
+
+00:33:17 Will McGugan, hey Will, this is the kind of thing I'd like to see from AI used for not putting artists and copywriters out of business.
+
+00:33:25 Yeah, I agree, amplifying people's good work, not necessarily replacing it.
+
+00:33:30 - Yeah. - We'll see where it goes.
+
+00:33:32 All right, Erin, you got the last one?
+
+00:33:34 - Okay, great, so yeah, talking about code mentorship and communicating with new developers, that's my next topic.
+
+00:33:42 So Sheena O'Connell gave a talk at DjangoCon last year.
+
+00:33:47 I attended that conference, but I missed this talk and watched it online later.
+
+00:33:52 And it's about her work at Muzi training unemployed young people in underserved communities in Africa.
+
+00:33:59 So her company had to quickly build an online learning management system when the pandemic hit in 2020.
+
+00:34:07 And they built that LMS in Django, which is why she was giving a talk at DjangoCon.
+
+00:34:12 Before then, the learning was all done in person.
+
+00:34:15 Anyway, you might think that's cool and all, but how can I apply that to me?
+
+00:34:21 I think that this talk is really excellent.
+
+00:34:24 I also think, I don't know if you all have ever listened to the Django Chat podcast.
+
+00:34:29 They had Sheena on, and she talked about her work at Umoosi, and she talked about getting learners to review each other, and also teaching green developers how to use GitHub and things like that so they don't, quote, "bother" their teammates too much once they get into their jobs after they're finished at Amuzi.
+
+00:34:51 And she specifically said, the quote I liked was, "What sort of thing does a person need to know in order to not annoy their co-workers in the first three months?" So I really liked thinking about the learning in that way. And yeah, so something we started doing recently where I work is we had been doing code reviews, me and the other codebase lead had been kind of just doing them all ourselves. And our project manager, Matt, suggested we take, we have a new requirement where two non-codebase leads have to review any pull request before any codebase lead looks at it.
+
+00:35:29 So that's something we just implemented. And have either of you have familiarity with with pull requests and code reviews in your day to day? Yes.
+
+00:35:38 Yeah. So I have to say it's it's it's really like been really helpful to us. And I liked I liked Sheena talking about that on on the Django chat podcast. She also mentioned that at Umusee, the learners review each other. So someone who is further along in her course gets to both learn how to review code and also review someone else's answer. Because with Python, there are a lot of different correct answers, right? So just reactivating that part of their brain to look back at a previous answer is kind of cool. Yeah. Were you going to?
+
+00:36:19 I also think that it's cool that they're learning more than just loops, variables, functions, you know, but how to coexist as a teammate in a software team.
+
+00:36:29 Yeah.
+
+00:36:30 Yeah, that's cool.
+
+00:36:31 Yeah, she could find there.
+
+00:36:32 Yeah, so, so we're always looking for new ways to like onboard developers.
+
+00:36:39 And another cool idea that Sheena had was writing half solutions and leaving gaps for others to fill in the blank.
+
+00:36:45 I thought that was kind of cool because when we onboard a new developer to our code base, it can be really rocky.
+
+00:36:52 And I kind of thought like, oh, that might be kind of neat, instead of giving them a whole ticket to work on, like half finishing a ticket and like letting them fill in the other blanks is kind of cool.
+
+00:37:02 And just one more article that I found about this was on the Cactus blog.
+
+00:37:07 I used to work at Cactus as a Django developer there.
+
+00:37:11 And so I still follow their blog quite often.
+
+00:37:15 And they had this recent blog post from Dimitri Chukin about their new internal mentorship program there, where they have three different paths.
+
+00:37:25 And one is apprenticeship for folks just starting out as developers.
+
+00:37:31 One is for fellowship, and that's for people who are currently training in one of those coding camps.
+
+00:37:36 And then the third one, which is really kind of special, is mentorship for high school students.
+
+00:37:41 So I thought that was kind of neat.
+
+00:37:44 still where I work, we're still figuring out how to onboard people. I feel like that is one of the hardest things. Do you both know what I'm talking about? Onboarding is extremely difficult and it depends on how much, well it depends on the skill set you need people to have. I mean, when you have like a diverse set of skills, we always face that. So I've got, I need somebody that knows both Python well, testing practices well, C++ well, and it'd be great if they also new like RF measurements and stuff like that.
+
+00:38:15 And you just can't find those people.
+
+00:38:16 So you have to pick what you want somebody to complement somebody else with and know that you're going to have to help train.
+
+00:38:24 Right.
+
+00:38:24 They support them in the other areas.
+
+00:38:26 Yeah.
+
+00:38:27 Yeah.
+
+00:38:27 Yeah.
+
+00:38:27 Cool.
+
+00:38:28 And one of the things that you mentioned, like code reviews, we, we use code reviews a lot for communication, not, not necessarily for people to catch what somebody else is doing wrong, but to make sure that everybody understands what the rest of the team is working on.
+
+00:38:44 So we, especially for long running things, we have a practice of using draft code reviews.
+
+00:38:50 So code reviews and drafts so that, and GitLab won't let you merge it if it says draft in the title.
+
+00:38:56 So, so then then people can just keep updating that and then they can get feedback even when it's not ready, when the code's not ready yet.
+
+00:39:04 So good way to do that.
+
+00:39:06 Yeah.
+
+00:39:07 Cool.
+
+00:39:08 Nice.
+
+00:39:09 - All right, that's all of our items.
+
+00:39:12 Brian, you got some extras for us to share?
+
+00:39:14 Anything else you want to throw out there real quick?
+
+00:39:15 - No, I spent most of my extra time getting my talk ready for PyCascades.
+
+00:39:19 So PyCascades coming up soon.
+
+00:39:21 - Yeah, indeed. Coming up very soon.
+
+00:39:23 Excellent.
+
+00:39:24 Erin, how about you?
+
+00:39:24 Want to throw anything out there?
+
+00:39:25 - Yeah, DjangoCon US is in Durham, which is 15 minutes from where I live.
+
+00:39:30 So I'm excited.
+
+00:39:31 - Nice.
+
+00:39:33 North Carolina is a fun place to visit.
+
+00:39:35 - Yes.
+
+00:39:35 - Generally warm, although not always warm, but generally warmer than a lot of places.
+
+00:39:39 - It's generally warmer and it's in October.
+
+00:39:41 So it'll be kind of a nice time of year probably.
+
+00:39:44 Hopefully not boiling hot, but yeah, probably not.
+
+00:39:47 - Cool.
+
+00:39:48 I'll have to try to see if I can get an excuse to get out there.
+
+00:39:51 That'd be fun.
+
+00:39:51 All right, excellent.
+
+00:39:52 Anything else?
+
+00:39:53 Is that it?
+
+00:39:54 - How about you?
+
+00:39:55 - Yeah, I got one.
+
+00:39:56 You know I do.
+
+00:39:56 All right, so an article came out a few days ago.
+
+00:39:59 Security researchers uncover 700 malicious open source packages on NPM and PyPI.
+
+00:40:05 This used to be a thing that could even headline.
+
+00:40:08 I think we even headlined in, like, was the title of one of our shows, Brian?
+
+00:40:11 The news here is not this.
+
+00:40:13 The news is that this stuff is just not news anymore.
+
+00:40:16 So people be careful out there when you pip install stuff, make sure you spell it right.
+
+00:40:21 That's like the, that's generally the worst thing is the typo squatting.
+
+00:40:25 So anyway, the fact that this is not released.
+
+00:40:28 - I didn't realize that that's how they were, oh, that's so smart.
+
+00:40:31 - They might put a virus in request instead of requests with the plural, you know what I mean?
+
+00:40:36 or if you transpose two letters and there's some stuff that the PIPA is trying to do to work that, but it's still tricky.
+
+00:40:44 - Or standard lib stuffs that you don't have to install.
+
+00:40:47 It's just there, people will explore on that.
+
+00:40:49 - Right, right, yeah.
+
+00:40:51 And it's create a package for that.
+
+00:40:53 All right, that's not the end of it.
+
+00:40:55 Another one, Brian, do you remember I announced, hey everybody, update your Git.
+
+00:40:59 There's a security vulnerability in Git.
+
+00:41:02 This is the first time this has happened in a really long time.
+
+00:41:04 - Yeah.
+
+00:41:05 make sure you apply git, or you install to dot 39.1 or higher. Well, guess what, two dot 39.1 has a vulnerability that's completely different. But if you try to clone from a malicious repository, you're going to be having a bad day. So update your get again. All right. And then also, I'm working on a project now where I needed a an ignore file. But the project was originally created in one language and I wanted the ignore file for another and I was basically going to combine them. So maybe you all know this, maybe you know this, but GitHub, when you go to create a new project, you can choose what kind of project is it. Is it C++? Is it Python? Is it Dart? Is it Flutter? And you'll get a different ignore for that. Well, there's actually a repo, github.com/github/getignore and every single language that you could have chosen that drop down has its ignore file here.
+
+00:42:00 So for example, the Python one, this, it's checked into this project.
+
+00:42:04 So when you say create a new Python project, what comes out as the ignore is actually this file.
+
+00:42:10 So if there's people out there who really need a change to the default behavior of the Python get ignore for projects, you know, you could go to a PR for this.
+
+00:42:18 But the way I use it is I just said, I also need one on Flutter or there's not a Flutter one, but there's a Dart one.
+
+00:42:25 So I grabbed the one for Dart and piled that in there as well.
+
+00:42:28 - Yeah, I've got it too.
+
+00:42:29 Or even if you're not using GitHub, you can use this for.
+
+00:42:32 - Yeah, exactly, it has nothing to do with GitHub.
+
+00:42:34 It's just you have access to every version of an ignore file that GitHub thinks is good.
+
+00:42:40 Related to that is getignore.io.
+
+00:42:43 This is another one you come down here and search for other stuff.
+
+00:42:45 Like for example, there was no Flutter in the GitHub one, but over here I can put Flutter, and here's my Flutter one for all the crazy build, code generation madness you get.
+
+00:42:55 It is a project by TopTile, but getignore.io, When you just put it in here, I'm looking for whatever, and then it'll pull up.
+
+00:43:02 - See, type PyTest, see if it'll do the results.
+
+00:43:06 - No results found, oh, sad.
+
+00:43:10 Sad face.
+
+00:43:10 But anyway, if you're looking for ignores for projects, there you go, those are kind of nice.
+
+00:43:15 - Cool, nice.
+
+00:43:16 - All right, are you all ready for a joke?
+
+00:43:19 - Yeah. - Yes.
+
+00:43:20 - Brian, I thought about you on this one in particular, so we'll see what you think of it.
+
+00:43:24 So this is one, it's a cartoon, And it has a cartoon character looking at two red buttons.
+
+00:43:29 They're both gonna do something massive.
+
+00:43:31 One has the star asterisk character and one has the ampersand.
+
+00:43:36 And there's the person there just sweating out, like, their fingers in the middle, doesn't know which one to pick.
+
+00:43:41 And it said, "My C code isn't working.
+
+00:43:44 "No one involves pointers." What do you think, Brian?
+
+00:43:49 - I would not hire this person.
+
+00:43:50 (laughing)
+
+00:43:52 - So the star will dereference the pointer, turning a pointer into one less level of pointing and the value where the ampersand will take a variable and make it a pointer, or if it is a pointer, make it a pointer to a pointer or even more so, which one do you press?
+
+00:44:06 Oh my gosh.
+
+00:44:07 Should be obvious by context.
+
+00:44:10 It says a C plus plus.
+
+00:44:11 Erin, do you have to do any of this kind of crazy stuff or you thankfully above and beyond the pointer world?
+
+00:44:19 I, yeah, thankfully not.
+
+00:44:21 Yeah.
+
+00:44:22 Oh, no, no C plus plus in my world.
+
+00:44:25 - Yeah, all right, well, that's what I got.
+
+00:44:27 I brought that one for you, Brian.
+
+00:44:28 - That's good, thanks.
+
+00:44:29 I'll incorporate that into my next interview.
+
+00:44:33 (both laughing)
+
+00:44:36 - You need to change a string, you're given a variable.
+
+00:44:40 Which one of these do you push?
+
+00:44:41 - All right, cool.
+
+00:44:43 - All right, well, Erin, it's been great to have you on the show.
+
+00:44:46 Thanks for being here.
+
+00:44:47 - Thanks for having me.
+
+00:44:48 Nice to meet you both.
+
+00:44:50 - Yeah, you bet, and Brian, thanks as always.
+
+00:44:51 See you, see y'all.
+
