@@ -1,0 +1,1092 @@
+00:00:00 Hello and welcome to Python Bytes where we deliver Python news and headlines directly to your earbuds.
+
+00:00:05 This is episode 325, recorded February 28th, the last day of February in 2023.
+
+00:00:12 I am Brian Okken.
+
+00:00:13 And I am Michael Kennedy.
+
+00:00:14 And before we jump in, I want to thank everybody that shows up for the livestream.
+
+00:00:19 If you haven't shown up for the livestream before, it's a lot of fun.
+
+00:00:22 People can stop and ask questions and chat and everything, and it's a good way to say hi.
+
+00:00:28 And we enjoy having you here or watch it afterwards if this is a bad time for you.
+
+00:00:33 Also want to thank Microsoft for Startup Founders Hub for sponsoring this episode.
+
+00:00:39 They've been an excellent sponsor of the show and they've also agreed to have us like be able to play with the sponsor spots and do some AI reading.
+
+00:00:47 So this one's going to be a fun one, this one.
+
+00:00:49 So I'm excited about it.
+
+00:00:50 >> I am too, it's going to be fun.
+
+00:00:52 >> So why don't you kick us off with our first topic today.
+
+00:00:56 >> All right. Let's jump right in.
+
+00:00:59 You like solid code.
+
+00:01:00 How about some Codesolid.com?
+
+00:01:02 Has nothing to do with solid code, but it's still interesting and it does have to do with code.
+
+00:01:06 This one is something called Parquet and Arrow.
+
+00:01:10 Have you heard of Apache Arrow or the Parquet file format, Brian?
+
+00:01:14 >> I've heard of Arrow, but I don't think I've heard of Parquet.
+
+00:01:18 >> When people do a lot of data science, you'll see them do things like open up Jupyter Notebooks and import Pandas.
+
+00:01:24 And then from Pandas, they'll say "Load CSV".
+
+00:01:27 Well, if you could think of a whole bunch of different file formats and how fast and efficient they might be stored on disk in red, how do you think CSVs might turn out?
+
+00:01:37 Pretty slow, pretty large, and so on.
+
+00:01:41 And Arrow through PyArrow has some really interesting in-memory structures that are a little more efficient than Pandas, as well as it has access to this Parquet format.
+
+00:01:52 So does Pandas through an add-on, but you'll see that it's still faster using PyArrow.
+
+00:01:58 So basically, that's what this article that I found is about.
+
+00:02:02 It highlights how these things compare, and it basically asks the questions like, can we use Pandas data frames and arrow tables together?
+
+00:02:11 Like if I have a Pandas data frame, but I wanna then switch it into PyArrow for better performance at some point for some analysis, can I do that?
+
+00:02:20 Or if I start with PyArrow, could I then turn it into a data frame and hand it off to Seaborn or some other thing that expects a pandas data frame?
+
+00:02:27 Answer is yes.
+
+00:02:28 Short version there.
+
+00:02:30 Are they better?
+
+00:02:32 In which ways are they better?
+
+00:02:33 Which way are they worse?
+
+00:02:34 And then the bulk of the analysis here is like, yeah, we could save our data, read and write our data from a bunch of different file formats, Parquet, but also things like Feather, Org, CSV and others, even Excel.
+
+00:02:47 What should we maybe consider using?
+
+00:02:49 - Okay. - Okay?
+
+00:02:50 So installing it is just pip install pyarrow, super easy, same type of story.
+
+00:02:56 If you want to use it with pandas, so I've got some pandas data, a data frame, and then I want to then convert it over, that's super easy.
+
+00:03:05 So you can use, go to pyarrow, and you say pyarrow.table, say from pandas, and give it a pandas data frame, and then boom, you've got it in pyarrow format.
+
+00:03:17 - Okay.
+
+00:03:18 - One of the things that's interesting is with Pandas is a real nice like wrangling, exploration style of data.
+
+00:03:27 So I can go and I can just show the data frame and it'll tell me like there are 14 columns and this example, 6,433 rows and it'll list off the headers and then the column data.
+
+00:03:38 If I do the same thing in Pyro, I just get, it's kind of human readable.
+
+00:03:43 You just get like a dump of junk basically.
+
+00:03:47 It's not real great.
+
+00:03:48 So that aspect, certainly using pandas, is nice for this kind of exploration.
+
+00:03:52 Another thing about PyArrow is the data is immutable.
+
+00:03:55 So you can't say, oh, every time that this thing appears, actually replace it with this canonical version.
+
+00:04:01 You know, if you get like a Y, lowercase yes and capital yes, you wanna make them all just lowercase yes or just the Y, like you gotta make a copy instead of change it in place.
+
+00:04:11 So that's one of the reasons you might stick with pandas, which is pretty interesting.
+
+00:04:16 But you can do a lot of really interesting parsing and performance stuff that you would do with, like you would do with pandas.
+
+00:04:24 But if your goal is performance, and performance measured in different ways, how much memory does it take up in computer RAM?
+
+00:04:32 How much disk space type of memory does it take up?
+
+00:04:36 How fast is it to read and write from those?
+
+00:04:38 It's pretty much always better to go with PyArrow.
+
+00:04:41 So for example, if I take those same sets of data, those two sets of data from, I think this is the New York City taxi data, some subset of that really common data set.
+
+00:04:51 It's like a digit grouping.
+
+00:04:54 It's a little over three megs of memory for the data frame and it's just under a hundred, sorry, three megs.
+
+00:05:00 Yeah, I don't know if I said three megs.
+
+00:05:01 Three megs of data for pandas, whereas it's just under one meg for high era.
+
+00:05:07 So that's three times smaller, which is pretty interesting there.
+
+00:05:10 >> Yeah.
+
+00:05:11 >> The other one is if you do like mathy things on it, like if you got tables of numbers, you're really likely to talk about things like the max, or the mean, or the average, and so on.
+
+00:05:24 Now, if you do that to pandas and you do it to PyArrow, you'll see it's about eight times faster to do math with PyArrow than it is to do it with pandas.
+
+00:05:34 That's pretty cool, right?
+
+00:05:35 >> Yeah. The syntax is a little grosser, but yeah.
+
+00:05:39 the syntax is a little grosser, I will show you a way to get to this in a moment that is less gross, I believe.
+
+00:05:45 Okay.
+
+00:05:45 Okay.
+
+00:05:46 And then Alvaro out there does say, if you want fast data frames, Polars plus Parquet is the way to go.
+
+00:05:53 Okay.
+
+00:05:54 He's reading, skating to where the puck is going to be, indeed.
+
+00:05:59 And Kim says, presumably the immutability plays a large part in the performance.
+
+00:06:03 I suppose so.
+
+00:06:05 Yeah.
+
+00:06:06 And then also some feedback of real-time analytics here.
+
+00:06:09 Alvaro says, "I got a broken script from a colleague.
+
+00:06:11 I rewrote it in Pandas, and it took about two hours to process.
+
+00:06:15 In Polars, it took three minutes." So that's a non-trivial sort of bonus there.
+
+00:06:22 All right, let me go over the file formats, and I'll just really quickly--
+
+00:06:26 I think we've talked about Polars, but I'll just reintroduce it really quick.
+
+00:06:29 So if we go and look at the different file formats, we could use Parquet.
+
+00:06:34 So we could say 2 parquet with PyArrow and you get it out and these numbers are all kind of like insane.
+
+00:06:41 4 milliseconds versus reading it with 2 milliseconds.
+
+00:06:44 If you use the fast parquet, which is the thing that allows data frames to do it, it's 14 milliseconds, which is a little over three times slower, but it's still really, really fast, right?
+
+00:06:54 There's Feather, which is the fastest of all the file formats with a 2 millisecond save time, which is blazing.
+
+00:07:01 There's Ork.
+
+00:07:02 I have no idea what Ork is.
+
+00:07:03 It's a little bit faster.
+
+00:07:04 Or if you, you want to show that you're taking lots of time and doing lots of print processing, doing lots of data science-y things, you could always do Excel, which takes about a second almost.
+
+00:07:14 I mean, on a larger data set, it might take a lot longer, right?
+
+00:07:17 You're like, Oh, I'm busy.
+
+00:07:18 I can't work.
+
+00:07:19 I'm getting a coffee because I'm saving.
+
+00:07:20 Well, I mean, there's some people that really have to export it to Excel so that other people can make mistakes later.
+
+00:07:27 Yes, exactly.
+
+00:07:28 Cause life is better when it's all go-to's.
+
+00:07:30 Yeah.
+
+00:07:31 But no, you're right.
+
+00:07:33 If the goal is to deliver an Excel file, then obviously.
+
+00:07:36 But this is more like considering what's a good intermediate storage format.
+
+00:07:40 And then CSV is actually not that slow.
+
+00:07:43 It's still slower, but it's only 30 milliseconds.
+
+00:07:45 But the other part that's worth thinking about, remember this is only 6,400 rows.
+
+00:07:50 The Parquet format is 191K.
+
+00:07:53 The Pandas one is almost 100K more, which is interesting.
+
+00:07:56 The Feather is almost half a meg.
+
+00:07:58 Orac is three quarters of a meg, Excel is half a meg, CSV is a meg, right?
+
+00:08:03 So a meg, it's almost a five times file size increase.
+
+00:08:06 So if you're storing tons of data and it's five gigs versus 50 gigs, you know, you maybe want to think about storing it in a different format.
+
+00:08:14 Plus you read and write it faster, right?
+
+00:08:16 So these are all pretty interesting.
+
+00:08:19 And Polars, polars.rs is the lightning fast data frame built in Rust and Python.
+
+00:08:25 This is built on top of PyArrow.
+
+00:08:27 I had a whole, built on top of Apache Arrow.
+
+00:08:31 I had a whole Talk Python episode on it.
+
+00:08:33 I'm pretty sure I'd talked about Polars before on here as well, but it's got like a really cool sort of fluent programming style and under the covers it's using PyArrow as well.
+
+00:08:43 So pretty neat.
+
+00:08:45 Yeah, so if you're really looking to say like, I just wanna go all in on this, as Alvaro pointed out, I think it was Alvaro, that Polars is, yeah, that Polars is pretty cool.
+
+00:08:54 - Okay, neat.
+
+00:08:56 And Henry out there, real time feedback is, Pandas is fully supporting PyArrow for all data types in the upcoming 1.5 and 2.0 releases.
+
+00:09:04 There was just a ball of post on it on the Data Pythonista blog.
+
+00:09:08 It's not clear if they're switching to it.
+
+00:09:11 I believe it's NumPy at the moment as the core, but it's, it'd be supporting it, which is awesome.
+
+00:09:17 Yeah, thanks Henry for that update there.
+
+00:09:19 - Well, and then also, they said, but it did say basically starting to get native PyArrow speed with pandas by just selecting the backend in the new pandas version.
+
+00:09:28 So cool. - Indeed.
+
+00:09:30 Awesome, yeah, yeah, very, very cool.
+
+00:09:31 So lots of options here, but I think a takeaway that it's kind of worth paying attention to here is choosing maybe parquet as a file format, regardless of whether you're using pandas or PyArrow or whatever, right?
+
+00:09:44 'Cause I think the default is read and write CSV.
+
+00:09:46 And if your CSV files are ginormous, that might be something you wanna not do.
+
+00:09:51 - Yeah, okay. - All right, over to you.
+
+00:09:53 - Well, you said have ever heard of Parquet.
+
+00:09:56 And before we get to the next topic, I was thinking like, is it butter or is it Parquet?
+
+00:10:02 It was a thing from when we were kids, but.
+
+00:10:05 - That's right, margarine.
+
+00:10:07 Yum.
+
+00:10:09 - Parquet, had a little tub that talked, it was neat.
+
+00:10:11 - That's right, it did, it had a little mouth, yeah.
+
+00:10:15 - Yeah, I wanna talk about FastAPI a bit.
+
+00:10:18 So this topic, FastAPI filter comes from us from Arthur Rio and Arthur, actually, it's his library, FastAPI Filter, and this is pretty cool.
+
+00:10:30 So I'm gonna pop over to the documentation quickly, but what it is, it's a query string filters for API endpoints, and so you can show them in Swagger and use them in stuff for cool things.
+
+00:10:43 So I'll pop over to the documentation.
+
+00:10:48 So it says query string filters that supports backends SQLAlchemy and MongoEngine.
+
+00:10:55 So that's nice.
+
+00:10:56 But let's say, well, we'll get to what the filters look like later, but in the Swagger interface, this is pretty neat.
+
+00:11:02 So let's say you're grabbing the users and you wanna filter them by like the name, you can do a query in the name or the age less than or age greater than or equal.
+
+00:11:14 These are pretty nice.
+
+00:11:15 There's a, so it says the philosophy of FastAPI filters to be very declarative.
+
+00:11:21 you define fields that you want to be able to filter on as well as the type of operator and then tie your filters to a specific model.
+
+00:11:29 It's pretty easy to set up.
+
+00:11:30 The syntax is pretty, well, we'll let you look at it, but it's not that bad to set up the filters.
+
+00:11:36 - Yeah, a lot of pedantic models, as you might expect it being FastAPI.
+
+00:11:40 - Yeah, so you plug in these filters, but then you get things like, the built-in ones are like not equal, greater than, greater than equal, in those sorts of things.
+
+00:11:51 But you could do some pretty complex query strings then, like, oh, there's some good examples down here.
+
+00:11:57 So like the users, but order by descending name or order by ascending ID, there's like plus and minus for ascending and you can have order by, and you can filter by like the name, custom orders.
+
+00:12:11 And actually putting some filters right in your API string is kind of an interesting idea.
+
+00:12:18 I don't know if it's a good idea or a bad idea, but it's interesting.
+
+00:12:21 - Yeah, this is a real interesting philosophy of how do I access the data in my database as an API?
+
+00:12:29 And I would say there's sort of two really common ways, and then there's a lot of abuse of what APIs look like and what you should do, you know, just remote procedure calls and all sorts of randomness.
+
+00:12:42 But the philosophy is I've got data in a database and I want to expose it over an API.
+
+00:12:47 do I go and write a bunch of different functions in fast API in this example, where I decide, here's a way where you can find the recent users and you can then possibly take some kind of parameter about a sort, or maybe how recent of the users do you wanna be, but you're writing the code that decides here's the database query and it's generally focused on recent users, right?
+
+00:13:12 That's one way to do API.
+
+00:13:14 The other is I kinda wanna take my database and just make it queryable over the internet, right?
+
+00:13:20 And this is with the right restrictions.
+
+00:13:22 It's not necessarily a security vulnerability, but it's just pushing all of the thinking about what the API is to the client side, right?
+
+00:13:29 So if I'm doing Vue.js, it's like, well, we'll wrap this onto our database and you ask it any question you can imagine as if you had a direct query line to the database, right?
+
+00:13:39 So that's why you would do maybe the age greater than, or you could do some of those filters where you say, give me all the users where the created date is less than such and such, or greater than such, that would basically be like the new users, right?
+
+00:13:52 But it's up to the client to kind of know the data schema and talk to it.
+
+00:13:55 And this is that latter style.
+
+00:13:57 If you like that, awesome.
+
+00:13:59 You can expose a relational database over SQLAlchemy or MongoDB through Mongo Engine, and it looks pretty cool.
+
+00:14:06 - My thoughts on where I probably, I mean, I'm not using this in production, but my thoughts on where I might use this, even disregarding like one of the Brandon's concerns, Brandon Brainer says, exposing my API field names makes me nervous.
+
+00:14:20 But there's a part of your, oops, part of your development where you're not quite sure what queries you want.
+
+00:14:28 So custom writing them, maybe you're not ready to do that or it'll be a lot of back and forth.
+
+00:14:34 So a great, I think a great place to be for this would be when you're working with, you've got your front end and your backend code, your API code, and you're trying to figure out what sort of searches you want, and you can use something like this to have it right be in the actual API query.
+
+00:14:52 And then once you figure out all the stuff you need, then you could go back if you want to and hard code different API endpoints with similar stuff, maybe, I don't know.
+
+00:15:03 - Yeah, yeah, and not everything's built the same, right?
+
+00:15:05 Kim out there points out that many of the APIs that he uses or builds are for in-house use only.
+
+00:15:11 - Yeah. - Right?
+
+00:15:12 And so it's just like, instead of coming up with very, very focused API endpoints, it's like, well, kind of just leave it open and people can use this service to access the data in a somewhat safe way, like a restricted way.
+
+00:15:24 - Yeah. - So it's, what are you building?
+
+00:15:26 Like, are you putting it just on the open internet or are you putting it, you know, inside?
+
+00:15:31 - That's very true.
+
+00:15:32 Yeah, like I've got a bunch of projects I'm working on that are internal and like, who cares if somebody knows what my data names are and stuff.
+
+00:15:40 - Right, well, and what is in it?
+
+00:15:41 Are you storing social security numbers and addresses, or are you storing voltage levels for RF devices?
+
+00:15:48 - Exactly.
+
+00:15:49 - Oh no, the voltage levels have leaked, oh no.
+
+00:15:52 Right, I mean, that flexibility might be awesome.
+
+00:15:55 - Yeah, I mean, the end, it's secretive.
+
+00:15:58 We don't want it to get out in the public, but it's not something that internal users are gonna do anything with, so yeah.
+
+00:16:05 - Yeah, yeah, exactly.
+
+00:16:06 - Cool, well yeah, that's really a nice one.
+
+00:16:10 So Brian, sponsor this week?
+
+00:16:13 - Yeah, Microsoft for Startups Founders Hub.
+
+00:16:15 But if you remember last week, we did an ad where we asked an AI to come up with the ad text for us.
+
+00:16:24 - In like an official, sort of official sounding way.
+
+00:16:27 - Yeah, so this week, you pushed it through the filter said to try to come up with the wording in a hipster voice, right?
+
+00:16:37 So here we go.
+
+00:16:39 Tell us about it.
+
+00:16:40 With a hipster style, I'll try.
+
+00:16:41 Yo Python Bytes fam, this segment is brought to you by the sickest program out there for startup founders, Microsoft for Startup Founders Hub.
+
+00:16:49 If you're a boss at running a startup, you're going to want to listen up because this is the deal of a lifetime.
+
+00:16:56 Microsoft for Startup Founders Hub is your ticket to scaling efficiently and preserving your runway, all while keeping your cool factor intact.
+
+00:17:05 With over six figures worth of benefits, the program is serious next level.
+
+00:17:09 You'll get 150K in Azure credits, the richest cloud credit offering on the market, access to the OpenAI APIs and the new Azure OpenAI service, where you can infuse some serious generative AI into your apps, and a one-on-one technical advisor from the Microsoft squad who will help you with your technical stack and architectural plans.
+
+00:17:33 This program is open to all, whether you're just getting started or already killing it.
+
+00:17:39 And the best part, there's no funding requirement.
+
+00:17:41 All it takes is five minutes to apply and you'll be reaping the benefits in no time.
+
+00:17:45 Check it out and sign up for Microsoft for Startup Founders Hub at pythonbites.fm/foundershub2022.
+
+00:17:53 Peace out and keep listening.
+
+00:17:55 It's insane the power of these AIs these days.
+
+00:17:58 And now if you want to get access to OpenAI and Azure and GitHub and all those things, well, a lot of people seem to be liking that program.
+
+00:18:05 So it's cool they're supporting us.
+
+00:18:07 >> Yeah. Also cool that they're letting us play with the ad.
+
+00:18:10 >> Yes, with their own tools indeed.
+
+00:18:12 Okay. What I got next Brian, is stuff to take your code to the next level, brah.
+
+00:18:18 But this sounds pretty interesting.
+
+00:18:21 Twelve Python decorators to take your code to the next level.
+
+00:18:24 - Nice. - Decorators are awesome.
+
+00:18:25 And they're kind of like a little bit of magic Python dust you can sprinkle onto a method and make things happen.
+
+00:18:32 Now, about half of these are homegrown.
+
+00:18:35 Half of those I'd recommend.
+
+00:18:36 And then a bunch of them are also, the other half is maybe the built-in ones that come from various places.
+
+00:18:41 So I'll just go through the list of 12 and you tell me what you think.
+
+00:18:44 The first one that they started off with in this article doesn't thrill me.
+
+00:18:47 It says, "Hey, I can wrap this function "with this thing called logger "and it'll tell me when it starts and stops." Like, yeah, no thanks, that doesn't seem interesting.
+
+00:18:54 But the next one, if, especially if you're already focused on decorators and psyched about that is the funk tools wraps.
+
+00:19:01 Yeah.
+
+00:19:02 Right.
+
+00:19:02 Because if you're going to definitely you got to use it.
+
+00:19:04 Yeah.
+
+00:19:05 It's basically required.
+
+00:19:06 If you create a decorator and they show you how to do that on the screen here and you try to interact with the function that is decorated, well, you're going to get funky results.
+
+00:19:14 Like what is the functions name?
+
+00:19:16 Well, it's the name of the decorator, not the actual thing.
+
+00:19:18 What if it's arguments?
+
+00:19:19 It's star star star KWR.
+
+00:19:21 What is the documentation?
+
+00:19:22 whatever the name, the documentation of the decorators and all that.
+
+00:19:25 So with wrapper or with wraps, you can wrap it around and you're actually kind of pass through that information, which is pretty cool.
+
+00:19:32 So if you're going to do decorators wrapped as kind of a meta decorator here.
+
+00:19:36 Another one I think is really cool and not for all use cases, not really great on the web because of the scale out across process story that often happens in deployment, but if you're doing data science-y things or a bunch of repetitive processing, the LRU cache is like magic, unless you are really memory constrained or something.
+
+00:19:54 - Yeah, love LRU cache.
+
+00:19:56 - Yeah, you just put it on a function, and you say @LRU cache, and you can even give it a max size, and it just says, as long as given a fixed input, you'll get the same output every time, then you can put the LRU cache on it, and the second time you call it the same arguments, it just goes, you know what, I know the answer, here you go, and it's an incredibly easy way to speed up stuff that takes like numbers like well-known things that are not objects, but it can be tested like, yeah, these are the same values.
+
+00:20:22 - And if you don't care about the max size, you can just use the decorator cache.
+
+00:20:26 Now you don't need to have the LRU part.
+
+00:20:28 - No, nice, great addition.
+
+00:20:30 Next up we have @repeat.
+
+00:20:32 Suppose for some reason I want to call a function multiple times, like if I want to try to say, what if I call this a bunch of times just for say, load testing, or I want to just, kind of in during development, I can't see this being used in any realistic way, but you can just say this is one that they built.
+
+00:20:49 You just wrap it and say repeat this n number of times.
+
+00:20:52 That might be useful.
+
+00:20:53 >> Yeah.
+
+00:20:54 >> Timeit. So Timeit is one that you could create that I think is pretty nice.
+
+00:20:59 Like this is one of the homegrown ones that I do think is good.
+
+00:21:01 Is a lot of times you want to know how long a function takes.
+
+00:21:04 One thing you could do is you could grab the time at the start.
+
+00:21:07 Here they're using perf counters which is pretty excellent.
+
+00:21:09 Then at the end, grab the time, print it out.
+
+00:21:12 But then you're messing with your code, right?
+
+00:21:14 It'd be a lot easier to just go, "You know what?
+
+00:21:16 I just want to wrap a decorator over some function and have it print out stuff.
+
+00:21:20 Just usually during development or debugging or something, not in production.
+
+00:21:23 But you're like, well, how long did this take?
+
+00:21:25 So just yesterday I was fiddling with a function.
+
+00:21:28 I'm like, if I change it this way, will it get any faster?
+
+00:21:31 It's a little more complicated, but maybe there's a big benefit, right?
+
+00:21:34 And I put this on, something like this on there and like, yeah, it didn't make any difference.
+
+00:21:38 So we'll keep them the simple bit of code in place.
+
+00:21:40 - Yeah, and if it's like super fast, - You can also do things like loop it, like add a loop thing there so that it runs like 100 times and then do the division or something.
+
+00:21:50 - That's a really good point.
+
+00:21:51 And these are composable, right?
+
+00:21:54 Decorators are composable.
+
+00:21:55 So you could say @timeit @repeat1000.
+
+00:21:59 - Oh, yeah, yeah.
+
+00:22:00 - Right?
+
+00:22:01 I mean, all of a sudden, repeat's starting to sound useful.
+
+00:22:04 They have a retry one for retrying a bunch of times.
+
+00:22:07 No.
+
+00:22:08 Tenacity.
+
+00:22:09 Don't do that.
+
+00:22:11 There's some that are really, really fantastic with many options.
+
+00:22:14 Don't bother rewriting some of those because you've got things like tenacity that has exponential back off, limiting the number of retries, customizing different behaviors and plans based on exceptions.
+
+00:22:26 So grab something like tenacity.
+
+00:22:27 But the idea of understanding the retries is kind of cool.
+
+00:22:30 Yeah.
+
+00:22:30 Thanks for reminding us about tenacity.
+
+00:22:32 I forgot about that.
+
+00:22:33 Yeah.
+
+00:22:33 That's a good one.
+
+00:22:34 Right.
+
+00:22:34 Count call.
+
+00:22:35 If you're doing debugging or performance stuff, you're just like, why does it seem like this is getting called like five times.
+
+00:22:41 It should be called once.
+
+00:22:42 This is weird.
+
+00:22:43 And so you could actually, they introduced this count call decorator that just every time a function is called, it's now been called this many times, which sounds silly, but are you trying to track down like an N plus one database problem or other weird things like that?
+
+00:22:56 If you don't really know why something bizarre is happening a ton of times, this could be kind of helpful.
+
+00:23:01 - Yeah.
+
+00:23:03 - Rate limited.
+
+00:23:04 This one sounds cool as well.
+
+00:23:05 Like I only want you to call this function so often per second.
+
+00:23:09 and you can decide what to do.
+
+00:23:12 In this case, it says we're gonna time.sleep.
+
+00:23:14 I'm not so sure that makes a lot of sense, but it was asynchronous.
+
+00:23:16 You could await asyncIO.sleep and it would cause no overhead on the system.
+
+00:23:20 It wouldn't clog anything up.
+
+00:23:21 It would just make the caller wait.
+
+00:23:23 So there's some interesting variations there as well.
+
+00:23:26 Keep scrolling.
+
+00:23:28 And then some more built-in ones, data classes.
+
+00:23:30 If you wanna have a data class, just @dataclass, the class.
+
+00:23:34 Brian, do you use data classes much?
+
+00:23:35 - Yes, quite a bit.
+
+00:23:36 - Nice.
+
+00:23:37 I like my classes to be VC funded, so I use Pydantic more often.
+
+00:23:41 (laughing)
+
+00:23:44 See last week, no, congratulations to the Samuel team there.
+
+00:23:47 But I honestly, I typically use Pydantic a little bit more because I'm often gonna use it with FastAPI or Beanie or something over the wire, but I really like the idea of data classes too.
+
+00:23:58 All right, a couple more, register.
+
+00:24:01 Let me know if you know about this one.
+
+00:24:02 I heard about it a little while, but I haven't ever had a chance to use it.
+
+00:24:05 But the AT, at exit module in Python, it has a way to say, when my program is shutting down, even if the user, like, Control + C is out of it, I need to make sure that I delete, say, some file I created, or call an API and tell it real quick, like, you know what, we're gone.
+
+00:24:23 Or, I don't know, something like that, right?
+
+00:24:24 You just need, there's something you gotta do on your way out, even if it's a force exit.
+
+00:24:29 - Yeah. - You can go.
+
+00:24:30 - I have, as, sorry to interrupt, I have used this.
+
+00:24:33 - Oh, good. - Yeah.
+
+00:24:33 - Yeah, when did you use it?
+
+00:24:34 What do you use it for?
+
+00:24:35 similar sort of thing. I've got like some, some thing in the background that I, I want to make sure that we, there's a little bit of cleanup that's done before it goes away. but they, I just wanted to correct this. This says from import, from at exit import register and then decorate with register. I think it looks better if you just import out of the exit and do the decorator as at exit dot register, because it's better documentation.
+
+00:24:59 I totally agree. I totally agree. There's, there's, There's a couple things in this article where the code is a little bit...
+
+00:25:07 No, it was the other article that I did that was a little bit...
+
+00:25:09 that I talked about that was a little bit weird.
+
+00:25:11 But I agree, keeping the namespace tells you, like, well, what the heck are you registering for, right?
+
+00:25:15 I think namespaces are a good idea. I definitely use them.
+
+00:25:18 But anyway, so you can just put this decorator on a function, and when you exit, they show an example of some loop going just while true, and they control C out of it.
+
+00:25:25 It says, "Hey, we're cleaning up here. Now bye." Which is... that's a pretty nice way to handle it, instead of trying to catch all the use cases with exceptions and try finalize and so on.
+
+00:25:35 All right, property, give your fields behaviors and validation, getters, setters, and so on, love it.
+
+00:25:42 And single dispatch, I believe we've spoken about before where you can give, basically you do argument over overloads for functions.
+
+00:25:51 So you can say, here's a function and here's the one that takes an integer and here's the one that takes a list.
+
+00:25:55 And these are separate functions and separate implementations.
+
+00:25:58 and you do that with that single dispatch decorator.
+
+00:26:00 >> I actually always forget about this.
+
+00:26:03 >> I do too.
+
+00:26:04 >> I'm glad I forget about it because I think-
+
+00:26:08 >> I would use it too much.
+
+00:26:09 >> Maybe.
+
+00:26:10 >> I used to love function overloading when I was doing C, C++, C# type stuff, I would really count on it.
+
+00:26:18 I thought I would miss it in Python and I haven't.
+
+00:26:21 >> Well, I noticed that some people that convert to Python from C, we'll just assume that it has function overloading, and it just doesn't work.
+
+00:26:30 >> That's known as function erasure.
+
+00:26:32 >> Function erasure.
+
+00:26:33 >> The last one wins, right?
+
+00:26:34 >> Yeah.
+
+00:26:34 >> We talked about that last time.
+
+00:26:36 No, we talked about that when we talked on Talk Python which maybe we'll mention at the end.
+
+00:26:40 But the last time we talked, yeah.
+
+00:26:42 >> Yeah.
+
+00:26:44 >> Anyway, those are the 12 that they put in the article.
+
+00:26:47 Most of them are really great.
+
+00:26:49 Some of them point you at things like tenacity, which is also really good.
+
+00:26:53 So that's what I got.
+
+00:26:54 >> Nice. Well, I would like to talk about testing too a bit.
+
+00:26:58 Let's talk about PyHamcrest.
+
+00:27:00 This topic is contributed by TXLs on the socials.
+
+00:27:08 Thanks, TXLs.
+
+00:27:09 PyHamcrest, and the thought was, Brian talks about testing a lot, so why haven't you covered this?
+
+00:27:16 What PyHamcrest is, is a matcher object declarative rule matcher thing that helps you with the certs and stuff like that.
+
+00:27:26 Have you used this?
+
+00:27:27 I have not.
+
+00:27:28 My first thought it was like some kind of menu item on a holiday dinner, but no.
+
+00:27:34 I literally only heard about this because you put it in the show notes.
+
+00:27:38 So this is news to me.
+
+00:27:39 The idea is instead of like all the assert, so you've got a whole bunch of certain things like assert that, assert that and equal to, and a bunch of ham crust things that you can import.
+
+00:27:49 So you can do things like, instead of saying, assert the biscuit equals my biscuit, you can say, assert that the biscuit equal to my biscuit.
+
+00:27:58 So at first, so I've always thought asserts are, like, I get this for unit test, but for PyTest, what, do we need it?
+
+00:28:06 Because you could just use assert in PyTest.
+
+00:28:09 However, I'm kind of easing up on that argument because I can see a lot of places where just, Really, if you can make your assertions more readable in some context, then why not?
+
+00:28:20 So, sure.
+
+00:28:22 And I don't know about this one, but if it's got things like go through a list and assert everything is equal in the list, right?
+
+00:28:28 Yeah.
+
+00:28:29 Or higher order things where it would be kind of kind of complex to implement the test.
+
+00:28:34 That is the thing you want to assert.
+
+00:28:36 Like these three fields are equal of these three things, right?
+
+00:28:39 Then it becomes a little less obvious.
+
+00:28:41 And if this has a really nice story.
+
+00:28:43 >> Well, so there's a whole-
+
+00:28:44 >> Looks like it does.
+
+00:28:45 >> Yep, there's a whole bunch of matchers within it.
+
+00:28:47 Like for objects, it's like equal to and has length, it has property.
+
+00:28:52 Has properties is interesting, so you could like assert on duck typing.
+
+00:28:56 Hopefully, it has these values or something.
+
+00:29:00 Numbers close to, greater than, less than.
+
+00:29:03 Of course, these asserts are fine with this, but the logical stuff, the logical and sequences is what I think where I probably might use it.
+
+00:29:11 like all of or any of or anything or that's that's neat like all of these things are true and you can combine this with or like all of these or all of those or something sequences contains contains in any order that's kind of interesting yeah nice has items is in again These are things that are testable in Python, raw, like just raw test, not too bad.
+
+00:29:40 But if it's more readable, sure, why not?
+
+00:29:43 There's some that are shown, especially with raising error, like exceptions.
+
+00:29:50 Where did I get it? Oh, the tutorial has a bunch of cool stuff in it.
+
+00:29:54 The things like assert that calling translate with args curse word raises a language error.
+
+00:30:00 Well, that's neat.
+
+00:30:02 >> Very naughty.
+
+00:30:04 >> Assert that broken function raises exception.
+
+00:30:07 In PyTest, you've got the raises thing with PyTest raises, but some people have a hard, it's not obvious and maybe this looks better.
+
+00:30:20 This is neat, you can use assertion exceptions with async methods.
+
+00:30:26 It has a resolved item, so you can say assert that await resolved future results in future raising value error or something.
+
+00:30:36 - Yeah, nice, that's cool.
+
+00:30:37 - So, yeah, so a lot of predefined matchers and I guess it has some syntactic shirker things like is underscore, so just if it sounds better to have an is in there, you can add it.
+
+00:30:50 So assert that the biscuit is equal to, doesn't do anything but it like sounds better, so why not, I guess.
+
+00:30:59 - If you wanted to read that in English, like insert a no op verb.
+
+00:31:03 >> Yeah. But I guess I do want to highlight this because why not?
+
+00:31:09 I mean, since I'm writing a lot of test code, I'm used to all the different ways you can check different equivalence of values or comparisons.
+
+00:31:17 I don't know how much I would use this, but I've seen a lot of people struggle with how to write an assertion.
+
+00:31:25 Having some help with the library, why not? This is pretty neat.
+
+00:31:28 >> Yeah, this totally resonates with me.
+
+00:31:30 I like it.
+
+00:31:30 So, well, that's our six items, six, four items.
+
+00:31:35 Do you have any extras for us this week?
+
+00:31:40 I do have a few extras.
+
+00:31:42 Let me throw them in here.
+
+00:31:44 First of all, it's a few weeks old.
+
+00:31:45 I didn't remember to put it up here, but Python 3.11.2 is out as well as 3.10.10 and the alpha 5 of 3.12.
+
+00:31:56 We're getting kind of close to beta.
+
+00:31:58 it feels like for 3.12, which will be exciting because then we'll get real visibility into what's probably going to be happening for the next version of Python. That's cool.
+
+00:32:06 Yeah. I'm testing for 3.12 already with our CI builds.
+
+00:32:11 Nice. For example, with 3.11.2, there were 192 commits since 3.11.1, 194 rather. So that's pretty non-trivial right there. And they link over to somewhere that looks, I don't know, just What am I supposed to learn from that? Here's the changes from 3.11 to 3.12.
+
+00:32:29 So I always go to downloads, full list of downloads.
+
+00:32:31 Dun-na-na-na-na-na-na. Scroll down to the particular version.
+
+00:32:34 Here, and go to release notes. And there you go.
+
+00:32:36 That's probably what they should be linking to.
+
+00:32:38 And here's all the things. There's some that are in here that are things that you might actually care about. Like for example, fixed race condition while iterating over thread states in thread.local.
+
+00:32:49 You might not want that in your code.
+
+00:32:50 And various other things.
+
+00:32:52 Yeah, a bunch of-- look at all these changes here. This is a lot.
+
+00:32:55 >> Yeah, nice. Go team.
+
+00:32:58 >> Yeah, go team. You might think, "Oh, it's just a dot plus one, plus 0.0.1 sort of thing to it." But now it's got some interesting changes as well as, I haven't looked at what's happening in the others, but maybe some of those are important enough to pull backwards those fixes.
+
+00:33:15 Also, more recent as in eight days ago, we've got Django 4.2 Beta, Beta 1.
+
+00:33:23 - You know, typically the philosophy is, once it hits beta, the API should be stable, the features should be stable, it's just about fixing bugs.
+
+00:33:31 Doesn't always work out that way, but that's generally the idea.
+
+00:33:34 So basically, here's your concrete look at Django 4.2.
+
+00:33:38 - Yeah. - Right?
+
+00:33:39 - And 4.2 looks exciting, so.
+
+00:33:41 - Yeah, absolutely.
+
+00:33:42 So you can, you know, they've got some release nodes and various things about what's going on.
+
+00:33:47 You can go check that out.
+
+00:33:47 So they got Psycho PG3, so Postgres support.
+
+00:33:52 It now supports post-PsychoPG version 3.1.8 or higher.
+
+00:33:57 You can update your code to use that as a backend.
+
+00:33:59 - I'm still using two, so I better, I didn't know there was a three.
+
+00:34:03 - No, careful, Brian.
+
+00:34:05 PsychoPG 2 is likely to be deprecated and removed at some point in the future.
+
+00:34:08 - Okay.
+
+00:34:09 - Yeah.
+
+00:34:10 - Comments on columns and tables.
+
+00:34:12 So that's kind of neat in the database model.
+
+00:34:15 So the ORM gets some love there.
+
+00:34:17 - No comment on that.
+
+00:34:18 - Yeah, no comment.
+
+00:34:19 Very good.
+
+00:34:20 some stuff about the so-called breach attack.
+
+00:34:22 I have no idea what it seems to have to do with gzip.
+
+00:34:24 So check that out.
+
+00:34:26 Another one that's interesting is in-memory file storage and custom file stores.
+
+00:34:30 This is for making testing potentially faster.
+
+00:34:33 So if you're gonna write some files as part of a behavior, you can say, just write them to in-memory.
+
+00:34:37 Don't have to clean them up and they write really fast.
+
+00:34:40 - Yeah, it phenomenally speeds up testing.
+
+00:34:42 It's good.
+
+00:34:43 - Yeah, I bet.
+
+00:34:44 All right, so there's that.
+
+00:34:45 And then also I wanna give a shout out, I'll put it like this.
+
+00:34:49 a shout out to an app real quick that people might find useful by way of a journey.
+
+00:34:54 So rewriting the Talk Python apps in Flutter, which all the APIs are Python, but we're having apps on Mac OS, Windows, Linux, iOS, and Android.
+
+00:35:05 That's really hard to do with Python, so Flutter is what we're using, and it's going along really well.
+
+00:35:09 Here's a little screenshot for you, Brian, to show you what we've got so far.
+
+00:35:12 Isn't that cool?
+
+00:35:13 >> Yeah.
+
+00:35:14 >> Yeah, and another, like, here's the little app and stuff.
+
+00:35:17 So I think I'm really happy with how it's coming together.
+
+00:35:18 I think it's going to be a better mobile app experience for an existing desktop experience for like offline mode with the talk Python courses.
+
+00:35:26 Oh, cool.
+
+00:35:27 Yeah, so that that'll be really neat.
+
+00:35:28 Thing I want to tell you about is something I just applied to it.
+
+00:35:31 This thing called image optimum.
+
+00:35:34 And what you can do is you can just take the top level of your project.
+
+00:35:37 So I did this for say the Talk Python Training website.
+
+00:35:39 I did this for the mobile app, just take the very top level project folder and just throw it on this app.
+
+00:35:44 go find all the images, all the vector graphics and everything and minimize the heck out of them.
+
+00:35:50 So for example, when I did that on the mobile app, it went from 10 megs of image assets to eight megs of image assets, lossless.
+
+00:35:57 Like no one will know the difference other than me that I've done it and it dropped 20% of the file size, which is not the end of the world, but given how much work it is, it's not too bad.
+
+00:36:07 - Well, the lossless part is the important bit, so that's pretty exciting.
+
+00:36:11 - Yeah, exactly.
+
+00:36:12 it'll do things like if it's a PNG and it sees you're using a smaller color palette than what it's actually holding.
+
+00:36:18 It's like, oh, we can rewrite that in a way that doesn't make it actually look different, but takes up less storage.
+
+00:36:23 Basically it's a wrapper over things like Moze JPEG, PNG Crush, Google Zappfile.
+
+00:36:31 I don't know how to say these things, but there are a bunch of image, like lossless image manipulation tools.
+
+00:36:37 And it just applies those to all of them, like in a super easy way.
+
+00:36:40 And this thing's open source itself.
+
+00:36:41 Cool.
+
+00:36:41 So yeah, anyway, if people have websites out there, you know, they could consider just like, take your website, throw it on here, and it'll tell you, you know, make sure it's all checked in and get, do this, see what it says, it gives you a report at the bottom, like you saved either 10k or you saved 5 megs, depending, you can decide whether to keep the changes.
+
+00:36:59 Yeah, cool.
+
+00:37:00 Yep, alright, that's all my extras.
+
+00:37:02 How about you?
+
+00:37:03 I just have a couple.
+
+00:37:04 Yesterday I talked with you on Python Byte, now on Talk Python, about PyTest tips and tricks. And I just wanted to point out that the post is available for people to read if they want.
+
+00:37:16 Go look through it. And if you have comments, please, or questions, let me know, of course. Also in March, I think I've brought this up before, but I'll be speaking at PyCascades.
+
+00:37:27 There's a picture of me without hair.
+
+00:37:31 And I did stick up a blog post on pythontest.com, just a placeholder so that I can link the slides and code afterwards.
+
+00:37:43 So that's it.
+
+00:37:44 >> Yeah, awesome.
+
+00:37:44 >> And that's it.
+
+00:37:46 >> Yeah, that's going to be a really cool talk.
+
+00:37:48 I think a lot of people are interested in how you share fixtures and build them for your team or cross-project as well.
+
+00:37:54 As it was really great to have you on Talk Python.
+
+00:37:56 We talked a bunch of cool PyTest things.
+
+00:37:59 That'll be out in a few weeks for people, if they don't want to watch the YouTube version.
+
+00:38:02 >> And then we'll let people know when that's available.
+
+00:38:05 >> Yeah, absolutely.
+
+00:38:06 But hopefully they're all subscribed to Talk Python already anyway.
+
+00:38:09 Of course, I'm sure they are.
+
+00:38:10 Yeah.
+
+00:38:10 They are. How about a joke? Are we ready?
+
+00:38:14 Yes, let's do a joke.
+
+00:38:15 Let's do it. This one, this is a quick and easy one, and for people listening, no pictures even.
+
+00:38:20 This one comes from Nick's craft on Twitter, and it says, "Developers, let us describe you as a group." Groups of things sometimes have weird names.
+
+00:38:32 A group of wolves is called a pack, A group of crows is called a murder.
+
+00:38:37 We think we should call a group of developers, Brian.
+
+00:38:41 >> That's hilarious. A group of developers is called a merge conflict.
+
+00:38:45 >> Isn't that good?
+
+00:38:47 >> Yeah.
+
+00:38:47 >> It is. The comments are pretty good.
+
+00:38:50 If you scroll down here, some of them are silly, some are just like, "Yup." Anyway, they're pretty good.
+
+00:39:00 But yeah, a group of developers is called a merge conflict, And so true it is.
+
+00:39:05 You can even have a merge conflict with yourself.
+
+00:39:08 Be a group of one.
+
+00:39:09 - How about a group of tech CEOs with social media accounts?
+
+00:39:15 That'd be a lawsuit.
+
+00:39:17 - That's right.
+
+00:39:19 An SEC investigation, that's right.
+
+00:39:22 - Yeah, yeah.
+
+00:39:23 - Wow, fun as always, thank you.
+
+00:39:27 - Thanks everybody for showing up as always.
+
+00:39:29 And we'll see everybody next week.
+
