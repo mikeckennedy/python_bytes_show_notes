@@ -1,0 +1,866 @@
+00:00:00 Hello and welcome to Python Bytes where we deliver Python news and headlines directly to your earbuds. This is episode 327 recorded March 13th 2023 and I am Brian Okken and I am Michael Kennedy This week's episode is sponsored by compiler podcast from Red Hat listen to their spot later in the show and connect with the show on Fostadon at pythonbytes@fostadon.org and both Brian and Michael are there also.
+
+00:00:29 Brian Okken and M. Kennedy.
+
+00:00:31 You can also join us on YouTube or join us live by going to pythonbytes.fm/live to be a part of the audience.
+
+00:00:41 It's really kind of fun.
+
+00:00:42 Usually it's Tuesdays at 11.
+
+00:00:44 This week it's Monday, but usually it's Tuesdays at 11.
+
+00:00:47 And you can watch older videos on the YouTubes as well.
+
+00:00:52 So thanks, Michael, for showing up again this week.
+
+00:00:56 We got quite a few episodes under our belt.
+
+00:00:59 So are you excited to get started?
+
+00:01:01 - We do, I am.
+
+00:01:02 You know, technology can be a tangled mess sometimes.
+
+00:01:07 And not long ago, we spoke about Untangle.
+
+00:01:11 And then, I believe it was Ian sent in and said, you know, that was really cool.
+
+00:01:15 Yeah, it was Ian, thank you.
+
+00:01:16 Said, I know you're a huge fan of Pydantic.
+
+00:01:20 It's true.
+
+00:01:20 Maybe you want to check out something that is similar to Untangle, which would let you talk to XML through Python in an object-oriented style way, a little more dynamic.
+
+00:01:32 He sent in the Pydantic-XML extension. Have you heard of this, Brian?
+
+00:01:38 >> No.
+
+00:01:39 >> No, I hadn't either. It's totally news to me.
+
+00:01:41 But the idea is basically, the way Pydantic traditionally works is you point it at a JSON file or a Python dictionary, and it can create an object graph hierarchy of all the pieces that it knows.
+
+00:01:55 So you can say it has a name and a number, but then also has a list of locations and the locations model of these Pydantic objects and so on.
+
+00:02:03 And that's how Pydantic has worked from day one more or less, right?
+
+00:02:07 It's based on dictionaries because that's the way that you speak APIs, right?
+
+00:02:12 And so it was very closely tied to APIs and JSON exchange there.
+
+00:02:16 So this one does basically the same thing, but for XML and it's glorious, right?
+
+00:02:21 It's glorious with the data validation, the required versus optional, the type conversion, all of those things.
+
+00:02:27 It supports dictionaries, lists, sets, tuples, unions.
+
+00:02:31 It has LXML parser support for high speed parser processing.
+
+00:02:36 You can pass in an element tree as well, which is the xml-e3-element tree class, which allows you to do parsing traditionally.
+
+00:02:46 So how do you get going?
+
+00:02:48 Well, you create a class here with pure Pydantic you derive from base model.
+
+00:02:53 Here you derive from base XML model, so it's slightly different, but it's fine.
+
+00:02:58 Check this out. In the XML document that they're talking about here, there's a top-level node has a thing called status, an attribute called status in XML.
+
+00:03:08 >> Okay.
+
+00:03:09 >> In the product it does, part of it anyway.
+
+00:03:12 It has two possible valid values.
+
+00:03:15 It can either be running or in development.
+
+00:03:17 It can't be ran or prod or any, it has to be those two words.
+
+00:03:22 So because it's Pydantic, you can just say the type of this is a literal running comma development.
+
+00:03:28 Isn't that awesome? That's it.
+
+00:03:30 >> That is pretty good.
+
+00:03:30 >> You're done validating that, that is correct.
+
+00:03:33 You set that equal to an adder, which means it's not coming from the body of the XML node, but it's coming from this attribute name status down here.
+
+00:03:41 So cool. Then you can have launched, You could have launched which is a numerical date.
+
+00:03:48 So the running ones have 2023 and 2019 as launch, but the one that's in development, well, it doesn't have a launch date, so it's missing.
+
+00:03:56 So the optional aspect of Pydantic is a play here.
+
+00:03:59 Then there's a title for that element, and that just comes, you say it's string, it just comes straight out of the body of the node, because it's not set to an attribute, but it's just the base one.
+
+00:04:10 I guess, presumably, you can only have one of those per node.
+
+00:04:13 - Okay, so is title special or can you name it whatever you want then?
+
+00:04:17 - You can name it whatever you want, I'm pretty sure.
+
+00:04:19 - Okay, okay.
+
+00:04:20 - Yeah.
+
+00:04:21 - Oh yeah, it says extracted from the element text, nice.
+
+00:04:23 Okay.
+
+00:04:24 - Yeah, yeah, exactly.
+
+00:04:25 And so then the overall XML document, I had it reversed when I first started talking about this.
+
+00:04:29 There's a company and the company has products, right?
+
+00:04:31 So there's a company class.
+
+00:04:33 It has a trade name from its attribute, SpaceX in this case.
+
+00:04:36 And then it has a node which has a website as its text value.
+
+00:04:40 but the text value is HTTPSpaceX.com, right?
+
+00:04:44 And so you can say the type is a URL and it'll actually parse it out as a URL, not just a string, which is really cool.
+
+00:04:51 And then in standard, identic style, it has a list of products and you give it the tag name that it's product, the node name is product and it just loops through that list.
+
+00:05:02 Isn't that a clever way to parse that with validation and data conversion and all that?
+
+00:05:06 - Not only that, I'm really glad you walked me through it because the first time I looked at this, I was a little bit lost on how to think about this and how it's building it up from different components and attributes and elements.
+
+00:05:21 It's pretty neat.
+
+00:05:22 - Yeah, if I've got to do XML again, I'm all over this.
+
+00:05:25 So there's a bunch of stuff about how you talk about heterogeneous collections, aliases, union types, model.
+
+00:05:32 You can go through it if you want.
+
+00:05:32 But I think this little quick getting started bit they have right at the top of the website that I'm linking to, that's pretty good.
+
+00:05:39 - Yeah, nice. Cool. - Very good.
+
+00:05:41 Yeah, anyway, that one's a great one. Thanks, Ian, for sending that in.
+
+00:05:44 I'm psyched to know about it.
+
+00:05:46 Well, next, I kind of want to talk about virtual environments.
+
+00:05:50 So I use the virtual environment VENV built into Python.
+
+00:05:56 I, in the past, have used the virtualenv-extra package that you can install, but since, I don't know, it's been quite a few versions of Python, on the built-in ones pretty darn good.
+
+00:06:10 So I'm happy with it.
+
+00:06:12 Anyway, there's a lot of people that kind of don't really get how they work.
+
+00:06:17 There's trying to get people on board with that they should use them is great, but trying to use them effectively, like one of the mistakes I've seen a lot of people make with virtual environments is using them, but then when they go to test in CI, actually trying to activate the virtual environment and you don't really have to, you can just use the binaries directly.
+
+00:06:39 And so I'm really happy this article is around.
+
+00:06:42 So Brett Cannon wrote an article called "How Virtual Environments Work." And this is excellent, and it's a short read.
+
+00:06:50 So one of the things that starts it with a little history, not a lot of history, just a little to remind people that back in the day, we had global and the working directory, or your current directory, and that's it.
+
+00:07:05 It wasn't anything else.
+
+00:07:06 And I kind of remember this of trying to find, if I'm sharing some code, trying to find some on the web and then just downloading it and sticking it in my directory and see if it works.
+
+00:07:15 It's just part of your code now.
+
+00:07:17 That's not what we have today.
+
+00:07:19 And partly in thanks to virtual environments.
+
+00:07:22 So it's better now.
+
+00:07:24 You can still complain about them.
+
+00:07:25 That's fine, but it's better now.
+
+00:07:27 And then he goes on to talk about the structure.
+
+00:07:30 So, and it's really, there's really not much there.
+
+00:07:33 I mean, when you're building a virtual environment, it's kind of a lightweight throwaway thing.
+
+00:07:38 Don't think of it as this huge thing.
+
+00:07:40 It's just a little directory and it's got a bin and an include and a site packages directory for the Python that you're using.
+
+00:07:48 And on Windows, it's a little different, but we'll just hand wave around that.
+
+00:07:54 In the Unix environment, it's mostly symbolic links to, I mean, you do have stuff installed there, but as far as replicating the Python environment, your Python interpreter isn't copied in there, it's symbolic linked, so you don't have to worry about that too much.
+
+00:08:09 It's the site packages in the bin and everything and how that's there.
+
+00:08:14 So how does Python deal with that?
+
+00:08:16 Well, it deals with it through a pyvenv.cfg.
+
+00:08:21 It's a config file that tells Python, when you run Python from this virtual environment, where the home directory should be, whether or not to include system packages in the site packages, and then the version and the executable and some other stuff, like the command, if you wanted to recreate it.
+
+00:08:40 I don't know why that's there, but in general, this is enough to tell Python, if you just run it from that environment, that you just get all the right stuff.
+
+00:08:52 And so if you're putting it in a script, just use those.
+
+00:08:56 But if you're using it from the shell, then of course you're gonna activate the shell.
+
+00:09:00 But the activation, he's stressing, and this is important to understand, it's optional.
+
+00:09:06 You don't have to hit activate as long as you're calling stuff within the environment.
+
+00:09:11 And he kind of goes on to talk about really what it's doing.
+
+00:09:15 What does the activation do though, if you're curious?
+
+00:09:18 It doesn't do much.
+
+00:09:19 It sticks some stuff in your path.
+
+00:09:22 It edits a like a virtual environment, sets a virtual env environment variable, and it registers a deactivate shell function.
+
+00:09:32 And that's about it.
+
+00:09:33 It changes your prompt too, to let you know that you've activated it, which is cool.
+
+00:09:38 And then he goes on to talk about how, partly why he's dug into this lately is because for VS Code, they're creating a little tiny, but you can use it anywhere you want, a extra extension called MicroVENV.
+
+00:09:52 microvenv, I don't know.
+
+00:09:54 So, and this is a single file, less than 100 lines to kind of emulate all of that.
+
+00:10:00 And the reason is because Debian doesn't, or Debian doesn't include the virtual environments by default.
+
+00:10:07 So they kind of have to wanna work around that.
+
+00:10:09 So anyway, really great summary of virtual environments.
+
+00:10:12 - Yeah, peeling away a little bit of the magic, letting you know what's happening in there, right?
+
+00:10:16 - Yeah, well, and also because it's sort of magical to some people, a lot of people are concerned about like trying to copy it or something.
+
+00:10:25 And it's, you shouldn't think, you shouldn't have anything kept that you, that's important within your virtual environment.
+
+00:10:32 You should be able to recreate it whenever you want.
+
+00:10:34 So there should be lightweight thing.
+
+00:10:36 Though, oh, the one thing I really wanted to highlight, and the reason why I really wanted to talk about this was because of a flag.
+
+00:10:42 So where's that flag?
+
+00:10:45 There's a flag, dash, dash.
+
+00:10:49 I gotta find it.
+
+00:10:50 Do you remember, do you know what I'm talking about?
+
+00:10:51 Anyway.
+
+00:10:52 - I'll help you search.
+
+00:10:54 - There's like no, there's like--
+
+00:10:58 - Without pip?
+
+00:10:59 - Yeah, without pip.
+
+00:11:00 - Dash dash without dash pip.
+
+00:11:02 - Okay, so without pip, excellent thing to know about, because, oh, here it is.
+
+00:11:09 BNV without pip.
+
+00:11:10 That will get it so that it doesn't ask you (laughs)
+
+00:11:14 ask you to upgrade pip.
+
+00:11:16 So especially in CI and other places, you don't care about upgrading it right now.
+
+00:11:21 I mean, I get it if I'm in the development mode, I do wanna upgrade it, I want to use the latest one.
+
+00:11:27 But in a CI environment or a lot of automated places, I don't need to do that.
+
+00:11:32 I can just use whatever's there, it's gonna be fine.
+
+00:11:35 So turning that off is awesome.
+
+00:11:36 And it saves some time.
+
+00:11:37 It's not just, it doesn't say not, it isn't really not install pip or upgrade, it just doesn't try.
+
+00:11:44 So it assumes PIP's already there is all.
+
+00:11:47 It uses the system PIP, so that's it.
+
+00:11:49 - Cool. - That's cool.
+
+00:11:50 Yeah, it just falls back to the global one but runs it for that environment.
+
+00:11:53 - Yeah, yeah.
+
+00:11:55 And apparently it saves a lot of time of that, so that's great.
+
+00:11:59 - Very cool, very cool.
+
+00:12:00 Well, before we move on, our sponsor.
+
+00:12:03 - Oh yeah, let's cover our sponsor.
+
+00:12:05 And I really, really appreciate Red Hat and The Compiler Podcast for sponsoring this episode.
+
+00:12:10 So just like you, both Michael and I are big fans of podcasts.
+
+00:12:14 and really happy to share a new one from a highly respected open source company.
+
+00:12:20 Compiler is an original podcast from Red Hat.
+
+00:12:23 Compiler brings together a curious team of Red Hatters to simplify tech topics and provide insight for a new generation of IT professionals.
+
+00:12:32 The show covers topics like, what are the components of a software stack?
+
+00:12:36 Are big mistakes that big of a deal?
+
+00:12:38 And do you have to know how to code to get started in open source?
+
+00:12:42 Compiler closes the gap between those who are new to technology and those behind the inventions and services shaping our world.
+
+00:12:50 They bring together stories and perspectives from the industry and simplifies it, its language, culture, and movements in a way that's fun, informative, and guilt-free.
+
+00:13:00 I recently listened to an episode titled Testing PDFs and Donkeys.
+
+00:13:05 It was great.
+
+00:13:06 It's part of a Stack Unstuck series.
+
+00:13:11 It's a great series and it talks about the entire tech stack, software tech stack, especially around web stuff, starting with the great stack debate.
+
+00:13:19 There's episodes on front end, frameworks, fundamentals, databases, and OS, even OS is just, OS is in system calls.
+
+00:13:27 And then it even talks about testing, even though testing really isn't part of the, you think of as the tech stack, it's kind of part of all of it.
+
+00:13:34 So I'm glad they covered it, especially for people either jumping into software or software old hats like me trying on new hats like embedded systems or control systems, people learning how to do web applications.
+
+00:13:46 These are great overview episodes and they're timed well.
+
+00:13:50 They're either, they're timed how they need to be.
+
+00:13:52 Sometimes some of them are 45 minutes, some of them are 25.
+
+00:13:55 And I like that flexibility.
+
+00:13:57 Learn more about the compiler at pythonbytes.fm/compiler.
+
+00:14:01 The link is in your podcast player show notes.
+
+00:14:04 And thank you to Compiler for keeping this podcast going.
+
+00:14:08 - Yes, thank you Red Hat, thank you compiler, good show.
+
+00:14:10 Check it out.
+
+00:14:11 All right, on to the next one, Brian.
+
+00:14:13 - Okay.
+
+00:14:14 - This one is a project by Raid.
+
+00:14:17 And if you've worked with databases in Python, especially if you're using an ORM like SQLAlchemy, SQLModel, QE, any of these things, what's really nice about those is you create classes in Python and then through some sort of magic, somehow there's a startup thing that makes sure the database exists, that the database has tables that map over the classes.
+
+00:14:38 So for example, if I create a class and say it's these three columns and here's an index and this one must be unique, it'll talk to the database and make that happen.
+
+00:14:46 But for the rest of database management, you've got to go and write stuff in SQL or DDL, data definition language, or whatever that is, right?
+
+00:14:56 The stuff where you create the tables and create those types of scripts, create users.
+
+00:15:01 So Raid created DB declare, a declarative layer for your database that adds on on top of those types of things like SQL alchemies, what I described for that kind of work.
+
+00:15:14 So it's a pretty new project, people can check it out.
+
+00:15:16 The idea is, let me find a quick example here.
+
+00:15:20 So what you can do is you can come and say, I wanna create a database and it's got this name and I wanna create a role.
+
+00:15:27 And here they have the name of the role is a hungry user, They have to log in, here's their password.
+
+00:15:32 They get privileges on the certain database, and you can model out those types of things.
+
+00:15:38 Then on top of that, you can just use SQLAlchemy itself as part of this process.
+
+00:15:43 You create a SQLAlchemy engine and you call run on that, and it'll create the SQLAlchemy models.
+
+00:15:50 There's an example a little bit further also linked to this that shows how to do basically the standard SQLAlchemy stuff that will create the tables with the primary keys and so on.
+
+00:16:01 So this one's just a short one, but if you like the way that SQLAlchemy works, also with SQLAlchemy you get migrations, or with SQL Model through Alembic, the idea is that this is gonna be extended in the future as well to have some of those type of transformational behaviors, but for now it's really the extra stuff like table creation, database creation, user roles and management.
+
+00:16:26 So, pretty cool.
+
+00:16:28 People can check that out if they find that useful.
+
+00:16:30 Want to stay more in Python and less in SQL scripts.
+
+00:16:33 - Well, especially the roles and permissions, having that covered by that, that's pretty cool.
+
+00:16:39 That's a piece that always trips me up, so.
+
+00:16:42 - You don't just have like the root users have full access, just run as admin.
+
+00:16:47 Just kidding.
+
+00:16:48 (laughing)
+
+00:16:50 - Yeah, exactly.
+
+00:16:51 It always seems like it's covered as like an advanced topic, but it's almost the first thing you need to figure out.
+
+00:16:57 is how to separate user roles.
+
+00:17:01 - Right, are we gonna put this on the internet and just let people have at it or are we gonna put a little data protection in there?
+
+00:17:06 Anyway, people can check that out, it's a good one.
+
+00:17:09 - Next, let's talk about Knox.
+
+00:17:11 So I use both Tox and Knox on various projects.
+
+00:17:16 A lot of my open source stuff is Tox-based for testing just because I'm used to it.
+
+00:17:22 But I'm starting to use Knox more and more And I wanna cover this article by Seth Larson called Testing Multiple Python Versions with Knox and PyEnv, P-Y-E-N-V.
+
+00:17:33 Now I personally don't use PyEnv, but I have before.
+
+00:17:37 And one of the things that's tripped me up before is how to use it with like Tox and Knox.
+
+00:17:42 So basically even, so check this out if you wanna check this article out if you wanna learn more about Knox, but also the trick about, even if you're a Tox user, the trick about how to use PyEnv with it, with the global, there's an example here, it's awesome.
+
+00:17:57 So let's go over this a little bit.
+
+00:17:59 So if you want, one of the first things I wanna try to do with Knox, when it wasn't obvious to me from the documentation is just how do I set it up like I would talks to just test multiple, my stuff with multiple Python versions?
+
+00:18:12 And that's the example that shows right off the bat.
+
+00:18:14 You have a Knox file, it's Knox file.py, and it's Python code.
+
+00:18:20 So you import Knox and you can set up a session for multiple Python versions.
+
+00:18:26 And then within this defining test, this can be anything.
+
+00:18:30 So the function names of around a session are, they're just, they're what you'll use later.
+
+00:18:36 So we'll cover that in a little bit.
+
+00:18:38 But then within your session, you do stuff.
+
+00:18:42 You either install or run.
+
+00:18:44 There's probably other stuff too, but this is what I use is install and run.
+
+00:18:47 So installing dot means installing the current project that you're working on.
+
+00:18:52 And then there's an example here for requirements files.
+
+00:18:54 So a dev requirements, but if you're using pyproject.toml, it could be also part of your dot install if you want.
+
+00:19:02 And then run test, run a support, and of course run pytest.
+
+00:19:05 So good job, Seth.
+
+00:19:06 And then it goes through how to run it.
+
+00:19:09 So you can either just type Knox and it'll run everything, or you can say nox-s for dash session to run test.
+
+00:19:17 And if you wanna run a specific one, like just 3.11, Python 3.11, you can say test-3.11.
+
+00:19:24 I kinda like that there's a dot in there.
+
+00:19:27 It's pretty easy to understand.
+
+00:19:29 So I just really like how simple this is to get the basics down, the basics of I wanna run tests on my project on over a multiple Python versions.
+
+00:19:39 And this is pretty clean.
+
+00:19:41 This is already a decent argument to switch to Knox if you're on the fence between Tox and Knox.
+
+00:19:47 - I agree, and it's so nice because not only is it clean, you get auto-complete support from your editor, you get whatever editor you're using will tell you if you've done something wrong.
+
+00:20:00 There's more support than just, well, here's a arbitrary text file I'm typing stuff into.
+
+00:20:05 Hope it works.
+
+00:20:05 - Yeah, and then you can, I mean, I've used it also to, just like I do is talks with doing something like adding linting and coverage checks and all sorts of stuff.
+
+00:20:17 I do want to actually, it's one of the things I'm glad you wrote this 'cause it's a reminder.
+
+00:20:21 I did want to write a, like an example of the workflow differences between using talks and Knox and showing a side-by-side comparison of those two.
+
+00:20:29 So hopefully in the future I can get that written.
+
+00:20:32 But one of the things that gets me is that with the run command, You have to separate every little piece of your command by, they have to be quoted as quoted strings, like pytest tests has to be two different parameters to the run argument.
+
+00:20:47 And if you have a bunch of flags, each of the flag needs to be different things.
+
+00:20:52 Now, some people might not care about this.
+
+00:20:55 I kind of care and it bugs me 'cause I don't have to do that with talks.
+
+00:20:58 So what I do is I just, since it's Python, I just write a string with all of the things that I want in it, and then I use split to create a--
+
+00:21:08 - Split on space, something like that.
+
+00:21:10 - Yeah, I just use split on space to create a array with all of the elements, and then when I run, I pass it to run and do the star thing so that it explodes it and passes it in all together.
+
+00:21:23 - Yeah, nice.
+
+00:21:24 - And then here's the trick, the magic trick about pyenv at the bottom is that if you say pyenv global and list all of the environments that you want to have available.
+
+00:21:35 It makes it available if you're using PyEnv.
+
+00:21:38 It isn't by default.
+
+00:21:40 So you have to run this for each session or shell invocation to get it to work for PyEnv people.
+
+00:21:47 But that trick works with TOCs also.
+
+00:21:50 And the other thing I wanted to mention was one of the things I really like about NOCs is that if you don't like it, this example has PyPy3 and 3, 8, 9, 10, 11, 12 all there.
+
+00:22:02 By default, Knox will not fail if you don't have one of these around.
+
+00:22:06 So if you only have like 3.11 installed, it'll just run that and it'll skip the others.
+
+00:22:11 You can make it fail if it doesn't have it, but you don't, by default, it just skips them, which is kind of cool.
+
+00:22:16 The Tox is the reverse.
+
+00:22:18 Tox is if by default, it'll fail if it's not there, but you can tell it to skip if it's not there.
+
+00:22:24 - Yeah, that's cool.
+
+00:22:25 One really quick thing if people are copying and pasting from that example, I'm pretty sure the -r dev requirements needs a -r space dev requirements in there just people are copy pasting, right?
+
+00:22:34 'Cause that's the command is install, pip install -r space file name.
+
+00:22:39 - This always surprised me.
+
+00:22:40 I've seen it in multiple tutorials.
+
+00:22:42 I don't know if that's true.
+
+00:22:43 I think it might be able to get away without the space.
+
+00:22:46 I don't know.
+
+00:22:47 - Okay, well, you may be able to.
+
+00:22:49 We can try it.
+
+00:22:51 Yeah, we can try it later.
+
+00:22:52 - Yeah.
+
+00:22:53 - All right, quick question for you, Brian, 'cause I don't know the answer.
+
+00:22:57 Damien asked, does someone know if how Nox or Tox work with poetry?
+
+00:23:01 Do you know?
+
+00:23:02 - Nothing works with poetry.
+
+00:23:03 (laughing)
+
+00:23:05 I don't know actually.
+
+00:23:07 So poetry, I'm sure there's, I don't know.
+
+00:23:11 I'd be--
+
+00:23:12 - Probably you talked about the Pi Project Tommel integration, so I mean it probably is more or less.
+
+00:23:17 - It probably works.
+
+00:23:18 Probably.
+
+00:23:19 - Yeah, it probably works.
+
+00:23:20 I'm sure many people listening know.
+
+00:23:22 Sorry, Damien, I don't know either.
+
+00:23:25 All right.
+
+00:23:26 - All that thought.
+
+00:23:27 - All that thought, yeah.
+
+00:23:28 That's all of our things, isn't it, Brian?
+
+00:23:30 - Dude, the search, yeah, we were quick.
+
+00:23:33 Do you have any extras for us?
+
+00:23:34 - Oh, I always got extras.
+
+00:23:36 So let's get through here.
+
+00:23:38 Remember when we talked about how much drama there was around, how was it, Google maybe?
+
+00:23:45 Someone was giving away like 2,000 or 4,000 YubiKeys to the top 100 or top 1,000 maintainers on PyPI, maintainers of the top projects on PyPI.
+
+00:23:57 And that was 'cause there was gonna be a requirement for PyPI that the very top 1% or some small percent was required to have 2FA.
+
+00:24:07 Well, guess what?
+
+00:24:08 If that caused drama, wait until you hear about this.
+
+00:24:12 GitHub makes 2FA mandatory next week for anyone who is an active developer.
+
+00:24:18 So basically, if you're making contributions to projects, public projects, I believe, something like that.
+
+00:24:26 So, yeah, security that counts of more than 100 million users.
+
+00:24:31 I'm not sure exactly what the definition of an active developer versus an active contributor, 'cause I might contribute to the code without writing any actual software, but whatever, it's splitting hairs.
+
+00:24:42 The only reason I really bring this up is not to go into depth, that's why this is an extra, but if it was a big deal that a thousand Python developers had to do 2FA and it sounded like it was.
+
+00:24:54 What about 100 million?
+
+00:24:56 It's gonna cause some drama.
+
+00:24:58 And then how many of those people who are contributing to PyPI are doing so in some way or another through GitHub?
+
+00:25:06 I would say the majority, probably.
+
+00:25:08 - Yeah, yeah.
+
+00:25:10 Actually, so I don't think it's gonna be drama.
+
+00:25:13 Hopefully people are just cool with it.
+
+00:25:14 I think that the mess up with PyPI was the dongle thing.
+
+00:25:17 I think people thought they had to have the hardware thing And they don't, I mean I use a software 2FA system.
+
+00:25:24 And it's not just them, I don't know about you, but I just looked, I got like half a dozen, dozen different things I gotta log into with Authy.
+
+00:25:33 - Yeah, I think I have about 30 accounts or so that are 2FA.
+
+00:25:37 - Yeah.
+
+00:25:38 - And I'm happy that I do.
+
+00:25:40 That is not a complaint, that's not me whining, that's me going yes.
+
+00:25:44 - Occasionally I'm annoyed by it.
+
+00:25:46 - Yes, oh yes. - Like right now, I went to the look at GitHub thing and I have to log in, so I don't have time to do that right now.
+
+00:25:54 So occasionally it's annoying, but--
+
+00:25:57 - Well, here, let me tell you why this is annoying so often.
+
+00:26:00 We're gonna take this and make it a whole episode, aren't we?
+
+00:26:02 So the reason it is annoying is there's so many places, like what is the point of the 2FA?
+
+00:26:08 The 2FA is if somebody steals your account login information through some kind of data breach or through password reuse or whatever, that someone else can't go and use those credentials to log in as you.
+
+00:26:22 They have to have the second factor.
+
+00:26:24 Well, here's why it's annoying.
+
+00:26:25 Every time I log into my credit card processor, I think almost every time I log into DigitalOcean, it's like, "Hey, how you doing?
+
+00:26:36 What's your 2FA factor?" It's like, I've given that to you about 100 times in the same browser, right?
+
+00:26:42 it should at some point go, you know what?
+
+00:26:44 They've given us the 2FA, we trust them.
+
+00:26:46 It's not, I'm not concerned someone is on my computer, logging into my thing.
+
+00:26:51 I'm concerned about the seven other billion people who might want to log in from somewhere else, right?
+
+00:26:57 So I think there should be a little bit of like, hey, if you've already logged in on this device, maybe you don't need the 2FA every time.
+
+00:27:05 Could you even refresh it monthly, but not four times this morning, right?
+
+00:27:08 That's when I'm like, ah, 2FA, it's driving me nuts.
+
+00:27:11 So that's my--
+
+00:27:12 But I mean, to be fair, GitHub doesn't do that or PyPI.
+
+00:27:15 - No, GitHub is great.
+
+00:27:17 GitHub, I have no complaints.
+
+00:27:18 - Okay, 'cause I don't have to do it every time for GitHub.
+
+00:27:22 So, and I've been-- - No, no, GitHub's really good.
+
+00:27:24 - Yeah, and I've been using 2FA for GitHub for quite a long time.
+
+00:27:27 It's been optional for a long time.
+
+00:27:29 So, or a while at least.
+
+00:27:31 I have a very short memory.
+
+00:27:32 I'm really good with open source because I have the same memory span as the general technology memory of open source.
+
+00:27:40 (laughing)
+
+00:27:42 - Nice.
+
+00:27:43 All right, I have one other really quick thing.
+
+00:27:46 You know, Brian, we always have good luck reaching out to our listeners about things.
+
+00:27:51 And this one is a little bit different.
+
+00:27:52 So I recently got a brand new adventure motorcycle as of last week, which is awesome.
+
+00:27:58 And I found some fun places to take it and ride.
+
+00:28:00 Like I rode up into the snow around here in the coastal range and stuff like that.
+
+00:28:05 I'm looking for somewhere fun in the Northwest to go riding that's like not intense motocross off-road, but you know, would be a lot of fun--
+
+00:28:14 - Just a nice view.
+
+00:28:16 - Yeah, just get out in the woods and cruise around in the summer, the spring.
+
+00:28:20 So listeners out there who know where to ride around here, that's not one of the couple huge off-road vehicle like state sponsored areas around Portland.
+
+00:28:29 People got it, shoot it in, and if you wanna know why I kinda got this bike, how much fun it was, there's a cool video I linked to with Ben Townley and another guy, something Raymond, I can't remember his first name.
+
+00:28:43 Anyway, you can check that out.
+
+00:28:44 And yeah, that's all I got for my extras.
+
+00:28:47 How about you?
+
+00:28:48 - I mean, while we're asking for contributors, we just passed, we were driving around this weekend and saw a group of 10, 20 people riding motorcycles.
+
+00:28:58 And since we've got a couple Harley places around here, so there are Harley groups around.
+
+00:29:06 But when I was a kid, I was scared of these people.
+
+00:29:09 And these people, just people with motorcycles, mostly wearing black leather.
+
+00:29:14 But now they're like, I mean, it's mostly people my age or older, you know, it's 50 to 70 year olds riding motorbikes just to hang out with their friends.
+
+00:29:23 Well, that's cool.
+
+00:29:24 I mean, at least that's what I see.
+
+00:29:25 But I think it'd be cool if I could see, are there e-bike gangs?
+
+00:29:31 Or are there e-bike groups of people just a bunch of e-bikes riding together or?
+
+00:29:38 Anyway, some of these e-bikes are awesome.
+
+00:29:40 Like electric bicycles, they're so cool.
+
+00:29:43 And I'm sure there are actually.
+
+00:29:45 But how are you gonna find them, right?
+
+00:29:45 - It'd be cool to see a picture of like a bunch of them.
+
+00:29:48 Anyway.
+
+00:29:49 - Do you have to have to get one of those club patches for it?
+
+00:29:51 - Can we get probably a little--
+
+00:29:52 - Do you have any extras before?
+
+00:29:54 - No, I don't have any extras.
+
+00:29:56 I was just BSing, so let's do a joke.
+
+00:29:59 - All right, let's do a joke.
+
+00:30:01 And, boy, I didn't do this, I didn't plan this, but boy, did it line up good.
+
+00:30:05 So this one comes to us from ProgrammingHumor on Reddit.
+
+00:30:08 And just check out this picture, Brian, here really quick.
+
+00:30:10 Describe the picture to folks.
+
+00:30:13 You see this?
+
+00:30:15 - I don't know what it means.
+
+00:30:16 - Some sort of login into GitHub.
+
+00:30:17 - Okay.
+
+00:30:18 - And somebody's gotta do a code review here in the morning.
+
+00:30:22 - Oh, there's over a million lines changed.
+
+00:30:25 And 20 deletions.
+
+00:30:26 - 1,094,000 lines changed, 20 removed, so not too bad there, but 2,945 files to review and zero of those.
+
+00:30:36 It's like, let's get started.
+
+00:30:38 So the title is, anyone else have this kind of colleague?
+
+00:30:43 What a way to start a Monday.
+
+00:30:45 - So, any guesses what they did?
+
+00:30:49 I'm guessing they applied black to their project and just changed everything.
+
+00:30:55 - Yeah, maybe.
+
+00:30:56 The comments section's pretty good too.
+
+00:30:59 Someone else suggested that maybe the git commit message is fixed typo.
+
+00:31:04 - Fixed typo.
+
+00:31:05 (laughing)
+
+00:31:06 - Or something like that.
+
+00:31:07 Added stuff, small update.
+
+00:31:10 - Small update, yeah.
+
+00:31:11 That's funny.
+
+00:31:13 Reformatted every line of code.
+
+00:31:15 - Exactly.
+
+00:31:17 So, it's Case of the Mondays, one of the best shows ever.
+
+00:31:21 - Replace all spaces with tabs.
+
+00:31:23 - Exactly.
+
+00:31:26 - Nice.
+
+00:31:27 So, anyway, cool.
+
+00:31:29 All right, well, that's what I got for you.
+
+00:31:30 - For this wonderful episode, I had a lot of fun.
+
+00:31:33 Hope everybody else did too.
+
+00:31:34 - Yeah, I did too.
+
+00:31:35 Thanks everyone for listening.
+
+00:31:36 See y'all later.
+
