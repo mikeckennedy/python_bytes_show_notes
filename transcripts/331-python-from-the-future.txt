@@ -1,0 +1,962 @@
+00:00:00 Hello and welcome to Python Bytes where we deliver Python news and headlines directly to your earbuds.
+
+00:00:05 This is episode 331 recorded April 11th, 2023. And I'm Brian Okken.
+
+00:00:12 And I'm Michael Kennedy.
+
+00:00:13 So I want to thank everybody that's showing up on the live stream and watches it on YouTube as well.
+
+00:00:18 I know a lot of people just listening to the audio, which is great. Thank you.
+
+00:00:22 But sometimes it's nice to pop over and join the chat.
+
+00:00:27 We usually record it Tuesday at 11s, Tuesdays at 11 Pacific time.
+
+00:00:33 So if you can catch it, great.
+
+00:00:34 If not, we enjoy your presence anyway.
+
+00:00:38 Also want to thank InfluxDB for sponsoring this episode.
+
+00:00:41 We'll hear more about them later in the show.
+
+00:00:44 But first, what do you got for us, Michael?
+
+00:00:47 >> How about we make an application?
+
+00:00:48 >> Yeah.
+
+00:00:50 >> Yeah, let's do it.
+
+00:00:52 So this one was actually thrown out just in passing over on Talk Python.
+
+00:01:00 When I had that panel about the direction of packaging in Python in general, like we've got all these different choices, we've got poetry, we've got pipdmv, we've got hatch, we've got straight pip, we've got pipduals.
+
+00:01:14 So I had a bunch of folks on the show to talk about that.
+
+00:01:16 Paul mentioned like, "Oh, make app is something that I'm really dreaming about right now.
+
+00:01:21 that might be a nice way to think about how we work with packages.
+
+00:01:25 So Felix Ingram noticed this maybe more than even that I did while we were watching, or while he's listening, and thought, "Maybe I should talk a bit more about this." So I wasn't really aware of this before I dug into it, but Make App, it's a little bit like Cookie Cutter and those kinds of things, but it'll guide you through creating your application as well as helping you test certain things like, for example, if I wanna create some Python package having to do with secure, I can't call it secure because guess what?
+
+00:02:00 That's already taken on PyPI as a package.
+
+00:02:03 So I'm never gonna be able to publish that.
+
+00:02:05 I'm gonna have to rename it.
+
+00:02:06 I might find that out later along the way.
+
+00:02:09 So make app will do things like check to see that the thing you're trying to create could be uploaded to PyPI if you later chose to do so, right?
+
+00:02:17 And also worth a quick pointing out, Felix said, "Hey, look, here's where you can link to it "over onto the Talk Python transcript page.
+
+00:02:27 "And it has every paragraph, I guess, more or less, "has its own little link that you can link to "and play and hear what it's talking about." And I don't think we have that on ours and I'm wondering how much people care.
+
+00:02:38 Like that's work that Michael has to do, but a bunch of people are like, "Yes, please." Then let me know.
+
+00:02:43 Anyway, that's how they shared it with me and I figured out what we're talking about.
+
+00:02:46 So this is an app that simplifies creating applications, rolling them out, and publishing them.
+
+00:02:53 And what it does is it will make a skeleton for your new application in one command.
+
+00:02:58 That's kind of the cookie cutter equivalent, although there's absolutely fewer templates or project types, right?
+
+00:03:04 There's like five or six project types instead of five or 6,000 for a cookie cutter, so that's a consideration there.
+
+00:03:10 But then it'll automatically create a Git repository for you.
+
+00:03:14 guessing just locally and you've got to link it to GitHub or wherever.
+
+00:03:18 As I said, it'll check whether the application name is available on PyPI.
+
+00:03:23 You pick your layout and then it also allows you to manage your app over time.
+
+00:03:29 So you can easily add entries like here's a new item or here's a breaking change to your change log.
+
+00:03:36 >> Cool.
+
+00:03:37 >> Publish your application, push to source control, push to PyPI, and those things in a single command.
+
+00:03:44 I don't know if I'd use that.
+
+00:03:45 I think I kind of just am always pushing to GitHub.
+
+00:03:48 I don't really wait until I'm ready to publish something.
+
+00:03:51 Like I'm pushing like stuff.
+
+00:03:53 I always kind of feel bad.
+
+00:03:54 I think GitHub, probably like, why does this person commit so often?
+
+00:03:57 But it's just like, you know what?
+
+00:03:59 I'm done with this little thing.
+
+00:04:00 I want to save it.
+
+00:04:01 What if I'm on my other computer?
+
+00:04:02 I don't want to have to try to remember how to get it back.
+
+00:04:05 Anyway, that's a cool feature.
+
+00:04:06 I'm not sure I would use.
+
+00:04:07 So when you create a new one, you say make app new, and you give it a name, you give a location, and other things like, what is the name?
+
+00:04:14 and it was the author.
+
+00:04:15 And you can also take things like the author, which you would put on the CLI, you can put that into a config file and say, you know what, it's me, it's always me.
+
+00:04:23 When I'm logged into this user profile, my name is still the same as it was before, right?
+
+00:04:28 So don't ask me about that, right?
+
+00:04:29 So that's kind of cool that you can do that.
+
+00:04:32 It'll create templates for things like a click powered app, something based on PyTest.
+
+00:04:39 It'll, Brian, let you create a PyTest plugin project.
+
+00:04:42 - Nice.
+
+00:04:43 that's intended to be a PyTest thing, a Django web app, or this thing called Web Scaf, which is also a scaffolding thing for web apps.
+
+00:04:49 Then when you're ready to publish it, you say make app release, and that'll bump a version, or you can say make app release, increment the major version, like that's a major change that you wanna make, right?
+
+00:05:00 So this will automatically bump the version number, tag it in source control, push the source and the tag up to GitHub or GitLab or wherever you're acting on, and publish it to PyPI all in one fail swoop.
+
+00:05:14 Then again, if you wanna make changes, you can say make app change, and then you put the text of that change, and it'll put that into change log in the right place.
+
+00:05:22 So you put like quote like here, it's plus new change command implemented or whatever.
+
+00:05:28 And it has certain prefixes like plus for a new feature edition, exclamation mark for important change, minus for a deprecation or star for some minor change.
+
+00:05:38 Pretty cool.
+
+00:05:39 On top of that, it comes with auto-complete in your shell.
+
+00:05:43 So if you're using Bash or OhMyZShell or something like that and you wanna hit tab and have it know about make app, what are its commands right after that, then you can put something into your profile, your RC file, and it will activate the auto-complete, which is cool.
+
+00:05:59 - That's cool.
+
+00:06:00 - Yeah, anyway, so people can check this out.
+
+00:06:02 Comes lightly recommended from that episode, but yeah, pretty cool.
+
+00:06:07 It looks interesting, worth all the money.
+
+00:06:09 - Nice.
+
+00:06:10 Well, one of the things I've been thinking about and looking forward to is Python 3.12 actually.
+
+00:06:19 So 3.12 is not here yet, but it is kind of here, right?
+
+00:06:25 So it's a yearly development cycle, Python's on.
+
+00:06:30 Where are we at right now?
+
+00:06:31 Well, we just had, so we just passed Alpha 7.
+
+00:06:36 So Alpha 7 was released recently.
+
+00:06:40 I don't think it was right on the--
+
+00:06:41 - That many days ago, yeah.
+
+00:06:42 - Yeah, but yeah.
+
+00:06:45 So 3.12 Alpha 7, and it's nice that they've published the schedule, the expected schedule.
+
+00:06:53 So we've got up through a couple more months of four or five months, four months, bad at math, in this early in the morning, of betas, and then candidate releases, and then the final in October, which is awesome.
+
+00:07:08 So why am I bringing this up?
+
+00:07:12 I'm bringing it up because a couple things happened recently.
+
+00:07:14 So the Alpha 7, if we took a look at the release notes, there's some fun stuff in here.
+
+00:07:20 I'm not sure when this came in, but the thing that I really am looking forward to in 3.12 is, well, there's some stuff that isn't really mentioned here, but I think we're gonna get more speed improvements, which I'm pretty excited about.
+
+00:07:34 But there's some cool stuff with, oh, this is just the major new features.
+
+00:07:42 We've got even more improved error messages, which are great.
+
+00:07:45 And that's one of the things I wanted to talk about.
+
+00:07:47 A whole bunch of great stuff, but these are pretty cool.
+
+00:07:52 Also invalid backslash escape sequences now worn for syntax warning and deprecation warning.
+
+00:07:58 That's kind of neat.
+
+00:07:59 So in the what's new article for 3.12, this does have some examples of the new error messages.
+
+00:08:08 So these are really kind of neat things.
+
+00:08:10 Like if you just kind of use sys version info, but if you forgot to import it, there's some new error logs of, did you forget to import sys?
+
+00:08:20 So did you forget to import?
+
+00:08:22 Those are nice error messages.
+
+00:08:24 There's another one from like, if you're using a variable within a class that's not around, maybe it's a self variable that you forgot or self member variable.
+
+00:08:37 So there's a, did you mean self.bleh?
+
+00:08:40 Nice example.
+
+00:08:43 Syntax error from, and I've done this a lot of import from and messing this up.
+
+00:08:50 So it's import something from this other thing.
+
+00:08:53 It's not that, you're supposed to say from something, import something and the syntax error now says, did you mean to use this instead?
+
+00:09:02 Which also, I don't know, to me begs the question of, like, can't you just figure it out if you know what I meant?
+
+00:09:10 But anyway, yeah, some other, like import error messages, some cleanup, more specific error messages, always exciting.
+
+00:09:19 The other, there's always new exciting things in new versions.
+
+00:09:24 One of the--
+
+00:09:25 Off of that bit, I just want to bring a little audience feedback.
+
+00:09:29 Sean Tibor from Teaching Python out there says, "Hooray for better error messages." And Pamela Fox says, "Yay, I've already been benefiting from 3.11 error message improvements, some of which I requested myself in the Python forum.
+
+00:09:44 Tell Pablo what you need." Yes, I think this is really great.
+
+00:09:47 It's certainly getting nice to have those, especially for people getting started in Python to be less confused.
+
+00:09:53 >> Yeah, and I'm finding myself, just I'm in a hurry more often than I guess I'm always in more of a hurry getting stuff done.
+
+00:10:01 If the error message can help me solve something quicker, that's a nice win.
+
+00:10:07 Just one of the announcements that came out recently.
+
+00:10:10 This is tight schedule.
+
+00:10:12 We're on Alpha 7, we've got no more Alphas, we've got some Betas coming, but I thought we were no new features beyond the Beta 1.
+
+00:10:24 One of the new features that I don't see so far, but it's supposedly coming in, is this per-interpreter gill, PEP 684, it's good for 3.12.
+
+00:10:37 It just got approved.
+
+00:10:40 I think I'm excited about it. I'm not sure.
+
+00:10:43 I don't know if you know much about it, Michael.
+
+00:10:45 but it says here, okay, so I'm just gonna quickly summarize the abstract.
+
+00:10:50 So CPython users can run multiple interpreters in the same process.
+
+00:10:56 However, interpreters in the same process always shared the same global state.
+
+00:11:01 So one gil.
+
+00:11:03 It is a source of bugs.
+
+00:11:05 So, and with a growing impact as more people use the feature.
+
+00:11:10 Furthermore, sufficient isolation would facilitate true multi-core parallelism.
+
+00:11:15 Ooh, I like multi-corporalism.
+
+00:11:18 So I think we want this.
+
+00:11:20 And so there's outlines in the proposal.
+
+00:11:23 So we're gonna have, they're moving the data surrounding the GIL into the per interpreter data.
+
+00:11:31 And I think I'm excited about it, but then later on it does say, there's a reference like for how do we teach this?
+
+00:11:39 And it mentions, oh, I think I've lost the link.
+
+00:11:44 Oh, this is an advanced feature meant for a narrow set of users of the C API.
+
+00:11:50 So I'm not sure how this will affect normal people in the future, but I still think it's a good thing.
+
+00:11:55 Do you have any idea, Michael?
+
+00:11:57 - I have no idea.
+
+00:11:58 Yeah, I think that the trick is how do you start a new interpreter?
+
+00:12:01 And what I would imagine might come out of this is there might be, right now in Python, we can create threads and we can create multiprocessing and we can do async I/O, right?
+
+00:12:12 - Yeah.
+
+00:12:12 I think I/O, it's just one thread.
+
+00:12:14 It doesn't do any of that.
+
+00:12:16 So kind of put that to a side.
+
+00:12:18 It doesn't really fall into the same realm.
+
+00:12:21 But with threading versus multiprocessing, it's always been this trade-off of, well, I really just want to run more than one thing at a time.
+
+00:12:29 And I've got 32 cores.
+
+00:12:32 Why can I only use one of them?
+
+00:12:33 I have this work I want to do.
+
+00:12:35 And this might be interesting for you as a data scientist or a scientist or somebody doing computational work, say on like hardware devices, a lot of, but then it also could be interesting for web consumer, web developers and APIs and stuff, right?
+
+00:12:52 Like those threads might be, you know, you're still blocked on the gill on the server side for each process that you spin off.
+
+00:12:59 And that's why we have a bunch of worker processes that run like you have eight worker processes already in a copy of your entire app consuming all that memory, right?
+
+00:13:08 That's, why do you do that?
+
+00:13:10 Well, because you don't want to be subjected to the gill, for among other reasons, but that's a primary reason.
+
+00:13:15 'Cause you can't really do it in parallel, but if you had a bunch of processes that are independent.
+
+00:13:19 So I can certainly see there might be some kind of API or something in the future where when you create a thread, you can say, and this thread lives inside this process, but I want more isolation.
+
+00:13:31 Like, interpreter isolation equals true when you create the thread or whatever.
+
+00:13:35 And then when you run that work, there's two things that happen.
+
+00:13:38 One, it should run in true parallel form, but let the OS, it'll be an OS thread, the OS will schedule that on its own course.
+
+00:13:46 But then you also will have to actually care about lock.
+
+00:13:49 Like other languages like C and C# and stuff, you do parallelism, you're all about, okay, when do I lock this?
+
+00:13:54 How do I lock that?
+
+00:13:55 How do I unlock it?
+
+00:13:56 What about a deadlock?
+
+00:13:57 And in Python, eh, kind of the gill will help us a lot.
+
+00:13:59 Like that's gone, right?
+
+00:14:01 And so it kind of levels up the difficulty of thread safety because there's more of a chance that these things run in parallel.
+
+00:14:07 So anyway, that's my thoughts.
+
+00:14:10 >> I think the gist around it is there were a lot of people that were--
+
+00:14:13 there are some people that are trying to utilize the multi-interpreter or sub-interpreter systems, and they were running into problems because of this, the GILs global sort of a thing.
+
+00:14:26 And so it's not just the GIL, but there's other things involved with this PEP that push more of the data around the per-interpreter thing into isolation.
+
+00:14:36 So it's increased isolation of the per interpreter stuff, including the GIL.
+
+00:14:40 And those kind of people, like it says, maintainers of any extension module that created isolated interpreters, they'll now be able to utilize this better.
+
+00:14:52 So there's some people making some cool things that'll continue.
+
+00:14:56 So, yay.
+
+00:14:57 Anyway.
+
+00:14:58 - I'm very excited for this.
+
+00:14:59 I'm excited for this.
+
+00:15:00 I'm excited for the no-GIL Python.
+
+00:15:01 I think it's one of these sort of chicken and egg type issues.
+
+00:15:05 "Ah, I don't really need the threading stuff.
+
+00:15:07 "I don't really use it." Because it's Python, a lot of people are like, "Well, there's no point in trying it." So there's just not a culture of really leveraging the hardware outside of these very specialized C APIs or certain Rust scenarios.
+
+00:15:20 But then when you do see them, you're like, "Oh, it's like 50 times faster." Like, "Hmm, wouldn't it be kind of nice "to go 50 times faster sometimes if you might need it?" Or use half as much RAM on a server 'cause you don't need to scale out as much for the gill.
+
+00:15:33 - Like you said, in other languages, we have to like freak out about like locks or using a message queue system for different processes instead and we don't have to deal with that now.
+
+00:15:44 But so I think it's good that we're taking slow steps towards it.
+
+00:15:48 So it's good.
+
+00:15:49 Anyway.
+
+00:15:50 - Yeah, no, I think this is good.
+
+00:15:52 I talked to Eric Snow about it long ago.
+
+00:15:54 It sounds like it's created better data isolation within the CPython source code anyway.
+
+00:16:00 There's a bunch of global shared variables that weren't really meant to be shared, but they were, 'cause there's really only one thing.
+
+00:16:06 And this refactoring, I think, has also made it a little bit better inside.
+
+00:16:11 - Yeah, okay, cool.
+
+00:16:12 Do you know what else is cool?
+
+00:16:15 - Databases.
+
+00:16:16 - Yeah, databases are great.
+
+00:16:18 And we wanna thank InfluxDB for sponsoring this episode.
+
+00:16:23 InfluxDB is a database purpose-built for handling time series data at massive scale for real-time analytics.
+
+00:16:31 Dell developers can ingest, store, and analyze all types of time series data, metrics, events, traces in a single platform.
+
+00:16:38 So dear listener, let me ask you a question.
+
+00:16:41 How would boundless cardinality and lightning fast SQL queries impact the way you develop real-time applications?
+
+00:16:47 InfluxDB processes large time series data sets and provides low latency SQL queries, making it a go-to choice for developers building real-time applications and seeking crucial insights.
+
+00:16:59 For developer efficiency, InfluxDB helps you create IoT, analytics, and cloud applications using timestamped data rapidly and at scale.
+
+00:17:10 It's designed to ingest billions of data points in real time with unlimited cardinality.
+
+00:17:16 InfluxDB streamlines building once and deploying across various products and environments from the edge, on-premise, and to the cloud.
+
+00:17:24 Try it for free at pythonbytes.fm/influxdb.
+
+00:17:28 The link is also in your show notes.
+
+00:17:30 Thanks, NFlux, for supporting the show.
+
+00:17:33 - Very, very awesome, thank you for supporting the show.
+
+00:17:35 Now, Brian, you live in the future in this world of Python 3.12.
+
+00:17:42 - Yeah.
+
+00:17:43 - I live in the present, as in just a few days ago, Python 3.11.3 was released, how about that?
+
+00:17:50 - Oh, cool, yeah.
+
+00:17:51 - I don't know, my feeling's a lot of times when it's one of these point releases, maybe it's worth upgrading.
+
+00:17:56 Sometimes there's something cool in there, sometimes not.
+
+00:17:59 This one, you probably want to get in there and check it out because number one, and this is not very common in the Python world, that there's a security update.
+
+00:18:09 So they updated the underlying open SSL version for Windows and Mac OS to 1.1.1 T.
+
+00:18:18 And we talked about like semantic version and calendar version.
+
+00:18:21 This one's the T versioning style to address, let's see, one, two, and three CVEs.
+
+00:18:29 And if you go pop over there to read a bit about that, it says severity high.
+
+00:18:33 (chuckles)
+
+00:18:34 Okay, that doesn't sound absolutely incredible.
+
+00:18:36 Another one is moderate, and another one is moderate, right?
+
+00:18:40 So those are probably worth paying attention to then.
+
+00:18:43 So that's, I just realized like 20 minutes ago that actually I know it came out last week, but I just noticed it this little bit ago.
+
+00:18:51 And because of the security stuff, I decided I'm kicking out something I wasn't gonna cover before, I'm putting this one in here.
+
+00:18:56 So.
+
+00:18:57 - That's pretty important.
+
+00:18:58 Yeah, I just wanna be a little timely on that.
+
+00:19:01 So there's also some other things, you know, there's always a few things like, I wonder if that might be causing a problem.
+
+00:19:07 For example, stack top value on tracing entries to avoid corruption on the garbage collection.
+
+00:19:13 Like, I don't know that I do that, but maybe things that I use do that.
+
+00:19:18 And I don't want a corrupted garbage collector, right?
+
+00:19:20 That would be bad.
+
+00:19:21 Who knows if it leaks data, that's bad.
+
+00:19:24 But if it goes and collects something that's not bad, that's really gonna be a problem.
+
+00:19:29 Overflow when creating very large dictionaries, causes a crash when deallocating nested filter objects, segfault from a race condition during garbage collection.
+
+00:19:39 All right, so there's enough stuff in here that I'm like, you know what?
+
+00:19:41 This thing's getting an update.
+
+00:19:43 All right, so those are the cores and built in, and then there's a bunch of things, a bunch of improvements to the standard library people can check out, right?
+
+00:19:51 So it's just always interesting how much, how many things get changed, even though you think like, "Eh, standard library is kind of static and fixed," but like, "Fixed Dundra WeakRef descriptor generation for custom data classes." And you know, for binary mode, file hook compressed doesn't set the encoding even if the value is none and so on.
+
+00:20:13 So just a bunch of little things getting fixed.
+
+00:20:15 But the reason I put it to the top of the list is the security stuff.
+
+00:20:20 - Yeah, one of the security things that's interesting to me, I haven't looked into that yet, is that subprocess, popen thing.
+
+00:20:27 is a lot of people use Python to coordinate other activities on, you know, like DevOps and systems admin and stuff like that.
+
+00:20:38 So security patches around that, you probably should pay attention to.
+
+00:20:42 So that's pretty interesting.
+
+00:20:44 - Absolutely.
+
+00:20:45 Yeah, specifically for Windows users, right?
+
+00:20:48 So now this is a safer approach to find CMD.exe when launching with shell equals true.
+
+00:20:54 - Yeah, and I can't imagine like, I didn't even think that if you found the wrong command, you'd be passing all your stuff to the wrong, like, you know.
+
+00:21:03 - Some evil CMD?
+
+00:21:04 - Yeah.
+
+00:21:06 Yikes.
+
+00:21:07 - Yeah, I do.
+
+00:21:08 Cool.
+
+00:21:09 All right, well, that's that one.
+
+00:21:10 What's your last?
+
+00:21:11 - I want to do something fun 'cause I'm looking forward to PyCon coming up, right?
+
+00:21:17 Pretty soon.
+
+00:21:18 Are you pretty excited about that?
+
+00:21:20 - I am excited.
+
+00:21:22 I think it's approaching faster then I'm ready to prepare for being there for all that time and getting the most out of it.
+
+00:21:28 But yeah, I'm excited.
+
+00:21:29 - Yeah, so there's an article, who's this by?
+
+00:21:33 Sebastian Witowski, "How to Make a Great Conference Talk." And I kind of like this.
+
+00:21:39 There's some really great advice in here.
+
+00:21:42 So I know it's kind of late.
+
+00:21:44 A lot of people that are speaking, people speak at all sorts of conferences though, so it's good.
+
+00:21:49 But if you're speaking at PyCon, there's a couple of things I want to highlight.
+
+00:21:53 You probably already have your slides set up, hopefully.
+
+00:21:56 And know you've already been accepted, so you don't need to worry.
+
+00:22:00 You can maybe skip the benefits of speaking at a conference, but I highly recommend people try.
+
+00:22:07 I think there's benefits of even submitting and trying to get an idea together, even if you don't present it, 'cause it's nice.
+
+00:22:15 Anyway, then there's call for proposals, research preparation slides.
+
+00:22:22 There's a whole bunch of stuff in here that's great.
+
+00:22:23 I wanna skip to the end.
+
+00:22:25 So you're in the middle of maybe trying to do rehearsing.
+
+00:22:30 So I say skip to this part, the live demos part and rehearsing and what to do on the day of the presentation and make sure you review these, 'cause these are great.
+
+00:22:40 And the greatest advice I've ever seen for live demos is do you really need a demo?
+
+00:22:45 We've probably all, I don't know if anybody's, Anybody that's tried to do a live demo has had one not go as they expected.
+
+00:22:55 Even if it turned out okay, it's a stressful thing.
+
+00:22:58 So especially if you are new to presenting, I would say skip the live demo.
+
+00:23:04 It's cool when it works, when it doesn't, and the other thing is, if you're gonna do it anyway and something goes wrong, the Python people in the audience are not gonna like heckle you or anything like that.
+
+00:23:17 We're a nice bunch of people And we've all had it happen to us.
+
+00:23:20 So you shouldn't feel too embarrassed.
+
+00:23:24 But prepare for it.
+
+00:23:27 What are you going to do if the Wi-Fi goes out?
+
+00:23:28 Things like that.
+
+00:23:31 And also, I just don't do them anymore, because they've always gone wrong for me.
+
+00:23:37 OK, moving on.
+
+00:23:38 At the very least, practice them.
+
+00:23:40 Rehearsing.
+
+00:23:41 I see a lot of people-- and I used to be like this--
+
+00:23:44 to forget to rehearse.
+
+00:23:46 The rehearsing is the most important part.
+
+00:23:49 And I can't remember where it is in here, but it's good advice of taking, practicing the first five minutes, making sure you've got the first five minutes, the last five minutes memorized.
+
+00:24:02 You can, you know exactly what you're gonna say.
+
+00:24:05 Because it's hard if you think you kinda know what you're gonna say.
+
+00:24:09 When you get up there, it's blank page.
+
+00:24:11 You have to, how do you start?
+
+00:24:12 So knowing how to start and knowing how to finish is a good thing.
+
+00:24:16 So practice, and I also see, I've seen people practice quietly, and I've done this before, in your head.
+
+00:24:23 Practicing in your head doesn't count.
+
+00:24:25 Do it out loud.
+
+00:24:26 And do it standing.
+
+00:24:27 You're gonna be standing at a conference, so don't sit and practice it.
+
+00:24:30 Stand up and practice it.
+
+00:24:32 I was at Pi Cascades, I was in the hotel room, and what did I use for a standing desk?
+
+00:24:38 The ironing board.
+
+00:24:40 The ironing board works great in a hotel for your standing desk to practice it.
+
+00:24:44 Anyway, practice your talk.
+
+00:24:46 And I take one of these.
+
+00:24:47 So I'm gonna have a link in this, I'm gonna take a look at this in a second, but one of these time timers.
+
+00:24:54 So it's 36 bucks for a little tiny timer.
+
+00:24:58 So what's the big deal?
+
+00:25:00 You can visually see what's going on.
+
+00:25:02 And I love these things.
+
+00:25:03 And that's what I used to practice with.
+
+00:25:06 And the other comment in here is to pay attention to where you are in your slides at different points, which is a great idea.
+
+00:25:13 like at 15 minutes, or 10 minutes, 20 minutes, whatever, where are you approximately in your slides?
+
+00:25:19 The reason for that is while you're doing your presentation, if you're at the 10 minute mark and you're already halfway through your talk, slow down a little bit.
+
+00:25:28 If you're at the 10 minute mark and you've only gone through the first three slides, you're gonna have to speed up a little bit or else you're not gonna get into it.
+
+00:25:34 - Or skip something.
+
+00:25:36 - Or, yeah, or skip something.
+
+00:25:38 Know what you're gonna skip, but practice it.
+
+00:25:41 And then some great advice for day of the presentation.
+
+00:25:44 Don't drink too much water or coffee.
+
+00:25:46 You're gonna want to, but don't.
+
+00:25:48 Because, but drink some, make sure you're hydrated, but not too hydrated, 'cause you know.
+
+00:25:52 So anyway, some great advice here, packing checklist, make sure you have extra chargers.
+
+00:25:59 I've got like the little dongle thing, 'cause conferences usually have whatever you need to hook up to, but I don't trust that.
+
+00:26:05 So I make sure that my laptop can get to HDMI, can get to, yeah, whatever it needs to.
+
+00:26:14 Extra charger if you've got one.
+
+00:26:16 So just prepare.
+
+00:26:17 - Yeah, it's a good article.
+
+00:26:18 Sebastian's a great presenter, so.
+
+00:26:20 - Yeah.
+
+00:26:21 - He's done a bunch.
+
+00:26:22 I also have some thoughts.
+
+00:26:25 I would say regarding the live demo part, I'm on board with Marco.
+
+00:26:30 Like I think, not that one, this one, that I find talks of live demos, he says more exciting.
+
+00:26:37 I say more real, right?
+
+00:26:39 Like if, and I think it applies in an important role, like there's certain things you show picture, picture, picture, you're like, oh, that's cool, but I bet that's really hard.
+
+00:26:48 But if you show, actually there's these three lines that I wrote in a minute in front of you, and now the thing happens, like, oh, that's totally approachable, I could do it.
+
+00:26:56 And I think it just sets a different tone.
+
+00:26:58 Don't think every talk has to have it.
+
+00:27:00 Like there's storytelling talks and like big picture talks and like those don't need it.
+
+00:27:05 But if you're trying to talk about a focused technology, I think it's almost table stakes.
+
+00:27:11 So I disagree a bit with Sebastian on that.
+
+00:27:13 - Okay, yeah. - However, that said, you can go into it with a blank file and get confused, you can get distracted, you can make mistakes, you can forget things.
+
+00:27:24 So two things, leave, if you do do it, leave lots of breadcrumbs.
+
+00:27:29 Like maybe put a comment, like, here I want to create a flask app.
+
+00:27:33 Here I wanna make a view that responds to this URL.
+
+00:27:37 And like, it might be hard to remember, do all the steps.
+
+00:27:39 But if you see, make the flask app, you're like, "Oh, I remember how to do that." Create a view that call it response to this URL with like the actual variable passing thing.
+
+00:27:49 And oh, okay, well, that's easy.
+
+00:27:51 We'll drop that, right?
+
+00:27:51 Like you can make it hard on yourself or easy on yourself.
+
+00:27:54 And then second, have a backup.
+
+00:27:58 Benful says at his research lab, they were actually saying keep a spare laptop.
+
+00:28:03 I didn't know necessarily about that, but I would at least have a finished version and then you're like, oh my gosh, well, let me pull this up and show you, then we'll talk, like some kind of fallback, right?
+
+00:28:11 There's like levels of live demo.
+
+00:28:14 Do I say file new project and we write a thousand lines, or do I strategically highlight the important bits and not distract people with like boilerplate, and get potentially lost, right?
+
+00:28:24 I don't know, so I think that's kind of what I was traveling on this stuff.
+
+00:28:27 - One of the halfway betweens is to script your demo, and there's a tool that Sebastian links to called Demo Magic and what you do with this is basically you have these commands of PEI or PE and other things and wait for prompts and whatever.
+
+00:28:45 What happens is it looks like you're demoing, but all you're doing is hitting "Enter" to go to the next thing.
+
+00:28:53 Then people can see in real-time what it looks like, but they don't have to wait for you to type.
+
+00:28:59 It just looks like it's typing.
+
+00:29:00 >> Yeah. It types it out as if it's doing.
+
+00:29:02 - Yeah, absolutely. - Yeah, so this is kinda nice.
+
+00:29:05 I also, one of the things, of all conference advice, Sebastian does talk about this, but keep it in mind, this is what works for him.
+
+00:29:13 I disagree with some of it, and you disagree with some of it, and it's okay if you disagree with it, 'cause it works different for everybody.
+
+00:29:21 Like one of his pieces of advice also is to write out your talk before you write your slides.
+
+00:29:28 I never do that, because I'm writing my slides markdown, I'm thinking about what I'm going to show while I'm talking and while I'm thinking about the topic.
+
+00:29:39 So my slides really are kind of outliny to begin with, and then I can put junk in there and cut it out, whatever.
+
+00:29:48 Also a code I don't know how to do, and it says you should be able to do your talk without slides.
+
+00:29:54 I just don't think that's true.
+
+00:29:57 For the kind of demo or the kind of stuff I'm doing, there's a lot of code I'm showing.
+
+00:30:01 I'm not gonna describe that code if the slides don't work.
+
+00:30:04 I don't know what I would do if my slides didn't work.
+
+00:30:06 But anyway.
+
+00:30:08 - Yeah, one other piece of advice that I wanna emphasize is Sean out there says, "I always take three slow breaths before I start talking.
+
+00:30:16 "Try to talk slow and smooth for the first minute." That's really good advice.
+
+00:30:19 And you know, your body reacts to stressful situations like this in weird ways, right?
+
+00:30:26 Like you think, your body's like, you're gonna be eaten by a bear if you say something wrong.
+
+00:30:30 Like, no, you won't be eaten by a bear.
+
+00:30:31 But, you know, your heart does race.
+
+00:30:34 And a lot of times, especially when you're new, it's easy to perceive that as like, oh my gosh, I'm so nervous, I hope I don't screw up.
+
+00:30:40 But an equal interpretation, viable interpretation of that would be, I'm really excited.
+
+00:30:46 Like, my body's going, like really, those butterflies in my stomach are like, I am psyched to do this.
+
+00:30:52 And so I just convinced myself, rightly or wrongly, kind of lied to myself, like, well, if you feel nervous, that's because you're getting excited and you're just about to do something awesome, so get ready for it, right?
+
+00:31:01 Rather than, oh my gosh, I'm nervous, I'm gonna make a mistake.
+
+00:31:04 So I think it's okay to lie to yourself in that regard.
+
+00:31:07 - I also, I've been, like, I don't wanna go over.
+
+00:31:12 I don't think anybody's gonna be mad if you go under.
+
+00:31:14 So I personally, if it's a 25 minute talk, I practice it in 20 minutes.
+
+00:31:20 - Absolutely.
+
+00:31:20 It's easy to expand, it's hard to shrink in real time.
+
+00:31:23 - And also, if you're done early, nobody's gonna complain about that.
+
+00:31:28 But also, if something goes wrong at the beginning and you have trouble with the video setup, you still have enough time to finish it.
+
+00:31:36 So I think that's cool.
+
+00:31:38 The other thing is pauses within.
+
+00:31:42 I just talk constantly and I have to remind myself if I'm showing something that I think is gonna be shocking, let people take a second to be shocked by it.
+
+00:31:51 And if people laugh, take a moment and let 'em laugh before you move on to the next thing.
+
+00:31:59 - Yeah, I embrace it.
+
+00:32:00 Absolutely, very good.
+
+00:32:01 - Cool.
+
+00:32:02 - And good article, Sebastian.
+
+00:32:03 Okay, well.
+
+00:32:04 - Those are our topics.
+
+00:32:05 Do you have anything extra for us?
+
+00:32:07 - I sure do.
+
+00:32:08 I got a few things.
+
+00:32:09 I finally got that CDN Python web apps that fly with CDNs course published and online.
+
+00:32:16 Like I said that I would, but now I officially have it up so people can go check that out.
+
+00:32:20 It's super fun.
+
+00:32:21 Speaking of releases, Django 4.2 was released last week also one day before Python 3.11.3.
+
+00:32:27 Major highlights include Psycho PG, version three support, comments on columns and tables, support for asynchronous streaming responses and async interfaces related to managers and models.
+
+00:32:40 So you can go check that out if you're doing the Django.
+
+00:32:44 - Also, it's a LTS release, so.
+
+00:32:47 - Oh yeah, that's important.
+
+00:32:49 It has been designated a long-term support LTS release, which means it will be around for three years.
+
+00:32:54 All right, that's it for my extras.
+
+00:32:56 You?
+
+00:32:57 - No, no extras this time.
+
+00:32:58 Oh, I forgot, I realized that I forgot, there's a lamp in the background, that's new.
+
+00:33:03 I had a big Easter party and the lamp got moved in here to save space in the rest of the house.
+
+00:33:11 I forgot to move that.
+
+00:33:12 - 'Cause why wouldn't you cram it into your office?
+
+00:33:14 - Yeah, why not?
+
+00:33:15 - I had a lovely experience where we had to remodel the inside of our garage, basically do a bunch of drywall and stuff, so everything had to come out.
+
+00:33:22 So pretty much the entire garage moved up into my office into a mountain of junk behind me.
+
+00:33:26 It was awesome for a while.
+
+00:33:28 I'm very glad to have that mostly gone.
+
+00:33:29 Yeah.
+
+00:33:30 Well, how about a joke?
+
+00:33:32 - Yeah.
+
+00:33:33 - All right then.
+
+00:33:34 This one comes from Programming Humor.
+
+00:33:36 And we are in this time of a thousand flowers blooming AI revolution.
+
+00:33:43 See where it goes.
+
+00:33:44 You know, we've got ChatGPT, got mid journey, got stable diffusion.
+
+00:33:49 And it seems like everyone is plugging AI into their tools and email, copywriting, all those, there's a bunch of things like Notion, for example, you can get an AI plugged in to help you write your app.
+
+00:34:03 And so here, this is like two views, people sending email to each other, couple of coworkers on one side, a couple on the other, and they don't know about each other.
+
+00:34:12 The one on the first one is just one bullet point that you could see like a dot and a line.
+
+00:34:17 There's like one line, and this person's bragging to their coworker, AI turns a single bullet point into a long email so I can pretend I wrote it.
+
+00:34:25 Boom, send.
+
+00:34:26 The person who receives it is talking happily to their coworker, says, AI makes a single bullet point out of this long email so I can pretend I read it.
+
+00:34:34 (laughing)
+
+00:34:36 Oh, here we are.
+
+00:34:38 - Yeah.
+
+00:34:39 - When you talk about stuff getting sent over, how does that work?
+
+00:34:41 Well, first you connect over TCP and then there's DNS and then there's TLS and then there's the HTTP layer.
+
+00:34:48 And now there's like this AI translation layer that rewrites it to be sent.
+
+00:34:54 But it's kind of the opposite of efficiency.
+
+00:34:56 Instead of sending the single bullet point, it expands it to a whole paragraph, sends it, and then shrinks it back down.
+
+00:35:03 It's the opposite of compression.
+
+00:35:04 - AI's kind of freaking me out.
+
+00:35:06 I hope that I still have a job five years from now.
+
+00:35:09 But anyway.
+
+00:35:11 - Well, we'll ask ChatGPT about that later.
+
+00:35:15 - Yeah, at some point.
+
+00:35:17 And you know more about this than I do.
+
+00:35:18 So at some point you're gonna be like, like, can I get an AI Brian to host the podcast with me?
+
+00:35:26 - Yeah, I'm already digging my bunker for when Skynet activates as Sean says.
+
+00:35:31 - Yeah, anyway, start growing carrots.
+
+00:35:36 - Yeah, exactly, find some goats.
+
+00:35:38 No, actually I'm gonna go back to writing Python code.
+
+00:35:43 - ChatGPT, make me a goat.
+
+00:35:46 (laughing)
+
+00:35:47 How do I start a goat farm and live off grid?
+
+00:35:50 (laughing)
+
+00:35:51 Fantastic, all right, well Brian, thanks as always.
+
+00:35:53 - Thanks, talk to you later, bye.
+
+00:35:55 - Bye, and thanks to everyone out in the audience,
+
