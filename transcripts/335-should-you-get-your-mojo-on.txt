@@ -1,0 +1,712 @@
+00:00:00 Hello and welcome to Python Bytes where we deliver Python news and headlines directly to your earbuds.
+
+00:00:04 This is episode 335. Is that right? Yeah. Recorded May 9, 2023. And I'm Brian Okken.
+
+00:00:11 I'm Michael Kennedy.
+
+00:00:12 And we've got a sponsor, InfluxDB. Thanks, Influx. We'll hear more about them later.
+
+00:00:17 If you'd like to connect with us and talk to us in sort of real time or async, we've got, All of us are on Mastodon, all of us, all two of us.
+
+00:00:26 But at M. Kennedy, at Fostodon, at Brian Okken, and at Python Bytes, we're all on Fostodon.
+
+00:00:34 - So you raise a philosophical issue.
+
+00:00:36 The United States, the laws may be gone too far to be business friendly in some ways, and businesses have the same rights as a person.
+
+00:00:43 Does a podcast?
+
+00:00:44 I don't know.
+
+00:00:45 You said all three of us are on.
+
+00:00:48 - Oh yeah.
+
+00:00:49 - Does the podcast have pronouns?
+
+00:00:51 What rights does our podcast have?
+
+00:00:53 I'm very curious now, but maybe we got to think about that later.
+
+00:00:56 my podcast identifies as a podcast.
+
+00:00:59 Identifies as MP3.
+
+00:01:01 Well, so let's kick off the wonderful show.
+
+00:01:05 with a cool topic.
+
+00:01:07 Yes.
+
+00:01:08 Talking about trust.
+
+00:01:10 So Brian, one of the ways in which you automatically publish or even within your system, publish things to high PI is you take your one and only permanent API key and you put it in whatever location that is.
+
+00:01:26 So some people will go and publish from GitHub through GitHub Actions, and in the action, it says, here's where your username goes, here's where your API key goes.
+
+00:01:35 And it may be a little known fact that people, I'm not sure if you're aware of this, but if you're on the command line and you do get actions like get pull, and it says, oh, enter your username, boom, enter your username, enter your password, you can enter that API key, and that will allow you to do full CLI access, presumably.
+
+00:01:52 depending on, actually that's the get it one.
+
+00:01:55 So I'm crisscrossing these, but nonetheless, putting your PyPI API key into GitHub actions and other CI/CD places and scripts, not ideal, right?
+
+00:02:07 - Yeah.
+
+00:02:07 - So last month, a couple of weeks ago, Dustin Ingram, one of the folks at PyPI said, we're introducing trusted publishers.
+
+00:02:17 So starting today, PyPI package maintainers can adopt a new, more secure publishing method that does not require long-lived passwords or API tokens to be shared with external systems, such as GitHub Actions and others.
+
+00:02:31 - Okay. - Okay.
+
+00:02:32 So what you can do instead is you can create like an OpenID OAuth type of connection between IPI for your account and GitHub, yeah?
+
+00:02:42 And when you do that, then when that action runs, instead of saying, what is the API key?
+
+00:02:47 It says, let me through open ID connect, exchange, say, we trust each other for this user.
+
+00:02:54 Give me a 30 second valid token that I can use, or I'm making up 30 seconds, but give me a token that I can use a short lived token that just for this publish or just for this interaction is authenticated and then we'll immediately expire that.
+
+00:03:10 Yeah.
+
+00:03:11 Cool.
+
+00:03:11 Yeah.
+
+00:03:12 That's pretty cool.
+
+00:03:12 Right.
+
+00:03:12 yeah.
+
+00:03:14 So basically you just connect those and you're good to go.
+
+00:03:17 these API tokens, because they're regenerated and short-lived, never need to be or should be stored.
+
+00:03:23 They're not shared.
+
+00:03:24 They rotate automatically because they're invalid.
+
+00:03:28 They invalidate themselves.
+
+00:03:29 This is not quite as obvious, but if somebody says, "This user logged in and published this version of a package to PyPI, and there's one API key," well, I don't know.
+
+00:03:41 Was that really the user?
+
+00:03:42 Where were they? Were they on vacation when they were at that IP address?
+
+00:03:45 or is that a hacker, was that a CI system?
+
+00:03:48 We don't know, but because this actually understands what system is requesting the token, they say that it provides a verifiable link between a published package and its source, which I think is pretty cool.
+
+00:04:01 - Think?
+
+00:04:02 Although what if somebody hacks into my GitHub Actions?
+
+00:04:05 - Yeah, well, it only goes one level out in the ring of trust, right?
+
+00:04:10 So yeah, I mean, that is possible for sure.
+
+00:04:12 Speaking of what if somebody hacks into my GitHub Actions, You can see in the doc that the blog post that they publish, it shows this is the part that you add permissions, ID token is right and that's it, versus here is your username and password.
+
+00:04:28 That's cool. It says additional security hardening is available.
+
+00:04:32 You can further increase the security of your release workflow by configuring trusted publishers only to release from a specific GitHub Action environment.
+
+00:04:42 I don't do anything to that degree with GitHub Actions, But basically with GitHub Action Environments, you can set rules and workflows around that environment, such as requiring manual approval for each run by a set of trusted people who are repository maintainers, right?
+
+00:05:01 So even if it gets hacked, it's not enough that the organization, the GitHub organization has a workflow that will push it, you might want to set it up so that it says, In order to push PyTest check out of this environment automatically when we're going to production, right, shipping a build, you've gotta go push a button as Brian Auchin on GitHub.
+
+00:05:22 - Okay, interesting.
+
+00:05:24 - Okay, that is optional but strongly recommended.
+
+00:05:28 And finally, right now from my understanding, this just works with GitHub Actions.
+
+00:05:32 However, this infrastructure to make this possible is now in place so it can be integrated with many more things.
+
+00:05:38 So introducing trusted publishers.
+
+00:05:41 If you maintain important packages, this might be worth looking at.
+
+00:05:45 - That's pretty cool, thanks.
+
+00:05:46 - Indeed, yeah, over to you.
+
+00:05:49 - Well, this topic is on fire.
+
+00:05:54 - It is on fire.
+
+00:05:55 - So Modular released a video and a statement.
+
+00:06:00 I think it was on the second of the month.
+
+00:06:03 So it's been almost a week, but time moves fast in the software world.
+
+00:06:08 So Mojo, Modular announced Mojo.
+
+00:06:11 Mojo is a new programming language for all AI developers.
+
+00:06:15 And although I'm not an AI developer, we are all AI developers now, I think.
+
+00:06:22 - Either you're in the machine or you are controlling the machine. - Or you're part of it.
+
+00:06:26 - Take your pick, yes, exactly.
+
+00:06:28 - So anyway, so what is Mojo?
+
+00:06:30 So, and also I wanna thank everybody that suggested this.
+
+00:06:33 We got like a whole bunch of people that suggested this, said, "Have you seen this?" Don't feel bad if you see a new topic and you think, "Yeah, somebody's probably already told you guys.
+
+00:06:43 Tell us anyway, we like it." Anyway, Mojo, a new programming language, what is it?
+
+00:06:49 It is like Python-ish, it looks like Python.
+
+00:06:53 It actually, supposedly, that one of the goals is it's going to be a super set of fun.
+
+00:06:58 It's not there yet, but they want to do like Python, but extra stuff that's C++-ish, like structs and strict types and everything.
+
+00:07:11 - Is this like your programming world has crashed together and is now trying to become one?
+
+00:07:16 - I hope so.
+
+00:07:18 - The tectonic plates of Brian Aukin's programming experience.
+
+00:07:22 - I'm pretty excited about it actually.
+
+00:07:24 Not for AI stuff, but for hardware things.
+
+00:07:26 I think that this would be kind of fun.
+
+00:07:29 So what's the big deal?
+
+00:07:31 It's compiled and fast.
+
+00:07:35 in the order of like thousands of times faster in some cases, supposedly.
+
+00:07:40 So, but, so what, one of the things, we're gonna link to the Mojo webpage where how you can get started.
+
+00:07:47 It's hard to get started right now, but we'll get to that.
+
+00:07:51 So there's also a fast AI, like announcement blog post, but also a video with Jeremy Howard.
+
+00:08:00 It's a really fascinating read.
+
+00:08:02 And why is this kind of, where's this coming from?
+
+00:08:05 if you're not familiar with modular, which I wasn't really.
+
+00:08:08 These are the same people that brought us LLVM.
+
+00:08:13 >> Yeah, Chris Lattner and crew.
+
+00:08:15 >> Yeah. There's a lot of excitement around it.
+
+00:08:20 It's not an LLVM.
+
+00:08:23 I had to look this up.
+
+00:08:24 LLVMs are what low-level virtual machine is what it started out with, but we know it as almost all languages are built on top of it right now.
+
+00:08:34 So Mojo is not that, it's multi-level intermediate representation.
+
+00:08:39 It's a MLIR instead.
+
+00:08:42 So do I care?
+
+00:08:44 Probably not.
+
+00:08:45 But it's a, so anyway, there's a announcement.
+
+00:08:48 >> It probably does mean it has a lot of targets that it can compile for, right?
+
+00:08:53 Giving you that intermediate flexibility.
+
+00:08:54 >> Yeah.
+
+00:08:55 And it's, and it doesn't have some of the, there are some limitations with the LLVM that it doesn't have, because it's a little different.
+
+00:09:03 So I don't completely know it, but there's a, it's kind of a fun video.
+
+00:09:08 I've been playing with it just a little bit.
+
+00:09:10 So if you, right now, what's the stage of it?
+
+00:09:14 You can't get it for your local machine.
+
+00:09:16 So you, you have to sign, you have to like, if you want to go to the normal page, you say, get started.
+
+00:09:22 And it has you sign up on a list, a waiting list.
+
+00:09:25 And luckily I got in.
+
+00:09:27 Yay.
+
+00:09:28 So I got to play with it and the, a little bit.
+
+00:09:32 So when you drop into it and play with it, you get a Jupyter Notebook thing.
+
+00:09:37 And the Jupyter Notebooks are already filled out with like a hello world and or hello mojo, and you get to walk through it and you get to see some of the different stuff.
+
+00:09:48 So it's got definitions or defs, but you have these let statements.
+
+00:09:52 So you can, that's different.
+
+00:09:55 We don't have to do lets and vars in declarations in Python.
+
+00:10:00 So you can do normal Python.
+
+00:10:02 Kind of the neat thing about having it be kind of like Python is you're kind of used to it already.
+
+00:10:07 You don't have to learn something new.
+
+00:10:08 But also it's compatible with external libraries.
+
+00:10:11 So you can hook in things that are already built in pure Python that can be hooked in too.
+
+00:10:16 That's the part where I'm curious about.
+
+00:10:18 Can I just forget about all this other machine language, low level stuff, and can I just use this to compile my Python?
+
+00:10:25 Don't know that yet.
+
+00:10:27 - Yeah, I don't know what the integration with other libraries, it was like the example had clearly indicated like NumPy integration.
+
+00:10:34 - Yeah.
+
+00:10:35 - But can I use Flask with it, for example, right?
+
+00:10:38 I don't know.
+
+00:10:39 - Yeah, don't know.
+
+00:10:41 - Yeah, I don't know either.
+
+00:10:43 This is very exciting.
+
+00:10:44 I did wanna point out that we are correcting a mistake that we made at PyCon, Brian.
+
+00:10:50 No, not just last week.
+
+00:10:52 Somebody out in the comment in the livestream last time and in the YouTube video said, "I'm telling y'all folks, I'm really not believe what I'm hearing.
+
+00:10:58 How can they not be talking about Mojo?
+
+00:11:00 Oh, so, yeah, but well, so what do you think?
+
+00:11:06 Well, okay.
+
+00:11:07 So one, it sounds very exciting.
+
+00:11:08 Two things rubbed me the wrong way quite a bit from the start that it's behind a, an sort of mailing list paywall, not paywall, but like gated wall.
+
+00:11:18 Yeah.
+
+00:11:18 Right.
+
+00:11:19 That, that just seems, it seems off to the wrong start.
+
+00:11:23 Right.
+
+00:11:23 If you want to get a lot of attraction, I think, you know, put it out there.
+
+00:11:27 Maybe you've got to sign up in order to run the compilers on a Jupyter Notebook in the cloud because they're not totally tested and stable or something along those lines.
+
+00:11:38 That would be totally fair, but it doesn't tell you if it's open source or not.
+
+00:11:42 It doesn't share a GitHub repository.
+
+00:11:45 It doesn't share a way in which it expresses what this is going to be.
+
+00:11:50 Is this a $1,000 a month subscription?
+
+00:11:52 Is this open source?
+
+00:11:53 Is it both?
+
+00:11:55 Is it like, oh gosh, what was it called?
+
+00:11:57 Codon, I believe some people were like so excited about Codon.
+
+00:12:00 It's like it's under the model of if you've got to ask what the price is, it's too expensive for you.
+
+00:12:05 >> Oh, yeah.
+
+00:12:06 >> Which, okay, I'm not going to get super excited about investing in that, even if it is neat and powerful.
+
+00:12:11 So that said, everyone seems to be super excited about it.
+
+00:12:15 I love the way the language looks for a more compiled way.
+
+00:12:19 I think there's a lot of possible Python integrations, like we already talked about.
+
+00:12:23 Hey, could I run Flask?
+
+00:12:24 Is it so close that we could just make our stuff go faster when we need it?
+
+00:12:28 If we're willing to say, decorate our variable declarations with a let or a var.
+
+00:12:33 >> Yeah.
+
+00:12:33 >> I might be willing to do that if my code could run a thousand times faster.
+
+00:12:37 >> Yeah.
+
+00:12:38 >> I don't know. It's not clear to me how much community there is versus product, which I'm not saying you shouldn't have one or the other.
+
+00:12:48 They're both fair, but it doesn't say and it's behind a sign up wall, which makes me wonder, right?
+
+00:12:55 It just makes me feel less excited about it, which is why I didn't cover it last week.
+
+00:12:59 I'm like, "Eh, maybe, I don't know, we'll see." >> Okay. Also, the rough edges, there's a rough edges section of like roadmap and rough edges.
+
+00:13:07 Some of them are really big missing things like tuples.
+
+00:13:11 >> Yeah.
+
+00:13:12 >> Like tuples not supported, classes not supported.
+
+00:13:16 Well, that's a lot of Python that you can't use without classes.
+
+00:13:21 - Yeah, well, and maybe this is just early and they're just showing it.
+
+00:13:25 And if it's coming, that is totally good.
+
+00:13:28 So I just, I don't know, when I first saw it though, like here, like sign up for our mailing list so that you can maybe look at it.
+
+00:13:35 It's like, what is this thing here?
+
+00:13:36 And it doesn't express, there's no GitHub repo linked.
+
+00:13:39 Like, I don't know.
+
+00:13:40 So I have a lot of hope for it, but I'm just not, I'm gonna just withhold my assessment of like the impact I think it will make yet because of that, right?
+
+00:13:50 I whistled, it could have quite an impact if we get everybody able to play with it.
+
+00:13:56 And it's just gonna be, I mean, there's a lot of people talking about it this week, but it seems like there's a new trend every week.
+
+00:14:05 So, anyway.
+
+00:14:07 - Yeah, I'm a little suspect.
+
+00:14:08 Is it written in Rust?
+
+00:14:09 I'm not sure it is.
+
+00:14:10 Just kidding.
+
+00:14:10 (laughing)
+
+00:14:11 'Cause that's where I--
+
+00:14:12 - How can it be cool if it's not written in Rust?
+
+00:14:14 - I know, that's exactly my point.
+
+00:14:15 That seems where all the action is right now, which is cool.
+
+00:14:18 But it's also worth pointing out for people who are not putting it together that Chris Lautner is also the person behind the Swift programming language, which is a pretty interesting language that's also borrowed a lot from Python.
+
+00:14:31 So it is exciting.
+
+00:14:32 The other thing that is it's sold as a make AI work fast, but like Python.
+
+00:14:38 That's awesome.
+
+00:14:39 And it's a cool focus.
+
+00:14:41 But it doesn't speak to a goal of like, hey, we could bring more and more Python until it's like a 90% case that's awesome that we could do many things with if it's really focused on running Python code on GPUs and just really, really focused in on the AI stuff.
+
+00:14:58 So that's the other comment that I wanted to make about like, where's this going?
+
+00:15:02 So we'll see, but yeah, a lot of people are excited.
+
+00:15:04 I mean, I would say, honestly, we have not received more listener recommendations that we cover something than this.
+
+00:15:12 I mean, maybe the only other thing was Guido retiring from BDL was the only other thing that we got that much massed on Twitter email about.
+
+00:15:23 So thank you all for sending that in.
+
+00:15:25 These are my thoughts.
+
+00:15:26 I would love to see it succeed, but I just don't know quite where it's going or what it's gonna be yet.
+
+00:15:31 - Yeah, I guess my optimism comes from where it's coming from.
+
+00:15:35 The people involved have a history of doing things that are helpful to the community.
+
+00:15:39 - Yeah, it absolutely has big hitters behind it.
+
+00:15:43 So it's got a way better chance than just somebody publishing something cool.
+
+00:15:46 Okay.
+
+00:15:47 Yeah.
+
+00:15:48 All right.
+
+00:15:49 Yeah, we'll see.
+
+00:15:50 I mean, certainly worth keeping track of it.
+
+00:15:52 So next up, I would like to talk about our sponsor.
+
+00:15:55 Now, right on.
+
+00:15:56 InfluxDB.
+
+00:15:57 So this episode of Python Bytes is brought to you by InfluxData, the makers of InfluxDB.
+
+00:16:03 InfluxDB is a database purpose built for handling time series data at a massive scale for real real time analytics.
+
+00:16:11 can ingest, store, and analyze all types of time series data, metrics, events, traces in a single platform.
+
+00:16:18 So dear listener, let me ask you a question.
+
+00:16:21 How would boundless cardinality and lightning fast SQL queries impact the way you develop real-time applications?
+
+00:16:28 InfluxDB processes large time series data sets and provides low latency SQL queries, making it a go-to choice for developers building real-time applications and seeking crucial insights. For developer efficiency, InfluxDB helps you create IoT, analytics, and cloud applications using timestamped data rapidly and at scale. It's designed to ingest billions of data points in real time with unlimited cardinality. InfluxDB streamlines building once and deploying across various products and environments, from the edge, on-premise, and to the cloud. Try it for free at pythonbytes.fm/influxdb. That link is also, of course, in our show - Show notes, thanks for sponsoring the show.
+
+00:17:12 - Yep, thank you, Influx TV.
+
+00:17:14 Now, let's talk about some Django.
+
+00:17:17 - Okay.
+
+00:17:18 - All right, so in Django, I wanna introduce something called Django Prose.
+
+00:17:25 Doesn't it just make you wanna write, just sit down and put on your best Ernest Hemingway impression and just start writing?
+
+00:17:34 I don't know, maybe.
+
+00:17:35 But this thing is a rich text editor that you plug in to, I believe, into the admin section, the admin backend for Django, yeah?
+
+00:17:45 - Okay.
+
+00:17:46 - So, wonderful, rich text editing for your Django project, right?
+
+00:17:49 So what you do is you install it, you add it as one of your apps, and then you have to run some migrations 'cause it needs some database backend stuff to keep track of what it's working on.
+
+00:18:00 And then finally, you set up a URL for it, and then you're good to go.
+
+00:18:03 And there's different ways in which you can work with it.
+
+00:18:05 It can control basically the entire page because it's more or less HTML.
+
+00:18:10 And so you can just say, show me the document.content.
+
+00:18:14 Now, when you render that in your Django templates, this is HTML and Django templates, like many of the templating languages are smart and say, yeah, no, if we just let people type in here, they're gonna type angle bracket JavaScript, hackswars.com, dot, dot, dot, dot, right?
+
+00:18:30 So they're going to HTML encode that, which will show it up as like view source, right?
+
+00:18:36 So you got to do a pipe safe to say, nope, don't encode it.
+
+00:18:41 Just drop the HTML straight in there, which in which case this should not be used by untrusted individuals, right?
+
+00:18:48 You can also have ORM models and the ORM model itself can have a rich text field type, which is kind of interesting, right?
+
+00:18:58 And then you can show that as part of your template.
+
+00:19:01 And again, you've got a pipe safe that because if not, it won't work.
+
+00:19:06 And then you can even have a separate table with a foreign key relationship to the content for like large documents.
+
+00:19:15 So there's a lot of stuff with not just dropping an editor into the admin section, but actually integrating that into the Django ORM and models which is where I think it gets worth paying attention to over some of the other just JavaScript front ends for HTML editing.
+
+00:19:29 - Nice.
+
+00:19:30 - Yeah, yeah.
+
+00:19:31 It even has a form support for rendering out editable forms and attachments, all those sorts of things.
+
+00:19:41 It also only allows a subset of tags and attributes, and it uses the Bleach library, which I don't know how many people are with Bleach, but Bleach is kind of interested.
+
+00:19:53 Apparently it's deprecated, although you're just using it for whitelisting.
+
+00:19:56 I don't know really why it would make a change, right?
+
+00:20:00 Like these are the 20 tags and whatnot that are allowed, and they're still gonna be allowed, But anyway, if you wanna see, there's both a picture, that's larger than I was hoping for, there's a picture of basically what it looks like.
+
+00:20:12 And you can imagine it's like a rich text editor or online blog thing, and it has an editing section and a preview section, as well as a video tutorial.
+
+00:20:20 So if you're doing Django and you want rich text editing that renders, that basically edits raw HTML in a nice way, WYSIWYG, as they said back in the day, you can go and check this out and check out Django pros.
+
+00:20:34 - Nice.
+
+00:20:35 Hey, so have you ever heard the, if you had a writing group in a penitentiary, it would be pros and cons.
+
+00:20:41 (laughing)
+
+00:20:44 - Pros from cons.
+
+00:20:46 (laughing)
+
+00:20:47 I love it, that's good.
+
+00:20:48 Yeah, we're jumping ahead, the joke comes at the end.
+
+00:20:52 - Okay, sorry.
+
+00:20:52 - Don't get ahead.
+
+00:20:54 - Okay, so I wanna talk with, speaking of rich, I want to talk about PyLizer.
+
+00:21:00 Actually, not Rich, Rust.
+
+00:21:03 So PyLizer.
+
+00:21:04 So this was suggested by Owen.
+
+00:21:06 Thanks, Owen.
+
+00:21:07 And this is a project that is, it reminded me of Ruff a little bit.
+
+00:21:12 So it is, PyLizer is a static code on the analyzer in a language server for Python written in Rust.
+
+00:21:21 Just cool.
+
+00:21:23 Some of the details on it, I'm a little, I don't quite understand, but anyway, it's a Rust thing that can analyze your code.
+
+00:21:30 So what is the big deal?
+
+00:21:31 Why don't we have, what is, speaking of Ruff, what's the difference?
+
+00:21:35 Well, so Ruff is like PyLint, Ruff is a static code analysis, but Ruff is just your linter.
+
+00:21:43 It doesn't do type checking in language server.
+
+00:21:45 So PyLint has a little bit more, it's a little, does more, a little more linting.
+
+00:21:49 It can do things like checking for out of bounds errors and things.
+
+00:21:51 So it isn't a replacement for Ruff, you would run both of them if you want to.
+
+00:21:56 and they're so fast that why not?
+
+00:21:57 So, and that's one of the things because it's written in Rust, it's quick, it's very fast, but that's not the only thing 'cause you also want like good error messages.
+
+00:22:08 So that's one of the selling points apparently is a detailed analysis.
+
+00:22:13 It can check a whole bunch of stuff, but it also is readable.
+
+00:22:16 So it'll tell you what's wrong and it's supposedly, it does things like underlining where the problem is and what you should do instead.
+
+00:22:27 Maybe, so this kind of looks like fun actually.
+
+00:22:30 - Yeah, that is a really nice error message.
+
+00:22:32 It has like a tree structure under the error thing.
+
+00:22:35 It says, "Expected strf, but found int." - Yeah, kind of reminds me of some of the new stuff in Python to help you with problems.
+
+00:22:43 - Exactly, the 3.11 error message improvements.
+
+00:22:46 - Yeah, and especially if it's gonna do this sort of stuff, language server, I'd like it integrated with a editor, So this does have a VS Code extension that you can integrate that and use that instead of the built-in, whatever VS Code uses.
+
+00:23:02 -Pylance. -Pylance.
+
+00:23:04 Pylance is pretty good though.
+
+00:23:06 I'm not sure how it works.
+
+00:23:08 So here's the stuff that I don't quite get.
+
+00:23:11 Part is it uses a type checker from the ERG programming language.
+
+00:23:16 -Erg? -Erg.
+
+00:23:18 -I've never heard of Erg. -Interesting.
+
+00:23:21 I haven't heard of it either, so I'm not quite sure.
+
+00:23:24 Maybe it's faster that way, but it does that.
+
+00:23:27 I don't know if there's limitations.
+
+00:23:28 But it's a project in the rather early stages, I think.
+
+00:23:32 It's got a lot of stuff going on for it.
+
+00:23:34 But I think it's neat that they listed a to-do list and the things they haven't done yet.
+
+00:23:39 So it doesn't check for finals and other things, but does quite a bit.
+
+00:23:43 - That's still pretty good.
+
+00:23:44 - So new tool, neat.
+
+00:23:45 - All right, are you ready for a joke or you got an extra?
+
+00:23:49 - I, no extras today, but I'm ready for a joke.
+
+00:23:52 - Awesome, me too.
+
+00:23:53 This one comes to us from Arthur Rio and says, "This joke might be right up your alley." Okay, so what this is, is it says escape room.
+
+00:24:01 So it's an escape room, like you know, the kind of thing where you go and you gotta find the clues to get out and if you don't find the clues, you're gonna be stuck in there.
+
+00:24:09 So this person with a big smiling anticipation is walking into the escape room, finds a skeleton sitting at a laptop, a person who died is gone, right?
+
+00:24:22 And starts to get really worried, like, "Maybe this escape room is too serious for me." Looks over the shoulder and realizes what they are doing is they're in Vim trying to get out of it.
+
+00:24:31 >>AJ: That's so meta.
+
+00:24:32 >>Corey: I know.
+
+00:24:33 It's so meta.
+
+00:24:34 Go ahead.
+
+00:24:35 >>AJ: Yeah.
+
+00:24:36 You just have to hit escape.
+
+00:24:37 >>Corey: I know.
+
+00:24:38 And look at the person who says there's always a way.
+
+00:24:44 A completely beaten, smashed MacBook.
+
+00:24:47 >> How did that happen?
+
+00:24:49 >> I don't know.
+
+00:24:49 >> Somebody run over it?
+
+00:24:51 >> It does look like it got run over and then they opened it.
+
+00:24:54 Yeah, it's not ideal, but the escape room, I thought you'd appreciate that one.
+
+00:24:58 >> Yeah.
+
+00:24:58 >> Why is that such a big thing?
+
+00:25:00 I don't know. It's a frustrating old joke of people are always going to make fun of it.
+
+00:25:05 >> I know. You could do the same for Emacs.
+
+00:25:07 >> Yeah. How do you quit Emacs? I don't even know.
+
+00:25:09 >> Yeah. It's like a cord.
+
+00:25:10 I forgot what it was.
+
+00:25:12 >> You have to play guitars for it?
+
+00:25:14 >> Yeah, you do.
+
+00:25:15 It's why it takes so long.
+
+00:25:17 First you learn guitar, then you can say you're exit.
+
+00:25:20 >> Anyway. Awesome.
+
+00:25:25 Well, I guess that's an episode.
+
+00:25:27 >> That would be Episode 335 in the bag.
+
+00:25:31 >> Yeah. Thanks everybody for listening. Thanks, Michael.
+
+00:25:35 >> You bet. Fun as always. See you.
+
