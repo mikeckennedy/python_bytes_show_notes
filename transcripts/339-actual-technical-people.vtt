@@ -1,0 +1,2801 @@
+WEBVTT
+
+00:00:00.000 --> 00:00:05.200
+Hello and welcome to Python Bytes where we deliver Python news and headlines directly to your earbuds.
+
+
+00:00:05.200 --> 00:00:10.560
+This is episode 339, recorded June 6th, 2023.
+
+
+00:00:10.560 --> 00:00:13.000
+Is it the 6th? Yeah. I am Brian Okken.
+
+
+00:00:13.000 --> 00:00:14.200
+I'm Michael Kennedy.
+
+
+00:00:14.200 --> 00:00:19.040
+Today's episode is sponsored by InfluxDB from InfluxData.
+
+
+00:00:19.040 --> 00:00:23.040
+Thank you and we'll talk about them more later in the show.
+
+
+00:00:23.040 --> 00:00:28.360
+If you want to reach any of us or the show, you can, we have a contact form of course.
+
+
+00:00:28.360 --> 00:00:31.760
+You can, and then also M. Kennedy at Fostedon
+
+
+00:00:31.760 --> 00:00:34.440
+and Brian Auken and Python Bytes,
+
+
+00:00:34.440 --> 00:00:37.160
+all Fostedon, Mastodon locations.
+
+
+00:00:37.160 --> 00:00:41.480
+If you're listening to us on a recording
+
+
+00:00:41.480 --> 00:00:44.720
+or on YouTube or on a podcast player,
+
+
+00:00:44.720 --> 00:00:49.040
+please join us on YouTube at pythonbytes.fm/live,
+
+
+00:00:49.040 --> 00:00:50.200
+at least occasionally,
+
+
+00:00:50.200 --> 00:00:52.080
+'cause it's fun to have people hanging around
+
+
+00:00:52.080 --> 00:00:53.280
+while we're recording.
+
+
+00:00:53.280 --> 00:00:55.480
+It's usually Tuesdays at 11,
+
+
+00:00:55.480 --> 00:00:57.640
+and you can watch older versions there too.
+
+
+00:00:57.640 --> 00:01:01.240
+So let's kick it off with something stacky.
+
+
+00:01:01.240 --> 00:01:02.240
+>> Something stacky.
+
+
+00:01:02.240 --> 00:01:04.040
+You're feeling like some pancakes,
+
+
+00:01:04.040 --> 00:01:05.300
+a stack of pancakes?
+
+
+00:01:05.300 --> 00:01:05.760
+>> Yeah.
+
+
+00:01:05.760 --> 00:01:06.960
+>> How about a PyStack?
+
+
+00:01:06.960 --> 00:01:10.820
+So the reason I was late to this recording, Brian,
+
+
+00:01:10.820 --> 00:01:13.800
+was I was just talking with Pablo and Matt,
+
+
+00:01:13.800 --> 00:01:17.080
+maintainers and creators of PyStack.
+
+
+00:01:17.080 --> 00:01:18.240
+Have you heard of PyStack?
+
+
+00:01:18.240 --> 00:01:19.120
+>> I have not.
+
+
+00:01:19.120 --> 00:01:23.000
+>> So PyStack is a tool that uses forbidden magic to let
+
+
+00:01:23.000 --> 00:01:27.080
+people inspect the stack frames of a running Python process,
+
+
+00:01:27.080 --> 00:01:32.680
+or even a core dump that was captured from a Python process that crashed,
+
+
+00:01:32.680 --> 00:01:35.820
+helping you quickly and easily learn what it's doing.
+
+
+00:01:35.820 --> 00:01:36.720
+How cool is that?
+
+
+00:01:36.720 --> 00:01:37.480
+>> Pretty good.
+
+
+00:01:37.480 --> 00:01:38.980
+>> Yeah. So here's the deal.
+
+
+00:01:38.980 --> 00:01:39.980
+Yeah. So here's the deal.
+
+
+00:01:39.980 --> 00:01:41.700
+I've got a Python app.
+
+
+00:01:41.700 --> 00:01:44.540
+This is especially important if you have mixed code.
+
+
+00:01:44.540 --> 00:01:46.920
+So if you're talking with C, C++,
+
+
+00:01:46.920 --> 00:01:50.700
+Rust, those kinds of things because it'll cross those boundaries as well.
+
+
+00:01:50.700 --> 00:01:52.540
+But let's just say pure Python even.
+
+
+00:01:52.540 --> 00:01:57.540
+I've got a Python web app and I go to the server,
+
+
+00:01:57.540 --> 00:02:00.580
+I try to connect to it, it won't really respond.
+
+
+00:02:00.580 --> 00:02:02.260
+It connects, but it just hangs.
+
+
+00:02:02.260 --> 00:02:04.220
+Go to the server, it's not 100% CPU,
+
+
+00:02:04.220 --> 00:02:06.100
+in fact, it's 0% CPU usage,
+
+
+00:02:06.100 --> 00:02:08.320
+so it's not like spinning and busy.
+
+
+00:02:08.320 --> 00:02:09.780
+Like what the heck is it doing?
+
+
+00:02:09.780 --> 00:02:10.740
+Is it a deadlock?
+
+
+00:02:10.740 --> 00:02:12.740
+Is it waiting on like the database?
+
+
+00:02:12.740 --> 00:02:13.740
+What is going on?
+
+
+00:02:13.740 --> 00:02:15.960
+So what you can do, even in production,
+
+
+00:02:15.960 --> 00:02:18.700
+you can go up to that process and you can say,
+
+
+00:02:18.700 --> 00:02:23.700
+give me a snapshot of exactly what this process is doing.
+
+
+00:02:23.700 --> 00:02:28.100
+And what you see is you see a call stack.
+
+
+00:02:28.100 --> 00:02:30.380
+Let me find an example here of what it looks like.
+
+
+00:02:30.380 --> 00:02:32.740
+It looks like this, silly zoom.
+
+
+00:02:32.740 --> 00:02:34.340
+So what you'll see is like,
+
+
+00:02:34.340 --> 00:02:36.320
+hey, on this particular thread,
+
+
+00:02:36.320 --> 00:02:39.020
+we're seeing on this file, on this line,
+
+
+00:02:39.020 --> 00:02:41.100
+this function was called and check it out.
+
+
+00:02:41.100 --> 00:02:44.380
+It even has the arguments passed to the function.
+
+
+00:02:44.380 --> 00:02:45.580
+- Oh, wow, that's nice.
+
+
+00:02:45.580 --> 00:02:48.260
+- Yeah, and then you can see what function that's calling
+
+
+00:02:48.260 --> 00:02:49.560
+with the arguments passed it,
+
+
+00:02:49.560 --> 00:02:50.600
+and what function that's calling
+
+
+00:02:50.600 --> 00:02:52.160
+with the arguments passed it.
+
+
+00:02:52.160 --> 00:02:54.240
+You can do this on a running function
+
+
+00:02:54.240 --> 00:02:56.080
+without altering its behavior.
+
+
+00:02:56.080 --> 00:02:58.080
+Basically, it doesn't inject any code or anything.
+
+
+00:02:58.080 --> 00:02:59.880
+The only behavior it alters is that
+
+
+00:02:59.880 --> 00:03:01.720
+like freezes it for a second potentially,
+
+
+00:03:01.720 --> 00:03:03.860
+which could, I guess, make something timeout.
+
+
+00:03:03.860 --> 00:03:06.900
+But other than that, you could do this in production,
+
+
+00:03:06.900 --> 00:03:08.320
+even to see what's happening.
+
+
+00:03:08.320 --> 00:03:11.140
+And what's extra cool is,
+
+
+00:03:11.140 --> 00:03:13.280
+even if the process crashes,
+
+
+00:03:13.280 --> 00:03:14.940
+you can grab the core dump,
+
+
+00:03:14.940 --> 00:03:17.080
+and it will go back and analyze that
+
+
+00:03:17.080 --> 00:03:19.160
+as if it was a running process.
+
+
+00:03:19.160 --> 00:03:20.220
+>> That's pretty cool.
+
+
+00:03:20.220 --> 00:03:23.040
+>> Yeah. So there are a ton of features.
+
+
+00:03:23.040 --> 00:03:24.940
+If you can get to the section where it says,
+
+
+00:03:24.940 --> 00:03:26.440
+what can PyStack do?
+
+
+00:03:26.440 --> 00:03:29.960
+So it works with both running processes and core dump files.
+
+
+00:03:29.960 --> 00:03:34.220
+It'll tell you if a thread is currently holding onto the gill,
+
+
+00:03:34.220 --> 00:03:37.700
+if it's waiting to acquire or is trying to drop it.
+
+
+00:03:37.700 --> 00:03:42.700
+So one of the examples that Matt and Pablo spoke about was,
+
+
+00:03:42.700 --> 00:03:45.780
+they were calling into custom C code that was
+
+
+00:03:45.780 --> 00:03:49.100
+a Python extension, that call that was coming in,
+
+
+00:03:49.100 --> 00:03:53.140
+that was acquiring the gill.
+
+
+00:03:53.140 --> 00:03:55.380
+But then in the destructor for
+
+
+00:03:55.380 --> 00:03:58.480
+some object that it was waiting for it to go away,
+
+
+00:03:58.480 --> 00:04:02.480
+it was waiting on a background thread to do some cleanup.
+
+
+00:04:02.480 --> 00:04:04.740
+That background thread also is trying to do
+
+
+00:04:04.740 --> 00:04:06.540
+a callback to let Python know what's
+
+
+00:04:06.540 --> 00:04:10.140
+happening and was trying to acquire the gill, but it couldn't.
+
+
+00:04:10.140 --> 00:04:13.020
+Because the one that was waiting on it was already
+
+
+00:04:13.020 --> 00:04:14.820
+holding the gill and wasn't going to give it up,
+
+
+00:04:14.820 --> 00:04:16.580
+because that's how the GIL works, right?
+
+
+00:04:16.580 --> 00:04:20.900
+So you can use it for like these deadlock situations.
+
+
+00:04:20.900 --> 00:04:22.780
+You can see if it's running a GC,
+
+
+00:04:22.780 --> 00:04:26.940
+you can see both the call stack intertwined
+
+
+00:04:26.940 --> 00:04:31.220
+for both Python and C or C++ or Rust all together.
+
+
+00:04:31.220 --> 00:04:33.180
+And it'll even do things like go out
+
+
+00:04:33.180 --> 00:04:37.460
+and find the debugging symbols for say your Python runtime.
+
+
+00:04:37.460 --> 00:04:38.580
+Even if you don't have it,
+
+
+00:04:38.580 --> 00:04:40.580
+it can potentially go and get those
+
+
+00:04:40.580 --> 00:04:42.820
+and bring that extra information in.
+
+
+00:04:42.820 --> 00:04:45.220
+What else should we see here?
+
+
+00:04:45.220 --> 00:04:47.300
+Safety using running processes.
+
+
+00:04:47.300 --> 00:04:50.500
+You can run it on a process in memory,
+
+
+00:04:50.500 --> 00:04:53.460
+running process without pausing at all,
+
+
+00:04:53.460 --> 00:04:56.380
+which will minimize the impact it might have,
+
+
+00:04:56.380 --> 00:04:58.460
+but it'll also potentially have
+
+
+00:04:58.460 --> 00:05:00.740
+like not 100 percent precise information.
+
+
+00:05:00.740 --> 00:05:01.700
+It could be out of sync.
+
+
+00:05:01.700 --> 00:05:06.620
+So yeah, it even works on corrupted process cordoms
+
+
+00:05:06.620 --> 00:05:07.940
+because the process died because it
+
+
+00:05:07.940 --> 00:05:09.900
+got corrupted memory or something.
+
+
+00:05:09.900 --> 00:05:11.500
+So if you've thought about
+
+
+00:05:11.500 --> 00:05:14.060
+GDB or some of these other types of things because you're like,
+
+
+00:05:14.060 --> 00:05:17.300
+"Oh my gosh, I've got to figure out why this crashed.
+
+
+00:05:17.300 --> 00:05:19.020
+Here's a core dump. Let me start looking at it."
+
+
+00:05:19.020 --> 00:05:21.700
+Well, PyStack may be the thing you want.
+
+
+00:05:21.700 --> 00:05:22.820
+>> That's pretty cool.
+
+
+00:05:22.820 --> 00:05:25.660
+>> One final bonus for you, Brian.
+
+
+00:05:25.660 --> 00:05:28.900
+Suppose you have a PyTest test,
+
+
+00:05:28.900 --> 00:05:30.380
+then here, this one.
+
+
+00:05:30.380 --> 00:05:35.300
+Suppose you have a PyTest test and that test,
+
+
+00:05:35.300 --> 00:05:39.620
+while it's running, deadlocks or is very slow or something like that.
+
+
+00:05:39.620 --> 00:05:44.020
+you can have PyStack as a PyTest plugin.
+
+
+00:05:44.020 --> 00:05:46.020
+Then when you run your code,
+
+
+00:05:46.020 --> 00:05:48.300
+how do you do it? I think it's you just,
+
+
+00:05:48.300 --> 00:05:52.460
+where is it? Anyway, when you run it,
+
+
+00:05:52.460 --> 00:05:54.180
+you can say basically,
+
+
+00:05:54.180 --> 00:05:57.260
+analyze my tests and here's
+
+
+00:05:57.260 --> 00:05:58.780
+a certain threshold to consider
+
+
+00:05:58.780 --> 00:06:00.940
+a failure and take a snapshot of that and so on.
+
+
+00:06:00.940 --> 00:06:03.780
+>> Yeah, I like the threshold notion of just like,
+
+
+00:06:03.780 --> 00:06:06.060
+if it gets this bad, tell me why.
+
+
+00:06:06.060 --> 00:06:06.540
+>> Exactly.
+
+
+00:06:06.540 --> 00:06:07.340
+>> Yeah, nice.
+
+
+00:06:07.340 --> 00:06:09.980
+- Cool, so if people want the full details,
+
+
+00:06:09.980 --> 00:06:11.500
+I suppose they could go check out
+
+
+00:06:11.500 --> 00:06:15.180
+the YouTube live stream channel for Talk Python now,
+
+
+00:06:15.180 --> 00:06:17.460
+or in three weeks they could listen to the podcast.
+
+
+00:06:17.460 --> 00:06:21.280
+But super, super cool tool if you've got a process
+
+
+00:06:21.280 --> 00:06:23.340
+that is crashing, that is hanging,
+
+
+00:06:23.340 --> 00:06:24.780
+maybe it's doing this in production
+
+
+00:06:24.780 --> 00:06:28.140
+and it only gets deadlocked after 12 hours
+
+
+00:06:28.140 --> 00:06:29.620
+of being hammered on.
+
+
+00:06:29.620 --> 00:06:31.780
+You can't easily just debug it locally
+
+
+00:06:31.780 --> 00:06:32.940
+and get this to happen.
+
+
+00:06:32.940 --> 00:06:35.900
+Or if it's completely crashed and you have a core dump,
+
+
+00:06:35.900 --> 00:06:38.500
+These guys are doing lots of magic to make it possible.
+
+
+00:06:38.500 --> 00:06:39.500
+- Nice. - Yep.
+
+
+00:06:39.500 --> 00:06:40.900
+- Cool.
+
+
+00:06:40.900 --> 00:06:45.900
+Well, next I kinda wanna give everybody some news.
+
+
+00:06:45.900 --> 00:06:49.860
+So last year, actually, it was in July last year,
+
+
+00:06:49.860 --> 00:06:53.860
+so we talked about in episode 293,
+
+
+00:06:53.860 --> 00:06:57.060
+we talked about some giveaway, some PSF,
+
+
+00:06:57.060 --> 00:07:00.620
+the PSF saying that there's like the top 1%
+
+
+00:07:00.620 --> 00:07:03.580
+of the critical packages are gonna have to use
+
+
+00:07:03.580 --> 00:07:06.300
+two-factor authentication.
+
+
+00:07:06.300 --> 00:07:08.220
+>> It was big drama at the time, right?
+
+
+00:07:08.220 --> 00:07:10.500
+>> Yeah. Well, because there was some confusion over
+
+
+00:07:10.500 --> 00:07:12.860
+the keys and stuff like that or hardware keys,
+
+
+00:07:12.860 --> 00:07:16.580
+and yes, some pushback against that,
+
+
+00:07:16.580 --> 00:07:18.740
+or just some confusion around it, I think.
+
+
+00:07:18.740 --> 00:07:23.140
+But we've seen some even more attacks
+
+
+00:07:23.140 --> 00:07:25.620
+against Python projects in the last year.
+
+
+00:07:25.620 --> 00:07:29.300
+I mean, it's been less than a year since that.
+
+
+00:07:29.300 --> 00:07:38.020
+And so the change is this year, PyPI is going to require everybody to use two-factor authentication,
+
+
+00:07:38.020 --> 00:07:42.420
+not the top 1%, the top 100%.
+
+
+00:07:42.420 --> 00:07:46.620
+So and it's you got till the end of the year, I think.
+
+
+00:07:46.620 --> 00:07:54.660
+And it's a see, we're linking to an article from the Python package index, saying securing
+
+
+00:07:54.660 --> 00:07:58.340
+PyPI accounts via two-factor authentication.
+
+
+00:07:58.340 --> 00:08:03.140
+And as of today, they're going to require,
+
+
+00:08:03.140 --> 00:08:05.940
+they're announcing that every account that maintains,
+
+
+00:08:05.940 --> 00:08:07.940
+every account that maintains a project
+
+
+00:08:07.940 --> 00:08:10.820
+or organization on PyPI will be required
+
+
+00:08:10.820 --> 00:08:13.780
+to enable two-factor authentication on their account
+
+
+00:08:13.780 --> 00:08:15.260
+by the end of 2023.
+
+
+00:08:15.260 --> 00:08:17.220
+So that's the news really.
+
+
+00:08:17.220 --> 00:08:20.700
+There's some discussion as to why in this article,
+
+
+00:08:20.700 --> 00:08:24.320
+but there's some information on how to,
+
+
+00:08:24.320 --> 00:08:27.600
+how to prepare, but it's not, I mean, not that bad.
+
+
+00:08:27.600 --> 00:08:28.880
+I did it last year.
+
+
+00:08:28.880 --> 00:08:33.460
+If you've got, especially if you're already using a smartphone, I think that
+
+
+00:08:33.460 --> 00:08:39.520
+using as a something like offy or something like that on, on a smartphone
+
+
+00:08:39.520 --> 00:08:40.400
+would work just fine.
+
+
+00:08:40.400 --> 00:08:41.240
+So, yeah.
+
+
+00:08:41.240 --> 00:08:42.760
+Um, what else?
+
+
+00:08:42.760 --> 00:08:47.600
+Uh, there's, it's kind of, I guess there's not much really more to say about it is
+
+
+00:08:47.600 --> 00:08:49.960
+that this is happening and you gotta kind of do it.
+
+
+00:08:49.960 --> 00:08:51.280
+You had to do it by the end of the year.
+
+
+00:08:51.280 --> 00:08:51.600
+Yeah.
+
+
+00:08:51.600 --> 00:08:52.840
+Wait, but why not?
+
+
+00:08:52.840 --> 00:08:53.360
+Why wait?
+
+
+00:08:53.520 --> 00:08:54.560
+Just go ahead and do it.
+
+
+00:08:54.560 --> 00:08:55.720
+And it's really everybody.
+
+
+00:08:55.720 --> 00:08:58.320
+So let's say you've got an open source project
+
+
+00:08:58.320 --> 00:09:00.960
+and there's like 20 people contributing.
+
+
+00:09:00.960 --> 00:09:01.880
+That would be cool.
+
+
+00:09:01.880 --> 00:09:03.000
+Maybe there's like five.
+
+
+00:09:03.000 --> 00:09:05.800
+But if only one of you is ever pushing to PyPI,
+
+
+00:09:05.800 --> 00:09:08.000
+then it's just one of, I think it's just one of you,
+
+
+00:09:08.000 --> 00:09:10.000
+unless you're doing it in an organization thing.
+
+
+00:09:10.000 --> 00:09:11.560
+I think it's just the person pushing.
+
+
+00:09:11.560 --> 00:09:14.120
+So if other people are on Git
+
+
+00:09:14.120 --> 00:09:16.520
+and not using two-factor for Git,
+
+
+00:09:16.520 --> 00:09:19.080
+but they're just pushing to your repo,
+
+
+00:09:19.080 --> 00:09:20.520
+I think that's still fine.
+
+
+00:09:20.520 --> 00:09:21.360
+It doesn't matter.
+
+
+00:09:21.360 --> 00:09:26.280
+the people actually actively interacting with PyPI that need to be authenticated.
+
+
+00:09:26.280 --> 00:09:28.480
+Yeah, that's what it sounds like to me as well.
+
+
+00:09:28.480 --> 00:09:32.880
+It's kind of if you're actually have an active account on PyPI,
+
+
+00:09:32.880 --> 00:09:37.920
+it's not necessarily GitHub, although I think GitHub itself also has a 2FA requirement now.
+
+
+00:09:37.920 --> 00:09:43.620
+And there is some discussion here about like people that don't interact with a project,
+
+
+00:09:43.620 --> 00:09:45.460
+but still have a PyPI account.
+
+
+00:09:45.460 --> 00:09:47.060
+And I'm not exactly sure why.
+
+
+00:09:47.060 --> 00:09:49.560
+Apparently, there's some people that need it.
+
+
+00:09:49.560 --> 00:09:52.680
+- Why would you have a PyPI account
+
+
+00:09:52.680 --> 00:09:54.000
+if you're not pushing stuff to--
+
+
+00:09:54.000 --> 00:09:55.960
+- Yeah, yeah, that's a good point.
+
+
+00:09:55.960 --> 00:09:56.920
+It is a good point.
+
+
+00:09:56.920 --> 00:10:03.140
+Well, so there was so much drama about it
+
+
+00:10:03.140 --> 00:10:07.560
+and there was that person that deleted all their packages
+
+
+00:10:07.560 --> 00:10:10.280
+because they were frustrated as like a thing of protest
+
+
+00:10:10.280 --> 00:10:11.680
+and it caused some issues.
+
+
+00:10:11.680 --> 00:10:13.440
+Well, I'm fine with this.
+
+
+00:10:13.440 --> 00:10:14.780
+This is great.
+
+
+00:10:14.780 --> 00:10:18.680
+I think supply chain issues are really, really serious.
+
+
+00:10:18.680 --> 00:10:21.600
+So it's okay with me.
+
+
+00:10:21.600 --> 00:10:22.680
+- Yeah, me too.
+
+
+00:10:22.680 --> 00:10:26.080
+So shall we thank our sponsor?
+
+
+00:10:26.080 --> 00:10:28.480
+- We shall, but first I just want to point out,
+
+
+00:10:28.480 --> 00:10:31.320
+yeah, I think Authy is a fantastic option
+
+
+00:10:31.320 --> 00:10:33.680
+for the 2FA stuff that you were pointing out.
+
+
+00:10:33.680 --> 00:10:34.880
+Ryan, as you mentioned,
+
+
+00:10:34.880 --> 00:10:37.560
+like one of the things that is a huge hassle
+
+
+00:10:37.560 --> 00:10:40.420
+for a lot of the systems is, guess what?
+
+
+00:10:40.420 --> 00:10:43.680
+You can install this 2FA tool onto your phone
+
+
+00:10:43.680 --> 00:10:45.240
+and it's completely safe.
+
+
+00:10:45.240 --> 00:10:48.500
+And all that local, that 2FA, it'll never go anywhere.
+
+
+00:10:48.500 --> 00:10:51.240
+until you want to get a new phone and then you're completely out of luck and
+
+
+00:10:51.240 --> 00:10:54.940
+you've got to somehow reset it or worse, you lose your phone, but it's not,
+
+
+00:10:54.940 --> 00:10:56.780
+there's no way to recover the 2FA code.
+
+
+00:10:56.780 --> 00:11:00.400
+So what I really like about Authy is it will, you can install it in multiple
+
+
+00:11:00.400 --> 00:11:05.120
+locations, like you can install it on your desktop and your mobile device.
+
+
+00:11:05.120 --> 00:11:06.660
+And they're just in sync.
+
+
+00:11:06.660 --> 00:11:08.980
+If you add one somewhere, it appears elsewhere.
+
+
+00:11:08.980 --> 00:11:12.880
+So if people feel like TFA is a huge pain, I think Authy is one of the
+
+
+00:11:12.880 --> 00:11:14.340
+choices that's pretty good for that.
+
+
+00:11:14.340 --> 00:11:14.900
+I didn't know.
+
+
+00:11:14.900 --> 00:11:17.200
+You can also do like one password and so on.
+
+
+00:11:17.200 --> 00:11:21.260
+but to me having the passwords there and the two of a thing in the same place
+
+
+00:11:21.260 --> 00:11:24.700
+seems to violate some aspect of security.
+
+
+00:11:24.700 --> 00:11:28.940
+I mean, I know one password is pretty safe, but two of a should be about having
+
+
+00:11:28.940 --> 00:11:31.340
+the password and the thing separated in my mind.
+
+
+00:11:31.340 --> 00:11:34.760
+So I don't use my password managers to a faith thing.
+
+
+00:11:34.760 --> 00:11:35.140
+Yeah.
+
+
+00:11:35.140 --> 00:11:37.980
+I just thought, I thought I had like just a couple of accounts with
+
+
+00:11:37.980 --> 00:11:41.100
+Authy and I just looked and I've got like, I got a scroll.
+
+
+00:11:41.100 --> 00:11:42.660
+I got a whole bunch of things on off.
+
+
+00:11:42.660 --> 00:11:42.900
+Yeah.
+
+
+00:11:42.900 --> 00:11:43.100
+Yeah.
+
+
+00:11:43.100 --> 00:11:45.340
+So yeah, I think I have 40 or so myself.
+
+
+00:11:45.340 --> 00:11:46.260
+All right.
+
+
+00:11:46.380 --> 00:11:48.340
+Now let's tell people about our sponsor.
+
+
+00:11:48.340 --> 00:11:50.340
+- All right, this episode of Python Bytes
+
+
+00:11:50.340 --> 00:11:52.360
+is brought to you by Influx Data,
+
+
+00:11:52.360 --> 00:11:54.500
+the makers of InfluxDB.
+
+
+00:11:54.500 --> 00:11:56.660
+InfluxDB is a database purpose-built
+
+
+00:11:56.660 --> 00:11:58.260
+for handling time series data
+
+
+00:11:58.260 --> 00:12:01.200
+at massive scale for real-time analytics.
+
+
+00:12:01.200 --> 00:12:02.780
+Developers can ingest, store,
+
+
+00:12:02.780 --> 00:12:04.980
+and analyze all types of time series data,
+
+
+00:12:04.980 --> 00:12:08.040
+metrics, events, traces on a single platform.
+
+
+00:12:08.040 --> 00:12:10.480
+So, dear listener, let me ask the question,
+
+
+00:12:10.480 --> 00:12:12.820
+how would boundless cardinality
+
+
+00:12:12.820 --> 00:12:14.540
+and lightning-fast SQL queries
+
+
+00:12:14.540 --> 00:12:17.540
+impact the way you develop real-time applications.
+
+
+00:12:17.540 --> 00:12:22.340
+InfluxDB processes large time series datasets and provides
+
+
+00:12:22.340 --> 00:12:25.740
+low latency SQL queries making it a go-to choice for
+
+
+00:12:25.740 --> 00:12:27.980
+developers building real-time applications
+
+
+00:12:27.980 --> 00:12:29.780
+and seeking crucial insights.
+
+
+00:12:29.780 --> 00:12:31.200
+For developer efficiency,
+
+
+00:12:31.200 --> 00:12:33.840
+InfluxDB helps you create IoT,
+
+
+00:12:33.840 --> 00:12:36.260
+analytics, and Cloud applications using
+
+
+00:12:36.260 --> 00:12:38.760
+timestamp data rapidly and at scale.
+
+
+00:12:38.760 --> 00:12:42.300
+It's designed to ingest billions of data points in
+
+
+00:12:42.300 --> 00:12:44.860
+real time with unlimited cardinality.
+
+
+00:12:44.860 --> 00:12:50.580
+InfluxDB streamlines building once and deploying across various products and environments from
+
+
+00:12:50.580 --> 00:12:53.460
+the edge, on-premise, and to the cloud.
+
+
+00:12:53.460 --> 00:12:57.540
+Try it for free at pythonbytes.fm/influxdb.
+
+
+00:12:57.540 --> 00:13:01.140
+The links are also in your show notes on the podcast.
+
+
+00:13:01.140 --> 00:13:03.460
+Thanks to InfluxDB for supporting the show.
+
+
+00:13:03.460 --> 00:13:04.460
+>> Yep.
+
+
+00:13:04.460 --> 00:13:05.460
+Thank you.
+
+
+00:13:05.460 --> 00:13:06.460
+Thank you.
+
+
+00:13:06.460 --> 00:13:07.460
+Everyone check them out to help support the show.
+
+
+00:13:07.460 --> 00:13:08.660
+All right.
+
+
+00:13:08.660 --> 00:13:10.380
+Let's talk about queues, Brian.
+
+
+00:13:10.380 --> 00:13:11.380
+>> Okay.
+
+
+00:13:11.380 --> 00:13:13.980
+So I want to talk about Propan.
+
+
+00:13:13.980 --> 00:13:19.740
+Now, Propan is a project that's not tens of thousands of GitHub stars.
+
+
+00:13:19.740 --> 00:13:22.220
+I think it looks pretty compelling.
+
+
+00:13:22.220 --> 00:13:24.980
+It's put together by Lance Nick,
+
+
+00:13:24.980 --> 00:13:27.420
+Lance Nick, I'm going to go with,
+
+
+00:13:27.420 --> 00:13:28.540
+over here on GitHub,
+
+
+00:13:28.540 --> 00:13:31.900
+and it is a powerful and easy to use Python framework for
+
+
+00:13:31.900 --> 00:13:36.940
+building asynchronous web services that interact with any message broker.
+
+
+00:13:36.940 --> 00:13:40.340
+So what are some of the options of the message brokers here?
+
+
+00:13:40.340 --> 00:13:45.340
+we've got RabbitMQ, Redis, Nats, Kafka, SQS,
+
+
+00:13:45.340 --> 00:13:48.700
+some of the other ones like Redis Streams.
+
+
+00:13:48.700 --> 00:13:52.480
+If you're using these and you want a cool declarative way
+
+
+00:13:52.480 --> 00:13:55.780
+to interact with them, then Propan might be your thing.
+
+
+00:13:55.780 --> 00:14:00.260
+So right now what they have is async APIs for you,
+
+
+00:14:00.260 --> 00:14:02.200
+and they're working on synchronous ones,
+
+
+00:14:02.200 --> 00:14:03.600
+but they don't have them yet.
+
+
+00:14:03.600 --> 00:14:05.980
+So let me just give you an example, Brian.
+
+
+00:14:05.980 --> 00:14:07.660
+Over here, it says,
+
+
+00:14:07.660 --> 00:14:11.440
+First, let's take the quick start from AIO Pika,
+
+
+00:14:11.440 --> 00:14:15.360
+which is a way to listen for events.
+
+
+00:14:15.360 --> 00:14:17.280
+This is the important part, listen for
+
+
+00:14:17.280 --> 00:14:20.780
+a certain set of events coming into a message queue.
+
+
+00:14:20.780 --> 00:14:22.400
+What you do is you say,
+
+
+00:14:22.400 --> 00:14:26.040
+I'm going to connect to the message queue server,
+
+
+00:14:26.040 --> 00:14:29.060
+and I'm going to listen to a particular queue.
+
+
+00:14:29.060 --> 00:14:31.700
+Then you await creating the connection,
+
+
+00:14:31.700 --> 00:14:33.400
+you await creating a channel,
+
+
+00:14:33.400 --> 00:14:36.020
+you await connecting to the queue.
+
+
+00:14:36.020 --> 00:14:39.180
+And once you do it, then you use the iterator,
+
+
+00:14:39.180 --> 00:14:41.320
+you loop over the iterator as messages come in,
+
+
+00:14:41.320 --> 00:14:42.780
+and then you get them.
+
+
+00:14:42.780 --> 00:14:45.380
+And then you, of course, run that code that does that.
+
+
+00:14:45.380 --> 00:14:47.580
+That's the imperative way
+
+
+00:14:47.580 --> 00:14:49.780
+where you do all the steps yourself.
+
+
+00:14:49.780 --> 00:14:53.060
+So this other way is, what you do is you go to,
+
+
+00:14:53.060 --> 00:14:55.060
+you basically create this thing called a broker
+
+
+00:14:55.060 --> 00:14:59.140
+using ProPan, and you point it at one of these queues,
+
+
+00:14:59.140 --> 00:15:00.560
+like Redis or something.
+
+
+00:15:00.560 --> 00:15:03.500
+And then you just, kind of like you would in FastAPI
+
+
+00:15:03.500 --> 00:15:06.340
+or flask, you say you put a decorator on a function,
+
+
+00:15:06.340 --> 00:15:09.420
+you say @broker.handle, and you give it the name of the queue.
+
+
+00:15:09.420 --> 00:15:12.180
+So if a message comes into that named queue,
+
+
+00:15:12.180 --> 00:15:13.100
+call this function.
+
+
+00:15:13.100 --> 00:15:14.180
+- Oh, I like that better.
+
+
+00:15:14.180 --> 00:15:15.020
+- Isn't this nice?
+
+
+00:15:15.020 --> 00:15:16.980
+It's kind of like, I'm listening for this URL,
+
+
+00:15:16.980 --> 00:15:21.120
+like if, you know, /courses/id of a course,
+
+
+00:15:21.120 --> 00:15:23.420
+I want to get you details about that course, right?
+
+
+00:15:23.420 --> 00:15:26.300
+You would put that in flask or pyramid or fast API.
+
+
+00:15:26.300 --> 00:15:28.700
+This is the same thing, but for message queue.
+
+
+00:15:28.700 --> 00:15:30.980
+So you say this function receives stuff
+
+
+00:15:30.980 --> 00:15:31.980
+that goes to that queue.
+
+
+00:15:31.980 --> 00:15:32.860
+- Oh, I like it.
+
+
+00:15:32.860 --> 00:15:35.200
+>> Yeah. That's what those interfaces should be like.
+
+
+00:15:35.200 --> 00:15:37.860
+>> Yeah, absolutely. It totally should.
+
+
+00:15:37.860 --> 00:15:39.980
+This is pretty interesting already,
+
+
+00:15:39.980 --> 00:15:42.380
+but it gets a little bit cooler.
+
+
+00:15:42.380 --> 00:15:43.700
+You can go and create one of
+
+
+00:15:43.700 --> 00:15:47.180
+these apps and just run a server directly.
+
+
+00:15:47.180 --> 00:15:51.740
+You can say, I want to run this as a system daemon on Linux,
+
+
+00:15:51.740 --> 00:15:55.420
+let's say, and it's just going to use the ProPan server to run.
+
+
+00:15:55.420 --> 00:15:58.460
+That's fine, but there's tons of infrastructure around
+
+
+00:15:58.460 --> 00:16:01.860
+running these types of things as web applications.
+
+
+00:16:01.860 --> 00:16:07.260
+And if you already have a web app that receives like JSON requests,
+
+
+00:16:07.260 --> 00:16:09.960
+you know, it's got some kind of API endpoint,
+
+
+00:16:09.960 --> 00:16:14.260
+but you also want to have it handle stuff that might be put into the message queue,
+
+
+00:16:14.260 --> 00:16:18.360
+then it has integration, if I scroll down,
+
+
+00:16:18.360 --> 00:16:21.460
+into, you can do it manually into any web framework,
+
+
+00:16:21.460 --> 00:16:25.060
+or it's got things like a fast API plugin, which is pretty cool.
+
+
+00:16:25.060 --> 00:16:25.660
+>> Oh, cool.
+
+
+00:16:25.660 --> 00:16:27.360
+>> Yeah. So let's see.
+
+
+00:16:27.360 --> 00:16:28.560
+Actually, if I go to the examples,
+
+
+00:16:28.560 --> 00:16:31.260
+I'll pull up a Flask one that's probably the best,
+
+
+00:16:31.260 --> 00:16:33.900
+which you got to use court because it's only async.
+
+
+00:16:33.900 --> 00:16:36.460
+That's the Flask async variant.
+
+
+00:16:36.460 --> 00:16:38.420
+What you can do is in your,
+
+
+00:16:38.420 --> 00:16:40.260
+let's see, I'll just say, in your court app,
+
+
+00:16:40.260 --> 00:16:45.940
+you create this broker to listen as well in addition to create your Flask or court app.
+
+
+00:16:45.940 --> 00:16:51.100
+Then you might have a function that says app.routeListenFor/,
+
+
+00:16:51.100 --> 00:16:52.620
+and that's a JSON endpoint,
+
+
+00:16:52.620 --> 00:16:56.160
+or you might have broker.handle some queue message,
+
+
+00:16:56.160 --> 00:16:58.020
+and that's the queue coming in.
+
+
+00:16:58.020 --> 00:17:00.260
+It's like, well, here's the messages coming in
+
+
+00:17:00.260 --> 00:17:04.160
+over the web and hear the ones coming over a message queuing.
+
+
+00:17:04.160 --> 00:17:08.380
+But it runs in micro-WSGI or g-unicorn or whatever.
+
+
+00:17:08.380 --> 00:17:09.340
+>> That's nice.
+
+
+00:17:09.340 --> 00:17:10.980
+>> Yeah. Last thing,
+
+
+00:17:10.980 --> 00:17:15.500
+this is inspired by Pydantic and FastAPI.
+
+
+00:17:15.500 --> 00:17:19.820
+Let me see about a good example here.
+
+
+00:17:19.820 --> 00:17:24.080
+You can do things like declaring that the body of
+
+
+00:17:24.080 --> 00:17:28.380
+the message is a dictionary or you can
+
+
+00:17:28.380 --> 00:17:31.300
+have Pydantic base models that are coming in.
+
+
+00:17:31.300 --> 00:17:34.580
+So you can say, when a message comes to the message queue,
+
+
+00:17:34.580 --> 00:17:36.540
+it's going to be represented by, let's say,
+
+
+00:17:36.540 --> 00:17:40.560
+JSON and that JSON I want to parse into a Pydantic model.
+
+
+00:17:40.560 --> 00:17:42.880
+You can just say, much like FastAPI,
+
+
+00:17:42.880 --> 00:17:45.400
+in your handler, you say body colon,
+
+
+00:17:45.400 --> 00:17:47.460
+the name of your custom Pydantic class.
+
+
+00:17:47.460 --> 00:17:50.780
+Boom, now it's automatically parsing that based on the type.
+
+
+00:17:50.780 --> 00:17:52.980
+>> Based on, that's neat.
+
+
+00:17:52.980 --> 00:17:55.820
+>> The last thing, they also have this concept
+
+
+00:17:55.820 --> 00:17:59.700
+of modeling PyTest fixtures.
+
+
+00:17:59.700 --> 00:18:02.640
+So you can create functions that will do things like,
+
+
+00:18:02.640 --> 00:18:05.060
+process requests or give you extra information
+
+
+00:18:05.060 --> 00:18:07.780
+or what you would do with PyTest fixture type things.
+
+
+00:18:07.780 --> 00:18:10.860
+And you can have those as well in here,
+
+
+00:18:10.860 --> 00:18:11.700
+which is pretty cool.
+
+
+00:18:11.700 --> 00:18:12.940
+So there's a lot of cool,
+
+
+00:18:12.940 --> 00:18:15.820
+it's like a fusion of interesting Python frameworks
+
+
+00:18:15.820 --> 00:18:16.860
+for message queuing.
+
+
+00:18:16.860 --> 00:18:17.780
+- I like it.
+
+
+00:18:17.780 --> 00:18:20.980
+So ask your doctor if ProPan is right for you.
+
+
+00:18:20.980 --> 00:18:22.460
+- Ask your doctor, that's right.
+
+
+00:18:22.460 --> 00:18:25.780
+Yeah, it's interesting because this message queuing
+
+
+00:18:25.780 --> 00:18:31.140
+type of architecture is super powerful at unlocking tons of interesting asynchrony.
+
+
+00:18:31.140 --> 00:18:34.980
+Like, well, if I've got a request come in and I got to, you know, place an order,
+
+
+00:18:34.980 --> 00:18:36.900
+we got to check the warehouse, whether we have them.
+
+
+00:18:36.900 --> 00:18:40.180
+And that's a janky old API call that's slow.
+
+
+00:18:40.180 --> 00:18:44.900
+Like, well, how do I scale that would be one option with threads and async in a way.
+
+
+00:18:44.900 --> 00:18:48.500
+The other one would be just like, well, throw that into a queue to say,
+
+
+00:18:48.500 --> 00:18:52.420
+check that out and then, you know, let it run completely disassociated.
+
+
+00:18:52.420 --> 00:18:52.900
+Right?
+
+
+00:18:52.900 --> 00:18:57.400
+>> Yeah. Scroll to the bottom, the key features.
+
+
+00:18:57.400 --> 00:18:59.440
+One of the things I want right down there,
+
+
+00:18:59.440 --> 00:19:02.880
+testability, ProPan allows you to test your app.
+
+
+00:19:02.880 --> 00:19:04.480
+Without external dependencies,
+
+
+00:19:04.480 --> 00:19:07.180
+you do not have to set up a message broker to test.
+
+
+00:19:07.180 --> 00:19:09.440
+You can have a virtual one. That's pretty cool.
+
+
+00:19:09.440 --> 00:19:11.120
+>> Yeah. This is cool.
+
+
+00:19:11.120 --> 00:19:13.720
+It's not super popular, like I said.
+
+
+00:19:13.720 --> 00:19:15.900
+However, it does look pretty neat.
+
+
+00:19:15.900 --> 00:19:16.840
+>> Sure does.
+
+
+00:19:16.840 --> 00:19:17.920
+>> All right. Over to you.
+
+
+00:19:17.920 --> 00:19:20.640
+>> That was a little bit of a new thing.
+
+
+00:19:20.640 --> 00:19:22.740
+I want to talk about a little bit of an old thing,
+
+
+00:19:22.740 --> 00:19:24.540
+which is make files.
+
+
+00:19:24.540 --> 00:19:25.780
+We haven't talked about it for a while,
+
+
+00:19:25.780 --> 00:19:28.820
+but make files are still fairly popular
+
+
+00:19:28.820 --> 00:19:30.620
+for Python projects, I think.
+
+
+00:19:30.620 --> 00:19:34.460
+I've got them on several internal projects at least.
+
+
+00:19:34.460 --> 00:19:36.380
+And they come in handy.
+
+
+00:19:36.380 --> 00:19:38.020
+You gotta be careful that a lot of,
+
+
+00:19:38.020 --> 00:19:40.820
+sometimes people on your team won't be familiar with them.
+
+
+00:19:40.820 --> 00:19:44.140
+But if it's a common thing for your team to use make files,
+
+
+00:19:44.140 --> 00:19:46.820
+or for you, why not use them on a Python project?
+
+
+00:19:46.820 --> 00:19:50.700
+So this, what I'm gonna cover is an article,
+
+
+00:19:51.740 --> 00:19:53.420
+forgetting the author name right now.
+
+
+00:19:53.420 --> 00:19:55.940
+Let's see, Ricardo Endereg,
+
+
+00:19:55.940 --> 00:19:58.500
+called Makefile Tricks for Python Projects.
+
+
+00:19:58.500 --> 00:20:01.640
+And I'm gonna hop down to the actual template.
+
+
+00:20:01.640 --> 00:20:03.340
+What it is, it's a little,
+
+
+00:20:03.340 --> 00:20:06.200
+it's a small template as a starter template
+
+
+00:20:06.200 --> 00:20:07.520
+for a Python project,
+
+
+00:20:07.520 --> 00:20:09.760
+but it has some pretty cool features.
+
+
+00:20:09.760 --> 00:20:13.080
+And the actual templates at the bottom of the article,
+
+
+00:20:13.080 --> 00:20:15.700
+but we kind of go through some of the different things
+
+
+00:20:15.700 --> 00:20:17.620
+that you might want to put in there.
+
+
+00:20:17.620 --> 00:20:20.880
+And so to start off some, a little bit,
+
+
+00:20:20.880 --> 00:20:22.000
+I always forget to do this.
+
+
+00:20:22.000 --> 00:20:23.720
+These are things I always wanna do,
+
+
+00:20:23.720 --> 00:20:25.080
+but I forget in my Makefiles.
+
+
+00:20:25.080 --> 00:20:27.680
+Things like making sure that it fails
+
+
+00:20:27.680 --> 00:20:31.120
+if anything throws a incorrect error code,
+
+
+00:20:31.120 --> 00:20:33.520
+and also warning if you did something wrong
+
+
+00:20:33.520 --> 00:20:35.980
+like undefined variables or you're using,
+
+
+00:20:35.980 --> 00:20:39.200
+you can turn off this built-in rules.
+
+
+00:20:39.200 --> 00:20:42.140
+And I don't really know what the built-in rules thing does.
+
+
+00:20:42.140 --> 00:20:45.800
+It's just, I find my Makefiles more pleasant
+
+
+00:20:45.800 --> 00:20:46.680
+if I disable them.
+
+
+00:20:46.680 --> 00:20:47.960
+So this is good.
+
+
+00:20:47.960 --> 00:20:49.720
+The virtual environment thing.
+
+
+00:20:49.720 --> 00:20:52.920
+So there's a little snippet that he includes
+
+
+00:20:52.920 --> 00:20:56.360
+that you can use the py variable
+
+
+00:20:56.360 --> 00:20:58.180
+to select which Python to run.
+
+
+00:20:58.180 --> 00:21:00.400
+So if you already have a virtual environment,
+
+
+00:21:00.400 --> 00:21:02.760
+it uses that, which is cool.
+
+
+00:21:02.760 --> 00:21:03.840
+- That's pretty clever, yeah.
+
+
+00:21:03.840 --> 00:21:06.340
+- Yeah, and if you don't, it uses the global one.
+
+
+00:21:06.340 --> 00:21:11.880
+And then also with pip, so it uses that py variable
+
+
+00:21:11.880 --> 00:21:15.200
+to pick pip if it's there or not,
+
+
+00:21:15.200 --> 00:21:17.960
+and it uses the global one, so that's pretty cool.
+
+
+00:21:17.960 --> 00:21:20.440
+Actually, it'd probably be better to just blow up
+
+
+00:21:20.440 --> 00:21:22.280
+if you didn't have a virtual environment.
+
+
+00:21:22.280 --> 00:21:26.480
+So anyway, some stuff like PWD
+
+
+00:21:26.480 --> 00:21:29.840
+and current working directory and work route,
+
+
+00:21:29.840 --> 00:21:31.760
+these are good things to add in
+
+
+00:21:31.760 --> 00:21:35.200
+because sometimes you'll call a make script
+
+
+00:21:35.200 --> 00:21:36.660
+from a different directory.
+
+
+00:21:36.660 --> 00:21:38.420
+So your actual current directory is different
+
+
+00:21:38.420 --> 00:21:39.680
+and it mucks things up.
+
+
+00:21:39.680 --> 00:21:42.260
+So there's some good correction there.
+
+
+00:21:42.260 --> 00:21:45.980
+I do like this, there's some little magic stuff
+
+
+00:21:45.980 --> 00:21:48.040
+about default goal and help message.
+
+
+00:21:48.040 --> 00:21:49.340
+And I had to read this a little bit
+
+
+00:21:49.340 --> 00:21:50.900
+to understand what's going on.
+
+
+00:21:50.900 --> 00:21:54.580
+But what happens is it, the default goal being help
+
+
+00:21:54.580 --> 00:21:58.680
+means that if you just type make with no arguments,
+
+
+00:21:58.680 --> 00:21:59.860
+what should it do?
+
+
+00:21:59.860 --> 00:22:01.780
+And a cool thing to have make do
+
+
+00:22:01.780 --> 00:22:04.540
+is to print out all the things that you can do
+
+
+00:22:04.540 --> 00:22:08.820
+with the make file, like all the targets and what they do.
+
+
+00:22:08.820 --> 00:22:10.540
+And so that's what this does
+
+
+00:22:10.540 --> 00:22:14.800
+by having this little greps thing,
+
+
+00:22:14.800 --> 00:22:17.360
+Is it grep?
+
+
+00:22:17.360 --> 00:22:21.320
+I don't know if it's. Anyway, it's searching through your file and using
+
+
+00:22:21.320 --> 00:22:27.720
+awk and saying, hey, if you've got a comment against the side of a target,
+
+
+00:22:27.720 --> 00:22:29.280
+that means that's the help message.
+
+
+00:22:29.280 --> 00:22:30.600
+So it'll print that stuff out.
+
+
+00:22:30.600 --> 00:22:32.000
+Oh, that's cool.
+
+
+00:22:32.000 --> 00:22:32.680
+Yeah.
+
+
+00:22:32.680 --> 00:22:35.760
+Some I don't really muck with my Python path too much,
+
+
+00:22:35.760 --> 00:22:41.200
+but if you have to muck with your Python path for make file to find libraries or
+
+
+00:22:41.200 --> 00:22:44.800
+something like that, or find the code that you're running.
+
+
+00:22:44.800 --> 00:22:48.700
+There's examples on how to do that, which is nice.
+
+
+00:22:48.700 --> 00:22:51.960
+Yes, that's really what I wanted to talk about.
+
+
+00:22:51.960 --> 00:22:54.440
+I was surprised that it's doing all this stuff and
+
+
+00:22:54.440 --> 00:22:58.400
+it's really and some examples on how you can use the path thing.
+
+
+00:22:58.400 --> 00:23:01.960
+Having adding a little create virtual environment within a makefile,
+
+
+00:23:01.960 --> 00:23:04.720
+this is nice just so that people working on the project.
+
+
+00:23:04.720 --> 00:23:05.400
+>> Make.vnv.
+
+
+00:23:05.400 --> 00:23:08.880
+>> Yeah, make.vnv, you could have vnv also,
+
+
+00:23:08.880 --> 00:23:10.880
+and it just makes your virtual environment.
+
+
+00:23:10.880 --> 00:23:12.680
+Why do you need a target for that?
+
+
+00:23:12.680 --> 00:23:15.760
+And it's because, and you've discovered this,
+
+
+00:23:15.760 --> 00:23:19.360
+but sometimes new Python developers kind of forget,
+
+
+00:23:19.360 --> 00:23:22.840
+is that it's kind of annoying to just create a virtual environment.
+
+
+00:23:22.840 --> 00:23:25.080
+It's good to, after you've created it,
+
+
+00:23:25.080 --> 00:23:28.800
+update the update setup tools and wheel and build.
+
+
+00:23:28.800 --> 00:23:31.320
+And then also, if you have a requirements file,
+
+
+00:23:31.320 --> 00:23:35.720
+why not just install it right away instead of having that as another command?
+
+
+00:23:35.720 --> 00:23:40.080
+So kind of a fun template for starting Makefiles with Python project.
+
+
+00:23:40.080 --> 00:23:44.600
+>> Yeah, that's what is that a modern take on an old idea?
+
+
+00:23:44.600 --> 00:23:48.760
+>> Yeah. If you are new to Makefiles,
+
+
+00:23:48.760 --> 00:23:51.160
+one of the things to be careful about that some people
+
+
+00:23:51.160 --> 00:23:56.200
+don't quite sometimes remember is spaces matter within Makefiles,
+
+
+00:23:56.200 --> 00:23:57.460
+like they do in Python,
+
+
+00:23:57.460 --> 00:23:59.720
+but spaces and tabs matter.
+
+
+00:23:59.720 --> 00:24:02.480
+In Makefiles, you're using tabs.
+
+
+00:24:02.480 --> 00:24:05.120
+It has to be a tab, it cannot be space.
+
+
+00:24:05.120 --> 00:24:07.560
+Unless something's changed that I don't know about,
+
+
+00:24:07.560 --> 00:24:10.160
+But that has messed me up before.
+
+
+00:24:10.160 --> 00:24:12.860
+So use tabs within Makefiles.
+
+
+00:24:12.860 --> 00:24:16.020
+>> All right. Sounds good. Excellent one.
+
+
+00:24:16.020 --> 00:24:18.000
+I guess that's everything.
+
+
+00:24:18.000 --> 00:24:18.440
+>> Yeah.
+
+
+00:24:18.440 --> 00:24:19.540
+>> Yeah. Any extras?
+
+
+00:24:19.540 --> 00:24:21.400
+>> No. Not really. You?
+
+
+00:24:21.400 --> 00:24:23.200
+>> I got a couple here.
+
+
+00:24:23.200 --> 00:24:25.160
+Just a couple of conference ones.
+
+
+00:24:25.160 --> 00:24:30.200
+So PyCon Portugal has their call for participation.
+
+
+00:24:30.200 --> 00:24:34.620
+So got a little bit of time left on that.
+
+
+00:24:34.620 --> 00:24:37.820
+What is that till the 30th of June?
+
+
+00:24:37.820 --> 00:24:39.580
+And when will it be?
+
+
+00:24:39.580 --> 00:24:43.740
+It will be September 7 to 9, which is cool.
+
+
+00:24:43.740 --> 00:24:47.740
+So if you're in and around or want to go to Portugal, there you go.
+
+
+00:24:47.740 --> 00:24:48.060
+Cool.
+
+
+00:24:48.060 --> 00:24:53.500
+On the other hand, if you happen to be interested in Django and are in Europe,
+
+
+00:24:53.500 --> 00:24:55.020
+that just got announced as well.
+
+
+00:24:55.020 --> 00:24:56.620
+So people can check that out.
+
+
+00:24:56.620 --> 00:24:57.740
+I want to go.
+
+
+00:24:57.740 --> 00:25:00.540
+I'm not going, but I want to go.
+
+
+00:25:00.540 --> 00:25:01.820
+Yeah, indeed.
+
+
+00:25:01.820 --> 00:25:03.100
+So that's also announced.
+
+
+00:25:03.100 --> 00:25:05.060
+It's linked to both of those in the show notes.
+
+
+00:25:05.060 --> 00:25:06.280
+All right, you ready for a joke?
+
+
+00:25:06.280 --> 00:25:07.120
+- Yeah.
+
+
+00:25:07.120 --> 00:25:10.180
+- Well, this becomes because Apple.com.
+
+
+00:25:10.180 --> 00:25:11.380
+Did you see that they announced
+
+
+00:25:11.380 --> 00:25:14.520
+this crazy Vision thing, Brian?
+
+
+00:25:14.520 --> 00:25:17.260
+- Yeah, but it doesn't come with the snorkel.
+
+
+00:25:17.260 --> 00:25:18.940
+It's just the snorkel mask.
+
+
+00:25:18.940 --> 00:25:21.420
+- Yeah, it's just the snorkel mask.
+
+
+00:25:21.420 --> 00:25:24.300
+It doesn't even come with that little handheld
+
+
+00:25:24.300 --> 00:25:27.700
+sub submarine thing that you can drag yourself around either.
+
+
+00:25:27.700 --> 00:25:31.420
+So yeah, so they announced, if you haven't noticed yet,
+
+
+00:25:31.420 --> 00:25:38.560
+Apple announced Vision Pro, which is a $3,500 ski goggle looking thing that is
+
+
+00:25:38.560 --> 00:25:43.260
+both augmented reality and virtual reality, kind of turn the dial.
+
+
+00:25:43.260 --> 00:25:49.260
+I'm highly suspicious of this. I think it's going to not do great, but it does
+
+
+00:25:49.260 --> 00:25:54.660
+look pretty awesome for certain use cases. Like, for example, you could sit on the sidelines of a football game
+
+
+00:25:54.660 --> 00:26:00.760
+and get like a 3D view. So you could look to the right and see down the sideline and then look ahead and watch the game.
+
+
+00:26:00.760 --> 00:26:02.400
+Like that, that's pretty epic.
+
+
+00:26:02.400 --> 00:26:04.320
+Is it worth $3,500?
+
+
+00:26:04.320 --> 00:26:06.400
+I don't know, we'll see.
+
+
+00:26:06.400 --> 00:26:09.200
+But okay, so that's setting the stage for the joke.
+
+
+00:26:09.200 --> 00:26:10.240
+So here's the joke.
+
+
+00:26:10.240 --> 00:26:12.820
+The average pseudo-technical person
+
+
+00:26:12.820 --> 00:26:15.500
+has got like an Oculus Rift
+
+
+00:26:15.500 --> 00:26:18.200
+and they got their handheld controllers
+
+
+00:26:18.200 --> 00:26:19.460
+that they're doing, right?
+
+
+00:26:19.460 --> 00:26:23.240
+And then we have the rich pseudo-technical people
+
+
+00:26:23.240 --> 00:26:25.800
+wearing the Apple one, sitting there watching TV.
+
+
+00:26:25.800 --> 00:26:27.660
+And then Brian, you wanna describe
+
+
+00:26:27.660 --> 00:26:31.660
+the actual technical people advanced high tech setup they got here.
+
+
+00:26:31.660 --> 00:26:38.260
+>> That's just a dude at a desk with using a computer.
+
+
+00:26:38.260 --> 00:26:40.200
+>> There's important stuff to it though.
+
+
+00:26:40.200 --> 00:26:42.060
+It's dual monitor.
+
+
+00:26:42.060 --> 00:26:46.020
+We will note the dual monitor and the mechanical keyboard.
+
+
+00:26:46.020 --> 00:26:49.020
+This is not your average desk worker.
+
+
+00:26:49.020 --> 00:26:49.800
+>> Yeah.
+
+
+00:26:49.800 --> 00:26:53.620
+>> Anyway, there's my follow-on to WWDC.
+
+
+00:26:55.180 --> 00:26:56.140
+- That's okay.
+
+
+00:26:56.140 --> 00:26:58.300
+I've got the big curved monitor,
+
+
+00:26:58.300 --> 00:27:00.180
+so I don't have two right now.
+
+
+00:27:00.180 --> 00:27:01.620
+Do you have two monitors?
+
+
+00:27:01.620 --> 00:27:05.460
+- I have one big monitor for my working desk
+
+
+00:27:05.460 --> 00:27:07.740
+and I have a big curved monitor for my gaming PC,
+
+
+00:27:07.740 --> 00:27:09.500
+but just one for both as well.
+
+
+00:27:09.500 --> 00:27:10.480
+I used to have dual monitors
+
+
+00:27:10.480 --> 00:27:12.780
+and I was always trying to juggle them.
+
+
+00:27:12.780 --> 00:27:15.000
+I'm like, you know what, just one big monitor, that's better.
+
+
+00:27:15.000 --> 00:27:17.300
+- Yeah, actually, when we did the pandemic thing,
+
+
+00:27:17.300 --> 00:27:18.940
+I went to one big monitor at home
+
+
+00:27:18.940 --> 00:27:21.480
+and then at work I still had the two split ones,
+
+
+00:27:21.480 --> 00:27:25.140
+but then I was just tired of doing this all day long.
+
+
+00:27:25.140 --> 00:27:26.820
+So I'm like, oh, we got it just--
+
+
+00:27:26.820 --> 00:27:28.140
+so I went to a big one.
+
+
+00:27:28.140 --> 00:27:32.100
+But that's kind of privilege speak, so I don't know.
+
+
+00:27:32.100 --> 00:27:33.220
+It is a little bit.
+
+
+00:27:33.220 --> 00:27:36.620
+For people who are interested, if I do need a second monitor,
+
+
+00:27:36.620 --> 00:27:38.380
+like sometimes when I'm recording a course,
+
+
+00:27:38.380 --> 00:27:41.020
+I want to be able to see what the recording is doing.
+
+
+00:27:41.020 --> 00:27:43.940
+So I want to see my video overlaid with maybe what's
+
+
+00:27:43.940 --> 00:27:47.340
+on the screen, with whatever settings, like scale,
+
+
+00:27:47.340 --> 00:27:49.300
+like exactly what's being recorded
+
+
+00:27:49.300 --> 00:27:51.420
+as the person is going to see it in case something
+
+
+00:27:51.420 --> 00:27:52.580
+goes weird with that.
+
+
+00:27:52.580 --> 00:27:57.060
+So I'll take my iPad, plug it into my Mini,
+
+
+00:27:57.060 --> 00:27:58.540
+and then use Duet.
+
+
+00:27:58.540 --> 00:28:01.320
+Duet is a really cool software
+
+
+00:28:01.320 --> 00:28:03.320
+that I think works on Mac and Windows,
+
+
+00:28:03.320 --> 00:28:05.480
+and basically turns that into a second monitor
+
+
+00:28:05.480 --> 00:28:07.700
+just periodically when you want it.
+
+
+00:28:07.700 --> 00:28:12.480
+So that's what I do if I really feel like I need extra space.
+
+
+00:28:12.480 --> 00:28:15.320
+- So go back to the Apple Vision thing, or the iDork,
+
+
+00:28:15.320 --> 00:28:16.160
+what's it called?
+
+
+00:28:16.160 --> 00:28:16.980
+Apple Vision.
+
+
+00:28:16.980 --> 00:28:19.200
+- Yeah, I think it's iDork Pro.
+
+
+00:28:19.200 --> 00:28:21.600
+(laughing)
+
+
+00:28:21.600 --> 00:28:28.200
+>> One of the things on there is somebody doing a meeting where you can
+
+
+00:28:28.200 --> 00:28:32.820
+supposedly see other people in the meeting as if you were still there,
+
+
+00:28:32.820 --> 00:28:34.700
+they were with you or something.
+
+
+00:28:34.700 --> 00:28:37.320
+I thought, well, that one, go up a little bit.
+
+
+00:28:37.320 --> 00:28:40.360
+>> Yeah. This is like the group FaceTime is what that is.
+
+
+00:28:40.360 --> 00:28:41.400
+>> Except for.
+
+
+00:28:41.400 --> 00:28:43.080
+>> Oh, no. Yeah, I see it.
+
+
+00:28:43.080 --> 00:28:46.440
+>> Wouldn't they see you with the goggles on?
+
+
+00:28:46.440 --> 00:28:48.000
+If everybody's doing it,
+
+
+00:28:48.000 --> 00:28:51.180
+wouldn't everybody just, you'd just be able to see people with goggles.
+
+
+00:28:51.180 --> 00:28:52.440
+That's interesting.
+
+
+00:28:52.440 --> 00:28:56.040
+I think it might scan you and put an avatar of you up there.
+
+
+00:28:56.040 --> 00:28:56.680
+Oh yeah.
+
+
+00:28:56.680 --> 00:29:00.040
+It's an AI you it's not really, I think it's, I think it's an AI you actually.
+
+
+00:29:00.040 --> 00:29:00.200
+Yeah.
+
+
+00:29:00.200 --> 00:29:00.880
+I think so.
+
+
+00:29:00.880 --> 00:29:03.120
+I haven't tried this out.
+
+
+00:29:03.120 --> 00:29:04.980
+And where's your camera?
+
+
+00:29:04.980 --> 00:29:06.160
+Where do you put your camera?
+
+
+00:29:06.160 --> 00:29:10.780
+Like for, so anyway, yeah, there's a lot of interesting and stuff.
+
+
+00:29:10.780 --> 00:29:12.300
+I'm actually interesting things and stuff.
+
+
+00:29:12.300 --> 00:29:16.200
+I'm actually excited about announced at, at WWDC.
+
+
+00:29:16.200 --> 00:29:17.080
+Vision pro.
+
+
+00:29:17.280 --> 00:29:24.560
+Yeah, there's like, for example, large language model dictation for iOS and Mac.
+
+
+00:29:24.560 --> 00:29:32.760
+So I don't know how many people know who have tried this, but I, for multiple reasons, have tried to do dictation on the Mac,
+
+
+00:29:32.760 --> 00:29:36.840
+partly because I have like mild grade at this point, RSI issues.
+
+
+00:29:36.840 --> 00:29:38.760
+And so if I can limit typing, that's good.
+
+
+00:29:38.760 --> 00:29:42.680
+And maybe I've got a lot of stuff I need to blaze through, like a bunch of email or something.
+
+
+00:29:42.680 --> 00:29:44.200
+I'd love to dictate to it.
+
+
+00:29:44.200 --> 00:29:48.800
+But the dictation system on Mac is like 10 years old or something.
+
+
+00:29:48.800 --> 00:29:49.600
+It's really bad.
+
+
+00:29:49.600 --> 00:29:51.840
+You can't even say new paragraph, for example.
+
+
+00:29:51.840 --> 00:29:54.640
+Like, nope, they don't just write out new paragraph.
+
+
+00:29:54.640 --> 00:29:57.360
+Whereas on iPhone, you can say new paragraph or do this,
+
+
+00:29:57.360 --> 00:29:59.760
+or you can navigate around way better.
+
+
+00:29:59.760 --> 00:30:01.120
+They're not the same systems.
+
+
+00:30:01.120 --> 00:30:05.880
+So both of those are being replaced with like ChatGPT level of AIs.
+
+
+00:30:05.880 --> 00:30:10.400
+And so dictation to your computer or your device is going to get way better.
+
+
+00:30:10.400 --> 00:30:12.880
+So that means less typing, less RSI,
+
+
+00:30:12.880 --> 00:30:15.600
+just different input modalities if you need a break.
+
+
+00:30:15.600 --> 00:30:17.480
+Like those kind of things I'm really psyched about.
+
+
+00:30:17.480 --> 00:30:18.960
+Vision Pro, we'll see.
+
+
+00:30:18.960 --> 00:30:22.020
+>> Yeah. There's potential there,
+
+
+00:30:22.020 --> 00:30:25.060
+but there's also way more potential for jokes.
+
+
+00:30:25.060 --> 00:30:27.080
+>> Yes, it's going to be good. Speaking of jokes,
+
+
+00:30:27.080 --> 00:30:29.240
+we'll wrap it up with one from Kim in the audience.
+
+
+00:30:29.240 --> 00:30:30.580
+If an avatar is an option,
+
+
+00:30:30.580 --> 00:30:34.680
+T-Rexes will be meeting with the elves and talking frogs in no time.
+
+
+00:30:34.680 --> 00:30:36.640
+>> That would be great.
+
+
+00:30:36.640 --> 00:30:38.160
+>> I'm here for that. Let's do it.
+
+
+00:30:38.160 --> 00:30:38.520
+>> Yeah.
+
+
+00:30:38.520 --> 00:30:39.520
+I'm here for it.
+
+
+00:30:39.520 --> 00:30:40.520
+All right.
+
+
+00:30:40.520 --> 00:30:41.520
+Bye Brian.
+
+
+00:30:41.520 --> 00:30:42.520
+Bye.
+

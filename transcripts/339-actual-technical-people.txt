@@ -1,0 +1,812 @@
+00:00:00 Hello and welcome to Python Bytes where we deliver Python news and headlines directly to your earbuds.
+
+00:00:05 This is episode 339, recorded June 6th, 2023.
+
+00:00:10 Is it the 6th? Yeah. I am Brian Okken.
+
+00:00:13 I'm Michael Kennedy.
+
+00:00:14 Today's episode is sponsored by InfluxDB from InfluxData.
+
+00:00:19 Thank you and we'll talk about them more later in the show.
+
+00:00:23 If you want to reach any of us or the show, you can, we have a contact form of course.
+
+00:00:28 You can, and then also M. Kennedy at Fostedon and Brian Auken and Python Bytes, all Fostedon, Mastodon locations.
+
+00:00:37 If you're listening to us on a recording or on YouTube or on a podcast player, please join us on YouTube at pythonbytes.fm/live, at least occasionally, 'cause it's fun to have people hanging around while we're recording.
+
+00:00:53 It's usually Tuesdays at 11, and you can watch older versions there too.
+
+00:00:57 So let's kick it off with something stacky.
+
+00:01:01 >> Something stacky.
+
+00:01:02 You're feeling like some pancakes, a stack of pancakes?
+
+00:01:05 >> Yeah.
+
+00:01:05 >> How about a PyStack?
+
+00:01:06 So the reason I was late to this recording, Brian, was I was just talking with Pablo and Matt, maintainers and creators of PyStack.
+
+00:01:17 Have you heard of PyStack?
+
+00:01:18 >> I have not.
+
+00:01:19 >> So PyStack is a tool that uses forbidden magic to let people inspect the stack frames of a running Python process, or even a core dump that was captured from a Python process that crashed, helping you quickly and easily learn what it's doing.
+
+00:01:35 How cool is that?
+
+00:01:36 >> Pretty good.
+
+00:01:37 >> Yeah. So here's the deal.
+
+00:01:38 Yeah. So here's the deal.
+
+00:01:39 I've got a Python app.
+
+00:01:41 This is especially important if you have mixed code.
+
+00:01:44 So if you're talking with C, C++, Rust, those kinds of things because it'll cross those boundaries as well.
+
+00:01:50 But let's just say pure Python even.
+
+00:01:52 I've got a Python web app and I go to the server, I try to connect to it, it won't really respond.
+
+00:02:00 It connects, but it just hangs.
+
+00:02:02 Go to the server, it's not 100% CPU, in fact, it's 0% CPU usage, so it's not like spinning and busy.
+
+00:02:08 Like what the heck is it doing?
+
+00:02:09 Is it a deadlock?
+
+00:02:10 Is it waiting on like the database?
+
+00:02:12 What is going on?
+
+00:02:13 So what you can do, even in production, you can go up to that process and you can say, give me a snapshot of exactly what this process is doing.
+
+00:02:23 And what you see is you see a call stack.
+
+00:02:28 Let me find an example here of what it looks like.
+
+00:02:30 It looks like this, silly zoom.
+
+00:02:32 So what you'll see is like, hey, on this particular thread, we're seeing on this file, on this line, this function was called and check it out.
+
+00:02:41 It even has the arguments passed to the function.
+
+00:02:44 - Oh, wow, that's nice.
+
+00:02:45 - Yeah, and then you can see what function that's calling with the arguments passed it, and what function that's calling with the arguments passed it.
+
+00:02:52 You can do this on a running function without altering its behavior.
+
+00:02:56 Basically, it doesn't inject any code or anything.
+
+00:02:58 The only behavior it alters is that like freezes it for a second potentially, which could, I guess, make something timeout.
+
+00:03:03 But other than that, you could do this in production, even to see what's happening.
+
+00:03:08 And what's extra cool is, even if the process crashes, you can grab the core dump, and it will go back and analyze that as if it was a running process.
+
+00:03:19 >> That's pretty cool.
+
+00:03:20 >> Yeah. So there are a ton of features.
+
+00:03:23 If you can get to the section where it says, what can PyStack do?
+
+00:03:26 So it works with both running processes and core dump files.
+
+00:03:29 It'll tell you if a thread is currently holding onto the gill, if it's waiting to acquire or is trying to drop it.
+
+00:03:37 So one of the examples that Matt and Pablo spoke about was, they were calling into custom C code that was a Python extension, that call that was coming in, that was acquiring the gill.
+
+00:03:53 But then in the destructor for some object that it was waiting for it to go away, it was waiting on a background thread to do some cleanup.
+
+00:04:02 That background thread also is trying to do a callback to let Python know what's happening and was trying to acquire the gill, but it couldn't.
+
+00:04:10 Because the one that was waiting on it was already holding the gill and wasn't going to give it up, because that's how the GIL works, right?
+
+00:04:16 So you can use it for like these deadlock situations.
+
+00:04:20 You can see if it's running a GC, you can see both the call stack intertwined for both Python and C or C++ or Rust all together.
+
+00:04:31 And it'll even do things like go out and find the debugging symbols for say your Python runtime.
+
+00:04:37 Even if you don't have it, it can potentially go and get those and bring that extra information in.
+
+00:04:42 What else should we see here?
+
+00:04:45 Safety using running processes.
+
+00:04:47 You can run it on a process in memory, running process without pausing at all, which will minimize the impact it might have, but it'll also potentially have like not 100 percent precise information.
+
+00:05:00 It could be out of sync.
+
+00:05:01 So yeah, it even works on corrupted process cordoms because the process died because it got corrupted memory or something.
+
+00:05:09 So if you've thought about GDB or some of these other types of things because you're like, "Oh my gosh, I've got to figure out why this crashed.
+
+00:05:17 Here's a core dump. Let me start looking at it." Well, PyStack may be the thing you want.
+
+00:05:21 >> That's pretty cool.
+
+00:05:22 >> One final bonus for you, Brian.
+
+00:05:25 Suppose you have a PyTest test, then here, this one.
+
+00:05:30 Suppose you have a PyTest test and that test, while it's running, deadlocks or is very slow or something like that.
+
+00:05:39 you can have PyStack as a PyTest plugin.
+
+00:05:44 Then when you run your code, how do you do it? I think it's you just, where is it? Anyway, when you run it, you can say basically, analyze my tests and here's a certain threshold to consider a failure and take a snapshot of that and so on.
+
+00:06:00 >> Yeah, I like the threshold notion of just like, if it gets this bad, tell me why.
+
+00:06:06 >> Exactly.
+
+00:06:06 >> Yeah, nice.
+
+00:06:07 - Cool, so if people want the full details, I suppose they could go check out the YouTube live stream channel for Talk Python now, or in three weeks they could listen to the podcast.
+
+00:06:17 But super, super cool tool if you've got a process that is crashing, that is hanging, maybe it's doing this in production and it only gets deadlocked after 12 hours of being hammered on.
+
+00:06:29 You can't easily just debug it locally and get this to happen.
+
+00:06:32 Or if it's completely crashed and you have a core dump, These guys are doing lots of magic to make it possible.
+
+00:06:38 - Nice. - Yep.
+
+00:06:39 - Cool.
+
+00:06:40 Well, next I kinda wanna give everybody some news.
+
+00:06:45 So last year, actually, it was in July last year, so we talked about in episode 293, we talked about some giveaway, some PSF, the PSF saying that there's like the top 1% of the critical packages are gonna have to use two-factor authentication.
+
+00:07:06 >> It was big drama at the time, right?
+
+00:07:08 >> Yeah. Well, because there was some confusion over the keys and stuff like that or hardware keys, and yes, some pushback against that, or just some confusion around it, I think.
+
+00:07:18 But we've seen some even more attacks against Python projects in the last year.
+
+00:07:25 I mean, it's been less than a year since that.
+
+00:07:29 And so the change is this year, PyPI is going to require everybody to use two-factor authentication, not the top 1%, the top 100%.
+
+00:07:42 So and it's you got till the end of the year, I think.
+
+00:07:46 And it's a see, we're linking to an article from the Python package index, saying securing PyPI accounts via two-factor authentication.
+
+00:07:58 And as of today, they're going to require, they're announcing that every account that maintains, every account that maintains a project or organization on PyPI will be required to enable two-factor authentication on their account by the end of 2023.
+
+00:08:15 So that's the news really.
+
+00:08:17 There's some discussion as to why in this article, but there's some information on how to, how to prepare, but it's not, I mean, not that bad.
+
+00:08:27 I did it last year.
+
+00:08:28 If you've got, especially if you're already using a smartphone, I think that using as a something like offy or something like that on, on a smartphone would work just fine.
+
+00:08:40 So, yeah.
+
+00:08:41 what else?
+
+00:08:42 there's, it's kind of, I guess there's not much really more to say about it is that this is happening and you gotta kind of do it.
+
+00:08:49 You had to do it by the end of the year.
+
+00:08:51 Yeah.
+
+00:08:51 Wait, but why not?
+
+00:08:52 Why wait?
+
+00:08:53 Just go ahead and do it.
+
+00:08:54 And it's really everybody.
+
+00:08:55 So let's say you've got an open source project and there's like 20 people contributing.
+
+00:09:00 That would be cool.
+
+00:09:01 Maybe there's like five.
+
+00:09:03 But if only one of you is ever pushing to PyPI, then it's just one of, I think it's just one of you, unless you're doing it in an organization thing.
+
+00:09:10 I think it's just the person pushing.
+
+00:09:11 So if other people are on Git and not using two-factor for Git, but they're just pushing to your repo, I think that's still fine.
+
+00:09:20 It doesn't matter.
+
+00:09:21 the people actually actively interacting with PyPI that need to be authenticated.
+
+00:09:26 Yeah, that's what it sounds like to me as well.
+
+00:09:28 It's kind of if you're actually have an active account on PyPI, it's not necessarily GitHub, although I think GitHub itself also has a 2FA requirement now.
+
+00:09:37 And there is some discussion here about like people that don't interact with a project, but still have a PyPI account.
+
+00:09:45 And I'm not exactly sure why.
+
+00:09:47 Apparently, there's some people that need it.
+
+00:09:49 - Why would you have a PyPI account if you're not pushing stuff to--
+
+00:09:54 - Yeah, yeah, that's a good point.
+
+00:09:55 It is a good point.
+
+00:09:56 Well, so there was so much drama about it and there was that person that deleted all their packages because they were frustrated as like a thing of protest and it caused some issues.
+
+00:10:11 Well, I'm fine with this.
+
+00:10:13 This is great.
+
+00:10:14 I think supply chain issues are really, really serious.
+
+00:10:18 So it's okay with me.
+
+00:10:21 - Yeah, me too.
+
+00:10:22 So shall we thank our sponsor?
+
+00:10:26 - We shall, but first I just want to point out, yeah, I think Authy is a fantastic option for the 2FA stuff that you were pointing out.
+
+00:10:33 Ryan, as you mentioned, like one of the things that is a huge hassle for a lot of the systems is, guess what?
+
+00:10:40 You can install this 2FA tool onto your phone and it's completely safe.
+
+00:10:45 And all that local, that 2FA, it'll never go anywhere.
+
+00:10:48 until you want to get a new phone and then you're completely out of luck and you've got to somehow reset it or worse, you lose your phone, but it's not, there's no way to recover the 2FA code.
+
+00:10:56 So what I really like about Authy is it will, you can install it in multiple locations, like you can install it on your desktop and your mobile device.
+
+00:11:05 And they're just in sync.
+
+00:11:06 If you add one somewhere, it appears elsewhere.
+
+00:11:08 So if people feel like TFA is a huge pain, I think Authy is one of the choices that's pretty good for that.
+
+00:11:14 I didn't know.
+
+00:11:14 You can also do like one password and so on.
+
+00:11:17 but to me having the passwords there and the two of a thing in the same place seems to violate some aspect of security.
+
+00:11:24 I mean, I know one password is pretty safe, but two of a should be about having the password and the thing separated in my mind.
+
+00:11:31 So I don't use my password managers to a faith thing.
+
+00:11:34 Yeah.
+
+00:11:35 I just thought, I thought I had like just a couple of accounts with Authy and I just looked and I've got like, I got a scroll.
+
+00:11:41 I got a whole bunch of things on off.
+
+00:11:42 Yeah.
+
+00:11:42 Yeah.
+
+00:11:43 So yeah, I think I have 40 or so myself.
+
+00:11:45 All right.
+
+00:11:46 Now let's tell people about our sponsor.
+
+00:11:48 - All right, this episode of Python Bytes is brought to you by Influx Data, the makers of InfluxDB.
+
+00:11:54 InfluxDB is a database purpose-built for handling time series data at massive scale for real-time analytics.
+
+00:12:01 Developers can ingest, store, and analyze all types of time series data, metrics, events, traces on a single platform.
+
+00:12:08 So, dear listener, let me ask the question, how would boundless cardinality and lightning-fast SQL queries impact the way you develop real-time applications.
+
+00:12:17 InfluxDB processes large time series datasets and provides low latency SQL queries making it a go-to choice for developers building real-time applications and seeking crucial insights.
+
+00:12:29 For developer efficiency, InfluxDB helps you create IoT, analytics, and Cloud applications using timestamp data rapidly and at scale.
+
+00:12:38 It's designed to ingest billions of data points in real time with unlimited cardinality.
+
+00:12:44 InfluxDB streamlines building once and deploying across various products and environments from the edge, on-premise, and to the cloud.
+
+00:12:53 Try it for free at pythonbytes.fm/influxdb.
+
+00:12:57 The links are also in your show notes on the podcast.
+
+00:13:01 Thanks to InfluxDB for supporting the show.
+
+00:13:03 >> Yep.
+
+00:13:04 Thank you.
+
+00:13:05 Thank you.
+
+00:13:06 Everyone check them out to help support the show.
+
+00:13:07 All right.
+
+00:13:08 Let's talk about queues, Brian.
+
+00:13:10 >> Okay.
+
+00:13:11 So I want to talk about Propan.
+
+00:13:13 Now, Propan is a project that's not tens of thousands of GitHub stars.
+
+00:13:19 I think it looks pretty compelling.
+
+00:13:22 It's put together by Lance Nick, Lance Nick, I'm going to go with, over here on GitHub, and it is a powerful and easy to use Python framework for building asynchronous web services that interact with any message broker.
+
+00:13:36 So what are some of the options of the message brokers here?
+
+00:13:40 we've got RabbitMQ, Redis, Nats, Kafka, SQS, some of the other ones like Redis Streams.
+
+00:13:48 If you're using these and you want a cool declarative way to interact with them, then Propan might be your thing.
+
+00:13:55 So right now what they have is async APIs for you, and they're working on synchronous ones, but they don't have them yet.
+
+00:14:03 So let me just give you an example, Brian.
+
+00:14:05 Over here, it says, First, let's take the quick start from AIO Pika, which is a way to listen for events.
+
+00:14:15 This is the important part, listen for a certain set of events coming into a message queue.
+
+00:14:20 What you do is you say, I'm going to connect to the message queue server, and I'm going to listen to a particular queue.
+
+00:14:29 Then you await creating the connection, you await creating a channel, you await connecting to the queue.
+
+00:14:36 And once you do it, then you use the iterator, you loop over the iterator as messages come in, and then you get them.
+
+00:14:42 And then you, of course, run that code that does that.
+
+00:14:45 That's the imperative way where you do all the steps yourself.
+
+00:14:49 So this other way is, what you do is you go to, you basically create this thing called a broker using ProPan, and you point it at one of these queues, like Redis or something.
+
+00:15:00 And then you just, kind of like you would in FastAPI or flask, you say you put a decorator on a function, you say @broker.handle, and you give it the name of the queue.
+
+00:15:09 So if a message comes into that named queue, call this function.
+
+00:15:13 - Oh, I like that better.
+
+00:15:14 - Isn't this nice?
+
+00:15:15 It's kind of like, I'm listening for this URL, like if, you know, /courses/id of a course, I want to get you details about that course, right?
+
+00:15:23 You would put that in flask or pyramid or fast API.
+
+00:15:26 This is the same thing, but for message queue.
+
+00:15:28 So you say this function receives stuff that goes to that queue.
+
+00:15:31 - Oh, I like it.
+
+00:15:32 >> Yeah. That's what those interfaces should be like.
+
+00:15:35 >> Yeah, absolutely. It totally should.
+
+00:15:37 This is pretty interesting already, but it gets a little bit cooler.
+
+00:15:42 You can go and create one of these apps and just run a server directly.
+
+00:15:47 You can say, I want to run this as a system daemon on Linux, let's say, and it's just going to use the ProPan server to run.
+
+00:15:55 That's fine, but there's tons of infrastructure around running these types of things as web applications.
+
+00:16:01 And if you already have a web app that receives like JSON requests, you know, it's got some kind of API endpoint, but you also want to have it handle stuff that might be put into the message queue, then it has integration, if I scroll down, into, you can do it manually into any web framework, or it's got things like a fast API plugin, which is pretty cool.
+
+00:16:25 >> Oh, cool.
+
+00:16:25 >> Yeah. So let's see.
+
+00:16:27 Actually, if I go to the examples, I'll pull up a Flask one that's probably the best, which you got to use court because it's only async.
+
+00:16:33 That's the Flask async variant.
+
+00:16:36 What you can do is in your, let's see, I'll just say, in your court app, you create this broker to listen as well in addition to create your Flask or court app.
+
+00:16:45 Then you might have a function that says app.routeListenFor/, and that's a JSON endpoint, or you might have broker.handle some queue message, and that's the queue coming in.
+
+00:16:58 It's like, well, here's the messages coming in over the web and hear the ones coming over a message queuing.
+
+00:17:04 But it runs in micro-WSGI or g-unicorn or whatever.
+
+00:17:08 >> That's nice.
+
+00:17:09 >> Yeah. Last thing, this is inspired by Pydantic and FastAPI.
+
+00:17:15 Let me see about a good example here.
+
+00:17:19 You can do things like declaring that the body of the message is a dictionary or you can have Pydantic base models that are coming in.
+
+00:17:31 So you can say, when a message comes to the message queue, it's going to be represented by, let's say, JSON and that JSON I want to parse into a Pydantic model.
+
+00:17:40 You can just say, much like FastAPI, in your handler, you say body colon, the name of your custom Pydantic class.
+
+00:17:47 Boom, now it's automatically parsing that based on the type.
+
+00:17:50 >> Based on, that's neat.
+
+00:17:52 >> The last thing, they also have this concept of modeling PyTest fixtures.
+
+00:17:59 So you can create functions that will do things like, process requests or give you extra information or what you would do with PyTest fixture type things.
+
+00:18:07 And you can have those as well in here, which is pretty cool.
+
+00:18:11 So there's a lot of cool, it's like a fusion of interesting Python frameworks for message queuing.
+
+00:18:16 - I like it.
+
+00:18:17 So ask your doctor if ProPan is right for you.
+
+00:18:20 - Ask your doctor, that's right.
+
+00:18:22 Yeah, it's interesting because this message queuing type of architecture is super powerful at unlocking tons of interesting asynchrony.
+
+00:18:31 Like, well, if I've got a request come in and I got to, you know, place an order, we got to check the warehouse, whether we have them.
+
+00:18:36 And that's a janky old API call that's slow.
+
+00:18:40 Like, well, how do I scale that would be one option with threads and async in a way.
+
+00:18:44 The other one would be just like, well, throw that into a queue to say, check that out and then, you know, let it run completely disassociated.
+
+00:18:52 Right?
+
+00:18:52 >> Yeah. Scroll to the bottom, the key features.
+
+00:18:57 One of the things I want right down there, testability, ProPan allows you to test your app.
+
+00:19:02 Without external dependencies, you do not have to set up a message broker to test.
+
+00:19:07 You can have a virtual one. That's pretty cool.
+
+00:19:09 >> Yeah. This is cool.
+
+00:19:11 It's not super popular, like I said.
+
+00:19:13 However, it does look pretty neat.
+
+00:19:15 >> Sure does.
+
+00:19:16 >> All right. Over to you.
+
+00:19:17 >> That was a little bit of a new thing.
+
+00:19:20 I want to talk about a little bit of an old thing, which is make files.
+
+00:19:24 We haven't talked about it for a while, but make files are still fairly popular for Python projects, I think.
+
+00:19:30 I've got them on several internal projects at least.
+
+00:19:34 And they come in handy.
+
+00:19:36 You gotta be careful that a lot of, sometimes people on your team won't be familiar with them.
+
+00:19:40 But if it's a common thing for your team to use make files, or for you, why not use them on a Python project?
+
+00:19:46 So this, what I'm gonna cover is an article, forgetting the author name right now.
+
+00:19:53 Let's see, Ricardo Endereg, called Makefile Tricks for Python Projects.
+
+00:19:58 And I'm gonna hop down to the actual template.
+
+00:20:01 What it is, it's a little, it's a small template as a starter template for a Python project, but it has some pretty cool features.
+
+00:20:09 And the actual templates at the bottom of the article, but we kind of go through some of the different things that you might want to put in there.
+
+00:20:17 And so to start off some, a little bit, I always forget to do this.
+
+00:20:22 These are things I always wanna do, but I forget in my Makefiles.
+
+00:20:25 Things like making sure that it fails if anything throws a incorrect error code, and also warning if you did something wrong like undefined variables or you're using, you can turn off this built-in rules.
+
+00:20:39 And I don't really know what the built-in rules thing does.
+
+00:20:42 It's just, I find my Makefiles more pleasant if I disable them.
+
+00:20:46 So this is good.
+
+00:20:47 The virtual environment thing.
+
+00:20:49 So there's a little snippet that he includes that you can use the py variable to select which Python to run.
+
+00:20:58 So if you already have a virtual environment, it uses that, which is cool.
+
+00:21:02 - That's pretty clever, yeah.
+
+00:21:03 - Yeah, and if you don't, it uses the global one.
+
+00:21:06 And then also with pip, so it uses that py variable to pick pip if it's there or not, and it uses the global one, so that's pretty cool.
+
+00:21:17 Actually, it'd probably be better to just blow up if you didn't have a virtual environment.
+
+00:21:22 So anyway, some stuff like PWD and current working directory and work route, these are good things to add in because sometimes you'll call a make script from a different directory.
+
+00:21:36 So your actual current directory is different and it mucks things up.
+
+00:21:39 So there's some good correction there.
+
+00:21:42 I do like this, there's some little magic stuff about default goal and help message.
+
+00:21:48 And I had to read this a little bit to understand what's going on.
+
+00:21:50 But what happens is it, the default goal being help means that if you just type make with no arguments, what should it do?
+
+00:21:59 And a cool thing to have make do is to print out all the things that you can do with the make file, like all the targets and what they do.
+
+00:22:08 And so that's what this does by having this little greps thing, Is it grep?
+
+00:22:17 I don't know if it's. Anyway, it's searching through your file and using awk and saying, hey, if you've got a comment against the side of a target, that means that's the help message.
+
+00:22:29 So it'll print that stuff out.
+
+00:22:30 Oh, that's cool.
+
+00:22:32 Yeah.
+
+00:22:32 Some I don't really muck with my Python path too much, but if you have to muck with your Python path for make file to find libraries or something like that, or find the code that you're running.
+
+00:22:44 There's examples on how to do that, which is nice.
+
+00:22:48 Yes, that's really what I wanted to talk about.
+
+00:22:51 I was surprised that it's doing all this stuff and it's really and some examples on how you can use the path thing.
+
+00:22:58 Having adding a little create virtual environment within a makefile, this is nice just so that people working on the project.
+
+00:23:04 >> Make.vnv.
+
+00:23:05 >> Yeah, make.vnv, you could have vnv also, and it just makes your virtual environment.
+
+00:23:10 Why do you need a target for that?
+
+00:23:12 And it's because, and you've discovered this, but sometimes new Python developers kind of forget, is that it's kind of annoying to just create a virtual environment.
+
+00:23:22 It's good to, after you've created it, update the update setup tools and wheel and build.
+
+00:23:28 And then also, if you have a requirements file, why not just install it right away instead of having that as another command?
+
+00:23:35 So kind of a fun template for starting Makefiles with Python project.
+
+00:23:40 >> Yeah, that's what is that a modern take on an old idea?
+
+00:23:44 >> Yeah. If you are new to Makefiles, one of the things to be careful about that some people don't quite sometimes remember is spaces matter within Makefiles, like they do in Python, but spaces and tabs matter.
+
+00:23:59 In Makefiles, you're using tabs.
+
+00:24:02 It has to be a tab, it cannot be space.
+
+00:24:05 Unless something's changed that I don't know about, But that has messed me up before.
+
+00:24:10 So use tabs within Makefiles.
+
+00:24:12 >> All right. Sounds good. Excellent one.
+
+00:24:16 I guess that's everything.
+
+00:24:18 >> Yeah.
+
+00:24:18 >> Yeah. Any extras?
+
+00:24:19 >> No. Not really. You?
+
+00:24:21 >> I got a couple here.
+
+00:24:23 Just a couple of conference ones.
+
+00:24:25 So PyCon Portugal has their call for participation.
+
+00:24:30 So got a little bit of time left on that.
+
+00:24:34 What is that till the 30th of June?
+
+00:24:37 And when will it be?
+
+00:24:39 It will be September 7 to 9, which is cool.
+
+00:24:43 So if you're in and around or want to go to Portugal, there you go.
+
+00:24:47 Cool.
+
+00:24:48 On the other hand, if you happen to be interested in Django and are in Europe, that just got announced as well.
+
+00:24:55 So people can check that out.
+
+00:24:56 I want to go.
+
+00:24:57 I'm not going, but I want to go.
+
+00:25:00 Yeah, indeed.
+
+00:25:01 So that's also announced.
+
+00:25:03 It's linked to both of those in the show notes.
+
+00:25:05 All right, you ready for a joke?
+
+00:25:06 - Yeah.
+
+00:25:07 - Well, this becomes because Apple.com.
+
+00:25:10 Did you see that they announced this crazy Vision thing, Brian?
+
+00:25:14 - Yeah, but it doesn't come with the snorkel.
+
+00:25:17 It's just the snorkel mask.
+
+00:25:18 - Yeah, it's just the snorkel mask.
+
+00:25:21 It doesn't even come with that little handheld sub submarine thing that you can drag yourself around either.
+
+00:25:27 So yeah, so they announced, if you haven't noticed yet, Apple announced Vision Pro, which is a $3,500 ski goggle looking thing that is both augmented reality and virtual reality, kind of turn the dial.
+
+00:25:43 I'm highly suspicious of this. I think it's going to not do great, but it does look pretty awesome for certain use cases. Like, for example, you could sit on the sidelines of a football game and get like a 3D view. So you could look to the right and see down the sideline and then look ahead and watch the game.
+
+00:26:00 Like that, that's pretty epic.
+
+00:26:02 Is it worth $3,500?
+
+00:26:04 I don't know, we'll see.
+
+00:26:06 But okay, so that's setting the stage for the joke.
+
+00:26:09 So here's the joke.
+
+00:26:10 The average pseudo-technical person has got like an Oculus Rift and they got their handheld controllers that they're doing, right?
+
+00:26:19 And then we have the rich pseudo-technical people wearing the Apple one, sitting there watching TV.
+
+00:26:25 And then Brian, you wanna describe the actual technical people advanced high tech setup they got here.
+
+00:26:31 >> That's just a dude at a desk with using a computer.
+
+00:26:38 >> There's important stuff to it though.
+
+00:26:40 It's dual monitor.
+
+00:26:42 We will note the dual monitor and the mechanical keyboard.
+
+00:26:46 This is not your average desk worker.
+
+00:26:49 >> Yeah.
+
+00:26:49 >> Anyway, there's my follow-on to WWDC.
+
+00:26:55 - That's okay.
+
+00:26:56 I've got the big curved monitor, so I don't have two right now.
+
+00:27:00 Do you have two monitors?
+
+00:27:01 - I have one big monitor for my working desk and I have a big curved monitor for my gaming PC, but just one for both as well.
+
+00:27:09 I used to have dual monitors and I was always trying to juggle them.
+
+00:27:12 I'm like, you know what, just one big monitor, that's better.
+
+00:27:15 - Yeah, actually, when we did the pandemic thing, I went to one big monitor at home and then at work I still had the two split ones, but then I was just tired of doing this all day long.
+
+00:27:25 So I'm like, oh, we got it just--
+
+00:27:26 so I went to a big one.
+
+00:27:28 But that's kind of privilege speak, so I don't know.
+
+00:27:32 It is a little bit.
+
+00:27:33 For people who are interested, if I do need a second monitor, like sometimes when I'm recording a course, I want to be able to see what the recording is doing.
+
+00:27:41 So I want to see my video overlaid with maybe what's on the screen, with whatever settings, like scale, like exactly what's being recorded as the person is going to see it in case something goes weird with that.
+
+00:27:52 So I'll take my iPad, plug it into my Mini, and then use Duet.
+
+00:27:58 Duet is a really cool software that I think works on Mac and Windows, and basically turns that into a second monitor just periodically when you want it.
+
+00:28:07 So that's what I do if I really feel like I need extra space.
+
+00:28:12 - So go back to the Apple Vision thing, or the iDork, what's it called?
+
+00:28:16 Apple Vision.
+
+00:28:16 - Yeah, I think it's iDork Pro.
+
+00:28:19 (laughing)
+
+00:28:21 >> One of the things on there is somebody doing a meeting where you can supposedly see other people in the meeting as if you were still there, they were with you or something.
+
+00:28:34 I thought, well, that one, go up a little bit.
+
+00:28:37 >> Yeah. This is like the group FaceTime is what that is.
+
+00:28:40 >> Except for.
+
+00:28:41 >> Oh, no. Yeah, I see it.
+
+00:28:43 >> Wouldn't they see you with the goggles on?
+
+00:28:46 If everybody's doing it, wouldn't everybody just, you'd just be able to see people with goggles.
+
+00:28:51 That's interesting.
+
+00:28:52 I think it might scan you and put an avatar of you up there.
+
+00:28:56 Oh yeah.
+
+00:28:56 It's an AI you it's not really, I think it's, I think it's an AI you actually.
+
+00:29:00 Yeah.
+
+00:29:00 I think so.
+
+00:29:00 I haven't tried this out.
+
+00:29:03 And where's your camera?
+
+00:29:04 Where do you put your camera?
+
+00:29:06 Like for, so anyway, yeah, there's a lot of interesting and stuff.
+
+00:29:10 I'm actually interesting things and stuff.
+
+00:29:12 I'm actually excited about announced at, at WWDC.
+
+00:29:16 Vision pro.
+
+00:29:17 Yeah, there's like, for example, large language model dictation for iOS and Mac.
+
+00:29:24 So I don't know how many people know who have tried this, but I, for multiple reasons, have tried to do dictation on the Mac, partly because I have like mild grade at this point, RSI issues.
+
+00:29:36 And so if I can limit typing, that's good.
+
+00:29:38 And maybe I've got a lot of stuff I need to blaze through, like a bunch of email or something.
+
+00:29:42 I'd love to dictate to it.
+
+00:29:44 But the dictation system on Mac is like 10 years old or something.
+
+00:29:48 It's really bad.
+
+00:29:49 You can't even say new paragraph, for example.
+
+00:29:51 Like, nope, they don't just write out new paragraph.
+
+00:29:54 Whereas on iPhone, you can say new paragraph or do this, or you can navigate around way better.
+
+00:29:59 They're not the same systems.
+
+00:30:01 So both of those are being replaced with like ChatGPT level of AIs.
+
+00:30:05 And so dictation to your computer or your device is going to get way better.
+
+00:30:10 So that means less typing, less RSI, just different input modalities if you need a break.
+
+00:30:15 Like those kind of things I'm really psyched about.
+
+00:30:17 Vision Pro, we'll see.
+
+00:30:18 >> Yeah. There's potential there, but there's also way more potential for jokes.
+
+00:30:25 >> Yes, it's going to be good. Speaking of jokes, we'll wrap it up with one from Kim in the audience.
+
+00:30:29 If an avatar is an option, T-Rexes will be meeting with the elves and talking frogs in no time.
+
+00:30:34 >> That would be great.
+
+00:30:36 >> I'm here for that. Let's do it.
+
+00:30:38 >> Yeah.
+
+00:30:38 I'm here for it.
+
+00:30:39 All right.
+
+00:30:40 Bye Brian.
+
+00:30:41 Bye.
+
