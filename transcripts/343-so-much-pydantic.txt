@@ -1,0 +1,1010 @@
+00:00:00 Hello and welcome to Python Bytes where we deliver Python news and headlines directly to your earbuds.
+
+00:00:05 This is episode 343, recorded July 11th, 2023, and I am Brian Okken.
+
+00:00:11 And I am Michael Kennedy.
+
+00:00:13 That's pretty exciting to be here. If you're listening to the show, thank you.
+
+00:00:17 And also, if you'd like to watch and participate, ask questions or whatever, you can do that by going to pythonbytes.fm/live.
+
+00:00:26 And we'd love to have you, even if it's just once in a while.
+
+00:00:29 Yeah, sometimes people show up in the live stream that will possibly get their projects will actually get mentioned as well.
+
+00:00:37 And that's always kind of interesting.
+
+00:00:39 I'm feeling this might happen today.
+
+00:00:41 Yeah.
+
+00:00:41 Speaking of that, Seth Larson showed up and we have some Seth Larson news to share.
+
+00:00:46 So that's cool.
+
+00:00:47 Hey, Seth.
+
+00:00:48 Well, how would you like to start us off today, Michael?
+
+00:00:52 I would like to start it with a version update.
+
+00:00:55 So let's talk about Pydantic.
+
+00:00:57 we talked about the Pydantic version 2 story and performance.
+
+00:01:02 So Pydantic got a major rewrite.
+
+00:01:05 This rewrite was, I don't know, maybe a year in undertaking, a year-long undertaking, quite massive.
+
+00:01:11 Got its internals rewritten in Rust to be way faster.
+
+00:01:15 We talked about the early alpha version of this, and the early alpha version had a 22 times speedup.
+
+00:01:22 Well, alpha no more.
+
+00:01:24 If you pip install Pydantic, you get Pydantic 2.
+
+00:01:28 So that's pretty exciting, right?
+
+00:01:30 - That's very exciting, yeah.
+
+00:01:31 - Yeah, so there's a blog post that says the last few months have involved a whirlwind of work.
+
+00:01:37 And finally, we're ready to announce version 2.
+
+00:01:40 So you get started by just installing it, upgrading it, requires Python 3.7 and above.
+
+00:01:45 So honestly, that's a pretty old bit of Python that you can be based on there.
+
+00:01:50 That's great.
+
+00:01:51 Now, there's some pretty major changes in terms of the API, I guess you would call it, the way that you work with Pydantic, right?
+
+00:02:00 In some cases, the way you work with base classes or the functions you call and all those things.
+
+00:02:06 So there's a migration guide that we can use to go through that.
+
+00:02:09 And if you check out the migration guide, you'll see, let's go like this.
+
+00:02:14 You got the migration guide.
+
+00:02:16 It starts by recommending this thing called Bump Pydantic.
+
+00:02:19 And I guess I should probably also just let you know, like this is like a big Pydantic episode that we're gonna be covering a lot of Pydantic things.
+
+00:02:27 So there's this thing called bump Pydantic.
+
+00:02:29 And what you can do is you can run it against your project and it will traverse all the code and find all of the Pydantic things, the classes and functions and so on that you might write with for your Pydantic code and it will upgrade them to the new thing.
+
+00:02:46 So we can check that thing out first.
+
+00:02:49 Basically a converter.
+
+00:02:50 It's like a two to three, but for Pydantic.
+
+00:02:52 It's like a one to two, I guess.
+
+00:02:54 And so it'll do things like, one of the things you should do is you should have explicitly set the default value.
+
+00:03:02 So previously you could have a class that give an example of a user that's a base model, you have a name and you say the name is an optional string.
+
+00:03:09 Well, now what you should write is name optional string equals none.
+
+00:03:14 So explicitly setting the default values when there's things like none, right?
+
+00:03:19 So if you run this code against it, it'll go and make those transformations.
+
+00:03:23 It also will replace the config class with a model config attribute.
+
+00:03:28 So you might've had an inner config class and now you have a model config where you set that to an instance of the same settings basically.
+
+00:03:39 So fewer inner classes, more just fields that make things happen, right?
+
+00:03:45 And a bunch of stuff like that, that you can run and it'll do that automatically.
+
+00:03:48 But this is, if you look at the migration guide, this is actually just scratching the surface.
+
+00:03:53 So there's a lot of other things that you need to be aware of.
+
+00:03:57 And I don't know how far they intend for this bump pedantic to go in trying to manage those things.
+
+00:04:03 But for example--
+
+00:04:04 - It's pretty cool that they have it though.
+
+00:04:06 - It is pretty cool they have it, yeah.
+
+00:04:07 Even it's a start, right?
+
+00:04:08 - Yeah, let people say, here's the changes you have to make and also here's a tool that can do at least most of it.
+
+00:04:16 - Exactly.
+
+00:04:17 So there's things like in old Pydantic, you had a dunder fields.
+
+00:04:21 Now you have model fields as a field to the base class.
+
+00:04:25 You had dunder private attributes, and now you have dunder Pydantic private.
+
+00:04:29 And there's more relevant ones, like there was a copy function, and now there's a model copy.
+
+00:04:35 There was a dict, and now there's a model dump.
+
+00:04:38 So if you had a Pydantic model, you wanted a dictionary, you could just call dict on it.
+
+00:04:41 Well, that doesn't exist or is deprecated, and so now you have a model dump.
+
+00:04:46 They did say where possible, they've tried to retain deprecated methods with their old names for ease of migration, but you'll get deprecation warnings.
+
+00:04:54 So don't sleep on that 'cause one day they won't be.
+
+00:04:58 There's this a pretty significantly long document.
+
+00:05:01 I don't know how long it is, this migration guide, but there's a bunch of things you should just go through.
+
+00:05:08 I would just say, try to upgrade to Pydantic 2, run your code, see if you get any deprecation warnings.
+
+00:05:16 If it runs and you don't get them, you're probably fine.
+
+00:05:18 But if you get errors, then go consult a migration guide.
+
+00:05:23 If you get deprecation warnings, do the same, but maybe with slightly less urgency.
+
+00:05:28 So yeah, there's a bunch of stuff that you can go through.
+
+00:05:30 One of them was, one that's interesting is they introduced this thing called a type adapter.
+
+00:05:36 Let me see if there's a section where they talk about it.
+
+00:05:38 Yeah, so now they have this thing called a type adapter, which is pretty cool.
+
+00:05:43 They have some example, there we go.
+
+00:05:45 says in Pydantic version one, we had weak support for validating or serializing non-base model types, like a list of something.
+
+00:05:52 So now you can create this instance of a type called a type adapter, and you pass the type it adapts.
+
+00:06:00 So you can say a type adapter of list of int, and then you can just go to it and say validate Python.
+
+00:06:06 And for the example here, they have a list of numbers, but they're in strings, like the list, string one, string two, string three.
+
+00:06:13 and then what it gives you back is just the actual list, 1, 2, 3, all that magical transformation that Pydantic is.
+
+00:06:21 >> That's pretty cool.
+
+00:06:22 >> Yeah. So that's another thing people can check out.
+
+00:06:24 Like I said, this is a huge document.
+
+00:06:26 People probably want to go check out.
+
+00:06:28 They've removed a whole bunch of error messages, or errors, sorry, error types like Pydantic.errors.ipv any interface error.
+
+00:06:37 I'm not sure where they went though.
+
+00:06:40 It doesn't explicitly say.
+
+00:06:42 and they were moved or re-mapped over to this other error type.
+
+00:06:46 But again, it's a huge document.
+
+00:06:48 I don't want to go through my migration guide for everyone.
+
+00:06:50 That's not fun. But congratulations to the Pydantic team.
+
+00:06:55 This is really awesome that this is finally here.
+
+00:06:57 Now, we come to the point where we wait.
+
+00:07:00 We wait for all of the Pydantic frameworks.
+
+00:07:04 Because working with Pydantic is great and you can do cool stuff with Pydantic directly like you can directly work with it in a flask app, for example.
+
+00:07:12 But if you work with fast API or beanie or all these other frameworks that are built on top of it, you got to wait for, you know, they're deep down in the guts of Pydantic a lot of times because of the way they work.
+
+00:07:24 Except for, now fast API though.
+
+00:07:26 Fast API is already upgraded, right?
+
+00:07:28 Yeah, it, um...
+
+00:07:29 Is it released or just the beta is out for it?
+
+00:07:32 I can't remember.
+
+00:07:33 I think so. Fast API released a version 0.100.0. Come on, guys, zero verse still.
+
+00:07:40 Anyway, four days ago.
+
+00:07:41 And it does look like the last five days ago, we got a merge for adding support for pedantic 2.002 or something.
+
+00:07:55 The first couple of versions for pedantic didn't work with fastAPI, but looks like there were some fixes.
+
+00:08:01 Wouldn't surprise me if they kind of just held off on announcing the version 2 until FastAPI was able to use it.
+
+00:08:09 Because that's a huge user of it.
+
+00:08:12 >> Yeah, it's certainly the biggest user.
+
+00:08:14 Samuel and Sebastian work pretty closely together.
+
+00:08:17 >> I'm excited. I know this is different.
+
+00:08:20 It might be difficult for people that are already using an old Bidantic to move over even with the bump.
+
+00:08:26 But I guess I haven't used Bidantic directly before, and now I'm excited to use it.
+
+00:08:32 even with tools like this auto thing that they're using.
+
+00:08:37 What was that? The auto changer?
+
+00:08:40 >> The bump.
+
+00:08:40 >> No.
+
+00:08:40 >> The bump identic?
+
+00:08:41 >> No, the one to like-
+
+00:08:42 >> Oh, the type adapter.
+
+00:08:44 >> Type adapter. Yeah.
+
+00:08:45 I think that I've got places to use type adapter even without non-web stuff.
+
+00:08:51 So I think that's pretty fun.
+
+00:08:53 Anyway, cool. I'm excited.
+
+00:08:56 >> Grant, the audience does point out, tough luck for base models with an existing model attribute.
+
+00:09:02 There might be some mechanism to rename that or remap that.
+
+00:09:07 You know, there's like an alias you can put on them, but you say, when you look in the data, it looks like this, even though the name is that, but yeah, there might be some trickiness here.
+
+00:09:18 - Yeah.
+
+00:09:18 - Yeah, at least at an API level, you could be able to fix it.
+
+00:09:21 I don't know about the Python code level, if that'll help you.
+
+00:09:23 All right, well, anyway, big news, big news.
+
+00:09:25 Pydantic version two is out.
+
+00:09:28 This was on June 30th, but we were off on vacation, Brian.
+
+00:09:33 Mostly my fault, sorry.
+
+00:09:37 - Well, actually--
+
+00:09:37 - So we didn't cover it.
+
+00:09:39 - It's all right, now that we covered it, now we can cover the FastAPIs cut up, so it's great.
+
+00:09:43 - Yeah, exactly, wait long enough things.
+
+00:09:45 It's coming together.
+
+00:09:46 - Well, I wanna talk about talks a little bit because I learned something new from Hinnick, which isn't that unusual.
+
+00:09:54 I often learn a lot of stuff from him.
+
+00:09:57 However, there's an article from him saying two ways to turbo charge talks.
+
+00:10:02 And it just starts right off the bat with saying, no, it's not just run parallel because actually running parallel is pretty cool.
+
+00:10:11 And if you don't know about running parallel, if you, I usually just use the talks-p to run parallel.
+
+00:10:18 If you can run all of your environments in parallel, it's super cool to be able to speed it up.
+
+00:10:25 That's the awesomest way to speed it up, I think.
+
+00:10:28 He does note that it's broken for some people.
+
+00:10:33 So Talks 4 is awesome and it's got some great new features, but apparently for some people, Parallel isn't working.
+
+00:10:42 I'm not one of those people.
+
+00:10:44 So most of my, all of my projects that can use Talks or Parallel seems to be working, but I'm not using something complicated.
+
+00:10:51 Apparently it's broken for adders, for instance, or at least it was last time I checked.
+
+00:10:56 Anyway, so what is he recommending?
+
+00:10:58 If it's not running in parallel, what should you do?
+
+00:11:01 This is something that I didn't really think about before.
+
+00:11:04 So one of the things that Tox does is for each environment that you set up, like say you've got environments for three versions of Python, and it will create a source distribution of your library or package for each of those.
+
+00:11:22 if you're doing a normal, like using talks to test a Python package.
+
+00:11:26 It'll build a source distribution for each environment.
+
+00:11:29 Except for that's not really how we use our packages.
+
+00:11:32 We build it once and throw it up on PyPI and everybody uses the same one if one supports all three versions of Python.
+
+00:11:41 So he's showing us a way to get around that to say instead of building it on all environments, go ahead and just build the wheel once.
+
+00:11:50 And so you tell it to build the wheel instead of a source distribution, and you tell it where to put it into, and there's apparently a command line way to do it, but really, it's, throw it in your toxini file.
+
+00:12:03 Or if you're using pyproject.toml, you can throw it there too, of course.
+
+00:12:07 But so there's a wheel build environment that tells tox what directory to stick it in.
+
+00:12:14 And if it's the same directory for everybody, it'll get used for all environments.
+
+00:12:19 And this alone sped up quite a few of my workflows, which is really cool.
+
+00:12:24 Just building it once, using it and testing it in different Python environments.
+
+00:12:29 - Yeah, that's really excellent.
+
+00:12:30 'Cause generally the wheel's not gonna vary from 3.9 to 3.10, right?
+
+00:12:35 - Right, yeah.
+
+00:12:37 In a lot of Python-only packages, you're gonna use the same wheel for everything.
+
+00:12:43 And now there are some that use, have different ones for different versions, I guess.
+
+00:12:47 None of the stuff I work with does.
+
+00:12:49 And they, okay, so that's the first way to speed it up.
+
+00:12:53 What's the second way?
+
+00:12:54 The second way is if you're in one of these camps, especially one of these camps where you can't run talks in parallel, you can still run pytest in parallel.
+
+00:13:04 So he's recommending using pytest xdist and run and then use as a plugin and then running pytest dash in auto, or you can give it a number of CPUs or whatever.
+
+00:13:16 And it's auto just says, pick the number of CPUs you want, and you can run pytest in parallel.
+
+00:13:22 This actually, if you have a fast test suite, this might slow down your tests.
+
+00:13:26 So be careful, measure it.
+
+00:13:28 However, he has an example in a lot of CPU intensive test suites, like for instance, if you're using Hypothesis, and it's running a lot of tests that are similar.
+
+00:13:40 And yeah, so especially if you're using Hypothesis, I recommend trying out running pytest in parallel, and it can speed things up significantly.
+
+00:13:50 He has an example at the bottom.
+
+00:13:52 Oh, I wanted to cover some of the other things.
+
+00:13:54 If you're doing all these tricks, it might muck up your coverage collection.
+
+00:14:00 So he's got some stuff here to help you through cleaning up your coverage, which is great.
+
+00:14:07 Skipping down.
+
+00:14:09 For the Adders project, Those two tricks, he started out with 257 seconds and got it down to 69 seconds using parallel pytest and building a wheel only.
+
+00:14:21 I had a test suite that was pretty fast anyway, just 18 seconds.
+
+00:14:26 It did take it down to like five seconds.
+
+00:14:28 So it's, yeah, it's worth it just for the heck of it.
+
+00:14:33 Why not?
+
+00:14:34 So thanks.
+
+00:14:35 - Yeah, it's almost five times faster, not bad.
+
+00:14:37 Four times faster?
+
+00:14:38 - Yeah, I mean, right.
+
+00:14:40 If it's low, you don't really think about it, even if it's multiples.
+
+00:14:43 So--
+
+00:14:44 - Yep.
+
+00:14:45 And the bigger the project, the more you care, right?
+
+00:14:48 - Yeah.
+
+00:14:49 And I wasn't using a hypothesis.
+
+00:14:51 I would like to try this out using hypothesis.
+
+00:14:54 It's pretty cool.
+
+00:14:55 - Excellent.
+
+00:14:56 - Good one.
+
+00:14:57 - All right.
+
+00:14:58 Before we move on to the next item, I have a bit of real-time follow-up, but not real-time follow-up in the traditional sense where we have audience members.
+
+00:15:06 I just got a message from Roman Wright, who is the creator of Beanie, the async MongoDB ODM, based on Pydantic, and he said, I am releasing a version of Beanie that supports Pydantic version two soon, either this week or next week.
+
+00:15:25 So don't wanna put him down for a certain time exactly, but just that project is also moving along like FastAPI did to support it.
+
+00:15:35 And he said it promises to have quite a bit of a speed up, as you would expect.
+
+00:15:38 - Nice, cool.
+
+00:15:40 That Beanie's a cool project.
+
+00:15:41 - It absolutely is.
+
+00:15:42 So how about something totally different like Pydantic?
+
+00:15:45 So this next item is Awesome Pydantic, a curated list of awesome things related to Pydantic.
+
+00:15:52 So there's, this is kind of an early stage project here.
+
+00:15:57 And it's, you know, got created five months ago or so, but I feel like it needs people out there who have Pydantic things contributing them back.
+
+00:16:05 For example, do we have, I don't even think like SQL model is listed here where SQL model is created by Sebastian Ramirez based on Pydantic and SQLAlchemy, for example.
+
+00:16:17 So there are some notable things though that are worth pointing out here.
+
+00:16:20 So we have Transformers and what's cool is that lists all the stars.
+
+00:16:25 So Transformers has 106,000 stars.
+
+00:16:28 - Wow. - That's crazy, Brian.
+
+00:16:30 - Yeah.
+
+00:16:30 - I mean, if you look at CPython, I think it has in the realm of 50,000, Flask does as well.
+
+00:16:35 So Transformers is the state of art, natural language processing for PyTorch and TensorFlow based on Pydantic.
+
+00:16:42 >> It's more popular than Python.
+
+00:16:45 >> Sort of, yes. I think how many people are actually trying to work on Python and the code itself.
+
+00:16:53 But yeah, in a sense.
+
+00:16:55 Spacey, of course, the free open-source library for natural NLP, natural language processing.
+
+00:17:01 That's a pretty cool one.
+
+00:17:03 Gina, Gina, Gina is geared towards building search systems for any kind of data, including text, image, audio, video, and more.
+
+00:17:16 That's pretty excellent. Modular design and multilayer abstractions.
+
+00:17:19 You can leverage efficient patterns to build different parts of the system or change them to a flow.
+
+00:17:25 That sounds pretty interesting, right?
+
+00:17:26 >> Yeah.
+
+00:17:27 >> Down here, we have the object mapping.
+
+00:17:30 We have Beanie, as I just called out, an asynchronous Python object document mapper for MongoDB based on motor and Pydantic, of course.
+
+00:17:39 What else we got?
+
+00:17:41 We have data model code generator, which is the foundation of JSON to Pydantic, which I know that we talked about before.
+
+00:17:50 If you're not familiar with JSON to Pydantic.com, take some JSON, drop it in there, you get your JSON output.
+
+00:17:58 Here's the big question though, Brian, what version of Pydantic do you get out?
+
+00:18:02 >> I'm guessing not the new one. I don't know.
+
+00:18:04 >> I am as well. It probably needs an update, doesn't it?
+
+00:18:07 So hopefully that comes along there.
+
+00:18:10 >> Well, stick in model in there as an attribute and see what happens.
+
+00:18:14 >> Oh, yeah. Nope, not doing it.
+
+00:18:16 So data model code generator is the CLI equivalent that that thing uses behind the scenes.
+
+00:18:22 Let's see. I don't know how many people know that Pydantic has a settings management capability, where you can read variables out of environment variables and YAML files and so on.
+
+00:18:33 So goodconf, as in good config, goodconf is a thin wrapper over Pydantic settings management.
+
+00:18:40 So that's pretty cool.
+
+00:18:41 You get a little bit of a cleaner or more opinionated way to work with settings.
+
+00:18:46 And of course, fastAPI, Django, Ninja are listed here along with some others.
+
+00:18:52 And yeah, I think I'll probably leave it there with that as the shout out for all those items.
+
+00:18:57 But there's a bunch of cool stuff in here.
+
+00:18:58 awesome things you might say that people can check out.
+
+00:19:01 Also, if you have one of these projects or you're a super fan of one of these projects, and it's not listed here, PRs are accepted, I believe.
+
+00:19:08 >> Yeah, cool.
+
+00:19:09 >> Yeah. That was the next thing in the Pydantic journey of today.
+
+00:19:14 >> Nice. Well, I'm going to go away from Pydantic again, and I want to talk about command line interface tools.
+
+00:19:23 I like CLIs.
+
+00:19:25 I kind of spent a lot of time with a terminal open.
+
+00:19:30 And so I thought this was a fun article from Simon Willison, CLI tools hidden in the Python standard library.
+
+00:19:37 And I think it's also really cool that Simon does a shout out to Seth Larson.
+
+00:19:43 Hey, Seth.
+
+00:19:45 That Seth pointed out that gzip, the Python gzip module, you can use it as a CLI tool, especially handy if you're on Windows and don't have gzip built in, you can say python -m gzip and you can with a -d decompress and give it a gzip file and it'll decompress it for you.
+
+00:20:05 There's a whole bunch of other stuff you can do with it, but it's pretty neat, kind of fun.
+
+00:20:11 So Simon saw this, that Seth pointed this out and thought, wonder what other stuff is hiding in the standard library.
+
+00:20:20 So he talks about using ripgrep to search through the standard library.
+
+00:20:25 And I think it's kind of fun that he shows you how he went about looking for all these things and then parsed out some stuff because he didn't really care about tests or turtle or idle, because yes, we know that those have applications.
+
+00:20:41 But what's left is quite a few.
+
+00:20:44 There's quite a few Python modules within standard library or packages, modules that do these init things, or have a command line thing.
+
+00:20:55 And so what's kind of interesting is what he's looking for.
+
+00:20:58 He's looking for packages that have a if name equals main, because that little trick of if dunder name equals dunder main, that means that if it's imported, it just runs like a library.
+
+00:21:12 But if it's not imported, if it's run directly, then this will be true, and whatever's in there will run as a command and you can do the -m thing.
+
+00:21:22 And so one of the few fun things that he found, I did know about the server thing, but I always forget about it.
+
+00:21:29 Python -m HTTP.server and you can give it a port.
+
+00:21:34 Yeah, that's nice. I use that sometimes when things complain and trying to work with like JavaScript and a static HTML file or something.
+
+00:21:41 It's like, you need a server for this to work because it wants to just do forward slash something.
+
+00:21:45 So I'll just run that and then like open up the file right there and then it starts working instead of trying to get a lot of trouble.
+
+00:21:52 Run that in the directory you're working on.
+
+00:21:54 Yeah, and if you want to, one of the fun things with this is if you want to just learn a little basic HTML, maybe JavaScript in CSS, you can just use this as a local server to just play around with using all three together. It's kind of fun.
+
+00:22:10 Yeah, or maybe you want to do PyScript and not actually do JavaScript.
+
+00:22:13 Oh, yeah, yeah, maybe.
+
+00:22:15 So let's go through a few more fun things.
+
+00:22:18 Base64, you can use -m base64 to either encode, decode, or both.
+
+00:22:25 I'm not sure what both at the same time means.
+
+00:22:28 To try that out, see what it does.
+
+00:22:31 Maybe you just get the answer back.
+
+00:22:32 The input back.
+
+00:22:33 Maybe.
+
+00:22:34 AsyncIO has, will open up an async REPL, where you can use a wait and instead of async.io run, you can use a wait directly.
+
+00:22:47 It's kind of fun.
+
+00:22:48 Neat to try out async stuff on the REPL.
+
+00:22:53 That sounds hard, but it might be fun.
+
+00:22:55 Tokenize, just as a fun thing, you can use the Python tokenizer on a Python file just to see what the tokens look like.
+
+00:23:05 That's kind of neat.
+
+00:23:07 AST, I probably would use more.
+
+00:23:09 You can do -mast on a Python file, it'll give you a printout of the abstract syntax tree, which is nice.
+
+00:23:20 This is super handy, I didn't know about this, json.tool.
+
+00:23:24 It's a pretty printer for JSON, so you can just pipe some JSON into it, and get some nice formatted output, nice.
+
+00:23:34 Yeah, that's really what I wanted to highlight, those calendar. I knew about this a long time ago and I totally forgot about it.
+
+00:23:40 Python - M calendar will print an ASCII calendar of the current year.
+
+00:23:45 Why would you need this? But anyway, >> Because you can, Brian.
+
+00:23:50 >> Because you can. I used this way, way, way long ago to try to, and then parsed it afterwards to hook up a dynamic calendar application with clickable dates.
+
+00:24:05 It was terrible, it was terrible application, but it was fun.
+
+00:24:08 Anyway.
+
+00:24:09 (laughing)
+
+00:24:09 - That's kind of, I kind of like it though.
+
+00:24:11 I do kind of like it.
+
+00:24:13 - So, oh, NNTP.
+
+00:24:15 Do you use news groups much?
+
+00:24:18 I don't use news groups.
+
+00:24:19 - I used to news group, but--
+
+00:24:21 - Apparently you can do NNTP and it prints out like some articles.
+
+00:24:25 (laughing)
+
+00:24:26 Interesting.
+
+00:24:27 - In case you want to read from 1994.
+
+00:24:30 (laughing)
+
+00:24:32 - One thing I think it might be kind of cool if somebody creates a meta package for this kind of stuff based on this article.
+
+00:24:43 What I mean is if you set an entry point in your Python package and you install it into your virtual environment or you pipx install it, it becomes a CLI command, right?
+
+00:24:54 So for example, pyjoke, right?
+
+00:24:56 I could just go up here and type pyjoke, oh, pipx install pyjoke first, And it'll give you some kind of, it'll just call that function, right?
+
+00:25:07 Is it joke perhaps?
+
+00:25:08 I'm not sure.
+
+00:25:08 Yeah.
+
+00:25:09 So if I type pyjoke after installing a pipx install, it says obfuscated reality mappers, ORMs can be useful database tools, right?
+
+00:25:16 So, right.
+
+00:25:18 But the fact now I have a single command I give instead of, you know, Python dash M pyjoke, I just type pyjoke, right?
+
+00:25:25 So it would be cool if somebody took this and created something that I could pipx install It gave me every single one of these in a more concise way to call it.
+
+00:25:35 So instead of Python dash M dash, you know, calendar or just calendar, I could just type calendar and it runs this right.
+
+00:25:42 Or I could just type ACP dot server and it runs, runs that.
+
+00:25:45 So there's a something for, for people to try to come up with a cleaner way.
+
+00:25:50 there might be some name conflicts.
+
+00:25:52 So you'd have like for GZIP, you might need to PG zip or something, right?
+
+00:25:56 Like that.
+
+00:25:57 So, which is, would be a little bit annoying, but yeah, anyway, it'd be fun.
+
+00:26:00 And if somebody turned these into a simpler series of commands and just like, you got Python, you basically have all these.
+
+00:26:06 >> Yeah, it might be kind of difficult.
+
+00:26:08 Maybe a fun thing to try because you can't just import the module and run it because then that part doesn't run.
+
+00:26:15 So you have to, yeah.
+
+00:26:16 >> Right, you would have to set up a bunch of entry points in your package and then give them names and then basically map them over to Colleen.
+
+00:26:24 But Henry out in the audience says, "I thought the point is you didn't have to install anything to use these." >> Right.
+
+00:26:30 >> True. But you have got to make a bunch of aliases if you want them real short.
+
+00:26:35 Anyway, very cool.
+
+00:26:37 >> Cheat sheet maybe.
+
+00:26:39 >> Yes, a cheat sheet. Thanks, Simon.
+
+00:26:42 Thank you, Seth. This is cool.
+
+00:26:43 >> All right. Well, those are our things.
+
+00:26:46 Do you have anything extra to share with us?
+
+00:26:49 >> I do have some extras.
+
+00:26:50 Back to Pydantic.
+
+00:26:52 Over at TalkByThon training, We have a brand new course, a seven hour course for MongoDB called MongoDB with Async Python.
+
+00:27:02 - Oh fun.
+
+00:27:02 - And the whole idea is it takes Beanie and it's kind of a comprehensive introduction to MongoDB but approaches it from using Beanie which is Pydantic plus Async and Await talking to MongoDB, how to use indexes, how do you write queries, what are the different styles.
+
+00:27:20 We end up building a fast API API around that, as well as do load testing with Locust.
+
+00:27:27 So if you wanna kinda see end to end how to build a modern Python app based on MongoDB and Beanie, check it out.
+
+00:27:35 Links in the show notes, just talkpython.fm, click on courses, and you'll find it over there.
+
+00:27:41 So I'm really, really excited.
+
+00:27:42 I've been working for a long time on this.
+
+00:27:44 It has an early bird special.
+
+00:27:46 So for today for a week, you can get $10 off or something relative in your own currency off if you get it this week and then it goes up a little bit next week.
+
+00:27:56 So really, really fun course.
+
+00:27:58 There's tons of stuff to learn here.
+
+00:27:59 People can check it out if they're interested in this.
+
+00:28:03 And as I said, I was just talking to Roman and Beanie should get its Pydantic version two upgrade as well so this should only get to be a better story as we go on.
+
+00:28:13 - Very cool.
+
+00:28:13 Now is this one that you did or was this somebody else?
+
+00:28:16 - This is me.
+
+00:28:18 - Okay. - And again, this is like what's powering Python by set FM, this is what's powering talkpython.fm, like those kind of, it's the same tech behind the scenes, so pretty excellent.
+
+00:28:27 - Nice.
+
+00:28:28 - Another one, did you know that PyPI has a blog?
+
+00:28:32 - No. - It does.
+
+00:28:33 This one's been sitting around for a little bit, I meant to talk about it, but it kept getting edged out by more urgent things.
+
+00:28:40 But back in March, end of March, there's now a blog.pypi.org that you can go to.
+
+00:28:48 So definitely check that out.
+
+00:28:49 One of the things that's a little bit of a hassle is if you take this, like blog.pypi.org and you drop it into your RSS reader, like reader with two Es for me, it says there's no blog here.
+
+00:29:02 Is there no blog here?
+
+00:29:04 So go to the bottom.
+
+00:29:07 There's a blog.pypi.org/feed_rss_created.xml.
+
+00:29:12 That is what you got to put into your RSS reader if your RSS reader doesn't find it 'cause there's no meta tag for the RSS capabilities.
+
+00:29:22 Maybe someone's over there listening, go and throw that in, make that a little bit quicker and simpler for people to find.
+
+00:29:27 But if you wanna subscribe to it, that is the business right there.
+
+00:29:32 - Well, if you go to, yeah, there is a little icon at the bottom right-hand corner, the RSS thing.
+
+00:29:39 So all the way down. - Yeah, right there.
+
+00:29:41 - Yeah. - So copy link.
+
+00:29:42 Is that the same address?
+
+00:29:43 Yeah, that's the same address I suggested.
+
+00:29:45 - Cool. - So people, yeah.
+
+00:29:46 But like if there's a meta tag you can put, so like you'll get a little pop up in your different browsers and other things that browse it.
+
+00:29:54 Say, hey, just click here to subscribe or to auto detect it.
+
+00:29:56 Yeah. - Cool.
+
+00:29:57 - Yeah.
+
+00:29:58 Excellent.
+
+00:29:59 One, yes, one final thing of my extras.
+
+00:30:02 Oh my gosh, there's a lot of pop ups on Twitter these days.
+
+00:30:05 On Twitter, Luca Schlinga pointed out, says, "Wow, meta," as in Facebook, "meta commits to dedicate three engineering years to implement the removal of the GIL from Python and fix upcoming compatibility and performance issues as a result of that.
+
+00:30:21 >> Oh, awesome.
+
+00:30:22 >> How about that? So I believe this is the, 703 is the no-GIL work done by Sam Gross, who is at Meta, and there's been some hesitation like, well, if we adopt this, how much things that are based on C and Rust start breaking?
+
+00:30:40 So it sounds like with a couple of paragraphs of information, that they're saying, look, we'll both fix C Python.
+
+00:30:46 >> Just do it anyway and we'll fix it later.
+
+00:30:48 >> I think it's like we'll fix C Python and then maybe I'm inferring here is like, and we'll fix the popular packages based on it that might run into trouble. I'm not sure.
+
+00:30:59 But yeah, so basically three years.
+
+00:31:03 I think they were saying one to two years of actual calendar time, but with multiple people who are either core developers or very close to core developers to make this happen.
+
+00:31:13 Cool.
+
+00:31:14 So that's big news, and those are my extras.
+
+00:31:17 Nice. I wanted to say congrats to Seth Larson.
+
+00:31:21 So we mentioned him at the beginning of the show and a couple times during the show.
+
+00:31:25 Seth is the new security developer in residence.
+
+00:31:31 So yay, congrats, Seth.
+
+00:31:33 So we're linking to an announcement on the PSF blog.
+
+00:31:38 And he also has a... oops, that's blank.
+
+00:31:41 He has a blog announcing the change also, a blog post.
+
+00:31:45 So pretty cool. I'm excited to see that.
+
+00:31:49 So congrats, Seth.
+
+00:31:50 Yeah, congrats, Seth. And there's all this discussion about supply chain vulnerabilities and security and all of those things.
+
+00:31:59 So it's really excellent.
+
+00:32:00 And just security in general.
+
+00:32:02 So thanks for coming on to make things better.
+
+00:32:05 Yeah, and nice sweatshirt, Seth. Cool.
+
+00:32:08 The other thing I wanted to announce is I'm pretty excited about this last bit.
+
+00:32:14 Python People is live.
+
+00:32:16 So Python People...
+
+00:32:17 Who are these Python People you speak of, Brian?
+
+00:32:19 Python People.
+
+00:32:20 So I, you know, the first part of like, I kind of, there's a couple things that were inspiring for this.
+
+00:32:27 So it's a new podcast, pythonpeople.fm.
+
+00:32:31 So far, there's one episode with Michael Kennedy, but there are you, but there's a whole bunch more coming.
+
+00:32:36 And I used to mostly just want the tech stuff of a tech podcast.
+
+00:32:42 But I kind of really liked the first part of Talk Python, where you just get to know people.
+
+00:32:46 And I thought, we should do more of that.
+
+00:32:49 So I wanted to get a podcast together where we mostly focus on the people and less about the tech.
+
+00:32:56 So that's what Python People is about.
+
+00:32:59 Yeah, we talk for like 45 minutes or something.
+
+00:33:02 No, 28 minutes and 44 seconds.
+
+00:33:04 and we almost don't talk about Python at all, right?
+
+00:33:07 >> Yeah, a little bit about what you do.
+
+00:33:10 I thought it'd be fun to pull in why, I mean, everybody knows who you are, but for some people, what is your connection to Python?
+
+00:33:17 What is your connection to the Python community?
+
+00:33:19 But then also just more about you.
+
+00:33:20 We learned about your motorcycling and about being a pool shark.
+
+00:33:25 [LAUGHTER]
+
+00:33:26 >> Who knew?
+
+00:33:27 >> Who knew? We talk about skateboarding with you.
+
+00:33:31 So there's like a ton of other cool things that people might be interested in.
+
+00:33:35 - Yeah, so check it out, please.
+
+00:33:37 And that's all I've got for--
+
+00:33:39 - What if somebody else wants to be a Python people?
+
+00:33:41 Can they reach out to you?
+
+00:33:43 - Oh, I will-- - Do you wanna be a Python person?
+
+00:33:44 - Yeah, I should put a like a be a person, or I don't know how to be--
+
+00:33:48 - Be a person.
+
+00:33:49 - Oh, maybe be a guest or something.
+
+00:33:51 Yeah, just reach out to me.
+
+00:33:53 You don't have to be as well known as Michael because who is?
+
+00:33:58 but I'd love to have just like everybody on, why not?
+
+00:34:02 - Yeah, good luck with the show.
+
+00:34:04 It's off to a good start and it was really fun to be a part of that.
+
+00:34:08 - Cool.
+
+00:34:09 - All right, you ready for some O'Reilly?
+
+00:34:11 - Oh yeah, we have a joke.
+
+00:34:12 - We have a joke.
+
+00:34:14 So this is part of the O'Reilly book series.
+
+00:34:17 You know, O'Reilly always has like an animal or something on there.
+
+00:34:21 And so there's the joke series, O'Reilly?
+
+00:34:24 Question mark?
+
+00:34:25 It's kind of a riffs on that a little bit.
+
+00:34:27 This one is Kubernetes for Beginners.
+
+00:34:29 It says, "What could go wrong?" And this is in the dev-oops category of tech books.
+
+00:34:36 And then the cover is, it says, "Containers, that'll fix it." And it has that giant evergreen container ship stuck sideways in the Suez Canal.
+
+00:34:43 What could go wrong?
+
+00:34:44 - Yeah.
+
+00:34:45 And just the title, Kubernetes for Beginners.
+
+00:34:49 No, beginners aren't there yet.
+
+00:34:53 - Yeah, they probably shouldn't be doing Kubernetes, but that'll fix it.
+
+00:34:56 Awesome.
+
+00:34:57 You got a joke for us as well, right?
+
+00:34:58 - Oh yeah, just a random one I heard the other day.
+
+00:35:02 I thought it was terrible, so I thought I'd share it with the world.
+
+00:35:05 So five ants rent an apartment together.
+
+00:35:07 They invite five other ants to share the rent.
+
+00:35:10 Also, they got tons of room, so now they're tenants.
+
+00:35:14 - Ah, tenants, got it.
+
+00:35:15 - Tenants, tenants.
+
+00:35:16 - I love it.
+
+00:35:17 All right, I got one more in that vein for you since I just installed PyJoke.
+
+00:35:21 They're a single word on the CLI for me.
+
+00:35:26 So pirates go arg, computer buyers go argv.
+
+00:35:30 (laughing)
+
+00:35:32 How about that?
+
+00:35:33 Pretty bad.
+
+00:35:33 - Yeah, yeah.
+
+00:35:35 - But also true.
+
+00:35:36 They do that.
+
+00:35:37 - Maybe.
+
+00:35:38 All right, cool.
+
+00:35:40 Fun talking with you again.
+
+00:35:42 Thanks to everybody in the interwebs and on the YouTubes to watching us.
+
+00:35:47 - Yeah, thanks everyone.
+
+00:35:48 Good to be back with you, Brian.
+
+00:35:50 - Bye.
+
