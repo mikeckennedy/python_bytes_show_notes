@@ -1,0 +1,3173 @@
+WEBVTT
+
+00:00:00.000 --> 00:00:05.000
+Hello and welcome to Python Bytes, where we deliver Python news and headlines directly to your earbuds.
+
+
+00:00:05.000 --> 00:00:11.600
+This is episode 345, recorded July 26th. Is that right? July 26th, 2023.
+
+
+00:00:11.600 --> 00:00:12.800
+I am Brian Okken.
+
+
+00:00:12.800 --> 00:00:14.200
+And I am Michael Kennedy.
+
+
+00:00:14.200 --> 00:00:19.600
+And you know, 345 episodes, you'd think I wouldn't have to read that, but I still do.
+
+
+00:00:19.600 --> 00:00:24.600
+Anyway, a lot of fun topics today.
+
+
+00:00:24.600 --> 00:00:30.760
+We are sponsors today or us, courses at Talk Python Training, we'll talk about those, and
+
+
+00:00:30.760 --> 00:00:35.160
+the new Python People podcast, and our Patreon supporters, of course. Thank you, everybody,
+
+
+00:00:35.160 --> 00:00:42.840
+for continuing to support us. And everybody that's listening to this, usually, so this is a
+
+
+00:00:42.840 --> 00:00:49.240
+Wednesday morning, but usually it's Tuesday at 11 Pacific is when we're recording. And if you
+
+
+00:00:49.240 --> 00:00:50.680
+are around at that time,
+
+
+00:00:50.680 --> 00:00:52.280
+we'd love to have you join the show.
+
+
+00:00:52.280 --> 00:00:55.720
+Just go to pythonbytes.fm/live and you can
+
+
+00:00:55.720 --> 00:00:58.280
+see when the next episode is going to get recorded.
+
+
+00:00:58.280 --> 00:01:01.600
+>> Yeah, Brian, I'm not always successful.
+
+
+00:01:01.600 --> 00:01:03.380
+Also, sometimes I just don't know.
+
+
+00:01:03.380 --> 00:01:05.560
+I usually try to schedule
+
+
+00:01:05.560 --> 00:01:09.240
+the next live stream as soon as we're done with this one.
+
+
+00:01:09.240 --> 00:01:09.800
+>> Yeah.
+
+
+00:01:09.800 --> 00:01:11.320
+>> If you go to YouTube, you can click
+
+
+00:01:11.320 --> 00:01:13.520
+"Notify me" for just that event,
+
+
+00:01:13.520 --> 00:01:16.400
+if you want to come to the next week's one or something.
+
+
+00:01:16.400 --> 00:01:19.200
+That's kind of the best way to know when the next live stream is.
+
+
+00:01:19.200 --> 00:01:23.840
+>> Yeah. I appreciate people that show up and add comments. It's nice.
+
+
+00:01:23.840 --> 00:01:26.840
+So, Michael, why don't you kick us off with the first topic?
+
+
+00:01:26.840 --> 00:01:29.440
+>> Yes, indeed. This is a very, very exciting one.
+
+
+00:01:29.440 --> 00:01:31.280
+So, the next topic,
+
+
+00:01:31.280 --> 00:01:36.880
+the first topic is the third version of Cython, not CPython.
+
+
+00:01:36.880 --> 00:01:39.640
+I didn't drop a P on accident, Cython.
+
+
+00:01:39.640 --> 00:01:41.400
+Many people know what Cython is,
+
+
+00:01:41.400 --> 00:01:46.240
+but I suspect sufficiently many don't that it justifies me saying what the heck it is.
+
+
+00:01:46.240 --> 00:01:50.880
+So Cython, let's do a throwback, Brian. This will be fun.
+
+
+00:01:50.880 --> 00:01:55.140
+You've done plenty of C. Do you remember inline assembler?
+
+
+00:01:55.140 --> 00:02:00.240
+When like little sections of C code had to be like really close to the metal
+
+
+00:02:00.240 --> 00:02:05.940
+and so you would write like a little bit of assembly inside of a C function
+
+
+00:02:05.940 --> 00:02:09.740
+or make a function in assembly and call it something crazy like that.
+
+
+00:02:09.740 --> 00:02:11.040
+We're talking like 90s.
+
+
+00:02:11.040 --> 00:02:11.540
+Yeah.
+
+
+00:02:11.540 --> 00:02:13.740
+Well, Cython is kind of like that for Python.
+
+
+00:02:13.740 --> 00:02:17.820
+If you've got some part of your code that's not fast enough,
+
+
+00:02:17.820 --> 00:02:22.220
+well, one of the options is to do what a lot of people are doing is go like,
+
+
+00:02:22.220 --> 00:02:23.460
+"Well, I'm going to go learn Rust,
+
+
+00:02:23.460 --> 00:02:25.340
+and I'm going to write this section in Rust,
+
+
+00:02:25.340 --> 00:02:27.460
+and then I'm going to import it into Python."
+
+
+00:02:27.460 --> 00:02:30.340
+There are certainly tools for doing so,
+
+
+00:02:30.340 --> 00:02:35.380
+but what if you could write Python and make it as fast as C almost?
+
+
+00:02:35.380 --> 00:02:36.620
+That's what Cython is,
+
+
+00:02:36.620 --> 00:02:38.500
+and it's like this inline bit,
+
+
+00:02:38.500 --> 00:02:41.680
+like this function or this module,
+
+
+00:02:41.680 --> 00:02:45.560
+I need to be in closer to C speed,
+
+
+00:02:45.560 --> 00:02:47.200
+farther from Python speed,
+
+
+00:02:47.200 --> 00:02:50.160
+especially in the math type of scenario.
+
+
+00:02:50.160 --> 00:02:51.640
+That's what Cython is.
+
+
+00:02:51.640 --> 00:02:55.440
+It lets you write Python code that gets compiled to C,
+
+
+00:02:55.440 --> 00:02:59.800
+use very, very slight variations in the Python syntax.
+
+
+00:02:59.800 --> 00:03:01.600
+It used to be way different.
+
+
+00:03:01.600 --> 00:03:06.400
+You'd have to have your own types and they were imported from Cython.
+
+
+00:03:06.400 --> 00:03:12.640
+So instead of having a traditional I object derived integer type,
+
+
+00:03:12.640 --> 00:03:14.760
+you would actually have a Cython int,
+
+
+00:03:14.760 --> 00:03:16.160
+which was like a local int,
+
+
+00:03:16.160 --> 00:03:18.080
+and you would express that in different ways.
+
+
+00:03:18.080 --> 00:03:22.740
+They've been moving towards what they call pure Python mode,
+
+
+00:03:22.740 --> 00:03:25.760
+where the code that you write for Cython is
+
+
+00:03:25.760 --> 00:03:29.880
+actually still valid Python if you wanted to just run it that way.
+
+
+00:03:29.880 --> 00:03:31.020
+That's pretty cool, right?
+
+
+00:03:31.020 --> 00:03:31.720
+>> Yeah.
+
+
+00:03:31.720 --> 00:03:33.340
+>> That involves things like type in.
+
+
+00:03:33.340 --> 00:03:34.440
+So if you want to say, "Oh,
+
+
+00:03:34.440 --> 00:03:38.800
+here's a thing that's in int instead of importing some specialized int type from Cython,
+
+
+00:03:38.800 --> 00:03:41.000
+you would just say x colon int.
+
+
+00:03:41.000 --> 00:03:44.000
+And guess what? That's how it works in modern Python.
+
+
+00:03:44.000 --> 00:03:48.040
+So the news for this week is that Cython goes 3.0.
+
+
+00:03:48.040 --> 00:03:52.600
+And this news comes to us from, let's see.
+
+
+00:03:52.600 --> 00:03:55.040
+Oh no, I ran across this with other ones sent over.
+
+
+00:03:55.040 --> 00:03:57.680
+They're both new releases with lots of details. So sorry.
+
+
+00:03:57.680 --> 00:04:01.680
+Yeah, so anyway, this one, the headline here is that this is long in development.
+
+
+00:04:01.680 --> 00:04:03.440
+that's in like five years,
+
+
+00:04:03.440 --> 00:04:04.960
+has been working on this.
+
+
+00:04:04.960 --> 00:04:08.200
+It sheds legacy Python support,
+
+
+00:04:08.200 --> 00:04:09.960
+that is Python 2.
+
+
+00:04:09.960 --> 00:04:14.520
+Look, see that legacy Python people are starting to adopt our term.
+
+
+00:04:14.520 --> 00:04:16.060
+I don't know if we have anything to do with it,
+
+
+00:04:16.060 --> 00:04:19.440
+but we should have tried to popularize that view of Python 2, didn't we?
+
+
+00:04:19.440 --> 00:04:20.040
+>> Yeah.
+
+
+00:04:20.040 --> 00:04:25.520
+>> It has a lot of boost for this pure Python mode that I talked about.
+
+
+00:04:25.520 --> 00:04:27.280
+You might say, "Okay, well,
+
+
+00:04:27.280 --> 00:04:29.440
+that's interesting that you have this pure Python mode,
+
+
+00:04:29.440 --> 00:04:30.940
+but why would I really care?"
+
+
+00:04:30.940 --> 00:04:33.680
+because if the goal is to make it faster,
+
+
+00:04:33.680 --> 00:04:35.480
+I don't want to run it in pure Python,
+
+
+00:04:35.480 --> 00:04:37.800
+I want to run it in Cython.
+
+
+00:04:37.800 --> 00:04:40.100
+So compile it to C and then behind
+
+
+00:04:40.100 --> 00:04:43.060
+the scenes as part of your building of the wheel and all that.
+
+
+00:04:43.060 --> 00:04:43.440
+>> Yeah.
+
+
+00:04:43.440 --> 00:04:45.000
+>> The reason you might want to do that is,
+
+
+00:04:45.000 --> 00:04:46.940
+what if you care about mypy,
+
+
+00:04:46.940 --> 00:04:48.260
+or you care about Ruff,
+
+
+00:04:48.260 --> 00:04:49.760
+or you care about Black,
+
+
+00:04:49.760 --> 00:04:52.720
+or all these other tools that are
+
+
+00:04:52.720 --> 00:04:56.480
+Python tooling to understand the Python code,
+
+
+00:04:56.480 --> 00:04:58.600
+or even PyCharm or VS Code.
+
+
+00:04:58.600 --> 00:05:00.800
+You want it to look at that and be able to
+
+
+00:05:00.800 --> 00:05:03.400
+lint it and format it and understand it.
+
+
+00:05:03.400 --> 00:05:06.280
+The pure Python mode allows you to do things
+
+
+00:05:06.280 --> 00:05:08.800
+like keep your linting tools.
+
+
+00:05:08.800 --> 00:05:12.960
+>> Yeah, and also just there's been discussions basically
+
+
+00:05:12.960 --> 00:05:17.680
+that if we had type hints when Cython started,
+
+
+00:05:17.680 --> 00:05:19.060
+they probably would have used them to start
+
+
+00:05:19.060 --> 00:05:20.940
+with instead of their own thing.
+
+
+00:05:20.940 --> 00:05:22.620
+>> Yeah, they had no alternative,
+
+
+00:05:22.620 --> 00:05:24.120
+so they came up with something.
+
+
+00:05:24.120 --> 00:05:26.400
+It's just interesting that it came.
+
+
+00:05:26.400 --> 00:05:27.940
+I guess it compiles to C,
+
+
+00:05:27.940 --> 00:05:32.220
+so it makes sense that it had a really strong C flavor in the way that you wrote it.
+
+
+00:05:32.220 --> 00:05:35.500
+Yeah. What else is notable here?
+
+
+00:05:35.500 --> 00:05:39.460
+Said there's major NumPy support improvements.
+
+
+00:05:39.460 --> 00:05:41.420
+Cython has worked well with NumPy,
+
+
+00:05:41.420 --> 00:05:43.540
+but now with Cython 3,
+
+
+00:05:43.540 --> 00:05:46.780
+it gives you the ability to write NumPy Ufuncs.
+
+
+00:05:46.780 --> 00:05:50.600
+I don't do enough NumPy to know why I care about Ufuncs,
+
+
+00:05:50.600 --> 00:05:53.440
+but you can write them directly in Cython.
+
+
+00:05:53.440 --> 00:05:57.380
+My understanding is basically that instead of going through
+
+
+00:05:57.380 --> 00:06:01.260
+the Python API and layer to work with NumPy,
+
+
+00:06:01.260 --> 00:06:03.180
+it drops down to the C layer.
+
+
+00:06:03.180 --> 00:06:05.900
+So it's like C to C interoperability
+
+
+00:06:05.900 --> 00:06:08.860
+when you're doing NumPy within Cython. That's pretty cool.
+
+
+00:06:08.860 --> 00:06:10.980
+Another thing that's not mentioned in this article that I'm
+
+
+00:06:10.980 --> 00:06:14.020
+linking to on InfoWorld that's really cool about
+
+
+00:06:14.020 --> 00:06:18.300
+NumPy about Cython is you can remove the gil.
+
+
+00:06:18.300 --> 00:06:19.740
+You can go no gil.
+
+
+00:06:19.740 --> 00:06:22.700
+There's a context manager that's just called no gil.
+
+
+00:06:22.700 --> 00:06:24.940
+So I can say like, with this section,
+
+
+00:06:24.940 --> 00:06:31.060
+I'm going to do a bunch of code and I want to release the GIL for other parallel processing
+
+
+00:06:31.060 --> 00:06:32.060
+stuff.
+
+
+00:06:32.060 --> 00:06:36.940
+So if multiple bits of code call that into that function and they're being done within
+
+
+00:06:36.940 --> 00:06:42.220
+threads, they can run truly in parallel on hardware, right on the cores, right?
+
+
+00:06:42.220 --> 00:06:44.940
+True OS thread parallelism, which is pretty excellent.
+
+
+00:06:44.940 --> 00:06:52.220
+Now the limitation there is that you can't be working directly with the Python API, right?
+
+
+00:06:52.220 --> 00:06:53.700
+like say list or something,
+
+
+00:06:53.700 --> 00:06:55.740
+'cause those assume that they're thread safe
+
+
+00:06:55.740 --> 00:06:57.180
+because of the gill, right?
+
+
+00:06:57.180 --> 00:07:00.380
+But if you're just doing like your own algorithm, right,
+
+
+00:07:00.380 --> 00:07:01.740
+then you can, which is pretty cool.
+
+
+00:07:01.740 --> 00:07:04.660
+And yeah, that's pretty much it.
+
+
+00:07:04.660 --> 00:07:07.100
+So well done folks on that.
+
+
+00:07:07.100 --> 00:07:09.620
+It sounds like a ton of work, but yeah.
+
+
+00:07:09.620 --> 00:07:11.180
+- Yeah, and-- - If you are interested
+
+
+00:07:11.180 --> 00:07:13.060
+in Cython, check this out.
+
+
+00:07:13.060 --> 00:07:14.780
+- Cyro in the audience says,
+
+
+00:07:14.780 --> 00:07:18.980
+"Cython is great for waiting for HPI output."
+
+
+00:07:18.980 --> 00:07:19.800
+Nice.
+
+
+00:07:19.800 --> 00:07:20.640
+- Mm-hmm.
+
+
+00:07:20.640 --> 00:07:22.180
+All right, well, that's number one.
+
+
+00:07:22.180 --> 00:07:24.660
+- Okay, I was-- - Which is actually number three.
+
+
+00:07:24.660 --> 00:07:25.820
+(laughing)
+
+
+00:07:25.820 --> 00:07:28.220
+- Oh yeah, 'cause it's Cython3.
+
+
+00:07:28.220 --> 00:07:29.740
+- Exactly.
+
+
+00:07:29.740 --> 00:07:32.020
+- So I wanna talk about reading code.
+
+
+00:07:32.020 --> 00:07:33.860
+And I kind of agree.
+
+
+00:07:33.860 --> 00:07:36.460
+So this is an article by Eric Mathis,
+
+
+00:07:36.460 --> 00:07:40.380
+and he's the dude that wrote Python Crash Course.
+
+
+00:07:40.380 --> 00:07:43.580
+And it's on its third edition now, it's a pretty good book.
+
+
+00:07:43.580 --> 00:07:46.080
+Anyway, reading code, an important
+
+
+00:07:46.080 --> 00:07:48.060
+but seldom discussed skill.
+
+
+00:07:48.060 --> 00:07:49.140
+And I have to agree with that.
+
+
+00:07:49.140 --> 00:07:51.940
+I've had many discussions in the past
+
+
+00:07:51.940 --> 00:07:56.940
+about coding standards within teams.
+
+
+00:07:56.940 --> 00:08:00.160
+And I try to have them be lightweight.
+
+
+00:08:00.160 --> 00:08:03.120
+It's better to just teach people how to read code.
+
+
+00:08:03.120 --> 00:08:06.940
+And so this, I'm mostly bringing this up
+
+
+00:08:06.940 --> 00:08:09.080
+because I definitely agree that we need to talk
+
+
+00:08:09.080 --> 00:08:12.020
+about it more, especially when teaching people,
+
+
+00:08:12.020 --> 00:08:14.360
+reading code and reading, like we often tell people
+
+
+00:08:14.360 --> 00:08:16.560
+go out and read the source code
+
+
+00:08:16.560 --> 00:08:20.600
+for some popular third party libraries or packages
+
+
+00:08:20.600 --> 00:08:25.600
+or even the internal Python, standard Python library.
+
+
+00:08:25.600 --> 00:08:29.440
+But it does take some skill to read code.
+
+
+00:08:29.440 --> 00:08:34.440
+So anyway, he takes an example of a lottery example
+
+
+00:08:34.440 --> 00:08:37.140
+or something that doesn't really matter.
+
+
+00:08:37.140 --> 00:08:39.540
+But there's a few techniques, a couple techniques
+
+
+00:08:39.540 --> 00:08:41.240
+that he lists that I really like.
+
+
+00:08:41.240 --> 00:08:43.900
+So there's a, if you just look at code,
+
+
+00:08:43.900 --> 00:08:45.460
+you've got a whole bunch of comments,
+
+
+00:08:45.460 --> 00:08:47.620
+you got a whole bunch of stuff going on often.
+
+
+00:08:47.620 --> 00:08:50.140
+And one of the things he says to start with
+
+
+00:08:50.140 --> 00:08:53.820
+is ignore the function definitions, which is interesting
+
+
+00:08:53.820 --> 00:08:55.580
+'cause the function definition is where the name
+
+
+00:08:55.580 --> 00:08:59.060
+of the function is, but just sort of ignore that for now.
+
+
+00:08:59.060 --> 00:09:02.380
+And he doesn't say this, but in his example,
+
+
+00:09:02.380 --> 00:09:04.340
+he said, ignore all the comments.
+
+
+00:09:04.340 --> 00:09:05.740
+I mean, he took out all the comments
+
+
+00:09:05.740 --> 00:09:06.940
+in the function definition.
+
+
+00:09:06.940 --> 00:09:09.340
+And just so that you can just see the code
+
+
+00:09:09.340 --> 00:09:10.780
+and not everything else.
+
+
+00:09:10.780 --> 00:09:14.420
+And I actually, I had a code base once where I had,
+
+
+00:09:14.420 --> 00:09:16.740
+there were so many comments that I wrote a little script
+
+
+00:09:16.740 --> 00:09:18.140
+that would strip the comments out
+
+
+00:09:18.140 --> 00:09:19.620
+so that I could read the code better.
+
+
+00:09:19.620 --> 00:09:26.020
+Anyway, you can mentally do it when you get used to doing this.
+
+
+00:09:26.020 --> 00:09:27.700
+And also, IDEs help.
+
+
+00:09:27.700 --> 00:09:30.260
+But that's a great way to just sort of simplify
+
+
+00:09:30.260 --> 00:09:32.500
+what you're looking at so that you can mentally
+
+
+00:09:32.500 --> 00:09:34.060
+see what's going on.
+
+
+00:09:34.060 --> 00:09:37.140
+The second technique is to simplify repetitive blocks.
+
+
+00:09:37.140 --> 00:09:39.100
+Like in the example we're showing,
+
+
+00:09:39.100 --> 00:09:41.740
+there's a couple big print blocks.
+
+
+00:09:41.740 --> 00:09:46.100
+And his example says, mentally, you can just
+
+
+00:09:46.100 --> 00:09:48.740
+blunt this into print a message.
+
+
+00:09:48.740 --> 00:09:50.100
+and that helps you.
+
+
+00:09:50.100 --> 00:09:52.380
+And then there's really not that much code left
+
+
+00:09:52.380 --> 00:09:53.460
+when you're looking at it.
+
+
+00:09:53.460 --> 00:09:57.340
+And so that, he talks about trying to make sense of it.
+
+
+00:09:57.340 --> 00:09:59.300
+I'm not gonna throw any,
+
+
+00:09:59.300 --> 00:10:02.840
+I'm not gonna discuss really what I think of the quality
+
+
+00:10:02.840 --> 00:10:05.400
+of the code he's showing, it's fine.
+
+
+00:10:05.400 --> 00:10:08.980
+But, and then the last thing,
+
+
+00:10:08.980 --> 00:10:13.580
+or next to the last is to talk about using an IDE.
+
+
+00:10:13.580 --> 00:10:17.620
+And so I do this a lot with many IDEs,
+
+
+00:10:17.620 --> 00:10:19.180
+I think all of them now.
+
+
+00:10:19.180 --> 00:10:22.020
+You can, like, just instead of hiding
+
+
+00:10:22.020 --> 00:10:24.740
+the function definition, you can hide everything
+
+
+00:10:24.740 --> 00:10:28.140
+but the function definition on a lot of functions.
+
+
+00:10:28.140 --> 00:10:30.700
+And especially if you've got a whole bunch
+
+
+00:10:30.700 --> 00:10:34.580
+of helper functions that are cluttering up your workspace,
+
+
+00:10:34.580 --> 00:10:36.420
+or in weird places, you can just hide them
+
+
+00:10:36.420 --> 00:10:37.680
+so that you can see.
+
+
+00:10:37.680 --> 00:10:40.320
+So like in this example, we've got get winning ticket,
+
+
+00:10:40.320 --> 00:10:43.040
+check ticket, and make random ticket.
+
+
+00:10:43.040 --> 00:10:46.460
+And then you can kind of see part of one of the functions,
+
+
+00:10:46.460 --> 00:10:49.660
+But maybe I also want to see one other function.
+
+
+00:10:49.660 --> 00:10:51.660
+So especially if you're looking at two functions,
+
+
+00:10:51.660 --> 00:10:52.940
+you can hide the rest of them.
+
+
+00:10:52.940 --> 00:10:54.460
+It makes it nice.
+
+
+00:10:54.460 --> 00:10:57.500
+- Yeah, it usually goes under the term of code folding.
+
+
+00:10:57.500 --> 00:10:59.380
+- Yeah, code folding, that's it.
+
+
+00:10:59.380 --> 00:11:04.100
+But then a great discussion of, think about this.
+
+
+00:11:04.100 --> 00:11:06.380
+Think about that people are gonna read your code
+
+
+00:11:06.380 --> 00:11:07.420
+and try to understand it.
+
+
+00:11:07.420 --> 00:11:09.500
+So think about that when you're writing code.
+
+
+00:11:09.500 --> 00:11:11.780
+So writing readable code.
+
+
+00:11:11.780 --> 00:11:13.340
+One of the things he didn't bring up
+
+
+00:11:13.340 --> 00:11:15.300
+that I want to make sure about is,
+
+
+00:11:15.300 --> 00:11:18.300
+So this technique of like hiding the function definition,
+
+
+00:11:18.300 --> 00:11:21.520
+one of the things, one of the powerful things about this
+
+
+00:11:21.520 --> 00:11:25.620
+is because we have mentally, when we're reading code,
+
+
+00:11:25.620 --> 00:11:28.140
+at least when I am, and I think this applies
+
+
+00:11:28.140 --> 00:11:31.060
+to a lot of people, we believe the function name
+
+
+00:11:31.060 --> 00:11:34.500
+and we believe the variable name because somebody chose it.
+
+
+00:11:34.500 --> 00:11:37.460
+But so therefore it really needs to be accurate.
+
+
+00:11:37.460 --> 00:11:41.060
+It should be, it's hard to name functions and variables,
+
+
+00:11:41.060 --> 00:11:43.060
+but sometimes they drift.
+
+
+00:11:43.060 --> 00:11:46.780
+Sometimes it'll say set name or something,
+
+
+00:11:46.780 --> 00:11:48.460
+but it does a whole bunch of other stuff.
+
+
+00:11:48.460 --> 00:11:50.320
+If it does a whole bunch of other stuff,
+
+
+00:11:50.320 --> 00:11:52.100
+you're going to have to change the name of the function
+
+
+00:11:52.100 --> 00:11:55.660
+because if the function's name is not accurate,
+
+
+00:11:55.660 --> 00:11:59.180
+people are going to fold it up and just assume that's what it does.
+
+
+00:11:59.180 --> 00:12:02.060
+I would add to this,
+
+
+00:12:02.060 --> 00:12:05.380
+make sure your function and variable names are descriptive and change
+
+
+00:12:05.380 --> 00:12:10.100
+them when the body of the function changes.
+
+
+00:12:10.100 --> 00:12:13.260
+- Yeah, it's interesting, I just had Eric on Talk Python,
+
+
+00:12:13.260 --> 00:12:16.860
+which is not yet out, so, you know, time travel, podcasts,
+
+
+00:12:16.860 --> 00:12:18.300
+he was both there and is not there,
+
+
+00:12:18.300 --> 00:12:20.420
+and it's sort of a, and Heisen, Eric,
+
+
+00:12:20.420 --> 00:12:21.460
+sort of thing going on there,
+
+
+00:12:21.460 --> 00:12:23.780
+but a couple thoughts on this.
+
+
+00:12:23.780 --> 00:12:26.180
+I think if, it's kind of a big if,
+
+
+00:12:26.180 --> 00:12:28.280
+and the comments are hinting towards this
+
+
+00:12:28.280 --> 00:12:29.520
+in the livestream as well,
+
+
+00:12:29.520 --> 00:12:32.520
+if the naming is super good,
+
+
+00:12:32.520 --> 00:12:34.360
+I kind of prefer the second way,
+
+
+00:12:34.360 --> 00:12:36.580
+like collapse all the functions and then expand them
+
+
+00:12:36.580 --> 00:12:38.900
+as you're like, that's not clear what this is doing,
+
+
+00:12:38.900 --> 00:12:39.980
+like let me dive into that,
+
+
+00:12:39.980 --> 00:12:42.720
+a print header, like, "Okay, well,
+
+
+00:12:42.720 --> 00:12:44.920
+we're going to assume that that prints the header."
+
+
+00:12:44.920 --> 00:12:48.360
+Just go on or things like that,
+
+
+00:12:48.360 --> 00:12:50.640
+where it's pretty straightforward and there's not a lot of,
+
+
+00:12:50.640 --> 00:12:52.420
+"I wonder what the algorithm does there."
+
+
+00:12:52.420 --> 00:12:54.280
+It's like, "Not too much."
+
+
+00:12:54.280 --> 00:12:56.520
+So then I like to fold it down.
+
+
+00:12:56.520 --> 00:13:00.740
+But I'm not sure that I would take away the function names.
+
+
+00:13:00.740 --> 00:13:05.120
+I guess it would be like a unique IDE plugin,
+
+
+00:13:05.120 --> 00:13:07.540
+or you could say inline everything,
+
+
+00:13:07.540 --> 00:13:08.640
+and even if there's repetition,
+
+
+00:13:08.640 --> 00:13:10.520
+just inline it and just like, you know,
+
+
+00:13:10.520 --> 00:13:12.880
+and then work backwards as a way to understand.
+
+
+00:13:12.880 --> 00:13:14.000
+Don't do that in the main branch,
+
+
+00:13:14.000 --> 00:13:16.000
+but that'd be interesting to do.
+
+
+00:13:16.000 --> 00:13:17.520
+But it kind of in the reverse,
+
+
+00:13:17.520 --> 00:13:19.600
+a lot of times what you'll end up with is
+
+
+00:13:19.600 --> 00:13:22.480
+a function that's like super long and poorly structured.
+
+
+00:13:22.480 --> 00:13:23.820
+If you're trying to understand it,
+
+
+00:13:23.820 --> 00:13:26.280
+if just reading the function name doesn't work,
+
+
+00:13:26.280 --> 00:13:29.000
+it's usually because it's a big glob of a mess, right?
+
+
+00:13:29.000 --> 00:13:30.240
+Not always, but often.
+
+
+00:13:30.240 --> 00:13:32.480
+So the part where he says,
+
+
+00:13:32.480 --> 00:13:34.120
+comment out this instead of having
+
+
+00:13:34.120 --> 00:13:36.000
+all the steps of like print the winning thing,
+
+
+00:13:36.000 --> 00:13:37.760
+and here's like the seven things that does,
+
+
+00:13:37.760 --> 00:13:40.240
+you just have a comment, print the winning thing.
+
+
+00:13:40.240 --> 00:13:42.000
+What I like to do for that is,
+
+
+00:13:42.000 --> 00:13:43.380
+as I'm trying to understand it,
+
+
+00:13:43.380 --> 00:13:46.980
+I'll grab that section and refactor to a function and say,
+
+
+00:13:46.980 --> 00:13:49.320
+print the winner, grab the other part,
+
+
+00:13:49.320 --> 00:13:51.440
+refactor, print loser,
+
+
+00:13:51.440 --> 00:13:54.000
+or something along those lines.
+
+
+00:13:54.000 --> 00:13:56.360
+It actually will start to have
+
+
+00:13:56.360 --> 00:13:58.960
+the same effect as replacing with a comment,
+
+
+00:13:58.960 --> 00:14:01.120
+but you end up with running code that is still
+
+
+00:14:01.120 --> 00:14:04.200
+understandable and consistent as you play with it.
+
+
+00:14:04.200 --> 00:14:06.160
+I'll go through something big and go, "Okay,
+
+
+00:14:06.160 --> 00:14:09.200
+this section, this should be its own little thing with a name.
+
+
+00:14:09.200 --> 00:14:13.400
+Hey, how about I can make a function that has that name and the ID just a highlight,
+
+
+00:14:13.400 --> 00:14:15.920
+right-click, Control T or whatever,
+
+
+00:14:15.920 --> 00:14:19.520
+do it and give it the name that you were going to make the comment.
+
+
+00:14:19.520 --> 00:14:21.880
+That works a little bit better for me because it doesn't
+
+
+00:14:21.880 --> 00:14:24.040
+destroy the running code in case you're like,
+
+
+00:14:24.040 --> 00:14:26.680
+well, but now I need to run it to see what this other part does.
+
+
+00:14:26.680 --> 00:14:32.640
+>> Yeah. Another thing that I was thinking of other tips.
+
+
+00:14:32.640 --> 00:14:36.600
+I learned to program mostly doing a lot of C code.
+
+
+00:14:36.600 --> 00:14:40.120
+In there, if you're writing helper functions,
+
+
+00:14:40.120 --> 00:14:43.120
+they need to go above the normal,
+
+
+00:14:43.120 --> 00:14:46.400
+the other function because it's not declared,
+
+
+00:14:46.400 --> 00:14:49.080
+when it has to be visible to the function.
+
+
+00:14:49.080 --> 00:14:51.480
+That's not true with Python.
+
+
+00:14:51.480 --> 00:14:54.920
+I've liked to have the reverse.
+
+
+00:14:54.920 --> 00:14:57.680
+One of the suggestions is to break out,
+
+
+00:14:57.680 --> 00:14:59.440
+if you've got a bunch of helper functions and it's
+
+
+00:14:59.440 --> 00:15:01.800
+confusing you, to put them in another file.
+
+
+00:15:01.800 --> 00:15:03.080
+I don't actually like to do that,
+
+
+00:15:03.080 --> 00:15:05.600
+especially if it's only one file using it.
+
+
+00:15:05.600 --> 00:15:10.920
+I'd rather put them below the function that they're helping.
+
+
+00:15:10.920 --> 00:15:15.760
+Especially if there's just a couple main functions that are
+
+
+00:15:15.760 --> 00:15:19.100
+used in this module that are used externally.
+
+
+00:15:19.100 --> 00:15:21.140
+But I'd like to put those at the top and
+
+
+00:15:21.140 --> 00:15:23.480
+then all the helpers at the bottom or something like that.
+
+
+00:15:23.480 --> 00:15:24.520
+>> Yeah.
+
+
+00:15:24.520 --> 00:15:28.800
+>> I used to have a coding style to do the reverse,
+
+
+00:15:28.800 --> 00:15:32.260
+and I think it was inherited from C code style,
+
+
+00:15:32.260 --> 00:15:34.540
+but Python's different.
+
+
+00:15:34.540 --> 00:15:37.940
+I don't necessarily, I guess,
+
+
+00:15:37.940 --> 00:15:41.560
+I'm not sure what I feel about the hiding the function name,
+
+
+00:15:41.560 --> 00:15:44.600
+but I guess maybe don't trust the function name?
+
+
+00:15:44.600 --> 00:15:45.360
+>> Yeah.
+
+
+00:15:45.360 --> 00:15:46.880
+>> Verify?
+
+
+00:15:46.880 --> 00:15:49.160
+>> Yeah. There's a couple of comments like that.
+
+
+00:15:49.160 --> 00:15:51.200
+David Poole says, "I quote I once read,
+
+
+00:15:51.200 --> 00:15:53.560
+is if the code and comments disagree, both are wrong."
+
+
+00:15:53.560 --> 00:15:55.720
+It's similar to the function names,
+
+
+00:15:55.720 --> 00:15:57.640
+as well as given sufficient times,
+
+
+00:15:57.640 --> 00:15:59.240
+the code and the comments,
+
+
+00:15:59.240 --> 00:16:01.480
+maybe function names as well will start to lie,
+
+
+00:16:01.480 --> 00:16:03.040
+which is interesting.
+
+
+00:16:03.040 --> 00:16:05.660
+>> I also see that people are more reluctant to
+
+
+00:16:05.660 --> 00:16:07.160
+change somebody else's comment
+
+
+00:16:07.160 --> 00:16:09.040
+than they are to change their code.
+
+
+00:16:09.040 --> 00:16:11.480
+I'm like, you got to get over that.
+
+
+00:16:11.480 --> 00:16:12.800
+If the comments are wrong,
+
+
+00:16:12.800 --> 00:16:14.000
+feel free to change it.
+
+
+00:16:14.000 --> 00:16:16.400
+That's a perfectly fine refactoring.
+
+
+00:16:16.400 --> 00:16:19.040
+Anyway, let's move to the next one.
+
+
+00:16:19.040 --> 00:16:21.680
+>> I totally agree with you about putting the most,
+
+
+00:16:21.680 --> 00:16:25.440
+the organizing, coordinating high-level stuff first.
+
+
+00:16:25.440 --> 00:16:27.680
+maybe what would be in the dunder,
+
+
+00:16:27.680 --> 00:16:30.640
+if name, dunder name equals dunder main,
+
+
+00:16:30.640 --> 00:16:33.040
+whatever that is, make that a function and put it at the top.
+
+
+00:16:33.040 --> 00:16:35.100
+I totally agree that that's the way to go.
+
+
+00:16:35.100 --> 00:16:36.200
+>> Yeah. Cool.
+
+
+00:16:36.200 --> 00:16:38.600
+>> All right. Next, how about another release?
+
+
+00:16:38.600 --> 00:16:43.000
+This time, something very small with lots of effort.
+
+
+00:16:43.000 --> 00:16:48.160
+This is the one that I was thinking that comes from Matt Trentini.
+
+
+00:16:48.160 --> 00:16:50.520
+Let me pull it up because it has some good stats in it.
+
+
+00:16:50.520 --> 00:16:52.080
+It says, "After 10 months,
+
+
+00:16:52.080 --> 00:16:55.720
+a thousand mainline commits and over 100 contributors,
+
+
+00:16:55.720 --> 00:16:58.840
+we have a new version of MicroPython.
+
+
+00:16:58.840 --> 00:17:00.920
+Thank you, Matt, for sending that into us.
+
+
+00:17:00.920 --> 00:17:04.600
+That's a pretty big release, 100 contributors.
+
+
+00:17:04.600 --> 00:17:06.720
+The reason I brought that up is that
+
+
+00:17:06.720 --> 00:17:09.200
+the GitHub announcement for the release
+
+
+00:17:09.200 --> 00:17:11.800
+doesn't point out how big of a release this was,
+
+
+00:17:11.800 --> 00:17:13.720
+like almost a year's worth of work.
+
+
+00:17:13.720 --> 00:17:17.000
+MicroPython, the one that runs on embedded devices,
+
+
+00:17:17.000 --> 00:17:21.040
+not phones, but incredibly small and cheap devices,
+
+
+00:17:21.040 --> 00:17:22.680
+like five, $10 chips.
+
+
+00:17:22.680 --> 00:17:23.520
+- Yeah.
+
+
+00:17:23.520 --> 00:17:24.340
+- It's awesome.
+
+
+00:17:24.340 --> 00:17:26.440
+It's awesome that you can run Python there, right?
+
+
+00:17:26.440 --> 00:17:30.320
+And so, MicroPython and CircuitPython are, you know,
+
+
+00:17:30.320 --> 00:17:33.600
+similar projects, one fork from the other, I believe,
+
+
+00:17:33.600 --> 00:17:35.400
+but they've deviated a little bit.
+
+
+00:17:35.400 --> 00:17:38.440
+CircuitPython being more beginner, educational-friendly,
+
+
+00:17:38.440 --> 00:17:42.480
+MicroPython being more production device, you know,
+
+
+00:17:42.480 --> 00:17:46.240
+creating devices to do actual jobs type of friendly.
+
+
+00:17:46.240 --> 00:17:47.740
+But I think they're working a lot together.
+
+
+00:17:47.740 --> 00:17:50.440
+There's been a lot of merging back, so that's pretty cool.
+
+
+00:17:50.440 --> 00:17:56.240
+So this release of MicroPython introduces a lightweight package manager called MIP.
+
+
+00:17:56.240 --> 00:17:58.140
+Instead of PIP, you've got MIP.
+
+
+00:17:58.140 --> 00:18:03.940
+It uses a custom protocol to query and install packages that's optimized for embedded systems.
+
+
+00:18:03.940 --> 00:18:08.140
+So that's pretty cool. It's easier to get packages involved.
+
+
+00:18:08.140 --> 00:18:12.540
+Like if you've done MicroPython stuff before, it's not as easy as just pip install this thing.
+
+
+00:18:12.540 --> 00:18:14.840
+It's a little bit trickier than that.
+
+
+00:18:14.840 --> 00:18:20.140
+Also, the core runtime and built-in types have been compressed
+
+
+00:18:20.140 --> 00:18:25.700
+to only including C-level type structs for as much as possible.
+
+
+00:18:25.700 --> 00:18:27.660
+So that's shrunken the size of it,
+
+
+00:18:27.660 --> 00:18:33.020
+not by a lot, but it's so small that losing kilobytes actually makes a difference,
+
+
+00:18:33.020 --> 00:18:35.860
+which is a pretty interesting way to think about it because we don't
+
+
+00:18:35.860 --> 00:18:39.180
+worry about the size varying by kilobytes in CPython.
+
+
+00:18:39.180 --> 00:18:40.020
+>> Right.
+
+
+00:18:40.020 --> 00:18:45.220
+>> Then there's a bunch of small changes like Bluetooth low energy changes,
+
+
+00:18:45.220 --> 00:18:46.900
+SSL settings, by the way,
+
+
+00:18:46.900 --> 00:18:50.380
+SSL is way harder over there than you would imagine it would be.
+
+
+00:18:50.380 --> 00:18:55.260
+There's a bunch of different ports like the ESP32 is the one that I've worked with.
+
+
+00:18:55.260 --> 00:18:58.180
+For each of the different ports that it goes through,
+
+
+00:18:58.180 --> 00:19:01.220
+there's a summary of how has it changed for that one.
+
+
+00:19:01.220 --> 00:19:04.140
+I'd also like to just remind people,
+
+
+00:19:04.140 --> 00:19:06.260
+while this is awesome for embedded devices,
+
+
+00:19:06.260 --> 00:19:10.580
+you might think, I don't do small chip programming,
+
+
+00:19:10.580 --> 00:19:11.660
+so it doesn't matter to me.
+
+
+00:19:11.660 --> 00:19:14.740
+You also might be interested in PyScript.
+
+
+00:19:14.740 --> 00:19:19.780
+>> So one of the things that they're trying to do is work to get
+
+
+00:19:19.780 --> 00:19:23.040
+MicroPython to be one of the possible foundations,
+
+
+00:19:23.040 --> 00:19:27.060
+the runtimes in WebAssembly for PyScript.
+
+
+00:19:27.060 --> 00:19:31.380
+When this thing is 100K or 75K, whatever it is,
+
+
+00:19:31.380 --> 00:19:33.700
+all of a sudden, you can run PyScript in
+
+
+00:19:33.700 --> 00:19:36.700
+the browser nearly on par with JavaScript.
+
+
+00:19:36.700 --> 00:19:41.340
+Traditional PyScript used the full C Python,
+
+
+00:19:41.340 --> 00:19:43.620
+at least as much as you can get into WebAssembly,
+
+
+00:19:43.620 --> 00:19:46.440
+which is meant a 10 meg download and then in the browser,
+
+
+00:19:46.440 --> 00:19:48.220
+I had to parse and start up that whole thing.
+
+
+00:19:48.220 --> 00:19:50.140
+If that goes to MicroPython,
+
+
+00:19:50.140 --> 00:19:53.420
+that becomes incredibly fast to download 75K.
+
+
+00:19:53.420 --> 00:19:56.460
+That's like JavaScript size.
+
+
+00:19:56.460 --> 00:19:59.180
+All these changes are not just like,
+
+
+00:19:59.180 --> 00:20:02.980
+I don't do this embedded device programming,
+
+
+00:20:02.980 --> 00:20:06.220
+so it's not for me. It may well be for all of us soon,
+
+
+00:20:06.220 --> 00:20:08.420
+instead of JavaScript, which is very exciting.
+
+
+00:20:08.420 --> 00:20:10.500
+There are many changes like,
+
+
+00:20:10.500 --> 00:20:13.860
+Ryan, see the scroll bar size as I'm going through this list?
+
+
+00:20:13.860 --> 00:20:16.000
+I am not going to go through them, but if you care,
+
+
+00:20:16.000 --> 00:20:19.160
+I just want to point out, there's a massive new release of MicroPython.
+
+
+00:20:19.160 --> 00:20:21.960
+You can go and see what's changed for the different ports.
+
+
+00:20:21.960 --> 00:20:25.500
+And then in the core, there's just almost,
+
+
+00:20:25.500 --> 00:20:28.040
+I don't know how many pages that is, but it's many, many, many pages.
+
+
+00:20:28.040 --> 00:20:31.240
+So check out the linked release notes from the MicroPython team.
+
+
+00:20:31.240 --> 00:20:34.000
+Congrats to them as well, Damian, George, and others.
+
+
+00:20:34.000 --> 00:20:35.600
+Yeah, this is really cool.
+
+
+00:20:35.600 --> 00:20:40.100
+I love to see that basically also that the project is continuing
+
+
+00:20:40.100 --> 00:20:44.540
+and we all benefit from Python-enabled devices and stuff,
+
+
+00:20:44.540 --> 00:20:47.740
+and people can invent new things better.
+
+
+00:20:47.740 --> 00:20:51.020
+Yeah, the Internet of Things being
+
+
+00:20:51.020 --> 00:20:53.540
+in Python is better than having a different language.
+
+
+00:20:53.540 --> 00:20:56.460
+>> Absolutely. Also, just want to
+
+
+00:20:56.460 --> 00:20:59.180
+time travel thing as well.
+
+
+00:20:59.180 --> 00:21:01.660
+I think Matt sent this over quite a while ago,
+
+
+00:21:01.660 --> 00:21:03.100
+and it's been on our list,
+
+
+00:21:03.100 --> 00:21:05.020
+and I finally pulled it off our list and made it a topic.
+
+
+00:21:05.020 --> 00:21:06.660
+This is from end of April.
+
+
+00:21:06.660 --> 00:21:08.020
+It's a couple of months old,
+
+
+00:21:08.020 --> 00:21:11.700
+But still, almost a year's worth of work is worth celebrating,
+
+
+00:21:11.700 --> 00:21:13.980
+even if it's a couple of months later.
+
+
+00:21:13.980 --> 00:21:17.100
+>> Yeah, pretty cool. All right.
+
+
+00:21:17.100 --> 00:21:19.800
+Ready for our last topic?
+
+
+00:21:19.800 --> 00:21:22.100
+>> Yeah, bring it on.
+
+
+00:21:22.100 --> 00:21:27.260
+>> I shouldn't even qualify this.
+
+
+00:21:27.260 --> 00:21:31.580
+I was going to say I'm not a sucker for listicles, but I am.
+
+
+00:21:31.580 --> 00:21:35.460
+This is an article called Advanced Python Tips for Development.
+
+
+00:21:35.460 --> 00:21:36.700
+But when I was reading it,
+
+
+00:21:36.700 --> 00:21:40.980
+So this is by Schofield-Idahen.
+
+
+00:21:40.980 --> 00:21:43.220
+And when I was reading it, there's 15 tips,
+
+
+00:21:43.220 --> 00:21:45.460
+and some of them don't really seem that advanced.
+
+
+00:21:45.460 --> 00:21:47.780
+Like the top one, use list comprehensions.
+
+
+00:21:47.780 --> 00:21:49.440
+Okay, you should do that.
+
+
+00:21:49.440 --> 00:21:51.100
+But there's a few that I wanted to point out
+
+
+00:21:51.100 --> 00:21:54.140
+that I thought were, that I just wanted reminders of
+
+
+00:21:54.140 --> 00:21:55.740
+to use it more often.
+
+
+00:21:55.740 --> 00:21:58.580
+So list comprehensions are awesome,
+
+
+00:21:58.580 --> 00:22:03.180
+and I kind of forget that they aren't obvious to people now
+
+
+00:22:03.180 --> 00:22:04.560
+because I've been using them for so long.
+
+
+00:22:04.560 --> 00:22:06.660
+So they're great, but one of the things
+
+
+00:22:06.660 --> 00:22:10.280
+The next step, so tip one is use list comprehensions.
+
+
+00:22:10.280 --> 00:22:13.360
+Tip two is leverage generator expressions
+
+
+00:22:13.360 --> 00:22:14.820
+for memory efficiency.
+
+
+00:22:14.820 --> 00:22:17.440
+And I don't use generator expressions enough,
+
+
+00:22:17.440 --> 00:22:18.360
+and I think I should.
+
+
+00:22:18.360 --> 00:22:20.640
+And one of the cool things about this article
+
+
+00:22:20.640 --> 00:22:23.580
+is it shows side by side a list comprehension
+
+
+00:22:23.580 --> 00:22:26.980
+and a generator expression, and they look identical,
+
+
+00:22:26.980 --> 00:22:31.000
+except for there's brackets versus parentheses.
+
+
+00:22:31.000 --> 00:22:32.920
+So parentheses, yeah, parens.
+
+
+00:22:32.920 --> 00:22:37.120
+I forget about generator expressions.
+
+
+00:22:37.120 --> 00:22:41.280
+So generator expressions are list comprehensions not generators?
+
+
+00:22:41.280 --> 00:22:42.240
+I thought they were.
+
+
+00:22:42.240 --> 00:22:42.920
+>> No.
+
+
+00:22:42.920 --> 00:22:43.960
+>> No. Okay.
+
+
+00:22:43.960 --> 00:22:48.040
+>> Well, the list comprehension executes it all into memory,
+
+
+00:22:48.040 --> 00:22:49.760
+and then the generator one,
+
+
+00:22:49.760 --> 00:22:52.840
+you have to start iterating through it to create it,
+
+
+00:22:52.840 --> 00:22:55.400
+which it's cool that they're so similar,
+
+
+00:22:55.400 --> 00:23:02.560
+but I'm sure it's caused untold amounts of challenges for people to go,
+
+
+00:23:02.560 --> 00:23:04.700
+They look the same. You can do both.
+
+
+00:23:04.700 --> 00:23:07.760
+It doesn't seem to matter until it really matters, you know?
+
+
+00:23:07.760 --> 00:23:13.420
+>> Yeah. Also, when you get used to list comprehensions,
+
+
+00:23:13.420 --> 00:23:16.880
+generic expressions looks like a tuple expression.
+
+
+00:23:16.880 --> 00:23:21.800
+>> Yeah. Well, then you put curly braces on it and it becomes a set comprehension.
+
+
+00:23:21.800 --> 00:23:24.600
+>> Yeah. The grant reminded us that.
+
+
+00:23:24.600 --> 00:23:26.280
+Don't forget set comprehensions.
+
+
+00:23:26.280 --> 00:23:27.600
+>> Yeah.
+
+
+00:23:27.600 --> 00:23:31.180
+>> Let's hop down. The enumerate function,
+
+
+00:23:31.180 --> 00:23:33.980
+This is just take advantage of the numerate function.
+
+
+00:23:33.980 --> 00:23:37.260
+This is just remember to teach people that are coming from C or
+
+
+00:23:37.260 --> 00:23:42.940
+other for I equals 1-10 languages that enumerates around.
+
+
+00:23:42.940 --> 00:23:45.520
+If you need the index, also use enumerate.
+
+
+00:23:45.520 --> 00:23:48.620
+Don't be a dork and get the length of a list.
+
+
+00:23:48.620 --> 00:23:50.300
+>> Counter equals 1.
+
+
+00:23:50.300 --> 00:23:52.100
+>> For I equals 1 to link the list.
+
+
+00:23:52.100 --> 00:23:52.580
+>> Wow.
+
+
+00:23:52.580 --> 00:23:52.900
+>> Yeah.
+
+
+00:23:52.900 --> 00:23:54.900
+>> Don't do that. Also, enumerate can,
+
+
+00:23:54.900 --> 00:23:57.300
+if you need it to be a,
+
+
+00:23:57.300 --> 00:23:59.820
+so enumerate does zero through whatever.
+
+
+00:23:59.820 --> 00:24:02.000
+If you need it to be one through whatever,
+
+
+00:24:02.000 --> 00:24:04.300
+you can give it a start.
+
+
+00:24:04.300 --> 00:24:06.520
+Enumerate takes a starting point,
+
+
+00:24:06.520 --> 00:24:08.200
+so you can make it start at one if you need it.
+
+
+00:24:08.200 --> 00:24:10.080
+>> If you're working with indexes,
+
+
+00:24:10.080 --> 00:24:12.840
+the default is good, but if you're trying to print thing one,
+
+
+00:24:12.840 --> 00:24:16.320
+thing two, thing three, then start equals one is the way to go.
+
+
+00:24:16.320 --> 00:24:18.260
+>> Or if you're using it to get
+
+
+00:24:18.260 --> 00:24:20.640
+into some other data structure or something.
+
+
+00:24:20.640 --> 00:24:22.920
+I'm going to hop down to,
+
+
+00:24:22.920 --> 00:24:25.840
+so that's true, hop down to five,
+
+
+00:24:25.840 --> 00:24:28.040
+which is the zip function.
+
+
+00:24:28.040 --> 00:24:32.040
+So zip is great for parallel iterating
+
+
+00:24:32.040 --> 00:24:35.320
+through parallel lists, and you can do more than,
+
+
+00:24:35.320 --> 00:24:38.660
+this is showing name and age as two different lists
+
+
+00:24:38.660 --> 00:24:40.820
+and going through them.
+
+
+00:24:40.820 --> 00:24:44.200
+My tip is just practice this several times
+
+
+00:24:44.200 --> 00:24:47.080
+and unfrequently if you need it,
+
+
+00:24:47.080 --> 00:24:50.720
+because this was a hard one to pound into my brain,
+
+
+00:24:50.720 --> 00:24:52.840
+is to remember how zip works,
+
+
+00:24:52.840 --> 00:24:55.000
+because it's not that confusing,
+
+
+00:24:55.000 --> 00:24:57.360
+but it's tripped me up for some reason.
+
+
+00:24:57.360 --> 00:25:00.560
+So you'll take several lists and it just makes,
+
+
+00:25:00.560 --> 00:25:03.300
+if you zip them, you end up with a,
+
+
+00:25:03.300 --> 00:25:05.980
+what is it, a list of tuples or some sort of iterable,
+
+
+00:25:05.980 --> 00:25:07.360
+I don't know if it's an actual list,
+
+
+00:25:07.360 --> 00:25:10.560
+in the iterable of tuples that you can pull out
+
+
+00:25:10.560 --> 00:25:12.100
+different parts of it or something.
+
+
+00:25:12.100 --> 00:25:14.360
+And then you can, in this example,
+
+
+00:25:14.360 --> 00:25:16.200
+it says for name, last age,
+
+
+00:25:16.200 --> 00:25:18.640
+so that's unpacking it after you get it.
+
+
+00:25:18.640 --> 00:25:21.400
+And it works great, I just always forget to use it.
+
+
+00:25:21.400 --> 00:25:23.080
+So a good reminder.
+
+
+00:25:23.080 --> 00:25:26.260
+And then now I'm gonna jump down to my,
+
+
+00:25:26.260 --> 00:25:29.480
+One of the things, 12, but eight is kind of funny
+
+
+00:25:29.480 --> 00:25:31.180
+'cause it's a formatting problem.
+
+
+00:25:31.180 --> 00:25:34.220
+But anyway, use counters, counters are good.
+
+
+00:25:34.220 --> 00:25:36.980
+12 is, what is 12?
+
+
+00:25:36.980 --> 00:25:41.400
+Oh, one of the things, 11 is use decorate,
+
+
+00:25:41.400 --> 00:25:44.100
+decorate functions with static method and class method.
+
+
+00:25:44.100 --> 00:25:46.660
+I just hardly ever do this.
+
+
+00:25:46.660 --> 00:25:51.020
+Do you use static method or class method that much, Michael?
+
+
+00:25:51.020 --> 00:25:52.260
+- Yeah, quite a bit, actually.
+
+
+00:25:52.260 --> 00:25:53.100
+- Oh, really?
+
+
+00:25:53.100 --> 00:25:53.940
+Okay. - Yeah.
+
+
+00:25:54.940 --> 00:25:58.140
+And I guess one of the neat things,
+
+
+00:25:58.140 --> 00:26:00.100
+yeah, anyway, I just don't use it much.
+
+
+00:26:00.100 --> 00:26:04.020
+Maybe I'll try to explore where I can use it more often.
+
+
+00:26:04.020 --> 00:26:07.760
+The number 12 is use slots to reduce memory usage.
+
+
+00:26:07.760 --> 00:26:10.340
+And I kind of forget to do this too,
+
+
+00:26:10.340 --> 00:26:13.780
+so this is a good reminder to use slots when you're,
+
+
+00:26:13.780 --> 00:26:17.340
+and this is great, especially if you know ahead of time
+
+
+00:26:17.340 --> 00:26:21.880
+what, you know, your classes aren't gonna add new data
+
+
+00:26:21.880 --> 00:26:23.660
+as it goes on, or it's not gonna be--
+
+
+00:26:23.660 --> 00:26:26.580
+>> Dynamically generating new fields.
+
+
+00:26:26.580 --> 00:26:30.900
+>> I guess here, I just use the adders.
+
+
+00:26:30.900 --> 00:26:37.300
+>> It's worth pointing out that slots don't just reduce memory,
+
+
+00:26:37.300 --> 00:26:40.300
+they also make attribute access faster.
+
+
+00:26:40.300 --> 00:26:45.980
+Like thing.field, getting and setting that value is also faster with slots.
+
+
+00:26:45.980 --> 00:26:48.940
+>> Okay. Yeah, that is good to remember.
+
+
+00:26:48.940 --> 00:26:51.900
+Anyway, some fun tips.
+
+
+00:26:51.900 --> 00:26:54.700
+14, use pytest.
+
+
+00:26:54.700 --> 00:26:56.580
+It says use unit test or pytest.
+
+
+00:26:56.580 --> 00:26:59.540
+Ignore the first part, use pytest.
+
+
+00:26:59.540 --> 00:27:02.180
+>> Is there a typo there? Is that what you're saying?
+
+
+00:27:02.180 --> 00:27:06.020
+>> There's some typos. Use unit test or take out the unit test or,
+
+
+00:27:06.020 --> 00:27:07.820
+and also it says for unit testing,
+
+
+00:27:07.820 --> 00:27:11.300
+just automated testing for all your automated testing,
+
+
+00:27:11.300 --> 00:27:13.220
+not just unit test.
+
+
+00:27:13.220 --> 00:27:16.900
+Well, those are our topics.
+
+
+00:27:16.900 --> 00:27:20.180
+Do you want to talk about some extras, Michael?
+
+
+00:27:20.180 --> 00:27:21.260
+- I do have some.
+
+
+00:27:21.260 --> 00:27:24.060
+So I feel like, Brian, it's not time for a joke yet,
+
+
+00:27:24.060 --> 00:27:25.820
+but there is a pretty good joke on that page
+
+
+00:27:25.820 --> 00:27:27.100
+we might have to come back to.
+
+
+00:27:27.100 --> 00:27:28.820
+- Well, do you want to just explore it now?
+
+
+00:27:28.820 --> 00:27:30.460
+- No, not yet, not yet.
+
+
+00:27:30.460 --> 00:27:31.780
+- We can do it later, okay.
+
+
+00:27:31.780 --> 00:27:32.860
+- Let's do it later, all right.
+
+
+00:27:32.860 --> 00:27:36.620
+So, you know, people have different faces, Brian.
+
+
+00:27:36.620 --> 00:27:39.420
+Sometimes you've got your sort of like neutral face,
+
+
+00:27:39.420 --> 00:27:41.980
+you've got your happy face, you've got your sad face.
+
+
+00:27:41.980 --> 00:27:43.660
+How about your hugging face?
+
+
+00:27:43.660 --> 00:27:45.180
+What's your hugging face look like?
+
+
+00:27:45.180 --> 00:27:50.180
+So there's this project created by Agustin.
+
+
+00:27:50.180 --> 00:27:51.120
+Let me pull it up here.
+
+
+00:27:51.120 --> 00:27:52.820
+The source code's linked at the bottom.
+
+
+00:27:52.820 --> 00:27:57.100
+By Agustin Pekeres, or Agus, as his friends call him,
+
+
+00:27:57.100 --> 00:27:59.340
+sent in, "Hey, I was looking to play
+
+
+00:27:59.340 --> 00:28:01.660
+"with the Hugging Face API, and so I'm like,
+
+
+00:28:01.660 --> 00:28:03.040
+"well, what could I work with?
+
+
+00:28:03.040 --> 00:28:06.880
+"What if I turn a large language model
+
+
+00:28:06.880 --> 00:28:09.800
+"or semantic search loose on Talk Python to me
+
+
+00:28:09.800 --> 00:28:11.020
+"in their transcripts?"
+
+
+00:28:11.020 --> 00:28:11.960
+That's cool, huh?
+
+
+00:28:11.960 --> 00:28:12.800
+- Yeah.
+
+
+00:28:12.800 --> 00:28:14.280
+- So he created this project.
+
+
+00:28:14.280 --> 00:28:17.640
+you gotta go and get a free Hugging Face API token
+
+
+00:28:17.640 --> 00:28:19.040
+'cause it uses Hugging Face.
+
+
+00:28:19.040 --> 00:28:19.940
+I was joking around.
+
+
+00:28:19.940 --> 00:28:21.560
+But then it says you can ask a question.
+
+
+00:28:21.560 --> 00:28:23.880
+For example, what's my advanced options?
+
+
+00:28:23.880 --> 00:28:26.760
+Oh yeah, I can see how many things I could get back.
+
+
+00:28:26.760 --> 00:28:27.800
+Make that 10.
+
+
+00:28:27.800 --> 00:28:28.920
+Focus, folks, come on.
+
+
+00:28:28.920 --> 00:28:31.080
+So you can go to things and say,
+
+
+00:28:31.080 --> 00:28:35.960
+who uses MicroPython in production, for example.
+
+
+00:28:35.960 --> 00:28:37.600
+All right, I can type that into the search field
+
+
+00:28:37.600 --> 00:28:39.000
+and then I can say submit.
+
+
+00:28:39.000 --> 00:28:40.880
+And sometimes it takes a second,
+
+
+00:28:40.880 --> 00:28:42.000
+sometimes it's pretty quick.
+
+
+00:28:42.000 --> 00:28:43.200
+But we're gonna see what we get.
+
+
+00:28:43.200 --> 00:28:44.840
+his little running character,
+
+
+00:28:44.840 --> 00:28:46.480
+although they can't choose their sport.
+
+
+00:28:46.480 --> 00:28:48.320
+It's like rowing and then swimming
+
+
+00:28:48.320 --> 00:28:50.200
+and then it's running and then it's biking.
+
+
+00:28:50.200 --> 00:28:51.720
+That's what the light, here we go.
+
+
+00:28:51.720 --> 00:28:52.960
+- It's like a decathlon.
+
+
+00:28:52.960 --> 00:28:53.800
+- I guess you're right.
+
+
+00:28:53.800 --> 00:28:55.400
+And so here comes the answer back.
+
+
+00:28:55.400 --> 00:28:56.640
+It says over on Talk Python,
+
+
+00:28:56.640 --> 00:28:59.200
+you should check out PyScript powered by MicroPython
+
+
+00:28:59.200 --> 00:29:01.560
+and MicroPython plus CircuitPython.
+
+
+00:29:01.560 --> 00:29:03.240
+You might be thinking, well, it's just searching titles,
+
+
+00:29:03.240 --> 00:29:06.340
+but then empowering developers by embedding Python
+
+
+00:29:06.340 --> 00:29:08.040
+by Nina Zakarenko.
+
+
+00:29:08.040 --> 00:29:09.700
+And then this weird one by Brian
+
+
+00:29:09.700 --> 00:29:12.320
+called 30 Amazing Python Projects and so on.
+
+
+00:29:12.320 --> 00:29:14.140
+or even the year in review. Isn't that cool?
+
+
+00:29:14.140 --> 00:29:15.240
+>> That is neat.
+
+
+00:29:15.240 --> 00:29:16.860
+>> If you want to play with this stuff,
+
+
+00:29:16.860 --> 00:29:19.040
+either because you want to build a thing like this for
+
+
+00:29:19.040 --> 00:29:20.620
+something else or you want to
+
+
+00:29:20.620 --> 00:29:23.140
+just go ask questions about DocPython,
+
+
+00:29:23.140 --> 00:29:25.260
+you can go and check out this app.
+
+
+00:29:25.260 --> 00:29:27.060
+The source code is linked at the bottom.
+
+
+00:29:27.060 --> 00:29:31.140
+>> I guess another comment that maybe it's a good idea to
+
+
+00:29:31.140 --> 00:29:35.780
+have transcripts for people to be able to use as search.
+
+
+00:29:35.780 --> 00:29:38.900
+>> Exactly. We didn't have transcripts.
+
+
+00:29:38.900 --> 00:29:41.900
+We wouldn't be able to do this cool project.
+
+
+00:29:41.900 --> 00:29:46.620
+Yeah, excellent. So that's one. And yeah, that's that's it for me for my extras. You got any?
+
+
+00:29:46.620 --> 00:29:53.580
+Yeah, one, I just wanted to, I guess, remind people that Python people is a thing. Python
+
+
+00:29:53.580 --> 00:30:00.380
+people is a new podcast, and episode three is out with the Brett Cannon. And the one of the comments,
+
+
+00:30:00.380 --> 00:30:05.420
+I one of the quotes from him is I came for the language, but I stayed for the community. We
+
+
+00:30:05.420 --> 00:30:11.500
+explore that. And what was the situation when he when he talked about that? And, and we talked about
+
+
+00:30:11.500 --> 00:30:15.200
+about a whole bunch of stuff like what is the meaning of back baking and toque,
+
+
+00:30:15.200 --> 00:30:22.980
+um, things like that. So check it out. then, oh, nice. I had forgotten
+
+
+00:30:22.980 --> 00:30:27.660
+to, for people listening, I had forgotten to actually show the, the
+
+
+00:30:27.660 --> 00:30:31.020
+episode on the, I could go back and search talk python again for this and
+
+
+00:30:31.020 --> 00:30:34.060
+see if we find python people. You would find a ton of Brett cannon over there
+
+
+00:30:34.060 --> 00:30:38.540
+and we have an episode for him coming up very soon. But, but now I switched it
+
+
+00:30:38.540 --> 00:30:46.860
+over to yours. Next, I didn't. There's a oh, that's the wrong thing. Oh, oh, I deleted
+
+
+00:30:46.860 --> 00:30:51.620
+the thing I wanted to talk about. So I guess that's it from extras. For me. It's gone from
+
+
+00:30:51.620 --> 00:30:59.180
+the internet. It is gone. So I have a joke for us. Okay, well, let's before we do the
+
+
+00:30:59.180 --> 00:31:03.460
+joke, we didn't do any sponsors. One of the sponsors, of course, is Python people, or
+
+
+00:31:03.460 --> 00:31:06.360
+It's us, but I'd like people to check it out.
+
+
+00:31:06.360 --> 00:31:08.700
+We have maybe three listeners so far.
+
+
+00:31:08.700 --> 00:31:11.960
+No, it's bigger than that, but I'd like it to grow.
+
+
+00:31:11.960 --> 00:31:16.360
+I also wanted to give a shout out to everybody on Patreon.
+
+
+00:31:16.360 --> 00:31:20.900
+So if you go to any of Python Bytes pages,
+
+
+00:31:20.900 --> 00:31:22.780
+especially ones without any advertising,
+
+
+00:31:22.780 --> 00:31:27.780
+like today's or episode 343, you can see Become a Patreon,
+
+
+00:31:27.780 --> 00:31:31.760
+and you can click on it and become a member
+
+
+00:31:31.760 --> 00:31:33.500
+and help support the show for a buck.
+
+
+00:31:33.500 --> 00:31:34.340
+That's great.
+
+
+00:31:34.340 --> 00:31:35.400
+I also wanted to give a shout out
+
+
+00:31:35.400 --> 00:31:38.120
+to all of the amazing courses at Talk Python Training.
+
+
+00:31:38.120 --> 00:31:39.520
+Michael has done a great job,
+
+
+00:31:39.520 --> 00:31:43.840
+plus pulling in amazing other people to teach courses,
+
+
+00:31:43.840 --> 00:31:46.240
+like me, at Talk Python Training.
+
+
+00:31:46.240 --> 00:31:48.040
+There's some great stuff, so check it out.
+
+
+00:31:48.040 --> 00:31:49.280
+- That's right. - Now we can do a joke.
+
+
+00:31:49.280 --> 00:31:52.240
+- Yeah, I got some new courses coming
+
+
+00:31:52.240 --> 00:31:53.560
+from some really awesome people.
+
+
+00:31:53.560 --> 00:31:55.040
+All right, on to the joke.
+
+
+00:31:55.040 --> 00:31:55.920
+- On to the joke.
+
+
+00:31:55.920 --> 00:31:59.960
+- So this one is a meme somebody put together.
+
+
+00:31:59.960 --> 00:32:02.280
+I have two jokes here that we can even do the third joke
+
+
+00:32:02.280 --> 00:32:04.800
+that you had on screen a little bit ago.
+
+
+00:32:04.800 --> 00:32:07.920
+So HTMX, if you're all familiar with HTMX,
+
+
+00:32:07.920 --> 00:32:11.400
+if you're not, you should definitely check out our HTMX and Flask course.
+
+
+00:32:11.400 --> 00:32:13.240
+This thing is so awesome.
+
+
+00:32:13.240 --> 00:32:15.080
+I had so much fun learning it and I'm like,
+
+
+00:32:15.080 --> 00:32:18.640
+where's the next project I can use HTMX on because it's great.
+
+
+00:32:18.640 --> 00:32:21.040
+The idea with HTMX is instead of doing JavaScript,
+
+
+00:32:21.040 --> 00:32:23.280
+you just write attributes and then that
+
+
+00:32:23.280 --> 00:32:26.200
+magically through HTMX gets turned into server calls.
+
+
+00:32:26.200 --> 00:32:29.400
+If I need to rebuild a table,
+
+
+00:32:29.400 --> 00:32:31.600
+as somebody interacts with some other part of the page,
+
+
+00:32:31.600 --> 00:32:33.280
+that could just be done on the server
+
+
+00:32:33.280 --> 00:32:35.120
+and just send little fragments back.
+
+
+00:32:35.120 --> 00:32:36.320
+It's incredible, right?
+
+
+00:32:36.320 --> 00:32:37.800
+So it means you don't have to write JavaScript.
+
+
+00:32:37.800 --> 00:32:39.280
+So the joke is,
+
+
+00:32:39.280 --> 00:32:42.400
+there's a guy that's back in dev,
+
+
+00:32:42.400 --> 00:32:44.040
+and then this other dude,
+
+
+00:32:44.040 --> 00:32:45.400
+that's HTMXes.
+
+
+00:32:45.400 --> 00:32:47.000
+HTMXes, look at me.
+
+
+00:32:47.000 --> 00:32:48.240
+Look at me back in dev.
+
+
+00:32:48.240 --> 00:32:49.320
+You're full stack now.
+
+
+00:32:49.320 --> 00:32:50.200
+You're full stack.
+
+
+00:32:50.200 --> 00:32:51.320
+Stand up for yourself, man.
+
+
+00:32:51.320 --> 00:32:52.040
+Don't let those,
+
+
+00:32:52.040 --> 00:32:54.200
+don't feel like you can only write it back in code.
+
+
+00:32:54.200 --> 00:32:55.240
+You're full stack now.
+
+
+00:32:55.240 --> 00:32:56.200
+HTMX.
+
+
+00:32:56.200 --> 00:32:57.240
+Isn't that good?
+
+
+00:32:57.240 --> 00:32:58.480
+>> Yeah.
+
+
+00:32:58.480 --> 00:33:01.080
+The other joke, before we get to the one
+
+
+00:33:01.080 --> 00:33:02.320
+that you had on the page is,
+
+
+00:33:02.320 --> 00:33:04.040
+what is happening to Twitter?
+
+
+00:33:04.040 --> 00:33:08.520
+How did a child try to rebrand this?
+
+
+00:33:08.520 --> 00:33:11.560
+It is so incredibly bad.
+
+
+00:33:11.560 --> 00:33:15.120
+- No, it's like branded by a high school band.
+
+
+00:33:15.120 --> 00:33:16.680
+- It's so bad.
+
+
+00:33:16.680 --> 00:33:20.360
+- Let's call ourselves X, that'd be so cool, man.
+
+
+00:33:20.360 --> 00:33:21.480
+- Yeah, man.
+
+
+00:33:21.480 --> 00:33:23.960
+And so like, for example, people might be thinking,
+
+
+00:33:23.960 --> 00:33:25.160
+I go, you're overreacting.
+
+
+00:33:25.160 --> 00:33:28.040
+They tried to take the Twitter logo down
+
+
+00:33:28.040 --> 00:33:31.720
+replace it with an X and then the police came and stopped them because they
+
+
+00:33:31.720 --> 00:33:36.480
+didn't have the Twitter employees doing it, didn't have a permit to drive a crane
+
+
+00:33:36.480 --> 00:33:41.800
+around downtown San Francisco. So it's like half the Twitter logo is like half
+
+
+00:33:41.800 --> 00:33:47.720
+removed. There's no X nor is there Twitter. It says tweet. I'm on twitter.com
+
+
+00:33:47.720 --> 00:33:54.680
+but there's an X but you know sometimes like what do you call these? Are there
+
+
+00:33:54.680 --> 00:33:59.880
+supposed to be X's, you know, usually X's is kind of a bad, I mean, it's just like.
+
+
+00:33:59.880 --> 00:34:02.920
+And if you, if you share another one, is it a re X?
+
+
+00:34:02.920 --> 00:34:04.280
+Yes, exactly.
+
+
+00:34:04.280 --> 00:34:09.640
+And there's, there's some random person who has X as a handle on Twitter.
+
+
+00:34:09.640 --> 00:34:11.480
+And they're like, what's going on?
+
+
+00:34:11.480 --> 00:34:12.800
+Am I going to be like Twitter?
+
+
+00:34:12.800 --> 00:34:12.960
+Yeah.
+
+
+00:34:12.960 --> 00:34:17.840
+They, I heard that they don't, I don't know for sure on this one, but they don't
+
+
+00:34:17.840 --> 00:34:23.240
+seem to have the intellectual property rights to like trademark the letter X.
+
+
+00:34:23.240 --> 00:34:24.400
+Well, you can't.
+
+
+00:34:24.400 --> 00:34:29.400
+- I know, and this X looks like, I think the X11 logo.
+
+
+00:34:29.400 --> 00:34:33.760
+If you go look at that, I think that was the one.
+
+
+00:34:33.760 --> 00:34:36.880
+It's like a thick right slanty
+
+
+00:34:36.880 --> 00:34:41.240
+versus a thin left slanty, which is, you know,
+
+
+00:34:41.240 --> 00:34:43.840
+one's hollow, one's solid, other than that,
+
+
+00:34:43.840 --> 00:34:45.960
+they're kind of, anyway, there's,
+
+
+00:34:45.960 --> 00:34:48.040
+that's sort of a meta joke.
+
+
+00:34:48.040 --> 00:34:50.920
+- On the good side, current employees
+
+
+00:34:50.920 --> 00:34:54.000
+and those that are laid off are all X employees now.
+
+
+00:34:54.000 --> 00:34:57.000
+>> Exactly. Look at all the people that work for Twitter now.
+
+
+00:34:57.000 --> 00:34:59.320
+>> They're all ex-employees.
+
+
+00:34:59.320 --> 00:35:02.320
+>> All right. Because this came from Twitter,
+
+
+00:35:02.320 --> 00:35:05.160
+I'm going to open up like, wow, this is getting janky.
+
+
+00:35:05.160 --> 00:35:08.200
+>> It's ex-news, so it has to be part of our extras.
+
+
+00:35:08.200 --> 00:35:10.480
+>> It absolutely does. All right. If you want to just
+
+
+00:35:10.480 --> 00:35:13.080
+give a quick shout out to what was on that page before.
+
+
+00:35:13.080 --> 00:35:15.120
+>> What were you referring to?
+
+
+00:35:15.120 --> 00:35:17.680
+>> The only valid measurement of code quality,
+
+
+00:35:17.680 --> 00:35:19.320
+the WTFs per minute.
+
+
+00:35:19.320 --> 00:35:21.880
+>> Okay. Yeah, WTFs per minute.
+
+
+00:35:21.880 --> 00:35:22.600
+>> It's true.
+
+
+00:35:22.600 --> 00:35:24.760
+>> Oh, you need the full one.
+
+
+00:35:24.760 --> 00:35:26.080
+>> Oh, wow. You lost it now.
+
+
+00:35:26.080 --> 00:35:26.880
+>> I lost it.
+
+
+00:35:26.880 --> 00:35:30.720
+>> It was an ad. It was a code review and behind the door,
+
+
+00:35:30.720 --> 00:35:33.520
+you could just hear WTF, what WTF?
+
+
+00:35:33.520 --> 00:35:35.720
+The good code only had a couple,
+
+
+00:35:35.720 --> 00:35:39.640
+the bad code was just like overwhelmed with them. That was the joke.
+
+
+00:35:39.640 --> 00:35:40.360
+>> Yeah.
+
+
+00:35:40.360 --> 00:35:41.800
+>> All right. Well, this episode was no joke.
+
+
+00:35:41.800 --> 00:35:43.360
+It was a lot of fun. Thanks, Brian.
+
+
+00:35:43.360 --> 00:35:46.640
+>> Thank you. Thanks everybody for showing up at a weird time.
+
+
+00:35:46.640 --> 00:35:48.040
+I really appreciate it.
+
+
+00:35:48.040 --> 00:35:48.960
+>> It's great.
+
+
+00:35:48.960 --> 00:35:49.760
+>> Yeah.
+
+
+00:35:49.760 --> 00:35:50.720
+>> Talk to you later.
+
+
+00:35:50.720 --> 00:35:51.360
+>> Bye.
+

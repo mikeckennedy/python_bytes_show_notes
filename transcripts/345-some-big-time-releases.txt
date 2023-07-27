@@ -1,0 +1,842 @@
+00:00:00 Hello and welcome to Python Bytes, where we deliver Python news and headlines directly to your earbuds.
+
+00:00:05 This is episode 345, recorded July 26th. Is that right? July 26th, 2023.
+
+00:00:11 I am Brian Okken.
+
+00:00:12 And I am Michael Kennedy.
+
+00:00:14 And you know, 345 episodes, you'd think I wouldn't have to read that, but I still do.
+
+00:00:19 Anyway, a lot of fun topics today.
+
+00:00:24 We are sponsors today or us, courses at Talk Python Training, we'll talk about those, and the new Python People podcast, and our Patreon supporters, of course. Thank you, everybody, for continuing to support us. And everybody that's listening to this, usually, so this is a Wednesday morning, but usually it's Tuesday at 11 Pacific is when we're recording. And if you are around at that time, we'd love to have you join the show.
+
+00:00:52 Just go to pythonbytes.fm/live and you can see when the next episode is going to get recorded.
+
+00:00:58 >> Yeah, Brian, I'm not always successful.
+
+00:01:01 Also, sometimes I just don't know.
+
+00:01:03 I usually try to schedule the next live stream as soon as we're done with this one.
+
+00:01:09 >> Yeah.
+
+00:01:09 >> If you go to YouTube, you can click "Notify me" for just that event, if you want to come to the next week's one or something.
+
+00:01:16 That's kind of the best way to know when the next live stream is.
+
+00:01:19 >> Yeah. I appreciate people that show up and add comments. It's nice.
+
+00:01:23 So, Michael, why don't you kick us off with the first topic?
+
+00:01:26 >> Yes, indeed. This is a very, very exciting one.
+
+00:01:29 So, the next topic, the first topic is the third version of Cython, not CPython.
+
+00:01:36 I didn't drop a P on accident, Cython.
+
+00:01:39 Many people know what Cython is, but I suspect sufficiently many don't that it justifies me saying what the heck it is.
+
+00:01:46 So Cython, let's do a throwback, Brian. This will be fun.
+
+00:01:50 You've done plenty of C. Do you remember inline assembler?
+
+00:01:55 When like little sections of C code had to be like really close to the metal and so you would write like a little bit of assembly inside of a C function or make a function in assembly and call it something crazy like that.
+
+00:02:09 We're talking like 90s.
+
+00:02:11 Yeah.
+
+00:02:11 Well, Cython is kind of like that for Python.
+
+00:02:13 If you've got some part of your code that's not fast enough, well, one of the options is to do what a lot of people are doing is go like, "Well, I'm going to go learn Rust, and I'm going to write this section in Rust, and then I'm going to import it into Python." There are certainly tools for doing so, but what if you could write Python and make it as fast as C almost?
+
+00:02:35 That's what Cython is, and it's like this inline bit, like this function or this module, I need to be in closer to C speed, farther from Python speed, especially in the math type of scenario.
+
+00:02:50 That's what Cython is.
+
+00:02:51 It lets you write Python code that gets compiled to C, use very, very slight variations in the Python syntax.
+
+00:02:59 It used to be way different.
+
+00:03:01 You'd have to have your own types and they were imported from Cython.
+
+00:03:06 So instead of having a traditional I object derived integer type, you would actually have a Cython int, which was like a local int, and you would express that in different ways.
+
+00:03:18 They've been moving towards what they call pure Python mode, where the code that you write for Cython is actually still valid Python if you wanted to just run it that way.
+
+00:03:29 That's pretty cool, right?
+
+00:03:31 >> Yeah.
+
+00:03:31 >> That involves things like type in.
+
+00:03:33 So if you want to say, "Oh, here's a thing that's in int instead of importing some specialized int type from Cython, you would just say x colon int.
+
+00:03:41 And guess what? That's how it works in modern Python.
+
+00:03:44 So the news for this week is that Cython goes 3.0.
+
+00:03:48 And this news comes to us from, let's see.
+
+00:03:52 Oh no, I ran across this with other ones sent over.
+
+00:03:55 They're both new releases with lots of details. So sorry.
+
+00:03:57 Yeah, so anyway, this one, the headline here is that this is long in development.
+
+00:04:01 that's in like five years, has been working on this.
+
+00:04:04 It sheds legacy Python support, that is Python 2.
+
+00:04:09 Look, see that legacy Python people are starting to adopt our term.
+
+00:04:14 I don't know if we have anything to do with it, but we should have tried to popularize that view of Python 2, didn't we?
+
+00:04:19 >> Yeah.
+
+00:04:20 >> It has a lot of boost for this pure Python mode that I talked about.
+
+00:04:25 You might say, "Okay, well, that's interesting that you have this pure Python mode, but why would I really care?" because if the goal is to make it faster, I don't want to run it in pure Python, I want to run it in Cython.
+
+00:04:37 So compile it to C and then behind the scenes as part of your building of the wheel and all that.
+
+00:04:43 >> Yeah.
+
+00:04:43 >> The reason you might want to do that is, what if you care about mypy, or you care about Ruff, or you care about Black, or all these other tools that are Python tooling to understand the Python code, or even PyCharm or VS Code.
+
+00:04:58 You want it to look at that and be able to lint it and format it and understand it.
+
+00:05:03 The pure Python mode allows you to do things like keep your linting tools.
+
+00:05:08 >> Yeah, and also just there's been discussions basically that if we had type hints when Cython started, they probably would have used them to start with instead of their own thing.
+
+00:05:20 >> Yeah, they had no alternative, so they came up with something.
+
+00:05:24 It's just interesting that it came.
+
+00:05:26 I guess it compiles to C, so it makes sense that it had a really strong C flavor in the way that you wrote it.
+
+00:05:32 Yeah. What else is notable here?
+
+00:05:35 Said there's major NumPy support improvements.
+
+00:05:39 Cython has worked well with NumPy, but now with Cython 3, it gives you the ability to write NumPy Ufuncs.
+
+00:05:46 I don't do enough NumPy to know why I care about Ufuncs, but you can write them directly in Cython.
+
+00:05:53 My understanding is basically that instead of going through the Python API and layer to work with NumPy, it drops down to the C layer.
+
+00:06:03 So it's like C to C interoperability when you're doing NumPy within Cython. That's pretty cool.
+
+00:06:08 Another thing that's not mentioned in this article that I'm linking to on InfoWorld that's really cool about NumPy about Cython is you can remove the gil.
+
+00:06:18 You can go no gil.
+
+00:06:19 There's a context manager that's just called no gil.
+
+00:06:22 So I can say like, with this section, I'm going to do a bunch of code and I want to release the GIL for other parallel processing stuff.
+
+00:06:32 So if multiple bits of code call that into that function and they're being done within threads, they can run truly in parallel on hardware, right on the cores, right?
+
+00:06:42 True OS thread parallelism, which is pretty excellent.
+
+00:06:44 Now the limitation there is that you can't be working directly with the Python API, right?
+
+00:06:52 like say list or something, 'cause those assume that they're thread safe because of the gill, right?
+
+00:06:57 But if you're just doing like your own algorithm, right, then you can, which is pretty cool.
+
+00:07:01 And yeah, that's pretty much it.
+
+00:07:04 So well done folks on that.
+
+00:07:07 It sounds like a ton of work, but yeah.
+
+00:07:09 - Yeah, and-- - If you are interested in Cython, check this out.
+
+00:07:13 - Cyro in the audience says, "Cython is great for waiting for HPI output." Nice.
+
+00:07:19 - Mm-hmm.
+
+00:07:20 All right, well, that's number one.
+
+00:07:22 - Okay, I was-- - Which is actually number three.
+
+00:07:24 (laughing)
+
+00:07:25 - Oh yeah, 'cause it's Cython3.
+
+00:07:28 - Exactly.
+
+00:07:29 - So I wanna talk about reading code.
+
+00:07:32 And I kind of agree.
+
+00:07:33 So this is an article by Eric Mathis, and he's the dude that wrote Python Crash Course.
+
+00:07:40 And it's on its third edition now, it's a pretty good book.
+
+00:07:43 Anyway, reading code, an important but seldom discussed skill.
+
+00:07:48 And I have to agree with that.
+
+00:07:49 I've had many discussions in the past about coding standards within teams.
+
+00:07:56 And I try to have them be lightweight.
+
+00:08:00 It's better to just teach people how to read code.
+
+00:08:03 And so this, I'm mostly bringing this up because I definitely agree that we need to talk about it more, especially when teaching people, reading code and reading, like we often tell people go out and read the source code for some popular third party libraries or packages or even the internal Python, standard Python library.
+
+00:08:25 But it does take some skill to read code.
+
+00:08:29 So anyway, he takes an example of a lottery example or something that doesn't really matter.
+
+00:08:37 But there's a few techniques, a couple techniques that he lists that I really like.
+
+00:08:41 So there's a, if you just look at code, you've got a whole bunch of comments, you got a whole bunch of stuff going on often.
+
+00:08:47 And one of the things he says to start with is ignore the function definitions, which is interesting 'cause the function definition is where the name of the function is, but just sort of ignore that for now.
+
+00:08:59 And he doesn't say this, but in his example, he said, ignore all the comments.
+
+00:09:04 I mean, he took out all the comments in the function definition.
+
+00:09:06 And just so that you can just see the code and not everything else.
+
+00:09:10 And I actually, I had a code base once where I had, there were so many comments that I wrote a little script that would strip the comments out so that I could read the code better.
+
+00:09:19 Anyway, you can mentally do it when you get used to doing this.
+
+00:09:26 And also, IDEs help.
+
+00:09:27 But that's a great way to just sort of simplify what you're looking at so that you can mentally see what's going on.
+
+00:09:34 The second technique is to simplify repetitive blocks.
+
+00:09:37 Like in the example we're showing, there's a couple big print blocks.
+
+00:09:41 And his example says, mentally, you can just blunt this into print a message.
+
+00:09:48 and that helps you.
+
+00:09:50 And then there's really not that much code left when you're looking at it.
+
+00:09:53 And so that, he talks about trying to make sense of it.
+
+00:09:57 I'm not gonna throw any, I'm not gonna discuss really what I think of the quality of the code he's showing, it's fine.
+
+00:10:05 But, and then the last thing, or next to the last is to talk about using an IDE.
+
+00:10:13 And so I do this a lot with many IDEs, I think all of them now.
+
+00:10:19 You can, like, just instead of hiding the function definition, you can hide everything but the function definition on a lot of functions.
+
+00:10:28 And especially if you've got a whole bunch of helper functions that are cluttering up your workspace, or in weird places, you can just hide them so that you can see.
+
+00:10:37 So like in this example, we've got get winning ticket, check ticket, and make random ticket.
+
+00:10:43 And then you can kind of see part of one of the functions, But maybe I also want to see one other function.
+
+00:10:49 So especially if you're looking at two functions, you can hide the rest of them.
+
+00:10:52 It makes it nice.
+
+00:10:54 - Yeah, it usually goes under the term of code folding.
+
+00:10:57 - Yeah, code folding, that's it.
+
+00:10:59 But then a great discussion of, think about this.
+
+00:11:04 Think about that people are gonna read your code and try to understand it.
+
+00:11:07 So think about that when you're writing code.
+
+00:11:09 So writing readable code.
+
+00:11:11 One of the things he didn't bring up that I want to make sure about is, So this technique of like hiding the function definition, one of the things, one of the powerful things about this is because we have mentally, when we're reading code, at least when I am, and I think this applies to a lot of people, we believe the function name and we believe the variable name because somebody chose it.
+
+00:11:34 But so therefore it really needs to be accurate.
+
+00:11:37 It should be, it's hard to name functions and variables, but sometimes they drift.
+
+00:11:43 Sometimes it'll say set name or something, but it does a whole bunch of other stuff.
+
+00:11:48 If it does a whole bunch of other stuff, you're going to have to change the name of the function because if the function's name is not accurate, people are going to fold it up and just assume that's what it does.
+
+00:11:59 I would add to this, make sure your function and variable names are descriptive and change them when the body of the function changes.
+
+00:12:10 - Yeah, it's interesting, I just had Eric on Talk Python, which is not yet out, so, you know, time travel, podcasts, he was both there and is not there, and it's sort of a, and Heisen, Eric, sort of thing going on there, but a couple thoughts on this.
+
+00:12:23 I think if, it's kind of a big if, and the comments are hinting towards this in the livestream as well, if the naming is super good, I kind of prefer the second way, like collapse all the functions and then expand them as you're like, that's not clear what this is doing, like let me dive into that, a print header, like, "Okay, well, we're going to assume that that prints the header." Just go on or things like that, where it's pretty straightforward and there's not a lot of, "I wonder what the algorithm does there." It's like, "Not too much." So then I like to fold it down.
+
+00:12:56 But I'm not sure that I would take away the function names.
+
+00:13:00 I guess it would be like a unique IDE plugin, or you could say inline everything, and even if there's repetition, just inline it and just like, you know, and then work backwards as a way to understand.
+
+00:13:12 Don't do that in the main branch, but that'd be interesting to do.
+
+00:13:16 But it kind of in the reverse, a lot of times what you'll end up with is a function that's like super long and poorly structured.
+
+00:13:22 If you're trying to understand it, if just reading the function name doesn't work, it's usually because it's a big glob of a mess, right?
+
+00:13:29 Not always, but often.
+
+00:13:30 So the part where he says, comment out this instead of having all the steps of like print the winning thing, and here's like the seven things that does, you just have a comment, print the winning thing.
+
+00:13:40 What I like to do for that is, as I'm trying to understand it, I'll grab that section and refactor to a function and say, print the winner, grab the other part, refactor, print loser, or something along those lines.
+
+00:13:54 It actually will start to have the same effect as replacing with a comment, but you end up with running code that is still understandable and consistent as you play with it.
+
+00:14:04 I'll go through something big and go, "Okay, this section, this should be its own little thing with a name.
+
+00:14:09 Hey, how about I can make a function that has that name and the ID just a highlight, right-click, Control T or whatever, do it and give it the name that you were going to make the comment.
+
+00:14:19 That works a little bit better for me because it doesn't destroy the running code in case you're like, well, but now I need to run it to see what this other part does.
+
+00:14:26 >> Yeah. Another thing that I was thinking of other tips.
+
+00:14:32 I learned to program mostly doing a lot of C code.
+
+00:14:36 In there, if you're writing helper functions, they need to go above the normal, the other function because it's not declared, when it has to be visible to the function.
+
+00:14:49 That's not true with Python.
+
+00:14:51 I've liked to have the reverse.
+
+00:14:54 One of the suggestions is to break out, if you've got a bunch of helper functions and it's confusing you, to put them in another file.
+
+00:15:01 I don't actually like to do that, especially if it's only one file using it.
+
+00:15:05 I'd rather put them below the function that they're helping.
+
+00:15:10 Especially if there's just a couple main functions that are used in this module that are used externally.
+
+00:15:19 But I'd like to put those at the top and then all the helpers at the bottom or something like that.
+
+00:15:23 >> Yeah.
+
+00:15:24 >> I used to have a coding style to do the reverse, and I think it was inherited from C code style, but Python's different.
+
+00:15:34 I don't necessarily, I guess, I'm not sure what I feel about the hiding the function name, but I guess maybe don't trust the function name?
+
+00:15:44 >> Yeah.
+
+00:15:45 >> Verify?
+
+00:15:46 >> Yeah. There's a couple of comments like that.
+
+00:15:49 David Poole says, "I quote I once read, is if the code and comments disagree, both are wrong." It's similar to the function names, as well as given sufficient times, the code and the comments, maybe function names as well will start to lie, which is interesting.
+
+00:16:03 >> I also see that people are more reluctant to change somebody else's comment than they are to change their code.
+
+00:16:09 I'm like, you got to get over that.
+
+00:16:11 If the comments are wrong, feel free to change it.
+
+00:16:14 That's a perfectly fine refactoring.
+
+00:16:16 Anyway, let's move to the next one.
+
+00:16:19 >> I totally agree with you about putting the most, the organizing, coordinating high-level stuff first.
+
+00:16:25 maybe what would be in the dunder, if name, dunder name equals dunder main, whatever that is, make that a function and put it at the top.
+
+00:16:33 I totally agree that that's the way to go.
+
+00:16:35 >> Yeah. Cool.
+
+00:16:36 >> All right. Next, how about another release?
+
+00:16:38 This time, something very small with lots of effort.
+
+00:16:43 This is the one that I was thinking that comes from Matt Trentini.
+
+00:16:48 Let me pull it up because it has some good stats in it.
+
+00:16:50 It says, "After 10 months, a thousand mainline commits and over 100 contributors, we have a new version of MicroPython.
+
+00:16:58 Thank you, Matt, for sending that into us.
+
+00:17:00 That's a pretty big release, 100 contributors.
+
+00:17:04 The reason I brought that up is that the GitHub announcement for the release doesn't point out how big of a release this was, like almost a year's worth of work.
+
+00:17:13 MicroPython, the one that runs on embedded devices, not phones, but incredibly small and cheap devices, like five, $10 chips.
+
+00:17:22 - Yeah.
+
+00:17:23 - It's awesome.
+
+00:17:24 It's awesome that you can run Python there, right?
+
+00:17:26 And so, MicroPython and CircuitPython are, you know, similar projects, one fork from the other, I believe, but they've deviated a little bit.
+
+00:17:35 CircuitPython being more beginner, educational-friendly, MicroPython being more production device, you know, creating devices to do actual jobs type of friendly.
+
+00:17:46 But I think they're working a lot together.
+
+00:17:47 There's been a lot of merging back, so that's pretty cool.
+
+00:17:50 So this release of MicroPython introduces a lightweight package manager called MIP.
+
+00:17:56 Instead of PIP, you've got MIP.
+
+00:17:58 It uses a custom protocol to query and install packages that's optimized for embedded systems.
+
+00:18:03 So that's pretty cool. It's easier to get packages involved.
+
+00:18:08 Like if you've done MicroPython stuff before, it's not as easy as just pip install this thing.
+
+00:18:12 It's a little bit trickier than that.
+
+00:18:14 Also, the core runtime and built-in types have been compressed to only including C-level type structs for as much as possible.
+
+00:18:25 So that's shrunken the size of it, not by a lot, but it's so small that losing kilobytes actually makes a difference, which is a pretty interesting way to think about it because we don't worry about the size varying by kilobytes in CPython.
+
+00:18:39 >> Right.
+
+00:18:40 >> Then there's a bunch of small changes like Bluetooth low energy changes, SSL settings, by the way, SSL is way harder over there than you would imagine it would be.
+
+00:18:50 There's a bunch of different ports like the ESP32 is the one that I've worked with.
+
+00:18:55 For each of the different ports that it goes through, there's a summary of how has it changed for that one.
+
+00:19:01 I'd also like to just remind people, while this is awesome for embedded devices, you might think, I don't do small chip programming, so it doesn't matter to me.
+
+00:19:11 You also might be interested in PyScript.
+
+00:19:14 >> So one of the things that they're trying to do is work to get MicroPython to be one of the possible foundations, the runtimes in WebAssembly for PyScript.
+
+00:19:27 When this thing is 100K or 75K, whatever it is, all of a sudden, you can run PyScript in the browser nearly on par with JavaScript.
+
+00:19:36 Traditional PyScript used the full C Python, at least as much as you can get into WebAssembly, which is meant a 10 meg download and then in the browser, I had to parse and start up that whole thing.
+
+00:19:48 If that goes to MicroPython, that becomes incredibly fast to download 75K.
+
+00:19:53 That's like JavaScript size.
+
+00:19:56 All these changes are not just like, I don't do this embedded device programming, so it's not for me. It may well be for all of us soon, instead of JavaScript, which is very exciting.
+
+00:20:08 There are many changes like, Ryan, see the scroll bar size as I'm going through this list?
+
+00:20:13 I am not going to go through them, but if you care, I just want to point out, there's a massive new release of MicroPython.
+
+00:20:19 You can go and see what's changed for the different ports.
+
+00:20:21 And then in the core, there's just almost, I don't know how many pages that is, but it's many, many, many pages.
+
+00:20:28 So check out the linked release notes from the MicroPython team.
+
+00:20:31 Congrats to them as well, Damian, George, and others.
+
+00:20:34 Yeah, this is really cool.
+
+00:20:35 I love to see that basically also that the project is continuing and we all benefit from Python-enabled devices and stuff, and people can invent new things better.
+
+00:20:47 Yeah, the Internet of Things being in Python is better than having a different language.
+
+00:20:53 >> Absolutely. Also, just want to time travel thing as well.
+
+00:20:59 I think Matt sent this over quite a while ago, and it's been on our list, and I finally pulled it off our list and made it a topic.
+
+00:21:05 This is from end of April.
+
+00:21:06 It's a couple of months old, But still, almost a year's worth of work is worth celebrating, even if it's a couple of months later.
+
+00:21:13 >> Yeah, pretty cool. All right.
+
+00:21:17 Ready for our last topic?
+
+00:21:19 >> Yeah, bring it on.
+
+00:21:22 >> I shouldn't even qualify this.
+
+00:21:27 I was going to say I'm not a sucker for listicles, but I am.
+
+00:21:31 This is an article called Advanced Python Tips for Development.
+
+00:21:35 But when I was reading it, So this is by Schofield-Idahen.
+
+00:21:40 And when I was reading it, there's 15 tips, and some of them don't really seem that advanced.
+
+00:21:45 Like the top one, use list comprehensions.
+
+00:21:47 Okay, you should do that.
+
+00:21:49 But there's a few that I wanted to point out that I thought were, that I just wanted reminders of to use it more often.
+
+00:21:55 So list comprehensions are awesome, and I kind of forget that they aren't obvious to people now because I've been using them for so long.
+
+00:22:04 So they're great, but one of the things The next step, so tip one is use list comprehensions.
+
+00:22:10 Tip two is leverage generator expressions for memory efficiency.
+
+00:22:14 And I don't use generator expressions enough, and I think I should.
+
+00:22:18 And one of the cool things about this article is it shows side by side a list comprehension and a generator expression, and they look identical, except for there's brackets versus parentheses.
+
+00:22:31 So parentheses, yeah, parens.
+
+00:22:32 I forget about generator expressions.
+
+00:22:37 So generator expressions are list comprehensions not generators?
+
+00:22:41 I thought they were.
+
+00:22:42 >> No.
+
+00:22:42 >> No. Okay.
+
+00:22:43 >> Well, the list comprehension executes it all into memory, and then the generator one, you have to start iterating through it to create it, which it's cool that they're so similar, but I'm sure it's caused untold amounts of challenges for people to go, They look the same. You can do both.
+
+00:23:04 It doesn't seem to matter until it really matters, you know?
+
+00:23:07 >> Yeah. Also, when you get used to list comprehensions, generic expressions looks like a tuple expression.
+
+00:23:16 >> Yeah. Well, then you put curly braces on it and it becomes a set comprehension.
+
+00:23:21 >> Yeah. The grant reminded us that.
+
+00:23:24 Don't forget set comprehensions.
+
+00:23:26 >> Yeah.
+
+00:23:27 >> Let's hop down. The enumerate function, This is just take advantage of the numerate function.
+
+00:23:33 This is just remember to teach people that are coming from C or other for I equals 1-10 languages that enumerates around.
+
+00:23:42 If you need the index, also use enumerate.
+
+00:23:45 Don't be a dork and get the length of a list.
+
+00:23:48 >> Counter equals 1.
+
+00:23:50 >> For I equals 1 to link the list.
+
+00:23:52 >> Wow.
+
+00:23:52 >> Yeah.
+
+00:23:52 >> Don't do that. Also, enumerate can, if you need it to be a, so enumerate does zero through whatever.
+
+00:23:59 If you need it to be one through whatever, you can give it a start.
+
+00:24:04 Enumerate takes a starting point, so you can make it start at one if you need it.
+
+00:24:08 >> If you're working with indexes, the default is good, but if you're trying to print thing one, thing two, thing three, then start equals one is the way to go.
+
+00:24:16 >> Or if you're using it to get into some other data structure or something.
+
+00:24:20 I'm going to hop down to, so that's true, hop down to five, which is the zip function.
+
+00:24:28 So zip is great for parallel iterating through parallel lists, and you can do more than, this is showing name and age as two different lists and going through them.
+
+00:24:40 My tip is just practice this several times and unfrequently if you need it, because this was a hard one to pound into my brain, is to remember how zip works, because it's not that confusing, but it's tripped me up for some reason.
+
+00:24:57 So you'll take several lists and it just makes, if you zip them, you end up with a, what is it, a list of tuples or some sort of iterable, I don't know if it's an actual list, in the iterable of tuples that you can pull out different parts of it or something.
+
+00:25:12 And then you can, in this example, it says for name, last age, so that's unpacking it after you get it.
+
+00:25:18 And it works great, I just always forget to use it.
+
+00:25:21 So a good reminder.
+
+00:25:23 And then now I'm gonna jump down to my, One of the things, 12, but eight is kind of funny 'cause it's a formatting problem.
+
+00:25:31 But anyway, use counters, counters are good.
+
+00:25:34 12 is, what is 12?
+
+00:25:36 Oh, one of the things, 11 is use decorate, decorate functions with static method and class method.
+
+00:25:44 I just hardly ever do this.
+
+00:25:46 Do you use static method or class method that much, Michael?
+
+00:25:51 - Yeah, quite a bit, actually.
+
+00:25:52 - Oh, really?
+
+00:25:53 Okay. - Yeah.
+
+00:25:54 And I guess one of the neat things, yeah, anyway, I just don't use it much.
+
+00:26:00 Maybe I'll try to explore where I can use it more often.
+
+00:26:04 The number 12 is use slots to reduce memory usage.
+
+00:26:07 And I kind of forget to do this too, so this is a good reminder to use slots when you're, and this is great, especially if you know ahead of time what, you know, your classes aren't gonna add new data as it goes on, or it's not gonna be--
+
+00:26:23 >> Dynamically generating new fields.
+
+00:26:26 >> I guess here, I just use the adders.
+
+00:26:30 >> It's worth pointing out that slots don't just reduce memory, they also make attribute access faster.
+
+00:26:40 Like thing.field, getting and setting that value is also faster with slots.
+
+00:26:45 >> Okay. Yeah, that is good to remember.
+
+00:26:48 Anyway, some fun tips.
+
+00:26:51 14, use pytest.
+
+00:26:54 It says use unit test or pytest.
+
+00:26:56 Ignore the first part, use pytest.
+
+00:26:59 >> Is there a typo there? Is that what you're saying?
+
+00:27:02 >> There's some typos. Use unit test or take out the unit test or, and also it says for unit testing, just automated testing for all your automated testing, not just unit test.
+
+00:27:13 Well, those are our topics.
+
+00:27:16 Do you want to talk about some extras, Michael?
+
+00:27:20 - I do have some.
+
+00:27:21 So I feel like, Brian, it's not time for a joke yet, but there is a pretty good joke on that page we might have to come back to.
+
+00:27:27 - Well, do you want to just explore it now?
+
+00:27:28 - No, not yet, not yet.
+
+00:27:30 - We can do it later, okay.
+
+00:27:31 - Let's do it later, all right.
+
+00:27:32 So, you know, people have different faces, Brian.
+
+00:27:36 Sometimes you've got your sort of like neutral face, you've got your happy face, you've got your sad face.
+
+00:27:41 How about your hugging face?
+
+00:27:43 What's your hugging face look like?
+
+00:27:45 So there's this project created by Agustin.
+
+00:27:50 Let me pull it up here.
+
+00:27:51 The source code's linked at the bottom.
+
+00:27:52 By Agustin Pekeres, or Agus, as his friends call him, sent in, "Hey, I was looking to play "with the Hugging Face API, and so I'm like, "well, what could I work with?
+
+00:28:03 "What if I turn a large language model "or semantic search loose on Talk Python to me "in their transcripts?" That's cool, huh?
+
+00:28:11 - Yeah.
+
+00:28:12 - So he created this project.
+
+00:28:14 you gotta go and get a free Hugging Face API token 'cause it uses Hugging Face.
+
+00:28:19 I was joking around.
+
+00:28:19 But then it says you can ask a question.
+
+00:28:21 For example, what's my advanced options?
+
+00:28:23 Oh yeah, I can see how many things I could get back.
+
+00:28:26 Make that 10.
+
+00:28:27 Focus, folks, come on.
+
+00:28:28 So you can go to things and say, who uses MicroPython in production, for example.
+
+00:28:35 All right, I can type that into the search field and then I can say submit.
+
+00:28:39 And sometimes it takes a second, sometimes it's pretty quick.
+
+00:28:42 But we're gonna see what we get.
+
+00:28:43 his little running character, although they can't choose their sport.
+
+00:28:46 It's like rowing and then swimming and then it's running and then it's biking.
+
+00:28:50 That's what the light, here we go.
+
+00:28:51 - It's like a decathlon.
+
+00:28:52 - I guess you're right.
+
+00:28:53 And so here comes the answer back.
+
+00:28:55 It says over on Talk Python, you should check out PyScript powered by MicroPython and MicroPython plus CircuitPython.
+
+00:29:01 You might be thinking, well, it's just searching titles, but then empowering developers by embedding Python by Nina Zakarenko.
+
+00:29:08 And then this weird one by Brian called 30 Amazing Python Projects and so on.
+
+00:29:12 or even the year in review. Isn't that cool?
+
+00:29:14 >> That is neat.
+
+00:29:15 >> If you want to play with this stuff, either because you want to build a thing like this for something else or you want to just go ask questions about DocPython, you can go and check out this app.
+
+00:29:25 The source code is linked at the bottom.
+
+00:29:27 >> I guess another comment that maybe it's a good idea to have transcripts for people to be able to use as search.
+
+00:29:35 >> Exactly. We didn't have transcripts.
+
+00:29:38 We wouldn't be able to do this cool project.
+
+00:29:41 Yeah, excellent. So that's one. And yeah, that's that's it for me for my extras. You got any?
+
+00:29:46 Yeah, one, I just wanted to, I guess, remind people that Python people is a thing. Python people is a new podcast, and episode three is out with the Brett Cannon. And the one of the comments, I one of the quotes from him is I came for the language, but I stayed for the community. We explore that. And what was the situation when he when he talked about that? And, and we talked about about a whole bunch of stuff like what is the meaning of back baking and toque, things like that. So check it out. then, oh, nice. I had forgotten to, for people listening, I had forgotten to actually show the, the episode on the, I could go back and search talk python again for this and see if we find python people. You would find a ton of Brett cannon over there and we have an episode for him coming up very soon. But, but now I switched it over to yours. Next, I didn't. There's a oh, that's the wrong thing. Oh, oh, I deleted the thing I wanted to talk about. So I guess that's it from extras. For me. It's gone from the internet. It is gone. So I have a joke for us. Okay, well, let's before we do the joke, we didn't do any sponsors. One of the sponsors, of course, is Python people, or It's us, but I'd like people to check it out.
+
+00:31:06 We have maybe three listeners so far.
+
+00:31:08 No, it's bigger than that, but I'd like it to grow.
+
+00:31:11 I also wanted to give a shout out to everybody on Patreon.
+
+00:31:16 So if you go to any of Python Bytes pages, especially ones without any advertising, like today's or episode 343, you can see Become a Patreon, and you can click on it and become a member and help support the show for a buck.
+
+00:31:33 That's great.
+
+00:31:34 I also wanted to give a shout out to all of the amazing courses at Talk Python Training.
+
+00:31:38 Michael has done a great job, plus pulling in amazing other people to teach courses, like me, at Talk Python Training.
+
+00:31:46 There's some great stuff, so check it out.
+
+00:31:48 - That's right. - Now we can do a joke.
+
+00:31:49 - Yeah, I got some new courses coming from some really awesome people.
+
+00:31:53 All right, on to the joke.
+
+00:31:55 - On to the joke.
+
+00:31:55 - So this one is a meme somebody put together.
+
+00:31:59 I have two jokes here that we can even do the third joke that you had on screen a little bit ago.
+
+00:32:04 So HTMX, if you're all familiar with HTMX, if you're not, you should definitely check out our HTMX and Flask course.
+
+00:32:11 This thing is so awesome.
+
+00:32:13 I had so much fun learning it and I'm like, where's the next project I can use HTMX on because it's great.
+
+00:32:18 The idea with HTMX is instead of doing JavaScript, you just write attributes and then that magically through HTMX gets turned into server calls.
+
+00:32:26 If I need to rebuild a table, as somebody interacts with some other part of the page, that could just be done on the server and just send little fragments back.
+
+00:32:35 It's incredible, right?
+
+00:32:36 So it means you don't have to write JavaScript.
+
+00:32:37 So the joke is, there's a guy that's back in dev, and then this other dude, that's HTMXes.
+
+00:32:45 HTMXes, look at me.
+
+00:32:47 Look at me back in dev.
+
+00:32:48 You're full stack now.
+
+00:32:49 You're full stack.
+
+00:32:50 Stand up for yourself, man.
+
+00:32:51 Don't let those, don't feel like you can only write it back in code.
+
+00:32:54 You're full stack now.
+
+00:32:55 HTMX.
+
+00:32:56 Isn't that good?
+
+00:32:57 >> Yeah.
+
+00:32:58 The other joke, before we get to the one that you had on the page is, what is happening to Twitter?
+
+00:33:04 How did a child try to rebrand this?
+
+00:33:08 It is so incredibly bad.
+
+00:33:11 - No, it's like branded by a high school band.
+
+00:33:15 - It's so bad.
+
+00:33:16 - Let's call ourselves X, that'd be so cool, man.
+
+00:33:20 - Yeah, man.
+
+00:33:21 And so like, for example, people might be thinking, I go, you're overreacting.
+
+00:33:25 They tried to take the Twitter logo down replace it with an X and then the police came and stopped them because they didn't have the Twitter employees doing it, didn't have a permit to drive a crane around downtown San Francisco. So it's like half the Twitter logo is like half removed. There's no X nor is there Twitter. It says tweet. I'm on twitter.com but there's an X but you know sometimes like what do you call these? Are there supposed to be X's, you know, usually X's is kind of a bad, I mean, it's just like.
+
+00:33:59 And if you, if you share another one, is it a re X?
+
+00:34:02 Yes, exactly.
+
+00:34:04 And there's, there's some random person who has X as a handle on Twitter.
+
+00:34:09 And they're like, what's going on?
+
+00:34:11 Am I going to be like Twitter?
+
+00:34:12 Yeah.
+
+00:34:12 They, I heard that they don't, I don't know for sure on this one, but they don't seem to have the intellectual property rights to like trademark the letter X.
+
+00:34:23 Well, you can't.
+
+00:34:24 - I know, and this X looks like, I think the X11 logo.
+
+00:34:29 If you go look at that, I think that was the one.
+
+00:34:33 It's like a thick right slanty versus a thin left slanty, which is, you know, one's hollow, one's solid, other than that, they're kind of, anyway, there's, that's sort of a meta joke.
+
+00:34:48 - On the good side, current employees and those that are laid off are all X employees now.
+
+00:34:54 >> Exactly. Look at all the people that work for Twitter now.
+
+00:34:57 >> They're all ex-employees.
+
+00:34:59 >> All right. Because this came from Twitter, I'm going to open up like, wow, this is getting janky.
+
+00:35:05 >> It's ex-news, so it has to be part of our extras.
+
+00:35:08 >> It absolutely does. All right. If you want to just give a quick shout out to what was on that page before.
+
+00:35:13 >> What were you referring to?
+
+00:35:15 >> The only valid measurement of code quality, the WTFs per minute.
+
+00:35:19 >> Okay. Yeah, WTFs per minute.
+
+00:35:21 >> It's true.
+
+00:35:22 >> Oh, you need the full one.
+
+00:35:24 >> Oh, wow. You lost it now.
+
+00:35:26 >> I lost it.
+
+00:35:26 >> It was an ad. It was a code review and behind the door, you could just hear WTF, what WTF?
+
+00:35:33 The good code only had a couple, the bad code was just like overwhelmed with them. That was the joke.
+
+00:35:39 >> Yeah.
+
+00:35:40 >> All right. Well, this episode was no joke.
+
+00:35:41 It was a lot of fun. Thanks, Brian.
+
+00:35:43 >> Thank you. Thanks everybody for showing up at a weird time.
+
+00:35:46 I really appreciate it.
+
+00:35:48 >> It's great.
+
+00:35:48 >> Yeah.
+
+00:35:49 >> Talk to you later.
+
+00:35:50 >> Bye.
+
