@@ -1,0 +1,3429 @@
+WEBVTT
+
+00:00:00.000 --> 00:00:05.520
+Hello and welcome to Python Bytes where we deliver Python news and headlines directly to your earbuds.
+
+
+00:00:05.520 --> 00:00:10.320
+This is episode 347, recorded August 8th, 2023.
+
+
+00:00:10.320 --> 00:00:11.520
+And I'm Brian Okken.
+
+
+00:00:11.520 --> 00:00:12.800
+And I'm Michael Kennedy.
+
+
+00:00:12.800 --> 00:00:17.760
+Well, we have lots of great topics today. I'm pretty excited to get to them.
+
+
+00:00:17.760 --> 00:00:23.200
+This episode of course is, well, not of course, but is sponsored by us.
+
+
+00:00:23.200 --> 00:00:26.960
+So if you'd like to support the show, you can support us on Patreon
+
+
+00:00:26.960 --> 00:00:30.120
+or check out one of Michael's many courses,
+
+
+00:00:30.120 --> 00:00:34.280
+or my other podcasts, or you know how to support us.
+
+
+00:00:34.280 --> 00:00:35.600
+>> They know the deal. Brian,
+
+
+00:00:35.600 --> 00:00:37.000
+let me throw one more in there for people.
+
+
+00:00:37.000 --> 00:00:37.360
+>> Okay.
+
+
+00:00:37.360 --> 00:00:40.160
+>> If you work for a company and that company is
+
+
+00:00:40.160 --> 00:00:42.320
+trying to spread the word about a product or service,
+
+
+00:00:42.320 --> 00:00:45.160
+pythonbytes.fm/sponsor, and check that as well.
+
+
+00:00:45.160 --> 00:00:47.320
+I recommend that to their marketing team.
+
+
+00:00:47.320 --> 00:00:50.160
+>> Definitely. If you are listening
+
+
+00:00:50.160 --> 00:00:53.320
+and would like to join the show live sometimes,
+
+
+00:00:53.320 --> 00:00:56.320
+just check out pythonbytes.fm/live,
+
+
+00:00:56.320 --> 00:00:58.080
+>> There's info about it there.
+
+
+00:00:58.080 --> 00:00:59.560
+Why don't you kick us off, Michael,
+
+
+00:00:59.560 --> 00:01:00.880
+with the first topic?
+
+
+00:01:00.880 --> 00:01:03.960
+>> Here we go. Let's do a lead-in
+
+
+00:01:03.960 --> 00:01:06.600
+here to basically all of my things.
+
+
+00:01:06.600 --> 00:01:08.240
+Freddie, I believe it was Freddie.
+
+
+00:01:08.240 --> 00:01:10.560
+The folks behind Lightstar,
+
+
+00:01:10.560 --> 00:01:12.600
+L-I-T-E star is
+
+
+00:01:12.600 --> 00:01:15.640
+a sync framework for building APIs in Python.
+
+
+00:01:15.640 --> 00:01:19.200
+It's pretty interesting, similar but not the same as FastAPI.
+
+
+00:01:19.200 --> 00:01:21.200
+They share some of the same Zen.
+
+
+00:01:21.200 --> 00:01:23.040
+Now, I'm not ready to talk about Lightstar.
+
+
+00:01:23.040 --> 00:01:24.180
+This is not actually my thing.
+
+
+00:01:24.180 --> 00:01:25.740
+I will at some point probably.
+
+
+00:01:25.740 --> 00:01:29.500
+It's pretty popular, 2.4 thousand stars, which is cool.
+
+
+00:01:29.500 --> 00:01:31.660
+But I'm like, huh, let me learn more about this.
+
+
+00:01:31.660 --> 00:01:33.580
+Like, let me see what this is built on.
+
+
+00:01:33.580 --> 00:01:36.060
+And so I started poking through, what did I poke through?
+
+
+00:01:36.060 --> 00:01:41.340
+Not the requirements, but the poetry, lock file, and PyProject, and all that stuff.
+
+
+00:01:41.340 --> 00:01:45.900
+And came across two projects that are not super well known, I think.
+
+
+00:01:45.900 --> 00:01:49.900
+And I kind of want to shine a light on them by way of finding them through Lightstar.
+
+
+00:01:49.900 --> 00:01:53.180
+So the first one I want to talk about is AsyncTimeout.
+
+
+00:01:53.180 --> 00:01:56.940
+And I know you have some stuff you want to talk about with context managers.
+
+
+00:01:56.940 --> 00:01:59.180
+And this kind of lines right up there.
+
+
+00:01:59.180 --> 00:02:05.020
+So this is an async I/O compatible, as in async and await keywords, timeout class.
+
+
+00:02:05.020 --> 00:02:07.340
+And it is itself a context manager.
+
+
+00:02:07.340 --> 00:02:09.580
+Not the only way you could possibly use it, I suppose.
+
+
+00:02:09.580 --> 00:02:11.100
+But it's a context manager.
+
+
+00:02:11.100 --> 00:02:14.700
+And the idea is you say async with timeout.
+
+
+00:02:14.700 --> 00:02:19.500
+And then whatever you do inside of that block, that context manager, that with block,
+
+
+00:02:19.500 --> 00:02:23.760
+If it's asynchronous and it takes longer than the timeout you specified,
+
+
+00:02:23.760 --> 00:02:27.100
+it will cancel it and raise an exception, say, this took too long.
+
+
+00:02:27.100 --> 00:02:30.700
+Maybe you're trying to talk to a database and you're not sure it's on,
+
+
+00:02:30.700 --> 00:02:32.940
+or you're trying to call an API and you don't know,
+
+
+00:02:32.940 --> 00:02:35.900
+you don't want to wait more than two seconds for the API to respond,
+
+
+00:02:35.900 --> 00:02:37.660
+or whatever it is you're after,
+
+
+00:02:37.660 --> 00:02:41.220
+that's what you do is you just say async with timeout,
+
+
+00:02:41.220 --> 00:02:45.220
+and then it manages all of the nested async I/O calls.
+
+
+00:02:45.220 --> 00:02:47.220
+If something goes wrong there,
+
+
+00:02:47.220 --> 00:02:48.960
+it just raises an exception and cancels it.
+
+
+00:02:48.960 --> 00:02:50.260
+That's really pretty cool.
+
+
+00:02:50.260 --> 00:02:51.060
+Isn't that cool?
+
+
+00:02:51.060 --> 00:02:55.760
+There are ways in which in Python 3.11, I believe it was added,
+
+
+00:02:55.760 --> 00:03:00.560
+where you can create a task group and then you can do certain things.
+
+
+00:03:00.560 --> 00:03:06.160
+I believe you got to pass, you got to use the task group itself to run the work.
+
+
+00:03:06.160 --> 00:03:06.760
+Okay.
+
+
+00:03:06.760 --> 00:03:09.760
+So you pretty sure that's how you do it.
+
+
+00:03:09.760 --> 00:03:10.860
+It's been a while since I thought about it.
+
+
+00:03:10.860 --> 00:03:14.760
+It'd be something like task group dot, you know, create task and you await it.
+
+
+00:03:14.760 --> 00:03:16.060
+Something along those lines, right?
+
+
+00:03:16.060 --> 00:03:19.340
+And there, you've got to be really explicit,
+
+
+00:03:19.340 --> 00:03:22.060
+not just in the parts within that,
+
+
+00:03:22.060 --> 00:03:24.060
+but all the stuff that's doing async and await
+
+
+00:03:24.060 --> 00:03:25.060
+deep down in the guts.
+
+
+00:03:25.060 --> 00:03:27.740
+They all kind of got to know about this task group deal, I believe.
+
+
+00:03:27.740 --> 00:03:28.740
+If I'm remembering it correctly.
+
+
+00:03:28.740 --> 00:03:30.260
+And this one, you don't have to do that.
+
+
+00:03:30.260 --> 00:03:34.060
+You just run async stuff within this with block
+
+
+00:03:34.060 --> 00:03:36.340
+and if it takes too long, that's it.
+
+
+00:03:36.340 --> 00:03:40.340
+So in the example here, it says we have an await inner.
+
+
+00:03:40.340 --> 00:03:42.340
+This is like all the work that's happening.
+
+
+00:03:42.340 --> 00:03:43.860
+I don't see why that has to be just one.
+
+
+00:03:43.860 --> 00:03:45.060
+It could be multiple things.
+
+
+00:03:45.060 --> 00:03:45.560
+>> Yeah.
+
+
+00:03:45.560 --> 00:03:48.380
+>> It says if it executes faster than the timeout,
+
+
+00:03:48.380 --> 00:03:50.620
+it just runs as if nothing happened.
+
+
+00:03:50.620 --> 00:03:53.620
+Otherwise, the inner work is canceled
+
+
+00:03:53.620 --> 00:03:58.060
+internally by sending an asyncIO.canceled error into it.
+
+
+00:03:58.060 --> 00:04:00.580
+But from the outside, that's transformed into
+
+
+00:04:00.580 --> 00:04:04.100
+a timeout error that's raised outside the context manager scope.
+
+
+00:04:04.100 --> 00:04:04.860
+Pretty cool, huh?
+
+
+00:04:04.860 --> 00:04:06.380
+>> Yeah, that's handy.
+
+
+00:04:06.380 --> 00:04:07.860
+>> Yeah. There's another way you can specify,
+
+
+00:04:07.860 --> 00:04:09.300
+you can say timeout at,
+
+
+00:04:09.300 --> 00:04:14.420
+like now plus 1.5 seconds if you'd rather than just saying 1.5 seconds.
+
+
+00:04:14.420 --> 00:04:16.700
+So if there's, you want to capture a time at some point
+
+
+00:04:16.700 --> 00:04:18.120
+and then later you want to say that time
+
+
+00:04:18.120 --> 00:04:20.060
+plus some bit of time.
+
+
+00:04:20.060 --> 00:04:23.000
+You can also access things like the expired property
+
+
+00:04:23.000 --> 00:04:24.460
+on the context manager,
+
+
+00:04:24.460 --> 00:04:27.260
+which tells you whether or not it was expired
+
+
+00:04:27.260 --> 00:04:28.960
+or whether it ran successfully.
+
+
+00:04:28.960 --> 00:04:31.720
+Inside the context manager, you can ask for the deadline
+
+
+00:04:31.720 --> 00:04:33.120
+so you know how long it takes.
+
+
+00:04:33.120 --> 00:04:36.500
+And you can upgrade the time as it runs.
+
+
+00:04:36.500 --> 00:04:38.960
+You're like, oh, this part took too long
+
+
+00:04:38.960 --> 00:04:41.280
+or under some circumstance, something happened.
+
+
+00:04:41.280 --> 00:04:42.440
+So we need to do more work.
+
+
+00:04:42.440 --> 00:04:44.300
+Like maybe we're checking the API
+
+
+00:04:44.300 --> 00:04:46.400
+if there's a user, but actually there's not.
+
+
+00:04:46.400 --> 00:04:47.980
+So we've got to create the new user,
+
+
+00:04:47.980 --> 00:04:49.180
+we've got to send him an email,
+
+
+00:04:49.180 --> 00:04:53.520
+and that might take more time than the other scenario.
+
+
+00:04:53.520 --> 00:04:56.880
+So you can say shift by or shift to for time.
+
+
+00:04:56.880 --> 00:05:00.580
+So you can say, hey, we need to add a second
+
+
+00:05:00.580 --> 00:05:03.080
+to the timeout within this context manager.
+
+
+00:05:03.080 --> 00:05:03.920
+- Interesting.
+
+
+00:05:03.920 --> 00:05:05.080
+- So basically reschedule it, yeah.
+
+
+00:05:05.080 --> 00:05:06.300
+- Oh, that's pretty cool.
+
+
+00:05:06.300 --> 00:05:08.800
+- Yeah, so that's one thing.
+
+
+00:05:08.800 --> 00:05:13.340
+And then there's one other bit in here, the wait for, right.
+
+
+00:05:13.340 --> 00:05:19.840
+It says, so this is useful when async.io.waitFor is not suitable, but it's also faster than
+
+
+00:05:19.840 --> 00:05:25.820
+waitFor because it doesn't create a separate task that is also scheduled as async.waitFor
+
+
+00:05:25.820 --> 00:05:26.820
+itself does.
+
+
+00:05:26.820 --> 00:05:32.780
+So it's not totally unique functionality in Python, but it's a neat way to look at it.
+
+
+00:05:32.780 --> 00:05:34.500
+And I think this is a nice little library.
+
+
+00:05:34.500 --> 00:05:35.660
+>> Yeah, I like that.
+
+
+00:05:35.660 --> 00:05:38.020
+The interface to it's pretty clean as well.
+
+
+00:05:38.020 --> 00:05:40.180
+>> Yeah, a good little API there.
+
+
+00:05:40.180 --> 00:05:41.660
+Because it's a context manager, huh?
+
+
+00:05:41.660 --> 00:05:42.660
+>> Yeah.
+
+
+00:05:42.660 --> 00:05:44.860
+Let's reorder my topics a little bit.
+
+
+00:05:44.860 --> 00:05:46.900
+Let's talk about context managers.
+
+
+00:05:46.900 --> 00:05:48.820
+>> Did I change orders?
+
+
+00:05:48.820 --> 00:05:51.900
+>> That's all right. Trey Hunter has
+
+
+00:05:51.900 --> 00:05:55.860
+written an article called Creating a Context Manager in Python.
+
+
+00:05:55.860 --> 00:05:58.300
+As you've just described,
+
+
+00:05:58.300 --> 00:06:03.260
+a context manager is really the things that you use a with block with.
+
+
+00:06:03.260 --> 00:06:06.660
+There's a whole bunch of them like there's open.
+
+
+00:06:06.660 --> 00:06:10.260
+If you say with open and then a file name as file,
+
+
+00:06:10.260 --> 00:06:14.780
+then the context manager automatically closes it afterwards.
+
+
+00:06:14.780 --> 00:06:16.900
+Really, this article is about,
+
+
+00:06:16.900 --> 00:06:17.980
+this is pretty awesome,
+
+
+00:06:17.980 --> 00:06:20.700
+but how do we do it ourselves?
+
+
+00:06:20.700 --> 00:06:27.440
+He walks through, he's got a bunch of detail here, which is great.
+
+
+00:06:27.440 --> 00:06:29.700
+It's not too long of an article though.
+
+
+00:06:29.700 --> 00:06:33.480
+A useful one, which I thought that was an awesome good example,
+
+
+00:06:33.480 --> 00:06:36.700
+is having a context manager that
+
+
+00:06:36.700 --> 00:06:39.980
+changed an environmental variable just with the width block.
+
+
+00:06:39.980 --> 00:06:42.540
+and then it goes back to the way it was before.
+
+
+00:06:42.540 --> 00:06:46.540
+And the code for this is just a class
+
+
+00:06:46.540 --> 00:06:48.960
+with it's not inheriting from anything.
+
+
+00:06:48.960 --> 00:06:52.340
+And the context manager class is a class
+
+
+00:06:52.340 --> 00:06:55.000
+that has dunder init, dunder enter,
+
+
+00:06:55.000 --> 00:06:57.560
+and dunder exit functions.
+
+
+00:06:57.560 --> 00:06:59.360
+And then he talks about all the stuff
+
+
+00:06:59.360 --> 00:07:00.560
+you have to put in here.
+
+
+00:07:00.560 --> 00:07:04.160
+And then in your example before,
+
+
+00:07:04.160 --> 00:07:09.040
+you said as like with the timer as cm or something
+
+
+00:07:09.040 --> 00:07:13.640
+so that you could access that to see values afterwards.
+
+
+00:07:13.640 --> 00:07:18.640
+So Trey talks about how do you get the as functionality
+
+
+00:07:18.640 --> 00:07:22.880
+to work and really it's just, you have to return something.
+
+
+00:07:22.880 --> 00:07:26.240
+And then there's enter and exit functions.
+
+
+00:07:26.240 --> 00:07:31.800
+And there's, yeah, how do you deal with all of those?
+
+
+00:07:31.800 --> 00:07:34.000
+It's a great, it's just a little great article.
+
+
+00:07:34.000 --> 00:07:38.400
+I love using context managers and knowing how to,
+
+
+00:07:38.400 --> 00:07:41.160
+I think it makes sense to practice a couple of these
+
+
+00:07:41.160 --> 00:07:43.520
+because knowing how to use one
+
+
+00:07:43.520 --> 00:07:45.880
+in the context of your own code,
+
+
+00:07:45.880 --> 00:07:48.800
+there's frequently times where you have to do something
+
+
+00:07:48.800 --> 00:07:50.720
+and you know you're gonna have to clean up or something
+
+
+00:07:50.720 --> 00:07:52.880
+or there's some final thing that you have to do.
+
+
+00:07:52.880 --> 00:07:55.520
+You don't really wanna have that littered all over your code
+
+
+00:07:55.520 --> 00:07:58.720
+especially if there's multiple exit points or return points
+
+
+00:07:58.720 --> 00:08:02.000
+and a context manager is a great way to deal with that.
+
+
+00:08:02.000 --> 00:08:05.200
+I did wanna shout out to pytest a little bit.
+
+
+00:08:05.200 --> 00:08:08.980
+So the environmental variable part example
+
+
+00:08:08.980 --> 00:08:11.840
+is a great useful one for normal code
+
+
+00:08:11.840 --> 00:08:13.660
+if you ever want to change the environment
+
+
+00:08:13.660 --> 00:08:15.020
+outside of testing.
+
+
+00:08:15.020 --> 00:08:17.180
+But if you're doing it in testing,
+
+
+00:08:17.180 --> 00:08:19.440
+I recommend making sure that you,
+
+
+00:08:19.440 --> 00:08:20.940
+oh, I scrolled to the wrong spot.
+
+
+00:08:20.940 --> 00:08:24.060
+There's a monkey patch thing within pytest.
+
+
+00:08:24.060 --> 00:08:28.860
+So if you use fixtures, monkey patch,
+
+
+00:08:28.860 --> 00:08:32.740
+there is a set environment monkey patch portion.
+
+
+00:08:32.740 --> 00:08:33.660
+So within a test,
+
+
+00:08:33.660 --> 00:08:35.460
+That's how you do an environmental variable.
+
+
+00:08:35.460 --> 00:08:36.820
+But outside of a test,
+
+
+00:08:36.820 --> 00:08:39.660
+why not create your own context manager?
+
+
+00:08:39.660 --> 00:08:40.580
+Oh, you're muted.
+
+
+00:08:40.580 --> 00:08:42.740
+- So the environment variable only exists
+
+
+00:08:42.740 --> 00:08:44.900
+while you're in the context block, right?
+
+
+00:08:44.900 --> 00:08:46.500
+That's cool, the with block.
+
+
+00:08:46.500 --> 00:08:47.860
+- Yeah, or you're changing it.
+
+
+00:08:47.860 --> 00:08:49.380
+Like if you wanted to add a path,
+
+
+00:08:49.380 --> 00:08:51.900
+add something to the path or something.
+
+
+00:08:51.900 --> 00:08:52.740
+- Sure, sure.
+
+
+00:08:52.740 --> 00:08:54.100
+- There's other ways to do the path,
+
+
+00:08:54.100 --> 00:08:56.140
+but let's say it's a, I don't know,
+
+
+00:08:56.140 --> 00:08:59.260
+some other Windows environmental variable or something.
+
+
+00:08:59.260 --> 00:09:00.340
+- Yeah, these things are so cool.
+
+
+00:09:00.340 --> 00:09:03.980
+So if you ever find yourself writing try finally,
+
+
+00:09:03.980 --> 00:09:06.900
+and the finally part is unwinding something
+
+
+00:09:06.900 --> 00:09:10.420
+like it's clearing some variable
+
+
+00:09:10.420 --> 00:09:13.260
+or deleting a temporary file or closing a connection,
+
+
+00:09:13.260 --> 00:09:14.540
+that's a super good chance
+
+
+00:09:14.540 --> 00:09:16.600
+to be using a context manager instead.
+
+
+00:09:16.600 --> 00:09:19.100
+'Cause you just say with the thing, and then it goes.
+
+
+00:09:19.100 --> 00:09:21.340
+I'll give two examples that I think were really fun
+
+
+00:09:21.340 --> 00:09:22.780
+and that people might connect with.
+
+
+00:09:22.780 --> 00:09:26.340
+So prior to SQLAlchemy 1.4, the session,
+
+
+00:09:26.340 --> 00:09:30.400
+which is the unit of work design pattern object
+
+
+00:09:30.400 --> 00:09:31.920
+in SQLAlchemy.
+
+
+00:09:31.920 --> 00:09:34.800
+The idea of those are I start a session,
+
+
+00:09:34.800 --> 00:09:38.480
+I do some queries, updates, deletes, inserts, more work,
+
+
+00:09:38.480 --> 00:09:41.240
+and then I commit all of that work in one shot.
+
+
+00:09:41.240 --> 00:09:43.800
+Like that thing didn't used to be a context manager.
+
+
+00:09:43.800 --> 00:09:47.680
+And so what was really awesome was I would create one,
+
+
+00:09:47.680 --> 00:09:50.040
+like a wrapper class that would say,
+
+
+00:09:50.040 --> 00:09:52.840
+in this block, create a session, do all the work.
+
+
+00:09:52.840 --> 00:09:55.000
+And then if you look at the dunder exit,
+
+
+00:09:55.000 --> 00:09:56.960
+it has whether or not there was an exception.
+
+
+00:09:56.960 --> 00:09:59.680
+And so my context manager, you could say when you create it,
+
+
+00:09:59.680 --> 00:10:02.340
+do you want to auto commit the transaction if it succeeds
+
+
+00:10:02.340 --> 00:10:04.800
+and auto roll it back if there's an error?
+
+
+00:10:04.800 --> 00:10:07.300
+And so you just say in the exit, is there an error?
+
+
+00:10:07.300 --> 00:10:08.760
+Roll back the session.
+
+
+00:10:08.760 --> 00:10:11.120
+If it's no errors, commit the session.
+
+
+00:10:11.120 --> 00:10:13.040
+And then you just, it's like beautiful, right?
+
+
+00:10:13.040 --> 00:10:13.960
+You don't have to juggle that.
+
+
+00:10:13.960 --> 00:10:16.360
+There's no try finally, there's awesome.
+
+
+00:10:16.360 --> 00:10:19.360
+Another one to put it in something
+
+
+00:10:19.360 --> 00:10:21.780
+sort of out of normal scope maybe for people,
+
+
+00:10:21.780 --> 00:10:24.240
+like the database one might be something you think of.
+
+
+00:10:24.240 --> 00:10:25.680
+- This is a great one. - Colors.
+
+
+00:10:25.680 --> 00:10:27.060
+- Yeah. - Colorama.
+
+
+00:10:27.060 --> 00:10:28.800
+So if you're using something like Colorama,
+
+
+00:10:28.800 --> 00:10:31.640
+where you're like, I want to change the color of the text
+
+
+00:10:31.640 --> 00:10:33.360
+for this block, right?
+
+
+00:10:33.360 --> 00:10:36.280
+So there's all sorts of colors and cool stuff.
+
+
+00:10:36.280 --> 00:10:37.920
+It's like a lightweight version of Rich,
+
+
+00:10:37.920 --> 00:10:39.000
+but just for colors.
+
+
+00:10:39.000 --> 00:10:42.000
+You can do things like print foreground.red,
+
+
+00:10:42.000 --> 00:10:43.520
+and it'll do some sort of,
+
+
+00:10:43.520 --> 00:10:45.080
+every bit of text that comes after that
+
+
+00:10:45.080 --> 00:10:47.160
+will be red or whatever.
+
+
+00:10:47.160 --> 00:10:48.760
+So you can create a context block
+
+
+00:10:48.760 --> 00:10:51.720
+that is like a colored block of output.
+
+
+00:10:51.720 --> 00:10:54.840
+And then there's a reset all style that reset all you can do.
+
+
+00:10:54.840 --> 00:10:58.620
+So you just, in the open, you pass in the new color settings, you do all your
+
+
+00:10:58.620 --> 00:11:00.720
+print statements and whatever deep down.
+
+
+00:11:00.720 --> 00:11:04.840
+And then on the exit, you just say print style that reset all of out of colorama.
+
+
+00:11:04.840 --> 00:11:06.220
+And it's, it's undone.
+
+
+00:11:06.220 --> 00:11:08.700
+Like the color vanishes or you capture what it is.
+
+
+00:11:08.700 --> 00:11:12.140
+And then you reset it to the way it was before something along those lines.
+
+
+00:11:12.140 --> 00:11:15.300
+Anyway, this is, I really like this, that kind of stuff, right?
+
+
+00:11:15.300 --> 00:11:18.460
+People maybe don't think about color as a context manager, but
+
+
+00:11:18.720 --> 00:11:22.120
+>> But it kind of is because you always have to do the thing afterwards.
+
+
+00:11:22.120 --> 00:11:24.120
+You always have to do the reset.
+
+
+00:11:24.120 --> 00:11:25.440
+>> Yes. You have to put it back. It's so annoying.
+
+
+00:11:25.440 --> 00:11:27.040
+>> Anything where you have to put it back.
+
+
+00:11:27.040 --> 00:11:31.640
+Any other data structures that you may have like dirty,
+
+
+00:11:31.640 --> 00:11:34.840
+you've got queues sitting around that you want to clean up afterwards.
+
+
+00:11:34.840 --> 00:11:36.920
+Those are great for context managers.
+
+
+00:11:36.920 --> 00:11:37.600
+>> Absolutely.
+
+
+00:11:37.600 --> 00:11:41.740
+>> Brandon Brainer notices and points out that
+
+
+00:11:41.740 --> 00:11:44.740
+there's also context lib for making them,
+
+
+00:11:44.740 --> 00:11:46.560
+and I'm glad he brought that up.
+
+
+00:11:46.560 --> 00:11:47.640
+I was going to bring that up.
+
+
+00:11:47.640 --> 00:11:53.840
+ContextLib is great, especially for quickly and doing context managers.
+
+
+00:11:53.840 --> 00:11:55.140
+But I think it's in,
+
+
+00:11:55.140 --> 00:11:57.340
+and maybe the documentation is pretty good.
+
+
+00:11:57.340 --> 00:11:59.380
+You can do a decorator context manager,
+
+
+00:11:59.380 --> 00:12:01.580
+and then you can use a yield for it.
+
+
+00:12:01.580 --> 00:12:04.340
+But I really like the notion of,
+
+
+00:12:04.340 --> 00:12:05.780
+I guess you should understand both.
+
+
+00:12:05.780 --> 00:12:08.940
+I think people should understand how to write them with just
+
+
+00:12:08.940 --> 00:12:13.260
+Dunder methods and how to write them with the context manager and context lib.
+
+
+00:12:13.260 --> 00:12:14.340
+I think both are useful.
+
+
+00:12:14.340 --> 00:12:17.940
+But meant to mentally understand how the enter exit,
+
+
+00:12:17.940 --> 00:12:20.500
+all that stuff works, I think is important.
+
+
+00:12:20.500 --> 00:12:21.340
+Thanks, Brent.
+
+
+00:12:21.340 --> 00:12:24.800
+>> Yes. Let's tie the thing that I opened with,
+
+
+00:12:24.800 --> 00:12:27.560
+and this one a little bit tighter together, Brian.
+
+
+00:12:27.560 --> 00:12:32.920
+There's an A enter and A exit or async with blocks.
+
+
+00:12:32.920 --> 00:12:35.060
+If you want an asynchronous enabled version,
+
+
+00:12:35.060 --> 00:12:36.720
+you just create an async,
+
+
+00:12:36.720 --> 00:12:38.740
+async def, A enter,
+
+
+00:12:38.740 --> 00:12:40.900
+then async def, A exit.
+
+
+00:12:40.900 --> 00:12:43.480
+Now you can do async and await stuff
+
+
+00:12:43.480 --> 00:12:49.160
+in your context manager, which is sort of the async equivalent of the enter and exit.
+
+
+00:12:49.160 --> 00:12:56.200
+Okay. And the context lib also has these async context manager options.
+
+
+00:12:56.200 --> 00:12:56.680
+Mm-hmm.
+
+
+00:12:56.680 --> 00:12:57.880
+A enter and a exit.
+
+
+00:12:57.880 --> 00:12:58.360
+Cool.
+
+
+00:12:58.360 --> 00:13:03.800
+Yeah, perfect. Yeah, exactly. Very nice. Very nice. All right. Let's go to the next one, huh?
+
+
+00:13:03.800 --> 00:13:04.360
+Yeah.
+
+
+00:13:04.360 --> 00:13:11.240
+So server sent events. Let's talk about server sent events. Server sent events, people probably,
+
+
+00:13:11.240 --> 00:13:16.880
+Well, they certainly know what a request response is for the web, because we do that in our browsers all the time.
+
+
+00:13:16.880 --> 00:13:25.240
+I enter a URL, the page comes back, I click a button, it does another request, it pulls back a page, maybe I submit a form, it posts it, and then it pulls back a page.
+
+
+00:13:25.240 --> 00:13:25.680
+Right?
+
+
+00:13:25.680 --> 00:13:28.480
+Like that's traditional web interchange.
+
+
+00:13:28.480 --> 00:13:35.520
+But that is a stateless kind of one time and who knows what happens after that sort of experience for the web.
+
+
+00:13:35.520 --> 00:13:38.760
+And so there were a bunch of different styles of like,
+
+
+00:13:38.760 --> 00:13:43.720
+what if the web server and the client could talk to each other type of thing, right?
+
+
+00:13:43.720 --> 00:13:47.160
+In the early days, this is what's called long polling.
+
+
+00:13:47.160 --> 00:13:52.200
+This works, but it is bad on your server for what you do is you make a request,
+
+
+00:13:52.200 --> 00:13:54.160
+and the server doesn't respond right away.
+
+
+00:13:54.160 --> 00:13:58.840
+It just says, this request is going to time out in five minutes, and then it'll wait.
+
+
+00:13:58.840 --> 00:14:02.280
+And if it has any events to send during that time, it'll respond,
+
+
+00:14:02.280 --> 00:14:06.080
+and then you start another long polled event cycle, right?
+
+
+00:14:06.080 --> 00:14:07.780
+But the problem is you've got to,
+
+
+00:14:07.780 --> 00:14:09.500
+for everything that might be interested,
+
+
+00:14:09.500 --> 00:14:12.580
+you've got an open socket just waiting.
+
+
+00:14:12.580 --> 00:14:15.580
+Try it like in the process that requests queue
+
+
+00:14:15.580 --> 00:14:16.740
+sort of thing, it's not great.
+
+
+00:14:16.740 --> 00:14:18.280
+And then web sockets were added.
+
+
+00:14:18.280 --> 00:14:21.620
+And web sockets are cool because they create this connection
+
+
+00:14:21.620 --> 00:14:23.820
+that is bi-directional, like a binary,
+
+
+00:14:23.820 --> 00:14:26.940
+bi-directional socket channel from the web server
+
+
+00:14:26.940 --> 00:14:28.780
+to the client, which is cool.
+
+
+00:14:28.780 --> 00:14:35.900
+Not great for IoT things, mobile devices are not necessarily super good for WebSockets.
+
+
+00:14:35.900 --> 00:14:41.340
+It's kind of heavyweight. It's like a very sort of complex, like we're going to be able to have a client talk to the server,
+
+
+00:14:41.340 --> 00:14:44.340
+but also the server, the client, they can respond to each other.
+
+
+00:14:44.340 --> 00:14:49.220
+So a lighter weight, simpler version of that would be server sent events.
+
+
+00:14:49.220 --> 00:14:50.220
+Okay.
+
+
+00:14:50.220 --> 00:14:57.140
+So what server sent events do is it's the same idea, like I want to have the server without the client's interaction,
+
+
+00:14:57.140 --> 00:14:58.700
+send messages to the client.
+
+
+00:14:58.700 --> 00:15:01.220
+So I could create like a dashboard or something, right?
+
+
+00:15:01.220 --> 00:15:03.340
+The difference with server send events is
+
+
+00:15:03.340 --> 00:15:04.820
+it's not bi-directional.
+
+
+00:15:04.820 --> 00:15:07.100
+Only the server can send information to the client.
+
+
+00:15:07.100 --> 00:15:09.260
+But often for like dashboard type things,
+
+
+00:15:09.260 --> 00:15:10.100
+that's all you want.
+
+
+00:15:10.100 --> 00:15:12.340
+Like I wanna pull up a bunch of pieces of information
+
+
+00:15:12.340 --> 00:15:15.460
+and if any of them change, let the server notify me, right?
+
+
+00:15:15.460 --> 00:15:16.300
+- Oh yeah.
+
+
+00:15:16.300 --> 00:15:18.020
+- I wanna create a page that shows
+
+
+00:15:18.020 --> 00:15:20.340
+the position of all the cars in F1,
+
+
+00:15:20.340 --> 00:15:22.580
+their last pit stop, their tires,
+
+
+00:15:22.580 --> 00:15:23.660
+like all of that stuff.
+
+
+00:15:23.660 --> 00:15:25.220
+And like, if any of them change,
+
+
+00:15:25.220 --> 00:15:29.520
+I want the server to be able to let the browser know, but there's no reason
+
+
+00:15:29.520 --> 00:15:31.640
+the browser needs to like make a change.
+
+
+00:15:31.640 --> 00:15:31.800
+Right.
+
+
+00:15:31.800 --> 00:15:33.400
+It's like, it's a watching, right?
+
+
+00:15:33.400 --> 00:15:37.040
+If so, if you have this watching scenario, server sent events are like a simpler,
+
+
+00:15:37.040 --> 00:15:38.880
+more lightweight, awesome way to do this.
+
+
+00:15:38.880 --> 00:15:39.360
+Okay.
+
+
+00:15:39.360 --> 00:15:41.960
+We all know what SSE as service and events are.
+
+
+00:15:41.960 --> 00:15:42.560
+Okay.
+
+
+00:15:42.560 --> 00:15:47.880
+So if you want that in Python, there's this cool library, which is not super
+
+
+00:15:47.880 --> 00:15:51.000
+well known, but it's cool is HTTP X.
+
+
+00:15:51.080 --> 00:15:56.240
+So HTTPX is kind of like requests sort of maybe the modern day version of
+
+
+00:15:56.240 --> 00:16:00.400
+requests, because it has a really great async and await story going on.
+
+
+00:16:00.400 --> 00:16:06.840
+So there's this extension called HTTPX-SSE for consuming
+
+
+00:16:06.840 --> 00:16:09.440
+server sent events with HTTPX.
+
+
+00:16:09.440 --> 00:16:10.440
+Oh, okay.
+
+
+00:16:10.440 --> 00:16:10.920
+Yeah.
+
+
+00:16:10.920 --> 00:16:15.080
+So if you want to be a client to one of these things in Python to some
+
+
+00:16:15.080 --> 00:16:18.360
+server that's sending out these notifications and these, these updates,
+
+
+00:16:18.560 --> 00:16:21.800
+Well, HTTPS is an awesome way to do it because you can do async and await.
+
+
+00:16:21.800 --> 00:16:23.420
+So just a great client in general.
+
+
+00:16:23.420 --> 00:16:27.980
+And then here you plug this in and it has a really, really clean API to do it.
+
+
+00:16:27.980 --> 00:16:32.540
+So what you do is you would get the connect SSE out of it.
+
+
+00:16:32.540 --> 00:16:36.620
+And you just with, HTTPS, you just create a client and then you say,
+
+
+00:16:36.620 --> 00:16:40.180
+connect the SSE to that client to someplace gives you an event source.
+
+
+00:16:40.180 --> 00:16:44.360
+And then you just iterate, just say for thing and event, and it just blocks
+
+
+00:16:44.360 --> 00:16:45.860
+until the server sends you an event.
+
+
+00:16:46.100 --> 00:16:49.640
+And it'll think raise an exception if the sockets closed is what happens.
+
+
+00:16:49.640 --> 00:16:52.040
+So you just like loop over the events that the server's
+
+
+00:16:52.040 --> 00:16:53.660
+sending you when they happen.
+
+
+00:16:53.660 --> 00:16:54.280
+Okay.
+
+
+00:16:54.280 --> 00:16:54.760
+Cool.
+
+
+00:16:54.760 --> 00:16:55.460
+Isn't that cool?
+
+
+00:16:55.460 --> 00:16:59.400
+So yeah, so you could like in my F1 example, you could subscribe to the,
+
+
+00:16:59.400 --> 00:17:02.180
+the changes of the race and when anything happens, you would get like,
+
+
+00:17:02.180 --> 00:17:06.960
+there's a new tire event and here's the data about it and, the ID of the
+
+
+00:17:06.960 --> 00:17:11.760
+event, session and all those different things just streaming to you.
+
+
+00:17:11.760 --> 00:17:14.040
+And it's like literally five lines of code.
+
+
+00:17:14.040 --> 00:17:14.560
+Sorry.
+
+
+00:17:14.560 --> 00:17:15.520
+Six lines of code.
+
+
+00:17:15.520 --> 00:17:17.300
+with the import statement.
+
+
+00:17:17.300 --> 00:17:19.320
+- So what does it look like on the server then?
+
+
+00:17:19.320 --> 00:17:21.520
+I guess that's not what this project's about.
+
+
+00:17:21.520 --> 00:17:22.860
+- It's not your problem.
+
+
+00:17:22.860 --> 00:17:26.880
+However, they do say you can create a server,
+
+
+00:17:26.880 --> 00:17:29.380
+sorry, a starlet server here,
+
+
+00:17:29.380 --> 00:17:30.980
+and they have below an example you can use.
+
+
+00:17:30.980 --> 00:17:33.780
+So it's cool they've got a Python example for both ends.
+
+
+00:17:33.780 --> 00:17:34.620
+- Yeah.
+
+
+00:17:34.620 --> 00:17:35.660
+- So what you do on the server
+
+
+00:17:35.660 --> 00:17:37.440
+is you create an async function,
+
+
+00:17:37.440 --> 00:17:41.860
+and here's a async function that just yields bits of,
+
+
+00:17:41.860 --> 00:17:43.100
+just a series of numbers.
+
+
+00:17:43.100 --> 00:17:44.580
+It's kind of like a really cheesy example,
+
+
+00:17:44.580 --> 00:17:47.940
+but it sleeps for about an async second.
+
+
+00:17:47.940 --> 00:17:50.100
+It's like a New York second, like a New York minute,
+
+
+00:17:50.100 --> 00:17:52.820
+but 1/60th of it, and it doesn't block stuff.
+
+
+00:17:52.820 --> 00:17:55.860
+So for an async second, you sleep,
+
+
+00:17:55.860 --> 00:17:57.580
+and then it yields up the data, right?
+
+
+00:17:57.580 --> 00:18:01.740
+And then you can just create one of these
+
+
+00:18:01.740 --> 00:18:06.740
+event source responses, which comes out of the Starlet SSE,
+
+
+00:18:06.740 --> 00:18:08.780
+which is not related to this, I believe,
+
+
+00:18:08.780 --> 00:18:10.660
+but is like kind of the server implementation,
+
+
+00:18:10.660 --> 00:18:12.260
+and then you just set that as an endpoint.
+
+
+00:18:12.260 --> 00:18:14.020
+So in order to do that, they just connect
+
+
+00:18:14.020 --> 00:18:16.840
+to that and then they just get these numbers
+
+
+00:18:16.840 --> 00:18:18.740
+just streaming back every second.
+
+
+00:18:18.740 --> 00:18:20.020
+- That's pretty cool.
+
+
+00:18:20.020 --> 00:18:21.340
+- Yeah, I mean all of this,
+
+
+00:18:21.340 --> 00:18:25.200
+like if I hit Command minus one time,
+
+
+00:18:25.200 --> 00:18:27.140
+all of the, both the server and the client
+
+
+00:18:27.140 --> 00:18:28.540
+fit on one screen of code.
+
+
+00:18:28.540 --> 00:18:29.380
+- Yeah, yep.
+
+
+00:18:29.380 --> 00:18:30.860
+- Yeah, that's pretty neat.
+
+
+00:18:30.860 --> 00:18:32.780
+What else do I have to say about it?
+
+
+00:18:32.780 --> 00:18:34.820
+It has an async way to call it
+
+
+00:18:34.820 --> 00:18:36.100
+and a synchronous way to call it
+
+
+00:18:36.100 --> 00:18:38.820
+because that's HTTPS's style.
+
+
+00:18:38.820 --> 00:18:40.180
+It shows how to do it with the async.
+
+
+00:18:40.180 --> 00:18:41.700
+Here's your async with block.
+
+
+00:18:41.700 --> 00:18:43.900
+I mean, it's full of context managers this episode.
+
+
+00:18:43.900 --> 00:18:46.180
+And it shows you all the different things that you can do.
+
+
+00:18:46.180 --> 00:18:48.540
+It talks about how you handle reconnects
+
+
+00:18:48.540 --> 00:18:51.180
+and all of these little projects
+
+
+00:18:51.180 --> 00:18:52.780
+and all these things we're talking about
+
+
+00:18:52.780 --> 00:18:57.420
+are sort of breadcrumbs through the trail of Python.
+
+
+00:18:57.420 --> 00:18:59.660
+So it says, look, if there's an error,
+
+
+00:18:59.660 --> 00:19:01.220
+what you might do about that,
+
+
+00:19:01.220 --> 00:19:03.220
+like if you disconnect,
+
+
+00:19:03.220 --> 00:19:05.020
+you might wanna just let it be disconnected
+
+
+00:19:05.020 --> 00:19:07.620
+or you might wanna try to reconnect or who knows, right?
+
+
+00:19:07.620 --> 00:19:10.100
+What you need to do is not really known by this library.
+
+
+00:19:10.100 --> 00:19:12.800
+So it just says, you're just gonna get an exception.
+
+
+00:19:12.800 --> 00:19:17.860
+but it does provide a way to resume by holding onto the last event ID.
+
+
+00:19:17.860 --> 00:19:21.140
+So you can say like, Hey, you know, that generator you were sending me before,
+
+
+00:19:21.140 --> 00:19:24.020
+like, let's keep doing that, which is kind of cool.
+
+
+00:19:24.020 --> 00:19:26.260
+And then you'll just pick up, but here's the breadcrumbs.
+
+
+00:19:26.260 --> 00:19:28.860
+It says, here's how you might achieve this using stamina.
+
+
+00:19:28.860 --> 00:19:31.020
+And it has the operations here.
+
+
+00:19:31.020 --> 00:19:36.920
+And it says on HTTP, it gives a decorator says at retry on HTTP X dot reader.
+
+
+00:19:36.920 --> 00:19:39.180
+And then it goes how to redo it again.
+
+
+00:19:39.180 --> 00:19:42.820
+and how often, so Stamina is a project by Henik
+
+
+00:19:42.820 --> 00:19:47.340
+that allows you to do asynchronous retries
+
+
+00:19:47.340 --> 00:19:48.620
+and all sorts of cool stuff.
+
+
+00:19:48.620 --> 00:19:50.420
+So maybe something fun to,
+
+
+00:19:50.420 --> 00:19:51.740
+have we talked about Stamina before?
+
+
+00:19:51.740 --> 00:19:52.580
+I don't believe we have.
+
+
+00:19:52.580 --> 00:19:54.140
+- I don't think we have.
+
+
+00:19:54.140 --> 00:19:55.180
+- I don't remember it either.
+
+
+00:19:55.180 --> 00:19:56.020
+- But it's pretty cool.
+
+
+00:19:56.020 --> 00:19:58.220
+- So anyway, yeah, there's a lot of cool stuff in here.
+
+
+00:19:58.220 --> 00:20:01.020
+And yeah, so people can go and check this out,
+
+
+00:20:01.020 --> 00:20:03.780
+but here's the retrying version.
+
+
+00:20:03.780 --> 00:20:05.060
+You can see an example of that
+
+
+00:20:05.060 --> 00:20:08.320
+where it just automatically will continue to keep going.
+
+
+00:20:08.320 --> 00:20:13.520
+So pretty cool little library here, HTTPX-SE.
+
+
+00:20:13.520 --> 00:20:15.520
+It has 51 GitHub stars.
+
+
+00:20:15.520 --> 00:20:18.760
+I feel like it deserves more so people can give it a look.
+
+
+00:20:18.760 --> 00:20:24.760
+>> Yeah. Well, speaking of cool projects in Python,
+
+
+00:20:24.760 --> 00:20:27.220
+you probably grab them from PyPI, right?
+
+
+00:20:27.220 --> 00:20:28.000
+>> Of course.
+
+
+00:20:28.000 --> 00:20:32.420
+>> You have pip install. Let's take a look at stamina, for instance.
+
+
+00:20:32.420 --> 00:20:33.840
+In a lot of projects,
+
+
+00:20:33.840 --> 00:20:35.340
+one of the things you can do,
+
+
+00:20:35.340 --> 00:20:37.540
+you can go down and on the left-hand side,
+
+
+00:20:37.540 --> 00:20:40.640
+There's project description, release history, download files.
+
+
+00:20:40.640 --> 00:20:42.440
+Everybody has all of them have that.
+
+
+00:20:42.440 --> 00:20:45.540
+But then there's project links and these change.
+
+
+00:20:45.540 --> 00:20:46.900
+They're different on different projects.
+
+
+00:20:46.900 --> 00:20:51.780
+So stamina has got a change log and documentation and funding and source.
+
+
+00:20:51.780 --> 00:20:54.900
+And they all have like icons associated with it.
+
+
+00:20:54.900 --> 00:20:56.940
+So I don't know what we have.
+
+
+00:20:56.940 --> 00:20:58.740
+We go to sources, it goes to GitHub.
+
+
+00:20:58.740 --> 00:21:00.740
+Looks like funding.
+
+
+00:21:00.740 --> 00:21:02.380
+It's a GitHub sponsors.
+
+
+00:21:02.380 --> 00:21:04.180
+That's pretty cool documentation.
+
+
+00:21:04.180 --> 00:21:05.900
+I'm looking at the bottom of my screen.
+
+
+00:21:05.900 --> 00:21:09.260
+documentation links to stamina.inic.me.
+
+
+00:21:09.260 --> 00:21:11.700
+Okay, interesting. Change log.
+
+
+00:21:11.700 --> 00:21:14.280
+Anyway, these links are great on projects.
+
+
+00:21:14.280 --> 00:21:16.620
+Let's take a look at it, but they're different.
+
+
+00:21:16.620 --> 00:21:19.620
+Textual just has a homepage.
+
+
+00:21:19.620 --> 00:21:25.220
+HTTPX has change log homepage documentation.
+
+
+00:21:25.220 --> 00:21:27.020
+Itest has a bunch also.
+
+
+00:21:27.020 --> 00:21:28.660
+Also, it has a tracker.
+
+
+00:21:28.660 --> 00:21:30.300
+That's neat. Twitter.
+
+
+00:21:30.300 --> 00:21:31.500
+>> A bug in there, yeah.
+
+
+00:21:31.500 --> 00:21:34.020
+>> Yeah. How do you get these?
+
+
+00:21:34.020 --> 00:21:37.860
+So if you have a project, it's really helpful to put these in here.
+
+
+00:21:37.860 --> 00:21:43.540
+And so there's Daniel Roy Greenfield wrote a blog post or post saying,
+
+
+00:21:43.540 --> 00:21:46.260
+"IPI project URLs cheat sheet."
+
+
+00:21:46.260 --> 00:21:48.740
+So basically, figured all this stuff out.
+
+
+00:21:48.740 --> 00:21:51.780
+It's not documented really anywhere except for here,
+
+
+00:21:51.780 --> 00:21:54.100
+but it's in the warehouse code.
+
+
+00:21:54.100 --> 00:21:56.820
+And the warehouse is the software that runs by IPI.
+
+
+00:21:56.820 --> 00:21:59.540
+And I'm not going to dig through this too much,
+
+
+00:21:59.540 --> 00:22:03.380
+but basically, it's trying to figure out what the name,
+
+
+00:22:03.380 --> 00:22:06.660
+the name that you put on in for a link,
+
+
+00:22:06.660 --> 00:22:08.900
+and then which icon to use if that's it.
+
+
+00:22:08.900 --> 00:22:11.960
+There's a bunch of different icons that are available.
+
+
+00:22:11.960 --> 00:22:14.580
+Anyway, we don't need to look at that too much
+
+
+00:22:14.580 --> 00:22:17.300
+because Daniel made a cheat sheet for us.
+
+
+00:22:17.300 --> 00:22:20.900
+He shows a handful of them on his post,
+
+
+00:22:20.900 --> 00:22:23.460
+also a link to where they all are.
+
+
+00:22:23.460 --> 00:22:25.180
+But then what it is,
+
+
+00:22:25.180 --> 00:22:29.860
+is you've got project URLs in your PyProject.toml file,
+
+
+00:22:29.860 --> 00:22:33.100
+and it just lists a bunch of them that you probably want,
+
+
+00:22:33.100 --> 00:22:36.180
+possibly like homepage, repository, changelog.
+
+
+00:22:36.180 --> 00:22:40.320
+Anyway, this is a really cool cheat sheet of things that you might want to use
+
+
+00:22:40.320 --> 00:22:42.820
+and what names to give them.
+
+
+00:22:42.820 --> 00:22:46.940
+So it's a name equals string with the URL,
+
+
+00:22:46.940 --> 00:22:50.780
+and the names on the left can be anything,
+
+
+00:22:50.780 --> 00:22:53.540
+but if they're special things, you get an icon.
+
+
+00:22:53.540 --> 00:22:54.820
+>> Nice.
+
+
+00:22:54.820 --> 00:22:58.220
+>> Anyway, and there's even a Mastodon one now, so that's cool.
+
+
+00:22:58.220 --> 00:23:01.060
+>> Yay. You got to change the Twitter one.
+
+
+00:23:01.060 --> 00:23:04.700
+- Twitter, oh, it's Twitter or X, interesting.
+
+
+00:23:04.700 --> 00:23:06.580
+- Yeah, I think how much math is gonna break?
+
+
+00:23:06.580 --> 00:23:08.180
+It has to be called X everywhere now.
+
+
+00:23:08.180 --> 00:23:09.380
+No more algebra for you.
+
+
+00:23:09.380 --> 00:23:11.580
+- Yeah.
+
+
+00:23:11.580 --> 00:23:12.780
+- What a dumpster fire, okay.
+
+
+00:23:12.780 --> 00:23:14.980
+(laughing)
+
+
+00:23:14.980 --> 00:23:17.100
+My god, the audience points out the icons are
+
+
+00:23:17.100 --> 00:23:19.760
+courtesy of Font Awesome and indeed they are.
+
+
+00:23:19.760 --> 00:23:21.940
+If you're not familiar with Font Awesome, check that out.
+
+
+00:23:21.940 --> 00:23:24.580
+So like we can come over here and search for,
+
+
+00:23:24.580 --> 00:23:27.820
+wait for it, GitHub, and you get all these icons here.
+
+
+00:23:27.820 --> 00:23:30.280
+One of them is the one that shows up.
+
+
+00:23:30.280 --> 00:23:32.240
+I don't remember which one of these it would be,
+
+
+00:23:32.240 --> 00:23:36.280
+but if, you know, so it shows you the code that you need.
+
+
+00:23:36.280 --> 00:23:41.280
+It's just fabrands space fa-github for the icon there.
+
+
+00:23:41.280 --> 00:23:43.240
+But if for some reason you're like,
+
+
+00:23:43.240 --> 00:23:44.920
+what if there was a merge one?
+
+
+00:23:44.920 --> 00:23:47.680
+I want to merge, but there's no merge that's there,
+
+
+00:23:47.680 --> 00:23:49.160
+like on your other project, right?
+
+
+00:23:49.160 --> 00:23:51.840
+Then there's, I don't know how many icons are in Font Awesome,
+
+
+00:23:51.840 --> 00:23:55.320
+like 6,000, yeah, 6,444 in total.
+
+
+00:23:55.320 --> 00:23:57.360
+And maybe, no, I take that back
+
+
+00:23:57.360 --> 00:23:59.800
+'cause there's new 12,000 new ones.
+
+
+00:23:59.800 --> 00:24:01.960
+So there's a lot, let's just say there's a lot here.
+
+
+00:24:01.960 --> 00:24:04.920
+- Well, the top said 26,000, so that's--
+
+
+00:24:04.920 --> 00:24:06.360
+- There we go.
+
+
+00:24:06.360 --> 00:24:07.280
+Yeah, awesome.
+
+
+00:24:07.280 --> 00:24:08.280
+Yeah, so--
+
+
+00:24:08.280 --> 00:24:09.960
+- Oh, there's a fire one.
+
+
+00:24:09.960 --> 00:24:10.800
+- There's so many good ones.
+
+
+00:24:10.800 --> 00:24:13.040
+- That'd be a good one for Twitter now.
+
+
+00:24:13.040 --> 00:24:15.120
+- By the way, if you go to Python Bytes,
+
+
+00:24:15.120 --> 00:24:17.120
+and you would be, I would be,
+
+
+00:24:17.120 --> 00:24:19.120
+you go to the bottom, all these little icons,
+
+
+00:24:19.120 --> 00:24:20.320
+these are all Font Awesome.
+
+
+00:24:20.320 --> 00:24:23.120
+Even the little heart about Made in Portland, ah.
+
+
+00:24:23.120 --> 00:24:24.600
+- Is Font Awesome a free thing,
+
+
+00:24:24.600 --> 00:24:25.960
+or do you gotta pay for it, you know?
+
+
+00:24:25.960 --> 00:24:26.800
+- Yes and no.
+
+
+00:24:26.800 --> 00:24:29.720
+So Font Awesome is, there's like a few,
+
+
+00:24:29.720 --> 00:24:30.760
+I searched for GitHub again.
+
+
+00:24:30.760 --> 00:24:32.640
+You see that some say pro and some don't.
+
+
+00:24:32.640 --> 00:24:33.080
+Yeah.
+
+
+00:24:33.080 --> 00:24:36.240
+Oh, pro the ones that don't say pro are free.
+
+
+00:24:36.240 --> 00:24:37.720
+The ones that say pro are pro.
+
+
+00:24:37.720 --> 00:24:42.600
+They cost like a hundred dollars a year subscription, but I have a, I bought a
+
+
+00:24:42.600 --> 00:24:46.280
+subscription to it and just canceled it because you got the icons you need.
+
+
+00:24:46.280 --> 00:24:47.240
+I got the icon.
+
+
+00:24:47.240 --> 00:24:50.040
+If I'm just locked at version six for a good long while, that's fine.
+
+
+00:24:50.040 --> 00:24:51.760
+Maybe someday I'll buy more, but yeah.
+
+
+00:24:51.760 --> 00:24:53.040
+So there you go.
+
+
+00:24:53.040 --> 00:24:53.680
+Nice.
+
+
+00:24:53.680 --> 00:24:55.160
+So yeah, that's, that's awesome.
+
+
+00:24:55.160 --> 00:24:58.400
+but it's cool how you pointed out
+
+
+00:24:58.400 --> 00:25:01.200
+any related to that to the pyproject.toml.
+
+
+00:25:01.200 --> 00:25:03.080
+I had no idea that that's how those went together.
+
+
+00:25:03.080 --> 00:25:04.080
+It's cool.
+
+
+00:25:04.080 --> 00:25:04.900
+- Nice.
+
+
+00:25:04.900 --> 00:25:05.740
+All right.
+
+
+00:25:05.740 --> 00:25:06.580
+- All right, well, I've got my screen up.
+
+
+00:25:06.580 --> 00:25:07.600
+I'm off to the next one, huh?
+
+
+00:25:07.600 --> 00:25:08.440
+- Yeah.
+
+
+00:25:08.440 --> 00:25:09.260
+- We're done with them, aren't we?
+
+
+00:25:09.260 --> 00:25:10.960
+That was, I have no more items.
+
+
+00:25:10.960 --> 00:25:13.920
+No more items to cover than other than extras.
+
+
+00:25:13.920 --> 00:25:17.360
+- Okay, well, I have a few, couple extras.
+
+
+00:25:17.360 --> 00:25:20.520
+So I, a couple--
+
+
+00:25:20.520 --> 00:25:21.360
+- More people?
+
+
+00:25:21.360 --> 00:25:22.200
+- More people.
+
+
+00:25:22.200 --> 00:25:23.020
+- You have more people?
+
+
+00:25:23.020 --> 00:25:24.360
+- More people and Python people.
+
+
+00:25:24.360 --> 00:25:25.440
+What did I want to say?
+
+
+00:25:25.440 --> 00:25:28.620
+Oh, just that I had some great feedback.
+
+
+00:25:28.620 --> 00:25:31.240
+So I love starting something new.
+
+
+00:25:31.240 --> 00:25:33.160
+It's good to provide feedback for people.
+
+
+00:25:33.160 --> 00:25:35.840
+And I got some wonderful feedback that the music
+
+
+00:25:35.840 --> 00:25:39.680
+that I stole from testing code is annoying on Python people
+
+
+00:25:39.680 --> 00:25:42.440
+'cause it's a completely different tone and fair enough.
+
+
+00:25:42.440 --> 00:25:44.520
+So I'm gonna go through and rip out all the music,
+
+
+00:25:44.520 --> 00:25:47.400
+the intro music out of Python people.
+
+
+00:25:47.400 --> 00:25:50.840
+So, and also the next episode is coming out this week.
+
+
+00:25:50.840 --> 00:25:53.280
+It'll be Bob Bilderbos from PyBytes.
+
+
+00:25:53.280 --> 00:25:54.120
+It's a good episode.
+
+
+00:25:54.120 --> 00:25:55.640
+So should be out later this week.
+
+
+00:25:55.640 --> 00:25:56.960
+Do you have any extras?
+
+
+00:25:56.960 --> 00:25:58.600
+- I do, I do, I do.
+
+
+00:25:58.600 --> 00:26:02.200
+I have some cool announcements and some extras
+
+
+00:26:02.200 --> 00:26:03.560
+and all of those things.
+
+
+00:26:03.560 --> 00:26:06.320
+First of all, businesses achieve fusion
+
+
+00:26:06.320 --> 00:26:08.880
+with NetEnergy game for the second time.
+
+
+00:26:08.880 --> 00:26:11.720
+So, you know, the holy grail of energy
+
+
+00:26:11.720 --> 00:26:13.720
+is fusion, not fission, right?
+
+
+00:26:13.720 --> 00:26:16.240
+Just squishing stuff together like the sun does
+
+
+00:26:16.240 --> 00:26:19.120
+and getting heavier particles and tons of energy
+
+
+00:26:19.120 --> 00:26:21.960
+with no waste, no negative waste really.
+
+
+00:26:21.960 --> 00:26:24.840
+I mean, there's output, but like helium or something, right?
+
+
+00:26:24.840 --> 00:26:26.720
+Oh no, we need more helium anyway.
+
+
+00:26:26.720 --> 00:26:27.560
+I don't know, Brian, if you knew,
+
+
+00:26:27.560 --> 00:26:29.200
+but there's a helium shortage
+
+
+00:26:29.200 --> 00:26:31.240
+and a crisis of helium potentially.
+
+
+00:26:31.240 --> 00:26:32.240
+We'll see that someday.
+
+
+00:26:32.240 --> 00:26:37.240
+Anyway, the big news is the folks over at the NIF
+
+
+00:26:37.240 --> 00:26:40.280
+repeated this big breakthrough that they had last year,
+
+
+00:26:40.280 --> 00:26:42.080
+the National Ignition Facility.
+
+
+00:26:42.080 --> 00:26:43.480
+So congrats to them.
+
+
+00:26:43.480 --> 00:26:46.040
+And why am I covering this here other than,
+
+
+00:26:46.040 --> 00:26:47.360
+hey, it's chemical science,
+
+
+00:26:47.360 --> 00:26:50.800
+is last year after that, or actually earlier this year,
+
+
+00:26:50.800 --> 00:26:53.720
+I had Jay Solomonson on the show,
+
+
+00:26:53.720 --> 00:26:55.640
+and we talked about all the Python
+
+
+00:26:55.640 --> 00:26:58.760
+that is behind that project at the NIF
+
+
+00:26:58.760 --> 00:27:01.280
+and how they use Python to help power up
+
+
+00:27:01.280 --> 00:27:04.080
+the whole Nash fusion breakthrough that they had.
+
+
+00:27:04.080 --> 00:27:05.280
+So, very cool.
+
+
+00:27:05.280 --> 00:27:06.800
+If people wanna learn more about that,
+
+
+00:27:06.800 --> 00:27:10.120
+they can listen to the episode 403 on Talk Python and me.
+
+
+00:27:10.120 --> 00:27:12.520
+And just congrats to Jay and team again.
+
+
+00:27:12.520 --> 00:27:13.340
+That's very cool.
+
+
+00:27:13.340 --> 00:27:18.340
+- Do they have a 1.21 gigawatt one yet?
+
+
+00:27:18.340 --> 00:27:19.880
+That would be good.
+
+
+00:27:19.880 --> 00:27:20.700
+- They can't go back in time yet.
+
+
+00:27:20.700 --> 00:27:21.660
+- Oh, okay.
+
+
+00:27:21.660 --> 00:27:26.660
+- No, but if you actually look, there's a video down,
+
+
+00:27:26.660 --> 00:27:28.220
+there's this video demonstration.
+
+
+00:27:28.220 --> 00:27:31.580
+If you actually look at the project here,
+
+
+00:27:31.580 --> 00:27:33.820
+the machine that it goes through,
+
+
+00:27:33.820 --> 00:27:35.420
+this is like a room size,
+
+
+00:27:35.420 --> 00:27:38.180
+like a warehouse room size machine of lasers
+
+
+00:27:38.180 --> 00:27:42.280
+and coolers and mirrors and insane stuff
+
+
+00:27:42.280 --> 00:27:45.940
+that it goes through until it hits like a dime size
+
+
+00:27:45.940 --> 00:27:48.260
+or small marble size piece somewhere.
+
+
+00:27:48.260 --> 00:27:49.980
+There's like an insane,
+
+
+00:27:49.980 --> 00:27:52.540
+It's not exactly what you're asking for,
+
+
+00:27:52.540 --> 00:27:53.720
+but there is something insane
+
+
+00:27:53.720 --> 00:27:55.260
+on the other side of the devices.
+
+
+00:27:55.260 --> 00:27:58.020
+- Yeah, we've got ways to get this into a car.
+
+
+00:27:58.020 --> 00:28:01.860
+- Yeah, I mean, Marty McFly has got to definitely wait
+
+
+00:28:01.860 --> 00:28:03.660
+to save his parents' relationship.
+
+
+00:28:03.660 --> 00:28:04.860
+Okay.
+
+
+00:28:04.860 --> 00:28:05.700
+- All right.
+
+
+00:28:05.700 --> 00:28:07.220
+- All right, I have another bit of positive news.
+
+
+00:28:07.220 --> 00:28:08.060
+I think this is positive.
+
+
+00:28:08.060 --> 00:28:09.700
+This is very positive news.
+
+
+00:28:09.700 --> 00:28:10.940
+The other positive news is, you know,
+
+
+00:28:10.940 --> 00:28:14.380
+I've kind of knocked on Facebook and Google.
+
+
+00:28:14.380 --> 00:28:16.220
+Last time I think I was railing against Google
+
+
+00:28:16.220 --> 00:28:18.940
+and their DRM for websites.
+
+
+00:28:18.940 --> 00:28:21.940
+like their ongoing persistent premise
+
+
+00:28:21.940 --> 00:28:24.340
+that we must track and retarget you.
+
+
+00:28:24.340 --> 00:28:26.220
+So how can we make the web better?
+
+
+00:28:26.220 --> 00:28:28.340
+Like, no, no, that's not the assumption
+
+
+00:28:28.340 --> 00:28:29.460
+we need to start with.
+
+
+00:28:29.460 --> 00:28:30.300
+No, it's not.
+
+
+00:28:30.300 --> 00:28:33.300
+So I would, you know, I just want to point out maybe
+
+
+00:28:33.300 --> 00:28:36.100
+like a little credit, a little credit to Facebook
+
+
+00:28:36.100 --> 00:28:38.380
+at this time, a little, maybe a positive shout out.
+
+
+00:28:38.380 --> 00:28:41.620
+So there's a bunch of rules that I think are off the target
+
+
+00:28:41.620 --> 00:28:42.740
+by here.
+
+
+00:28:42.740 --> 00:28:47.580
+And for example, there were a bunch of attempts
+
+
+00:28:47.580 --> 00:28:50.760
+And like in Spain, there was an attempt to say,
+
+
+00:28:50.760 --> 00:28:54.560
+if you're going to link to a news organization,
+
+
+00:28:54.560 --> 00:28:55.700
+you have to pay them.
+
+
+00:28:55.700 --> 00:28:56.540
+- Okay.
+
+
+00:28:56.540 --> 00:28:57.360
+- Like, wait a minute.
+
+
+00:28:57.360 --> 00:29:01.680
+So our big platform is sending you free traffic.
+
+
+00:29:01.680 --> 00:29:03.680
+And to do that, we have to pay you,
+
+
+00:29:03.680 --> 00:29:05.240
+because the newspapers are having a hard time
+
+
+00:29:05.240 --> 00:29:08.320
+and they're important, but maybe that's a little bit off.
+
+
+00:29:08.320 --> 00:29:11.240
+Probably the most outrageous of this category of them
+
+
+00:29:11.240 --> 00:29:12.240
+were somewhere in Europe.
+
+
+00:29:12.240 --> 00:29:13.880
+I can't remember if it was the EU in general
+
+
+00:29:13.880 --> 00:29:17.080
+or a particular company, a country rather, sorry.
+
+
+00:29:17.080 --> 00:29:20.440
+they were trying to make companies like Netflix
+
+
+00:29:20.440 --> 00:29:24.960
+and Google because of YouTube pay for their broadband
+
+
+00:29:24.960 --> 00:29:27.360
+because people consume a lot of their content
+
+
+00:29:27.360 --> 00:29:28.700
+so it uses a lot of their traffic.
+
+
+00:29:28.700 --> 00:29:31.200
+It's like, wait a minute, we're paying already
+
+
+00:29:31.200 --> 00:29:34.120
+to get this to you and then you're gonna charge us
+
+
+00:29:34.120 --> 00:29:36.240
+to make you pay for our infrastructure.
+
+
+00:29:36.240 --> 00:29:37.680
+I don't know, it's just, you're like,
+
+
+00:29:37.680 --> 00:29:39.760
+oh, I don't know, that seems really odd to say,
+
+
+00:29:39.760 --> 00:29:44.720
+like, you know, Netflix should pay for Europe's fiber
+
+
+00:29:44.720 --> 00:29:46.080
+because people watch Netflix.
+
+
+00:29:46.080 --> 00:29:48.400
+I don't know, that just, it seems super backwards to me.
+
+
+00:29:48.400 --> 00:29:49.240
+So--
+
+
+00:29:49.240 --> 00:29:51.480
+- Okay, I'm gonna be a devil's advocate here.
+
+
+00:29:51.480 --> 00:29:55.380
+I think that if Netflix, for example,
+
+
+00:29:55.380 --> 00:29:57.640
+if Netflix is taking half the bandwidth
+
+
+00:29:57.640 --> 00:29:59.120
+or something like that,
+
+
+00:29:59.120 --> 00:30:01.580
+then all of the infrastructure costs,
+
+
+00:30:01.580 --> 00:30:04.020
+half of those costs are benefiting Netflix
+
+
+00:30:04.020 --> 00:30:05.480
+and they're profiting off of it.
+
+
+00:30:05.480 --> 00:30:07.400
+I think that's sort of legitimate.
+
+
+00:30:07.400 --> 00:30:09.660
+It depends on the scale, right?
+
+
+00:30:09.660 --> 00:30:13.480
+I think, like we are not taking a ton of bandwidth
+
+
+00:30:13.480 --> 00:30:15.760
+from Europe, so it would be weird for us
+
+
+00:30:15.760 --> 00:30:19.740
+have to pay something, but if I'm taking a measurable percentage,
+
+
+00:30:19.740 --> 00:30:22.360
+that's probably maybe okay.
+
+
+00:30:22.360 --> 00:30:26.680
+the other side is like I read Google news still,
+
+
+00:30:26.680 --> 00:30:29.480
+even though I'm not a huge fan of Google, but I read Google news.
+
+
+00:30:29.480 --> 00:30:31.800
+There's a lot of times where that's enough. I'm like,
+
+
+00:30:31.800 --> 00:30:34.400
+is there anything important happening? I'm just reading the headlines.
+
+
+00:30:34.400 --> 00:30:36.720
+I'm not clicking on the link and that,
+
+
+00:30:36.720 --> 00:30:41.400
+that benefit then for Google wouldn't be there if the newspapers weren't there.
+
+
+00:30:41.400 --> 00:30:45.140
+So I would say some money going to the newspapers that are providing those
+
+
+00:30:45.140 --> 00:30:46.820
+headlines, I think that's fair.
+
+
+00:30:46.820 --> 00:30:50.460
+So I, I certainly hear what you're saying with the news on that.
+
+
+00:30:50.460 --> 00:30:52.420
+Um, we still haven't got to the topic yet.
+
+
+00:30:52.420 --> 00:30:52.500
+I know.
+
+
+00:30:52.500 --> 00:30:52.940
+Okay.
+
+
+00:30:52.940 --> 00:30:53.900
+Uh, no, no.
+
+
+00:30:53.900 --> 00:30:54.900
+But I totally hear you.
+
+
+00:30:54.900 --> 00:30:59.900
+I think with the, the bandwidth, like the customers decided, like no one's Netflix
+
+
+00:30:59.900 --> 00:31:03.820
+isn't projecting stuff onto the people in Europe and they're receiving it out of it.
+
+
+00:31:03.820 --> 00:31:05.020
+They, they seek it out.
+
+
+00:31:05.020 --> 00:31:05.340
+Right.
+
+
+00:31:05.340 --> 00:31:05.860
+So I don't know.
+
+
+00:31:05.860 --> 00:31:10.100
+I feel like, yeah, but we can, yeah, that's, I, I appreciate the devil's advocate.
+
+
+00:31:10.100 --> 00:31:10.340
+Yeah.
+
+
+00:31:10.340 --> 00:31:11.180
+Okay.
+
+
+00:31:11.180 --> 00:31:12.540
+What was the news?
+
+
+00:31:12.540 --> 00:31:13.940
+So here's the news though.
+
+
+00:31:13.940 --> 00:31:19.700
+Facebook and more generally Meta is protesting a new Canadian law,
+
+
+00:31:19.700 --> 00:31:25.780
+obliging it to pay for news that if, so if my mom shares an article,
+
+
+00:31:25.780 --> 00:31:31.340
+say my mom was Canadian and she shared an article to some, some
+
+
+00:31:31.340 --> 00:31:36.340
+news thing, the Canadian post or whatever, then on Facebook, then
+
+
+00:31:36.340 --> 00:31:39.460
+Facebook would have to pay the Canadian post because my mom put it there.
+
+
+00:31:39.700 --> 00:31:43.900
+So they're protested by no longer having news in Canada.
+
+
+00:31:43.900 --> 00:31:46.020
+Like news doesn't exist in Canada now.
+
+
+00:31:46.020 --> 00:31:47.280
+On Facebook or.
+
+
+00:31:47.280 --> 00:31:47.620
+Yeah.
+
+
+00:31:47.620 --> 00:31:50.380
+So my mom tried to post that they were just going to like that can't be posted.
+
+
+00:31:50.380 --> 00:31:52.000
+Oh, well, that's weird.
+
+
+00:31:52.000 --> 00:31:53.620
+Isn't that weird.
+
+
+00:31:53.620 --> 00:31:57.500
+So I actually kind of agree with you on the Google news bit, like where a good
+
+
+00:31:57.500 --> 00:32:00.940
+chunk of it is there and it becomes almost a reader type service, but
+
+
+00:32:00.940 --> 00:32:02.040
+like Facebook doesn't do that.
+
+
+00:32:02.040 --> 00:32:05.500
+It just says, well, here's the, here's the thumbnail and you could click on it.
+
+
+00:32:05.500 --> 00:32:08.340
+But also a lot of, a lot of anger below it, but.
+
+
+00:32:08.340 --> 00:32:12.020
+get their news from people sharing it on Facebook.
+
+
+00:32:12.020 --> 00:32:12.860
+They follow people that share news.
+
+
+00:32:12.860 --> 00:32:13.700
+- But do they click it?
+
+
+00:32:13.700 --> 00:32:15.660
+That's the question, do they click it?
+
+
+00:32:15.660 --> 00:32:17.260
+- Often not.
+
+
+00:32:17.260 --> 00:32:18.460
+- Yeah, possibly.
+
+
+00:32:18.460 --> 00:32:19.420
+- And is it free?
+
+
+00:32:19.420 --> 00:32:24.420
+Is the bandwidth, if I share it with a million people
+
+
+00:32:24.420 --> 00:32:28.420
+and they don't click on it, does it cost the newspaper?
+
+
+00:32:28.420 --> 00:32:30.580
+Possibly, they might be drawing it for the headline
+
+
+00:32:30.580 --> 00:32:31.700
+and the image and all that stuff.
+
+
+00:32:31.700 --> 00:32:33.240
+- They might, yeah, they'd probably catch it,
+
+
+00:32:33.240 --> 00:32:34.660
+but they might not.
+
+
+00:32:34.660 --> 00:32:36.820
+So I'll put this out there for people
+
+
+00:32:36.820 --> 00:32:38.360
+to have their own opinions.
+
+
+00:32:38.360 --> 00:32:43.520
+Um, but I, I think this is something that Facebook should stand up to and just me
+
+
+00:32:43.520 --> 00:32:45.440
+not speaking for Brian, well done Facebook.
+
+
+00:32:45.440 --> 00:32:47.920
+I don't think, I don't think this makes any sense.
+
+
+00:32:47.920 --> 00:32:52.500
+Like they're protesting this law that makes them pay if my mom were
+
+
+00:32:52.500 --> 00:32:54.520
+Canadian and put news into her feed.
+
+
+00:32:54.520 --> 00:32:54.960
+Yeah.
+
+
+00:32:54.960 --> 00:32:57.220
+And I'll just say way to go, Canada.
+
+
+00:32:57.220 --> 00:32:57.880
+I like it.
+
+
+00:32:57.880 --> 00:32:59.920
+Awesome.
+
+
+00:32:59.920 --> 00:33:01.040
+All right, cool.
+
+
+00:33:01.040 --> 00:33:03.040
+That's it for all the items I got.
+
+
+00:33:03.040 --> 00:33:03.960
+You covered yours, right?
+
+
+00:33:03.960 --> 00:33:05.080
+Yes, I did.
+
+
+00:33:05.080 --> 00:33:06.200
+So let's do something funny.
+
+
+00:33:06.200 --> 00:33:08.840
+- Before we get into fisticuffs.
+
+
+00:33:08.840 --> 00:33:10.600
+- No, never.
+
+
+00:33:10.600 --> 00:33:12.520
+So, well, you want to talk about fisticuffs.
+
+
+00:33:12.520 --> 00:33:13.560
+So let's see the joke.
+
+
+00:33:13.560 --> 00:33:15.480
+So this joke makes fun of a particular language.
+
+
+00:33:15.480 --> 00:33:18.360
+The point is not to make fun of that language.
+
+
+00:33:18.360 --> 00:33:20.440
+It's to make fun of AI, okay.
+
+
+00:33:20.440 --> 00:33:22.500
+So people who want to support the AI,
+
+
+00:33:22.500 --> 00:33:23.840
+they can send me their angry messages.
+
+
+00:33:23.840 --> 00:33:26.400
+People who are fans of the language I'm about to show you,
+
+
+00:33:26.400 --> 00:33:27.240
+please don't.
+
+
+00:33:27.240 --> 00:33:28.060
+(laughing)
+
+
+00:33:28.060 --> 00:33:29.080
+Not about that.
+
+
+00:33:29.080 --> 00:33:33.920
+Okay, so if you were working with a GitHub copilot,
+
+
+00:33:33.920 --> 00:33:37.480
+note, a lot of times it tries to auto suggest stuff for you, right?
+
+
+00:33:37.480 --> 00:33:39.320
+Um, that didn't zoom that.
+
+
+00:33:39.320 --> 00:33:41.400
+So it tries to auto suggest stuff for you.
+
+
+00:33:41.400 --> 00:33:42.240
+Yeah.
+
+
+00:33:42.240 --> 00:33:46.900
+And so if you say like, this is C sharp, people know I've done C sharp before.
+
+
+00:33:46.900 --> 00:33:48.080
+I like it at all.
+
+
+00:33:48.080 --> 00:33:51.520
+Um, so not make fun of it, but it's just a slash slash day.
+
+
+00:33:51.520 --> 00:33:53.640
+And then there's an auto complete statement that the
+
+
+00:33:53.640 --> 00:33:54.840
+co-pilot is trying to write.
+
+
+00:33:54.840 --> 00:33:55.360
+What does it say?
+
+
+00:33:55.360 --> 00:33:55.680
+Right.
+
+
+00:33:55.680 --> 00:33:59.920
+It says day one of C sharp, sharp, and I already hate it.
+
+
+00:34:02.040 --> 00:34:06.240
+So like how many people have written this in their online journals or something?
+
+
+00:34:06.240 --> 00:34:07.520
+Yes, exactly.
+
+
+00:34:07.520 --> 00:34:09.320
+What in the world is going on here?
+
+
+00:34:09.320 --> 00:34:17.800
+So that's, there's some, there's some fun comments, but, they're not too
+
+
+00:34:17.800 --> 00:34:20.960
+great down here, but I just, I just thought like, you know, this, this
+
+
+00:34:20.960 --> 00:34:25.600
+weirdo, weirdo autocomplete, like we're going to get into this where this
+
+
+00:34:25.600 --> 00:34:26.940
+kind of stuff happens all the time.
+
+
+00:34:26.940 --> 00:34:27.160
+Right.
+
+
+00:34:27.160 --> 00:34:31.880
+This is kind of, the Google suggest, you know, let's see if I can get
+
+
+00:34:31.880 --> 00:34:38.620
+it to work here, we go to Google and type American Americans are, no, what
+
+
+00:34:38.620 --> 00:34:39.120
+does it say?
+
+
+00:34:39.120 --> 00:34:39.400
+Right?
+
+
+00:34:39.400 --> 00:34:41.720
+Struggling entitled.
+
+
+00:34:41.720 --> 00:34:42.180
+Yeah.
+
+
+00:34:42.180 --> 00:34:48.020
+Like C sharp developers are, and then it'll give you like a list or let's
+
+
+00:34:48.020 --> 00:34:49.220
+do it with a Python, right?
+
+
+00:34:49.220 --> 00:34:51.500
+I thought Python, right.
+
+
+00:34:51.500 --> 00:34:52.600
+Who are the Python?
+
+
+00:34:52.600 --> 00:34:53.860
+Why are they paid so much?
+
+
+00:34:53.860 --> 00:34:55.180
+Who hired these people?
+
+
+00:34:55.180 --> 00:34:56.020
+It said it, right?
+
+
+00:34:56.020 --> 00:34:59.640
+So this is the AI equivalent, but it's going to be right where you work all the
+
+
+00:34:59.640 --> 00:35:00.060
+time.
+
+
+00:35:01.420 --> 00:35:01.920
+That's funny.
+
+
+00:35:01.920 --> 00:35:07.060
+And mode and Joe out there says, I wonder what it says for day one of Python.
+
+
+00:35:07.060 --> 00:35:10.920
+I have no idea, but somebody had copilot installed.
+
+
+00:35:10.920 --> 00:35:11.680
+They should let us know.
+
+
+00:35:11.680 --> 00:35:14.040
+And what maybe we'll point it out next time.
+
+
+00:35:14.040 --> 00:35:15.160
+Yeah.
+
+
+00:35:15.160 --> 00:35:16.540
+Interesting.
+
+
+00:35:16.540 --> 00:35:19.360
+I haven't turned it on, but no, I haven't either.
+
+
+00:35:19.360 --> 00:35:19.960
+All right.
+
+
+00:35:19.960 --> 00:35:20.300
+All right.
+
+
+00:35:20.300 --> 00:35:20.640
+Well, thanks.
+
+
+00:35:20.640 --> 00:35:21.500
+Really many people do.
+
+
+00:35:21.500 --> 00:35:22.500
+And I really enjoy it.
+
+
+00:35:22.500 --> 00:35:25.120
+Like the usage numbers are kind of off the chart.
+
+
+00:35:25.120 --> 00:35:30.400
+Well, so yeah, I'll just say one of the people used to not like
+
+
+00:35:30.480 --> 00:35:35.360
+maintaining software written by others and they mostly like writing green field code.
+
+
+00:35:35.360 --> 00:35:41.040
+But with Copilot, you don't have to write your first draft. You can just become a permanent
+
+
+00:35:41.040 --> 00:35:45.920
+maintainer of software written by something else. >> Exactly. I wrote the bullet points and now I
+
+
+00:35:45.920 --> 00:35:50.400
+maintain what the AI wrote. Fantastic. >> Yeah, exactly. Hope you understand it.
+
+
+00:35:50.400 --> 00:35:56.000
+>> Yeah, exactly. >> But anyway, well, thanks a lot for a
+
+
+00:35:56.000 --> 00:36:00.320
+great day again, or a great episode. >> Absolutely. Thank you. See y'all later.
+

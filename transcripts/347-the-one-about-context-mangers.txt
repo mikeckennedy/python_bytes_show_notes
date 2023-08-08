@@ -1,0 +1,1104 @@
+00:00:00 Hello and welcome to Python Bytes where we deliver Python news and headlines directly to your earbuds.
+
+00:00:05 This is episode 347, recorded August 8th, 2023.
+
+00:00:10 And I'm Brian Okken.
+
+00:00:11 And I'm Michael Kennedy.
+
+00:00:12 Well, we have lots of great topics today. I'm pretty excited to get to them.
+
+00:00:17 This episode of course is, well, not of course, but is sponsored by us.
+
+00:00:23 So if you'd like to support the show, you can support us on Patreon or check out one of Michael's many courses, or my other podcasts, or you know how to support us.
+
+00:00:34 >> They know the deal. Brian, let me throw one more in there for people.
+
+00:00:37 >> Okay.
+
+00:00:37 >> If you work for a company and that company is trying to spread the word about a product or service, pythonbytes.fm/sponsor, and check that as well.
+
+00:00:45 I recommend that to their marketing team.
+
+00:00:47 >> Definitely. If you are listening and would like to join the show live sometimes, just check out pythonbytes.fm/live, >> There's info about it there.
+
+00:00:58 Why don't you kick us off, Michael, with the first topic?
+
+00:01:00 >> Here we go. Let's do a lead-in here to basically all of my things.
+
+00:01:06 Freddie, I believe it was Freddie.
+
+00:01:08 The folks behind Lightstar, L-I-T-E star is a sync framework for building APIs in Python.
+
+00:01:15 It's pretty interesting, similar but not the same as FastAPI.
+
+00:01:19 They share some of the same Zen.
+
+00:01:21 Now, I'm not ready to talk about Lightstar.
+
+00:01:23 This is not actually my thing.
+
+00:01:24 I will at some point probably.
+
+00:01:25 It's pretty popular, 2.4 thousand stars, which is cool.
+
+00:01:29 But I'm like, huh, let me learn more about this.
+
+00:01:31 Like, let me see what this is built on.
+
+00:01:33 And so I started poking through, what did I poke through?
+
+00:01:36 Not the requirements, but the poetry, lock file, and PyProject, and all that stuff.
+
+00:01:41 And came across two projects that are not super well known, I think.
+
+00:01:45 And I kind of want to shine a light on them by way of finding them through Lightstar.
+
+00:01:49 So the first one I want to talk about is AsyncTimeout.
+
+00:01:53 And I know you have some stuff you want to talk about with context managers.
+
+00:01:56 And this kind of lines right up there.
+
+00:01:59 So this is an async I/O compatible, as in async and await keywords, timeout class.
+
+00:02:05 And it is itself a context manager.
+
+00:02:07 Not the only way you could possibly use it, I suppose.
+
+00:02:09 But it's a context manager.
+
+00:02:11 And the idea is you say async with timeout.
+
+00:02:14 And then whatever you do inside of that block, that context manager, that with block, If it's asynchronous and it takes longer than the timeout you specified, it will cancel it and raise an exception, say, this took too long.
+
+00:02:27 Maybe you're trying to talk to a database and you're not sure it's on, or you're trying to call an API and you don't know, you don't want to wait more than two seconds for the API to respond, or whatever it is you're after, that's what you do is you just say async with timeout, and then it manages all of the nested async I/O calls.
+
+00:02:45 If something goes wrong there, it just raises an exception and cancels it.
+
+00:02:48 That's really pretty cool.
+
+00:02:50 Isn't that cool?
+
+00:02:51 There are ways in which in Python 3.11, I believe it was added, where you can create a task group and then you can do certain things.
+
+00:03:00 I believe you got to pass, you got to use the task group itself to run the work.
+
+00:03:06 Okay.
+
+00:03:06 So you pretty sure that's how you do it.
+
+00:03:09 It's been a while since I thought about it.
+
+00:03:10 It'd be something like task group dot, you know, create task and you await it.
+
+00:03:14 Something along those lines, right?
+
+00:03:16 And there, you've got to be really explicit, not just in the parts within that, but all the stuff that's doing async and await deep down in the guts.
+
+00:03:25 They all kind of got to know about this task group deal, I believe.
+
+00:03:27 If I'm remembering it correctly.
+
+00:03:28 And this one, you don't have to do that.
+
+00:03:30 You just run async stuff within this with block and if it takes too long, that's it.
+
+00:03:36 So in the example here, it says we have an await inner.
+
+00:03:40 This is like all the work that's happening.
+
+00:03:42 I don't see why that has to be just one.
+
+00:03:43 It could be multiple things.
+
+00:03:45 >> Yeah.
+
+00:03:45 >> It says if it executes faster than the timeout, it just runs as if nothing happened.
+
+00:03:50 Otherwise, the inner work is canceled internally by sending an asyncIO.canceled error into it.
+
+00:03:58 But from the outside, that's transformed into a timeout error that's raised outside the context manager scope.
+
+00:04:04 Pretty cool, huh?
+
+00:04:04 >> Yeah, that's handy.
+
+00:04:06 >> Yeah. There's another way you can specify, you can say timeout at, like now plus 1.5 seconds if you'd rather than just saying 1.5 seconds.
+
+00:04:14 So if there's, you want to capture a time at some point and then later you want to say that time plus some bit of time.
+
+00:04:20 You can also access things like the expired property on the context manager, which tells you whether or not it was expired or whether it ran successfully.
+
+00:04:28 Inside the context manager, you can ask for the deadline so you know how long it takes.
+
+00:04:33 And you can upgrade the time as it runs.
+
+00:04:36 You're like, oh, this part took too long or under some circumstance, something happened.
+
+00:04:41 So we need to do more work.
+
+00:04:42 Like maybe we're checking the API if there's a user, but actually there's not.
+
+00:04:46 So we've got to create the new user, we've got to send him an email, and that might take more time than the other scenario.
+
+00:04:53 So you can say shift by or shift to for time.
+
+00:04:56 So you can say, hey, we need to add a second to the timeout within this context manager.
+
+00:05:03 - Interesting.
+
+00:05:03 - So basically reschedule it, yeah.
+
+00:05:05 - Oh, that's pretty cool.
+
+00:05:06 - Yeah, so that's one thing.
+
+00:05:08 And then there's one other bit in here, the wait for, right.
+
+00:05:13 It says, so this is useful when async.io.waitFor is not suitable, but it's also faster than waitFor because it doesn't create a separate task that is also scheduled as async.waitFor itself does.
+
+00:05:26 So it's not totally unique functionality in Python, but it's a neat way to look at it.
+
+00:05:32 And I think this is a nice little library.
+
+00:05:34 >> Yeah, I like that.
+
+00:05:35 The interface to it's pretty clean as well.
+
+00:05:38 >> Yeah, a good little API there.
+
+00:05:40 Because it's a context manager, huh?
+
+00:05:41 >> Yeah.
+
+00:05:42 Let's reorder my topics a little bit.
+
+00:05:44 Let's talk about context managers.
+
+00:05:46 >> Did I change orders?
+
+00:05:48 >> That's all right. Trey Hunter has written an article called Creating a Context Manager in Python.
+
+00:05:55 As you've just described, a context manager is really the things that you use a with block with.
+
+00:06:03 There's a whole bunch of them like there's open.
+
+00:06:06 If you say with open and then a file name as file, then the context manager automatically closes it afterwards.
+
+00:06:14 Really, this article is about, this is pretty awesome, but how do we do it ourselves?
+
+00:06:20 He walks through, he's got a bunch of detail here, which is great.
+
+00:06:27 It's not too long of an article though.
+
+00:06:29 A useful one, which I thought that was an awesome good example, is having a context manager that changed an environmental variable just with the width block.
+
+00:06:39 and then it goes back to the way it was before.
+
+00:06:42 And the code for this is just a class with it's not inheriting from anything.
+
+00:06:48 And the context manager class is a class that has dunder init, dunder enter, and dunder exit functions.
+
+00:06:57 And then he talks about all the stuff you have to put in here.
+
+00:07:00 And then in your example before, you said as like with the timer as cm or something so that you could access that to see values afterwards.
+
+00:07:13 So Trey talks about how do you get the as functionality to work and really it's just, you have to return something.
+
+00:07:22 And then there's enter and exit functions.
+
+00:07:26 And there's, yeah, how do you deal with all of those?
+
+00:07:31 It's a great, it's just a little great article.
+
+00:07:34 I love using context managers and knowing how to, I think it makes sense to practice a couple of these because knowing how to use one in the context of your own code, there's frequently times where you have to do something and you know you're gonna have to clean up or something or there's some final thing that you have to do.
+
+00:07:52 You don't really wanna have that littered all over your code especially if there's multiple exit points or return points and a context manager is a great way to deal with that.
+
+00:08:02 I did wanna shout out to pytest a little bit.
+
+00:08:05 So the environmental variable part example is a great useful one for normal code if you ever want to change the environment outside of testing.
+
+00:08:15 But if you're doing it in testing, I recommend making sure that you, oh, I scrolled to the wrong spot.
+
+00:08:20 There's a monkey patch thing within pytest.
+
+00:08:24 So if you use fixtures, monkey patch, there is a set environment monkey patch portion.
+
+00:08:32 So within a test, That's how you do an environmental variable.
+
+00:08:35 But outside of a test, why not create your own context manager?
+
+00:08:39 Oh, you're muted.
+
+00:08:40 - So the environment variable only exists while you're in the context block, right?
+
+00:08:44 That's cool, the with block.
+
+00:08:46 - Yeah, or you're changing it.
+
+00:08:47 Like if you wanted to add a path, add something to the path or something.
+
+00:08:51 - Sure, sure.
+
+00:08:52 - There's other ways to do the path, but let's say it's a, I don't know, some other Windows environmental variable or something.
+
+00:08:59 - Yeah, these things are so cool.
+
+00:09:00 So if you ever find yourself writing try finally, and the finally part is unwinding something like it's clearing some variable or deleting a temporary file or closing a connection, that's a super good chance to be using a context manager instead.
+
+00:09:16 'Cause you just say with the thing, and then it goes.
+
+00:09:19 I'll give two examples that I think were really fun and that people might connect with.
+
+00:09:22 So prior to SQLAlchemy 1.4, the session, which is the unit of work design pattern object in SQLAlchemy.
+
+00:09:31 The idea of those are I start a session, I do some queries, updates, deletes, inserts, more work, and then I commit all of that work in one shot.
+
+00:09:41 Like that thing didn't used to be a context manager.
+
+00:09:43 And so what was really awesome was I would create one, like a wrapper class that would say, in this block, create a session, do all the work.
+
+00:09:52 And then if you look at the dunder exit, it has whether or not there was an exception.
+
+00:09:56 And so my context manager, you could say when you create it, do you want to auto commit the transaction if it succeeds and auto roll it back if there's an error?
+
+00:10:04 And so you just say in the exit, is there an error?
+
+00:10:07 Roll back the session.
+
+00:10:08 If it's no errors, commit the session.
+
+00:10:11 And then you just, it's like beautiful, right?
+
+00:10:13 You don't have to juggle that.
+
+00:10:13 There's no try finally, there's awesome.
+
+00:10:16 Another one to put it in something sort of out of normal scope maybe for people, like the database one might be something you think of.
+
+00:10:24 - This is a great one. - Colors.
+
+00:10:25 - Yeah. - Colorama.
+
+00:10:27 So if you're using something like Colorama, where you're like, I want to change the color of the text for this block, right?
+
+00:10:33 So there's all sorts of colors and cool stuff.
+
+00:10:36 It's like a lightweight version of Rich, but just for colors.
+
+00:10:39 You can do things like print foreground.red, and it'll do some sort of, every bit of text that comes after that will be red or whatever.
+
+00:10:47 So you can create a context block that is like a colored block of output.
+
+00:10:51 And then there's a reset all style that reset all you can do.
+
+00:10:54 So you just, in the open, you pass in the new color settings, you do all your print statements and whatever deep down.
+
+00:11:00 And then on the exit, you just say print style that reset all of out of colorama.
+
+00:11:04 And it's, it's undone.
+
+00:11:06 Like the color vanishes or you capture what it is.
+
+00:11:08 And then you reset it to the way it was before something along those lines.
+
+00:11:12 Anyway, this is, I really like this, that kind of stuff, right?
+
+00:11:15 People maybe don't think about color as a context manager, but >> But it kind of is because you always have to do the thing afterwards.
+
+00:11:22 You always have to do the reset.
+
+00:11:24 >> Yes. You have to put it back. It's so annoying.
+
+00:11:25 >> Anything where you have to put it back.
+
+00:11:27 Any other data structures that you may have like dirty, you've got queues sitting around that you want to clean up afterwards.
+
+00:11:34 Those are great for context managers.
+
+00:11:36 >> Absolutely.
+
+00:11:37 >> Brandon Brainer notices and points out that there's also context lib for making them, and I'm glad he brought that up.
+
+00:11:46 I was going to bring that up.
+
+00:11:47 ContextLib is great, especially for quickly and doing context managers.
+
+00:11:53 But I think it's in, and maybe the documentation is pretty good.
+
+00:11:57 You can do a decorator context manager, and then you can use a yield for it.
+
+00:12:01 But I really like the notion of, I guess you should understand both.
+
+00:12:05 I think people should understand how to write them with just Dunder methods and how to write them with the context manager and context lib.
+
+00:12:13 I think both are useful.
+
+00:12:14 But meant to mentally understand how the enter exit, all that stuff works, I think is important.
+
+00:12:20 Thanks, Brent.
+
+00:12:21 >> Yes. Let's tie the thing that I opened with, and this one a little bit tighter together, Brian.
+
+00:12:27 There's an A enter and A exit or async with blocks.
+
+00:12:32 If you want an asynchronous enabled version, you just create an async, async def, A enter, then async def, A exit.
+
+00:12:40 Now you can do async and await stuff in your context manager, which is sort of the async equivalent of the enter and exit.
+
+00:12:49 Okay. And the context lib also has these async context manager options.
+
+00:12:56 Mm-hmm.
+
+00:12:56 A enter and a exit.
+
+00:12:57 Cool.
+
+00:12:58 Yeah, perfect. Yeah, exactly. Very nice. Very nice. All right. Let's go to the next one, huh?
+
+00:13:03 Yeah.
+
+00:13:04 So server sent events. Let's talk about server sent events. Server sent events, people probably, Well, they certainly know what a request response is for the web, because we do that in our browsers all the time.
+
+00:13:16 I enter a URL, the page comes back, I click a button, it does another request, it pulls back a page, maybe I submit a form, it posts it, and then it pulls back a page.
+
+00:13:25 Right?
+
+00:13:25 Like that's traditional web interchange.
+
+00:13:28 But that is a stateless kind of one time and who knows what happens after that sort of experience for the web.
+
+00:13:35 And so there were a bunch of different styles of like, what if the web server and the client could talk to each other type of thing, right?
+
+00:13:43 In the early days, this is what's called long polling.
+
+00:13:47 This works, but it is bad on your server for what you do is you make a request, and the server doesn't respond right away.
+
+00:13:54 It just says, this request is going to time out in five minutes, and then it'll wait.
+
+00:13:58 And if it has any events to send during that time, it'll respond, and then you start another long polled event cycle, right?
+
+00:14:06 But the problem is you've got to, for everything that might be interested, you've got an open socket just waiting.
+
+00:14:12 Try it like in the process that requests queue sort of thing, it's not great.
+
+00:14:16 And then web sockets were added.
+
+00:14:18 And web sockets are cool because they create this connection that is bi-directional, like a binary, bi-directional socket channel from the web server to the client, which is cool.
+
+00:14:28 Not great for IoT things, mobile devices are not necessarily super good for WebSockets.
+
+00:14:35 It's kind of heavyweight. It's like a very sort of complex, like we're going to be able to have a client talk to the server, but also the server, the client, they can respond to each other.
+
+00:14:44 So a lighter weight, simpler version of that would be server sent events.
+
+00:14:49 Okay.
+
+00:14:50 So what server sent events do is it's the same idea, like I want to have the server without the client's interaction, send messages to the client.
+
+00:14:58 So I could create like a dashboard or something, right?
+
+00:15:01 The difference with server send events is it's not bi-directional.
+
+00:15:04 Only the server can send information to the client.
+
+00:15:07 But often for like dashboard type things, that's all you want.
+
+00:15:10 Like I wanna pull up a bunch of pieces of information and if any of them change, let the server notify me, right?
+
+00:15:15 - Oh yeah.
+
+00:15:16 - I wanna create a page that shows the position of all the cars in F1, their last pit stop, their tires, like all of that stuff.
+
+00:15:23 And like, if any of them change, I want the server to be able to let the browser know, but there's no reason the browser needs to like make a change.
+
+00:15:31 Right.
+
+00:15:31 It's like, it's a watching, right?
+
+00:15:33 If so, if you have this watching scenario, server sent events are like a simpler, more lightweight, awesome way to do this.
+
+00:15:38 Okay.
+
+00:15:39 We all know what SSE as service and events are.
+
+00:15:41 Okay.
+
+00:15:42 So if you want that in Python, there's this cool library, which is not super well known, but it's cool is HTTP X.
+
+00:15:51 So HTTPX is kind of like requests sort of maybe the modern day version of requests, because it has a really great async and await story going on.
+
+00:16:00 So there's this extension called HTTPX-SSE for consuming server sent events with HTTPX.
+
+00:16:09 Oh, okay.
+
+00:16:10 Yeah.
+
+00:16:10 So if you want to be a client to one of these things in Python to some server that's sending out these notifications and these, these updates, Well, HTTPS is an awesome way to do it because you can do async and await.
+
+00:16:21 So just a great client in general.
+
+00:16:23 And then here you plug this in and it has a really, really clean API to do it.
+
+00:16:27 So what you do is you would get the connect SSE out of it.
+
+00:16:32 And you just with, HTTPS, you just create a client and then you say, connect the SSE to that client to someplace gives you an event source.
+
+00:16:40 And then you just iterate, just say for thing and event, and it just blocks until the server sends you an event.
+
+00:16:46 And it'll think raise an exception if the sockets closed is what happens.
+
+00:16:49 So you just like loop over the events that the server's sending you when they happen.
+
+00:16:53 Okay.
+
+00:16:54 Cool.
+
+00:16:54 Isn't that cool?
+
+00:16:55 So yeah, so you could like in my F1 example, you could subscribe to the, the changes of the race and when anything happens, you would get like, there's a new tire event and here's the data about it and, the ID of the event, session and all those different things just streaming to you.
+
+00:17:11 And it's like literally five lines of code.
+
+00:17:14 Sorry.
+
+00:17:14 Six lines of code.
+
+00:17:15 with the import statement.
+
+00:17:17 - So what does it look like on the server then?
+
+00:17:19 I guess that's not what this project's about.
+
+00:17:21 - It's not your problem.
+
+00:17:22 However, they do say you can create a server, sorry, a starlet server here, and they have below an example you can use.
+
+00:17:30 So it's cool they've got a Python example for both ends.
+
+00:17:33 - Yeah.
+
+00:17:34 - So what you do on the server is you create an async function, and here's a async function that just yields bits of, just a series of numbers.
+
+00:17:43 It's kind of like a really cheesy example, but it sleeps for about an async second.
+
+00:17:47 It's like a New York second, like a New York minute, but 1/60th of it, and it doesn't block stuff.
+
+00:17:52 So for an async second, you sleep, and then it yields up the data, right?
+
+00:17:57 And then you can just create one of these event source responses, which comes out of the Starlet SSE, which is not related to this, I believe, but is like kind of the server implementation, and then you just set that as an endpoint.
+
+00:18:12 So in order to do that, they just connect to that and then they just get these numbers just streaming back every second.
+
+00:18:18 - That's pretty cool.
+
+00:18:20 - Yeah, I mean all of this, like if I hit Command minus one time, all of the, both the server and the client fit on one screen of code.
+
+00:18:28 - Yeah, yep.
+
+00:18:29 - Yeah, that's pretty neat.
+
+00:18:30 What else do I have to say about it?
+
+00:18:32 It has an async way to call it and a synchronous way to call it because that's HTTPS's style.
+
+00:18:38 It shows how to do it with the async.
+
+00:18:40 Here's your async with block.
+
+00:18:41 I mean, it's full of context managers this episode.
+
+00:18:43 And it shows you all the different things that you can do.
+
+00:18:46 It talks about how you handle reconnects and all of these little projects and all these things we're talking about are sort of breadcrumbs through the trail of Python.
+
+00:18:57 So it says, look, if there's an error, what you might do about that, like if you disconnect, you might wanna just let it be disconnected or you might wanna try to reconnect or who knows, right?
+
+00:19:07 What you need to do is not really known by this library.
+
+00:19:10 So it just says, you're just gonna get an exception.
+
+00:19:12 but it does provide a way to resume by holding onto the last event ID.
+
+00:19:17 So you can say like, Hey, you know, that generator you were sending me before, like, let's keep doing that, which is kind of cool.
+
+00:19:24 And then you'll just pick up, but here's the breadcrumbs.
+
+00:19:26 It says, here's how you might achieve this using stamina.
+
+00:19:28 And it has the operations here.
+
+00:19:31 And it says on HTTP, it gives a decorator says at retry on HTTP X dot reader.
+
+00:19:36 And then it goes how to redo it again.
+
+00:19:39 and how often, so Stamina is a project by Henik that allows you to do asynchronous retries and all sorts of cool stuff.
+
+00:19:48 So maybe something fun to, have we talked about Stamina before?
+
+00:19:51 I don't believe we have.
+
+00:19:52 - I don't think we have.
+
+00:19:54 - I don't remember it either.
+
+00:19:55 - But it's pretty cool.
+
+00:19:56 - So anyway, yeah, there's a lot of cool stuff in here.
+
+00:19:58 And yeah, so people can go and check this out, but here's the retrying version.
+
+00:20:03 You can see an example of that where it just automatically will continue to keep going.
+
+00:20:08 So pretty cool little library here, HTTPX-SE.
+
+00:20:13 It has 51 GitHub stars.
+
+00:20:15 I feel like it deserves more so people can give it a look.
+
+00:20:18 >> Yeah. Well, speaking of cool projects in Python, you probably grab them from PyPI, right?
+
+00:20:27 >> Of course.
+
+00:20:28 >> You have pip install. Let's take a look at stamina, for instance.
+
+00:20:32 In a lot of projects, one of the things you can do, you can go down and on the left-hand side, There's project description, release history, download files.
+
+00:20:40 Everybody has all of them have that.
+
+00:20:42 But then there's project links and these change.
+
+00:20:45 They're different on different projects.
+
+00:20:46 So stamina has got a change log and documentation and funding and source.
+
+00:20:51 And they all have like icons associated with it.
+
+00:20:54 So I don't know what we have.
+
+00:20:56 We go to sources, it goes to GitHub.
+
+00:20:58 Looks like funding.
+
+00:21:00 It's a GitHub sponsors.
+
+00:21:02 That's pretty cool documentation.
+
+00:21:04 I'm looking at the bottom of my screen.
+
+00:21:05 documentation links to stamina.inic.me.
+
+00:21:09 Okay, interesting. Change log.
+
+00:21:11 Anyway, these links are great on projects.
+
+00:21:14 Let's take a look at it, but they're different.
+
+00:21:16 Textual just has a homepage.
+
+00:21:19 HTTPX has change log homepage documentation.
+
+00:21:25 Itest has a bunch also.
+
+00:21:27 Also, it has a tracker.
+
+00:21:28 That's neat. Twitter.
+
+00:21:30 >> A bug in there, yeah.
+
+00:21:31 >> Yeah. How do you get these?
+
+00:21:34 So if you have a project, it's really helpful to put these in here.
+
+00:21:37 And so there's Daniel Roy Greenfield wrote a blog post or post saying, "IPI project URLs cheat sheet." So basically, figured all this stuff out.
+
+00:21:48 It's not documented really anywhere except for here, but it's in the warehouse code.
+
+00:21:54 And the warehouse is the software that runs by IPI.
+
+00:21:56 And I'm not going to dig through this too much, but basically, it's trying to figure out what the name, the name that you put on in for a link, and then which icon to use if that's it.
+
+00:22:08 There's a bunch of different icons that are available.
+
+00:22:11 Anyway, we don't need to look at that too much because Daniel made a cheat sheet for us.
+
+00:22:17 He shows a handful of them on his post, also a link to where they all are.
+
+00:22:23 But then what it is, is you've got project URLs in your PyProject.toml file, and it just lists a bunch of them that you probably want, possibly like homepage, repository, changelog.
+
+00:22:36 Anyway, this is a really cool cheat sheet of things that you might want to use and what names to give them.
+
+00:22:42 So it's a name equals string with the URL, and the names on the left can be anything, but if they're special things, you get an icon.
+
+00:22:53 >> Nice.
+
+00:22:54 >> Anyway, and there's even a Mastodon one now, so that's cool.
+
+00:22:58 >> Yay. You got to change the Twitter one.
+
+00:23:01 - Twitter, oh, it's Twitter or X, interesting.
+
+00:23:04 - Yeah, I think how much math is gonna break?
+
+00:23:06 It has to be called X everywhere now.
+
+00:23:08 No more algebra for you.
+
+00:23:09 - Yeah.
+
+00:23:11 - What a dumpster fire, okay.
+
+00:23:12 (laughing)
+
+00:23:14 My god, the audience points out the icons are courtesy of Font Awesome and indeed they are.
+
+00:23:19 If you're not familiar with Font Awesome, check that out.
+
+00:23:21 So like we can come over here and search for, wait for it, GitHub, and you get all these icons here.
+
+00:23:27 One of them is the one that shows up.
+
+00:23:30 I don't remember which one of these it would be, but if, you know, so it shows you the code that you need.
+
+00:23:36 It's just fabrands space fa-github for the icon there.
+
+00:23:41 But if for some reason you're like, what if there was a merge one?
+
+00:23:44 I want to merge, but there's no merge that's there, like on your other project, right?
+
+00:23:49 Then there's, I don't know how many icons are in Font Awesome, like 6,000, yeah, 6,444 in total.
+
+00:23:55 And maybe, no, I take that back 'cause there's new 12,000 new ones.
+
+00:23:59 So there's a lot, let's just say there's a lot here.
+
+00:24:01 - Well, the top said 26,000, so that's--
+
+00:24:04 - There we go.
+
+00:24:06 Yeah, awesome.
+
+00:24:07 Yeah, so--
+
+00:24:08 - Oh, there's a fire one.
+
+00:24:09 - There's so many good ones.
+
+00:24:10 - That'd be a good one for Twitter now.
+
+00:24:13 - By the way, if you go to Python Bytes, and you would be, I would be, you go to the bottom, all these little icons, these are all Font Awesome.
+
+00:24:20 Even the little heart about Made in Portland, ah.
+
+00:24:23 - Is Font Awesome a free thing, or do you gotta pay for it, you know?
+
+00:24:25 - Yes and no.
+
+00:24:26 So Font Awesome is, there's like a few, I searched for GitHub again.
+
+00:24:30 You see that some say pro and some don't.
+
+00:24:32 Yeah.
+
+00:24:33 Oh, pro the ones that don't say pro are free.
+
+00:24:36 The ones that say pro are pro.
+
+00:24:37 They cost like a hundred dollars a year subscription, but I have a, I bought a subscription to it and just canceled it because you got the icons you need.
+
+00:24:46 I got the icon.
+
+00:24:47 If I'm just locked at version six for a good long while, that's fine.
+
+00:24:50 Maybe someday I'll buy more, but yeah.
+
+00:24:51 So there you go.
+
+00:24:53 Nice.
+
+00:24:53 So yeah, that's, that's awesome.
+
+00:24:55 but it's cool how you pointed out any related to that to the pyproject.toml.
+
+00:25:01 I had no idea that that's how those went together.
+
+00:25:03 It's cool.
+
+00:25:04 - Nice.
+
+00:25:04 All right.
+
+00:25:05 - All right, well, I've got my screen up.
+
+00:25:06 I'm off to the next one, huh?
+
+00:25:07 - Yeah.
+
+00:25:08 - We're done with them, aren't we?
+
+00:25:09 That was, I have no more items.
+
+00:25:10 No more items to cover than other than extras.
+
+00:25:13 - Okay, well, I have a few, couple extras.
+
+00:25:17 So I, a couple--
+
+00:25:20 - More people?
+
+00:25:21 - More people.
+
+00:25:22 - You have more people?
+
+00:25:23 - More people and Python people.
+
+00:25:24 What did I want to say?
+
+00:25:25 Oh, just that I had some great feedback.
+
+00:25:28 So I love starting something new.
+
+00:25:31 It's good to provide feedback for people.
+
+00:25:33 And I got some wonderful feedback that the music that I stole from testing code is annoying on Python people 'cause it's a completely different tone and fair enough.
+
+00:25:42 So I'm gonna go through and rip out all the music, the intro music out of Python people.
+
+00:25:47 So, and also the next episode is coming out this week.
+
+00:25:50 It'll be Bob Bilderbos from PyBytes.
+
+00:25:53 It's a good episode.
+
+00:25:54 So should be out later this week.
+
+00:25:55 Do you have any extras?
+
+00:25:56 - I do, I do, I do.
+
+00:25:58 I have some cool announcements and some extras and all of those things.
+
+00:26:03 First of all, businesses achieve fusion with NetEnergy game for the second time.
+
+00:26:08 So, you know, the holy grail of energy is fusion, not fission, right?
+
+00:26:13 Just squishing stuff together like the sun does and getting heavier particles and tons of energy with no waste, no negative waste really.
+
+00:26:21 I mean, there's output, but like helium or something, right?
+
+00:26:24 Oh no, we need more helium anyway.
+
+00:26:26 I don't know, Brian, if you knew, but there's a helium shortage and a crisis of helium potentially.
+
+00:26:31 We'll see that someday.
+
+00:26:32 Anyway, the big news is the folks over at the NIF repeated this big breakthrough that they had last year, the National Ignition Facility.
+
+00:26:42 So congrats to them.
+
+00:26:43 And why am I covering this here other than, hey, it's chemical science, is last year after that, or actually earlier this year, I had Jay Solomonson on the show, and we talked about all the Python that is behind that project at the NIF and how they use Python to help power up the whole Nash fusion breakthrough that they had.
+
+00:27:04 So, very cool.
+
+00:27:05 If people wanna learn more about that, they can listen to the episode 403 on Talk Python and me.
+
+00:27:10 And just congrats to Jay and team again.
+
+00:27:12 That's very cool.
+
+00:27:13 - Do they have a 1.21 gigawatt one yet?
+
+00:27:18 That would be good.
+
+00:27:19 - They can't go back in time yet.
+
+00:27:20 - Oh, okay.
+
+00:27:21 - No, but if you actually look, there's a video down, there's this video demonstration.
+
+00:27:28 If you actually look at the project here, the machine that it goes through, this is like a room size, like a warehouse room size machine of lasers and coolers and mirrors and insane stuff that it goes through until it hits like a dime size or small marble size piece somewhere.
+
+00:27:48 There's like an insane, It's not exactly what you're asking for, but there is something insane on the other side of the devices.
+
+00:27:55 - Yeah, we've got ways to get this into a car.
+
+00:27:58 - Yeah, I mean, Marty McFly has got to definitely wait to save his parents' relationship.
+
+00:28:03 Okay.
+
+00:28:04 - All right.
+
+00:28:05 - All right, I have another bit of positive news.
+
+00:28:07 I think this is positive.
+
+00:28:08 This is very positive news.
+
+00:28:09 The other positive news is, you know, I've kind of knocked on Facebook and Google.
+
+00:28:14 Last time I think I was railing against Google and their DRM for websites.
+
+00:28:18 like their ongoing persistent premise that we must track and retarget you.
+
+00:28:24 So how can we make the web better?
+
+00:28:26 Like, no, no, that's not the assumption we need to start with.
+
+00:28:29 No, it's not.
+
+00:28:30 So I would, you know, I just want to point out maybe like a little credit, a little credit to Facebook at this time, a little, maybe a positive shout out.
+
+00:28:38 So there's a bunch of rules that I think are off the target by here.
+
+00:28:42 And for example, there were a bunch of attempts And like in Spain, there was an attempt to say, if you're going to link to a news organization, you have to pay them.
+
+00:28:55 - Okay.
+
+00:28:56 - Like, wait a minute.
+
+00:28:57 So our big platform is sending you free traffic.
+
+00:29:01 And to do that, we have to pay you, because the newspapers are having a hard time and they're important, but maybe that's a little bit off.
+
+00:29:08 Probably the most outrageous of this category of them were somewhere in Europe.
+
+00:29:12 I can't remember if it was the EU in general or a particular company, a country rather, sorry.
+
+00:29:17 they were trying to make companies like Netflix and Google because of YouTube pay for their broadband because people consume a lot of their content so it uses a lot of their traffic.
+
+00:29:28 It's like, wait a minute, we're paying already to get this to you and then you're gonna charge us to make you pay for our infrastructure.
+
+00:29:36 I don't know, it's just, you're like, oh, I don't know, that seems really odd to say, like, you know, Netflix should pay for Europe's fiber because people watch Netflix.
+
+00:29:46 I don't know, that just, it seems super backwards to me.
+
+00:29:48 So--
+
+00:29:49 - Okay, I'm gonna be a devil's advocate here.
+
+00:29:51 I think that if Netflix, for example, if Netflix is taking half the bandwidth or something like that, then all of the infrastructure costs, half of those costs are benefiting Netflix and they're profiting off of it.
+
+00:30:05 I think that's sort of legitimate.
+
+00:30:07 It depends on the scale, right?
+
+00:30:09 I think, like we are not taking a ton of bandwidth from Europe, so it would be weird for us have to pay something, but if I'm taking a measurable percentage, that's probably maybe okay.
+
+00:30:22 the other side is like I read Google news still, even though I'm not a huge fan of Google, but I read Google news.
+
+00:30:29 There's a lot of times where that's enough. I'm like, is there anything important happening? I'm just reading the headlines.
+
+00:30:34 I'm not clicking on the link and that, that benefit then for Google wouldn't be there if the newspapers weren't there.
+
+00:30:41 So I would say some money going to the newspapers that are providing those headlines, I think that's fair.
+
+00:30:46 So I, I certainly hear what you're saying with the news on that.
+
+00:30:50 we still haven't got to the topic yet.
+
+00:30:52 I know.
+
+00:30:52 Okay.
+
+00:30:52 no, no.
+
+00:30:53 But I totally hear you.
+
+00:30:54 I think with the, the bandwidth, like the customers decided, like no one's Netflix isn't projecting stuff onto the people in Europe and they're receiving it out of it.
+
+00:31:03 They, they seek it out.
+
+00:31:05 Right.
+
+00:31:05 So I don't know.
+
+00:31:05 I feel like, yeah, but we can, yeah, that's, I, I appreciate the devil's advocate.
+
+00:31:10 Yeah.
+
+00:31:10 Okay.
+
+00:31:11 What was the news?
+
+00:31:12 So here's the news though.
+
+00:31:13 Facebook and more generally Meta is protesting a new Canadian law, obliging it to pay for news that if, so if my mom shares an article, say my mom was Canadian and she shared an article to some, some news thing, the Canadian post or whatever, then on Facebook, then Facebook would have to pay the Canadian post because my mom put it there.
+
+00:31:39 So they're protested by no longer having news in Canada.
+
+00:31:43 Like news doesn't exist in Canada now.
+
+00:31:46 On Facebook or.
+
+00:31:47 Yeah.
+
+00:31:47 So my mom tried to post that they were just going to like that can't be posted.
+
+00:31:50 Oh, well, that's weird.
+
+00:31:52 Isn't that weird.
+
+00:31:53 So I actually kind of agree with you on the Google news bit, like where a good chunk of it is there and it becomes almost a reader type service, but like Facebook doesn't do that.
+
+00:32:02 It just says, well, here's the, here's the thumbnail and you could click on it.
+
+00:32:05 But also a lot of, a lot of anger below it, but.
+
+00:32:08 get their news from people sharing it on Facebook.
+
+00:32:12 They follow people that share news.
+
+00:32:12 - But do they click it?
+
+00:32:13 That's the question, do they click it?
+
+00:32:15 - Often not.
+
+00:32:17 - Yeah, possibly.
+
+00:32:18 - And is it free?
+
+00:32:19 Is the bandwidth, if I share it with a million people and they don't click on it, does it cost the newspaper?
+
+00:32:28 Possibly, they might be drawing it for the headline and the image and all that stuff.
+
+00:32:31 - They might, yeah, they'd probably catch it, but they might not.
+
+00:32:34 So I'll put this out there for people to have their own opinions.
+
+00:32:38 but I, I think this is something that Facebook should stand up to and just me not speaking for Brian, well done Facebook.
+
+00:32:45 I don't think, I don't think this makes any sense.
+
+00:32:47 Like they're protesting this law that makes them pay if my mom were Canadian and put news into her feed.
+
+00:32:54 Yeah.
+
+00:32:54 And I'll just say way to go, Canada.
+
+00:32:57 I like it.
+
+00:32:57 Awesome.
+
+00:32:59 All right, cool.
+
+00:33:01 That's it for all the items I got.
+
+00:33:03 You covered yours, right?
+
+00:33:03 Yes, I did.
+
+00:33:05 So let's do something funny.
+
+00:33:06 - Before we get into fisticuffs.
+
+00:33:08 - No, never.
+
+00:33:10 So, well, you want to talk about fisticuffs.
+
+00:33:12 So let's see the joke.
+
+00:33:13 So this joke makes fun of a particular language.
+
+00:33:15 The point is not to make fun of that language.
+
+00:33:18 It's to make fun of AI, okay.
+
+00:33:20 So people who want to support the AI, they can send me their angry messages.
+
+00:33:23 People who are fans of the language I'm about to show you, please don't.
+
+00:33:27 (laughing)
+
+00:33:28 Not about that.
+
+00:33:29 Okay, so if you were working with a GitHub copilot, note, a lot of times it tries to auto suggest stuff for you, right?
+
+00:33:37 that didn't zoom that.
+
+00:33:39 So it tries to auto suggest stuff for you.
+
+00:33:41 Yeah.
+
+00:33:42 And so if you say like, this is C sharp, people know I've done C sharp before.
+
+00:33:46 I like it at all.
+
+00:33:48 so not make fun of it, but it's just a slash slash day.
+
+00:33:51 And then there's an auto complete statement that the co-pilot is trying to write.
+
+00:33:54 What does it say?
+
+00:33:55 Right.
+
+00:33:55 It says day one of C#, and I already hate it.
+
+00:34:02 So like how many people have written this in their online journals or something?
+
+00:34:06 Yes, exactly.
+
+00:34:07 What in the world is going on here?
+
+00:34:09 So that's, there's some, there's some fun comments, but, they're not too great down here, but I just, I just thought like, you know, this, this weirdo, weirdo autocomplete, like we're going to get into this where this kind of stuff happens all the time.
+
+00:34:26 Right.
+
+00:34:27 This is kind of, the Google suggest, you know, let's see if I can get it to work here, we go to Google and type American Americans are, no, what does it say?
+
+00:34:39 Right?
+
+00:34:39 Struggling entitled.
+
+00:34:41 Yeah.
+
+00:34:42 Like C# developers are, and then it'll give you like a list or let's do it with a Python, right?
+
+00:34:49 I thought Python, right.
+
+00:34:51 Who are the Python?
+
+00:34:52 Why are they paid so much?
+
+00:34:53 Who hired these people?
+
+00:34:55 It said it, right?
+
+00:34:56 So this is the AI equivalent, but it's going to be right where you work all the time.
+
+00:35:01 That's funny.
+
+00:35:01 And mode and Joe out there says, I wonder what it says for day one of Python.
+
+00:35:07 I have no idea, but somebody had copilot installed.
+
+00:35:10 They should let us know.
+
+00:35:11 And what maybe we'll point it out next time.
+
+00:35:14 Yeah.
+
+00:35:15 Interesting.
+
+00:35:16 I haven't turned it on, but no, I haven't either.
+
+00:35:19 All right.
+
+00:35:19 All right.
+
+00:35:20 Well, thanks.
+
+00:35:20 Really many people do.
+
+00:35:21 And I really enjoy it.
+
+00:35:22 Like the usage numbers are kind of off the chart.
+
+00:35:25 Well, so yeah, I'll just say one of the people used to not like maintaining software written by others and they mostly like writing green field code.
+
+00:35:35 But with Copilot, you don't have to write your first draft. You can just become a permanent maintainer of software written by something else. >> Exactly. I wrote the bullet points and now I maintain what the AI wrote. Fantastic. >> Yeah, exactly. Hope you understand it.
+
+00:35:50 >> Yeah, exactly. >> But anyway, well, thanks a lot for a great day again, or a great episode. >> Absolutely. Thank you. See y'all later.
+
