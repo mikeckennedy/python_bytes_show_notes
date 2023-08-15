@@ -1,0 +1,1088 @@
+00:00:00 - Hello, and welcome to Python Bytes where we deliver Python news and headlines directly to your earbuds.
+
+00:00:05 This is episode 348 recorded August 15th, 2023.
+
+00:00:10 I'm Michael Kennedy.
+
+00:00:11 - And I'm Brian Akin.
+
+00:00:12 - And Brian, this episode is brought to everybody by us.
+
+00:00:15 I think you might be making a more concrete case for that than other times today.
+
+00:00:21 So, but yeah, check out all of our courses, books, things like that.
+
+00:00:25 It genuinely makes it possible for us to do this kind of stuff.
+
+00:00:28 So we really appreciate it. - Yeah, we love doing it, but yeah, also.
+
+00:00:32 - Yeah, yeah, also.
+
+00:00:33 And if you want to be part of the live show and you're not watching live now, Tuesdays at 11, at on by Set FM/Live, all the details there.
+
+00:00:42 Brian, let's kick it off.
+
+00:00:44 What's your first item?
+
+00:00:45 - Actually, I'm kind of on a packaging, a little bit of a packaging thing today.
+
+00:00:49 - Okay, okay.
+
+00:00:50 - Brett Cannon wrote an article called "Differentiating Between Writing Down Dependencies to use packages and for packages themselves.
+
+00:00:58 It's kind of a big title, but here's the idea.
+
+00:01:01 And I've been thinking about this also.
+
+00:01:03 So I really, there's requirements.txt files and those are often used for applications.
+
+00:01:09 And then there's, but that was really when we had like, that was either that or setup.py for packages.
+
+00:01:16 And now we have pyproject.toml.
+
+00:01:18 So can't we just use that?
+
+00:01:21 I mean, I kind of want to, But it doesn't quite work that way.
+
+00:01:25 You install dependencies with a pyproject.toml by installing your package.
+
+00:01:30 And you can install it like pip install.e.
+
+00:01:34 I think, Brett, yeah, pip install.e.
+
+00:01:36 - Dash e, dot.
+
+00:01:37 - Dash e, right.
+
+00:01:39 On the current directory, or you can give it a local project directory.
+
+00:01:42 And you can even do optional things like optional test dependencies and stuff.
+
+00:01:47 And I think when you do the dash e, it installs your optional test dependencies also, I'm not sure.
+
+00:01:55 But, and I'm used to that 'cause I do packages also, but we still have the requirements.txt file, there really are for different things.
+
+00:02:03 So Brett has talks about this a lot in here and looking at why there's a thing called like project dependencies and the project is really meant for packaging.
+
+00:02:15 It's really meant just for the whole packaging system.
+
+00:02:18 so that when you install something, install a wheel, it knows how to get packages for it.
+
+00:02:26 That's it.
+
+00:02:27 It's not supposed to be for applications.
+
+00:02:29 So really that's kind of the discussion around here, around this article.
+
+00:02:33 However, there's a couple ideas.
+
+00:02:36 He references, also references back a Donald stuffed article from 2013 about setup.py versus requirements.txt.
+
+00:02:45 But like I said, that was setup.py.
+
+00:02:47 Wait, maybe we could do something better.
+
+00:02:50 Brett's consideration is maybe we could have some standard, something, some other file that we could have.
+
+00:03:00 I personally, I have a, I think that maybe we could expand Pyproject.toml.
+
+00:03:05 I really like the toml thing.
+
+00:03:07 So maybe we could either have a requirements.toml, or maybe we could have like, instead of a project section of the toml file, maybe we could have maybe an application section.
+
+00:03:19 Maybe that would work.
+
+00:03:20 - So yeah, I think like a dev requirements even just in the pyproject.com all seems pretty straightforward to me.
+
+00:03:27 - Yeah, I mean, I run into it in other places too, like just in a Git repo that has like a couple of Python tools in it that people can install on their own, but they might have some requirements.
+
+00:03:40 How do you list those?
+
+00:03:41 Do you stick them as applications?
+
+00:03:43 I mean, requirements.txt is normally the thing that's used for, for like Django web applications and things like that.
+
+00:03:51 So maybe requirements.txt is fine, but I think--
+
+00:03:55 >> Perhaps. What I have is I have, for my world, I have requirements.txt, which is like from the web apps and stuff.
+
+00:04:01 That is what is required for the app to run.
+
+00:04:04 Without that, you can't make it go.
+
+00:04:07 Then I have requirements-dev.txt.
+
+00:04:09 I've seen that pattern a lot.
+
+00:04:10 Then to actually generate those, I use pip-tools and pip compiles.
+
+00:04:14 I have requirements.in and requirements-dev.in, and then I can auto-update all the dependencies and keep them in sync.
+
+00:04:22 That's how I do it these days.
+
+00:04:24 >> But now, even people with Django or other things are using a pyproject.toml also to store their black settings and things like that.
+
+00:04:35 >> Yeah.
+
+00:04:37 >> We're using pyproject.toml, the PI project Tomo for more things.
+
+00:04:41 And I think maybe we could extend it for this.
+
+00:04:43 Anyway, that's my hope.
+
+00:04:44 It's reasonable.
+
+00:04:45 Yeah.
+
+00:04:45 So anyway, what do you got for us?
+
+00:04:48 Well, let's, let's monkey around a little bit with the Python monkey with the Python monkey.
+
+00:04:53 That's cool.
+
+00:04:53 That's it is.
+
+00:04:54 So this comes to us from created by will Pringle, I believe amongst others.
+
+00:05:00 Let's see on the contributors here.
+
+00:05:03 there, yeah, there we go.
+
+00:05:06 Yeah.
+
+00:05:07 So a bunch of folks that work on this project.
+
+00:05:09 It's not super popular with only 276 stars, but I think it might be a pretty darn interesting compatibility layer for Python.
+
+00:05:18 So what do I mean by that?
+
+00:05:19 So imagine I'm, you can look at this from two perspectives.
+
+00:05:24 So don't scoff at one if you prefer the other.
+
+00:05:27 So imagine I'm a JavaScript developer and I've got a ton of cool JavaScript code that not just for the web front end, but you know, kind of in the Node.js sense, like a bunch of utilities or a bunch of libraries that, that work and do certain things, right?
+
+00:05:41 Yeah.
+
+00:05:42 But I also have a Python app and I'd like to somehow use those together.
+
+00:05:45 So Python monkey is a straight way to put it.
+
+00:05:49 It basically hosts.
+
+00:05:50 Ja a JavaScript, a full on high performance JavaScript JIT compiled to almost native performance JavaScript engine inside of Python through pip install.
+
+00:06:01 So if I wanted to use some of the JavaScript code, I just write my Python application and for that function or that functionality, I just import the job, you know, first spider monkey or Python monkey.
+
+00:06:15 And then I import the JavaScript files that you would use.
+
+00:06:20 And then you just call them like Python functions.
+
+00:06:22 Okay.
+
+00:06:23 Or reverse I'm writing a Python application and you know, one option to make like slow loops go faster would be to write that in Scython and Scython is getting better with the Scython three release that we discussed already in the previous episode.
+
+00:06:37 But JavaScript, because this thing, the SpiderMonkey JavaScript engine is the one that I believe Firefox uses, does JIT compilation to native code, it basically is near-native performance as well.
+
+00:06:50 So if you'd like, you could rewrite that part in TypeScript or JavaScript and run just that section.
+
+00:06:56 And it uses things like shared memory between JavaScript and Python.
+
+00:07:00 So if you've got like a string or a list, those are the same objects, which is pretty crazy.
+
+00:07:06 - Wow.
+
+00:07:07 - At least for the strings.
+
+00:07:08 Okay, so let's look at some examples.
+
+00:07:11 There's an article by Will, and no, I will not log into Medium.
+
+00:07:15 You're partially evil.
+
+00:07:15 Okay, so here's an article by Will here.
+
+00:07:20 So let's look at some code examples.
+
+00:07:23 All right, so import PythonMonkey as PM, and then you say PM eval and give it JavaScript code, and boom, it runs that.
+
+00:07:30 That's one way.
+
+00:07:31 What you can do maybe is more interesting is look at this.
+
+00:07:34 I can say EM dot eval and give it an anonymous JavaScript function.
+
+00:07:38 And then what comes back, not evaluating it, but just the thing to define the function in JavaScript.
+
+00:07:44 Okay.
+
+00:07:44 And then what comes back is an object that itself is a function.
+
+00:07:48 Okay.
+
+00:07:49 So that's pretty cool.
+
+00:07:50 Yeah.
+
+00:07:51 like, and hold on, there's two parts of this.
+
+00:07:53 So I've got a, I've created a JavaScript function that's jet compiled in spider monkey through this eval and what the, I didn't say this part, what the function takes is given a function, it will call that function passing hello world to it.
+
+00:08:07 Okay, the string hello world.
+
+00:08:09 Okay.
+
+00:08:10 So what you do is you get the function back as a Python function and then they pass print.
+
+00:08:15 It somehow proxies the print function into the JavaScript space and then JavaScript calls the Python print, which then comes back to the console, to the terminal.
+
+00:08:25 Wow.
+
+00:08:26 Okay.
+
+00:08:27 That's some deep integration, right?
+
+00:08:28 That's some pretty wild stuff.
+
+00:08:30 Let's see.
+
+00:08:31 else can we do here that's pretty interesting?
+
+00:08:33 I can say, given a JavaScript module like I described, I can, here's an example, it has a say hello export.
+
+00:08:42 Then you can just say pm.require that JavaScript module, and now you've got all the function, all the export behavior from that JavaScript module, right, which is cool.
+
+00:08:52 Yeah, there's some more examples in here.
+
+00:08:55 The other angle that's pretty interesting, there's two more angles that are interesting.
+
+00:08:59 Because it uses spider monkey and spider monkey is awesome with web assembly, allows you to run an untrusted WASM code from languages like C, C plus plus and rust, you can now basically do, any, you can call any web assembly code as well that you'd like inside of your function.
+
+00:09:17 Now we're getting into it.
+
+00:09:18 Yeah.
+
+00:09:19 It supports things like async and await using the async and await keywords to handle the callback nature of JavaScript, like the dot then type of deferreds and different things. So you can just async and await those behaviors, right? Just await a WebAssembly call, which is pretty excellent. Yeah. So there's a bunch of examples, some pretty cool graphics here with Spock and Captain Kurg going, "My mind to your mind, my object to your dicks, your dicks to my objects.
+
+00:09:50 It's pretty awesome there.
+
+00:09:52 Another angle that is worth considering is this allows the entire Python data science stack to become accessible to JavaScript developers, right?
+
+00:10:01 - Yeah.
+
+00:10:02 - So if you wanna use the machine learning stuff, if you wanna use pandas or pollers, right?
+
+00:10:07 You just write your code and then do the integration here.
+
+00:10:11 And yeah, that's pretty much it.
+
+00:10:14 It finishes with some funny little pictures here of a Noah on the ark, got a Python and JavaScript, which looks like a penguin, and then it has the Python monkey.
+
+00:10:24 What is that? What the heck is this?
+
+00:10:26 All right. Anyway, that's Python monkey, which is, I think, potentially interesting.
+
+00:10:33 >> With the WebAssembly and stuff, you could potentially have every other function in your system be implemented by a different language.
+
+00:10:43 - Yeah, I'm bored of C, C++, Rust, Go.
+
+00:10:48 What else do we want to write it in?
+
+00:10:51 - Yeah, why not everything?
+
+00:10:53 Just make sure that your application's only maintainable by you.
+
+00:10:57 That'd be-- - Exactly.
+
+00:10:58 Like, do you know how many compilers you need to do this?
+
+00:10:59 - No, this-- - You need them all.
+
+00:11:00 - That's kind of fun to joke about, but this does look pretty cool, so yeah.
+
+00:11:05 - Yeah, it does look pretty cool.
+
+00:11:06 So, you know, congrats to the folks there.
+
+00:11:08 This, maybe it'll go somewhere, we'll see.
+
+00:11:10 It's pretty interesting.
+
+00:11:11 I think also it's worth noting that there is a somewhere in here that there's a comparison to other things.
+
+00:11:19 So this apparently is not the only time such a type of creation has been attempted.
+
+00:11:25 So it says there are other projects that already do JavaScript and Python, such as Js2Py, PyV8 and MetaCol.
+
+00:11:31 But there's a bunch of different drawbacks or stuff.
+
+00:11:33 And so this is why we created it basically in addition.
+
+00:11:36 So Js2Py is implemented entirely in Python, which sounds awesome, except, you know, V8 and SpiderMonkey compiled a native code and run ultra fast.
+
+00:11:45 Whereas, you know, if you just run it in Python, it probably doesn't have any of those things, right?
+
+00:11:49 - Yeah.
+
+00:11:50 - PyV8 has a wrapper around Google's V8 JavaScript engine, which is great, but it's just super low level.
+
+00:11:56 You just like talk directly to the JavaScript bits, which for things, for example, doesn't have any sync and await.
+
+00:12:02 And finally, MetaCall is extensible, embeddable and interoperable, but you've got to install a bunch of different run times outside of just pip install.
+
+00:12:10 So anyway, if people are going, but it exists, it does, but this apparently is why it exists like this.
+
+00:12:16 Yeah, and John out in the audience says, I do this, but going the other way using transcript.
+
+00:12:23 - Okay.
+
+00:12:24 - Interesting, something new to check out.
+
+00:12:26 Thanks, John.
+
+00:12:27 - I'll take that out.
+
+00:12:29 - All right, over to you, Brian.
+
+00:12:30 - Well, I just, one more thing.
+
+00:12:32 Alvaro says, Python monkey perfect for works on my machine certification.
+
+00:12:38 there is an official works on my machine certification.
+
+00:12:41 If you have, I know we talked about it before, it's glorious, it comes with a sticker.
+
+00:12:45 Hire your application code, getting the latest version of any recent changes from other developers, purely optional and not a requirement for certification.
+
+00:12:53 Launch the application, cause one code path in the code you're checking to be executed.
+
+00:12:58 The preferred way to do this is with ad hoc manual testing.
+
+00:13:01 You can omit this step if the code change is less than five lines, or if in the developer's professional opinion, the code cannot possibly result in an error.
+
+00:13:09 Check your code into version control, you're certified.
+
+00:13:11 (laughing)
+
+00:13:13 - Yeah. - There we go.
+
+00:13:13 Two jokes in one episode, how about that?
+
+00:13:15 - Awesome.
+
+00:13:16 Well, we got a little bit more, a little more humor to add to it.
+
+00:13:21 So because I thought it was a serious article, and it is, it's just funny and weird.
+
+00:13:27 So Seth Larson wrote, "Quirks of Python Package Versioning." Package, Python package versioning, that's it.
+
+00:13:35 So we're used to, well, we're kind of getting used to the world where we all have SemVer like 1.2.3 and for semantic versioning, but we also have calendar versioning like 2023.6.1.
+
+00:13:49 And then there's stuff like you can add a prerelease suffix and things like that, but it gets way weirder and fun.
+
+00:13:56 So, and I have noticed this, especially with GitHub, like GitHub versioning, sometimes people will do a V versioning.
+
+00:14:05 So there's V prefixes you can do.
+
+00:14:07 And I guess you can pull that into your Python application version as well.
+
+00:14:12 Why not?
+
+00:14:14 So V versions are allowed.
+
+00:14:16 Epic versions-- did you know about Epic versions?
+
+00:14:18 I just learned about this.
+
+00:14:20 >>I don't think so.
+
+00:14:21 >>So you can have an exclamation point separating your Epic from the rest of your version.
+
+00:14:31 So like one bang 2.0.0 would be Epic one version 2.0.0.
+
+00:14:38 >> I got to tell you, I already had a hard time deciding when the two or when the middle zero or the last zero changes.
+
+00:14:43 If I put a number in front and exclamation point, I'm going to just lost.
+
+00:14:47 >> Yeah, apparently.
+
+00:14:48 >> Too much decision, too many decisions.
+
+00:14:50 >> Apparently some systems use colons for epics, but Python chose, this is all based on Python PEP 440.
+
+00:14:57 And the yeah, apparently we chose the bang symbol or is that's bang right?
+
+00:15:03 The exclamation point.
+
+00:15:06 So and that just kind of looks like a one if you did one bang one that would be hard to tell local versions and is you can you can extend after you have versions you can have alphanumeric and other stuff like you know your plus I don't know if the plus is part of it anyway.
+
+00:15:25 So after your normal version, like 1.0.0, he has an example of plus Ubuntu-1.
+
+00:15:31 This gets normalized, but this is kind of nice for local.
+
+00:15:36 It's local versions because PyPI doesn't like it.
+
+00:15:40 So PyPI will not let you push up local versions to PyPI, which is probably right.
+
+00:15:45 It's local builds.
+
+00:15:46 Long versions, apparently you can use the first 217 digits a pie and that works fine.
+
+00:15:55 As is one of the digits, there's no limits.
+
+00:15:59 Case insensitivity.
+
+00:16:01 So yeah, okay, that's fine.
+
+00:16:04 It gets normalized lower or something so that, you know, capital RC1 is the same as lowercase RC1.
+
+00:16:12 That's appropriate.
+
+00:16:13 So pre-release, I've seen, I've actually used pre-release, post, I don't know if I use pre.
+
+00:16:19 I've seen pre and I've used post-release occasionally.
+
+00:16:22 Although it's so weird that people don't understand what's going on, so I don't do that anymore.
+
+00:16:27 But apparently pre, post and dev are not mutually exclusive.
+
+00:16:31 You can have all three allowed in one version.
+
+00:16:35 Why would you do that?
+
+00:16:38 So, and yeah, no delimiters needed.
+
+00:16:43 There's just a lot of fun here.
+
+00:16:44 So implicit hyphens are allowed.
+
+00:16:48 So this is both the serious and non-serious.
+
+00:16:50 Oh, implicit zeros are weird.
+
+00:16:52 So if you have a version 2.0.4, you can just keep adding a bunch of .0.0.0s and it works fine.
+
+00:17:03 It resolves to 2.0.4.
+
+00:17:05 That's awesome.
+
+00:17:06 I definitely need to advertise some version, say just pick up 2.0.3.0.0.0.0.
+
+00:17:15 - Yeah, it makes it sound tough.
+
+00:17:19 Yeah, I mean, in releases we've had.
+
+00:17:20 Anyway, totally, totally fun articles.
+
+00:17:24 So thanks, Seth.
+
+00:17:25 Brian, do you hear that?
+
+00:17:26 No.
+
+00:17:26 That's the sound of a million regexs dying.
+
+00:17:30 (laughing)
+
+00:17:31 They're supposed to be scanning for the version string in your code.
+
+00:17:35 Yeah, but maybe that's why Python just has it as a string.
+
+00:17:40 If you do dunder version equals, it's just a string, so.
+
+00:17:44 Yeah.
+
+00:17:47 Act last, if you use C++ compiled code, so I guess native code, that's like not part of just source only Python.
+
+00:17:53 Is there a way to define which compiler you use in the versioning?
+
+00:17:56 Maybe that Ubuntu type variant, that local version, but you can't publish that, right?
+
+00:18:01 you can't push the pipe.
+
+00:18:02 Yeah.
+
+00:18:02 I like that.
+
+00:18:04 But like, for instance, it's, Hey, I'm not sure how this, this relates to, like the wheel naming the wheel download naming thing.
+
+00:18:13 Yeah.
+
+00:18:13 so, yeah.
+
+00:18:15 I'm sure there's some metadata you could put in there, right?
+
+00:18:18 Like you can do Dunder version, right?
+
+00:18:20 You could just do Dunder compiler and say, you know, print that out and it'll tell you, but it's not, there's no standard that I can think of.
+
+00:18:26 - Well, there's the, there is the wheel standard.
+
+00:18:30 I just don't remember where the link is.
+
+00:18:31 - But that's more platform-based, right?
+
+00:18:33 Than a compiler.
+
+00:18:34 - Oh, right. It's not compiler-based.
+
+00:18:36 It's platform-based.
+
+00:18:37 - I mean, the compiler's got to compile to the platform, but it doesn't say like use GCC versus LLVM, Clang, Visual Studio, whatever, right?
+
+00:18:45 Right.
+
+00:18:46 Yeah.
+
+00:18:46 And usually I'm just doing pure Python, so I have all listed, but the wheel.
+
+00:18:51 Anyway.
+
+00:18:51 Exactly.
+
+00:18:52 So.
+
+00:18:53 Exactly.
+
+00:18:53 All right.
+
+00:18:54 Well, with all that Python monkeying around, I could just barely stand it.
+
+00:18:59 Oh dear.
+
+00:19:00 About bear type.
+
+00:19:02 Nice.
+
+00:19:02 The bear metal type checker.
+
+00:19:04 Okay.
+
+00:19:05 So people know I'm a huge fan of types, Python, type hints, and all those things.
+
+00:19:08 They're super, super empowering and make the editors so much more helpful.
+
+00:19:13 means you don't have to go into the documentation and go, what does this take again?
+
+00:19:18 I know it takes an args here, but is args a dictionary?
+
+00:19:21 Is it a class?
+
+00:19:22 Is it a string?
+
+00:19:23 Is it a, what is it?
+
+00:19:24 Right?
+
+00:19:25 Like crazy stuff like that, right?
+
+00:19:26 So types are awesome for conveying that information without asking to go to the docs or some other place to figure it out.
+
+00:19:33 However, what Python type hints, annotations generally don't do, as the word hint would indicate, they don't require the hint.
+
+00:19:42 You can use tools like mypy and mypy will say the typing looks consistent or inconsistent, but regardless of what it says, when you run the code, whether or not the typing is consistent, long as it actually still semantically valid, it's gonna run, even if you tell the types, it takes a string, but you really pass an int, and it did plus to it, but you know what?
+
+00:20:02 You pass two integers and two strings and it still worked, right?
+
+00:20:05 So the runtime version of typing in Python is mostly absent, right?
+
+00:20:10 excluding things like Pydantic and a few others.
+
+00:20:12 So this bear type thing is a near zero cost, near real time, pure Python runtime type checker that makes runtime mismatches for typing, runtime errors.
+
+00:20:25 - Interesting.
+
+00:20:26 - Okay, so you can say, this sounds like a horrible idea and I will never touch it.
+
+00:20:30 Please don't, you know, install the bear.
+
+00:20:33 Or you could say, I come from a static language and this dynamic typing business is freaking me out.
+
+00:20:38 Can we get a little closer?
+
+00:20:40 then you can have it.
+
+00:20:40 I feel like this is the kind of thing that for little projects is completely useless, but for huge projects, it maybe it starts to become more valuable, right?
+
+00:20:47 - Yeah.
+
+00:20:48 - So if you just jump right into it, you pip install bare type, and then you can do things like import the decorator and just put a decorator onto a function that has a type annotation or hint right there like that.
+
+00:21:02 So here's one that says, quote Wigham, and then it passes lines and the type declaration says lines is a list of str, and it returns none, okay?
+
+00:21:11 So then if you just use this function, pass it a list of strings, it just runs, right?
+
+00:21:16 - Yeah.
+
+00:21:17 - If however though you pass it a list of bytes, which kind of look like strings but are not strings, you get an exception that says parameter such and such and such.
+
+00:21:27 - Well, it's a type.
+
+00:21:29 - The first, and it gives you the actual index in the list.
+
+00:21:32 It says list item zero with this value is not a string 'cause it's a B string, which is really bytes, right?
+
+00:21:39 >> Yeah.
+
+00:21:39 >> It's pretty cool, right?
+
+00:21:40 >> Yeah, it is really cool.
+
+00:21:43 I'm agreeing with Alvaro said, maybe running with the test suite, and I was thinking maybe dynamically add these somehow, use the var types during development and maybe take them off later.
+
+00:22:01 But if it's really fast, yeah.
+
+00:22:03 >> Yeah. I'll comment on that in a second.
+
+00:22:06 There are also validators.
+
+00:22:08 There's an is and an annotated validator.
+
+00:22:10 If you want to be more restrictive, maybe even then you might expect.
+
+00:22:14 It's part of Python, but it's not a commonly known part of the type.
+
+00:22:18 And then things.
+
+00:22:19 So for example, I could define a new type using annotated called list of strings.
+
+00:22:25 Okay.
+
+00:22:25 And it says, it has to be a list of strings as one part of the annotation.
+
+00:22:32 And then another one is, well, if it's, it has to be a non empty set of strings is what they're trying to create here.
+
+00:22:39 Okay, so it says if it's a list with a bunch of stuff, the bunch of stuff has to be strings, but it also contests that it's not falsy, which would be the case when it's a just, you know, zero length list.
+
+00:22:51 So then you can annotate with that type.
+
+00:22:54 And if you call with regular somewhere, you call it with regular code is fine.
+
+00:22:58 But if you call it with the empty list, where it says a list of strings, it says, no, no, no, it can't be an empty list.
+
+00:23:03 It has to be a non-empty list of strings.
+
+00:23:05 So there's like some pretty crazy things that you can do here.
+
+00:23:11 Yeah, some other stuff you can check if you like.
+
+00:23:13 But yeah, I wanted to read this introduction article here, which actually comes after all the examples.
+
+00:23:20 By the way, it also, in order to run this whole bunch of times, it took 33 microseconds, which is pretty incredible.
+
+00:23:30 The test, test this for like an array of tuples of arrays of, What is that a million, you know, 33 microseconds.
+
+00:23:38 So that's pretty fast, actually.
+
+00:23:39 Yeah.
+
+00:23:39 You still want to like compare it like your entire, like some workflow compared to with or without.
+
+00:23:45 So, yep.
+
+00:23:46 So let me read this.
+
+00:23:47 So if people are wondering, well, what the heck is this?
+
+00:23:49 Bare type brings rust and C plus plus inspired zero cost abstractions into the lawless world of dynamic typing, a dynamically typed Python, enforcing type safety at the granular level of functions and methods against type hints standardized by the Python community in 01, non-amortized worst-case time with negligible constant factors.
+
+00:24:09 How about that? If anyone asks what bear type is, there's a good description.
+
+00:24:12 >> Yeah.
+
+00:24:14 >> But yeah, it's pretty cool.
+
+00:24:16 Then there's a whole bunch of stuff about it.
+
+00:24:17 But anyway, that's bear type.
+
+00:24:19 It looks pretty promising to me.
+
+00:24:21 The drawback of a lot of these, I think, really is like, well, now you're doing a bunch of checking for every little function call and it's super slow.
+
+00:24:27 But if it's fast enough, that's pretty cool.
+
+00:24:30 >> Yeah. A couple of comments in the chat.
+
+00:24:33 Mike Felder doesn't, Pydantic includes call validators too, so I'm not sure how that relates.
+
+00:24:41 - I don't know if that's out of beta.
+
+00:24:42 Last time I looked at it, it was still in a testing phase.
+
+00:24:46 It may be out now.
+
+00:24:47 I mean, there's a ton of work that's happened on Pydantic.
+
+00:24:50 It's all been redone, so I don't know the status of that.
+
+00:24:53 Maybe Mike does.
+
+00:24:54 - Okay, and then also, is there a mypy plugin that does that?
+
+00:24:57 I don't know.
+
+00:24:58 I wasn't aware that mypy could be used at runtime, but.
+
+00:25:01 I wasn't aware of my PI could be used at runtime either, but perhaps.
+
+00:25:05 Yeah.
+
+00:25:06 Anyway, but anyway, this, this looks pretty, you know, quite straightforward.
+
+00:25:09 Be useful.
+
+00:25:10 You just do type ins, you put app bear type on it and it, it makes sure that it behaves.
+
+00:25:14 Yeah.
+
+00:25:14 So to do what you were looking at, sorry to do where you might want to turn it off in production, but run it in testing, which is reasonable.
+
+00:25:21 I don't see any mechanism for that.
+
+00:25:23 There may be.
+
+00:25:24 Yeah.
+
+00:25:25 It's a decorator mechanism.
+
+00:25:27 So you could, you could work around it if you needed to.
+
+00:25:29 - Well, you could just write a decorator that looks whether that setting is on or off, and either returns the bare type wrap thing or the direct function directly, and it would be like zero runtime cost once it's turned off 'cause the function is replaced with itself.
+
+00:25:44 Otherwise, it's replaced by the bare type decorated one.
+
+00:25:47 So you might have to write like 10 lines of Python, then you've got that feature, right?
+
+00:25:52 - The other thing is, how much of your code are you really gonna wanna throw bare type decorators around all over the place?
+
+00:25:59 That's a good point.
+
+00:26:00 Maybe just the boundary, right?
+
+00:26:01 Yeah.
+
+00:26:01 The API at the API level or something.
+
+00:26:03 Yeah, exactly.
+
+00:26:04 Exactly.
+
+00:26:05 Yeah.
+
+00:26:05 Cool.
+
+00:26:06 Yep.
+
+00:26:06 Anyway, there it is.
+
+00:26:07 and I suppose that's it for all of our items.
+
+00:26:10 That's what we got lined up for you.
+
+00:26:12 Anything else?
+
+00:26:12 extras.
+
+00:26:13 I have, you want me to go first?
+
+00:26:15 You want to save yours or you go first?
+
+00:26:17 I already got my screen up anyway.
+
+00:26:18 Okay.
+
+00:26:19 So first of all, congratulations.
+
+00:26:22 Mike Fowler, who is right here in the audience.
+
+00:26:26 Yeah.
+
+00:26:27 And I mispronounced his last name.
+
+00:26:28 Sorry.
+
+00:26:29 I'm hopefully I got it right.
+
+00:26:31 You did.
+
+00:26:31 I got it.
+
+00:26:32 At Mike, the man on Twitter, isn't the new safety and security engineer or PI PI that's awesome, Mike.
+
+00:26:41 Thank you so much.
+
+00:26:42 Cool.
+
+00:26:42 Clearly an area that needs lots of attention.
+
+00:26:45 So I just wanted to say welcome.
+
+00:26:47 Thanks for keeping us all safe out there.
+
+00:26:49 And, excellent.
+
+00:26:51 Yeah.
+
+00:26:51 I got to hang out with Mike a lot at PyCon.
+
+00:26:53 So that's really pretty cool.
+
+00:26:55 Yeah.
+
+00:26:56 Thanks.
+
+00:26:56 Super cool.
+
+00:26:56 Super cool.
+
+00:26:57 And then a couple of quick announcements to two conferences for people.
+
+00:27:00 A packaging con follow up on all of your items, Brian packaging con is happening fully online.
+
+00:27:07 no, hold on.
+
+00:27:08 No, it's happening in Berlin as hybrid.
+
+00:27:10 So it's in Berlin, October 26 to 28 for all things, packaging, Python, people, Rust, people, et cetera.
+
+00:27:18 So, check that out.
+
+00:27:20 And the cloud builders Python conf is September 6th, 2023.
+
+00:27:24 that's put together by a Ukrainian group, and it's just online.
+
+00:27:28 So people can check that out as well.
+
+00:27:30 And speakers, are they still have a call for proposals?
+
+00:27:34 Doesn't look like it.
+
+00:27:35 I think it's open.
+
+00:27:36 It's already all set for the agenda.
+
+00:27:39 So people can check that out.
+
+00:27:40 Should be fun.
+
+00:27:41 And onto your business.
+
+00:27:43 OK, well, a couple just a couple notes that I wanted to mention.
+
+00:27:48 The August release of Visual Studio Code has something I've been long awaiting.
+
+00:27:54 It's an error-tolerant pytest discovery.
+
+00:27:56 So what does this mean?
+
+00:27:58 It means you've got, and there's some comments down here.
+
+00:28:02 Oh, I went too far.
+
+00:28:03 You have to turn it on right now, but it's just in a setting.
+
+00:28:07 Apparently, some people have it on by default.
+
+00:28:09 Anyway, they should just turn it on. It's better.
+
+00:28:12 But the gist is, if you've got errors in some of your code, it used to just blow up.
+
+00:28:19 Like, let's say you've got a test suite, but you also have some old junk tests off in a side directory that you don't use anymore.
+
+00:28:27 If they had import errors or syntax errors or whatever, it would just blow up the whole thing and you couldn't get any tests to import.
+
+00:28:33 Now, it's tolerant and it doesn't import those tests that have import errors.
+
+00:28:39 That's great. You can still run the rest of the suite. That's good.
+
+00:28:43 There's a couple of things.
+
+00:28:46 It'd be cool if it could tell you which ones have had errors instead of just making them disappear.
+
+00:28:51 So that'd be neat.
+
+00:28:51 the other thing is guys, pytest isn't capitalized, though.
+
+00:28:56 You gotta work on your capitalization, non-capitalization.
+
+00:28:59 anyway.
+
+00:29:00 >> But discovery probably should be.
+
+00:29:01 >> Oh yeah.
+
+00:29:02 Oh yeah.
+
+00:29:03 Discovery should be.
+
+00:29:04 Oh, that's tough.
+
+00:29:06 Anyway.
+
+00:29:07 >> I always, I'm always unsure about my capitalization.
+
+00:29:10 It's so formal to capitalize everything.
+
+00:29:13 It's this time of year again, we got Python 3.12 release candidate one.
+
+00:29:20 So we're in the release candidates for Python 3.12.
+
+00:29:24 It's pretty exciting.
+
+00:29:24 Release candidate is a big deal though, right?
+
+00:29:27 It's we think this is the final version unless there's something gone wrong.
+
+00:29:31 Yeah, it's right out of beta.
+
+00:29:34 So anyway, speaking of beta, the big news for today is that I've got a Python testing with pytest.
+
+00:29:43 bundle course up and I'm super excited about it.
+
+00:29:47 I'm working really hard.
+
+00:29:48 However, it is in pre-release, pre-release beta.
+
+00:29:54 I don't know, I made up something that-
+
+00:29:56 >> Early bird.
+
+00:29:57 >> Early bird.
+
+00:29:59 >> Early beta bird.
+
+00:30:00 >> Yeah. What is going on?
+
+00:30:02 In the end, it's going to be, actually I included on here is a video that is got, Welcome to the pre-release beta and what does that mean?
+
+00:30:14 Video. So you can watch that. The gist of it is, is the three sections of the book are going to go into three different courses.
+
+00:30:21 But the pre-release right now that's for sale is a bundle of all, that will be all three.
+
+00:30:28 There's two chapters ready for the primary power for the first part.
+
+00:30:34 But I'm just going to chug along and people can jump in if they want.
+
+00:30:37 I'm doing it as a beta because the book itself really is better because of the beta program that I did when I was writing the book.
+
+00:30:45 And I'd love to have people come in and let me know where things need a little polish and we can fix it along the way.
+
+00:30:54 I also am setting up a job, or not a job board, a discussion board for people to ask questions if they get stuck.
+
+00:31:02 I really wanna make sure everybody's successful in getting this up and running, getting up and running in pytest quickly.
+
+00:31:09 So totally excited about getting this done.
+
+00:31:11 Oh, one more thing.
+
+00:31:13 I set up, I just launched it last night, but for Python Bytes listeners, you can use the coupon code Python Bytes with a Y.
+
+00:31:23 So, and we'll just throw that in the show notes.
+
+00:31:27 Use Python Bytes with a Y, and you can get 20% discount now through the end of the 17th.
+
+00:31:35 So just a few days, but that's enough time to grab it.
+
+00:31:39 So cool.
+
+00:31:40 - Yeah, awesome.
+
+00:31:41 Congrats on this, Brian.
+
+00:31:41 This will be exciting.
+
+00:31:43 And I know it's a lot of work, so.
+
+00:31:44 (Brian laughs)
+
+00:31:45 - Yeah.
+
+00:31:46 - Good luck.
+
+00:31:47 - Thanks.
+
+00:31:48 - Yeah, absolutely.
+
+00:31:49 - Oh.
+
+00:31:49 - You know what else is a lot of work and ties back to my first item?
+
+00:31:52 Learning JavaScript.
+
+00:31:53 Let's make that our joke.
+
+00:31:55 - Okay.
+
+00:31:55 - All right.
+
+00:31:56 So here's the text.
+
+00:31:57 It looks like a WhatsApp conversation that somebody got, unfortunately, from their apartment manager.
+
+00:32:04 And of course, it's addressed to Michael, which is extra funny.
+
+00:32:06 Hello, Michael.
+
+00:32:07 Your apartment has received the second complaint.
+
+00:32:11 Noise from the apartment is the problem.
+
+00:32:13 The dog whines.
+
+00:32:13 Apparently, you leave one home and the dog gets bored.
+
+00:32:16 Please address this.
+
+00:32:18 The response from Michael is, hello, I don't have a dog.
+
+00:32:21 This is me learning JavaScript.
+
+00:32:24 Like screaming and yelling and kicking.
+
+00:32:26 Oh, dog whines.
+
+00:32:28 OK.
+
+00:32:28 [LAUGHTER]
+
+00:32:31 Yeah.
+
+00:32:32 That's pretty good.
+
+00:32:33 >> That is pretty funny.
+
+00:32:34 >> It could be like learning all sorts of programs.
+
+00:32:35 It could be learning Python, but yeah, it's a little extra special, a little extra special there.
+
+00:32:39 You got your web pack working, have you got your requires working, have you got your transpiler working yet?
+
+00:32:46 >> Man, that was me with trying to relearn CSS.
+
+00:32:50 So first time I learned CSS, we didn't have all these pre-compilers and stuff.
+
+00:32:56 So CSS is a completely different ballgame now.
+
+00:32:59 >> Yeah.
+
+00:33:00 >> Yeah.
+
+00:33:00 >> Well.
+
+00:33:01 >> Yeah, it's crazy stuff. Cool.
+
+00:33:03 >> Well, anyway, this is my joke for everyone.
+
+00:33:05 We've received a noise complaint, I'm sorry.
+
+00:33:07 I don't have a dog.
+
+00:33:08 >> Awesome, well, it was a fun episode.
+
+00:33:11 Thanks again.
+
+00:33:11 >> Yeah, sure was.
+
+00:33:13 See you later.
+
