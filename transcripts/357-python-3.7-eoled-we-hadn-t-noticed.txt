@@ -1,0 +1,1044 @@
+00:00:00 Hello and welcome to Python Bytes, where we deliver Python news and headlines directly to your earbuds.
+
+00:00:05 This is episode 357, recorded October 17th.
+
+00:00:09 And I am Brian Okken.
+
+00:00:10 And I am Michael Kennedy.
+
+00:00:11 And our show is sponsored by us.
+
+00:00:14 Check out Talk Python Training, of course.
+
+00:00:17 There's wonderful courses from Michael and other people, including myself.
+
+00:00:21 And Patreon supporters, of course. We love Patreon supporters.
+
+00:00:26 We haven't really talked to him much lately. He's sending out emails. I should do that more.
+
+00:00:32 And lastly, the complete pytest course.
+
+00:00:35 Please check it out if you want to learn pytest the fastest way possible.
+
+00:00:39 And you can connect with us on Mastodon.
+
+00:00:42 On Mastodon, on Fosstodon. Both of those.
+
+00:00:45 And Michael's at mkennedy.
+
+00:00:49 I'm at Brian Okken.
+
+00:00:50 And the show is at Python Bytes.
+
+00:00:52 And you can also listen live if you head over to pythonbytes.fm.com.
+
+00:00:57 And you can watch it when we live stream, as we are right now.
+
+00:01:00 So, Michael, let's kick it off with something hot.
+
+00:01:04 Let's kick it off.
+
+00:01:05 I want to talk about a couple of, well, something I've learned from Glyph.
+
+00:01:10 When I was at PyBay, was that last weekend? Two weekends ago? Last weekend, I guess.
+
+00:01:14 Glyph gave a really cool talk.
+
+00:01:16 Some of the talks are starting to show up on YouTube, but his talk is not there yet.
+
+00:01:21 Or I would link to it.
+
+00:01:22 And it was something along the lines of, like, how to program your computer with Python.
+
+00:01:26 Which sounds silly, because we're all pretty good Python programmers.
+
+00:01:30 Like, you should think, okay, well, I could do that.
+
+00:01:32 But this was about, how do I automate stuff?
+
+00:01:34 How do I plug into things?
+
+00:01:37 Like, how can I automate Keynote to extract show notes out to put into another document?
+
+00:01:44 Or PowerPoint? Or, you know, things along those lines.
+
+00:01:48 And one of the things that he both created and talked about was this thing called Quick Mac Hotkey.
+
+00:01:55 Because you might want to have your Python not have a UI you're interacting with, but just be chilling in the background.
+
+00:02:01 And if you hit a certain hotkey, it does the thing, right?
+
+00:02:04 Yeah.
+
+00:02:04 Yeah. So this Quick Mac Hotkey does that.
+
+00:02:07 And basically, it's super simple to use.
+
+00:02:10 It's just a set of minimal Python bindings for macOS framework APIs using, what does it use for it to pull this off?
+
+00:02:19 Let's look through here.
+
+00:02:20 Oh, yeah. Pyobjc, I believe is what it's using.
+
+00:02:24 So, you just, super easy to write some code.
+
+00:02:27 You want to have a function that's called when a keystroke is down.
+
+00:02:31 You just give it the decorator, Quick Hotkey.
+
+00:02:34 And you say the virtual key is the X.
+
+00:02:36 The modifier is command control option.
+
+00:02:39 So, just hit all three of those plus X.
+
+00:02:42 You know, something that's most likely not going to interfere with some other behavior.
+
+00:02:46 And then boom, off it goes.
+
+00:02:48 And look how simple that code is.
+
+00:02:49 Isn't that nice?
+
+00:02:50 Yeah.
+
+00:02:50 Yeah, that's pretty cool.
+
+00:02:52 Although, I don't know if I can find my command control and hotkey at the same time.
+
+00:02:56 But, cool.
+
+00:02:58 Yeah, I use a Windows keyboard, unfortunately, because there's no ergonomic Mac keyboards.
+
+00:03:03 Like, apparently Apple hates people, and they want them to have RSI for the rest of their life.
+
+00:03:07 So, they only make these.
+
+00:03:08 Is the window key mapped to the command key?
+
+00:03:10 Yeah, the window key is just the command key.
+
+00:03:12 Yeah.
+
+00:03:13 So, it's nothing too fancy.
+
+00:03:15 So, there's not a lot of depth that we got to dive into this, other than how cool is it if you want to just add hotkeys here.
+
+00:03:21 You know, off you go.
+
+00:03:23 Okay, so when you install it, does it just run all the time or something?
+
+00:03:27 I think whenever your app is running.
+
+00:03:30 Okay.
+
+00:03:30 Like, so you can see the last line of this example.
+
+00:03:32 It says app helper dot run event loop.
+
+00:03:33 Okay.
+
+00:03:34 So, that's just like set there in the background and just wait for events.
+
+00:03:38 For example, it's this quick hotkey callback when somebody presses that.
+
+00:03:41 So, one of those, though, could be exit.
+
+00:03:44 You know, and just, you know, I don't know how you exit the event loop.
+
+00:03:47 Either raise an exception or just exit or who knows.
+
+00:03:50 There's got to be a way to get out of there.
+
+00:03:51 Reboot your computer.
+
+00:03:52 Exactly.
+
+00:03:53 It's like Vim.
+
+00:03:54 You're just in there.
+
+00:03:57 Nice.
+
+00:03:58 All right, over to you.
+
+00:03:59 Well, I'm going to talk about command lines applications a little bit, because Simon Wilson had things I've learned about building CLI tools in Python.
+
+00:04:08 And I really kind of like all the stuff he covered.
+
+00:04:12 I really like them.
+
+00:04:13 I mean, this isn't a super in-depth, like, how to write CLI tools.
+
+00:04:18 But some of the things, like just high level, when you're writing command line applications, it's good to be rather consistent with other command line applications to make it easy to use, because it's going to be used by people that like CLIs, right?
+
+00:04:32 So, a couple of options, things here.
+
+00:04:37 Be consistent with the terms.
+
+00:04:39 Well, you have to kind of understand the terms.
+
+00:04:41 But there's commands, there's arguments, there's options and flags.
+
+00:04:45 And sometimes flags are options.
+
+00:04:47 And yeah, anyway.
+
+00:04:49 So, commands that have our – he's using CLI application.
+
+00:04:53 So, he actually talks about CLI and also using a cookie cutter template that he lists at CLI app on Simon W on GitHub.
+
+00:05:04 But the – or, yeah, cookie cutter template to build these, which is cool.
+
+00:05:09 I like Typer, which is built on top of CLI.
+
+00:05:13 So, anyway.
+
+00:05:14 But these are still good advice.
+
+00:05:17 Like, make sure that your options, you know what options are, and then make sure you have like a short character.
+
+00:05:24 So, if you have dash dash port, also include like dash P as a short version, because people are used to that.
+
+00:05:33 There's mostly just a lot of description around making sure your flags and options and stuff are consistent.
+
+00:05:40 And I actually think people ought to get used to writing more CLI apps, because especially for utilities for yourself and for a team, they're great, because you'll use it all the time.
+
+00:05:53 And it's – you get used to it.
+
+00:05:55 It's easier than building a GUI application.
+
+00:05:58 So, consistency is everything.
+
+00:06:00 Try to be consistent with it.
+
+00:06:01 One of the great thing – the great advice here, so, is pay attention to your help message.
+
+00:06:08 So, a lot of CLI tools like Typer and Qlik kind of build a help for you, so that it prints out like the options and stuff that you can list, which is great.
+
+00:06:20 But you have to go in and add things like – put examples.
+
+00:06:26 So, example uses of like the entire application or the entire option and how to use it.
+
+00:06:31 This is extremely helpful.
+
+00:06:33 And I really appreciate it even just for myself, so that like six months from now, I can remember how to use it, things like that.
+
+00:06:41 So, include options in the help.
+
+00:06:43 And then the other thing is the lastly – oh, examples in help.
+
+00:06:48 And there's a couple of other things.
+
+00:06:51 Oh, include the output of your help in your online documentation.
+
+00:06:55 And there's ways to automate that.
+
+00:06:57 But I think that's great to just list it, because I'm looking for it when I'm looking at the – like at the bottom of the readme or something.
+
+00:07:04 The lastly is if you have a CLI that's being used by other people, make sure that you version it appropriately, because it is an API.
+
+00:07:16 A command line interface can be used by other programs, so treat it as an API, even if the other user is somebody's fingers.
+
+00:07:24 Because if things change, people should know about it.
+
+00:07:26 So, anyway, good application or a good article about building command line applications.
+
+00:07:32 And then his cool cookie cutter template for Qlik apps.
+
+00:07:36 It's nice.
+
+00:07:37 Excellent. Yeah, nice work, Simon.
+
+00:07:38 A couple of pieces of real-time follow-up here.
+
+00:07:42 One, audience is on point today.
+
+00:07:45 So, Kim out there says, Rich Qlik is also fantastic if you use Qlik.
+
+00:07:50 And I definitely agree on that.
+
+00:07:52 So, it's like Qlik, but all the help messages and stuff are in color, using Rich and little info boxes and stuff.
+
+00:08:01 And then Rhett, who was on Talk Python to talk about programming Mac apps, Mac OS apps, highlights that this quick hotkey thing sounds like a good opportunity for a Rumps menu bar app.
+
+00:08:16 So, Rumps is awesome.
+
+00:08:18 I was actually thinking of adding this hotkey thing exactly for one of my Rumps menu bar apps, which is just an unfair level of easy for building a Mac app that just runs in your menu bar.
+
+00:08:30 Oh, cool. Yeah, we've talked about that, but it's been a while.
+
+00:08:32 It has been a while, but you've got to, for me, I've got to go up and find it and like make it do the thing.
+
+00:08:37 I'm like, you know what?
+
+00:08:38 A hotkey. Oh yeah, here we go.
+
+00:08:40 Now it's on. Now it's going to the next level.
+
+00:08:43 So, yeah, super cool.
+
+00:08:45 All right, that's not what I want to talk about, but some good real-time follow-up.
+
+00:08:47 What I want to talk about is Warp.
+
+00:08:49 And this is also an item from PyBay indirectly.
+
+00:08:52 I ran into Elvis who works there.
+
+00:08:54 And have you heard of Warp, Brian?
+
+00:08:57 No, well, I mean, Warp Speed.
+
+00:08:59 Yes, I know.
+
+00:09:00 I've got to resist the Star Wars references.
+
+00:09:03 It's super cool.
+
+00:09:04 So, what terminal do you use?
+
+00:09:06 Like when you go to use the built-in Mac one, do you use iTerm2 or what's your story?
+
+00:09:11 Well, I use the built-in Mac one on Mac and then on Windows I use the, what?
+
+00:09:18 Windows terminal?
+
+00:09:19 Well, that was a good one.
+
+00:09:22 No, the Git for Windows bash comes with bash.
+
+00:09:27 So I use that.
+
+00:09:28 Okay, yeah.
+
+00:09:29 You should check out the Windows terminal and then plug the Git for bash into it.
+
+00:09:33 You get like, it behaves better and you can pick from like nine different shells and like things that run inside the Windows terminal.
+
+00:09:38 Anyway, Windows terminal is awesome.
+
+00:09:40 But we don't have Windows terminal on Mac, which is just fine because we have iTerm and other things.
+
+00:09:45 But I want to tell you about Warp because Warp is a new terminal that has got quite a bit of energy behind it.
+
+00:09:52 And it's awesome.
+
+00:09:54 So I think there's 30 people working on this project if I remember correctly, but there's a good number of people that are working on building this new terminal based on Rust.
+
+00:10:04 It even is programmed in Metal shaders.
+
+00:10:07 Metal is like the OpenGL DirectX Mac equivalent for making it super, super fast.
+
+00:10:12 But basically, like there's a bunch of shortcomings that always drove me crazy about the terminal and a lot of things that are pretty nice here.
+
+00:10:19 So it's a free thing for individuals.
+
+00:10:21 If you're a company, you got to pay for it if you want to company features.
+
+00:10:25 But it's worth checking out.
+
+00:10:27 So for example, if you write something, Brian, like I write some multi-line command and you're like, oh no, I forgot the quote at the beginning.
+
+00:10:36 You know, how do you fix it in iTerm?
+
+00:10:39 Left error, left error, left error, left error, left error.
+
+00:10:41 Like even home doesn't work.
+
+00:10:43 You know, left error, left error, left error.
+
+00:10:44 You wait and you get back there and you type the quote, right arrow, right arrow to get the focus back.
+
+00:10:49 Like clicking where you want to be doesn't work, right?
+
+00:10:53 For example.
+
+00:10:54 Well, you use Vim key bindings and just go there with Vim.
+
+00:10:57 Do you have Vim key bindings in the standard terminal?
+
+00:11:01 Yes, everywhere.
+
+00:11:02 Yeah? Okay.
+
+00:11:03 All right.
+
+00:11:05 Awesome.
+
+00:11:06 Well, so this one, like basically all the stuff you type at the bottom or wherever you're typing is like a full-on editor, which also has Vim key bindings.
+
+00:11:15 Yay!
+
+00:11:16 Okay.
+
+00:11:17 Okay.
+
+00:11:18 You can turn them on if you want, but you can basically click in there and edit pieces like you can double click.
+
+00:11:23 It'll select a word.
+
+00:11:23 You start typing and it replaces that.
+
+00:11:25 Super cool.
+
+00:11:26 It has like a kind of a new way to like keep your input focused in one area, which is really nice.
+
+00:11:33 So instead of it just being at the bottom of the screen, you can have it like always at the top or always at the bottom.
+
+00:11:38 One of the things that's cool is like it treats the output of every command as a solid, as one thing.
+
+00:11:45 So if I do like an LS and there's like 50 lines and I tail a catalog or something, there's like a thousand lines.
+
+00:11:52 And then if you want to go back, you can actually just go back by selecting each block of that.
+
+00:11:57 So go back a thousand lines, go back 50 lines, do a search, you can search just that 50 line section from that one command, even though your terminal's full of junk.
+
+00:12:05 Super, super cool.
+
+00:12:06 It does tons of autocomplete, which is super neat.
+
+00:12:10 Let's see one thing else.
+
+00:12:12 You can, if you do some kind of command, you're just talking about like Simon asking ChatGPT for what does like a command mean?
+
+00:12:19 So if you said like LS dash one, what does the one mean?
+
+00:12:23 You know, you hover over the one, it'll like pop up a little documentation for what dash one means.
+
+00:12:29 Oh, that's cool.
+
+00:12:30 Yeah. Also has AI built in if you want.
+
+00:12:33 I haven't used that very much, but you could like say hash.
+
+00:12:35 How do I, you know, write this kind of loop and bash or whatever and it'll, it'll print it out for you, but I don't use that one too much.
+
+00:12:42 But anyway, super, super cool.
+
+00:12:44 A lot of interesting things.
+
+00:12:46 It has the control R history, kind of like, like McFly, which I've talked a lot about how cool McFly is.
+
+00:12:53 So giving this thing a try for a few weeks, really enjoying it so far.
+
+00:12:57 Cool. Love to try it.
+
+00:12:58 Yeah. So people can check that out.
+
+00:13:00 And yeah, pretty neat.
+
+00:13:01 Kim says we've come a long way from a few years ago when Windows Terminal and awesome is in the same sentence.
+
+00:13:07 It's, yeah.
+
+00:13:08 I thought it was a joke also.
+
+00:13:10 I didn't, I can't believe that you said that, but no, it Windows Terminal is, it's, I don't want to be on Wikipedia, but it is definitely, definitely nice.
+
+00:13:19 So I'm not on my Windows machine and I'm not sharing my terminal anyway, but let's see if I can get it to show hotkey.
+
+00:13:27 So like, and it doesn't really show it great, but you can click on this, like you set what the default shell is that you want it to do, but you can click this.
+
+00:13:35 It'll be like the bash shell, the PowerShell, whatever that things play in music.
+
+00:13:42 I can't take it.
+
+00:13:43 But yeah, anyway, the Windows, yeah, check out Windows Terminal.
+
+00:13:46 It's actually good and Kim is right.
+
+00:13:48 We've come a long ways, but yeah.
+
+00:13:50 Okay.
+
+00:13:50 All right.
+
+00:13:51 Mm-hmm.
+
+00:13:52 You convinced me, I think.
+
+00:13:54 So let's try it.
+
+00:13:55 Give it a, give it a try.
+
+00:13:56 Give it a try.
+
+00:13:56 All right.
+
+00:13:57 What's your final thing?
+
+00:13:58 People should check out Warp.
+
+00:13:59 It's pretty neat.
+
+00:14:00 I will.
+
+00:14:00 Yeah.
+
+00:14:01 Oh, hold on.
+
+00:14:02 One more important thing here.
+
+00:14:03 Mac only for the moment for people, but they're working on Linux and Windows.
+
+00:14:07 So you can like sign up to get notified if you're not a Mac person.
+
+00:14:11 So just that caveat for now.
+
+00:14:14 I, did you, I, Python 3.7 end of life and I didn't even notice.
+
+00:14:20 What?
+
+00:14:21 That was a good one.
+
+00:14:22 That was one of the good ones.
+
+00:14:23 You can trust that one.
+
+00:14:25 So 3.7 end of life was in June, in June 27th.
+
+00:14:30 No, that was the first release.
+
+00:14:31 End of, no, end of life also.
+
+00:14:32 End of life 6, 27, 23.
+
+00:14:35 Interesting.
+
+00:14:35 But why did I not notice it?
+
+00:14:37 I didn't notice it because everybody's like three, like you said, 3.7 was one of the good ones.
+
+00:14:42 We got, we have data classes in there.
+
+00:14:44 f-strings came in 3.6 and they got improved in 3.7 and then they got improved in 3.10 again.
+
+00:14:50 And all sorts of stuff.
+
+00:14:52 But, but it is something to pay attention to.
+
+00:14:55 That I had noticed the first notice today.
+
+00:14:58 I was looking at the VS code announcement for the new, what was this?
+
+00:15:03 Python for Visual Studio Code, October 2023 release mentions that the 3.7 support is still, it's still probably works, but they're deprecating 3.7 in support.
+
+00:15:17 So just to be aware.
+
+00:15:18 I was also surprised if it didn't work because what was removed in 3.8 that was in 3.7.
+
+00:15:27 Like syntax wise, not functional wise.
+
+00:15:29 I can't think of anything.
+
+00:15:31 Yeah.
+
+00:15:32 So there's a couple of projects or several projects that I'm supporting where I support down to 3.7.
+
+00:15:39 I dropped 3.6 a while ago.
+
+00:15:42 But one of the things that catches me a lot, the remaining thing that catches me is annotations.
+
+00:15:49 And specifically I want to cover like if you really want to still support 3.7 or didn't know that it was this easy.
+
+00:15:57 At least for the code I write, the main thing is I like to use union types.
+
+00:16:02 So like to use this or type for unions.
+
+00:16:06 And this came in in 3.10.
+
+00:16:08 However, I can't find this documented anywhere.
+
+00:16:12 But to get it to work down to 3.7, you can do from futures, from future import annotations.
+
+00:16:18 And we've been used to using the from future for various things for a while.
+
+00:16:22 But it looks like 3.7 might be the end of needing from future for a while.
+
+00:16:27 I don't know, maybe they'll come up with something else that they're backboarding.
+
+00:16:30 But it doesn't look like there's anything else right now up to 3.12 that you need to go back down.
+
+00:16:36 It's just annotations so far.
+
+00:16:39 So I guess I want to show a little bit of an example for the annotations.
+
+00:16:45 So for data classes, data classes are awesome because you can type the variable that you're using.
+
+00:16:52 And then I often like to have it be none by default.
+
+00:16:57 So a string, it's going to be a string or it's none.
+
+00:17:01 So the or none is easy just to do the or none.
+
+00:17:03 And I know you can do optional, but this is just visually more pleasing to me.
+
+00:17:07 And to get that to work down to 3.7, it's just the from future important annotations and it'll work all the way down to 3.7.
+
+00:17:15 So it's just what I wanted to mention.
+
+00:17:17 And I think that it's also good to be aware, I guess, that 3.7 is end of life because some of the things you depend on might start dropping support for 3.7.
+
+00:17:30 It's fair game at this point.
+
+00:17:31 So, I mean, open source projects, they're fair game to drop support for everything below 3.12 if they want to.
+
+00:17:38 No one's signed a contract with anyone here.
+
+00:17:41 They can do what they want.
+
+00:17:42 Yeah, but it's good to be aware of.
+
+00:17:44 It certainly is.
+
+00:17:47 That's a cool graph you got there too.
+
+00:17:48 Yeah.
+
+00:17:49 Is that in the show notes?
+
+00:17:50 Yeah, it's from devguide.python.org with the versions.
+
+00:17:55 Yeah, Christian Lederman says, Walrus was introduced in 3.8.
+
+00:18:00 I don't know if you can do a from future import Walrus.
+
+00:18:03 I don't think so.
+
+00:18:04 If you do, you have to do an emoji, not the actual word Walrus, but you got to put the emoji of a Walrus and then it'll work.
+
+00:18:11 Well, I'm waiting for like emoji operators.
+
+00:18:15 So that'd be fun to have.
+
+00:18:17 Yeah.
+
+00:18:18 Have to put, not just can put, but you have to put emojis in your code.
+
+00:18:22 So what happens when the cat raises its paw against an integer?
+
+00:18:25 Oh, let me tell you, that one's really awesome.
+
+00:18:28 Yeah.
+
+00:18:29 Yeah, some of those conversations like Christian was saying that, I think where like, where I was saying, you know, what is in 3.7 that's not in 3.8?
+
+00:18:37 And those are all true, all those things, like there are new things, but if you wrote 3.7 code and then ran it against 3.8, it should still validate in mypy, it should still work in Python, right?
+
+00:18:49 There's no thing that was in 3.7 that because mypy is not supporting it, it will say, well, that used to work and it doesn't work anymore because Python's pretty awesome and stable like that.
+
+00:18:59 There might have been, there was one point, I think it was in 3.9 though, where like the async IO coroutine decorator was removed that caused all sorts of drama for me because some library I was using didn't use the word async, they just used the decorators.
+
+00:19:14 But even that a decorator should still validate in mypy with that context, right?
+
+00:19:18 So, I don't know.
+
+00:19:19 I guess I'll, maybe I'll revisit my opinion of supporting 3.8 or 3.7 because, so we can use the walrus operator in 3.8, but Henry Schreiner also noticed that, notes that the equal for f strings, so that you can say like x equal and it'll print the x equal.
+
+00:19:41 That's super handy.
+
+00:19:43 Yeah, it's good for debugging.
+
+00:19:44 Yeah, and just having that stuff in your code, like that'd be great.
+
+00:19:49 Yeah, and these things are super small and subtle like the walrus operator.
+
+00:19:52 I took the website down with the walrus operator once.
+
+00:19:55 I told that story before.
+
+00:19:57 Yeah.
+
+00:19:57 And like not even the main website, just it was in a little utility, but it got parsed by the route finding thing and killed it.
+
+00:20:04 All right, well, that's it for items, huh?
+
+00:20:05 Yeah, it is.
+
+00:20:07 Awesome.
+
+00:20:07 Extras?
+
+00:20:08 What you got?
+
+00:20:08 I got a couple since I got my screen up.
+
+00:20:11 Just one of the examples I showed was from a new plugin that I just released called pytest ParamScope.
+
+00:20:17 And this allows you to, for parameterized fixtures or for parameterized tests, to have a startup that goes, a setup that happens before all the parameters and the teardown that happens at the end.
+
+00:20:30 It's still, the API is up.
+
+00:20:33 There's a warning here because the API might change with respect to teardown.
+
+00:20:38 Working on yield functions for that.
+
+00:20:42 I also, I was going to cover this as a full thing.
+
+00:20:44 Oh, yeah, this is just sort of how you use it.
+
+00:20:46 You get like a setup and teardown.
+
+00:20:48 Oh, no, this is how I want to do it.
+
+00:20:50 This is the change that I might do of adding yield.
+
+00:20:53 So, anyway, Simon Wilson wrote a article called Stop Defining People.
+
+00:21:00 No, not Simon Wilson.
+
+00:21:02 Sorry, Josh Simmons.
+
+00:21:04 Sorry, Josh.
+
+00:21:06 Wrote an article called Stop Defining People by What They Are Not.
+
+00:21:10 And he was referring to non-code contributors.
+
+00:21:14 And I kind of agree.
+
+00:21:15 So I wanted to highlight this article.
+
+00:21:16 This is great.
+
+00:21:18 Just basically saying all contributions are awesome.
+
+00:21:21 And trying to, and elevating code contributors above non-code contributors is just not right.
+
+00:21:29 So don't do that.
+
+00:21:30 Also, it's just referring, I mean, if somebody only writes, just mostly helps with your test code, you don't have to call, I mean, you can say somebody that's contributing test code.
+
+00:21:42 You don't have to say, oh, that's non-code.
+
+00:21:44 Well, that's still code.
+
+00:21:45 But anyway, you know what I mean.
+
+00:21:48 People helping with documentation is great help.
+
+00:21:50 People helping with writing tutorials is great help.
+
+00:21:52 Everything is good.
+
+00:21:54 So, anyway.
+
+00:21:54 Sometimes it's more important to have a good example so people can get started quickly and enjoy the project rather than like one more feature, you know?
+
+00:22:03 Yeah, and also things like triaging issues and answering questions and making sure that all the issues are closed when things get fixed and all that sort of stuff.
+
+00:22:14 It's tons of work, so it's great help.
+
+00:22:17 Yeah, absolutely.
+
+00:22:18 Do you have any extras?
+
+00:22:19 I got a couple quick ones here.
+
+00:22:21 So OpenAI has released the beta version of their Python SDK.
+
+00:22:26 It's pretty exciting.
+
+00:22:27 So if you don't want to implement your own raw HTTP, JSON, parsing, and hope that you got everything right, you can just go there, start calling the functions that they write for you, and it should be going nicely.
+
+00:22:40 So it's still in beta, but people can check that out.
+
+00:22:43 That's pretty awesome.
+
+00:22:44 I think, was it here?
+
+00:22:45 I can't remember somewhere.
+
+00:22:46 No, it wasn't here.
+
+00:22:47 Maybe it was in the linked article.
+
+00:22:48 There was somewhere where there's a bunch of people whinging, like, why can't people just call HTTP?
+
+00:22:54 They're so lazy.
+
+00:22:54 They want a library for it.
+
+00:22:56 Like, you know what?
+
+00:22:56 Maybe like let somebody else handle the evolution of that API.
+
+00:23:00 You just call a stable Python set of functions and not worry about that.
+
+00:23:04 I wouldn't call that lazy.
+
+00:23:05 I would call that PyPI.
+
+00:23:07 And call it awesome.
+
+00:23:08 Anyway, so people are into open AI.
+
+00:23:11 What do you need Python for?
+
+00:23:12 Just call the raw C API.
+
+00:23:15 Exactly.
+
+00:23:16 Can I just do this with like a bunch of bash scripts and some curl?
+
+00:23:20 Let's go.
+
+00:23:20 All right.
+
+00:23:21 So sad news here is ChatGPT, oh no, stack overflow, probably because partly of ChatGPT.
+
+00:23:31 Get that in order right there.
+
+00:23:32 Stack overflow is laying off 28% of their staff.
+
+00:23:36 It's kind of surprising, huh?
+
+00:23:37 Yeah.
+
+00:23:38 Which turns out to be 100 to 200 people.
+
+00:23:41 Like a lot of people, not like they had four people and they laid one of them off.
+
+00:23:44 But it was really important.
+
+00:23:50 What exactly would you say you do here?
+
+00:23:52 No.
+
+00:23:53 I didn't know that stack overflow had so many people working for them though.
+
+00:23:57 I know.
+
+00:23:57 It was founded just by Joel Spolsky and Kodin Horigai, whose name I don't remember.
+
+00:24:04 Anyway, but yeah, it's growing to be super, super big.
+
+00:24:07 And I always sometimes wonder, like, do you really need a thousand people to run that website?
+
+00:24:11 I mean, maybe, but maybe you just don't.
+
+00:24:14 Anyway, that's a whole different discussion.
+
+00:24:16 But so there's some interesting conversation saying maybe this is because of ChatGPT and Google Copilot and all these other things.
+
+00:24:25 Like instead of going to stack overflow to go, how do I connect this type of thing to that type of database?
+
+00:24:32 You can just ask your coding assistant or your chat buddy and you'll get a great example.
+
+00:24:38 Oftentimes more specific, right?
+
+00:24:40 Like, yeah, but I'm using this version.
+
+00:24:42 Oh, well, if it's that version, you got to pass this argument too.
+
+00:24:44 Right.
+
+00:24:45 Thanks.
+
+00:24:45 Got it.
+
+00:24:46 You know?
+
+00:24:47 So this is pretty interesting.
+
+00:24:50 Kind of odd or weird.
+
+00:24:52 Like six months ago, stack overflow wrote a blog post that what's different about these layoffs in the tech industry?
+
+00:24:58 Not us.
+
+00:24:58 We're fine.
+
+00:24:59 Everyone else.
+
+00:25:00 And then, you know, six months later, you know, go back and read your own article, sadly.
+
+00:25:05 So that's an interesting thing to be aware of, I guess.
+
+00:25:10 Yeah.
+
+00:25:10 Yuri Silovanov just pointed out or posted on the X that UV loop 18 is here with Python 3.12 support.
+
+00:25:21 So I was trying to use 3.12 on a couple of the talk Python things and the websites like new UV loop.
+
+00:25:28 No, AIO HTTP definitely not going to work on Python 3.12, which is I think AIO HTTP still doesn't work.
+
+00:25:36 And sadly, some rummy dependency that I have is like using that library, which itself is not being upgraded 3.12, at least as of like a few days ago.
+
+00:25:45 So this gets me halfway there.
+
+00:25:47 The two things that wouldn't install one more to go hanging in there for AIO.
+
+00:25:50 HTTP.
+
+00:25:51 Come on now.
+
+00:25:51 But good news.
+
+00:25:52 Nonetheless, thanks, Yuri for doing that.
+
+00:25:54 Oh, and thanks, Kim, for reminding us that it was Jeff Atwood.
+
+00:25:58 Yes, of course it was.
+
+00:25:59 Thank you, Kim.
+
+00:25:59 That's the guy that went by Coding Horrer.
+
+00:26:01 That's what happens when you have too popular of a nickname that you've given yourself like Coding Whore on your blog.
+
+00:26:07 Yeah.
+
+00:26:07 Plus that logo or icon that he's got.
+
+00:26:11 I could just see it in my head.
+
+00:26:12 Yeah, too.
+
+00:26:13 I can't.
+
+00:26:13 Like the hair on fire.
+
+00:26:14 Yeah.
+
+00:26:15 Develop a picture.
+
+00:26:15 Yep.
+
+00:26:16 Yeah.
+
+00:26:16 All right.
+
+00:26:16 Those are all my extras that I got for now.
+
+00:26:20 Yeah.
+
+00:26:20 Ready for a joke?
+
+00:26:21 I am.
+
+00:26:22 We might even have two jokes, but yeah, I've got one I wanted to share also.
+
+00:26:25 All right.
+
+00:26:26 So this one comes from command line magic, but was pointed out to us by Lizzie.
+
+00:26:31 Said I love it.
+
+00:26:32 Hey, I'm Kennedy maybe for the show and the command line magic says I've always read that global variables are bad.
+
+00:26:40 So this is a Star Trek thing and can I make you bigger?
+
+00:26:42 Yes, the Star Trek things shows.
+
+00:26:45 I can't remember this character's name.
+
+00:26:46 This woman scientists on a shuttle for this all from Star Trek and they're like going right through the near the edge of the sun to do some studying and she wants to be real careful to make sure that you know, this ship doesn't melt.
+
+00:27:01 So she says computer notify me if temperatures get too hot beep beep.
+
+00:27:06 Please define hot says the computer.
+
+00:27:08 Let's say 1.9 million Kelvin.
+
+00:27:10 Okay fair later.
+
+00:27:12 Captain Picard is that the like the little food making thing, you know that materializes food.
+
+00:27:18 It says t Earl Gray pot just melts.
+
+00:27:22 It just like yeah, it sets it at 1.9 million Kelvin in his captain's quarters.
+
+00:27:27 Yeah, that's awesome.
+
+00:27:28 Yeah, I like it.
+
+00:27:30 Yeah, a little too hot.
+
+00:27:31 Test this.
+
+00:27:32 Yeah, maybe that tea was a real hot.
+
+00:27:35 Yeah.
+
+00:27:35 All right.
+
+00:27:36 What's your joke?
+
+00:27:37 Oh my so my daughter shared this with me and I just like kids.
+
+00:27:41 I haven't stopped giggling about it.
+
+00:27:42 So did you have you been to the Oregon Zoo, right?
+
+00:27:46 Yes.
+
+00:27:46 Yeah.
+
+00:27:47 Did you do you know there's a new exhibit there?
+
+00:27:49 It's just a baguette in a cage.
+
+00:27:53 It's bread in captivity.
+
+00:27:55 Oh my gosh bread in captivity.
+
+00:27:58 Yeah, that's hard to do.
+
+00:28:00 You know a lot of times you try but it just doesn't happen does it?
+
+00:28:04 I guess they pulled it off.
+
+00:28:04 Yeah.
+
+00:28:05 Awesome.
+
+00:28:06 This bad, bad dad joke.
+
+00:28:08 Those are very bad dad jokes.
+
+00:28:10 I was just thinking about going to the zoo.
+
+00:28:12 I haven't been there since maybe a year.
+
+00:28:14 I was thinking about taking my daughter back there.
+
+00:28:16 So what's weird is we almost always go to zoo lights.
+
+00:28:20 So I see a lot of animals, but they're all in lights instead of actual, the actual animals.
+
+00:28:28 Exactly.
+
+00:28:28 We need to go.
+
+00:28:29 Yeah, just put them on the wall and have them flashing for Christmas.
+
+00:28:34 That's right.
+
+00:28:34 Yeah, I actually really appreciate the during COVID.
+
+00:28:38 They like started doing the drive-thru zoo lights and they still do it like part light part way.
+
+00:28:45 So you can do drive-thru for a couple days or something and then they switch to walking.
+
+00:28:50 I like driving through it's nice.
+
+00:28:51 So yeah, it is nice.
+
+00:28:53 Definitely nice.
+
+00:28:54 All right.
+
+00:28:54 Well, we're coming up on the end of the year.
+
+00:28:56 So we'll have to get a report on the zoo lights.
+
+00:28:59 Yeah, and the bread in captivity bread.
+
+00:29:02 Bridge.
+
+00:29:03 Bye.
+
+00:29:04 All right.
+
