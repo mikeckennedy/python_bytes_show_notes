@@ -4,7 +4,7 @@
 
 00:00:09 I'm Michael Kennedy.
 
-00:00:10 And I am Brian Ocken.
+00:00:10 And I am Brian Okken.
 
 00:00:12 And I'm Adam Hopkins.
 
@@ -98,7 +98,7 @@
 
 00:02:20 I'm not, actually, I'm not gonna run all through all the tips.
 
-00:02:23 some good tips here, so go ahead and read the article. But the thing I wanted to come back to is just this one, this first one, smaller units, because I just ran into this. So I'm working on refactoring the PyTest check plugin, and currently it's just all in one. I mean, most of the code was in two files, like the basic plugin hookup, and then all of the rest of the code. And people have a couple of other people have added features, and that's a good thing, but I have had a hard time keeping my head around all the code in there and it was confusing myself.
+00:02:23 some good tips here, so go ahead and read the article. But the thing I wanted to come back to is just this one, this first one, smaller units, because I just ran into this. So I'm working on refactoring the pytest check plugin, and currently it's just all in one. I mean, most of the code was in two files, like the basic plugin hookup, and then all of the rest of the code. And people have a couple of other people have added features, and that's a good thing, but I have had a hard time keeping my head around all the code in there and it was confusing myself.
 
 00:03:03 I've been working on splitting it up.
 
@@ -154,7 +154,7 @@
 
 00:05:37 - I'm focusing on features.
 
-00:05:39 So trying to keep the, like for instance, the one of the functionalities for PyTest check is stop on fail working, and work correctly because you possibly could have multiple failures in a single test.
+00:05:39 So trying to keep the, like for instance, the one of the functionalities for pytest check is stop on fail working, and work correctly because you possibly could have multiple failures in a single test.
 
 00:05:54 So how does stop on fail work?
 
@@ -202,7 +202,7 @@
 
 00:07:31 So I'm super psyched about it.
 
-00:07:34 I just did a TalkPython episode, but I'll pull up a link to that in a moment.
+00:07:34 I just did a Talk Python episode, but I'll pull up a link to that in a moment.
 
 00:07:38 But what I found, so you encouraged me to go over there, and I did.
 
@@ -258,7 +258,7 @@
 
 00:10:23 These different places, you should really support them.
 
-00:10:25 these little instances, like for example, the one that Brian and I are on is Fostodon, the free and open source software instance.
+00:10:25 these little instances, like for example, the one that Brian and I are on is Fosstodon, the free and open source software instance.
 
 00:10:34 It went from 2,000 to 40 something thousand users in a week and their hosting cost went from 100 to $1,000 in the same period, which is a lot and it's just volunteer, right?
 
@@ -270,7 +270,7 @@
 
 00:10:52 If you look at, they have a sort of a statement breakdown of like, here's how much we spend on hosting, how much we spend on CDN and Bitwarden and all these different things and how it breaks down.
 
-00:11:00 It turns out, Brian, 2.5 cents per user will fund Macedon.
+00:11:00 It turns out, Brian, 2.5 cents per user will fund Mastodon.
 
 00:11:05 - That's awesome. - Wow.
 
@@ -282,7 +282,7 @@
 
 00:11:14 But most people who are software developers can surely do that.
 
-00:11:18 Put another way, out of those 40,000 people, if just 100 of them pay $10 a month, that will also fund Macedon.
+00:11:18 Put another way, out of those 40,000 people, if just 100 of them pay $10 a month, that will also fund Mastodon.
 
 00:11:25 So it's very achievable that we could end up in a world that is not ad-ridden, tracker-ridden, surveillance capitalism that's trying to trick us or manipulate us into doing things, but these really nice open places that we can move around as our values match, you know?
 
@@ -314,13 +314,13 @@
 
 00:12:45 >> Okay.
 
-00:12:45 >> So I wrote and I integrated the Macedon API into my Stream Deck.
+00:12:45 >> So I wrote and I integrated the Mastodon API into my Stream Deck.
 
 00:12:51 So now whenever we start a show, I just push that button and off it goes.
 
 00:12:54 Nice.
 
-00:12:55 I think actually I might have pushed the one for TalkPython this time because they're the same screen just slightly different.
+00:12:55 I think actually I might have pushed the one for Talk Python this time because they're the same screen just slightly different.
 
 00:13:00 But anyway, we push that button and it'll kick it off and that'll just post a toot, I guess we would say.
 
@@ -352,7 +352,7 @@
 
 00:13:50 We'll come back to CloseVember in a little bit.
 
-00:13:53 Maybe this is relevant here, but this is a library, Python package that you can use to talk to Macedon.
+00:13:53 Maybe this is relevant here, but this is a library, Python package that you can use to talk to Mastodon.
 
 00:14:00 I have no idea how to use it. It's completely opaque.
 
@@ -584,7 +584,7 @@
 
 00:25:14 To make your idea a reality with the critical support you'll get from Microsoft for Startups, join, is it join?
 
-00:25:19 Just visit pythonbites.fm/foundershub2022.
+00:25:19 Just visit pythonbytes.fm/foundershub2022.
 
 00:25:23 The link is in your show notes.
 
@@ -662,7 +662,7 @@
 
 00:28:58 - Yeah, that's fun.
 
-00:28:59 - Now, one of the reasons why I was looking at this is coming back to the little project, PyTestCheck, that I'm working on.
+00:28:59 - Now, one of the reasons why I was looking at this is coming back to the little project, pytestCheck, that I'm working on.
 
 00:29:08 I'm refactoring it.
 
@@ -684,7 +684,7 @@
 
 00:29:49 It directs right to some of the direct sponsors of the project.
 
-00:29:52 And having sponsors that actually show up in the readme, and look, talk Python training is there too.
+00:29:52 And having sponsors that actually show up in the readme, and look, Talk Python Training is there too.
 
 00:29:58 So go Michael.
 
@@ -800,7 +800,7 @@
 
 00:34:11 - Okay, that's good.
 
-00:34:12 - Yeah, but while we're looking at readmes, I did wanna also mention Will, because we have to, Will McCougin.
+00:34:12 - Yeah, but while we're looking at readmes, I did wanna also mention Will, because we have to, Will McGugan.
 
 00:34:21 - As it's Tuesday.
 
@@ -852,7 +852,7 @@
 
 00:35:37 Okay. - Let me just, I just wanna put out a call to people because I tried this on the social medias and it didn't really get me far and maybe it's just gonna go nowhere.
 
-00:35:45 I wanna do a TalkPython episode on awesome tools for managing your readme and your changelog and like release notes and stuff.
+00:35:45 I wanna do a Talk Python episode on awesome tools for managing your readme and your changelog and like release notes and stuff.
 
 00:35:53 I think that'd be fantastic.
 
@@ -890,7 +890,7 @@
 
 00:37:20 You know, when I go to an open source project and I see, oh, there's PRS for the last three months and they're all open.
 
-00:37:27 And like, uh, I probably don't want to contribute to this because the chances are it's just going to be another thing sitting there for months and it's going to get ignored.
+00:37:27 And like, I probably don't want to contribute to this because the chances are it's just going to be another thing sitting there for months and it's going to get ignored.
 
 00:37:35 And I don't care.
 
@@ -906,7 +906,7 @@
 
 00:37:51 Right.
 
-00:37:51 So there's, uh, it, it talks about, uh, it being a two way street and trying to do some of the, the healthy, uh, healthy things, help people.
+00:37:51 So there's, it, it talks about, it being a two way street and trying to do some of the, the healthy, healthy things, help people.
 
 00:37:59 Right.
 

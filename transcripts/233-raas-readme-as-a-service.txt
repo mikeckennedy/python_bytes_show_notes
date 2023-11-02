@@ -558,11 +558,11 @@
 
 00:21:24 Also, I think I was looking through the test code.
 
-00:21:27 The test code for DateUtil is a neat mix of unit test and PyTest.
+00:21:27 The test code for DateUtil is a neat mix of unit test and pytest.
 
 00:21:34 Both of them are good examples of how to do both.
 
-00:21:37 I like some of the newer stuff is using PyTest with parameterization, but it's good.
+00:21:37 I like some of the newer stuff is using pytest with parameterization, but it's good.
 
 00:21:42 >> Yeah, I like this a lot.
 
