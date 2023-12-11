@@ -1,12 +1,5 @@
 # Python Bytes 363
 
-Intro:
-Hello and Welcome to Python Bytes
-Where we deliver Python news and headlines directly to your earbuds.
-This is episode 363 recorded Dec 5
-I’m Brian Okken
-<and I’m Michael Kennedy>
-
 Sponsored by us! Support our work through:
 
 - Our [**courses at Talk Python Training**](https://training.talkpython.fm/)
@@ -21,7 +14,7 @@ Sponsored by us! Support our work through:
 
 Join us on YouTube at [**pythonbytes.fm/live**](https://pythonbytes.fm/stream/live) to be part of the audience. Usually Tuesdays at 11am PT. Older video versions available there too.
 
-**Michael #1:** ****[**Fixit 2: Meta’s next-generation auto-fixing linter**](https://engineering.fb.com/2023/08/07/developer-tools/fixit-2-linter-meta/)
+**Michael #1:** Ï[**Fixit 2: Meta’s next-generation auto-fixing linter**](https://engineering.fb.com/2023/08/07/developer-tools/fixit-2-linter-meta/)
 
 -  via Bart Kappenburg
 - Fixit is dead! Long live Fixit 2 – the latest version of our open-source auto-fixing linter.
@@ -61,8 +54,8 @@ Join us on YouTube at [**pythonbytes.fm/live**](https://pythonbytes.fm/stream/li
 
 - From Sander76
 - [**Pydantic Argparse**](https://pydantic-argparse.supimdos.com/) “is a Python package built on top of pydantic which provides declarative typed argument parsing using pydantic models.”
-****- [**Clipstick**](https://github.com/sander76/clipstick) is a “cli-tool based on Pydantic models.”
-****- [**tyro**](https://github.com/brentyi/tyro) “is a tool for generating command-line interfaces and configuration objects in Python.”
+  - [**Clipstick**](https://github.com/sander76/clipstick) is a “cli-tool based on Pydantic models.”
+  - [**tyro**](https://github.com/brentyi/tyro) “is a tool for generating command-line interfaces and configuration objects in Python.”
     - tyro includes support for dataclasses and attrs in place of Pydantic
 
 **Extras** 
@@ -70,7 +63,7 @@ Join us on YouTube at [**pythonbytes.fm/live**](https://pythonbytes.fm/stream/li
 Brian:
 
 - [**Django 5.0 has been released**](https://www.djangoproject.com/weblog/2023/dec/04/django-50-released/)
-- [**vim-keybindings-everywhere-the-ultimate-list**](https://github.com/erikw/vim-keybindings-everywhere-the-ultimate-list) ****- submitted by Paul Barry
+- [**vim-keybindings-everywhere-the-ultimate-list**](https://github.com/erikw/vim-keybindings-everywhere-the-ultimate-list) - submitted by Paul Barry
 - [**PythonTest**](https://podcast.pythontest.com/) (the podcast formerly known as [Test & Code](https://podcast.pythontest.com/), to be read in an undertone similar to the way one used to say “The artist formerly known as Prince”) has moved form testandcode.com to [podcast.pythontest.com](https://podcast.pythontest.com/)
     - Plus more [guests](https://podcast.pythontest.com/people) are listed now. I think I’ve gone backwards from current to episode 182. I tried to get my kid to help out, unsuccessfully. May have to hire someone to help. grrr.
 
