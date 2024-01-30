@@ -1,0 +1,1292 @@
+WEBVTT
+
+00:00:00.000 --> 00:00:06.080
+Hello and welcome to Python Bytes where we deliver Python news and headlines directly to your earbuds. This is episode
+
+00:00:06.080 --> 00:00:08.200
+369
+
+00:00:08.200 --> 00:00:14.360
+69 recorded January 29th 2024 and I am Brian Akin. Hey, I'm Michael Kennedy
+
+00:00:14.360 --> 00:00:17.080
+And this episode is sponsored by us
+
+00:00:17.080 --> 00:00:24.720
+so check out our courses at Talk Python Training and the complete pytest course and thanks to patreon supporters and
+
+00:00:24.720 --> 00:00:30.760
+Really everybody that just like spreads the love and shares our podcast with other people. Thanks so much
+
+00:00:30.760 --> 00:00:35.960
+The first item is gonna be granny in Oh neat. Yes before we get into that
+
+00:00:35.960 --> 00:00:41.280
+I just want to sort of set the stage is you know, when you're running Python apps web apps in production
+
+00:00:41.280 --> 00:00:46.500
+There's usually something that talks to the web browsers and then there's the part that runs your Python code
+
+00:00:46.500 --> 00:00:48.960
+Right the part that talks to your web browser is
+
+00:00:49.680 --> 00:00:55.280
+Nginx Apache caddy one of these things that does SSL it has no knowledge of Python
+
+00:00:55.280 --> 00:01:03.200
+But then behind that step we've got micro whiskey and we've got G unicorn and those types of things, right?
+
+00:01:03.200 --> 00:01:08.120
+so that's where your Python code runs usually it run it'll creep multiple of them and
+
+00:01:08.120 --> 00:01:12.500
+Both those two that I named I'm big fans of micro whiskey is awesome
+
+00:01:12.500 --> 00:01:19.360
+Super fast low memory usage, but only does WSGI does no async stuff
+
+00:01:19.360 --> 00:01:22.360
+And that's a huge drawback, right? It doesn't do a sink
+
+00:01:22.360 --> 00:01:28.800
+It doesn't allow you to like properly scale a sink and a wait do you on the other hand allows you use you via corn?
+
+00:01:28.800 --> 00:01:34.240
+Workers inside there, which is kind of like one more chain in that loop
+
+00:01:34.240 --> 00:01:38.640
+But it when you deploy it that way you can do a sink and a wait, which is awesome
+
+00:01:38.640 --> 00:01:44.840
+But there's this new ish thing coming along called granny in from the Emmett framework
+
+00:01:44.840 --> 00:01:49.040
+Which is a new Python web framework, but this is a rust based
+
+00:01:49.040 --> 00:01:53.640
+HTTP server for Python applications. So a rust version of
+
+00:01:53.640 --> 00:01:58.160
+Micro, whiskey or G unicorn? Yeah. Oh cool. That's kind of cool. It has
+
+00:01:58.160 --> 00:02:03.200
+1.5 thousand stars on github been coming along for a while and
+
+00:02:03.200 --> 00:02:06.240
+Created by a guy
+
+00:02:06.240 --> 00:02:14.120
+Named Giovanni, I believe and Giovanni says well why I'd build this thing a couple reasons. It's a
+
+00:02:14.720 --> 00:02:17.960
+correct HTTP implementation supporting version 1 2 and
+
+00:02:17.960 --> 00:02:25.120
+Working on HTTP 3 which is awesome. It avoids the g unicorn you via corn HTTP tools tendency
+
+00:02:25.120 --> 00:02:28.120
+composition when deploying in production
+
+00:02:28.120 --> 00:02:34.520
+So this natively supports a sink and a wait like right in it along with WSGI
+
+00:02:34.520 --> 00:02:39.720
+So however, whatever kind of app you've created you can just run it right there in this thing without
+
+00:02:40.120 --> 00:02:46.880
+Chaining stuff together and one of the things that's nice about it is it's not a ton faster, but it's way more stable
+
+00:02:46.880 --> 00:02:50.400
+There's a lesser jitter and its performance profile, which I think is super cool
+
+00:02:50.400 --> 00:02:56.800
+I'll talk about in a second. But yeah has HTTP 1 & 2 excellent supports HTTPS and web sockets directly
+
+00:02:56.800 --> 00:03:01.960
+I'm not gonna send HTTPS traffic to it. I'm just using for now engine X, whatever
+
+00:03:01.960 --> 00:03:08.800
+It also supports our SGI, which is a rust server gateway interface, I guess, you know, like ASGI and WSGI
+
+00:03:08.800 --> 00:03:11.920
+So it does all the Python things plus it has a rust
+
+00:03:11.920 --> 00:03:16.200
+Direct version if that was the way you went down it and it's super easy to run
+
+00:03:16.200 --> 00:03:20.880
+but from the performance perspective you look it'll compare it down here to
+
+00:03:20.880 --> 00:03:29.120
+Let's see against you via corn and hyper corn is another one. I should have mentioned that's like a parallel to
+
+00:03:29.120 --> 00:03:34.480
+You via corn plus g unicorn, but that one I think handles it all directly from Philip Jones, which is great
+
+00:03:34.480 --> 00:03:39.080
+But if you look at so let's just say like the ASGI yet, it says it'll do
+
+00:03:39.080 --> 00:03:43.000
+Numbers, please 1.3 million requests
+
+00:03:43.000 --> 00:03:47.480
+At okay. That's just totally doesn't anything it could be over three weeks
+
+00:03:47.480 --> 00:03:52.960
+85 86 thousand requests per second or maybe this this one's a little bit better
+
+00:03:52.960 --> 00:03:57.040
+a different get for 94,000 compare that against
+
+00:03:57.040 --> 00:04:00.240
+the UVA corn one, which is
+
+00:04:00.240 --> 00:04:02.440
+19,000 versus 94,000 or
+
+00:04:03.280 --> 00:04:10.080
+The hyper corn at 12,000 versus 94,000, which is great. But if you look at the variation like response time on
+
+00:04:10.080 --> 00:04:17.200
+Let's say you via corn is on average eight point seven milliseconds. That's really good
+
+00:04:17.200 --> 00:04:21.960
+But the max is 320 milliseconds. Whereas if you look at this one
+
+00:04:21.960 --> 00:04:28.440
+It's two point seven, but the max is only eight point six, right? So that that variability or jitter
+
+00:04:28.440 --> 00:04:28.960
+I don't know
+
+00:04:29.160 --> 00:04:34.560
+However, the heck you say it is way more stable and you just kind of look across the board like another example six versus
+
+00:04:34.560 --> 00:04:36.840
+70 and so on so I thought that was pretty cool
+
+00:04:36.840 --> 00:04:40.760
+So I switched if you come over here Brian the Python bytes. This is running on
+
+00:04:40.760 --> 00:04:44.960
+Granny in right now over my docker cluster for the moment
+
+00:04:44.960 --> 00:04:48.520
+So I just thought I'd see how it goes and it's been going perfectly from what I can tell
+
+00:04:48.520 --> 00:04:51.000
+So so it's pretty easy to switch then
+
+00:04:51.000 --> 00:04:55.320
+yeah, I mean all you got to do is pip install granny in and then change the
+
+00:04:55.840 --> 00:05:00.040
+Start command no matter however you run if you run it in the system D on like a VM
+
+00:05:00.040 --> 00:05:05.160
+You change the system D exec command if you do it in Docker, you just change the entry point command
+
+00:05:05.160 --> 00:05:12.840
+For a micro is give this or G unicorn that - it's basically just another startup command. Yeah, okay interesting cool
+
+00:05:12.840 --> 00:05:19.620
+Indeed indeed one thing I did want to add for people who are considering this I got to move this over
+
+00:05:19.640 --> 00:05:26.640
+So one thing it doesn't you can set it up so it'll do logging but it doesn't do like easy logging out of the box
+
+00:05:26.640 --> 00:05:33.460
+So I actually was messing around like maybe I should just do my own logging if we're not for my app started up
+
+00:05:33.460 --> 00:05:37.680
+Hey somebody click this button, but just request response logging which is pretty common
+
+00:05:37.680 --> 00:05:43.180
+So I actually ended up playing with it and using log guru to come up with a color coded
+
+00:05:44.040 --> 00:05:49.560
+added some middleware that came up with color coded request response logging that does all sorts of cool stuff like
+
+00:05:49.560 --> 00:05:55.220
+See how some of the sizes and this log are red and some are white if it's like over
+
+00:05:55.220 --> 00:06:00.400
+500 K in the request size than it or is it red or if the response time is too slow?
+
+00:06:00.400 --> 00:06:03.880
+It'll tell her color like yellow or if it gets really slow. It'll color it red or it's a
+
+00:06:03.880 --> 00:06:08.720
+400 or 500 code error it'll color that that part of the request
+
+00:06:08.960 --> 00:06:16.040
+Red or you know, so you can like look right at right away and see so I've decided doing your own log guru
+
+00:06:16.040 --> 00:06:22.760
+Request response stuff is pretty excellent. Actually, so that's a kind of a cool consequence playing around with this as well
+
+00:06:22.760 --> 00:06:23.260
+cool
+
+00:06:23.260 --> 00:06:24.640
+so is the like the
+
+00:06:24.640 --> 00:06:30.400
+Your use of log guru that a custom thing where you you look at the response times and color it differently or something
+
+00:06:30.400 --> 00:06:31.600
+Yeah, exactly
+
+00:06:31.600 --> 00:06:34.480
+Like it'd be easy enough to just go print this format
+
+00:06:34.480 --> 00:06:40.560
+The code is this the URL is that but I said it would be a lot more useful if it was color coded and meant
+
+00:06:40.560 --> 00:06:41.160
+Stuff right?
+
+00:06:41.160 --> 00:06:46.960
+Like if it's a 404 it should be a different color than if it's a 200 or if it's a redirect
+
+00:06:46.960 --> 00:06:49.520
+It should be a different color if it's really really slow
+
+00:06:49.520 --> 00:06:55.080
+If it's you see these times like 10 milliseconds 9 milliseconds 8 milliseconds 12 milliseconds if there was a second
+
+00:06:55.080 --> 00:07:01.880
+Maybe that's a problem color that a different color and I did that by installing middleware and the this is in pyramid
+
+00:07:01.880 --> 00:07:05.400
+But it could also be whatever right you do some fast API or whatever
+
+00:07:05.400 --> 00:07:07.400
+It just says begin the requests
+
+00:07:07.400 --> 00:07:13.920
+Do something pass it down to the framework and then in the request and just times it and logs it and colors it there
+
+00:07:13.920 --> 00:07:16.560
+Okay, neat. Yep, indeed indeed
+
+00:07:16.560 --> 00:07:24.040
+Well, I I also want to talk about something new and old at the same time. So nice
+
+00:07:25.000 --> 00:07:31.320
+Pi test is been around for a while. But I test 8 is brand new. So I just ate just came out this weekend
+
+00:07:31.320 --> 00:07:35.600
+I'm super excited to start running with it. Actually. I've already started running with it. I
+
+00:07:35.600 --> 00:07:37.880
+We're gonna
+
+00:07:37.880 --> 00:07:38.880
+put in the show notes
+
+00:07:38.880 --> 00:07:45.720
+I put put a highlighted blog post of just by test days here and links to the the change the full changelog
+
+00:07:45.720 --> 00:07:52.280
+But the what they did was they spread out if people are running 7 like old 7x
+
+00:07:52.920 --> 00:07:55.680
+High test which that's what I was using before
+
+00:07:55.680 --> 00:08:01.800
+The changelogs a little a little just takes a little bit to parse because they spread it along
+
+00:08:01.800 --> 00:08:07.840
+The RC 1 RC 2 and the final 880 release the changes are all there
+
+00:08:07.840 --> 00:08:13.940
+So I pulled the highlights out. So the the thing I'm really excited. There's two things. I'm really excited about one is
+
+00:08:13.940 --> 00:08:17.680
+when you had an exception that would just be a red block of
+
+00:08:19.120 --> 00:08:23.960
+Exception stuff and they've there's a whole bunch of cool difference differences
+
+00:08:23.960 --> 00:08:27.740
+So there's improved ifs when when you fail an exception
+
+00:08:27.740 --> 00:08:33.560
+especially if you do - VV so very verbose or verbose verbose
+
+00:08:33.560 --> 00:08:39.320
+However, you want to think about that, but you get a colored diff instead of the big chunk of red
+
+00:08:39.320 --> 00:08:43.840
+There's also there's also this color thing, right? Yeah, it's also more more colors
+
+00:08:44.680 --> 00:08:52.200
+Normal like syntax highlighting we're used to syntax highlighted code. So there's error reports are now syntax highlighted
+
+00:08:52.200 --> 00:08:56.460
+and there's the section the different sections of the error report are
+
+00:08:56.460 --> 00:09:00.920
+Separated better and then also there's better
+
+00:09:00.920 --> 00:09:04.140
+support for standard library containers
+
+00:09:04.140 --> 00:09:07.840
+For diffing like there was usually it was a pretty good
+
+00:09:08.680 --> 00:09:13.880
+Tuple diff for instance, but if you got if you had big lists, it was a little bit hard to read
+
+00:09:13.880 --> 00:09:19.720
+It's a little bit better now and then more comprehensive assert rewrites for other comparisons
+
+00:09:19.720 --> 00:09:23.040
+Not just equal but things like not equal less than equal
+
+00:09:23.040 --> 00:09:26.800
+Other comparisons, so that's really cool
+
+00:09:26.800 --> 00:09:29.400
+Help help people debug their code
+
+00:09:29.400 --> 00:09:34.880
+That's super nice because you want to be able to just say are these two things the same and not write code around?
+
+00:09:34.880 --> 00:09:37.240
+How do you do that? Right? Yeah. Yep
+
+00:09:37.560 --> 00:09:40.960
+And also like comparisons like less than or less than or equal
+
+00:09:40.960 --> 00:09:46.440
+It's really nice for the pytest to go out and really tell you why that check failed
+
+00:09:46.440 --> 00:09:52.320
+And highlight the part of your data that where it failed so really really fun to see that
+
+00:09:52.320 --> 00:09:57.840
+there's the thing the next thing I wanted to talk about for pytest 8 was
+
+00:09:57.840 --> 00:10:05.080
+Probably pretty obscure for people that are not using X fail. So X fail is a way to say
+
+00:10:05.480 --> 00:10:10.800
+I expect this test to fail and for a lot of people why would you expect it to fail?
+
+00:10:10.800 --> 00:10:16.640
+For but for large organizations, it's pretty common to file a defect and
+
+00:10:16.640 --> 00:10:22.360
+You don't have control over it. So you can't just go fix it. Somebody else is responsible for fixing it
+
+00:10:22.360 --> 00:10:24.200
+So that's how we use it
+
+00:10:24.200 --> 00:10:31.080
+We and I mark mark a test as failing as expected to fail and give it a defect number and then
+
+00:10:31.600 --> 00:10:34.920
+And then when when it and that's not new
+
+00:10:34.920 --> 00:10:37.120
+But if it if it passes
+
+00:10:37.120 --> 00:10:43.480
+There's there's decisions on how to make it X pass or what to deal with do with if an X failed passes
+
+00:10:43.480 --> 00:10:47.560
+I've talked about that much a bunch on the other podcast. However
+
+00:10:47.560 --> 00:10:50.280
+the change for pytest 8 is
+
+00:10:50.280 --> 00:10:54.760
+That with X fails the trace back never showed up
+
+00:10:54.760 --> 00:10:59.500
+It didn't used to so the changes now if you there's a way to turn that on with
+
+00:10:59.720 --> 00:11:02.000
+With the - our command you can turn on
+
+00:11:02.000 --> 00:11:05.560
+X fail trace backs. So that's really nice for
+
+00:11:05.560 --> 00:11:12.400
+CI test runs to be able to see what the failure was in CI and not have to try to rerun it again
+
+00:11:12.400 --> 00:11:17.520
+So really cool excited about that. There's lots more things. So check out the
+
+00:11:17.520 --> 00:11:26.120
+changelog the reason why they bumped to eight I think is because there was a bunch of they changed the way collection works and
+
+00:11:26.680 --> 00:11:33.960
+And that change that behavior change of backwards compatibility made it so that it made sense to bump the the number
+
+00:11:33.960 --> 00:11:35.960
+I think that's the reason I'm not sure
+
+00:11:35.960 --> 00:11:40.320
+But also it's good to bump the number every once in a while so that we have that
+
+00:11:40.320 --> 00:11:45.000
+So that you can deal with that deprecations you can get rid of the code that you were meaning to get rid of
+
+00:11:45.000 --> 00:11:51.200
+So I I encourage people to run pytest 8 and check it out and turn on, you know
+
+00:11:51.200 --> 00:11:58.720
+Turn on the full strict mode and everything so that you know, if if anything breaks you can roll back if you need to -
+
+00:11:58.720 --> 00:12:04.080
+Awesome, there's like Christmas for you, right? Yeah major. Yeah a major version release
+
+00:12:04.080 --> 00:12:09.340
+Yeah, and it also made me when I was looking at this maybe realize that I think I need to add more color to
+
+00:12:09.340 --> 00:12:14.840
+My blog it's just black and white and it's not very fun. So I have to add more color
+
+00:12:14.840 --> 00:12:18.320
+Colors always fun. I mean, that's the theme of this episode last week
+
+00:12:18.320 --> 00:12:24.480
+It was let's just ship announce open source projects were releasing. This is like color episode called the color episode. Yeah
+
+00:12:24.480 --> 00:12:28.820
+Or as midnight the audience puts it out. There is a readability episode
+
+00:12:28.820 --> 00:12:36.000
+Very good indeed. Well, let's harken back to a couple of things on my side here
+
+00:12:36.000 --> 00:12:39.080
+So I talked about this Docker work that I've been doing
+
+00:12:39.080 --> 00:12:42.980
+That also kind of led me to the granny and stuff and playing with that as well
+
+00:12:42.980 --> 00:12:48.520
+I also forgot to give a quick shout out to the people like both Andy Shapiro and Bill Crook
+
+00:12:48.520 --> 00:12:52.560
+Pointed out said hey, you should check out granny. So when I give them credit for sending that in
+
+00:12:52.560 --> 00:12:55.800
+Thank you. But as I was doing all these Docker things
+
+00:12:55.800 --> 00:13:03.080
+I was you know, you know when you're in a unusual or an unfamiliar uncomfortable space compared to what you normally do
+
+00:13:03.080 --> 00:13:09.160
+Like right now my little browser in this episode has maybe nine tabs and that's like kind of a lot
+
+00:13:09.160 --> 00:13:12.560
+But when I was doing the Docker stuff, I'd have a 30 40 50 tabs
+
+00:13:12.560 --> 00:13:16.240
+And then I would close 30 of them because I'd solve some problem that we work its way
+
+00:13:16.240 --> 00:13:20.020
+We're just tabs everywhere. So it was just like exploring stuff all over the place, right? Like wow
+
+00:13:20.020 --> 00:13:22.220
+I must not know what I'm doing right now
+
+00:13:22.220 --> 00:13:29.920
+But you know, that's how you get to where you know what's going on along that I'd be like, oh people talk about oh my gosh
+
+00:13:29.920 --> 00:13:35.460
+Totally giving up on doing this. I'm using orb stack or pod man or if they support this OS
+
+00:13:35.460 --> 00:13:41.620
+I'm like, what are these things? So I just want to go through a host of Docker goodies that I think people will enjoy
+
+00:13:41.620 --> 00:13:46.960
+Not exactly Python specific but certainly relevant if you're doing Python and any form of containers, right?
+
+00:13:46.960 --> 00:13:51.040
+So the first one of three, there's actually more Brian. I'm not gonna cover them all here
+
+00:13:51.040 --> 00:13:54.380
+I'm saving some for later because it's just it'll be a little out of control at that point
+
+00:13:54.380 --> 00:14:02.220
+So orb stack if you use Docker and you use Docker on Mac or Windows typically what you do is you get Docker desktop, right?
+
+00:14:02.220 --> 00:14:06.920
+So so that gives you the Docker commands that allows you to run Docker locally
+
+00:14:06.920 --> 00:14:13.860
+It might use maybe use a virtual box or something on Mac and it uses probably Windows subsystem for Linux on Windows
+
+00:14:13.860 --> 00:14:19.800
+But you run like Linux VM Linux containers on top of some hidden thing of Linux, right?
+
+00:14:19.800 --> 00:14:25.700
+Yeah, so orb stack is kind of that they say say goodbye to slow and clunky containers and VMS
+
+00:14:25.700 --> 00:14:31.780
+It's a light and easy way to run Docker containers and Linux on one machine, right?
+
+00:14:31.780 --> 00:14:37.980
+So well basically gives you a nice UI around it. It is a hundred percent compatible with Docker
+
+00:14:37.980 --> 00:14:43.180
+so you could say Docker run Docker exec Docker compose up or whatever it is you say and
+
+00:14:43.180 --> 00:14:49.700
+Instead of using the Docker engine. I'll use this orb stack engine, which is pretty neat. It also has its own
+
+00:14:49.700 --> 00:14:51.500
+CLI
+
+00:14:51.500 --> 00:14:58.200
+If you want to directly work with it, but basically it's kind of a one open source and two more lightweight
+
+00:14:58.200 --> 00:15:01.380
+They've got a bunch of cool commands, but they show down here somewhere
+
+00:15:01.380 --> 00:15:11.220
+Speed if you're gonna open it says open edX. I guess that's probably the the Docker compose setup for edX
+
+00:15:11.220 --> 00:15:17.580
+I'm to provision a development environment for it. It's pretty long still because I guess that's a beast of an app
+
+00:15:17.580 --> 00:15:23.680
+17 minutes on orb stack but 45 minutes on Docker desktop to build post hog, whatever that is
+
+00:15:23.940 --> 00:15:28.800
+It's like a quarter or a third of the time it uses if you're on a laptop
+
+00:15:28.800 --> 00:15:32.140
+It uses like less than 25% of the battery as well
+
+00:15:32.140 --> 00:15:39.720
+Or it depends if you're using super based or kubernetes or whatever right but pretty cool, right? Yeah. Yeah, and oh another thing
+
+00:15:39.720 --> 00:15:42.980
+I think I think let me look. Yes. This is a big deal
+
+00:15:42.980 --> 00:15:44.900
+You and I were just talking about this before we press record
+
+00:15:44.900 --> 00:15:47.340
+It says you can run Linux machines without a fuss
+
+00:15:47.340 --> 00:15:53.640
+So one of the things I can do is I can go to like parallels and I can run Linux a boon to or whatever
+
+00:15:53.640 --> 00:15:57.500
+On my Mac my m2 mini my m2 pro mini
+
+00:15:57.500 --> 00:16:03.700
+How are you those words to go together whatever order makes the right sense there I can run them, but I can only run the arm
+
+00:16:03.700 --> 00:16:09.960
+64 versions because I only have an arm 64 processor, but this one allows you to run
+
+00:16:09.960 --> 00:16:15.760
+Intel machines on Apple silicon with Rosetta which allows you then to run
+
+00:16:15.760 --> 00:16:17.900
+Intel based
+
+00:16:18.000 --> 00:16:23.640
+Docker images and basically be closer to what your production environment is if you're using Apple silicon
+
+00:16:23.640 --> 00:16:25.780
+So that's also a nice feature of this. That's pretty cool
+
+00:16:25.780 --> 00:16:30.940
+Yeah, it does cost money if you're a company, but it has a free version if you're just person
+
+00:16:30.940 --> 00:16:35.740
+So yeah, not an endorsement, but I thought people might find this to be pretty useful. It looks pretty cool
+
+00:16:35.740 --> 00:16:37.740
+Yeah, next one pod man
+
+00:16:37.740 --> 00:16:45.400
+But man is the best free and open source container tools so you can manage doctor containers pods and that term
+
+00:16:45.400 --> 00:16:51.900
+I believe comes from kubernetes like the unit of execution and kubernetes is called a pod and images with pod man
+
+00:16:51.900 --> 00:16:57.580
+So yeah, it lets you seamlessly work with containers and kubernetes from your local environment
+
+00:16:57.580 --> 00:17:00.660
+So this is also really cool. A lot of people are doing interesting stuff
+
+00:17:00.660 --> 00:17:05.660
+GitHub action plugins. It's got a visual studio code plugin and
+
+00:17:05.660 --> 00:17:09.280
+Different things and then the third one actually third
+
+00:17:09.280 --> 00:17:12.940
+3.5 because it kind of is - is this is pretty interesting
+
+00:17:12.940 --> 00:17:17.460
+So one of the things that kind of is inspiring once you get all this Docker stuff going is like, okay
+
+00:17:17.460 --> 00:17:24.060
+Well if that open source big complicated thing and some technology, I don't know how to run like PHP or whatever
+
+00:17:24.060 --> 00:17:28.260
+But if it has a Docker container or a Docker composed set of containers
+
+00:17:28.260 --> 00:17:29.100
+I can run it
+
+00:17:29.100 --> 00:17:33.340
+All I got to do is just tell Docker to update it when there's a new one and just run it
+
+00:17:33.340 --> 00:17:34.740
+That's super easy to do right?
+
+00:17:34.740 --> 00:17:41.020
+So there's this like taking that to kind of the extreme as there's this thing called Casa OS. Have you heard of this?
+
+00:17:41.180 --> 00:17:45.020
+No, I neither but as 20,000 get up stars, which is pretty cool
+
+00:17:45.020 --> 00:17:51.460
+They call it your personal cloud operating system community based open source software focused on delivering
+
+00:17:51.460 --> 00:17:57.300
+Simple personal cloud experience around the Docker ecosystem. So basically if there's a thing that runs Docker
+
+00:17:57.300 --> 00:18:01.460
+This is like a an OS for running in a platform for running all that
+
+00:18:01.460 --> 00:18:08.500
+So it gives you a UI and into this this OS that they give you and it says look you can collect all your precious
+
+00:18:08.500 --> 00:18:13.860
+Data, I don't like tie together Google Drive Dropbox. I cloud one drive, etc, etc
+
+00:18:13.860 --> 00:18:21.660
+Hard drives and everything into just one drive view and then you can just access it and like map that drive over to your TV
+
+00:18:21.660 --> 00:18:23.660
+Or your computer or whatever
+
+00:18:23.660 --> 00:18:28.100
+You go there's somewhere in here where they've got all these apps that you can go
+
+00:18:28.100 --> 00:18:33.660
+Just grab and install or supports a lot of them are unfamiliar to me because I haven't done this enough
+
+00:18:33.660 --> 00:18:39.740
+But like couch potato duck DNS photo prism and they just plug into this this thing. So this is pretty interesting, right?
+
+00:18:39.740 --> 00:18:45.660
+I think yeah, you think right? Yeah. I don't know what I would do with it. But you know
+
+00:18:45.660 --> 00:18:46.420
+Yeah
+
+00:18:46.420 --> 00:18:49.820
+So one of the things that I think this is sort of coming out of is they have this thing called
+
+00:18:49.820 --> 00:18:54.380
+Zim cube which instead of running all your stuff on the internet
+
+00:18:54.380 --> 00:18:57.540
+This is like kind of like a really fancy NAS
+
+00:18:57.540 --> 00:19:01.820
+Okay, network attached storage, but it also runs Docker and all these things
+
+00:19:01.980 --> 00:19:09.220
+So it says you can have up to 164 terabytes of SSD, but then it also runs all of these things and this is on
+
+00:19:09.220 --> 00:19:16.580
+Kickstarter and it was already funded at around 1.1 million US which is a lot apparently
+
+00:19:16.580 --> 00:19:23.020
+So this is kind of the the intended destination for that, but I think you can run it anywhere. So pretty cool, right?
+
+00:19:23.020 --> 00:19:27.580
+Yeah, I mean some people think over a million dollars is a lot. I don't you know
+
+00:19:27.580 --> 00:19:30.140
+Jump change, but you know, yeah
+
+00:19:30.740 --> 00:19:36.060
+So I don't think this thing is shipped yet, I think it's in in development still now their Kickstarter ended
+
+00:19:36.060 --> 00:19:43.340
+But yeah, so there's a whole bunch of different fun things. So orb orb stack pod man casa and Zima cube
+
+00:19:43.340 --> 00:19:45.580
+Okay, so I have a question about the orb stack
+
+00:19:45.580 --> 00:19:53.260
+Is that that doesn't generate Docker images though? Does it I mean I have to have orb stack stuff on the server as well
+
+00:19:53.260 --> 00:19:56.740
+Right. No, it it will manage it is a
+
+00:19:56.740 --> 00:19:58.980
+transparent
+
+00:19:59.100 --> 00:20:00.820
+Transparent
+
+00:20:00.820 --> 00:20:04.580
+API or CLI to the Docker CLI. Okay
+
+00:20:04.580 --> 00:20:10.260
+So so if you just install this then you can go to your command line and type Docker build
+
+00:20:10.260 --> 00:20:16.420
+Whatever, you know download and do all the things but then when you ship ship it to production you could have real Docker there
+
+00:20:16.420 --> 00:20:21.780
+Okay, okay, right. I didn't understand more like it's more I think it's mostly around kind of yeah
+
+00:20:21.780 --> 00:20:24.260
+It's mostly on the desktop side of things
+
+00:20:24.540 --> 00:20:29.660
+So it's like a simpler lighter way to do desktop stuff possibly you could run it on your own
+
+00:20:29.660 --> 00:20:33.100
+Like I said, it does have its own CLI for doing its things its way
+
+00:20:33.100 --> 00:20:36.980
+But I think people will just use as a duck Docker desktop alternative
+
+00:20:36.980 --> 00:20:42.020
+yeah, it looks like it's the the business and commercial use pricing is
+
+00:20:42.020 --> 00:20:48.060
+Slightly cheaper than Docker desktop right now. So there's benefit there
+
+00:20:48.060 --> 00:20:54.380
+Sorry, I didn't remember that Docker had gone commercial on that side as well. So yeah, that makes them more comparable, right?
+
+00:20:54.380 --> 00:21:00.300
+As opposed to yeah, there's this other free thing. It's not terrible though. I mean like I just we just had to re-up our Docker
+
+00:21:00.300 --> 00:21:07.100
+At work and it's what we I think I paid 300 bucks for five seats per year. That's not bad
+
+00:21:07.100 --> 00:21:10.540
+Yeah, that's not bad. Not when it's not your money. It's fine. It's not my money
+
+00:21:10.540 --> 00:21:13.580
+It's easier to spend not your money. Yeah
+
+00:21:13.580 --> 00:21:16.060
+so
+
+00:21:16.060 --> 00:21:18.060
+Yeah, I love not your money spending
+
+00:21:18.060 --> 00:21:20.940
+But anyway, pretty cool
+
+00:21:22.060 --> 00:21:27.060
+Look forward to checking that out. I actually think it'd be fun to have one of those Zima cubes. I do too
+
+00:21:27.060 --> 00:21:33.380
+I really consider again. Wouldn't it be awesome to just have all those cool apps running plus, you know, 100 terabytes of storage
+
+00:21:33.380 --> 00:21:37.660
+Yeah, so it's like the cloud but it's at home. So it's just exactly top 10
+
+00:21:37.660 --> 00:21:46.100
+It's more like fog. It's way lower down. It doesn't it's fog. It's personal personal cloud
+
+00:21:48.500 --> 00:21:50.700
+That's nice, okay cool
+
+00:21:50.700 --> 00:21:55.940
+Okay, so that's that's some good news and I the next step
+
+00:21:55.940 --> 00:22:01.060
+I don't know if this is good news or bad news. It depends on your perspective. So I'd like to talk about
+
+00:22:01.060 --> 00:22:04.460
+Github copilot and other
+
+00:22:04.460 --> 00:22:07.620
+assisted AI stuff so
+
+00:22:07.620 --> 00:22:10.220
+Visual Studio magazine
+
+00:22:10.220 --> 00:22:15.620
+Came out with this article called new github copilot research finds
+
+00:22:16.140 --> 00:22:18.020
+downward pressure on code quality
+
+00:22:18.020 --> 00:22:26.020
+so the the question really was kind of if I've got if I'm using code coding with copilot if I'm if I'm using
+
+00:22:26.020 --> 00:22:32.380
+using copilot to help me write some stuff is the copilot kind of like having a
+
+00:22:32.380 --> 00:22:40.860
+You know junior developer that is it more intern or is it more senior dev? Yeah, is it more intern or more senior dev?
+
+00:22:40.860 --> 00:22:42.860
+and so the the
+
+00:22:43.660 --> 00:22:46.060
+They the result was or oh
+
+00:22:46.060 --> 00:22:49.540
+Their question was is it more senior dev or more akin to it?
+
+00:22:49.540 --> 00:22:55.260
+just the just jointed work of a short-term contractor, which I thought that was appropriate because
+
+00:22:55.260 --> 00:23:01.020
+A contractor might be very skilled, but they don't really care about they might not care about maintenance too much
+
+00:23:01.020 --> 00:23:06.020
+And yeah, exactly. So yeah, the technical debt is not a problem when you're done next week
+
+00:23:06.020 --> 00:23:08.580
+Yeah, and you don't have to yeah. Yeah
+
+00:23:09.500 --> 00:23:13.740
+One of the best ways to not deal with legacy code is shift switch jobs
+
+00:23:13.740 --> 00:23:15.940
+anyway
+
+00:23:15.940 --> 00:23:22.420
+We the answer is summarized of this white paper is is summarized by
+
+00:23:22.420 --> 00:23:28.860
+We find it disconcerts. We find disconcerting trends for maintainability code churn
+
+00:23:28.860 --> 00:23:32.080
+which is the percentage of lines that are reverted or
+
+00:23:32.500 --> 00:23:36.820
+Updated less than two weeks after being authored is projected to double in
+
+00:23:36.820 --> 00:23:40.940
+2024 as compared to 2021 pre AI baseline
+
+00:23:40.940 --> 00:23:44.460
+we further find that the percentage of added code or and
+
+00:23:44.460 --> 00:23:50.300
+Copy pasted code is increasing in proportion to updated deleted and moved
+
+00:23:50.300 --> 00:23:58.340
+Code in this regard AI generated code resembles an iterant contributor prone to violating the dryness
+
+00:23:59.180 --> 00:24:03.300
+The don't repeat yourself of the repositories visited. So
+
+00:24:03.300 --> 00:24:08.980
+this isn't that surprising to me, but it's interesting that there was a study done by get clear and
+
+00:24:08.980 --> 00:24:13.700
+also interesting that it was, you know printed in Visual Studio magazine, but
+
+00:24:13.700 --> 00:24:20.740
+I don't know if this is if the I guess the magazine probably doesn't have any ties to Microsoft but
+
+00:24:20.740 --> 00:24:24.340
+Or GitHub, but anyway interesting
+
+00:24:26.700 --> 00:24:33.580
+So Bart out in the audience has a different analogy I'd like to adapt this is not junior seniors a parrot that recycles what it
+
+00:24:33.580 --> 00:24:38.600
+Found on the web. So I'm thinking more stack overflow copy and paste action type of stuff here
+
+00:24:38.600 --> 00:24:42.260
+And grant says I read this to the research makes sense
+
+00:24:42.260 --> 00:24:48.740
+Sounds right, but copilot has benefits as senior devs like applying good patterns faster. Yeah, it's pretty interesting
+
+00:24:48.740 --> 00:24:52.700
+There it there was some comment in the article that
+
+00:24:53.460 --> 00:24:58.180
+Essentially stuff still got done faster. It's or at least got to
+
+00:24:58.180 --> 00:25:01.060
+Something working faster
+
+00:25:01.060 --> 00:25:08.580
+It's just that people often go back and you know back later and then modify and refactor the code and that's not necessarily bad
+
+00:25:08.580 --> 00:25:15.160
+But you know and get the sense that copilot is very focused on what prompt did you give me?
+
+00:25:15.160 --> 00:25:20.940
+I'm gonna do that rather than I understand what your entire project is. I've seen all 200 files
+
+00:25:20.940 --> 00:25:26.620
+I've thought that through now in that context the answer your question is X rather than Y, right?
+
+00:25:26.620 --> 00:25:28.740
+I don't think it does that I think I mean
+
+00:25:28.740 --> 00:25:33.740
+I don't it would be a very high level of like token usage that it would have to take into account
+
+00:25:33.740 --> 00:25:38.800
+I just I think it probably just goes like alright. Well you asked me a sentence. Here's the answer Python
+
+00:25:38.800 --> 00:25:42.860
+Yeah, I actually want to play with it more. I haven't really played with copilot too much
+
+00:25:42.860 --> 00:25:46.620
+It's not something I can use at work, but on personal projects
+
+00:25:46.620 --> 00:25:49.500
+I think be fun to use it more but the the
+
+00:25:50.020 --> 00:25:53.400
+The I we're still I mean it seems like you know
+
+00:25:53.400 --> 00:25:57.500
+It seems like like ChatGPT is kind of old now and copilot
+
+00:25:57.500 --> 00:26:02.180
+It's like really old but really the we're really just starting to use these tools in
+
+00:26:02.180 --> 00:26:04.820
+Development like they said pre 2021
+
+00:26:04.820 --> 00:26:08.780
+So it's still only a couple years that we have have under our belt
+
+00:26:08.780 --> 00:26:14.580
+working with these things and I think that I think that the tools can get better and I I
+
+00:26:14.940 --> 00:26:21.740
+I'm looking forward to being able I I both worry about the the developers that are gonna lose jobs and stuff because of this but
+
+00:26:21.740 --> 00:26:25.220
+I also I think that the tools will probably get better
+
+00:26:25.220 --> 00:26:28.980
+Like you said if it can look at your entire project and say hey
+
+00:26:28.980 --> 00:26:36.660
+In this context, this is the right call. You're repeating something you can we can already you already implemented that
+
+00:26:36.660 --> 00:26:38.660
+Let's go you call this function instead
+
+00:26:38.860 --> 00:26:39.900
+That would be great
+
+00:26:39.900 --> 00:26:47.220
+and also if we could have AI tools to to help maybe keep a style similar or the just a general
+
+00:26:47.220 --> 00:26:51.420
+Philosophy similar in around a project. I think there's room for that
+
+00:26:51.420 --> 00:26:58.980
+Once it gets there, so yeah, I wouldn't be surprised to see that happen. Yeah. All right extra extra time extra extra
+
+00:26:58.980 --> 00:27:04.260
+Oh, yeah, so my extras are like did you know that pytest 8 is out?
+
+00:27:05.300 --> 00:27:09.820
+it's installed - you pip installed - you but I also if if
+
+00:27:09.820 --> 00:27:14.680
+Pytest is is one of those things that you've always been thinking about doing
+
+00:27:14.680 --> 00:27:20.260
+Head on over to courses dot Python test comm and you can learn it really fast
+
+00:27:20.260 --> 00:27:26.780
+Using a course or you can grab the book, of course, so yeah, excellent. Yeah, that's very exciting
+
+00:27:26.780 --> 00:27:32.020
+Do you have any extras? I do have a couple things. I want to quickly shout out to one
+
+00:27:32.100 --> 00:27:36.220
+This has been around for plenty long. Although it's changed behind the scenes not in a way
+
+00:27:36.220 --> 00:27:41.100
+Anyway, I don't necessarily notice but it has and that's just I want to encourage people to join our newsletter
+
+00:27:41.100 --> 00:27:44.140
+If you go to Python by set of them right below the hero image
+
+00:27:44.140 --> 00:27:46.940
+There's a thing that says new letter if you go newsletter you go over there
+
+00:27:46.940 --> 00:27:51.580
+Let's become a friend of the show your information in there. This is actually a
+
+00:27:51.580 --> 00:27:58.060
+Revamped as part of my work that I did with list monk the private self-hosted email
+
+00:27:58.580 --> 00:28:04.300
+Stuff moving away from MailChimp and others. We talked about that last week two weeks ago some some number of weeks ago and
+
+00:28:04.300 --> 00:28:06.740
+That means it doesn't go anywhere
+
+00:28:06.740 --> 00:28:10.500
+We don't share it with anyone but Brian and I are planning some fun stuff
+
+00:28:10.500 --> 00:28:14.460
+I'm trying to do more with newsletters and reaching out and connecting with you
+
+00:28:14.460 --> 00:28:17.540
+Also, we would love for you to go to Python by set of em
+
+00:28:17.540 --> 00:28:19.620
+Click on newsletter and put your information in there
+
+00:28:19.620 --> 00:28:22.460
+We won't share it, but we'll try to make make it worth your while
+
+00:28:22.460 --> 00:28:26.740
+But we also haven't emailed a lot on it yet in the past
+
+00:28:26.860 --> 00:28:32.620
+So when we start using it, don't think that we like bought your your name off some list
+
+00:28:32.620 --> 00:28:35.460
+It's that we're just starting to use it more. Yes, absolutely
+
+00:28:35.460 --> 00:28:40.380
+Drives me crazy when people mark they'll come sign up for your newsletter and then they'll mark it as spam
+
+00:28:40.380 --> 00:28:42.740
+Which means other people have a harder time getting it
+
+00:28:42.740 --> 00:28:49.780
+It's like you you hyped your information into there and then you mark just doesn't unsubscribe. Just please use the unsubscribe just do
+
+00:28:49.780 --> 00:28:52.500
+Yeah, I actually wrote a ton of software
+
+00:28:52.500 --> 00:28:58.740
+I have a whole separate Docker thing running that like monitors for people marking stuff as spam because there's ways that you can receive
+
+00:28:58.740 --> 00:29:00.740
+hooks about that information and
+
+00:29:00.740 --> 00:29:04.100
+Automatically unsubscribe people if they do that, even if they don't unsubscribe
+
+00:29:04.100 --> 00:29:08.340
+But you know, it's kind of a sense that damage is still done a little bit email is a complete nightmare
+
+00:29:08.340 --> 00:29:12.220
+All right. Let's get away from email because it makes me upset. All right, so
+
+00:29:12.220 --> 00:29:19.380
+Bydantic, bydantic is awesome. Sydney Runkle who works the bydantic company
+
+00:29:19.860 --> 00:29:24.140
+Was on talk by then recently released a brand new version version
+
+00:29:24.140 --> 00:29:30.700
+2.6.0 and Samuel Colvin said this is probably the biggest most important important release since
+
+00:29:30.700 --> 00:29:35.540
+2.0. Well, if you scroll through the release notes for identic 2.6
+
+00:29:35.540 --> 00:29:41.780
+There is a lot going on here and even just the new contributors is massive
+
+00:29:41.780 --> 00:29:47.300
+But apparently a ton of speed up some other things going on here that you can check out
+
+00:29:47.300 --> 00:29:54.140
+so if you're using pydantic everything's excellent just no more Python 3 7 because we've already had the
+
+00:29:54.140 --> 00:30:01.420
+The thanks and goodbye the Python 3 7 we're on to 3 8 as the minimum reasonable Python these days. Well, though
+
+00:30:01.420 --> 00:30:05.540
+Yeah, very cool. A lot of contenders. There's a lot going on here
+
+00:30:05.540 --> 00:30:10.300
+So it's a popular library. Like if we go over here and we see like, okay. Well how many things depend on it?
+
+00:30:10.300 --> 00:30:12.980
+where's the the used by
+
+00:30:14.380 --> 00:30:17.340
+317,000 projects it lists one two, three, four five
+
+00:30:17.340 --> 00:30:22.700
+It looks like six and it says plus as in there's more as a plus three hundred seventeen thousand nine hundred forty six
+
+00:30:22.700 --> 00:30:28.260
+Like that's not really totally representative, but okay, I understand the UI anyway, yeah, it's used by a lot of people
+
+00:30:28.260 --> 00:30:36.140
+Well, it's used by more projects than their stars. So some people are using it and don't like it. Apparently maybe I'm on start this up people
+
+00:30:36.140 --> 00:30:38.860
+The only reason you don't see a star for me is I'm not logged in
+
+00:30:38.860 --> 00:30:44.340
+All right, and finally I wrote a new essay called use custom search engines way more
+
+00:30:44.340 --> 00:30:51.940
+this is not duck duck go versus Google versus being but rather if you use a proper browser like Vivaldi or Firefox or
+
+00:30:51.940 --> 00:30:58.140
+Even Chrome though. Anyway, you can go and set custom search engines for all sorts of cool stuff
+
+00:30:58.140 --> 00:31:02.300
+Like one I set was pipey I Brian so if I go to my my address bar
+
+00:31:02.300 --> 00:31:07.380
+I don't know if I've done it on my streaming one here. Let me see now only my proper one
+
+00:31:07.380 --> 00:31:09.380
+This is like a separate user
+
+00:31:09.380 --> 00:31:14.860
+Account over here, but I could go and just type pipey I space py test and it will search using
+
+00:31:14.860 --> 00:31:22.740
+Pypi.org's search results directly for my test or whatever it is. You type there. I didn't know you could do this
+
+00:31:22.740 --> 00:31:25.540
+It is awesome. So if you want to search unsplash for
+
+00:31:25.540 --> 00:31:33.180
+Stock footage you space and you type the thing or so space you directly search on stack overflows
+
+00:31:33.180 --> 00:31:37.300
+So instead of searching for it, oh, I was looking in looking for stack overflows
+
+00:31:37.300 --> 00:31:39.300
+So you scroll through till you find the result and you go
+
+00:31:39.300 --> 00:31:44.140
+You know just like boom just like a super short or gh for github to search only
+
+00:31:44.140 --> 00:31:51.460
+Repositories not users or whatever you want to type in incredibly easy. So that's my my essay my quick little so that's it
+
+00:31:51.460 --> 00:31:57.700
+That's not built in already. You have to well, it's supported but you have to like configure it on your browser type
+
+00:31:57.700 --> 00:31:59.700
+Yeah, you have to type basically
+
+00:32:00.300 --> 00:32:06.060
+You go to Vivaldi search and then you find just go in our new search engine or there's ways to do in Firefox
+
+00:32:06.060 --> 00:32:07.700
+There's a way to do it in Chrome. They're all different
+
+00:32:07.700 --> 00:32:11.900
+Okay, but then you just figure out if you just search a site like if you search stack overflow
+
+00:32:11.900 --> 00:32:16.440
+You'll see it stack overflow comm slash search question mark Q equals some string
+
+00:32:16.440 --> 00:32:23.260
+And so you just put percent s there and say that's the search engine. Okay, I think I'll do a PB for Python bytes. Oh
+
+00:32:23.260 --> 00:32:26.140
+You know what? I'm feeling
+
+00:32:27.180 --> 00:32:31.300
+Like we could totally do this I mean you're all dried up there. Yeah
+
+00:32:31.300 --> 00:32:37.540
+Yeah, why not? Let's get one step beautiful. Anyway, that's my set of extras. Very cool. Thanks
+
+00:32:37.540 --> 00:32:44.080
+Well, how about funny stuff? This one's quick and short. Okay, it's a picture but you don't need to know anything about the picture
+
+00:32:44.080 --> 00:32:51.860
+It's just a lawyer arguing a case. Hey, Brian says your honor. My client didn't know they were pushing to the main branch
+
+00:32:53.740 --> 00:32:58.980
+That's funny, yeah, that's it didn't know I'd push it's my embrace this is my defense. I'm sorry
+
+00:32:58.980 --> 00:33:03.300
+I took down the website during Black Friday. I thought it was my my fork
+
+00:33:03.300 --> 00:33:10.760
+That's funny. Yeah, how often have you like I guess you don't do this too much, but it's three-day weekend
+
+00:33:10.760 --> 00:33:13.540
+I want to make sure that I have my stuff pushed to
+
+00:33:13.540 --> 00:33:19.820
+Central repo so push work at home, right? You want to like yeah and sync it back up or whatever
+
+00:33:19.820 --> 00:33:22.380
+Yeah, but but make sure you're on a branch
+
+00:33:22.980 --> 00:33:28.540
+Mm-hmm. So, okay. We were talking about junior versus senior a little bit on AI stuff
+
+00:33:28.540 --> 00:33:33.960
+So I wanted to share a little picture also of this was I saw this on
+
+00:33:33.960 --> 00:33:36.500
+Mastodon
+
+00:33:36.500 --> 00:33:40.820
+Junior versus senior developer junior. It's a timeline thing
+
+00:33:40.820 --> 00:33:46.380
+So the junior developer working on project encompasses the entire time senior developer
+
+00:33:46.620 --> 00:33:52.900
+Finding the motivation to start takes up like 90% 80% of the time and then actually doing it at the end
+
+00:33:52.900 --> 00:33:55.260
+And the total times equal
+
+00:33:55.260 --> 00:33:57.460
+Yeah
+
+00:33:57.460 --> 00:34:02.180
+It's amazing. I would have altered it to make the senior like the total time is like a little bit less
+
+00:34:02.180 --> 00:34:08.300
+It's just yeah. Yeah, and the junior needs a little bit of finding the motivation but just a tiny bit
+
+00:34:08.300 --> 00:34:11.980
+It's still a good one. Yeah
+
+00:34:11.980 --> 00:34:15.420
+Cool. Well, thanks again for oops
+
+00:34:16.220 --> 00:34:20.860
+Such a great episode good to talk to you this week. It's good to have everybody in the
+
+00:34:20.860 --> 00:34:23.540
+Showing up for the live show. Thank you very much
+
+00:34:23.540 --> 00:34:28.740
+If you want to what's that link again, if you if people want to go watch the live show
+
+00:34:28.740 --> 00:34:33.140
+They can buy them by set of em slash live. Yeah. All right, cool
+
+00:34:33.140 --> 00:34:37.540
+Plus if you just go to Python bytes dot FM, it's right at the top. Yeah there. Yeah
+
+00:34:37.540 --> 00:34:43.380
+Thanks a lot. It easy we make it easy for people. Yeah. All right. See you next week file
+
