@@ -1,0 +1,1811 @@
+WEBVTT
+
+00:00:00.000 --> 00:00:12.600
+Hello and welcome to Python Bytes where we deliver Python news and headlines directly to your earbuds. This is episode 371 recorded February 13th, 2024, day before Valentine's Day. I am Brian Okken.
+
+00:00:12.600 --> 00:00:13.720
+I am Michael Kennedy.
+
+00:00:13.720 --> 00:00:28.200
+This episode is sponsored by Scout APM. Listen to what we have to say about them later in the show. If you want to connect with us, of course, we're on Mastodon and Fosstodon. We're@mkennedy@brianocken and @pythonbytes.
+
+00:00:28.200 --> 00:00:40.000
+And you can always join us live on YouTube at pythonbytes.fm/live and we'd love to have you on the show if you or you know with us while we're recording. It's fun.
+
+00:00:40.000 --> 00:00:47.720
+So and let's just kick it off with with some. I'm a little hungry. Do you have any apples? Maybe I can eat.
+
+00:00:47.720 --> 00:01:04.280
+I'll see what I can find in the crate. No, so I do. Let's kick it off. So this one comes to us from Rhett Turnbull. Turnbull, excuse me. And Rhett has done a ton of interesting things with Python and Mac applications.
+
+00:01:04.280 --> 00:01:22.240
+I had him on talk Python. Remember we talked about text sniper at one point here on the show, and then he created textinator, which is a thing you can basically screenshot something on your screen, which then will OCR it right away in memory and then just copy the text, which is excellent.
+
+00:01:22.240 --> 00:01:32.280
+You know, so if you're watching a video and they say, here's the URL, instead of trying to shuffle around and figure it out, you just hit a button, highlight it, you know, in the screen and boom, you've got the text.
+
+00:01:32.280 --> 00:01:43.400
+Right. So when we talked about PyApp from the Hatch project and Ofec, he was like, that looks awesome. I want to try some variations on this.
+
+00:01:43.400 --> 00:01:49.760
+And he played with it. He said it does, in fact, look really cool. In fact, he said, holy cow, that's amazing.
+
+00:01:49.760 --> 00:02:08.680
+But one of the things that it doesn't do is actually build an installer. So depending on your operating system, you know, primarily this happens more on Mac and Windows, less on Linux, right? That's more of a package manager sort of type of thing to get apps over there.
+
+00:02:08.680 --> 00:02:18.960
+But on a Mac and Windows, it's real common to have something that runs installer, puts something in certain locations, maybe changes your path so it's accessible, right? All those kinds of things.
+
+00:02:18.960 --> 00:02:32.400
+So to your point, we have the Apple Crate. And Apple Crate is a, it says package your command line tools into a native macOS installer. And I'll just get in front of screenshot real quick.
+
+00:02:32.400 --> 00:02:40.760
+So it says install whatever it is, and you get an installer and a license and like all this process to install your app, right?
+
+00:02:40.760 --> 00:02:49.000
+This is awesome for people who are, when you would say, okay, all you got to do is make sure you have Python 3.10 or greater on your machine, have that in the path.
+
+00:02:49.000 --> 00:02:58.840
+And then what you're going to do is you're going to create a virtual environment, you're going to pip install pipx. And then you're like, wait, wait, wait, what's happening? Right? You just want to go double click it, you'll have it. You know what I mean?
+
+00:02:58.840 --> 00:03:12.760
+And so that's what this does. Right? So what you can do is you just say, Apple Crate build, what is the name of the app? What is the version? What is the license file? What binaries and stuff to include? And then where does it go? And it'll go and create this installer.
+
+00:03:12.760 --> 00:03:21.240
+And you can even do this through code if you want to somehow automate via Python, you want to automate this creation of the installer, installer build.
+
+00:03:21.240 --> 00:03:21.640
+Oh, cool.
+
+00:03:21.640 --> 00:03:23.000
+So isn't that cool?
+
+00:03:23.000 --> 00:03:25.080
+Yeah, actually, that's pretty neat.
+
+00:03:25.080 --> 00:03:43.400
+Yeah. So it says it's nothing that you couldn't do yourself. But there's a bunch of steps and different tools that are involved. It also uses Jinja too. So a templating thing. I'm not sure how many people are familiar with this concept. But the template language is like Jinja and Chameleon and others and Mako.
+
+00:03:43.400 --> 00:03:54.120
+They're known for being here's how I put dynamic stuff in HTML and Flask. Or here's how I return something that's a web page from fast API or whatever it is you're talking about. Right?
+
+00:03:54.120 --> 00:03:54.600
+Yeah.
+
+00:03:54.600 --> 00:04:21.320
+But those things are independent libraries, for the most part, and they can be used to generate anything you want. So for example, you could have a Jinja file that is like a transactional email. So I talked by thon people come and say, Hey, I forgot my password, you wouldn't believe how popular that feature is, I forgot my password. And you want to give them the same thing, like, here's a little design, there's a picture, sorry, you forgot your password, here's what you do, you know, because I'm not doing that for sleep, like the web app handles that.
+
+00:04:21.320 --> 00:04:43.000
+But there's parts where you want to put like chunks of data. So here's your unique code, you click link, you click to actually do the reset for you. Right? So that could just be a Jinja thing that runs a Jinja file template that just runs Jinja through it to actually generate what goes in the email, regardless, it's not a web view or a web request or anything like that. Right?
+
+00:04:43.000 --> 00:04:43.560
+Yeah.
+
+00:04:43.560 --> 00:05:12.040
+So you can do the same thing here, you can use Jinja two templates to generate files that are required. So it allows you to pass in variables like what is the name of the app? And what is the version of the app and different things. So you can kind of script the generation of say, like the license file or whatever, with Jinja, which is, you know, really pretty nice touch, I think. Also, it's a friend of the Toml. It's friendly with the PyProject Toml and it has its own app create.toml if you don't want to mix those together.
+
+00:05:12.040 --> 00:05:38.600
+Yeah, I mixed feelings about mushing everything into PyProject.toml. Like you can have rough in there, but I have my own rough.toml instead of, you know, tool.rough inside of the PyProject Toml. I don't know. Could get me throw away with that one. But anyway, this is it. And it shows you the different template variables you can use and you know, to like generate your output. And yeah, people if this is something you're trying to do, check it out. It looks really cool and keep up the momentum, right? Well done.
+
+00:05:38.600 --> 00:05:59.880
+That is pretty cool. On the Toml front, I kind of agree that I used to be on the bandwagon of like, let's put everything in PyProject.toml. But and then rough came along and I have like a huge rough config. Well, not huge, but it's larger than a lot of this other stuff. So I do things that are big. I do like to put those in their own little separate thing.
+
+00:05:59.880 --> 00:06:05.400
+Yeah, exactly. And also you can just look glance over and see the project. Oh, yeah, this is using rough. Got it. Because it is a rough.toml.
+
+00:06:05.400 --> 00:06:12.680
+Yeah. Yeah, there's that too. Okay. Speaking of packaging, it's packaging. Let's talk about some more packaging.
+
+00:06:12.680 --> 00:06:13.320
+It's the packaging episode.
+
+00:06:13.320 --> 00:06:39.560
+There is. So there's a lot of ways to package stuff. And Ned Batchelder, friend of the show, came out with a blog post called one way to package Python code right now. And I kind of like that this discussion, and the discussion really is, maybe you don't need something to generate like your package directory, maybe just like an example.
+
+00:06:39.560 --> 00:06:59.960
+So he just has a package sample GitHub repo that just has an example. And in the readme, there's a bunch of stuff like discussing what you need to think about. For one, the entire example is a good example. You can just use this and like copy it or something, and then modify your own stuff.
+
+00:06:59.960 --> 00:07:08.280
+One caveat, like me personally, like the readme is in restructured text, I would totally go with markdown instead of restructured text.
+
+00:07:08.280 --> 00:07:09.240
+100%.
+
+00:07:09.240 --> 00:07:26.600
+Yeah. However, a lot of common things here, things to think about, like decisions that you need to make before you get started, like what's your project name, and with a hint of like search for the name that you want on PyPI, just to make sure that it's not there already.
+
+00:07:26.600 --> 00:07:42.840
+And I recommend this for even people that don't plan on pushing it to PyPI, if you're only going to use a project on your own, internally or something, especially if you're going to share it with others within your company, don't collide with something already on PyPI, because it'll be annoying.
+
+00:07:42.840 --> 00:07:48.680
+And how to deal with the version number, doing optional features.
+
+00:07:48.680 --> 00:07:57.160
+So and then talks about what's in the repo and what he's included is the source directory, source packaging.
+
+00:07:57.160 --> 00:08:06.440
+I've kind of gone back and forth on that, but I do think that's the best way to do it is you've got your project and then a SRC directory and then the project directory under that.
+
+00:08:06.440 --> 00:08:11.480
+Seems like just one extra directory, but it's consistent and it's fine.
+
+00:08:11.480 --> 00:08:25.560
+I did learn a little bit. So one of the things, there's an example, pyproject.toml with some comments. It's very heavily commented, which is great, talking about, you know, different pieces.
+
+00:08:25.560 --> 00:08:31.080
+And it's not, it's a kind of a minimal set. It's not a whole bunch of stuff here, which is good.
+
+00:08:31.080 --> 00:08:44.920
+The dev requirements, you can have a dev optional install on pyproject.toml, but dev requirements is also something that's very common requirements.
+
+00:08:44.920 --> 00:08:51.080
+The readme, I actually, there's a license in a gitignore. Having an example gitignore is good.
+
+00:08:51.080 --> 00:08:58.280
+One of the things that was new to me is editor config. I think I've seen that before, but I didn't know that that was a thing.
+
+00:08:58.280 --> 00:09:01.080
+Did you know that .editorconfig was a thing?
+
+00:09:01.080 --> 00:09:09.000
+No, what does that work with? I know about the .idea subfolder for PyCharm and the .vscode one for VS Code, but I don't know anything about this.
+
+00:09:09.000 --> 00:09:14.600
+The idea is like this editorconfig.org, which I popped it open.
+
+00:09:14.600 --> 00:09:20.680
+It's a config file that configures, it's sort of a global configuration for different editors.
+
+00:09:20.680 --> 00:09:28.440
+And some of them support it natively and some you have to get out of a plugin or something.
+
+00:09:28.440 --> 00:09:37.480
+So for instance, all of the JetBrains stuff supports it. IntelliJ and all that PyCharm supports it.
+
+00:09:37.480 --> 00:09:48.680
+Vim supports it. Visual Studio, Visual Studio Code, you have to have a plugin to do that, but it is available, the plugin.
+
+00:09:48.680 --> 00:09:52.680
+That is news to me and I'll definitely be checking that out.
+
+00:09:52.680 --> 00:09:58.440
+Yeah, I'm like, oh cool, I'll maybe try that. Because sometimes I do pop around with different editors.
+
+00:09:58.440 --> 00:10:02.600
+It'd be nice to have one config, maybe. At least I'll try it.
+
+00:10:02.600 --> 00:10:07.800
+The other thing I like is a small makefile. I've kind of gone back and forth on this also.
+
+00:10:07.800 --> 00:10:13.480
+But if you're comfortable with makefiles or the people working on your project are, you may as well use them.
+
+00:10:13.480 --> 00:10:23.080
+If you're the only one comfortable, then maybe don't. But a kind of a nice minimal set of things to put in your makefile.
+
+00:10:23.080 --> 00:10:27.880
+Just stuff that you have to do with around your project, like tools.
+
+00:10:27.880 --> 00:10:36.280
+Maketools would do install the dev requirements. So it would, you know, I would probably make that makedev instead of maketools.
+
+00:10:36.280 --> 00:10:40.840
+But you know, whatever. How to do the distribution, he's using Twine.
+
+00:10:40.840 --> 00:10:50.280
+So testing on PyPI and then makepypi. Again, I probably would write that as makedistribute or something.
+
+00:10:50.280 --> 00:10:52.680
+But you know, kind of nice to have an example.
+
+00:10:52.680 --> 00:11:03.400
+So anyway, the other thing I wanted to say was he did shout out to the PyPA packaging Python projects tutorial.
+
+00:11:03.400 --> 00:11:08.840
+And I also agree that if you want to get into the nitty gritty, so his example is great for a minimal set.
+
+00:11:08.840 --> 00:11:17.480
+But if you really want to understand everything, this is a great reference is the python.org packaging Python projects page.
+
+00:11:17.480 --> 00:11:23.960
+Excellent. Yeah, I read that or I saw that article and skimmed through it, I guess, the right way to put it from Ned.
+
+00:11:23.960 --> 00:11:25.800
+And it looks really interesting. I'm glad you covered it.
+
+00:11:25.800 --> 00:11:26.040
+Cool.
+
+00:11:26.040 --> 00:11:29.720
+I agree that a minimalist, you know, I used to be like, all right, give me my cookie cutter thing.
+
+00:11:29.720 --> 00:11:32.840
+And there's always be, oh, it's going to generate this and this and this.
+
+00:11:32.840 --> 00:11:35.400
+But I don't want to use, you know, name your aspect.
+
+00:11:35.400 --> 00:11:41.560
+I don't want to use Redis in this thing, or I don't want to use react build steps in this particular product.
+
+00:11:41.560 --> 00:11:46.280
+Like they just always seem to be over specified a lot of those template building things, you know?
+
+00:11:46.280 --> 00:11:46.840
+Yeah.
+
+00:11:46.840 --> 00:11:55.720
+Also, one of the great comment in his thing was that there's a lot of people that just have some Python code that they need to distribute.
+
+00:11:55.720 --> 00:11:59.000
+Like they're not it isn't a whole bunch of stuff and it's not complicated.
+
+00:11:59.000 --> 00:12:00.280
+So please don't.
+
+00:12:00.280 --> 00:12:00.600
+Yeah.
+
+00:12:00.600 --> 00:12:02.760
+Please don't tell me like all the details.
+
+00:12:02.760 --> 00:12:05.800
+I don't want to care about the history and all the different tools.
+
+00:12:05.800 --> 00:12:06.840
+Just show me how to do it.
+
+00:12:06.840 --> 00:12:09.240
+So here's a decent example.
+
+00:12:09.240 --> 00:12:10.360
+So excellent.
+
+00:12:10.360 --> 00:12:10.680
+All right.
+
+00:12:10.680 --> 00:12:12.760
+A bit of a real time follow up.
+
+00:12:12.760 --> 00:12:15.960
+Henry out there says, I love this quick search.
+
+00:12:15.960 --> 00:12:20.280
+There are 8000 projects on PyPI that use PyProject.toml.
+
+00:12:20.280 --> 00:12:23.480
+While 80 of them use rough toml based on sdist.
+
+00:12:23.480 --> 00:12:25.400
+Interesting.
+
+00:12:25.400 --> 00:12:31.400
+I think you would maybe a way to think about that is like, you've got to ship your PyProject.toml.
+
+00:12:31.400 --> 00:12:33.160
+Like it's your new setup.py.
+
+00:12:33.160 --> 00:12:36.200
+It's part of, you know, it has to be there, right?
+
+00:12:36.200 --> 00:12:37.560
+To get the thing to install.
+
+00:12:37.560 --> 00:12:39.640
+Whereas rough.toml you don't.
+
+00:12:39.640 --> 00:12:45.240
+So like, for example, I just shipped a new version of umami Python for some updates there this morning.
+
+00:12:45.240 --> 00:12:49.320
+And if you look at the source, I've got like the gitignore and the rough toml.
+
+00:12:49.320 --> 00:12:56.520
+But the thing that actually gets shipped is like a different subset of that thing that doesn't include.
+
+00:12:56.520 --> 00:13:00.040
+So I'm not sure the absence of it necessarily means anything.
+
+00:13:00.040 --> 00:13:03.720
+But yeah, it would be interesting to know like what that ratio is.
+
+00:13:03.720 --> 00:13:06.520
+Also, the rough defaults are not bad.
+
+00:13:06.520 --> 00:13:12.920
+So I think a lot of projects that use rough don't have any settings and just run it vanilla.
+
+00:13:12.920 --> 00:13:15.800
+Yeah, let's see, which ones do I feel like are super important?
+
+00:13:15.800 --> 00:13:16.600
+There's very few.
+
+00:13:16.600 --> 00:13:20.440
+So I think the line length is way too short at 79.
+
+00:13:20.440 --> 00:13:22.600
+I mean, I have a 32 inch monitor.
+
+00:13:22.600 --> 00:13:25.960
+I don't want to work in like a third of it on the left.
+
+00:13:25.960 --> 00:13:26.440
+You know what I mean?
+
+00:13:27.800 --> 00:13:32.680
+And then I'm a fan of single quotes, not double quotes, and so on.
+
+00:13:32.680 --> 00:13:36.440
+And then, yeah, so that's pretty much the stuff that matters to me.
+
+00:13:36.440 --> 00:13:38.440
+But you know what else is really nice, Brian?
+
+00:13:38.440 --> 00:13:39.640
+Our sponsor.
+
+00:13:39.640 --> 00:13:40.440
+Yes.
+
+00:13:40.440 --> 00:13:42.680
+So we want to thank Scout APM.
+
+00:13:42.680 --> 00:13:45.320
+This episode is brought to you by Scout APM.
+
+00:13:45.320 --> 00:13:50.200
+Are you tired of spending hours trying to find the root cause of issues impacting performance?
+
+00:13:50.200 --> 00:13:54.280
+Then you owe it to yourself to check out our sponsor this week, Scout APM.
+
+00:13:54.280 --> 00:14:00.200
+Scout APM is a leading Python application performance monitoring tool that helps you
+
+00:14:00.200 --> 00:14:04.040
+identify and solve performance abnormalities faster and easier.
+
+00:14:04.040 --> 00:14:09.800
+Scout APM ties bottlenecks such as memory leaks, slow database queries, background jobs,
+
+00:14:09.800 --> 00:14:15.400
+the dreaded n plus one queries problem common with ORMs and more directly to your source code.
+
+00:14:15.400 --> 00:14:18.600
+So you can spend less time debugging and more time building.
+
+00:14:18.600 --> 00:14:23.160
+You'll love Scout because it's built for developers by developers.
+
+00:14:23.160 --> 00:14:28.520
+Scout makes it easy to get set up and deliver insights in less than four minutes.
+
+00:14:28.520 --> 00:14:34.120
+Seriously, you could pause this episode, set up Scout and be back at it without missing a beat.
+
+00:14:34.120 --> 00:14:37.960
+And the best part, Scout's pricing is affordable and straightforward.
+
+00:14:37.960 --> 00:14:43.000
+Only pay for the data you use, no hidden overage fees or per seat pricing.
+
+00:14:43.000 --> 00:14:46.040
+Start your free trial and get instant insights today.
+
+00:14:46.040 --> 00:14:52.600
+Visit pythonbytes.fm/scout and please use our link because it does truly support the show.
+
+00:14:52.600 --> 00:14:55.560
+Let's move on to the next item here.
+
+00:14:55.560 --> 00:15:03.720
+And this one comes from Mastodon and you are called Ninsky pointed out that,
+
+00:15:03.720 --> 00:15:05.480
+you know, something that's really awesome about rough.
+
+00:15:05.480 --> 00:15:07.400
+We were just talking about rough, right?
+
+00:15:07.400 --> 00:15:07.640
+Yeah.
+
+00:15:07.640 --> 00:15:13.880
+One of the things that's awesome about it is that they have put together a wiki like thing
+
+00:15:13.880 --> 00:15:15.640
+that tells you why.
+
+00:15:15.640 --> 00:15:21.720
+So somebody was complaining about, look, I, if I could just get Pylant or Flake 8 to tell me,
+
+00:15:21.720 --> 00:15:25.720
+like not just this is the rule, but why do you care about this rule?
+
+00:15:25.720 --> 00:15:26.680
+Why should you follow it?
+
+00:15:26.680 --> 00:15:29.960
+Or if you don't care about whatever it says, then you can ignore it or if you wish.
+
+00:15:29.960 --> 00:15:37.960
+So at docs.astral.sh, the company behind rough and with Charlie Martian team slash rough slash
+
+00:15:37.960 --> 00:15:40.920
+rules has a really cool site here.
+
+00:15:40.920 --> 00:15:45.000
+So you come down and it says here's 700 lit roles.
+
+00:15:45.000 --> 00:15:49.080
+And if you scroll down, it'll have like all the things like, okay,
+
+00:15:49.080 --> 00:15:55.560
+F 403 undefined local import with star or unused import.
+
+00:15:55.560 --> 00:15:55.880
+Right.
+
+00:15:55.880 --> 00:15:57.800
+So let's just grab the first one and click on it.
+
+00:15:57.800 --> 00:16:02.040
+It says, this is derived from the flakes, the pie flakes linter.
+
+00:16:02.040 --> 00:16:05.160
+Sometimes you can fix it, but most importantly, why is it bad?
+
+00:16:05.160 --> 00:16:06.600
+And give me an example of it.
+
+00:16:06.600 --> 00:16:07.640
+How cool is that?
+
+00:16:07.640 --> 00:16:09.160
+Yeah, that is really cool.
+
+00:16:09.160 --> 00:16:09.400
+Yeah.
+
+00:16:09.400 --> 00:16:14.040
+So for example, this one, it says unused imports at a performance overhead at runtime
+
+00:16:14.040 --> 00:16:16.920
+and risk creating import cycles.
+
+00:16:16.920 --> 00:16:20.920
+Like this thing imports that, but that thing imports of this boy, do I wish Python would
+
+00:16:20.920 --> 00:16:22.200
+get around that problem?
+
+00:16:22.200 --> 00:16:26.760
+I think it could, but anyway, like with that too, with a two-step compile, possibly like
+
+00:16:26.760 --> 00:16:29.960
+there's all sorts of languages that, that do that.
+
+00:16:29.960 --> 00:16:30.360
+Right.
+
+00:16:30.360 --> 00:16:30.600
+Yeah.
+
+00:16:30.600 --> 00:16:36.120
+Like you don't worry about that and see, for example anyway, they, they also increase
+
+00:16:36.120 --> 00:16:41.240
+unused imports also increase the cognitive load of reading the code.
+
+00:16:41.240 --> 00:16:45.560
+I mean, editors help if they grade out and say, this is not used, but still the performance
+
+00:16:45.560 --> 00:16:47.480
+thing and cycles is certainly there.
+
+00:16:47.480 --> 00:16:53.880
+So it says, here's an example, important numPy as NP define area, you know, pi times
+
+00:16:53.880 --> 00:16:59.000
+radius squared instead don't do that, but it has this, here's the problem.
+
+00:16:59.000 --> 00:17:01.480
+Here's what, and, and the right way, which is cool.
+
+00:17:01.480 --> 00:17:04.520
+So let me just, I'll just, I have no picked ones out of there.
+
+00:17:04.520 --> 00:17:08.520
+Um, let's see if tuple, what is this?
+
+00:17:08.520 --> 00:17:13.080
+So checks for if statements that use non-empty tuples as test conditions.
+
+00:17:13.080 --> 00:17:14.520
+Oh, anything about this?
+
+00:17:14.520 --> 00:17:15.160
+Why is this bad?
+
+00:17:15.160 --> 00:17:17.640
+Non-empty tuples are always true.
+
+00:17:17.640 --> 00:17:18.360
+I see.
+
+00:17:18.360 --> 00:17:22.440
+So you maybe want to think you want to put parentheses around your if, cause you're
+
+00:17:22.440 --> 00:17:26.920
+coming from another language, where did the C false, but you have a comma in there.
+
+00:17:26.920 --> 00:17:30.200
+It's always true, even though false is in the right, cause it's testing the truthiness
+
+00:17:30.200 --> 00:17:33.080
+of the container, not values of the container.
+
+00:17:33.080 --> 00:17:35.000
+This catches people often.
+
+00:17:35.000 --> 00:17:39.880
+I see it when somebody has an expression like they're, they're, it's like, you know, they're
+
+00:17:39.880 --> 00:17:43.080
+combining two strings or something and they're checking the result.
+
+00:17:43.080 --> 00:17:44.840
+Um, so yeah.
+
+00:17:44.840 --> 00:17:46.520
+Then maybe just some pep eight ones.
+
+00:17:46.520 --> 00:17:47.320
+Like here's another one.
+
+00:17:47.320 --> 00:17:47.960
+Pep eight.
+
+00:17:47.960 --> 00:17:54.040
+Don't, don't use, things that are variables, functions, et cetera, as capitals, right?
+
+00:17:54.040 --> 00:17:57.880
+Other languages have this, they have mixed case or whatever.
+
+00:17:57.880 --> 00:18:02.600
+I, this is okay for classes, but nothing really, not much else in Python gets named
+
+00:18:02.600 --> 00:18:02.920
+that way.
+
+00:18:02.920 --> 00:18:06.600
+So they have an example, like don't use capital B equals a plus three and so on.
+
+00:18:06.600 --> 00:18:09.000
+Anyway, I think this is really a nice resource.
+
+00:18:09.000 --> 00:18:11.400
+Like look at the scroll bar, Brian, like how much is here?
+
+00:18:11.400 --> 00:18:14.040
+This is a ton of work and they all have these really nice examples.
+
+00:18:14.040 --> 00:18:14.680
+It's fantastic.
+
+00:18:15.240 --> 00:18:19.240
+Um, I think it'd be cool just to like read through some of this, especially if you're,
+
+00:18:19.240 --> 00:18:24.680
+uh, if you're probably not new to Python, but like new ish, intermediate Python
+
+00:18:24.680 --> 00:18:27.880
+developer and you want to just sort of write stuff better.
+
+00:18:27.880 --> 00:18:32.120
+Well, one is to use these things, but also just kind of a read through some of this documentation
+
+00:18:32.120 --> 00:18:35.800
+to figure out, why different styles are the way they are.
+
+00:18:35.800 --> 00:18:37.320
+Um, so yeah.
+
+00:18:37.320 --> 00:18:37.720
+Yeah.
+
+00:18:37.720 --> 00:18:37.960
+Yeah.
+
+00:18:37.960 --> 00:18:41.080
+So even if you don't use rough, this is a nice resource.
+
+00:18:41.080 --> 00:18:41.320
+Cool.
+
+00:18:43.160 --> 00:18:47.720
+Well, I have a whole bunch of stuff I was going to, I'm doing an extra, extra, extra,
+
+00:18:47.720 --> 00:18:53.080
+extra thing for, for, for my next topic ish topics.
+
+00:18:53.080 --> 00:18:54.040
+Um, plural.
+
+00:18:54.040 --> 00:18:57.320
+So, I, came across an app.
+
+00:18:57.320 --> 00:19:00.520
+I think I heard it from several people called flat.app.
+
+00:19:00.520 --> 00:19:04.120
+So flat is, and I've just started playing with this.
+
+00:19:04.120 --> 00:19:09.640
+Um, it's kind of like Trello and other sort of task tracking where you can have, have
+
+00:19:09.640 --> 00:19:12.200
+things in to-do lists and in progress and done.
+
+00:19:12.200 --> 00:19:15.800
+Um, but the work and then different workspaces for different things, you can have different
+
+00:19:15.800 --> 00:19:16.920
+projects going on.
+
+00:19:16.920 --> 00:19:18.680
+It just kind of like the layout of it.
+
+00:19:18.680 --> 00:19:23.800
+And, I'm having fun playing with it and, right now it's free, but it's going to
+
+00:19:23.800 --> 00:19:26.600
+kind of end up being a paid app, but not very expensive.
+
+00:19:26.600 --> 00:19:29.560
+I think it's like for individuals, like five bucks a month or something.
+
+00:19:29.560 --> 00:19:31.640
+Um, anyway, flat looks, looks fun.
+
+00:19:31.640 --> 00:19:32.920
+I've started playing with that.
+
+00:19:32.920 --> 00:19:36.040
+Um, next up is, terms of service.
+
+00:19:36.040 --> 00:19:38.680
+Didn't read, this has been around for a while.
+
+00:19:38.680 --> 00:19:41.720
+It's at T O S D R dot org.
+
+00:19:41.720 --> 00:19:43.480
+Um, like kind of too long.
+
+00:19:43.480 --> 00:19:44.200
+Didn't read.
+
+00:19:44.200 --> 00:19:46.520
+Uh, the tagline is I have read and agree.
+
+00:19:46.520 --> 00:19:50.520
+These term with these terms, is the biggest lie on the web.
+
+00:19:50.520 --> 00:19:51.800
+And we aim to fix that.
+
+00:19:51.800 --> 00:19:53.080
+And I kind of love this.
+
+00:19:53.080 --> 00:19:59.160
+Um, it's a, it's, you can search for a different service and it tells you, it gives you a grade
+
+00:19:59.160 --> 00:20:00.280
+for each one.
+
+00:20:00.280 --> 00:20:05.320
+And then, and then also kind of some highlights as to why it's graded that way.
+
+00:20:05.320 --> 00:20:08.040
+Uh, Wikipedia has a grade of B.
+
+00:20:08.040 --> 00:20:10.440
+Um, there's apparently there's stuff that they don't like.
+
+00:20:10.440 --> 00:20:14.520
+And what I like about this is not just the grade, but why they give the grade because
+
+00:20:14.520 --> 00:20:20.200
+some stuff I don't really care about, like, you know, the, the data might go away.
+
+00:20:20.200 --> 00:20:21.480
+Um, okay.
+
+00:20:21.480 --> 00:20:21.720
+Yeah.
+
+00:20:21.720 --> 00:20:25.240
+Maybe, in Wikipedia, but, I kind of get that already.
+
+00:20:25.240 --> 00:20:25.880
+I understand.
+
+00:20:25.880 --> 00:20:28.040
+So, so this is neat.
+
+00:20:28.040 --> 00:20:33.240
+The, what I did was surprised by, I wanted to point this out is that it is a, it's kind
+
+00:20:33.240 --> 00:20:39.480
+of like Wikipedia in that it's it, the classification system and everything is done by it's peer
+
+00:20:39.480 --> 00:20:43.400
+review process, but it's not, it's not like one company doing all of this.
+
+00:20:43.400 --> 00:20:48.760
+It's, it's, you can sign up and you can, you can start rating different services if you
+
+00:20:48.760 --> 00:20:50.280
+want, and then it'll be reviewed.
+
+00:20:50.280 --> 00:20:53.720
+So it's kind of a crowd, crowd acted thing.
+
+00:20:53.720 --> 00:20:56.120
+So there's that last week I taught.
+
+00:20:56.120 --> 00:20:56.760
+It's really cool.
+
+00:20:56.760 --> 00:20:57.320
+I like that one.
+
+00:20:57.320 --> 00:20:57.820
+Yeah.
+
+00:20:57.820 --> 00:21:01.800
+Um, and then there's even articles on like wired and stuff.
+
+00:21:01.800 --> 00:21:04.680
+Like there was an article on wired about it, but it's been around for a while.
+
+00:21:04.680 --> 00:21:07.880
+So it's, like the wired article is from 2018.
+
+00:21:07.880 --> 00:21:11.640
+So anyway, but I like the idea.
+
+00:21:11.640 --> 00:21:13.480
+So if people want to help out, that'd be great.
+
+00:21:13.480 --> 00:21:19.480
+Uh, last week I talked about blogging and, and this week I ran across an article
+
+00:21:19.480 --> 00:21:22.840
+called why I write and I loved the topics here.
+
+00:21:22.840 --> 00:21:24.280
+So I wanted to highlight them.
+
+00:21:24.280 --> 00:21:30.760
+This is, from, Sheena O'Connell and, especially technical writing.
+
+00:21:30.760 --> 00:21:34.200
+So one of the things I write to remember, that's actually why I started blogging.
+
+00:21:34.200 --> 00:21:38.040
+I started blogging just to write, keep track of stuff that I kept forgetting.
+
+00:21:38.040 --> 00:21:39.560
+Uh, so I think that's a great idea.
+
+00:21:39.560 --> 00:21:45.720
+Uh, second is, to refine my thinking to once you, if you write it down to, it'll
+
+00:21:45.720 --> 00:21:50.120
+help you understand a project more, I write to impact.
+
+00:21:50.120 --> 00:21:53.480
+Um, of course I write to get through hard times.
+
+00:21:53.480 --> 00:21:55.080
+I think that's a, that's a good one.
+
+00:21:55.080 --> 00:21:56.280
+Even with technical stuff.
+
+00:21:56.280 --> 00:22:01.800
+I mean, there's personal, personal, writing as well, but also, I've had some times
+
+00:22:01.800 --> 00:22:07.960
+in my career where, I've been frustrated with my job and, blogging helps me focus
+
+00:22:07.960 --> 00:22:10.680
+on something that I can actually have an impact on.
+
+00:22:10.680 --> 00:22:15.080
+And it did help me, focus on something that I enjoy more than my job at the time.
+
+00:22:15.080 --> 00:22:16.280
+So I think that's good.
+
+00:22:16.280 --> 00:22:18.280
+Uh, and then, writing to connect.
+
+00:22:18.280 --> 00:22:21.320
+I think those are all connecting with people's all, they're all great.
+
+00:22:21.320 --> 00:22:23.960
+So, I'm almost done with all my extras.
+
+00:22:23.960 --> 00:22:25.240
+Not that those are good.
+
+00:22:25.240 --> 00:22:32.040
+I, I write for, for many of these reasons, but I also write because when I yell at podcasts,
+
+00:22:32.040 --> 00:22:34.120
+no one responds to me or listens.
+
+00:22:34.120 --> 00:22:37.880
+So maybe I can write down those thoughts somewhere else and someone will hear them.
+
+00:22:37.880 --> 00:22:38.440
+You know what I mean?
+
+00:22:38.440 --> 00:22:43.000
+Um, yeah, before I move on, Sheena, what was it?
+
+00:22:43.000 --> 00:22:44.120
+Sheena O'Connell.
+
+00:22:44.120 --> 00:22:46.280
+Um, she's got a lot of great articles.
+
+00:22:46.280 --> 00:22:49.240
+There's a unexpected glass ceilings for junior developers.
+
+00:22:49.240 --> 00:22:50.680
+That's an interesting read.
+
+00:22:50.760 --> 00:22:56.840
+Um, applying mastery based learning in tech education, a problem with code schools.
+
+00:22:56.840 --> 00:23:01.480
+Um, so these are, these are interesting, not, not just Python stuff, but interesting
+
+00:23:01.480 --> 00:23:02.360
+tech articles.
+
+00:23:02.360 --> 00:23:03.880
+So yeah, cool blog.
+
+00:23:03.880 --> 00:23:08.600
+Uh, the last thing I wanted to point out was, actually I think I'm done.
+
+00:23:08.600 --> 00:23:10.600
+That was, that was done with my extras.
+
+00:23:10.600 --> 00:23:11.720
+Oh no, one more.
+
+00:23:11.720 --> 00:23:18.760
+Um, Jeff brains, has a pie charm blog and there is three pie test features you will
+
+00:23:18.760 --> 00:23:20.280
+love by Helen Scott.
+
+00:23:20.280 --> 00:23:26.280
+So, just a quick article, talking about fixtures, marks, markers, and parameterize.
+
+00:23:26.280 --> 00:23:31.320
+And I wanted to do a shout out to this one because, at the bottom, it was great,
+
+00:23:31.320 --> 00:23:35.960
+great, short discussion, but, they also plug my course and book at the bottom.
+
+00:23:35.960 --> 00:23:37.960
+So thank you, Helen and pie term.
+
+00:23:37.960 --> 00:23:38.600
+It's great.
+
+00:23:38.600 --> 00:23:39.720
+So that's really cool.
+
+00:23:39.720 --> 00:23:40.220
+Nice.
+
+00:23:40.220 --> 00:23:41.820
+All right.
+
+00:23:41.820 --> 00:23:44.520
+Well, well, you got more extras.
+
+00:23:44.520 --> 00:23:45.720
+Do you want to just keep going?
+
+00:23:45.720 --> 00:23:46.680
+I could just keep going.
+
+00:23:46.680 --> 00:23:47.400
+I got a couple more.
+
+00:23:48.600 --> 00:23:49.100
+Okay.
+
+00:23:49.100 --> 00:23:50.280
+Um, that was good.
+
+00:23:50.280 --> 00:23:50.520
+Yeah.
+
+00:23:50.520 --> 00:23:52.680
+We're just going to go right into the extras anyway.
+
+00:23:52.680 --> 00:23:58.200
+Um, so, I just had what links to my course and, sorry, we couldn't find that page.
+
+00:23:58.200 --> 00:23:58.840
+Oh no.
+
+00:23:58.840 --> 00:24:03.720
+Um, anyway, of course the, I ran across this, this fun thing.
+
+00:24:03.720 --> 00:24:07.080
+It was just Wikipedia's list of common misconceptions.
+
+00:24:07.080 --> 00:24:12.520
+Um, and I, I don't know, somebody posted it on master or something, and this is a brilliant
+
+00:24:12.520 --> 00:24:13.160
+read.
+
+00:24:13.160 --> 00:24:17.960
+I don't know if you've read it, came across this before, but, Oh, this is not okay.
+
+00:24:17.960 --> 00:24:18.520
+I loved it.
+
+00:24:18.520 --> 00:24:21.080
+So I'm going to pull out a couple, Twinkies.
+
+00:24:21.080 --> 00:24:23.240
+Uh, we always talk about them lasting forever.
+
+00:24:23.240 --> 00:24:24.360
+Apparently they use it.
+
+00:24:24.360 --> 00:24:27.400
+They have a shelf life of 45 days, not millennia.
+
+00:24:27.400 --> 00:24:31.720
+Like I thought, Oh no, only McDonald's hamburgers.
+
+00:24:31.720 --> 00:24:32.280
+I don't know.
+
+00:24:32.280 --> 00:24:35.160
+I see some pictures of those things looking good after way too long.
+
+00:24:35.160 --> 00:24:39.400
+Um, something interesting I found out about microwave ovens.
+
+00:24:39.400 --> 00:24:44.360
+Um, I, that I didn't understand, let's see microwave ovens.
+
+00:24:44.360 --> 00:24:45.560
+They don't cause cancer.
+
+00:24:45.560 --> 00:24:46.280
+I knew that.
+
+00:24:46.280 --> 00:24:51.000
+But, I thought they, they do not cook from the inside out.
+
+00:24:51.000 --> 00:24:52.680
+I thought they did the inside out thing.
+
+00:24:52.680 --> 00:24:53.880
+I thought that also.
+
+00:24:53.880 --> 00:25:00.600
+Um, but it, the, 2.45 gigahertz micro microwaves can only penetrate approximately
+
+00:25:00.600 --> 00:25:04.360
+one centimeter, about three eighths of an inch into most foods.
+
+00:25:04.360 --> 00:25:09.560
+So the inside portions of thicker foods are mainly heated by, conduction from the
+
+00:25:09.560 --> 00:25:10.600
+outer portions.
+
+00:25:10.600 --> 00:25:11.560
+Did not know that.
+
+00:25:11.560 --> 00:25:15.080
+So, interesting learned something new every day.
+
+00:25:15.080 --> 00:25:18.520
+So, my last extra is just on a wishlist.
+
+00:25:18.520 --> 00:25:25.080
+I, I came across a company in Portland that makes microphones, ear trumpet labs, and
+
+00:25:25.080 --> 00:25:26.440
+I really want this microphone.
+
+00:25:26.440 --> 00:25:26.920
+Look at this.
+
+00:25:26.920 --> 00:25:28.520
+It's, oh, that's fantastic.
+
+00:25:28.520 --> 00:25:29.800
+It's like a steampunk.
+
+00:25:29.800 --> 00:25:30.300
+Yeah.
+
+00:25:30.300 --> 00:25:31.880
+It's so cool.
+
+00:25:31.880 --> 00:25:33.000
+It's called the Aduina.
+
+00:25:33.000 --> 00:25:37.560
+They've got a bunch of, bunch of different models, but, but this is a, this is a
+
+00:25:37.560 --> 00:25:40.360
+great looking, like, I'd love to be able to try this out.
+
+00:25:40.360 --> 00:25:41.640
+So 600 bucks, maybe.
+
+00:25:41.640 --> 00:25:42.760
+I think is amazing.
+
+00:25:42.760 --> 00:25:43.320
+Yeah.
+
+00:25:43.320 --> 00:25:46.520
+It gets into the price of this microphone, Brian, which is kind of ridiculous.
+
+00:25:46.520 --> 00:25:52.760
+So anyway, but it's, it's not, it's not dynamic.
+
+00:25:52.760 --> 00:25:53.480
+It's that other one.
+
+00:25:53.480 --> 00:25:55.160
+Oh, condenser.
+
+00:25:55.160 --> 00:25:57.000
+They've blown it.
+
+00:25:57.000 --> 00:25:57.880
+Oh man.
+
+00:25:57.880 --> 00:26:01.880
+So I'm not sure I'd have to try it out to see if I can get the, my room quiet enough
+
+00:26:01.880 --> 00:26:07.080
+to use this, but yeah, for people don't know the dynamic ones really capture just like
+
+00:26:07.080 --> 00:26:11.800
+an area and they exclude all the background sound like a whole bunch.
+
+00:26:11.800 --> 00:26:12.280
+Yeah.
+
+00:26:12.280 --> 00:26:16.440
+There's a lawnmower outside that you can't hear because of the, my dynamic mic.
+
+00:26:16.440 --> 00:26:17.560
+So is it right now?
+
+00:26:17.560 --> 00:26:17.880
+Yeah.
+
+00:26:17.880 --> 00:26:19.320
+They're absolutely, I don't hear anything at all.
+
+00:26:19.320 --> 00:26:24.200
+And I've had people right next door using a chainsaw on a tree going around and people
+
+00:26:24.200 --> 00:26:26.040
+couldn't, it didn't come through in the mic.
+
+00:26:26.040 --> 00:26:27.560
+Those are dynamic mics.
+
+00:26:27.560 --> 00:26:30.120
+Condenser mics are maybe better for like a studio.
+
+00:26:30.120 --> 00:26:34.040
+If you're people say they sound the best, well, they sound the best in like a truly
+
+00:26:34.040 --> 00:26:38.120
+quiet place, but they pick up echo more, they pick up background cars, et cetera.
+
+00:26:38.120 --> 00:26:39.320
+So yeah, you gotta be careful.
+
+00:26:39.320 --> 00:26:40.200
+Brian's getting out of here.
+
+00:26:40.200 --> 00:26:40.760
+Yeah.
+
+00:26:40.760 --> 00:26:41.160
+Yeah.
+
+00:26:41.160 --> 00:26:42.280
+Anyway, how about you?
+
+00:26:42.280 --> 00:26:43.400
+Do you have any extras?
+
+00:26:43.400 --> 00:26:44.840
+I sure do.
+
+00:26:44.840 --> 00:26:45.480
+I sure do.
+
+00:26:45.480 --> 00:26:45.980
+Okay.
+
+00:26:45.980 --> 00:26:52.360
+While ago, I wrote the unsolicited advice from Mozilla and Firefox saying that they
+
+00:26:52.360 --> 00:26:54.920
+are going off the rails and they really should fix it.
+
+00:26:54.920 --> 00:26:58.360
+This has nothing to do with what I said, but I do want to, you know, since I kind of criticized
+
+00:26:58.360 --> 00:26:59.880
+them, also gave them some ideas.
+
+00:26:59.880 --> 00:27:03.320
+I do want to point out something that's kind of cool that they just launched, which is
+
+00:27:03.320 --> 00:27:04.520
+Mozilla monitor.
+
+00:27:04.520 --> 00:27:09.400
+They had Mozilla monitor and like a really super shallow, not much of a service type
+
+00:27:09.400 --> 00:27:11.400
+of way, kind of like, have I been pwned?
+
+00:27:11.400 --> 00:27:12.920
+Like, it'll tell you if there's a breach.
+
+00:27:12.920 --> 00:27:13.560
+Okay.
+
+00:27:13.560 --> 00:27:16.840
+There's like services that are already I'm signed up for, but thanks.
+
+00:27:16.840 --> 00:27:21.560
+But what they did is they've announced some kind of service now that'll find where your
+
+00:27:21.560 --> 00:27:24.520
+private info is being sold by data brokers.
+
+00:27:24.520 --> 00:27:25.720
+And then they'll fix it.
+
+00:27:25.720 --> 00:27:32.520
+Like, see this, it says, we found, we found, 50 places where your email or your physical
+
+00:27:32.520 --> 00:27:38.440
+address or your phone number or your family member was being sold by these crappy scumbag
+
+00:27:38.440 --> 00:27:39.320
+data brokers.
+
+00:27:39.320 --> 00:27:42.360
+They truly are scummy people and we'll fix it.
+
+00:27:42.360 --> 00:27:44.520
+Here's another example, re manually fix.
+
+00:27:44.520 --> 00:27:49.640
+It's like change your password because, and then 80, 35 automatically removed because
+
+00:27:49.640 --> 00:27:50.360
+we found them.
+
+00:27:50.360 --> 00:27:51.720
+Well, I, I filled this out.
+
+00:27:51.720 --> 00:27:52.520
+It'll do a free scan.
+
+00:27:52.520 --> 00:27:57.720
+If you put your email address in here, I have a thousand and 80, a thousand and 80.
+
+00:27:57.720 --> 00:28:02.200
+And they have like my kids' names, my kids' phone numbers.
+
+00:28:02.200 --> 00:28:05.160
+This is, I'm telling you they're scumbags and they sell this.
+
+00:28:05.160 --> 00:28:05.880
+Right.
+
+00:28:05.880 --> 00:28:11.960
+So you can sign up for it and, it'll basically go through and keep it safe.
+
+00:28:11.960 --> 00:28:13.960
+You can do one time, like here's the old thing.
+
+00:28:13.960 --> 00:28:15.000
+It's the free breach alerts.
+
+00:28:15.000 --> 00:28:16.360
+Like, could have, I've been pwned.
+
+00:28:16.360 --> 00:28:16.760
+It's better.
+
+00:28:16.760 --> 00:28:17.960
+It's more comprehensive.
+
+00:28:17.960 --> 00:28:19.720
+Um, Troy hunt is awesome.
+
+00:28:19.720 --> 00:28:23.800
+I've had him on talk Python quite a while ago, but the monitor plus is what I'm talking
+
+00:28:23.800 --> 00:28:24.120
+about.
+
+00:28:24.120 --> 00:28:26.360
+The only drawback is look how much that is.
+
+00:28:26.360 --> 00:28:33.000
+That's $14 a month just to tell you if it's found something on, on online and we remove
+
+00:28:33.000 --> 00:28:33.240
+it.
+
+00:28:33.240 --> 00:28:35.560
+I think that's pretty steep, man.
+
+00:28:35.960 --> 00:28:41.160
+I mean, maybe if it really, really bothers you.
+
+00:28:41.160 --> 00:28:46.920
+So I guess, what my plan is to do, like, since there are so many and it really is creepy,
+
+00:28:46.920 --> 00:28:48.440
+it's like, I'm going to do it for one month.
+
+00:28:48.440 --> 00:28:51.320
+It's, it's been working for like a week and I don't remember how much it is.
+
+00:28:51.320 --> 00:28:53.400
+It's like a quarter of the way through getting rid of them.
+
+00:28:53.400 --> 00:28:54.520
+And then I'm going to cancel it again.
+
+00:28:54.520 --> 00:28:56.440
+Cause there's no way I'm paying $14 a month.
+
+00:28:56.440 --> 00:28:59.400
+Cause this stuff doesn't appear at an incredible rate.
+
+00:28:59.400 --> 00:29:02.280
+It's just, I haven't done it for 20 years, you know, and I haven't cleaned it up for
+
+00:29:02.280 --> 00:29:02.760
+20 years.
+
+00:29:02.760 --> 00:29:07.320
+So I think they're shooting themselves in the foot with this pricing because at $14
+
+00:29:07.320 --> 00:29:08.120
+a month, you're right.
+
+00:29:08.120 --> 00:29:11.480
+I'm like, I'm going to do it all in the month in one month.
+
+00:29:11.480 --> 00:29:15.160
+But if it was like four bucks a month, I'd probably just leave it on.
+
+00:29:15.160 --> 00:29:18.680
+And then they're making like 50 bucks from me instead of 14.
+
+00:29:18.680 --> 00:29:19.080
+Exactly.
+
+00:29:19.080 --> 00:29:20.520
+That's, that's my assessment as well.
+
+00:29:20.520 --> 00:29:22.280
+I think it's tremendously too high.
+
+00:29:22.280 --> 00:29:28.440
+I think everyone has subscription fatigue and another 15 bucks is just 14, 50, whatever
+
+00:29:28.440 --> 00:29:33.960
+it was, is like, especially since it mostly happens in one, one go, like you mostly get
+
+00:29:33.960 --> 00:29:37.000
+it cleaned up and then it's just kind of maintaining over time, you know?
+
+00:29:37.000 --> 00:29:44.200
+So I don't know, but still nonetheless, for doing something positive and making progress
+
+00:29:44.200 --> 00:29:46.840
+on, on finding multiple ways to support them.
+
+00:29:46.840 --> 00:29:51.320
+People can check out that article at mkdn.co if they want, like what I think they really
+
+00:29:51.320 --> 00:29:51.960
+should be doing.
+
+00:29:51.960 --> 00:29:52.200
+Yeah.
+
+00:29:52.200 --> 00:29:52.760
+There's that.
+
+00:29:52.760 --> 00:29:57.400
+There's also like, that's one way to like help support Mozilla cause they're cool.
+
+00:29:57.400 --> 00:29:57.640
+Yeah.
+
+00:29:57.640 --> 00:30:02.520
+If you can, you could also, could consider this just a $14 a month donation to Mozilla.
+
+00:30:02.520 --> 00:30:03.660
+Right.
+
+00:30:03.660 --> 00:30:06.920
+If that's how that's your vibe, then go for it.
+
+00:30:06.920 --> 00:30:09.800
+But there's a lot of things out there that deserve some of my money.
+
+00:30:09.800 --> 00:30:13.560
+And if I donate $14 a month to all of them, then that's a lot.
+
+00:30:13.560 --> 00:30:14.040
+Yeah.
+
+00:30:14.040 --> 00:30:16.280
+You don't even get an NPR mug for that.
+
+00:30:16.280 --> 00:30:17.480
+So exactly.
+
+00:30:17.480 --> 00:30:18.840
+Like I should at least get a free browser.
+
+00:30:18.840 --> 00:30:19.160
+Oh wait.
+
+00:30:19.160 --> 00:30:20.300
+Okay.
+
+00:30:20.300 --> 00:30:21.880
+A couple of other things here.
+
+00:30:21.880 --> 00:30:23.400
+Not the joke yet.
+
+00:30:23.400 --> 00:30:31.240
+Python 3.12.2 is out and there's, you know, a non-trivial number of fixes of it.
+
+00:30:31.240 --> 00:30:36.040
+Um, I don't know how many there are here, but you know, important stuff like get a new
+
+00:30:36.040 --> 00:30:41.240
+version of SQLite and open SSL and the freeze tool didn't work with this, et cetera, et
+
+00:30:41.240 --> 00:30:41.880
+cetera.
+
+00:30:41.880 --> 00:30:43.480
+So some bug fixes.
+
+00:30:43.480 --> 00:30:48.120
+I didn't see any security issues, but you can see there's, there's a, oh, okay.
+
+00:30:48.120 --> 00:30:49.480
+There is one minor security issue.
+
+00:30:49.480 --> 00:30:52.520
+I don't think it's a huge deal, but like there's quite a bit of change here, Brian.
+
+00:30:52.520 --> 00:30:53.080
+Look at this.
+
+00:30:53.080 --> 00:30:59.400
+So by the way, the security issue is that if there's a dot PTH file, starting with
+
+00:30:59.400 --> 00:31:05.800
+a dot or a hidden file attribute that could be, you know, snuck into something.
+
+00:31:05.800 --> 00:31:06.920
+So people don't know it.
+
+00:31:06.920 --> 00:31:10.200
+And then they get imported and run code or something to these effects.
+
+00:31:10.200 --> 00:31:14.280
+I don't, I don't know exactly the details, but that doesn't sound like a tremendous,
+
+00:31:14.280 --> 00:31:19.240
+you know, it's not like, well, if somebody sends 772 ampersand three, you're hacked.
+
+00:31:19.240 --> 00:31:22.600
+Or there's nothing like that, but it is, there's a minor security up to, but there's a lot
+
+00:31:22.600 --> 00:31:23.400
+of stuff, right?
+
+00:31:23.400 --> 00:31:23.960
+Yeah.
+
+00:31:23.960 --> 00:31:24.200
+Yeah.
+
+00:31:24.200 --> 00:31:25.480
+So very cool.
+
+00:31:25.480 --> 00:31:29.720
+And because of all the neat Docker stuff, one command, wait a couple of minutes and
+
+00:31:29.720 --> 00:31:34.760
+all the apps are now running Python 312.2, including Python bytes out of M hurray.
+
+00:31:34.760 --> 00:31:35.000
+Yeah.
+
+00:31:35.000 --> 00:31:40.520
+The other thing to, to note about 312 too, is that it's a couple of releases, a couple
+
+00:31:40.520 --> 00:31:42.120
+of bug fix releases in.
+
+00:31:42.120 --> 00:31:46.200
+So if you were holding out, switching to 312, this might be a good time.
+
+00:31:46.200 --> 00:31:46.440
+Yeah.
+
+00:31:46.440 --> 00:31:48.680
+That's, I didn't really think of that at all, but that's a good point.
+
+00:31:48.680 --> 00:31:52.440
+This is the third release of Python 312, right?
+
+00:31:52.440 --> 00:31:55.800
+So if you've been, Oh, we're not ready to be so cutting edge.
+
+00:31:55.800 --> 00:31:57.800
+Well, maybe, maybe now you are.
+
+00:31:57.800 --> 00:31:58.200
+Yeah.
+
+00:31:58.200 --> 00:31:59.400
+So, okay, cool.
+
+00:31:59.400 --> 00:32:06.840
+Next up, I want to reach out to anyone crazy enough to get a vision pro who also likes
+
+00:32:06.840 --> 00:32:12.920
+taking courses that talk Python, the talk Python mobile app and its iPad forum is now
+
+00:32:12.920 --> 00:32:14.840
+available to put into your virtual land.
+
+00:32:14.840 --> 00:32:19.400
+You could sit by Mount hood, relaxing, and then put, you know, Brian's PI test course
+
+00:32:19.400 --> 00:32:23.960
+on the wall next to you and look at the stars and then look over at Brian or whatever course
+
+00:32:23.960 --> 00:32:24.440
+you want.
+
+00:32:24.440 --> 00:32:28.360
+But I would, I would love for somebody to just try it out because there's no way I'm
+
+00:32:28.360 --> 00:32:29.400
+buying a vision pro.
+
+00:32:29.400 --> 00:32:31.080
+No way.
+
+00:32:31.080 --> 00:32:33.640
+But if people want to try it, that'd be cool.
+
+00:32:33.640 --> 00:32:38.360
+It's not like I built this app and didn't test it in that basically iPad apps.
+
+00:32:38.360 --> 00:32:41.880
+If you opt into it, you're allowed to run the iPad apps in the vision pro.
+
+00:32:41.880 --> 00:32:44.440
+So I just took our iPad app that we know works well.
+
+00:32:44.440 --> 00:32:45.560
+Let people run it over there.
+
+00:32:45.560 --> 00:32:45.880
+Yeah.
+
+00:32:45.880 --> 00:32:49.160
+I would totally try it for you if you want to buy me a vision pro.
+
+00:32:49.160 --> 00:32:49.560
+Sure.
+
+00:32:49.560 --> 00:32:50.760
+I'll go to an Apple store later.
+
+00:32:50.760 --> 00:32:54.760
+And you know, actually I'm going to stop by the sporting goods store and just get one
+
+00:32:54.760 --> 00:32:58.760
+of those snorkel snorkeling goggles, snorkeling mask.
+
+00:32:58.760 --> 00:33:00.040
+So I would be about the same.
+
+00:33:00.040 --> 00:33:05.720
+I want to use them for chopping onions and see if I can get an app that'll do googly
+
+00:33:05.720 --> 00:33:07.880
+eyes on my onions while I'm chopping them.
+
+00:33:07.880 --> 00:33:08.680
+That's amazing.
+
+00:33:08.680 --> 00:33:15.320
+I once came home and found my daughter wearing her swim goggles, you know, the small ones
+
+00:33:15.320 --> 00:33:17.400
+and they're chopping onions going, I'm winning the day.
+
+00:33:17.400 --> 00:33:18.360
+I'm winning the day.
+
+00:33:18.360 --> 00:33:20.040
+It's just like, I'm not, my eyes don't hurt at all.
+
+00:33:20.040 --> 00:33:21.080
+I was like, bravo.
+
+00:33:21.080 --> 00:33:21.880
+That's great.
+
+00:33:21.880 --> 00:33:22.920
+That's a good idea.
+
+00:33:22.920 --> 00:33:27.880
+We buy special made onion goggles, but basically swimming goggles.
+
+00:33:27.880 --> 00:33:28.920
+Yeah.
+
+00:33:28.920 --> 00:33:30.360
+Well, you could get the vision pro.
+
+00:33:30.360 --> 00:33:34.440
+I bet it'll keep most of the air out and you could just be like, you know, a field of onions
+
+00:33:34.440 --> 00:33:36.600
+cutting the onions or who knows where you want to be.
+
+00:33:36.600 --> 00:33:37.240
+Yeah.
+
+00:33:37.240 --> 00:33:38.200
+It's a brave new world.
+
+00:33:38.200 --> 00:33:42.280
+I don't know if I want to like put a knife that close to my hands with, with, with
+
+00:33:42.280 --> 00:33:45.560
+the monitor leg, but anyway.
+
+00:33:47.720 --> 00:33:48.280
+Excellent.
+
+00:33:48.280 --> 00:33:48.440
+Yeah.
+
+00:33:48.440 --> 00:33:51.320
+Henry expected that the vision pro would be mentioned.
+
+00:33:51.320 --> 00:33:54.680
+And then David out in the audience suggested I just get one for everyone in the chat, like
+
+00:33:54.680 --> 00:33:55.800
+surprise.
+
+00:33:55.800 --> 00:33:57.720
+Thank you for being part of the live show.
+
+00:33:57.720 --> 00:34:00.520
+You get a vision pro and you get a vision pro.
+
+00:34:00.520 --> 00:34:01.800
+Everyone look under your seat.
+
+00:34:01.800 --> 00:34:04.200
+That's really nice of you, Michael, for offering that.
+
+00:34:04.200 --> 00:34:05.320
+Yes, of course.
+
+00:34:05.320 --> 00:34:07.240
+She's here to please.
+
+00:34:07.240 --> 00:34:11.640
+I know I have something that I actually that's legitimately, next.
+
+00:34:11.640 --> 00:34:19.480
+So yesterday I had, Martina, Pugliese on the show and she does this really cool
+
+00:34:19.480 --> 00:34:21.160
+project called data doodling.
+
+00:34:21.160 --> 00:34:28.040
+She's a data scientist at a AI company, but also just draws out really cool pictures of
+
+00:34:28.040 --> 00:34:32.040
+things she's trying to visualize instead of going to use Python or other tools to do.
+
+00:34:32.040 --> 00:34:37.320
+And just let me think about that before, you actually, get in there and use the
+
+00:34:37.320 --> 00:34:40.520
+tools, just kind of kick back and explore data with pictures.
+
+00:34:40.520 --> 00:34:43.400
+So anyway, I encourage people to go check that video out.
+
+00:34:43.400 --> 00:34:45.000
+It's 29 minutes long.
+
+00:34:45.000 --> 00:34:49.400
+It's not super long, but if you're into data visualization and data science, she's
+
+00:34:49.400 --> 00:34:50.360
+doing some really cool stuff.
+
+00:34:50.360 --> 00:34:51.720
+So it's pretty great.
+
+00:34:51.720 --> 00:34:52.360
+Yeah.
+
+00:34:52.360 --> 00:34:52.600
+Yeah.
+
+00:34:52.600 --> 00:34:53.880
+It's really cool, isn't it?
+
+00:34:53.880 --> 00:34:54.440
+Yeah.
+
+00:34:54.440 --> 00:34:54.920
+Yeah.
+
+00:34:54.920 --> 00:34:55.480
+Yeah.
+
+00:34:55.480 --> 00:34:56.760
+She's doing awesome stuff.
+
+00:34:56.760 --> 00:35:01.080
+She says she has 50 different ones of those and they all have a article and analysis on
+
+00:35:01.080 --> 00:35:01.800
+the data.
+
+00:35:01.800 --> 00:35:03.240
+It's pretty, pretty in depth.
+
+00:35:03.240 --> 00:35:04.600
+All right.
+
+00:35:04.600 --> 00:35:06.120
+How about time for a joke?
+
+00:35:06.120 --> 00:35:06.600
+Yeah.
+
+00:35:06.600 --> 00:35:08.040
+Close it out with a joke.
+
+00:35:08.040 --> 00:35:11.160
+This one, this one, connects a lot here, Brian.
+
+00:35:11.160 --> 00:35:11.960
+Let's see.
+
+00:35:11.960 --> 00:35:18.120
+So here's a, presumably a developer stick figure walking along, looking at a fly trap
+
+00:35:18.120 --> 00:35:21.480
+and says, why would a fly land on something like this?
+
+00:35:21.480 --> 00:35:22.360
+Stupid fly.
+
+00:35:22.360 --> 00:35:27.160
+Looking at a mouse or rat trap rats should be a shame for falling into this trap.
+
+00:35:27.160 --> 00:35:30.360
+Big bear trap or one of those like trapper claw things.
+
+00:35:30.360 --> 00:35:30.920
+Bears.
+
+00:35:30.920 --> 00:35:31.880
+This is ridiculous.
+
+00:35:31.880 --> 00:35:32.760
+Don't step in this.
+
+00:35:33.880 --> 00:35:37.960
+Brian, there's a sign that says AWS free tier.
+
+00:35:37.960 --> 00:35:39.080
+Ooh, that looks nice.
+
+00:35:39.080 --> 00:35:43.320
+Yeah, that's funny.
+
+00:35:43.320 --> 00:35:45.560
+It's a good one, right?
+
+00:35:45.560 --> 00:35:46.040
+Yeah.
+
+00:35:46.040 --> 00:35:46.440
+Yeah.
+
+00:35:46.440 --> 00:35:47.320
+So yeah.
+
+00:35:47.320 --> 00:35:48.120
+Plus with the smile.
+
+00:35:48.120 --> 00:35:49.160
+That's what I got for you.
+
+00:35:49.160 --> 00:35:49.320
+All right.
+
+00:35:49.320 --> 00:35:49.560
+Yeah.
+
+00:35:49.560 --> 00:35:56.600
+Well, thanks again for a lovely episode and thanks everybody for, coming into
+
+00:35:56.600 --> 00:36:00.680
+the show and, coming on the show live and sharing it with us.
+
+00:36:00.680 --> 00:36:02.600
+It's been fun and we'll talk next week.
+
+00:36:02.600 --> 00:36:03.000
+Bye.
+
