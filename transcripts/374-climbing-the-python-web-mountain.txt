@@ -1,0 +1,1130 @@
+00:00:00 Hello and welcome to Python Bytes where we deliver Python news and headlines directly to your earbuds.
+
+00:00:06 This is episode 374 recorded March 11th, 2024.
+
+00:00:11 I am Michael Kennedy.
+
+00:00:12 And I'm Brian Okken.
+
+00:00:14 And this episode is brought to you by Scout APM.
+
+00:00:17 Check them out at pythonbytes.fm/scout.
+
+00:00:22 I'll tell you more about them later.
+
+00:00:24 If you'd like to connect with us, Mastodon is the main place.
+
+00:00:27 We're also on X Twitter.
+
+00:00:29 But primarily on Mastodon.
+
+00:00:32 And that's @mkennedy, @brianocken, and @pythonbytes all at mastodon.org.
+
+00:00:36 And watch us live, usually Tuesdays at 10 a.m. Pacific time.
+
+00:00:41 However, different today.
+
+00:00:42 But check it out at pythonbytes.fm/live.
+
+00:00:44 You'll be able to like get notified about the next upcoming recording.
+
+00:00:48 I usually put that up right after we're done with this one.
+
+00:00:51 Brian, before we jump into your first topic, I want to just take a moment and appreciate the beginning of summer.
+
+00:00:59 The first step towards summer coming.
+
+00:01:01 It is daylight savings switch over here in the U.S.
+
+00:01:05 And I know it is much maligned by people, but I was delighted to see the sun was up past 7 p.m. yesterday.
+
+00:01:11 After living in dark and rain for months and months, I'm feeling the summer.
+
+00:01:16 I know it's not quite there yet, but...
+
+00:01:18 Yeah, I didn't really notice it until after I woke up.
+
+00:01:22 Yeah.
+
+00:01:22 I woke up and I'm like, "Oh, gosh, I thought I'd slept in until like 10,
+
+00:01:27 but it was really 11. So, sleep the day away." Beautiful. Beautiful, beautiful.
+
+00:01:33 All right. Well, over to Python.
+
+00:01:35 What's your first thing?
+
+00:01:36 Okay. Well, I want to talk about spaghetti code a little bit.
+
+00:01:40 Actually, or how to fix it.
+
+00:01:42 So, there's an article...
+
+00:01:43 Is that what you get when you're real hungry?
+
+00:01:44 You're like, "What are you gonna have for dinner?
+
+00:01:46 Maybe some spaghetti code.
+
+00:01:47 A little carbonara?" Is that how you pronounce it?
+
+00:01:52 I've never been able to pronounce it.
+
+00:01:53 I'm probably gonna get emailed that it's not, but that's how I pronounce it.
+
+00:01:56 Article from somebody that goes by Piggly.
+
+00:01:59 "Six ways to improve the architecture of your Python project using import linter."
+
+00:02:04 And I kind of like this article, even if you don't want to use import linter.
+
+00:02:08 So, because of the six ways to improve the architecture, I love that.
+
+00:02:12 I love digging into that.
+
+00:02:14 So, and I actually have a couple projects that I'm working on that I would like to maybe clean up the architecture a bit.
+
+00:02:20 So, kind of a fun picture.
+
+00:02:22 Not sure what's going on here.
+
+00:02:23 Just a whole bunch of boxes pointing at each other.
+
+00:02:26 I guess just indicating that there's circular dependencies or something going on.
+
+00:02:33 And anyway, so a little bit of a discussion about why complex architecture might be bad,
+
+00:02:40 but I don't think any of us need convincing of that.
+
+00:02:43 Simplifying is a good thing.
+
+00:02:44 So, the first part talks about maybe setting up an idea of like, maybe you could, you have an idea of like setting your architecture into layers.
+
+00:02:52 If that's what you want to do, like a user layer or an application layer,
+
+00:02:58 plus a utilities or something services.
+
+00:03:01 But there's a tool called the import linter that there's a discussion about how to set it up
+
+00:03:06 so that you can use that to both configure what you want your layers to be and then test for it.
+
+00:03:15 It's like a linting to make sure that you're not importing in the wrong direction.
+
+00:03:18 So, the idea would be like, you're not importing, like if you want the top level one to be calling the lower level ones,
+
+00:03:24 but not the other way around.
+
+00:03:25 So, the importing is a way to test that.
+
+00:03:29 Because of that, I'm not sure what these arrows mean.
+
+00:03:32 Because it doesn't quite make sense if it's not an inheritance or calling.
+
+00:03:36 I don't know. Anyway, it's just an error.
+
+00:03:38 That looks pretty interesting.
+
+00:03:40 I think that means that something from that layer is importing something from the bottom layer,
+
+00:03:45 the lower layer.
+
+00:03:46 Yeah, but yeah.
+
+00:03:48 I think you can have stuff like import across within, but then it can only, I think it would be an error or a warning if maybe,
+
+00:03:57 say like the data layer imported the UI layer sort of thing.
+
+00:04:01 I think that's what it's saying.
+
+00:04:02 Yeah. Oh, and it makes more sense if I would have drawn the top layer at the top.
+
+00:04:07 I think it makes more sense to me if you do it the other way.
+
+00:04:10 Anyway, that's a drawing thing.
+
+00:04:12 It doesn't really matter.
+
+00:04:13 And also-
+
+00:04:13 It's probably by somebody in Australia because everything is upside down down there.
+
+00:04:17 Oh, yeah.
+
+00:04:18 That's probably it.
+
+00:04:19 Yeah, yeah. That was it.
+
+00:04:19 Okay.
+
+00:04:20 So what happens when you run this is you're probably-
+
+00:04:24 the recommendation is you're probably going to get a bunch of lint warnings or errors.
+
+00:04:29 And or maybe not, if not, awesome.
+
+00:04:32 But if you do, the recommendation here, which I kind of thought was cool,
+
+00:04:37 was to kind of exclude all of them.
+
+00:04:41 Like go through and add these ignore imports and just go through and ignore the ones that failed.
+
+00:04:48 And I'm like, okay, well, then you're going to pass and it's just going to ignore everything.
+
+00:04:52 But the idea behind it is to do it one at a time.
+
+00:04:55 So it's going to be overwhelming to get a bunch of errors.
+
+00:04:57 So ignore them all and then unignore one at a time and then go through and fix them.
+
+00:05:04 So that's where the really- the reason why I picked out this article isn't really because import linter is cool.
+
+00:05:10 It might be cool, but it's that these ways to fix these import dependencies,
+
+00:05:17 I thought were really great to walk through.
+
+00:05:19 There's six of them. First one is merging and splitting modules.
+
+00:05:23 And like there's an example where you've got resources that calls clusters,
+
+00:05:27 clusters calls resources dot cluster utils, and that's going the wrong direction.
+
+00:05:33 But to fix it, you maybe move those cluster utils down into the lower, like a lower library, like splitting them off.
+
+00:05:40 Kind of sort of straightforward, but it's good to like think about this.
+
+00:05:45 So I like that that part of it. Dependency injection.
+
+00:05:48 And if you're the kind of person that's kind of afraid of dependency injection,
+
+00:05:53 then don't even think about that term because it's not actually that scary.
+
+00:05:57 Just the term was scary to me for a while.
+
+00:05:59 So anyway, dependency injection might help to be able to pass a pass dependencies down into lower layers from upper layers.
+
+00:06:08 So that's a good way to get around it.
+
+00:06:11 The interesting, I'm glad they dug into this, is when you do the inversion of, what is it?
+
+00:06:18 I forget, the inversion of control.
+
+00:06:19 Inversion of control, yeah.
+
+00:06:21 Yeah. Sometimes if with Python, that works great, except for type hints.
+
+00:06:27 Sometimes you need to get the type hints, getting those right.
+
+00:06:31 So talking about how to use the protocol from typing to get that to work right.
+
+00:06:38 That discussion's in here, which is great. I love protocol.
+
+00:06:41 Then another discussion about using simpler dependency types and then delaying function implementation.
+
+00:06:48 And then even, what was the last one?
+
+00:06:52 Look at for six, configuration driven.
+
+00:06:54 That was interesting.
+
+00:06:56 I never really thought about doing this.
+
+00:06:57 The idea is you'd have a settings file or something and have that have, and then have the string that you would import, like marketing.sendSMS.
+
+00:07:09 And then later on in your calling thing, you use import string to import it.
+
+00:07:14 So you're still have the backwards dependency, but you don't know it at run, at compile, at write time, you know it at run time.
+
+00:07:23 I don't know.
+
+00:07:23 I don't know what I think about that.
+
+00:07:24 But anyway.
+
+00:07:25 Yeah.
+
+00:07:26 Yeah, that's interesting.
+
+00:07:27 It's a way to do it.
+
+00:07:28 So and then the last one is a replace function calls with event driven and purchase.
+
+00:07:34 So like callbacks and stuff like that.
+
+00:07:37 So these are a great architecture things to think about when you're cleaning up architecture, because it's not always trivial to just say, just don't do that.
+
+00:07:45 Don't do those imports.
+
+00:07:46 Well, how do you get around it if you've designed it that way?
+
+00:07:48 So I think a decent discussion about software architecture here.
+
+00:07:53 So I do think that's pretty interesting.
+
+00:07:55 And also just more broadly, I like the idea of ignoring all the issues you might run into with linters and then slowly turning the screws to make it a little tighter is good advice.
+
+00:08:06 Because if you have existing code of any significant size and you've never done linting on it, and then you turn on a linter, you feel bad about yourself.
+
+00:08:14 You're like, I've done all that wrong.
+
+00:08:16 593 errors.
+
+00:08:18 Great.
+
+00:08:19 Well, we'll turn that back off because I got work to do.
+
+00:08:21 You know what I mean?
+
+00:08:22 Yeah.
+
+00:08:22 Well, I'm kind of going through that with rough right now.
+
+00:08:26 So got some projects where default rough works fine, but the rough has like 800 rules or something you can add.
+
+00:08:33 And so I'm trying to turn on some of those extra features.
+
+00:08:37 I have just a few at a time.
+
+00:08:39 See, testing the waters, see how many failures I get and whether I want to clean them up.
+
+00:08:44 So yeah.
+
+00:08:45 Yeah.
+
+00:08:45 Interesting.
+
+00:08:46 Just interesting timing.
+
+00:08:48 I'm going to be speaking with Charlie Marshall on Talk Python tomorrow.
+
+00:08:51 Oh, awesome.
+
+00:08:52 About 24 hours from now, whatever that makes it for you.
+
+00:08:55 Yeah.
+
+00:08:55 Out there listening.
+
+00:08:56 Yeah.
+
+00:08:57 And we're going to talk mostly about UV, but I'm sure we'll talk a bit about rough as well.
+
+00:09:00 Cool.
+
+00:09:00 Well, I'm going to release a episode with Charlie Marsh today.
+
+00:09:04 So.
+
+00:09:05 Well, how about that?
+
+00:09:07 Awesome.
+
+00:09:07 Awesome.
+
+00:09:08 Do you guys talk about UV as well?
+
+00:09:09 Yeah, we talked about Flickate, or not Flickate.
+
+00:09:14 We talked about rough and Astral and UV, most of the conversations around UV and some of the discussion around that.
+
+00:09:21 So.
+
+00:09:22 Nice.
+
+00:09:22 Yeah.
+
+00:09:23 That'll be fun.
+
+00:09:23 All right.
+
+00:09:24 On to the next one here by Pierce Freeman.
+
+00:09:28 That's kind of a cool name, isn't it?
+
+00:09:29 It could be like a double O sort of agent.
+
+00:09:32 Yeah.
+
+00:09:32 Double O nine.
+
+00:09:33 I don't know what that is.
+
+00:09:35 Not James, but something like that.
+
+00:09:36 Anyway.
+
+00:09:36 Pierce Freeman to the rescue.
+
+00:09:38 Exactly.
+
+00:09:39 To bring you React and FastAPI and Python.
+
+00:09:43 In fact, with this framework called Mountaineer.
+
+00:09:45 So Mountaineer is a batteries included web framework for Python and React.
+
+00:09:51 So this, it plays in a similar space as FastUI from Samuel Colvin and the Pydantic crew.
+
+00:10:00 I don't know enough about them to know how truly similar they are.
+
+00:10:05 I think this is coming from a different angle.
+
+00:10:08 I think you're doing, you know, so FastUI is more about maybe you don't really have to do the React side unless you want.
+
+00:10:14 And it kind of brings that stuff together.
+
+00:10:15 Whereas this kind of like you're embracing TypeScript, you're embracing React, but you also get some really nice Python integration.
+
+00:10:23 And so if you look down here, what does it say?
+
+00:10:26 It says it lets you easily build web apps in Python and React.
+
+00:10:30 And if you are familiar with this, it should sound familiar to you.
+
+00:10:34 It should basically seem like what you're used to.
+
+00:10:37 And if not, then maybe not.
+
+00:10:39 But it says each framework like Flask or FastAPI or Django or whatever has its tradeoffs and features.
+
+00:10:45 And for this one, it focuses on developer productivity above all else with production speed of close seconds.
+
+00:10:51 So type hints up and down the stack front end, back end database, trivially easy client server communication.
+
+00:10:57 So you don't find yourself creating a bunch of APIs so that your React stuff can talk to the API.
+
+00:11:03 So it can actually get its data and all that, which is pretty interesting.
+
+00:11:07 It comes, this is kind of cool.
+
+00:11:09 So one of the things you can run into, I'm sure you've seen this, Brian, it drives me absolutely bonkers.
+
+00:11:14 You'll go to a website and it'll have something on the screen.
+
+00:11:17 And then like half a second later, it'll shift around and stuff will like all come into existence.
+
+00:11:23 You know, you'll be like, it'll have like the footer will be touching the top and then it'll bump out.
+
+00:11:28 It'll be a spinner and then stuff, you know, it's like, what is it?
+
+00:11:30 What is it doing?
+
+00:11:31 Well, especially if you start reading and then a picture pops in and what you read pops off the screen.
+
+00:11:37 Yeah. Another thing that drives me crazy is if you paste something into an input, but you don't type it,
+
+00:11:45 sometimes that won't trigger the data binding.
+
+00:11:47 And you know, like if he's a password manager type thing or something, or you just paste something,
+
+00:11:53 it'll say, oh, this is invalid.
+
+00:11:55 What is wrong with this?
+
+00:11:56 Oh, if you put a space and delete the space.
+
+00:11:57 Oh, oh, it's valid now.
+
+00:11:59 It's like, oh, I see.
+
+00:12:01 So something that would be really nice is if you just could ship straight HTML, right?
+
+00:12:05 Yeah.
+
+00:12:05 Or the first view of that was.
+
+00:12:08 And so what this comes with is they actually bundle the V8 engine.
+
+00:12:12 So on the server side, it can, it can render what your browser would do for you as final HTML.
+
+00:12:18 And it delivers with so optimized server side rendering for better accessibility and SEO.
+
+00:12:24 That's pretty cool.
+
+00:12:25 I think.
+
+00:12:25 Yeah, that's cool.
+
+00:12:26 As a Python thing, like normally you hear that as a node thing or something, right?
+
+00:12:29 Yeah.
+
+00:12:30 It also does static analysis for validations of like links and CSS and so on.
+
+00:12:35 And like I said, skip the API or Node.js server just for front end clients.
+
+00:12:41 Okay.
+
+00:12:41 So all of these things are pretty cool.
+
+00:12:43 If let me give you a warning and a disclaimer.
+
+00:12:46 One, if you don't know React real well, I don't think you'll really appreciate the benefits here that much.
+
+00:12:51 Like this is really for React people 100%.
+
+00:12:54 Second, that's not me.
+
+00:12:55 So I'm going to do my best to like tell you why you might want this.
+
+00:12:59 I think I can, can I get there?
+
+00:13:00 So first of all, it has a scaffolding type thing called create Mountaineer app and they suggest pipx.
+
+00:13:08 And I'm loving to see more pipx come along for these kinds of tools, right?
+
+00:13:12 Like you run this once, it's not part of your app.
+
+00:13:15 You just pipx install it and everything gets going.
+
+00:13:17 It's great.
+
+00:13:18 Also uses poetry pretty heavily.
+
+00:13:20 So what it does is it creates a Python bits and then some TypeScript stuff for your front end.
+
+00:13:27 And it comes with a CLI as well, which is nice.
+
+00:13:29 It has a built-in Docker containers for like managing Postgres databases and so on if you want to use that, but you don't have to.
+
+00:13:36 And let's see.
+
+00:13:37 So another interesting integration is it uses SQL model.
+
+00:13:42 So that's the typing in the data layer aspect.
+
+00:13:44 So SQL model is Pydantic plus SQLAlchemy basically by Sebastian Ramirez.
+
+00:13:49 So that's cool.
+
+00:13:50 And then you go down here and you create controllers.
+
+00:13:54 So it's kind of a class-based type of thing.
+
+00:13:56 First, it seems a little unnecessary, but as you interact with it and expose more features to the React layer, you'll see that kind of relevant there.
+
+00:14:05 So you just say, I'm going to render, say, my database things and some other pieces of data.
+
+00:14:11 And then down somewhere, you've got your React code and your TSX, your React component there.
+
+00:14:18 And if you've written React stuff, you should know pretty well how it works.
+
+00:14:22 But it manages passing all that data over like serverstate.todo's.
+
+00:14:26 And then you can just work with that, which is interesting.
+
+00:14:28 But it gets more interesting later if you say, let's add an async function, like add one of my to-dos.
+
+00:14:35 And I have a to-do example, right?
+
+00:14:36 So if you put this @sideeffect decorator on it, here's where the React integration comes in.
+
+00:14:41 That's pretty wild.
+
+00:14:43 So it automatically generates typed, let's just say typed TypeScript because, I mean, you can't have non-typed TypeScript.
+
+00:14:50 But generally, TypeScript is typed.
+
+00:14:52 You generate TypeScript versions of the functions that you write in Python on the JavaScript side.
+
+00:14:58 So you immediately can just start calling it and using those features.
+
+00:15:02 All right, so it kind of has this really tight integration with React, like as you would expect.
+
+00:15:06 What else?
+
+00:15:07 I think that's pretty much it.
+
+00:15:08 But if you're a heavy React shop and you want a nice Python back end and you want a tight data integration between those, this is probably worth a look.
+
+00:15:18 - Yeah, neat.
+
+00:15:19 - Yeah, yeah.
+
+00:15:20 It looks pretty neat to me too.
+
+00:15:21 I'm not, like I said, I'm not really a React person.
+
+00:15:24 So I'm not sure that I'm necessarily going to use it.
+
+00:15:27 But if I were to start adopting React, I may well decide that that's what I want.
+
+00:15:32 Speaking of cool things, Brian, how about Scout APM?
+
+00:15:36 Let me tell you real quick about Scout APM.
+
+00:15:40 They're big supporters of Python Bytes, so we appreciate that very much.
+
+00:15:44 So if you are tired of spending hours trying to find the root cause of issues impacting your performance, then you owe it to yourself to check out Scout APM.
+
+00:15:53 They're a leading Python application performance monitoring tool, APM, that helps you identify and solve performance abnormalities faster and easier.
+
+00:16:03 Scout APM ties bottlenecks such as memory leaks, slow database queries, background jobs, and the dreaded N+1 queries that you can end up if you do lazy loading in your ORM, and then you say, "Oh no, why is it so slow?
+
+00:16:16 Why are you doing 200 database queries for what should be one?" So you can find out things like that.
+
+00:16:19 And it links it back directly to source code, so you can spend less time in the debugger and peeling logs and just finding the problems and moving on.
+
+00:16:27 And you'll love it because it's built for developers by developers.
+
+00:16:30 It makes it easy to get set up.
+
+00:16:32 Seriously, you can do it in less than four minutes.
+
+00:16:34 So that's awesome.
+
+00:16:35 And the best part is the pricing is straightforward.
+
+00:16:39 You only pay for the data that you use with no hidden overage fees or per seat pricing.
+
+00:16:44 And I just learned this, Brian, they also have, they provide the pro version for free to all open source projects.
+
+00:16:51 So if you're an open source maintainer and you want to have Scout APM for that project, just shoot them a message or something on their pricing page about that.
+
+00:16:59 So you can start your free trial and get instant insights today.
+
+00:17:03 Visit pythonbytes.fm/scout.
+
+00:17:05 The link is in your podcast player show notes as well.
+
+00:17:08 And please use that link.
+
+00:17:09 Don't just search for them because otherwise they don't think you came from us.
+
+00:17:13 And then they'd stop supporting the show.
+
+00:17:14 So please use our link pythonbytes.fm/scout.
+
+00:17:17 Check them out.
+
+00:17:18 It really supports the show.
+
+00:17:20 Awesome.
+
+00:17:20 Awesome.
+
+00:17:21 What's next, Brian?
+
+00:17:22 Well, what's next is Guido van Rossum.
+
+00:17:26 Oh, yeah.
+
+00:17:27 So he's blogging a little bit lately.
+
+00:17:30 And he put up a post called "Why Python's Integer Division Floors".
+
+00:17:38 And I think this is just an interesting little bit of history.
+
+00:17:43 There's some, so, and this was a difference between Python 2 and 3.
+
+00:17:47 I guess, no, it, integer division always did flooring.
+
+00:17:51 But the, you know, we did a kind of a thing of what one slash meant.
+
+00:17:55 So if you do two slashes, it's always integer division.
+
+00:18:00 If you do one slash in, if it was both integers in Python 2, it would be integer division.
+
+00:18:06 And it would possibly not be the floating point result.
+
+00:18:09 But in Python 3, it will generate a float if you have it.
+
+00:18:13 Like, for instance, one third will, one divided by three results in a float.
+
+00:18:18 But if you do integer division, it's not.
+
+00:18:21 It's something else.
+
+00:18:22 Is that why the two to three conversion was so hard?
+
+00:18:25 I'm just kidding.
+
+00:18:26 What was that?
+
+00:18:26 It was strings. Everyone knows it's strings.
+
+00:18:28 So is that why the integer, the Python 2 to 3 story was so hard?
+
+00:18:33 [laughs]
+
+00:18:34 No, I'm just joking.
+
+00:18:36 [laughs]
+
+00:18:37 Yeah.
+
+00:18:38 So, yeah, so if you do five to two slashes, so integer division of five divided by two,
+
+00:18:45 you get two.
+
+00:18:47 And, which is normal, that's everywhere.
+
+00:18:51 But if you do it, like, say, negative five, you don't get negative two, you get negative three.
+
+00:18:58 So that's the, there's a question.
+
+00:19:00 So Guido said that he had a question about that, of why it's different, why it's like that.
+
+00:19:06 And so it's going, it does a division, and then it goes to the closest integer to the negative, closest to negative infinity.
+
+00:19:16 So, and there's reasonings behind that.
+
+00:19:19 But it's different than C.
+
+00:19:21 Apparently, I completely forgot what C did.
+
+00:19:24 C does it closer to zero.
+
+00:19:26 So you'd both, so negative five divided by two would, you'd end up with two, negative two.
+
+00:19:31 So the history there is that there was a choice to make.
+
+00:19:37 And you could either, with, it works with the modulo operator as well.
+
+00:19:45 Modulo will create the remainder, where integer division creates the integer division, the integer quotient.
+
+00:19:52 So, such that A divided by B equals Q, with remainder R, such that R is between zero and B.
+
+00:20:01 There's math here.
+
+00:20:03 But it just, you have a choice as to what you want to do, whether you want R to be possibly negative, positive or negative for the remainder.
+
+00:20:12 Or if you want R to always be positive.
+
+00:20:14 And basically, Guido chose the one that looks nicer in math.
+
+00:20:22 So that we go, we go do a floor division instead.
+
+00:20:27 The interesting, the interesting take on this, I thought, was, well, why did C choose the other way?
+
+00:20:33 And that's, that's the part that I thought was really interesting.
+
+00:20:37 And his answer, or his guess, is that, well, C was doing it way before Python was.
+
+00:20:44 And C was doing it on hardware that it may have been easier to do, to do division closer to zero instead of floor division.
+
+00:20:54 And part of that reason might be because some of the early hardware architectures were using sine plus magnitude, rather than twos complement.
+
+00:21:03 Which is kind of, I didn't know that.
+
+00:21:06 I must have, either if I did know it from CS, I forgot it.
+
+00:21:10 Definitely no remember twos complement.
+
+00:21:12 But anyway, it's an interesting history there.
+
+00:21:15 Also, one of the things I brought up, one of the reasons, it's kind of a silly little article to bring up.
+
+00:21:20 But one of the things I wanted to bring it up is because a lot of new Python people actually don't remember, will forget about integer division.
+
+00:21:31 And just assume that division is division.
+
+00:21:34 But integer division is really handy for a lot of cases.
+
+00:21:37 So don't forget about it.
+
+00:21:38 That's true, actually.
+
+00:21:39 Yeah, I find myself sometimes doing int of some float result.
+
+00:21:43 Maybe, maybe I could just double slash it and not have to.
+
+00:21:46 So comment from the chat, which I'm not sure how to take this.
+
+00:21:51 I'm thinking that they're bored with this topic, but...
+
+00:21:53 I'm not sure either.
+
+00:21:56 Anyway.
+
+00:21:58 No comment.
+
+00:21:59 All right.
+
+00:22:01 You know what, we're going to bring the hatchet out on this one, Ryan.
+
+00:22:03 Bring in the hatchet.
+
+00:22:04 So there's this thing I ran across called a hatchet, which is a distributed task queue for more resilient web apps.
+
+00:22:13 Now, I don't recall exactly what it is written in.
+
+00:22:17 I don't think it's written in Python.
+
+00:22:19 It's unclear.
+
+00:22:21 It's primary language is Python, but also has a go.
+
+00:22:24 Anyway, it doesn't matter.
+
+00:22:25 It has a Python.
+
+00:22:26 It's first SDK, its first integration is with Python.
+
+00:22:33 So here's the idea.
+
+00:22:35 You've got some work.
+
+00:22:36 It's going to take a little while to run.
+
+00:22:39 You know, your web app says, "Hey, I want you to ship this thing." Or, "I want you to run some analytics."
+
+00:22:46 And if those analytics take 10, 15 seconds to run, maybe they're computational.
+
+00:22:50 And they should run out on another computer rather than on your main web front end.
+
+00:22:56 Or they shouldn't block it for 15 seconds or whatever.
+
+00:22:58 When you're talking about your, how do you break up import dependencies across the wrong layers and stuff,
+
+00:23:04 maybe one way to fix that is to move some of the compute work completely to its own place, right?
+
+00:23:09 Like this whole queuing mechanism is super fascinating for creating like truly scalable, like multi-user thing, right?
+
+00:23:17 So if the majority of your work is in some place and you kind of don't really need the answer to give a response,
+
+00:23:23 you can just throw it onto one of these background queues and let it go.
+
+00:23:27 So one of the problems that you run into though is what if something goes wrong?
+
+00:23:32 Or how do I see what is running?
+
+00:23:35 Something fails, can I resume it?
+
+00:23:36 Maybe it was really important, like ship this thing to the customer.
+
+00:23:39 But when I put that on the queue and it finally got around to being run,
+
+00:23:43 the API at UPS was down for who knows, whatever reason, right?
+
+00:23:48 Things like that and you can't ship it.
+
+00:23:50 And then just go into the ether as an error or you resume it.
+
+00:23:53 Another problem you run into is fairness, right?
+
+00:23:57 If there's a ton of work coming in faster than the processor can handle,
+
+00:24:01 is there some thing where maybe only the new ones get worked on and the older ones get almost abandoned, right?
+
+00:24:07 There's all these interesting things.
+
+00:24:09 So this thing called Hatchet is in the realm of many different things that attempt to solve this problem, right?
+
+00:24:15 It's interesting, it's Y Combinator backed.
+
+00:24:19 It's a company that presumably will have a price, but there's also just an open source, take it for yourself and run with it,
+
+00:24:28 version over on GitHub, so 100% open source, 2,200 GitHub stars.
+
+00:24:33 Pretty interesting.
+
+00:24:34 But I think the business model is it says request cloud access, like they can run it for you or you can run your own, right?
+
+00:24:40 - Yeah.
+
+00:24:41 - So the website has a bunch of these little animations, which are kind of cool.
+
+00:24:45 It talks about fairness, batch processing.
+
+00:24:48 And as you click on them, see how it has these little fun animations.
+
+00:24:52 Like, what does this mean? Oh, I see.
+
+00:24:53 - Oh, I love it.
+
+00:24:54 - I do too. I do too.
+
+00:24:56 So it talks about fairness, batch processing, workflow, and event stuff.
+
+00:25:02 It's engineered for scaling challenges, which is pretty awesome.
+
+00:25:06 So low latency, 25 milliseconds on average, which means if you put something into the queue,
+
+00:25:12 there's ways in which you can sort of make callbacks to check on the process of the work
+
+00:25:17 and it shouldn't take all that long.
+
+00:25:19 A bunch of rules about rate limiting.
+
+00:25:21 Also durable, so you can replay events.
+
+00:25:25 You can do cron jobs and say, hey, every morning, just drop this into the queue and run it at 7 a.m. or whatever.
+
+00:25:32 You can schedule one-time jobs.
+
+00:25:34 It has ability to avoid being destroyed by spikes.
+
+00:25:38 Like if for some reason a whole bunch of work comes in all at once, maybe you got IoT things that do a bunch of work
+
+00:25:45 and people come into the office and at very first sees a bunch of stuff and then it chills out, right?
+
+00:25:49 You could smooth that out, all kinds of stuff.
+
+00:25:51 But like I said, it supports three technologies, Python number one, TypeScript number two, and Go number three.
+
+00:25:58 And it's really easy to do.
+
+00:26:00 You just go down here and you just put a, you know, when this event happens, I want you to run this class.
+
+00:26:05 And then it has a bunch of functions, methods.
+
+00:26:08 You say, here's a step, step one, do this work, step two.
+
+00:26:11 So you just basically put some decorators on a class and then plug it in and off it goes.
+
+00:26:17 Super easy. And to run it, you just say, push an event, whatever the name it is with the data,
+
+00:26:21 and it'll go, put it off in the background and run it.
+
+00:26:23 So yeah, it also has like nice visualizations.
+
+00:26:26 Like here you can see there's this on hatchet.run.
+
+00:26:29 You can see there's this like live view of how is the work running through the system and all kinds of stuff.
+
+00:26:35 So it looks pretty neat to me.
+
+00:26:37 Open source, people can check it out.
+
+00:26:39 It's worth knowing about.
+
+00:26:40 Yeah, it's pretty cool.
+
+00:26:42 Indeed, indeed.
+
+00:26:44 That's it for items.
+
+00:26:46 How are you feeling? How extra are you feeling?
+
+00:26:48 I've only got one extra that I almost, that I pretty much mentioned already.
+
+00:26:52 So I'll do it quickly.
+
+00:26:54 So Python test is at 2.15 right now as we look, but the most recent episode that will come out probably today
+
+00:27:02 is 2.16, which will be Charlie Marsh talking about UV.
+
+00:27:06 So check that out also.
+
+00:27:08 Awesome. Yeah, you did mention that.
+
+00:27:10 That's really good though.
+
+00:27:11 How about you? Got any extras?
+
+00:27:13 I'm feeling somewhat extra.
+
+00:27:14 I got two exciting announcements.
+
+00:27:16 One, I have a free new course over at Talk Python Training that covers a bunch of awesome technologies,
+
+00:27:23 but the core idea, the title is Build an Audio App with AI, with Python and Assembly AI.
+
+00:27:31 So the idea is what would you do if you say had access to, I don't know, a podcast's worth of data
+
+00:27:39 that's been going for many years, like Python Bytes or Talk Python, or honestly,
+
+00:27:43 the thing we built lets you access a whole library of podcasts.
+
+00:27:48 And you can go in there and do things like, hey, create me a transcript, which seems kind of straightforward.
+
+00:27:52 But once you have transcript data, you could get really cool search, like building your own custom search engine,
+
+00:27:57 not just over the title and the show notes and stuff, but also all the spoken words, which is kind of neat.
+
+00:28:03 Then you also bring more of the AI stuff in.
+
+00:28:05 You could create a summary. What are the key moments of this?
+
+00:28:09 And actually, what if I could just have a Q&A with you and me around what we said in the show?
+
+00:28:15 So kind of creating an LLM ChatGPT type of thing, but where it knows about any given episode out on the internet.
+
+00:28:23 So really fun. People will learn FastAPI.
+
+00:28:26 They learn Pydantic. They learn HTMX.
+
+00:28:29 They learn Beanie, and they learn Assembly AI and build a cool thing.
+
+00:28:33 And the whole course is like a four-hour free course, so they can check that out.
+
+00:28:36 - Wow, neat. Sounds fun.
+
+00:28:38 - Thanks. And next to it, another new course, Rock Solid Python with Python Typing.
+
+00:28:44 So this one is not a free one, but it basically shows you not just the how,
+
+00:28:50 but the why and when of Python typing.
+
+00:28:53 A bunch of different examples.
+
+00:28:56 Obviously the language, but things like FastAPI and Pydantic, how do they use it?
+
+00:29:02 What you talked about protocol before.
+
+00:29:04 What is protocol? Where does it fit?
+
+00:29:06 A bunch of design patterns and guidance for Python typing and how to think about how you should use it.
+
+00:29:12 So people should also check this one out.
+
+00:29:14 I'm really proud of this one.
+
+00:29:15 And it is also around four hours, 4.4 hours.
+
+00:29:18 And Pradeep asks out there, are these courses paid or free?
+
+00:29:22 Yes. The Build an Audio App course is 100% free.
+
+00:29:27 You just have to create an account.
+
+00:29:28 The Rock Solid Python course is 49 bucks.
+
+00:29:30 Yeah, but that's like 10 bucks an hour.
+
+00:29:33 That's almost free.
+
+00:29:34 Yes. It's certainly not a lot of money, you know, compared to other ways you might go learn about things like this.
+
+00:29:41 So anyway, both of these courses are awesome.
+
+00:29:44 People should check them out.
+
+00:29:45 So those are the two big announcements.
+
+00:29:47 I also have a couple of interesting things.
+
+00:29:49 I just want to give a quick shout out to, previously we spoke about Doku.
+
+00:29:53 I'm going to go with Doku because I think it's based on Docker.
+
+00:29:55 I don't know.
+
+00:29:56 Yes.
+
+00:29:57 Doku. And this is an open source platform as a service alternative to Heroku.
+
+00:30:03 We already spoke about that.
+
+00:30:04 But when we did, Ray out there on Mastodon, thank you, Ray, said, hey, you guys, love the episode on Doku.
+
+00:30:12 Haven't tried it myself.
+
+00:30:13 Big fan of Heroku.
+
+00:30:15 However, I set up Coolify.
+
+00:30:18 Coolify.
+
+00:30:19 I haven't talked about this, have I?
+
+00:30:20 I don't think so.
+
+00:30:21 Yeah, I don't think so.
+
+00:30:22 Okay. So Coolify is kind of the same.
+
+00:30:26 So this is pretty similar, but it has a nice GUI to configure everything and keep an eye on the status and all those things.
+
+00:30:32 So Coolify is self-hosting with superpowers.
+
+00:30:36 It's a self-hosted alternative to not just Heroku, but also Netlify and Verisign.
+
+00:30:42 So Netlify for static sites.
+
+00:30:44 You basically set this thing up, get it going.
+
+00:30:47 It'll run any language on basically any server.
+
+00:30:51 You just push to some Git branch, you deploy it.
+
+00:30:54 It does automatic SSL certificates.
+
+00:30:56 So if you just had a static site and I just want it to run over SSL on the internet, boom, done.
+
+00:31:02 It just does deluxe encrypt automatically as part of creating the app up there and gets it going.
+
+00:31:08 So it's probably a little bit of setup to get it going and get it running on Docker and stuff.
+
+00:31:13 But once you do, it just becomes the substrate for all of your apps that you want to put out there.
+
+00:31:18 And you don't have to think about anything but Git basically.
+
+00:31:21 - That's pretty cool, actually.
+
+00:31:22 - Yeah, it looks really, really nice.
+
+00:31:24 So people can check this out.
+
+00:31:27 Yeah, it has a paid cloud version and a self-hosted version with 17,000 or more people using it self-hosted.
+
+00:31:36 So that's pretty cool.
+
+00:31:37 It's interesting that they give stats there.
+
+00:31:39 But that's my last one.
+
+00:31:40 I think this is really neat as well.
+
+00:31:42 So Ray, thanks for sharing extra details.
+
+00:31:45 - Yeah, nice.
+
+00:31:46 - Shall we close it off with a joke?
+
+00:31:48 - Yeah, let's.
+
+00:31:49 - Yeah, okay.
+
+00:31:51 So speaking of I want to run my stuff on production, how do I do it?
+
+00:31:55 This is a great, great one.
+
+00:31:57 Back to workchronicles.com.
+
+00:31:59 And so I don't know how you feel about this, Brian, but I think it's pretty true.
+
+00:32:03 There's two engineers talking.
+
+00:32:05 It says, "Oh, no, I broke production.
+
+00:32:07 Will I get fired?" The more seasoned developer looks over.
+
+00:32:12 If we fire engineers who break production, we will need to fire everyone eventually.
+
+00:32:18 - Yeah, yeah.
+
+00:32:20 Also, if you fix it, you'll get a promotion or a raise or something.
+
+00:32:25 - There you go.
+
+00:32:26 Yeah.
+
+00:32:27 Maybe you just need to keep your fix rate above your destroy rate.
+
+00:32:32 - Yeah.
+
+00:32:33 - Yeah, there you go.
+
+00:32:34 - So, yeah.
+
+00:32:35 - Well, that's what I brought for us today.
+
+00:32:37 - Cool.
+
+00:32:38 I like it.
+
+00:32:39 - Yeah, excellent.
+
+00:32:40 - Okay, well, nice to kick off the week with a little Python Bytes.
+
+00:32:44 Happy to do it early.
+
+00:32:45 - Yeah, thank you.
+
+00:32:46 - Yeah.
+
+00:32:47 Good to see you, and thanks to everyone who joined.
+
+00:32:48 - Bye.
+
