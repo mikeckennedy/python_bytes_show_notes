@@ -1,0 +1,2081 @@
+WEBVTT
+
+00:00:00.000 --> 00:00:04.320
+Hello and welcome to Python Bytes where we deliver Python news and headlines directly to your
+
+00:00:04.320 --> 00:00:12.000
+earbuds. This is episode 377, recorded April 2nd, 2024, so it's not an April Fool's joke.
+
+00:00:12.000 --> 00:00:13.760
+And I am Brian Okken.
+
+00:00:13.760 --> 00:00:14.800
+I am Michael Kennedy.
+
+00:00:14.800 --> 00:00:21.360
+This episode is sponsored by Scout APM. Please listen to their segment later in the show.
+
+00:00:21.360 --> 00:00:25.200
+If you want to connect with us, we're at Fostadon on Mastodon,
+
+00:00:25.760 --> 00:00:30.480
+at Adam Kennedy, at Brian Okken, and at PythonBytes@Fostadon.org.
+
+00:00:30.480 --> 00:00:36.640
+And if you'd like to join us live for the live show, show up at PythonBytes.fm/live.
+
+00:00:36.640 --> 00:00:40.560
+Actually, you can just go there anytime and it tells you when the next recording is,
+
+00:00:40.560 --> 00:00:42.080
+so you can put it on your calendar.
+
+00:00:42.080 --> 00:00:50.320
+And finally, if you want an artisanal, handcrafted digest of every week of show notes in your email,
+
+00:00:50.320 --> 00:00:55.440
+so maybe you don't want to take notes while you're listening, or you miss an episode,
+
+00:00:55.440 --> 00:00:56.720
+you can get it right in your email.
+
+00:00:56.720 --> 00:01:03.440
+Just go to the PythonBytes.fm and look for "Friends of the Show" and you'll get an email too.
+
+00:01:03.440 --> 00:01:05.920
+Yeah, that's a cool thing we just started doing.
+
+00:01:05.920 --> 00:01:10.560
+So if you want to just, you don't have time to listen or you forget to show up for an episode,
+
+00:01:10.560 --> 00:01:11.440
+it'll just show up.
+
+00:01:11.440 --> 00:01:13.680
+I love the artisanal part, Brian. Well done on that.
+
+00:01:13.680 --> 00:01:16.080
+It's very craftsman-like.
+
+00:01:16.080 --> 00:01:18.080
+Yeah, anyway.
+
+00:01:18.080 --> 00:01:21.680
+I just want to talk about Paths today. Can we just talk about Paths?
+
+00:01:21.680 --> 00:01:23.040
+Yeah, just Paths. Nothing else.
+
+00:01:23.040 --> 00:01:24.480
+Nothing, just Paths.
+
+00:01:25.120 --> 00:01:27.200
+Actually, that's what it's called, just Paths.
+
+00:01:27.200 --> 00:01:33.520
+Okay, so here's a tool that is built in Python and just, it's just a language.
+
+00:01:33.520 --> 00:01:35.200
+It's 1.2% just.
+
+00:01:35.200 --> 00:01:37.040
+I don't know, this is too meta.
+
+00:01:37.040 --> 00:01:41.840
+Anyway, it's a quick CLI tool built with Python.
+
+00:01:41.840 --> 00:01:46.720
+And when you hear that, the first thing you should think is, "PipX, install the thing,"
+
+00:01:46.720 --> 00:01:50.400
+because that's how you install CLI tools for Python, right?
+
+00:01:50.400 --> 00:01:51.840
+It gets managed on its own.
+
+00:01:51.840 --> 00:01:54.560
+It gets, it's upgradable through PipX and all the things.
+
+00:01:54.560 --> 00:01:55.760
+They made a little mistake here.
+
+00:01:55.760 --> 00:01:59.200
+Like I should do a PR and put an X on the PipX install, just Path.
+
+00:01:59.200 --> 00:01:59.440
+Okay.
+
+00:01:59.440 --> 00:02:00.560
+So what is this thing?
+
+00:02:00.560 --> 00:02:06.320
+What it does is it, it's for Windows and macOS, I believe is what it's for.
+
+00:02:06.320 --> 00:02:12.320
+No, Windows Linux and macOS as well, because it basically pretends macOS is Linux.
+
+00:02:12.320 --> 00:02:16.480
+And what it does is it will look at your path variable and see,
+
+00:02:16.480 --> 00:02:19.040
+help you determine if it's good.
+
+00:02:19.040 --> 00:02:23.920
+So if you want to answer questions like, "When I type Python, I always get Python 2.
+
+00:02:23.920 --> 00:02:24.480
+Why is that?
+
+00:02:24.480 --> 00:02:28.000
+When I type Python, I get Python 3.10, but I have 3.12 installed.
+
+00:02:28.000 --> 00:02:28.560
+Why is that?
+
+00:02:28.560 --> 00:02:34.640
+When I pip install or PipX install a thing, it claims that stuff that gets installed by it
+
+00:02:34.640 --> 00:02:35.520
+won't be in the path.
+
+00:02:35.520 --> 00:02:36.480
+Wait, I thought it was.
+
+00:02:36.480 --> 00:02:38.800
+Oh, no, wait, that was 3.11, not the 3.12 version of that."
+
+00:02:38.800 --> 00:02:41.920
+All these complicated little weird things that you run into all the time.
+
+00:02:41.920 --> 00:02:45.680
+This is just a CLI tool that you just say, "Tell me how, how am I doing?
+
+00:02:45.680 --> 00:02:47.440
+What is my path?
+
+00:02:47.440 --> 00:02:52.480
+What stuff, like, do it, do I have something in my path that links to a directory,
+
+00:02:52.480 --> 00:02:54.080
+but the directory is no longer there?"
+
+00:02:54.080 --> 00:02:58.800
+So for example, if I have Python 3.10 in my path, but I've uninstalled Python 3.10,
+
+00:02:58.800 --> 00:03:05.280
+but it's still in my .cshrc or .bashrc file or Windows path environment variables,
+
+00:03:05.280 --> 00:03:06.080
+whatever, right?
+
+00:03:06.080 --> 00:03:06.960
+That kind of stuff.
+
+00:03:06.960 --> 00:03:07.600
+Cool, huh?
+
+00:03:07.600 --> 00:03:09.280
+Yeah, actually very cool.
+
+00:03:09.280 --> 00:03:11.120
+Yeah, so it does a bunch of different things.
+
+00:03:11.120 --> 00:03:14.320
+It can do just --raw to show you what it is.
+
+00:03:14.320 --> 00:03:20.400
+You can just run it by itself and it gives you this colored output of each element in your path.
+
+00:03:20.400 --> 00:03:24.080
+So it parses the path and then it goes line by line and tells you,
+
+00:03:24.080 --> 00:03:25.520
+"Green, this exists.
+
+00:03:25.520 --> 00:03:28.560
+Yellow, it's a duplicate of something that was there before."
+
+00:03:28.560 --> 00:03:31.120
+So if you have something in your path multiple times,
+
+00:03:31.120 --> 00:03:33.840
+maybe it's earlier and later and you thought it should be later.
+
+00:03:33.840 --> 00:03:36.000
+So that's also a weird thing going on.
+
+00:03:36.000 --> 00:03:39.600
+Or it'll turn it red if there are some that don't exist.
+
+00:03:39.600 --> 00:03:41.040
+Yeah, so that's pretty cool.
+
+00:03:41.040 --> 00:03:44.080
+You can ask for just the invalids, just for the duplicates.
+
+00:03:44.080 --> 00:03:48.240
+You can ask it to follow symlinks and then resolve whether those are duplicates or not.
+
+00:03:48.240 --> 00:03:52.320
+And then you can say, "Give me a corrected version as a string,"
+
+00:03:52.320 --> 00:03:53.840
+or not as a string, as a list.
+
+00:03:53.840 --> 00:03:56.640
+And then that will let you basically remove the duplicates,
+
+00:03:56.640 --> 00:03:58.720
+remove the missings, and go from there.
+
+00:03:58.720 --> 00:04:02.160
+There's a little video here that's --is it a GIF here or something?
+
+00:04:02.160 --> 00:04:02.720
+I don't know.
+
+00:04:02.720 --> 00:04:07.120
+But if you want to watch the video, you can pull it up and you'll see what it looks like
+
+00:04:07.120 --> 00:04:09.600
+when it runs and all the colors and stuff.
+
+00:04:09.600 --> 00:04:11.840
+But it's super easy to try out.
+
+00:04:11.840 --> 00:04:14.320
+So I recommend people check out JustPath.
+
+00:04:14.320 --> 00:04:15.760
+I think it's handy.
+
+00:04:15.760 --> 00:04:17.840
+I --my score is not that amazing.
+
+00:04:17.840 --> 00:04:20.400
+I just ran it, Brian, 42 directories in my path.
+
+00:04:20.400 --> 00:04:21.920
+12 do not exist.
+
+00:04:21.920 --> 00:04:22.880
+Fully 12 of them.
+
+00:04:22.880 --> 00:04:25.440
+And four of which that do are duplicates.
+
+00:04:25.440 --> 00:04:28.400
+Yeah, I've got a bunch of problems with mine.
+
+00:04:28.400 --> 00:04:28.900
+Okay.
+
+00:04:28.900 --> 00:04:30.240
+Who knew, right?
+
+00:04:30.240 --> 00:04:34.560
+Well, you know, you kind of like, you know, keep things around, you install stuff, change things.
+
+00:04:34.560 --> 00:04:36.480
+Yeah, this stuff is right only, right?
+
+00:04:36.480 --> 00:04:38.080
+Why would you take stuff out of your path?
+
+00:04:38.080 --> 00:04:40.640
+You know, you just keep adding to it and adding to it.
+
+00:04:40.640 --> 00:04:44.640
+But then, like you say, you uninstall things, stuff changes, etc.
+
+00:04:44.640 --> 00:04:52.640
+Yeah, I have like added my user users, Aachen dot local slash bin.
+
+00:04:52.640 --> 00:04:54.720
+Apparently, that doesn't exist anymore.
+
+00:04:54.720 --> 00:04:56.640
+And I don't even remember ever using that.
+
+00:04:56.640 --> 00:04:57.140
+So.
+
+00:04:57.140 --> 00:04:58.580
+Okay.
+
+00:04:58.580 --> 00:04:59.760
+Cool.
+
+00:04:59.760 --> 00:05:00.320
+Interesting.
+
+00:05:00.320 --> 00:05:02.880
+Yeah, it's easy to adopt and use.
+
+00:05:02.880 --> 00:05:06.080
+You just pipx install it and you just run the thing and it tells you what's up.
+
+00:05:06.080 --> 00:05:06.580
+Cool.
+
+00:05:06.580 --> 00:05:08.800
+Well, that's exciting.
+
+00:05:08.800 --> 00:05:11.120
+I have like, you know, doom and gloom next.
+
+00:05:11.120 --> 00:05:12.960
+So no.
+
+00:05:12.960 --> 00:05:15.360
+Yeah, the the XZ backdoor.
+
+00:05:15.360 --> 00:05:18.880
+I'm I don't know if everybody's heard about this.
+
+00:05:18.880 --> 00:05:21.040
+It just really sort of popped up last Friday.
+
+00:05:21.040 --> 00:05:22.320
+So it's fairly recent.
+
+00:05:22.320 --> 00:05:24.640
+Have you been keeping up on XZ?
+
+00:05:24.640 --> 00:05:28.080
+Yeah, it definitely has caught my attention and makes me quite nervous.
+
+00:05:28.080 --> 00:05:35.840
+I think we just missed this in getting released to basically every server on the Internet,
+
+00:05:35.840 --> 00:05:36.880
+which is really good.
+
+00:05:36.880 --> 00:05:38.020
+Yeah.
+
+00:05:38.640 --> 00:05:44.240
+So if you've just sort of heard about it, I'm going to provide a there's a lot of articles
+
+00:05:44.240 --> 00:05:46.080
+on it, and some of it has good information.
+
+00:05:46.080 --> 00:05:51.360
+Some of it has dubious, a little bit, maybe opinionated stuff, which is fine.
+
+00:05:51.360 --> 00:05:57.680
+But I'm linking to an article from Evan Bowen, but Evan Bowes, B-O-E-H-S.
+
+00:05:57.680 --> 00:05:58.880
+Not sure how to pronounce that.
+
+00:05:58.880 --> 00:06:06.240
+Anyway, everything I know about the XZ backdoor, and it's a fairly curated timeline of what
+
+00:06:06.240 --> 00:06:07.120
+the backdoor is.
+
+00:06:07.120 --> 00:06:10.080
+But it well, it's about the timeline of how it happened.
+
+00:06:10.080 --> 00:06:15.280
+But the the gist, if you haven't heard about it, this is that there was a backdoor added
+
+00:06:15.280 --> 00:06:17.120
+to I think it's XZ Utils.
+
+00:06:17.120 --> 00:06:24.960
+XZ is a compression or like an unzipper zipper and zipper sort of thing and archive tool
+
+00:06:24.960 --> 00:06:28.240
+for Linux and other Unix like distributions.
+
+00:06:28.240 --> 00:06:33.280
+So it's a weird story that start this multi-year.
+
+00:06:33.280 --> 00:06:42.080
+That's the part that's freaky is a little utility that's included everywhere that starting
+
+00:06:42.080 --> 00:06:48.720
+in 2021, somebody well, they went by the name of Gia Tan, but nobody really believes that
+
+00:06:48.720 --> 00:06:55.200
+that's really their name, started contributing to open source, added a patch and these patches
+
+00:06:55.200 --> 00:07:01.200
+were added like in long, long times apart, and then ended up becoming a maintainer of
+
+00:07:01.200 --> 00:07:05.520
+XZ and then creating in part of the test code.
+
+00:07:05.520 --> 00:07:12.880
+And this, the there wasn't a vulnerability in the in GitHub, but there was in the distributed
+
+00:07:12.880 --> 00:07:14.080
+tar release.
+
+00:07:14.080 --> 00:07:14.960
+I don't know.
+
+00:07:14.960 --> 00:07:20.480
+There's a lot of details that I didn't quite follow all of it over yuck and weird.
+
+00:07:20.480 --> 00:07:24.560
+And so the part that I want to talk about really is one, you should just be aware of
+
+00:07:24.560 --> 00:07:26.240
+this and we're going to link to a good article.
+
+00:07:26.240 --> 00:07:30.880
+I think it's right before before you go on a little farther because before we watch this
+
+00:07:30.880 --> 00:07:37.600
+the real basics of it, the basically this, this vulnerability was intentionally put there
+
+00:07:37.600 --> 00:07:41.920
+as a backdoor to break open SSH connections.
+
+00:07:41.920 --> 00:07:48.000
+So the idea was if you can SSH to your server, this was going to give other people SSH access
+
+00:07:48.000 --> 00:07:50.720
+to your server, which is extraordinarily bad.
+
+00:07:50.720 --> 00:07:51.040
+Yeah.
+
+00:07:51.040 --> 00:07:53.840
+And SSH into it with root access.
+
+00:07:53.840 --> 00:07:56.560
+So they have like full access really.
+
+00:07:56.560 --> 00:07:57.520
+Yeah.
+
+00:07:57.520 --> 00:07:58.000
+Terrible.
+
+00:07:58.000 --> 00:07:59.440
+Would have been a terrible backdoor.
+
+00:07:59.440 --> 00:08:00.480
+Glad it got caught.
+
+00:08:00.480 --> 00:08:07.040
+So it got caught by like somebody at Microsoft, Microsoft Postgres team, I think looking at
+
+00:08:07.040 --> 00:08:14.400
+some of their over like an update of XC causing or actually a slowdown in some of their I
+
+00:08:14.400 --> 00:08:16.960
+think it was in their test suite or something.
+
+00:08:16.960 --> 00:08:21.040
+They were running micro benchmarks and they saw like a 600 millisecond slowdown or something
+
+00:08:21.040 --> 00:08:22.160
+like, geez, that's weird.
+
+00:08:22.160 --> 00:08:24.640
+How about that testing for the wind, Brian?
+
+00:08:24.640 --> 00:08:25.040
+Yeah.
+
+00:08:25.040 --> 00:08:28.880
+And then also I guess Valgrind caught some problems with it as well.
+
+00:08:30.080 --> 00:08:34.240
+So I guess good thing that people were paying attention to that and then tracked it down
+
+00:08:34.240 --> 00:08:39.360
+fairly rapidly to a update of XZ.
+
+00:08:39.360 --> 00:08:45.440
+But then some of the unraveling of this is just, okay, so there was a vulnerability.
+
+00:08:45.440 --> 00:08:46.160
+It got caught.
+
+00:08:46.160 --> 00:08:47.280
+People are updating.
+
+00:08:47.280 --> 00:08:50.720
+That's good because you really don't want this here.
+
+00:08:50.720 --> 00:08:56.480
+However, some of the ways in which this happened are disturbing.
+
+00:08:56.480 --> 00:09:02.400
+And so that's why I think it's useful to read up on this a little bit, partly because this
+
+00:09:02.400 --> 00:09:08.800
+XC utility was not, it's mostly maintained by one person over years.
+
+00:09:08.800 --> 00:09:09.200
+Right.
+
+00:09:09.200 --> 00:09:15.920
+So, and then somebody comes along and wants a patch and is sort of, there's some sort of
+
+00:09:15.920 --> 00:09:22.560
+kind of not nice things said, including things like clearly don't do patches to this because
+
+00:09:22.560 --> 00:09:26.240
+they're, they don't, the current maintainer has lost interest or doesn't care anymore.
+
+00:09:26.240 --> 00:09:32.080
+Saying mean things like this kind of pressured, and this is way back in 2022, pressuring the
+
+00:09:32.080 --> 00:09:34.480
+person into adding another maintainer.
+
+00:09:34.480 --> 00:09:39.200
+Then, Hey, there's another maintainer ready and they're adding garbage to it.
+
+00:09:39.200 --> 00:09:39.680
+So.
+
+00:09:39.680 --> 00:09:44.080
+And they just happened to work for some state sponsored hacker group.
+
+00:09:44.080 --> 00:09:46.640
+I'm sure they'll do a good job maintaining it for us.
+
+00:09:46.640 --> 00:09:47.140
+Yeah.
+
+00:09:47.140 --> 00:09:49.540
+Maybe.
+
+00:09:49.920 --> 00:09:56.160
+And there's, you know, basically, I guess, watch out for this, but also I think, so one
+
+00:09:56.160 --> 00:09:59.200
+of the things I wanted to talk about is how do we, how do we avoid stuff like this?
+
+00:09:59.200 --> 00:10:04.400
+This is, I don't have an answer for it, but there's a lot of people discussing like, what
+
+00:10:04.400 --> 00:10:05.120
+do we do about it?
+
+00:10:05.120 --> 00:10:11.360
+Including a glyph whose answer may have been just is I'm willing to link to his article
+
+00:10:11.360 --> 00:10:13.520
+called software needs to be more expensive.
+
+00:10:13.520 --> 00:10:16.480
+Essentially we hit a lot of free software.
+
+00:10:16.480 --> 00:10:20.400
+Maybe we should start paying the maintainers so that people, I mean, burnout is a real
+
+00:10:20.400 --> 00:10:24.240
+thing, but you pay people, they will work on stuff or somebody else will.
+
+00:10:24.240 --> 00:10:26.960
+However, don't think that's this.
+
+00:10:26.960 --> 00:10:29.920
+That's quite one of the interesting thing, his idea.
+
+00:10:29.920 --> 00:10:35.680
+I'll just mention this because I think it's interesting is he's got an idea called just
+
+00:10:35.680 --> 00:10:38.240
+JGMM, just give maintainers money.
+
+00:10:38.240 --> 00:10:42.800
+And his idea is not to have companies try to figure out who to give money to.
+
+00:10:42.800 --> 00:10:48.800
+It's, it's his idea is just give every software engineer with your company a discretionary
+
+00:10:48.800 --> 00:10:51.520
+budget of like, say 50 bucks a month or whatever you want to do.
+
+00:10:51.520 --> 00:10:56.400
+And, and they can distribute that money to open source maintainers however they want.
+
+00:10:56.400 --> 00:10:58.000
+Interesting idea.
+
+00:10:58.000 --> 00:11:01.920
+I don't think if, even if that was in place, I don't think that it, which I think is a
+
+00:11:01.920 --> 00:11:02.720
+good idea.
+
+00:11:02.720 --> 00:11:06.400
+I don't think it would be have gone to XZ really.
+
+00:11:07.840 --> 00:11:12.160
+Because I would have thought things like, you know, Django or, you know, Python, but
+
+00:11:12.160 --> 00:11:16.000
+would I give money to a little zip utility?
+
+00:11:16.000 --> 00:11:17.040
+Probably not.
+
+00:11:17.040 --> 00:11:17.540
+Anyway.
+
+00:11:17.540 --> 00:11:21.440
+So I think this is a good thing to keep up on.
+
+00:11:21.440 --> 00:11:27.760
+And, and I do this idea of like bringing on maintainers, you have to be able to do that,
+
+00:11:27.760 --> 00:11:31.440
+but you have to, how do you tell somebody is going to be malicious a couple of years
+
+00:11:31.440 --> 00:11:32.000
+from now?
+
+00:11:32.000 --> 00:11:32.480
+I don't know.
+
+00:11:32.480 --> 00:11:35.280
+That's, that's how do you, I don't think you can check for that.
+
+00:11:35.280 --> 00:11:37.120
+It's tough.
+
+00:11:37.120 --> 00:11:37.440
+Yeah.
+
+00:11:37.440 --> 00:11:41.120
+That person, that person played the long game for sure.
+
+00:11:41.120 --> 00:11:41.600
+Yeah.
+
+00:11:41.600 --> 00:11:45.040
+So I thought, well, okay, well, I don't run any servers, so I'm fine.
+
+00:11:45.040 --> 00:11:52.000
+But then I ran across Jeff triplets article called upgrade, update and upgrade homebrew
+
+00:11:52.000 --> 00:11:53.440
+and the XZ versions.
+
+00:11:53.440 --> 00:11:54.640
+I'm like, what?
+
+00:11:54.640 --> 00:11:55.040
+Yeah.
+
+00:11:55.040 --> 00:11:59.680
+So if you, you should, if you run homebrew on your Mac, you should run brew info XZ.
+
+00:12:00.480 --> 00:12:06.000
+And if, if it shows up at five dot six X you need to update.
+
+00:12:06.000 --> 00:12:09.280
+And sure enough, I had the vulnerability on my machine.
+
+00:12:09.280 --> 00:12:15.040
+I checked it and I was, I was out of date or actually I was, I had upgraded to the new
+
+00:12:15.040 --> 00:12:15.440
+one and.
+
+00:12:15.440 --> 00:12:17.040
+Thanks.
+
+00:12:17.040 --> 00:12:17.280
+Yeah.
+
+00:12:17.280 --> 00:12:17.920
+I just checked.
+
+00:12:17.920 --> 00:12:20.000
+I don't seem to have it, which is very good.
+
+00:12:20.000 --> 00:12:23.840
+But the thing is you probably didn't install XZ.
+
+00:12:23.840 --> 00:12:28.240
+You probably installed the other thing, which depended on something, which depended on XZ,
+
+00:12:28.240 --> 00:12:31.760
+which is all parts of the supply chain problems, which is scary.
+
+00:12:31.760 --> 00:12:32.240
+Yeah.
+
+00:12:32.240 --> 00:12:37.040
+But I guess thanks dude at Microsoft that found this.
+
+00:12:37.040 --> 00:12:38.400
+Yeah, indeed.
+
+00:12:38.400 --> 00:12:43.520
+You know, you say probably would think that the 50 bucks wouldn't go to XZ, but I really
+
+00:12:43.520 --> 00:12:44.560
+like glyphs article.
+
+00:12:44.560 --> 00:12:46.160
+First of all, well done glyph.
+
+00:12:46.160 --> 00:12:50.160
+That was a very nice article you wrote and I enjoyed reading it.
+
+00:12:50.160 --> 00:12:52.080
+It's also a very thoughtful idea.
+
+00:12:52.080 --> 00:12:57.840
+I think his idea is basically instead of trying to get large companies to come on and be
+
+00:12:57.840 --> 00:13:03.280
+sponsors of open source projects, usually that's a huge negotiation and there's all
+
+00:13:03.280 --> 00:13:04.640
+sorts of stuff and right.
+
+00:13:04.640 --> 00:13:05.360
+It's just not easy.
+
+00:13:05.360 --> 00:13:07.760
+Just give everybody 50 bucks a year or a month.
+
+00:13:07.760 --> 00:13:08.240
+I can't remember.
+
+00:13:08.240 --> 00:13:09.920
+I think it was maybe a month.
+
+00:13:09.920 --> 00:13:14.160
+Anyway, give people a card and they could just, just donate it to whichever open source
+
+00:13:14.160 --> 00:13:15.840
+project that they would like.
+
+00:13:15.840 --> 00:13:20.160
+And I agree if there's a thousand people that did that, Brian, that XZ wouldn't probably
+
+00:13:20.160 --> 00:13:25.200
+wouldn't make it, but wouldn't it be awesome if there was a world where there were so many
+
+00:13:25.200 --> 00:13:29.280
+people who were just donating to open source that it became super lucrative that second
+
+00:13:29.280 --> 00:13:34.560
+tier projects were even potentially full-time things like rockstar developers, you know,
+
+00:13:34.560 --> 00:13:38.880
+like ballers are rolling up in their Ferrari cause they, cause they're running fast API
+
+00:13:38.880 --> 00:13:41.920
+or, you know, Sebastian is doing that.
+
+00:13:41.920 --> 00:13:43.280
+I mean, that would be really cool thing.
+
+00:13:43.280 --> 00:13:47.440
+How much more open source should I get created if it was sort of a gold rush as well.
+
+00:13:47.440 --> 00:13:50.160
+So yeah, I think it would be neat.
+
+00:13:50.160 --> 00:13:55.520
+And also even not necessarily a full-time job, but just to be able to say, even if I
+
+00:13:55.520 --> 00:14:01.600
+have to take the time unpaid from my normal job, if I took like a, like a day, a week
+
+00:14:01.600 --> 00:14:06.640
+off to, and just worked on open source, my open source project instead.
+
+00:14:06.640 --> 00:14:08.560
+And sometimes it's not even adding features.
+
+00:14:08.560 --> 00:14:12.400
+It's just going through issues, doing all of the, the bookkeeping and the maintenance
+
+00:14:12.400 --> 00:14:12.880
+and everything.
+
+00:14:12.880 --> 00:14:14.160
+There's a lot.
+
+00:14:14.160 --> 00:14:14.660
+Yeah.
+
+00:14:14.660 --> 00:14:16.400
+Or maybe you're a consultant.
+
+00:14:16.400 --> 00:14:18.640
+You take one for your clients on something like that.
+
+00:14:18.640 --> 00:14:19.040
+Right.
+
+00:14:19.040 --> 00:14:19.920
+Yeah, exactly.
+
+00:14:20.160 --> 00:14:20.800
+So thanks.
+
+00:14:20.800 --> 00:14:21.440
+Pretty cool.
+
+00:14:21.440 --> 00:14:22.000
+Yeah.
+
+00:14:22.000 --> 00:14:22.240
+Yeah.
+
+00:14:22.240 --> 00:14:23.360
+I'm glad you covered this.
+
+00:14:23.360 --> 00:14:27.120
+Um, well, we would like to thank Scout APM for sponsoring this episode.
+
+00:14:27.120 --> 00:14:27.680
+Thanks Scout.
+
+00:14:27.680 --> 00:14:32.240
+Let me tell you real quick about Scout APM.
+
+00:14:32.240 --> 00:14:34.080
+They're big supporters of Python Bytes.
+
+00:14:34.080 --> 00:14:36.000
+So we appreciate that very much.
+
+00:14:36.000 --> 00:14:41.360
+So if you are tired of spending hours trying to find the root cause of issues impacting
+
+00:14:41.360 --> 00:14:45.280
+your performance, then you owe it to yourself to check out Scout APM.
+
+00:14:45.280 --> 00:14:51.280
+They're a leading Python application performance monitoring tool, APM, that helps you identify
+
+00:14:51.280 --> 00:14:54.560
+and solve performance abnormalities faster and easier.
+
+00:14:54.560 --> 00:14:59.520
+Scout APM ties bottlenecks such as memory leaks, slow database queries, background jobs,
+
+00:14:59.520 --> 00:15:04.720
+and the dreaded N plus one queries that you can end up if you do lazy loading in your
+
+00:15:04.720 --> 00:15:07.680
+ORM, and then you say, Oh no, why is it so slow?
+
+00:15:07.680 --> 00:15:10.000
+Why are you doing 200 database queries for what should be one?
+
+00:15:10.000 --> 00:15:12.000
+So you can find out things like that.
+
+00:15:12.000 --> 00:15:13.840
+And it links it back directly to source code.
+
+00:15:13.840 --> 00:15:18.800
+So you can spend less time in the debugger and tailing logs and just finding the problems
+
+00:15:18.800 --> 00:15:19.760
+and moving on.
+
+00:15:19.760 --> 00:15:22.720
+And you'll love it because it's built for developers by developers.
+
+00:15:22.720 --> 00:15:24.560
+It makes it easy to get set up.
+
+00:15:24.560 --> 00:15:26.880
+Seriously, you can do it in less than four minutes.
+
+00:15:26.880 --> 00:15:27.760
+So that's awesome.
+
+00:15:27.760 --> 00:15:31.280
+And the best part is the pricing is straightforward.
+
+00:15:31.280 --> 00:15:36.240
+You only pay for the data that used with no hidden overage fees or per seat pricing.
+
+00:15:36.240 --> 00:15:38.800
+And I just learned this, Brian.
+
+00:15:38.800 --> 00:15:44.000
+They also have, they provide the pro version for free to all open source projects.
+
+00:15:44.000 --> 00:15:48.720
+So if you're an open source maintainer and you want to have Scout APM for that project,
+
+00:15:48.720 --> 00:15:51.840
+just shoot them a message or something on their pricing page about that.
+
+00:15:51.840 --> 00:15:55.520
+So you can start your free trial and get instant insights today.
+
+00:15:55.520 --> 00:15:58.160
+Visit pythonbytes.fm/scout.
+
+00:15:58.160 --> 00:16:00.560
+The link is in your podcast player show notes as well.
+
+00:16:00.560 --> 00:16:01.520
+And please use that link.
+
+00:16:01.520 --> 00:16:05.760
+Don't just search for them because otherwise they don't think you came from us.
+
+00:16:05.760 --> 00:16:07.120
+And then they'd stop supporting the show.
+
+00:16:07.120 --> 00:16:09.920
+So please use our link pythonbytes.fm/scout.
+
+00:16:09.920 --> 00:16:10.720
+Check them out.
+
+00:16:10.720 --> 00:16:12.800
+It really supports the show.
+
+00:16:12.800 --> 00:16:13.360
+Indeed.
+
+00:16:13.360 --> 00:16:13.840
+All right.
+
+00:16:13.840 --> 00:16:17.040
+Now, Brian, let's talk about some fast stuff.
+
+00:16:17.040 --> 00:16:17.600
+Okay.
+
+00:16:17.600 --> 00:16:18.640
+El Python.
+
+00:16:18.640 --> 00:16:19.920
+Have you heard of El Python?
+
+00:16:19.920 --> 00:16:20.320
+No.
+
+00:16:20.320 --> 00:16:21.280
+This is news to me.
+
+00:16:21.280 --> 00:16:25.520
+So El Python is a high performance type Python compiler.
+
+00:16:25.520 --> 00:16:29.520
+So basically if you type annotations or type hints on your Python code,
+
+00:16:29.520 --> 00:16:33.760
+it can aggressively optimize and compile your Python code.
+
+00:16:33.760 --> 00:16:38.000
+And it uses multiple backends, which is pretty interesting.
+
+00:16:38.000 --> 00:16:40.240
+So you can compile it using LLVM.
+
+00:16:40.240 --> 00:16:41.680
+You can compile it to C.
+
+00:16:41.680 --> 00:16:43.280
+You can compile it to C++.
+
+00:16:43.280 --> 00:16:45.440
+Or you can compile it to Wasm, WebAssembly.
+
+00:16:45.440 --> 00:16:46.480
+That's wild, right?
+
+00:16:46.480 --> 00:16:47.120
+Yeah.
+
+00:16:47.120 --> 00:16:47.680
+Yeah.
+
+00:16:47.680 --> 00:16:50.560
+So right now, just a heads up before people get too excited.
+
+00:16:50.560 --> 00:16:51.840
+It's an alpha stage.
+
+00:16:51.840 --> 00:16:55.360
+So it's not quite ready for maybe adoption.
+
+00:16:55.360 --> 00:16:58.000
+But if you're curious about it, you should definitely check it out.
+
+00:16:58.000 --> 00:16:59.840
+You can play with it and so on.
+
+00:16:59.840 --> 00:17:02.160
+And so it's starting to pick up speed.
+
+00:17:02.160 --> 00:17:03.760
+It's got a little over 1,000 GitHub stars.
+
+00:17:03.760 --> 00:17:06.960
+And you can try it in your browser.
+
+00:17:06.960 --> 00:17:08.480
+Let's try the browser, huh?
+
+00:17:08.480 --> 00:17:10.560
+Before I move on, though, let's say it's fast.
+
+00:17:10.560 --> 00:17:14.480
+It's built from the ground up to translate primarily data science-y code,
+
+00:17:14.480 --> 00:17:18.480
+because that's primarily where things get slow and actually matter in Python.
+
+00:17:18.480 --> 00:17:22.640
+But numerical array-oriented code into simple, readable, and fast code.
+
+00:17:22.640 --> 00:17:23.680
+Basic math.
+
+00:17:23.680 --> 00:17:29.680
+So it knows about, you know, sized integers, for example, n32 and so on.
+
+00:17:30.320 --> 00:17:36.480
+It has just-in-time compilation, which you can get if you don't want to run a compiler itself.
+
+00:17:36.480 --> 00:17:39.680
+You can just put an @lpython decorator onto a function,
+
+00:17:39.680 --> 00:17:42.000
+and it'll just compile at a runtime, which is kind of cool,
+
+00:17:42.000 --> 00:17:45.440
+because then I guess you probably don't need to distribute binary versions
+
+00:17:45.440 --> 00:17:47.920
+on your packages, your wheels, and so on.
+
+00:17:47.920 --> 00:17:50.000
+It's interoperable with CPython.
+
+00:17:50.000 --> 00:17:53.360
+So basically, you can call all the CPython functions.
+
+00:17:53.360 --> 00:18:00.160
+And it's also, if it works in CPython, it works here, it'll work in CPython, basically.
+
+00:18:00.160 --> 00:18:02.240
+Is it a subset, I guess, in a sense?
+
+00:18:02.240 --> 00:18:03.040
+And open source.
+
+00:18:03.040 --> 00:18:04.640
+All right, let's play with it for just a second.
+
+00:18:04.640 --> 00:18:08.480
+So if you go to dev.lpython.org, it loads up in the browser.
+
+00:18:08.480 --> 00:18:10.480
+And you can notice it loaded pretty quickly,
+
+00:18:10.480 --> 00:18:12.880
+although I have gigabit internet, it still loaded pretty quickly.
+
+00:18:12.880 --> 00:18:15.120
+See this picture here on the screen?
+
+00:18:15.120 --> 00:18:19.600
+This is the Mandelbrot set, which I don't know how many people have done fractals,
+
+00:18:19.600 --> 00:18:24.080
+but it's drawing two different copies of the Mandelbrot set.
+
+00:18:24.080 --> 00:18:25.360
+And what is that?
+
+00:18:25.360 --> 00:18:27.280
+A 600 by 600 image, maybe?
+
+00:18:27.280 --> 00:18:31.600
+Got a black and white one and a color map one.
+
+00:18:31.600 --> 00:18:34.640
+It says it took a little under half a second to compile it,
+
+00:18:34.640 --> 00:18:37.280
+and 80 milliseconds to generate those two images.
+
+00:18:37.280 --> 00:18:39.280
+And you can come over here and you can say, like, all right,
+
+00:18:39.280 --> 00:18:41.600
+what I'm going to do is-- what is that number?
+
+00:18:41.600 --> 00:18:45.280
+I'm going to make this, let's say, 355 iterations.
+
+00:18:45.280 --> 00:18:47.120
+And then we'll run it again.
+
+00:18:47.120 --> 00:18:49.120
+And 100 milliseconds.
+
+00:18:49.120 --> 00:18:52.960
+Right, if I make this something really silly here, like--
+
+00:18:52.960 --> 00:18:54.240
+oh, no, why did that go away?
+
+00:18:54.240 --> 00:18:58.160
+Back button is not supposed-- or the delete button is not supposed to navigate backwards.
+
+00:18:58.160 --> 00:18:58.720
+Hold on.
+
+00:18:58.720 --> 00:18:59.680
+Ooh, really big.
+
+00:18:59.680 --> 00:19:00.480
+There we go.
+
+00:19:00.480 --> 00:19:01.200
+All right, there we go.
+
+00:19:01.200 --> 00:19:04.080
+OK, so if I run it again, though, watch how fast this is.
+
+00:19:04.080 --> 00:19:05.040
+Like, boom, that's it.
+
+00:19:05.040 --> 00:19:07.280
+And then I'll put it back to-- what was it before?
+
+00:19:07.280 --> 00:19:09.120
+I'm a little weird the way it's, like, capturing my mouse.
+
+00:19:09.120 --> 00:19:12.640
+But anyway, people can come check this out and see it running.
+
+00:19:12.640 --> 00:19:15.120
+It runs super fast as Python.
+
+00:19:15.120 --> 00:19:22.160
+And you think all this iterative generating, a ton of paralyzed computation in WebAssembly,
+
+00:19:22.160 --> 00:19:25.200
+in the browser, with Python, I'm pretty impressed.
+
+00:19:25.200 --> 00:19:26.320
+Yeah, that's pretty cool.
+
+00:19:26.320 --> 00:19:28.480
+Hey, who's behind this, do you know?
+
+00:19:28.480 --> 00:19:29.520
+Mr. L. Python?
+
+00:19:29.520 --> 00:19:30.480
+I have no idea, honestly.
+
+00:19:30.480 --> 00:19:34.880
+It's by L Compilers, is what it says at the bottom.
+
+00:19:34.880 --> 00:19:36.960
+So what is that?
+
+00:19:36.960 --> 00:19:38.880
+Lcompilers.org.
+
+00:19:38.880 --> 00:19:41.840
+Yeah, good question.
+
+00:19:41.840 --> 00:19:43.520
+It has no public members.
+
+00:19:43.520 --> 00:19:44.640
+But it is exciting.
+
+00:19:44.640 --> 00:19:46.880
+So yeah, nor does it have a web page.
+
+00:19:46.880 --> 00:19:48.720
+Hopefully it's not an APT crew.
+
+00:19:51.040 --> 00:19:53.200
+Anyway, no, seriously, it looks like a cool project.
+
+00:19:53.200 --> 00:19:54.240
+And people can check it out.
+
+00:19:54.240 --> 00:19:56.880
+There's a lot of these ideas happening now.
+
+00:19:56.880 --> 00:19:58.320
+But yeah, it's quite interesting.
+
+00:19:58.320 --> 00:19:58.820
+Yeah.
+
+00:19:58.820 --> 00:20:05.520
+Well, my last topic was kind of dramatic with the whole XZ thing.
+
+00:20:05.520 --> 00:20:11.360
+So I'd like to continue the drama and bring it into Python.
+
+00:20:11.360 --> 00:20:17.600
+And with the help of Trey Hunter, he has a way to make your Python more dramatic.
+
+00:20:17.600 --> 00:20:19.840
+Actually, your Python output more dramatic.
+
+00:20:20.560 --> 00:20:24.000
+With a-- I'm just kind of joking, but it's kind of fun with the name.
+
+00:20:24.000 --> 00:20:27.200
+He's got a tool called Dramatic.
+
+00:20:27.200 --> 00:20:32.880
+And what it does is it slows down the print output, which--
+
+00:20:32.880 --> 00:20:35.200
+why would you want this?
+
+00:20:35.200 --> 00:20:36.320
+I don't know.
+
+00:20:36.320 --> 00:20:39.840
+It might be kind of fun if you're doing a demo or doing a presentation or something.
+
+00:20:39.840 --> 00:20:42.560
+But it's just pretty fun.
+
+00:20:42.560 --> 00:20:44.160
+There's a lot of ways you can use Dramatic.
+
+00:20:44.160 --> 00:20:49.440
+Once you install it, you can just use a context manager
+
+00:20:49.440 --> 00:20:52.160
+so that it's only around certain print statements.
+
+00:20:52.160 --> 00:20:56.080
+You can decorate certain functions so it temporarily does it.
+
+00:20:56.080 --> 00:21:03.040
+And you can even-- there's a start and print to do it targeted.
+
+00:21:03.040 --> 00:21:07.600
+One of the fun things-- and he's got examples on his readme how to do this.
+
+00:21:07.600 --> 00:21:10.800
+One of the fun things you can do-- I'm not sure why he included this--
+
+00:21:10.800 --> 00:21:14.960
+is you can do it outside the whole thing.
+
+00:21:14.960 --> 00:21:16.800
+He's got a Dramatic interpreter.
+
+00:21:16.800 --> 00:21:22.640
+So if you run Python-M Dramatic, it just slows down everything.
+
+00:21:22.640 --> 00:21:26.800
+You can turn it off, though.
+
+00:21:26.800 --> 00:21:29.200
+He's got a way to turn it off as well.
+
+00:21:29.200 --> 00:21:32.720
+But you can do speed ups and make it-- anyway.
+
+00:21:32.720 --> 00:21:33.760
+I think this--
+
+00:21:33.760 --> 00:21:37.200
+You want your Python code to look like ChatGPT or something like that, right?
+
+00:21:37.200 --> 00:21:39.280
+Yeah, as it's typing out and stuff.
+
+00:21:39.280 --> 00:21:45.520
+I think it's kind of-- especially if you're running-- I think it'd be useful--
+
+00:21:45.520 --> 00:21:47.120
+he gives an example of doing it.
+
+00:21:47.120 --> 00:21:50.160
+Like, for instance-- I guess this isn't an example.
+
+00:21:50.160 --> 00:21:53.680
+But if you're doing command line interface interactions with a user,
+
+00:21:53.680 --> 00:21:57.680
+I think it is helpful sometimes to have the output go slowly
+
+00:21:57.680 --> 00:22:01.360
+so that it's visually interesting to have it not just pop up
+
+00:22:01.360 --> 00:22:05.120
+with a mountain of text for people to read.
+
+00:22:05.120 --> 00:22:08.160
+But don't do it too slow because that's annoying also.
+
+00:22:08.160 --> 00:22:10.640
+But anyway, I think it's kind of fun.
+
+00:22:10.640 --> 00:22:11.120
+Fun thing.
+
+00:22:11.120 --> 00:22:14.080
+Related to this, I thought it'd be--
+
+00:22:15.040 --> 00:22:18.880
+when he submitted this the other day,
+
+00:22:18.880 --> 00:22:23.520
+I remembered somebody named Alan submitted a comment to us
+
+00:22:23.520 --> 00:22:26.240
+that texture-- terminal text-- what is it?
+
+00:22:26.240 --> 00:22:29.760
+Terminal text effects library is pretty cool.
+
+00:22:29.760 --> 00:22:31.920
+And so I'll go ahead and link to that also.
+
+00:22:31.920 --> 00:22:34.400
+That's a fun thing.
+
+00:22:34.400 --> 00:22:36.000
+It's very dramatic.
+
+00:22:36.000 --> 00:22:38.240
+That's quite dramatic.
+
+00:22:38.240 --> 00:22:40.800
+You've got a whole bunch of cool effects.
+
+00:22:41.920 --> 00:22:46.400
+There's a grid one where things show up gradually in a grid.
+
+00:22:46.400 --> 00:22:48.560
+There's a bunch of great examples.
+
+00:22:48.560 --> 00:22:50.720
+There's beams that pop back and forth.
+
+00:22:50.720 --> 00:22:51.280
+This is beautiful.
+
+00:22:51.280 --> 00:22:52.080
+Laser beams.
+
+00:22:52.080 --> 00:22:52.320
+Laser beams.
+
+00:22:52.320 --> 00:22:53.200
+I like that one.
+
+00:22:53.200 --> 00:22:54.480
+Yes, let's do it.
+
+00:22:54.480 --> 00:22:58.720
+The binary path kind of looks-- what is it?
+
+00:22:58.720 --> 00:23:00.640
+Matrixy sort of a look.
+
+00:23:00.640 --> 00:23:02.640
+I said, Neo, you can't go down there.
+
+00:23:02.640 --> 00:23:05.760
+There was one that I really liked a lot.
+
+00:23:05.760 --> 00:23:07.520
+The burn is neat.
+
+00:23:07.520 --> 00:23:09.120
+Crumble is kind of--
+
+00:23:09.120 --> 00:23:11.120
+These are all animated GIFs on the GitHub repo
+
+00:23:11.120 --> 00:23:12.000
+that Brian's linking to.
+
+00:23:12.000 --> 00:23:12.500
+Yeah, yeah.
+
+00:23:12.500 --> 00:23:16.960
+So I think it'd be cool for your--
+
+00:23:16.960 --> 00:23:18.320
+I wouldn't do it all over the place.
+
+00:23:18.320 --> 00:23:20.880
+But for instance, if you had a--
+
+00:23:20.880 --> 00:23:23.840
+probably not a help, but an about.
+
+00:23:23.840 --> 00:23:26.960
+And that's sort of where it's showing here,
+
+00:23:26.960 --> 00:23:30.480
+where you show the credits and who's worked on it
+
+00:23:30.480 --> 00:23:31.920
+and some more info and stuff.
+
+00:23:31.920 --> 00:23:38.640
+That'd be fun to do a fancy, dramatic output for that.
+
+00:23:38.640 --> 00:23:40.800
+All right, with this terminal text effects thing,
+
+00:23:41.520 --> 00:23:43.840
+I think if you work in the movie industry
+
+00:23:43.840 --> 00:23:47.760
+and you need to have a hacker breaking into a thing
+
+00:23:47.760 --> 00:23:50.320
+or somebody jacking into cyberspace
+
+00:23:50.320 --> 00:23:52.400
+or whatever one of these weird things are,
+
+00:23:52.400 --> 00:23:54.320
+where you're going to show a terminal and make it dramatic,
+
+00:23:54.320 --> 00:23:56.960
+oh my goodness, you could just basically do this for Hollywood.
+
+00:23:56.960 --> 00:23:57.460
+Yeah.
+
+00:23:57.460 --> 00:23:58.640
+Yeah.
+
+00:23:58.640 --> 00:23:59.440
+Couldn't you?
+
+00:23:59.440 --> 00:24:00.400
+Yeah, definitely.
+
+00:24:00.400 --> 00:24:02.480
+What is this language?
+
+00:24:02.480 --> 00:24:03.760
+Oh my gosh, this is VB6.
+
+00:24:03.760 --> 00:24:04.320
+I know this.
+
+00:24:04.320 --> 00:24:05.200
+I'm tracking his IP.
+
+00:24:05.200 --> 00:24:06.000
+Like, wait a minute, what?
+
+00:24:06.000 --> 00:24:07.120
+[LAUGHTER]
+
+00:24:07.120 --> 00:24:07.840
+You could do this.
+
+00:24:07.840 --> 00:24:08.800
+It would be a little bit better.
+
+00:24:09.840 --> 00:24:11.840
+Yeah, it'd be great.
+
+00:24:11.840 --> 00:24:14.160
+So anyway, that'd be fun.
+
+00:24:14.160 --> 00:24:17.840
+If you use both this and textual to turn it into--
+
+00:24:17.840 --> 00:24:18.880
+Oh, yeah.
+
+00:24:18.880 --> 00:24:23.040
+--like a Vim clone or something like that with fun effects.
+
+00:24:23.040 --> 00:24:24.000
+Ooh, that's fun.
+
+00:24:24.000 --> 00:24:25.040
+The pour is neat.
+
+00:24:25.040 --> 00:24:28.400
+Yeah, it's almost like the Tetris terminal, in a sense.
+
+00:24:28.400 --> 00:24:29.680
+Not quite, but almost.
+
+00:24:29.680 --> 00:24:34.080
+Anyway, I guess that is a fun wrap up of our topics.
+
+00:24:34.080 --> 00:24:36.160
+But we have some extras.
+
+00:24:36.160 --> 00:24:37.440
+Do you have any extras?
+
+00:24:37.440 --> 00:24:39.120
+Go do yours first, since you got your screen up.
+
+00:24:39.120 --> 00:24:39.760
+Yeah, OK.
+
+00:24:39.760 --> 00:24:40.480
+So the only thing--
+
+00:24:40.480 --> 00:24:42.720
+I mentioned textual a little bit.
+
+00:24:42.720 --> 00:24:46.800
+I'll go ahead and say that textual has released a new version.
+
+00:24:46.800 --> 00:24:52.480
+And I'm highlighting this because there's an inline feature, which is fun.
+
+00:24:52.480 --> 00:24:56.720
+So with the inline feature-- let's see if we can get an example up.
+
+00:24:56.720 --> 00:25:00.640
+You can kind of run textual in--
+
+00:25:00.640 --> 00:25:02.480
+will it run?
+
+00:25:02.480 --> 00:25:03.440
+It's not running for me.
+
+00:25:03.440 --> 00:25:07.120
+But anyway, you can run it inline.
+
+00:25:07.120 --> 00:25:12.640
+So normally, if you run a textual application, it takes up your whole terminal area.
+
+00:25:12.640 --> 00:25:15.200
+But this will just take a subset.
+
+00:25:15.200 --> 00:25:17.760
+So you can have a little input screen.
+
+00:25:17.760 --> 00:25:19.760
+So you can have kind of like an input dialogue, maybe.
+
+00:25:19.760 --> 00:25:24.160
+And it's very visual, but doesn't take over everything.
+
+00:25:24.160 --> 00:25:25.600
+Yeah.
+
+00:25:25.600 --> 00:25:27.200
+Yeah, anyway, kind of fun.
+
+00:25:27.200 --> 00:25:29.280
+Textual Enriched, continue to impress.
+
+00:25:29.280 --> 00:25:29.920
+Yeah.
+
+00:25:29.920 --> 00:25:30.640
+How about you?
+
+00:25:30.640 --> 00:25:31.600
+Any extras?
+
+00:25:31.600 --> 00:25:32.480
+I've got a few.
+
+00:25:32.480 --> 00:25:33.840
+Let's see.
+
+00:25:33.840 --> 00:25:38.000
+Let's start with a broadcast straight out of the Philippines.
+
+00:25:38.000 --> 00:25:46.400
+So my keynote, which was entitled "The State of Python in 2024," I gave two weeks ago at
+
+00:25:46.400 --> 00:25:48.080
+PyCon Philippines, is out.
+
+00:25:48.080 --> 00:25:51.680
+And the production quality is super high on this video.
+
+00:25:51.680 --> 00:25:53.040
+So they did a really great job.
+
+00:25:53.040 --> 00:25:54.080
+It was a fun conference.
+
+00:25:54.080 --> 00:25:58.800
+But if you would have loved to hear me give a presentation on the state of Python in 2024,
+
+00:25:58.800 --> 00:26:01.680
+but you weren't there, then you can still check it out now.
+
+00:26:01.680 --> 00:26:02.160
+It's awesome.
+
+00:26:02.880 --> 00:26:03.380
+And--
+
+00:26:03.380 --> 00:26:06.240
+I really enjoyed it, by the way.
+
+00:26:06.240 --> 00:26:06.720
+Yeah.
+
+00:26:06.720 --> 00:26:06.960
+Yeah.
+
+00:26:06.960 --> 00:26:08.160
+Oh, thanks so much.
+
+00:26:08.160 --> 00:26:12.320
+A bunch of the people whose projects we talk about on this show actually get a shout out
+
+00:26:12.320 --> 00:26:12.560
+there.
+
+00:26:12.560 --> 00:26:14.960
+So all right, that's thing one.
+
+00:26:14.960 --> 00:26:16.880
+Thing two, I just want to encourage people.
+
+00:26:16.880 --> 00:26:19.520
+I'm not logged in my GitHub, so I can't unfortunately show it here.
+
+00:26:19.520 --> 00:26:23.600
+But Brian, do you go to your GitHub and you know, there's that feed in the middle that
+
+00:26:23.600 --> 00:26:28.800
+shows all the stuff that's going on and who starred this and who's doing that and stuff.
+
+00:26:28.800 --> 00:26:30.000
+Do you ever use that thing?
+
+00:26:30.000 --> 00:26:30.400
+No.
+
+00:26:30.400 --> 00:26:32.160
+That's what I'm like, that's stupid.
+
+00:26:32.160 --> 00:26:34.240
+This is like 80% of the page and it's in the way.
+
+00:26:34.240 --> 00:26:34.740
+What is this?
+
+00:26:34.740 --> 00:26:37.040
+How do I get past this?
+
+00:26:37.040 --> 00:26:40.720
+I've started paying attention to it and I've found so many cool projects.
+
+00:26:40.720 --> 00:26:45.200
+So I want to inspire people to follow people on GitHub.
+
+00:26:45.200 --> 00:26:47.200
+You can follow Brian and me and see what we're starring.
+
+00:26:47.200 --> 00:26:49.600
+But who's starred what, who's forked what?
+
+00:26:49.600 --> 00:26:54.560
+I found probably three or four really interesting projects just last week by just kind of skimming
+
+00:26:54.560 --> 00:26:56.240
+that for five minutes a week, you know?
+
+00:26:56.240 --> 00:26:56.720
+So--
+
+00:26:56.720 --> 00:26:57.760
+That's pretty cool.
+
+00:26:57.760 --> 00:26:59.680
+Yeah, I was really surprised that that was useful.
+
+00:26:59.680 --> 00:27:01.280
+I guess I need to follow more people.
+
+00:27:01.280 --> 00:27:02.080
+I don't know how many--
+
+00:27:02.080 --> 00:27:06.320
+Exactly, because I should as well, because I hadn't really been following more people
+
+00:27:06.320 --> 00:27:07.360
+because why do you follow them?
+
+00:27:07.360 --> 00:27:08.480
+Well, maybe this is why.
+
+00:27:08.480 --> 00:27:13.200
+On to the thing that continues to perplex me, which is interesting, is that the official
+
+00:27:13.200 --> 00:27:16.480
+way that Python works is through blogspot.com.
+
+00:27:16.480 --> 00:27:19.200
+But nonetheless, important stuff for you all.
+
+00:27:19.200 --> 00:27:24.080
+If you are living in the past, like when I ran JustPath earlier, it said your Python
+
+00:27:24.080 --> 00:27:27.680
+3.10 thing is stupid because that doesn't exist on your computer anymore.
+
+00:27:27.680 --> 00:27:33.440
+But if you have 3.10, 3.9, or 3.8, there are security updates for the older versions of
+
+00:27:33.440 --> 00:27:35.280
+Python, but not the new one.
+
+00:27:35.280 --> 00:27:37.360
+They call them boring security releases.
+
+00:27:37.360 --> 00:27:39.360
+I never think of security releases as boring.
+
+00:27:39.360 --> 00:27:45.520
+They either go from slightly interesting to, oh my gosh, you have my full attention, like
+
+00:27:45.520 --> 00:27:48.240
+the XE thing.
+
+00:27:48.240 --> 00:27:53.200
+Anyway, people can check that out and should probably upgrade if they're running one of
+
+00:27:53.200 --> 00:27:55.120
+those versions, 3.10, 3.9, or 3.8.
+
+00:27:55.120 --> 00:27:59.200
+And if you're running 3.7 or older, too bad, so sad, no updates for you.
+
+00:27:59.200 --> 00:28:01.840
+They may be vulnerable, they may be not, I don't know.
+
+00:28:01.840 --> 00:28:04.560
+And that's just the way it works if you're out of support.
+
+00:28:04.560 --> 00:28:06.480
+That's why you should stay on some of the new stuff somewhat.
+
+00:28:06.480 --> 00:28:09.760
+>> Like the new stuff's really been fairly easy to upgrade to.
+
+00:28:09.760 --> 00:28:10.240
+I haven't...
+
+00:28:10.240 --> 00:28:11.040
+>> It has been.
+
+00:28:11.040 --> 00:28:14.880
+>> And a lot of, most of the part, well, maybe it's just my projects, but I haven't run into
+
+00:28:14.880 --> 00:28:16.080
+any issues really.
+
+00:28:16.080 --> 00:28:21.520
+>> I think if you stay one version behind, there's no effort at all almost to do it.
+
+00:28:22.560 --> 00:28:27.360
+Going from 3.11 to 3.12 was actually the hardest upgrade I've ever done because there was quite
+
+00:28:27.360 --> 00:28:31.440
+a few dependencies I had that used something that was removed as part of the dead batteries
+
+00:28:31.440 --> 00:28:32.800
+thing or something like that.
+
+00:28:32.800 --> 00:28:35.280
+And I can't, and it just wouldn't run.
+
+00:28:35.280 --> 00:28:39.600
+And I'm like, oh my gosh, I got to, I was just waiting until some dependency of a dependency
+
+00:28:39.600 --> 00:28:42.000
+got fixed, but it was slow for some reason.
+
+00:28:42.000 --> 00:28:44.960
+I don't know why, but that got fixed within a few weeks, right?
+
+00:28:44.960 --> 00:28:47.200
+So if you waited a little bit longer, it should be easy.
+
+00:28:47.200 --> 00:28:51.920
+>> Yeah, so one of the questions I got while we're looking at this, how many, I used to
+
+00:28:51.920 --> 00:28:58.400
+run a lot of versions of Python on my Mac, but I got a new Mac recently and I decided
+
+00:28:58.400 --> 00:29:05.040
+to mostly push most, I only run a couple and then I push, do most of my multi Python version
+
+00:29:05.040 --> 00:29:07.360
+testing in CI instead of locally.
+
+00:29:07.360 --> 00:29:10.720
+How many do you have on your machine or regularly?
+
+00:29:10.720 --> 00:29:16.080
+>> Let's see which Python, or one year Python rather, I think.
+
+00:29:16.080 --> 00:29:18.640
+>> I'm sorry to put you on the spot there.
+
+00:29:18.640 --> 00:29:19.280
+>> Oh, no problem.
+
+00:29:19.920 --> 00:29:25.040
+You know, I think I have, I think I have 3.11 and 3.12 and that's it.
+
+00:29:25.040 --> 00:29:25.540
+>> Yeah.
+
+00:29:25.540 --> 00:29:30.960
+>> I think that I don't have 3.9, I don't have 3.10, I definitely don't have anything
+
+00:29:30.960 --> 00:29:31.120
+else.
+
+00:29:31.120 --> 00:29:35.920
+So 3.11 or 3.12, those are the ones that I got right now.
+
+00:29:35.920 --> 00:29:36.400
+I'm with you.
+
+00:29:36.400 --> 00:29:38.480
+I try to, I did not put too much stuff on there.
+
+00:29:38.480 --> 00:29:42.400
+The only reason I really have older stuff on there is because I haven't gone to the
+
+00:29:42.400 --> 00:29:46.000
+trouble of removing it because there's some, a bunch of virtual environments I've created
+
+00:29:46.000 --> 00:29:47.680
+off it that I wanted to deal with.
+
+00:29:47.680 --> 00:29:49.360
+But ideally, I would just have the latest.
+
+00:29:49.360 --> 00:29:55.920
+>> Yeah, I think my normal, I don't know what I've got, but it's, well, with the packages
+
+00:29:55.920 --> 00:29:59.520
+I maintain, I usually have the newest and the oldest that I maintain.
+
+00:29:59.520 --> 00:30:03.520
+And so 3.12 and then however far back I wanted to go.
+
+00:30:03.520 --> 00:30:04.020
+>> Yeah.
+
+00:30:04.020 --> 00:30:09.120
+>> And then, so that talks can find those and I can find those locally, but yeah.
+
+00:30:09.120 --> 00:30:10.560
+>> Yeah, you know what I might do?
+
+00:30:10.560 --> 00:30:16.400
+I'm not doing it because I don't have a huge set of older Pythons I test for.
+
+00:30:16.400 --> 00:30:19.200
+But if I was like you where I did that, maybe I would have Docker.
+
+00:30:19.200 --> 00:30:23.840
+We have some Docker containers, so older ones, you can just do Docker run Python, this command,
+
+00:30:23.840 --> 00:30:24.880
+you know, this file or whatever.
+
+00:30:24.880 --> 00:30:25.360
+I don't know.
+
+00:30:25.360 --> 00:30:26.080
+>> Yeah, maybe.
+
+00:30:26.080 --> 00:30:27.360
+>> Keep it cleaned up.
+
+00:30:27.360 --> 00:30:30.160
+>> Yeah, but they run side by side pretty well.
+
+00:30:30.160 --> 00:30:31.520
+>> Yeah, they do.
+
+00:30:31.520 --> 00:30:32.080
+>> Anyway.
+
+00:30:32.080 --> 00:30:33.520
+>> Just got to keep your path in order.
+
+00:30:33.520 --> 00:30:34.160
+So just path.
+
+00:30:34.160 --> 00:30:36.720
+>> Just path, just path, just Jack.
+
+00:30:36.720 --> 00:30:41.040
+So should we have some fun, something funny?
+
+00:30:41.040 --> 00:30:42.160
+>> Ah, yes.
+
+00:30:42.160 --> 00:30:45.200
+This one, actually, I got it pulled up, but this one is from you.
+
+00:30:45.200 --> 00:30:48.000
+So I'm going to let you take the lead on telling us about this, Joker.
+
+00:30:48.000 --> 00:30:52.160
+>> Okay, so I saw this on LinkedIn, actually.
+
+00:30:52.160 --> 00:30:56.640
+It's from Matt Watson, don't know him, but it's pretty funny.
+
+00:30:56.640 --> 00:31:01.600
+So we've got some definitions of some software definitions for you.
+
+00:31:01.600 --> 00:31:04.000
+So starting, I've got a whole bunch of them.
+
+00:31:04.000 --> 00:31:05.520
+So I'll try to go through them.
+
+00:31:05.520 --> 00:31:09.200
+Technical debt, what technical debt is move fast and don't fix things.
+
+00:31:09.200 --> 00:31:13.520
+Agile development is admitting you have no plan.
+
+00:31:13.520 --> 00:31:16.960
+Test-driven development, guessing the future one test at a time.
+
+00:31:16.960 --> 00:31:18.480
+I love that.
+
+00:31:18.480 --> 00:31:21.440
+Open source is asking somebody else to fix it.
+
+00:31:21.440 --> 00:31:24.000
+Yeah, it's not always working.
+
+00:31:24.000 --> 00:31:28.960
+>> Maybe a slightly different term based on the topic I said this week,
+
+00:31:28.960 --> 00:31:31.760
+running someone else's code from the internet.
+
+00:31:31.760 --> 00:31:34.400
+>> Yeah, right.
+
+00:31:34.400 --> 00:31:37.760
+So CI/CD, automating your mistakes into production.
+
+00:31:37.760 --> 00:31:39.440
+That's awesome.
+
+00:31:39.440 --> 00:31:42.000
+API is also asking somebody else to do it.
+
+00:31:42.000 --> 00:31:43.120
+DevOps, I love this.
+
+00:31:43.120 --> 00:31:46.000
+DevOps is the belief that more tools fix any problem.
+
+00:31:46.000 --> 00:31:51.360
+Microservices are creating enough small problems to avoid one big one.
+
+00:31:51.360 --> 00:31:54.160
+Cybersecurity is playing hide and seek with hackers.
+
+00:31:54.160 --> 00:31:58.480
+And serverless is pretending servers don't exist until the bill comes.
+
+00:31:58.480 --> 00:32:00.480
+Oh yeah, Scrum, I like that.
+
+00:32:00.480 --> 00:32:03.440
+Scrum is group therapy for being behind schedule.
+
+00:32:03.440 --> 00:32:08.960
+>> Hi, my name is Michael, I'm blocked.
+
+00:32:08.960 --> 00:32:11.440
+Hi, Michael.
+
+00:32:12.080 --> 00:32:15.680
+>> I've been blocked for two months.
+
+00:32:15.680 --> 00:32:18.880
+>> Yeah, that's great.
+
+00:32:18.880 --> 00:32:19.120
+>> Yeah.
+
+00:32:19.120 --> 00:32:21.920
+>> We have to do that.
+
+00:32:21.920 --> 00:32:24.800
+Next, I'll have to try to incorporate that.
+
+00:32:24.800 --> 00:32:25.440
+>> There you go.
+
+00:32:25.440 --> 00:32:27.040
+Thanks, Brian.
+
+00:32:27.040 --> 00:32:28.400
+>> Well, thanks a lot.
+
+00:32:28.400 --> 00:32:30.080
+Thanks again for a wonderful episode.
+
+00:32:30.080 --> 00:32:34.880
+And thank you everybody for making, helping to make Python Bytes a wonderful podcast.
+
+00:32:34.880 --> 00:32:39.520
+And we don't ask this much, but if you find this amusing or helpful,
+
+00:32:39.520 --> 00:32:41.120
+please share with a friend.
+
+00:32:41.120 --> 00:32:46.400
+And you can sign up for one of the great ways to do that is to sign up as a friend of the show,
+
+00:32:46.400 --> 00:32:48.480
+get the newsletter, and then you can send that.
+
+00:32:48.480 --> 00:32:50.160
+You can spam your friends with that.
+
+00:32:50.160 --> 00:32:52.240
+We're not going to spam people, but you can.
+
+00:32:52.240 --> 00:32:52.960
+So thanks.
+
+00:32:52.960 --> 00:32:53.840
+>> Indeed.
+
+00:32:53.840 --> 00:32:54.640
+Yeah, thanks.
+
