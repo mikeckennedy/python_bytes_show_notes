@@ -1,6 +1,6 @@
 00:00:00 >> Hello and welcome to Python Bytes, where we deliver news and headlines directly to your earbuds.
 
-00:00:05 This is Episode 233, recorded May 12th, 2021, and I'm Brian Ockett.
+00:00:05 This is Episode 233, recorded May 12th, 2021, and I'm Brian Okken.
 
 00:00:11 >> I'm Michael Kennedy.
 
