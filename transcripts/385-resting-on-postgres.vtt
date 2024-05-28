@@ -1,0 +1,800 @@
+WEBVTT
+
+00:00:00.001 --> 00:00:05.200
+Hello and welcome to Python Bytes where we deliver Python news and headlines directly to your earbuds.
+
+00:00:05.200 --> 00:00:12.960
+This is episode 385, recorded May 27th, 2024. Did I get that right? Yeah. I am Brian Okken.
+
+00:00:12.960 --> 00:00:14.560
+And I am Michael Kennedy.
+
+00:00:14.560 --> 00:00:18.080
+This week's episode is sponsored by Mailchimp. More about them later.
+
+00:00:18.080 --> 00:00:22.960
+If you want to connect with us, we're all on Fosstodon, the show, and Michael and I.
+
+00:00:22.960 --> 00:00:24.480
+We're Fostadonians.
+
+00:00:24.480 --> 00:00:29.920
+Fostadonians, yeah. So those links are on the show notes. Also in the show notes,
+
+00:00:29.920 --> 00:00:35.680
+or at pythonbytes.fm, you can go to live if you want to join us, join the audience.
+
+00:00:35.680 --> 00:00:39.280
+Usually it's Tuesdays at 10am Pacific time.
+
+00:00:39.280 --> 00:00:45.360
+You can also use that link to get older videos too if you want to watch what happens live.
+
+00:00:45.360 --> 00:00:54.880
+Then finally, if you'd like to receive an email a day or two after the show to find out all of the
+
+00:00:54.880 --> 00:00:59.760
+links and to have a link to the show, but make sure if you listen to this and you want to make
+
+00:00:59.760 --> 00:01:04.880
+sure that you don't miss any links and be able to go check those out later, you can become a
+
+00:01:04.880 --> 00:01:10.560
+friend of our show and we'll send you those emails. So you had an announcement before we get started.
+
+00:01:10.560 --> 00:01:14.800
+I do. Well, I just wanted to say, Brian, the reason that we're not just doing this at a
+
+00:01:14.800 --> 00:01:18.400
+normal time, we're just kind of late. And I got some messages from folks in places like New Zealand,
+
+00:01:18.400 --> 00:01:22.480
+like, awesome, this is a perfect time. So there's always a perfect time somewhere in the world.
+
+00:01:22.480 --> 00:01:27.680
+But you've got this thing going on tomorrow. And then for the rest of the week, I'm going to this
+
+00:01:27.680 --> 00:01:34.960
+thing called the giant loop rides, this off-road rally that's at a hot springs and maybe 300 other
+
+00:01:34.960 --> 00:01:39.840
+off-road riders out in the Southeast desert of Oregon and riding the mountains and the desert and
+
+00:01:39.840 --> 00:01:46.640
+open bar, live music, all sorts of shenanigans going on. Anyway, somebody, yeah, that swimming
+
+00:01:46.640 --> 00:01:50.720
+pool is a hot springs, by the way, how crazy is that? If anyone is listening out there and it's
+
+00:01:50.720 --> 00:01:54.880
+also going, just come say hi. That's all I'm saying. But also why we're doing this in the
+
+00:01:54.880 --> 00:02:02.080
+middle of the night for some places. So I would say if you have a podcast that kind of runs late,
+
+00:02:02.080 --> 00:02:05.760
+sometimes it'll make you tired, wouldn't you think? Would you have to rest a little? Yeah.
+
+00:02:05.760 --> 00:02:15.120
+Let's talk about Postgres, post G rest as in Postgres rest API. So this one comes to us from
+
+00:02:15.120 --> 00:02:21.360
+Mark Little. So thanks, Mark, for sending this over. It's a good one. This is basically a web
+
+00:02:21.360 --> 00:02:26.800
+server, web front end for your database. So you've got Postgres and you might think, all right, well,
+
+00:02:26.800 --> 00:02:32.880
+I would just like to expose the tables as endpoints with ability to do queries over
+
+00:02:32.880 --> 00:02:38.880
+HTTP endpoints, you know, somehow pass the query over. You want to have security,
+
+00:02:38.880 --> 00:02:44.640
+things like that. So this is an app that you can run and it automatically with zero API work for
+
+00:02:44.640 --> 00:02:53.600
+you, turns your Postgres instance into a somewhat restricted API basically. Cool, right? Yeah.
+
+00:02:53.600 --> 00:02:57.840
+Yeah. Now, obviously these things, I don't know. I always have mixed feelings when I talk about
+
+00:02:57.840 --> 00:03:03.200
+these things. On one hand, if you just say, I would like, say my view front end or something,
+
+00:03:03.200 --> 00:03:08.960
+or even my Python code to just have access to the database as an API, just read, you know,
+
+00:03:08.960 --> 00:03:13.200
+the crud things of all the tables, you're good to go. This is what you want, right? On the other
+
+00:03:13.200 --> 00:03:18.320
+hand, sometimes I want to have more specific things instead of just, here's the user table.
+
+00:03:18.320 --> 00:03:24.320
+I want you to go through the user, the create new user API endpoint that uses, I don't know,
+
+00:03:24.320 --> 00:03:29.760
+Argon2 for memory hard, password hashing and other checks. And maybe, you know,
+
+00:03:29.760 --> 00:03:33.120
+they're like every time I come up against these things, I'm like, oh, they're really cool. But
+
+00:03:33.120 --> 00:03:39.200
+at the same time, I kind of want a little more specific control over how it works. So if you're
+
+00:03:39.200 --> 00:03:43.520
+just like, I just have a database, I just want to be able to expose it real quick. Let's go postgres
+
+00:03:43.520 --> 00:03:50.560
+rest sort of thing. Cool, right? So the way it works is it's written in Haskell, which you may,
+
+00:03:50.560 --> 00:03:54.400
+and it's 4% Python. So I guess there's a little Python in there, but you know, it doesn't really
+
+00:03:54.400 --> 00:03:59.440
+matter what it's written in. It's just a thing you run. And then, then you talk to it from your
+
+00:03:59.440 --> 00:04:04.720
+Python or from your JavaScript or whatever it is. Okay. So there's a couple of things you care
+
+00:04:04.720 --> 00:04:09.360
+about. One, you probably care about performance. I'm not super familiar with the performance of
+
+00:04:09.360 --> 00:04:13.280
+Haskell, but I believe it runs on top of the JVM. Sorry if I get that wrong, but I think so,
+
+00:04:13.280 --> 00:04:18.480
+which makes it pretty quick. It says it'll do 2000 requests per second on the Heroku free tier,
+
+00:04:18.480 --> 00:04:23.440
+which is pretty fast, actually. Right? That's, that's a pretty wimpy server. And 2000 requests
+
+00:04:23.440 --> 00:04:29.040
+a second is pretty high end. Three reasons for that Haskell, and it's written used in the warp
+
+00:04:29.040 --> 00:04:34.080
+HTTP server, a compile link compiled language with lightweight threads. I also learned about warp. So
+
+00:04:34.080 --> 00:04:38.080
+I'm learning about all sorts of things. It delegates as much as it can to the database.
+
+00:04:38.080 --> 00:04:43.200
+So it's like a really thin layer over the database as I was describing. So serializing Jspawn,
+
+00:04:43.200 --> 00:04:49.200
+JSON responds directly in SQL. It does the data validation, the authorization,
+
+00:04:49.200 --> 00:04:54.400
+combining row count and retrieval, data post in a single command. All those different things are
+
+00:04:54.400 --> 00:05:01.120
+happening in the database, not in this thing. Right? Yeah. And finally, it uses the Haskell
+
+00:05:02.000 --> 00:05:10.320
+instead of SQL, SQL, it's the Haskell library, which manages database connections,
+
+00:05:10.320 --> 00:05:15.840
+a binary protocol for talking to it and is stateless for horizontal scaling. Also very
+
+00:05:15.840 --> 00:05:20.640
+important for security. You don't want to just go and the whole thing is read right on the internet.
+
+00:05:20.640 --> 00:05:27.840
+You know, a little Bobby Tables doesn't find it. So it uses JSON web tokens. And basically what you
+
+00:05:27.840 --> 00:05:32.400
+do is you create a user in the database and then you set authentication like this user can only
+
+00:05:32.400 --> 00:05:36.400
+read and they can only read these tables, but they can write to that table. I don't know. And then
+
+00:05:36.400 --> 00:05:41.840
+that's what you can do when you authenticate over this. Right. So it basically leverages database
+
+00:05:41.840 --> 00:05:47.280
+users and their implicit permissions to control what you can do with the API. There's ways to
+
+00:05:47.280 --> 00:05:52.080
+version the API, which is kind of interesting as the database changes, you could keep it stable,
+
+00:05:52.080 --> 00:05:58.560
+it seems like, and it documents itself through open API. Well, this thing's pretty neat. So if
+
+00:05:58.560 --> 00:06:03.840
+you have a Postgres database, you're like, look, we really just need read, write, update, you know,
+
+00:06:03.840 --> 00:06:08.400
+it's maybe even an internal app. And you just want to have it real simple. Check this out. It's kind
+
+00:06:08.400 --> 00:06:15.120
+of cool. Cool. I didn't know that Heroku had a free tier anymore. But this may let's let's check
+
+00:06:15.120 --> 00:06:21.440
+out. Let's go back and do a little. It may have been from previous times. It Yeah, that statement,
+
+00:06:21.440 --> 00:06:25.840
+it must be from previous times, because I this was updated a month ago, but it didn't. Yeah,
+
+00:06:25.840 --> 00:06:31.440
+I think those are just whatever the free tier was. That's giving you a sense of what you can do.
+
+00:06:31.440 --> 00:06:39.440
+Okay, cool. Yeah. Neat. I want to talk about async IO a little bit. So there's a there's an article
+
+00:06:39.440 --> 00:06:47.840
+called from Jacob Padilla. How Python async IO, how Python async IO works recreating it from
+
+00:06:47.840 --> 00:06:55.440
+scratch. And I kind of like this, this, this idea, because I mean, I love async IO, but sometimes it
+
+00:06:55.440 --> 00:07:00.720
+just feels magical. And to sort of walk through some of the some how it might might be working
+
+00:07:00.720 --> 00:07:07.600
+in the in the background is kind of cool. So it goes through generator generators review talks
+
+00:07:07.600 --> 00:07:14.240
+about the event loop talks about sleeping, then yielding to a weight and a weight async IO. And
+
+00:07:14.240 --> 00:07:18.880
+I just kind of like the format that this is written into this sort of get your get a good
+
+00:07:18.880 --> 00:07:25.040
+mental model of how async IO works. So this is, I guess I highly recommend this article.
+
+00:07:25.040 --> 00:07:32.000
+Looks really fun. The colors are nice to I, you know, sucker for a good web page that's easy to
+
+00:07:32.000 --> 00:07:40.320
+read. But, but this is good. I skimmed it briefly already. And like, yeah, this kind of goes through
+
+00:07:40.320 --> 00:07:45.280
+how a weight async works. I think this sort of feels too magical sometimes, but
+
+00:07:45.280 --> 00:07:51.360
+it is pretty magical. And at the heart of it is generators, right? So generators themselves feel
+
+00:07:51.360 --> 00:07:56.240
+super magical. And once you kind of understand how those work, you understand, well, okay, well,
+
+00:07:56.240 --> 00:08:01.680
+that's how you kind of partition the work. And then you just run it in, in steps, each fragment
+
+00:08:01.680 --> 00:08:04.240
+of the generator and off you go. But yeah, it seems pretty wild.
+
+00:08:04.240 --> 00:08:07.760
+Yeah. So it kind of walks through all the little steps and then it shows what the,
+
+00:08:07.760 --> 00:08:13.440
+so it has like the final bit and then it rewrites the whole thing in actual async IO so that we can
+
+00:08:13.440 --> 00:08:18.400
+see what it looks like. So that's great. Along with that, when I noticed the link that some,
+
+00:08:18.400 --> 00:08:24.080
+there was a camera where I got it from, there was a comment also about if you want to like learn
+
+00:08:24.080 --> 00:08:30.400
+async IO from trying to recreate it from scratch, there was also a David Beasley talk from the,
+
+00:08:30.400 --> 00:08:37.200
+from, I think it's from PyCon. Yeah. PyCon India from 2019. I hadn't watched this. I still haven't
+
+00:08:37.200 --> 00:08:44.000
+watched this, but it's on my list now. Build your own async from David Beasley. Awesome instructor.
+
+00:08:44.000 --> 00:08:48.400
+So I'm sure this is a good video as well. So we'll link, we'll link to that. So some,
+
+00:08:48.400 --> 00:08:51.920
+some learning async IO. Awesome. Good stuff indeed.
+
+00:08:51.920 --> 00:08:57.840
+What else is good is our sponsor Mailtrap. All right. Let's talk about them.
+
+00:08:57.840 --> 00:09:02.240
+This episode is sponsored by Mailtrap, an email delivery platform that developers love.
+
+00:09:02.240 --> 00:09:10.160
+An email sending solution with industry best analytics, SMTP and email API, as well as SDKs
+
+00:09:10.160 --> 00:09:16.960
+for major programming languages and 24/7 human support. Try for free at mailtrap.io.
+
+00:09:16.960 --> 00:09:21.200
+Thank you. Thank you Mailtrap. Let's move on to something a little higher order. Shall we,
+
+00:09:21.200 --> 00:09:21.920
+Brian? Sure.
+
+00:09:21.920 --> 00:09:27.200
+Perfect follow on from what you were talking about. Async IO, parallel programming. It's
+
+00:09:27.200 --> 00:09:32.560
+basically scales the waiting. Now this, this is going to be a dated statement, I believe,
+
+00:09:32.560 --> 00:09:38.800
+but at the moment, Python is not super good at doing computational parallelism. Right.
+
+00:09:38.800 --> 00:09:46.880
+But you know, what is GPUs? GPUs are awesome at doing parallel programming. So, you know,
+
+00:09:46.880 --> 00:09:51.280
+your typical Python program has one thread, or if you don't do anything in most languages,
+
+00:09:51.280 --> 00:09:56.720
+they have one thread. If you scale out your CPUs, maybe you got 16, my Alienware gaming PC has that,
+
+00:09:56.720 --> 00:10:02.720
+my M2 MacBook Pro, I think has 10 threads, you know, but there's way more. It's get a lot more
+
+00:10:02.720 --> 00:10:07.680
+work done if you scale those out. Right. But if you scale the GPUs, they have 16,384 threads,
+
+00:10:07.680 --> 00:10:14.640
+things like that. Right. Incredible. So I ran across this thing called bend, B E N D. And it
+
+00:10:14.640 --> 00:10:20.160
+comes from higher order company, which has a couple of, it's like a runtime for bend and then
+
+00:10:20.160 --> 00:10:25.440
+has bend the language. And it's all about taking things and running them in parallel and making
+
+00:10:25.440 --> 00:10:31.840
+them basically be Python. So it says with bend, you can write parallel code for multi-core CPUs
+
+00:10:31.840 --> 00:10:38.160
+and GPUs without being a C or CUDA, respectively, expert with 10 years experience. And it feels
+
+00:10:38.160 --> 00:10:42.800
+just like Python. So they give us this example. Here's a function called sum, not the best
+
+00:10:42.800 --> 00:10:46.800
+example because it shadows a built-in, but whatever, let's get wrong with it. Right.
+
+00:10:46.800 --> 00:10:53.840
+And so it says def sum, take a depth, and there's some value that it starts with and then adds them
+
+00:10:53.840 --> 00:10:59.520
+all up. Right. So, so some, all the numbers from zero till two to the N and two to the depth,
+
+00:10:59.520 --> 00:11:06.240
+right. As a switch statement that once it gets to the end, it stops and then sort of recurses down
+
+00:11:06.240 --> 00:11:11.360
+as it would. And there's nothing that looks parallel about this whatsoever, but what happens
+
+00:11:11.360 --> 00:11:18.160
+is this code actually runs in parallel, potentially on those thousands of GPU cores. Oh, wow. Wild,
+
+00:11:18.160 --> 00:11:26.960
+right? Yeah. So the way it does that is, there's a picture here, is it breaks these things up into
+
+00:11:26.960 --> 00:11:33.200
+what are called computational graphs instead of work. And then it just, it goes and processes
+
+00:11:33.200 --> 00:11:39.200
+them to see if it, if that part of the graph can be parallelized, which is kind of nuts.
+
+00:11:39.200 --> 00:11:43.840
+So you don't even write the parallel code. It just looks at your code and goes, oh, you,
+
+00:11:43.840 --> 00:11:49.040
+that loop that we just saw, or that recursion type of thing we just saw, that actually could be done
+
+00:11:49.040 --> 00:11:55.040
+recursively by just changing the parameters or something. Right. So pretty wild. And so, yeah,
+
+00:11:55.040 --> 00:12:00.800
+they have this HVM, highly massively parallel runtime that achieves near ideal speed ups as a
+
+00:12:00.800 --> 00:12:05.600
+function across the available cores. And then Ben is the programming language that runs in parallel
+
+00:12:05.600 --> 00:12:12.320
+powered by this thing. Looks like Python. I don't know how compatible say it's standard library is
+
+00:12:12.320 --> 00:12:16.320
+or things like that. Yeah. And then you have this thing called kind, which is a parallel proof
+
+00:12:16.320 --> 00:12:21.120
+checker. Have no idea about that. I just said it's coming soon. So this is available on GitHub
+
+00:12:21.120 --> 00:12:26.400
+and you come over and you can find their language. And guess what? It has 15,000 stars. I'd never
+
+00:12:26.400 --> 00:12:30.960
+even heard of it until recently. It's pretty popular. Written in Rust, not that that's super
+
+00:12:30.960 --> 00:12:36.160
+relevant, but it's like powers a language that looks like Python. That's pretty cool. I'm
+
+00:12:38.080 --> 00:12:44.880
+cautiously optimistic about that. It could be good. So it looks like the real implementation
+
+00:12:44.880 --> 00:12:49.200
+for it is here, although it looks pretty short. I don't know. Updated a couple of days ago.
+
+00:12:49.200 --> 00:12:55.920
+But here it says, I don't know. We'll have to see how large of a thing is it. I guess that's
+
+00:12:55.920 --> 00:13:00.960
+some pretty big scroll bars. So maybe the whole runtime is here. We'll see. Maybe the number of
+
+00:13:00.960 --> 00:13:06.400
+files might be lower, but could have tons of stuff in there. Yeah, that's true. Anyway, is it going
+
+00:13:06.400 --> 00:13:11.600
+to be a thing? I'm not sure. Maybe, maybe not. But it's cool to see people being creative with
+
+00:13:11.600 --> 00:13:18.000
+this kind of stuff. Yeah, actually, it sounds pretty cool. And to, I guess, simplify the way
+
+00:13:18.000 --> 00:13:24.240
+you get your code ready for massive parallel running, if it can just look at your code and go,
+
+00:13:24.240 --> 00:13:29.200
+"Oh yeah, I got it." Yeah, if it can look and say, "This is what's often referred to as
+
+00:13:29.200 --> 00:13:34.240
+embarrassingly parallel." There's like no state shared. You could just take the pieces and break
+
+00:13:34.240 --> 00:13:39.120
+them up and run them on cores. If it just finds those automatically and does that, which is what
+
+00:13:39.120 --> 00:13:45.760
+it claims to do. Yeah, that's great. That's really great. Yeah, really great. All right. Next up,
+
+00:13:45.760 --> 00:13:52.640
+I've got regular expressions. So we're getting all sorts of deep topics today. We are. We sure are.
+
+00:13:52.640 --> 00:13:59.840
+So I ran across, I was looking at Reddit. And so this is an, this book is an older book,
+
+00:13:59.840 --> 00:14:05.520
+about a year, I think it's a year old. It's called the smartest way to learn Python regular
+
+00:14:05.520 --> 00:14:11.520
+expressions. And I don't normally pitch other people's books or anything on the show, but I
+
+00:14:11.520 --> 00:14:15.920
+thought it was kind of nice that it's a lean pub thing. So it's, they're doing their own thing.
+
+00:14:15.920 --> 00:14:20.800
+And I guess I'll get into why I think this is kind of neat, but the minimum price is free. So if,
+
+00:14:20.800 --> 00:14:26.960
+and since they're allowing that, I encourage everybody to throw a few bucks their way if they,
+
+00:14:26.960 --> 00:14:30.800
+if they can, because why not? It's good to have people teaching things.
+
+00:14:30.800 --> 00:14:38.480
+Anyway, ran across it on Reddit and the topics sound neat. So there's a, they go through an
+
+00:14:38.480 --> 00:14:42.720
+introduction of radical expressions. They do an application. I talk about puzzle learning and
+
+00:14:42.720 --> 00:14:49.280
+stuff, and then I skimmed the rest, but it looks like great stuff. And some Python related thing
+
+00:14:49.280 --> 00:14:53.760
+to teach regular expressions is great, would be good. And then I went and watched their video and
+
+00:14:53.760 --> 00:14:58.960
+now I am even more intrigued. So the idea around this book is that modern ways to learn are
+
+00:14:58.960 --> 00:15:04.560
+different than possibly people my age might be used to just reading a book and trying things out.
+
+00:15:04.560 --> 00:15:09.440
+But this is, this is set up. There's a little video introduction to the book. They're using
+
+00:15:09.440 --> 00:15:16.240
+the book itself as a, as a long form teaching people, but it's also, there's a video, there's
+
+00:15:16.240 --> 00:15:21.120
+a video course attached to it. So if you, if like you, you get the book and you're reading through
+
+00:15:21.120 --> 00:15:25.920
+it, there's links to the different course chapters within the book, which is kind of a neat idea.
+
+00:15:25.920 --> 00:15:32.080
+And then they've, there's puzzle solvers for each, each thing you're learning. So you can go
+
+00:15:32.080 --> 00:15:41.120
+apply it in a puzzle environment and they're using a thing called FinFinster. That's an awful name,
+
+00:15:41.120 --> 00:15:47.120
+actually, I think, but F I N X T E R. But but it looks like there's a whole bunch of other people
+
+00:15:47.120 --> 00:15:52.320
+using it too. And I've never tried it, but it's this, I don't know, online trying out some code
+
+00:15:52.320 --> 00:16:00.560
+platform, I think. So I'm, I'm, I'm going to try this out. I'm curious about the whole idea of
+
+00:16:00.560 --> 00:16:06.320
+reading a book and clicking on it and doing that as well. That's, you know, mileage may vary for
+
+00:16:06.320 --> 00:16:10.640
+me because I'm probably going to download this onto a Kindle and I can't click on anything with
+
+00:16:10.640 --> 00:16:15.920
+the Kindle, but at least the one I'm using, but anyway, it might be fun to go through.
+
+00:16:15.920 --> 00:16:21.120
+So yeah, looks excellent. Excellent. Give us a report when you get back.
+
+00:16:21.120 --> 00:16:21.920
+Sure. Yeah.
+
+00:16:21.920 --> 00:16:22.960
+See how it went.
+
+00:16:22.960 --> 00:16:29.360
+Yeah. And you know, not enough regular expression material out there for just deep, diving deep
+
+00:16:29.360 --> 00:16:32.000
+and really getting a, getting your head around it. So.
+
+00:16:32.000 --> 00:16:33.920
+Yeah. They're very powerful if you're good at them.
+
+00:16:33.920 --> 00:16:34.240
+Yeah.
+
+00:16:34.240 --> 00:16:34.720
+Big F.
+
+00:16:34.720 --> 00:16:39.680
+Those are our items. Do we have any extras?
+
+00:16:39.680 --> 00:16:45.520
+I have one that's quite interesting. And I, I don't, somebody gave me a bit of a tip towards
+
+00:16:45.520 --> 00:16:51.680
+this. I don't remember who it was. So I think it was a Mastodon, but thank you. And sorry about
+
+00:16:51.680 --> 00:16:57.600
+forgetting who to credit here on Wikipedia. We have the Python conference, AKA PyCon.
+
+00:16:57.600 --> 00:17:02.240
+And what does it say about it? It says the PyCon, the Python conference, also called PyCon,
+
+00:17:02.240 --> 00:17:06.400
+is the largest annual convention for the discussion and promotion of the Python language.
+
+00:17:06.400 --> 00:17:11.120
+Scroll down a little bit, Brian, you see things like, where was it in 2003? It was in DC
+
+00:17:11.120 --> 00:17:23.040
+at 200 attendees. 2012 was in Santa Clara, 2300. Oh, 2016. Yeah, baby. Portland, 3391. Almost,
+
+00:17:23.040 --> 00:17:34.880
+almost the record. Almost 3393. Two more people beat that number. Came over that number in the,
+
+00:17:35.440 --> 00:17:42.320
+from Cleveland, Ohio in the before days. And then COVID hit, knocked it down and it's slowly
+
+00:17:42.320 --> 00:17:49.040
+building back. Like in Pittsburgh, it was up to 2,500 again. So what was that? It's still got
+
+00:17:49.040 --> 00:17:56.160
+about 50% more to add or a third looking backwards. It's down. That's not what I want to talk about.
+
+00:17:56.160 --> 00:17:59.520
+I want to show you what is in this Wikipedia table right below it.
+
+00:17:59.520 --> 00:18:00.800
+Where we're going next.
+
+00:18:00.800 --> 00:18:04.880
+The long beach, baby. Going to California. Let's go. Going to the beach,
+
+00:18:04.880 --> 00:18:10.640
+going to some warm weather, going to a vacation spot. I will bet you that this significantly beats
+
+00:18:10.640 --> 00:18:16.560
+those numbers because it's just a destination, right? People want to just go there to be there,
+
+00:18:16.560 --> 00:18:16.960
+right?
+
+00:18:16.960 --> 00:18:21.040
+Well, it's kind of nice to see it on the West Coast. I mean, nothing against Pittsburgh,
+
+00:18:21.040 --> 00:18:24.320
+but it's only two hours away from, where was it? Cleveland.
+
+00:18:24.320 --> 00:18:30.320
+Cleveland. Yeah. Yeah. So we did have Salt Lake City in the intermission times,
+
+00:18:30.320 --> 00:18:36.880
+but Salt Lake City was still under a lot of funk. Like it was the first one that came back
+
+00:18:36.880 --> 00:18:40.960
+in person after COVID. So it was kind of funky. I went to the 2023 one.
+
+00:18:40.960 --> 00:18:46.000
+I know that, and I guess I'm going to go on the record of saying, I think that like,
+
+00:18:46.000 --> 00:18:52.800
+there's a lot more cool destination things, destination places on the coasts and Midwest,
+
+00:18:52.800 --> 00:18:59.360
+obviously, but I think doing it kind of in the middle of the country makes sense so that people
+
+00:18:59.360 --> 00:19:02.800
+can get easy flights from anywhere in the country. Just saying.
+
+00:19:02.800 --> 00:19:08.720
+Yeah. What are you optimizing for? Right? Are you trying to move it around? Are you trying to make
+
+00:19:08.720 --> 00:19:12.800
+it as centrally located? Are you trying to make it as cheap as possible? You're trying to make
+
+00:19:12.800 --> 00:19:18.240
+it a destination. All these different things play into this, and this is the biggest funding for the
+
+00:19:18.240 --> 00:19:24.320
+PSF. So it's not just like a curiosity, right? This is the funding for the PSF to a significant
+
+00:19:24.320 --> 00:19:24.880
+degree.
+
+00:19:24.880 --> 00:19:30.480
+It's interesting though that Portland was way back in 2017, and this in 2026 is going to be the
+
+00:19:30.480 --> 00:19:35.680
+next time that it's going to be on the West Coast. I don't think that, I know that everybody on the
+
+00:19:35.680 --> 00:19:39.040
+East Coast thinks that Salt Lake is in the West, but it's not really.
+
+00:19:39.040 --> 00:19:44.800
+Not even the same time zone, Brian. Not even the same time zone. Mountain time,
+
+00:19:44.800 --> 00:19:52.960
+Pacific time. Let's go. Anyway, this is my extra. Planned tentatively, the PyCon after Pittsburgh.
+
+00:19:52.960 --> 00:19:57.440
+So next year is still Pittsburgh. It's round two, but then Long Beach, California. And I'm
+
+00:19:57.440 --> 00:19:58.720
+here for it, Brian.
+
+00:19:58.720 --> 00:20:02.400
+Also, I've always been curious about, sometimes I'm curious about the numbers of like,
+
+00:20:02.400 --> 00:20:07.920
+how many people showed up in Montreal? And it's cool to see. You can just look it up on Wikipedia.
+
+00:20:07.920 --> 00:20:08.960
+Yeah, yeah. It's all right here.
+
+00:20:08.960 --> 00:20:18.480
+I've got something completely random that I, Prince of Persia was a video game from '89.
+
+00:20:18.480 --> 00:20:19.120
+I remember it.
+
+00:20:20.480 --> 00:20:25.040
+Oh, not only was it a video game, it was one of the best video games. It was so good.
+
+00:20:25.040 --> 00:20:28.320
+Yeah. Well, it was like this, one of these cool, like, you know,
+
+00:20:28.320 --> 00:20:32.960
+racer through all sorts of stuff. We had like the little runner thing and had to jump over
+
+00:20:32.960 --> 00:20:37.440
+all sorts of stuff. It was a fun game. And then there was a bunch of, a bunch of different
+
+00:20:37.440 --> 00:20:44.240
+permutations of it. And it's still going strong, I think. Still stuff going on. There's a, anyway,
+
+00:20:45.040 --> 00:20:53.200
+a cool game. But I ran across this, there's a book about it. So Jordan Mechner is a person that
+
+00:20:53.200 --> 00:21:00.640
+wrote it and originally wrote the Prince of Persia game. And he wrote a book called
+
+00:21:00.640 --> 00:21:09.600
+Replay. It's a memoir of an uprooted family. And apparently it goes back to 1938,
+
+00:21:10.320 --> 00:21:17.520
+when somebody in his family, his parents fled Austria to escape the Nazi persecution.
+
+00:21:17.520 --> 00:21:23.040
+And then, you know, he traveled, they traveled to the US. Eventually they went to France. Then
+
+00:21:23.040 --> 00:21:27.600
+they went to eventually, I think, actually, I'm just making this up. I don't know if he ever made
+
+00:21:27.600 --> 00:21:35.600
+it to the US. I think so. But then there's, then he goes back eventually. Yeah. Because he goes
+
+00:21:35.600 --> 00:21:43.920
+back eventually and works in France for a little while. But then did this book about his life,
+
+00:21:43.920 --> 00:21:49.120
+his family and his life story and then about the Prince of Persia. So I'm kind of excited to read
+
+00:21:49.120 --> 00:21:50.400
+this. - I really like these,
+
+00:21:50.400 --> 00:21:56.720
+like looks inside the storytelling of the history of some of these famous games and famous platforms.
+
+00:21:56.720 --> 00:22:01.200
+Yeah. They're very interesting. - Yeah. And apparently his dad wrote the,
+
+00:22:01.200 --> 00:22:04.320
+like wrote the music for the original video game. - Okay.
+
+00:22:04.320 --> 00:22:11.280
+- It's kind of cool. On a, I think, anyway, one of the, one of the older computers in the 80s.
+
+00:22:11.280 --> 00:22:16.320
+So that's it. That's my extra. - Awesome. Let's close it out with a
+
+00:22:16.320 --> 00:22:22.080
+work hack joke. I don't know what you call this, Brian. So we have this woman developer sitting
+
+00:22:22.080 --> 00:22:27.760
+here, pretty happy. And this boss comes in, manager says, "Hmm, I don't like this bash
+
+00:22:27.760 --> 00:22:34.160
+script you created. Write it in Python instead," commands the boss. "Import subprocess. Subprocess
+
+00:22:34.160 --> 00:22:39.440
+call work.sh." Well, that's a day's work done. - Nice.
+
+00:22:39.440 --> 00:22:44.400
+- How about that? Just, if you want me to write in Python, I'll just call the script from Python.
+
+00:22:44.400 --> 00:22:46.640
+Let's go. - Yeah. Well, what are the,
+
+00:22:46.640 --> 00:22:52.160
+what are the times where I'm like, where I early on, I guess not early on. Anyway, 20 years ago or
+
+00:22:52.160 --> 00:23:00.240
+so, I'm, I find myself in a new job and they've got all these builds, make scripts for C++ code.
+
+00:23:00.240 --> 00:23:06.640
+And I can't, they were, they were in batch files and, and bash and all sorts of stuff. And, and
+
+00:23:06.640 --> 00:23:12.160
+I said, can you rewrite this? Cause it's kind of a mess. So I rewrote it in a combination of,
+
+00:23:12.160 --> 00:23:18.960
+I had a combination of bash, Perl, Python, sed, a whole bunch of things, whatever I wanted to,
+
+00:23:18.960 --> 00:23:23.840
+to what I thought was an elegant solution. And the team was horrified. They're like,
+
+00:23:23.840 --> 00:23:29.360
+we're not learning that many languages. I'm like, okay. So I rewrote it all in Python.
+
+00:23:30.000 --> 00:23:36.160
+And that was the first time I, I really grabbed Python for do whatever I want as a shell script
+
+00:23:36.160 --> 00:23:41.920
+language. - Yeah. That's very cool. Yeah. I love it. - Subprocess call. Yeah. - Subprocess.call.
+
+00:23:41.920 --> 00:23:46.320
+That's right. - Yeah. Nice. - Hey, don't wait for it to complete. Just let it go.
+
+00:23:46.320 --> 00:23:53.200
+- Well, yeah. - No error handling needed. Let's, let's just let it run. No, it's a good joke. And
+
+00:23:53.200 --> 00:23:57.120
+that comes from your credit where credit's due, that comes from Linux handbook. - Linux handbook.
+
+00:23:57.120 --> 00:24:03.520
+Nice. Cool. Well, thanks Michael for another wonderful episode. - As always, thanks everyone for
+
