@@ -676,7 +676,7 @@
 
 00:27:49 So if I say, this is an async method, and then in that method, I call await some function call, normal Python's going to create a coroutine.
 
-00:27:58 It's gonna schedule it on the async IO event loop, and it's gonna get to it.
+00:27:58 It's gonna schedule it on the asyncio event loop, and it's gonna get to it.
 
 00:28:01 And that's a lot of overhead, but maybe that function says inside, the first thing is, if this case, just return the cached answer, otherwise go to the database, await the response and so on.
 

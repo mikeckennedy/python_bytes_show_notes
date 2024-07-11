@@ -604,9 +604,9 @@
 
 00:25:55 So anyway, well, so what I wanted to talk about is some of the interesting bits here, which I thought was really kind of cool of Sebastian and others to handle.
 
-00:26:05 So one of the things is they upgraded to Starlet, and I think it's Starlet 0.2 or something.
+00:26:05 So one of the things is they upgraded to Starlet, and I think it's Starlette 0.2 or something.
 
-00:26:12 Anyway, I'm not sure which version of Starlet, but the Starlet version they changed to had a test client update and updated from requests to HTTPX.
+00:26:12 Anyway, I'm not sure which version of Starlet, but the Starlette version they changed to had a test client update and updated from requests to HTTPX.
 
 00:26:24 And that's pretty interesting.
 
