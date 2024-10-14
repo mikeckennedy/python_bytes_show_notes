@@ -1218,7 +1218,7 @@
 
 00:50:30 No problem. Thanks for having me.
 
-00:50:32 Thank you for listening to Python Bytes. Follow the show on Twitter via @pythonbytes. That's Python Bytes as in B-Y-T-E-S. And get the full show notes at pythonbytes.fm. If you have a news item you want featured, just visit pythonbytes.fm and send it our way. We're always on the lookout for sharing something cool. On behalf of myself and Brian Aukin, This is Michael Kennedy.
+00:50:32 Thank you for listening to Python Bytes. Follow the show on Twitter via @pythonbytes. That's Python Bytes as in B-Y-T-E-S. And get the full show notes at pythonbytes.fm. If you have a news item you want featured, just visit pythonbytes.fm and send it our way. We're always on the lookout for sharing something cool. On behalf of myself and Brian Okken, This is Michael Kennedy.
 
 00:50:54 Thank you for listening and sharing this podcast with your friends and colleagues.
 
