@@ -1,0 +1,965 @@
+WEBVTT
+
+00:00:00.001 --> 00:00:04.440
+Hello and welcome to Python Bytes, where we deliver Python news and headlines directly to
+
+00:00:04.440 --> 00:00:10.780
+your earbuds. This is episode 407, recorded October 28, 2024. And I am Brian Okken.
+
+00:00:10.780 --> 00:00:11.660
+And I'm Michael Kennedy.
+
+00:00:11.660 --> 00:00:18.520
+And this week we're sponsored by ourselves. So please check out our offerings. There's all of
+
+00:00:18.520 --> 00:00:24.060
+the fabulous courses at Talk PythonTraining there. And then over at pythontest.com,
+
+00:00:24.060 --> 00:00:27.760
+we've got the complete pytest course and also the short course, Hello pytest.
+
+00:00:27.760 --> 00:00:32.120
+And also thank you to our Patreon supporters who we don't do a shout out enough to,
+
+00:00:32.120 --> 00:00:36.120
+but thank you very much. We appreciate it. If you'd like to connect with the show,
+
+00:00:36.120 --> 00:00:42.620
+we'd love to hear from you. You can connect with us on Fostadon. We're at mkedeny,
+
+00:00:42.620 --> 00:00:47.400
+at Brian Okken, and at Python Bytes, all at Fostadon. And also those links are in the show notes,
+
+00:00:47.400 --> 00:00:55.980
+as well as in at pythonbytes.fm. You can find out when the next upcoming episode is going to be.
+
+00:00:55.980 --> 00:00:59.740
+And I was going to mention this later. I'll just go ahead and mention it right now.
+
+00:00:59.740 --> 00:01:04.520
+Next week on November 4th, we are going to be recording early. So it'll be at 730 in the
+
+00:01:04.520 --> 00:01:09.240
+morning instead of our normal time. And that's Pacific time instead of our normal 10 a.m. Pacific
+
+00:01:09.240 --> 00:01:16.740
+because of work for me. Anyway, so that's what's going on next week. But at pythonbytes.fm,
+
+00:01:16.740 --> 00:01:21.340
+you can sign up for our newsletter. You can get the show notes. You can sign up to and look to see
+
+00:01:21.340 --> 00:01:26.380
+when the next live recording is. But right now, I'd like to hear from Michael to see what you had
+
+00:01:26.380 --> 00:01:27.160
+to talk about.
+
+00:01:27.160 --> 00:01:34.140
+Shall we teleport, transport to the future? Brian, I want you to imagine a time when it is not so gloomy
+
+00:01:34.140 --> 00:01:40.940
+and rainy about 11 months from now, when we have a new version of python that comes onto the scene 314.
+
+00:01:40.940 --> 00:01:48.540
+And that future can be for you now in a limited sense because 314 alpha one is now available.
+
+00:01:48.540 --> 00:01:50.420
+The pi version of pi, thorn.
+
+00:01:50.420 --> 00:01:58.700
+That's right. So that's the first alpha one release. And there will be seven in theory,
+
+00:01:58.700 --> 00:02:03.580
+you know, by plan, at least unless something goes wrong. This is the first of seven alpha releases
+
+00:02:03.580 --> 00:02:08.940
+before we go beta, before we go release candidate, and then we finally ship. Right. So it has some of
+
+00:02:08.940 --> 00:02:14.460
+the new ideas, but not all of the new ideas. It comes with performance improvements and actually quite a bit
+
+00:02:14.460 --> 00:02:19.180
+more, which is pretty interesting. So if you read the blog post announcement, well, it looks like,
+
+00:02:19.180 --> 00:02:25.660
+okay, so we've got this new PEP called deferred evaluation of annotations. Now, I think this was
+
+00:02:25.660 --> 00:02:33.020
+meant to land in 311 or 312, something like that. And all of the frameworks and libraries that thought
+
+00:02:33.020 --> 00:02:35.420
+typing should matter. Like fast step behind.
+
+00:02:35.420 --> 00:02:41.340
+Yes. And typer and pydantic and so on. And I count myself as a big fan of all of those libraries.
+
+00:02:41.340 --> 00:02:46.860
+Those all those people are like, Hey, hold on, hold on. This is not just a thing for my pie.
+
+00:02:46.860 --> 00:02:51.580
+These types are not just for my pie. And if you take away their evaluation, all of our awesome
+
+00:02:51.580 --> 00:02:56.220
+frameworks go away. And I think that would be a massive step back for Python. A lot of people
+
+00:02:56.220 --> 00:03:01.420
+agreed, made some changes. So that wasn't done as far, at least in a limited way. But you know,
+
+00:03:01.420 --> 00:03:07.100
+having these type annotations does have a performance cost of say an import, potentially,
+
+00:03:07.100 --> 00:03:14.140
+it does have weird issues where you've got indirect or sort of half defined types that you want to
+
+00:03:14.140 --> 00:03:18.460
+talk about. I have a function or a method on a class, and I want to say it returns one of those
+
+00:03:18.460 --> 00:03:22.620
+classes or, you know, it's like an equals. It takes another one of these classes and it tells you if
+
+00:03:22.620 --> 00:03:28.940
+it's equal to it. So you had to do weird tricks like typing dot self, or you could have quotes,
+
+00:03:28.940 --> 00:03:32.860
+the name of a type that's not defined yet, but eventually someday it will be defined if you
+
+00:03:32.860 --> 00:03:37.020
+get around to looking for it. So this will allow you to not worry about those types of things.
+
+00:03:37.020 --> 00:03:42.860
+And there's a new API if you consume them, if you were Pydantic or FastAPI or whatever,
+
+00:03:42.860 --> 00:03:49.740
+there's a new way to say, let me read the annotation metadata about this. That's slightly different,
+
+00:03:49.740 --> 00:03:54.940
+but it's still there. Okay. Improved error messages. We all love improving, further improved
+
+00:03:54.940 --> 00:03:58.540
+error messages. So there's that. And then, so that sounds like when you read it like, okay,
+
+00:03:58.540 --> 00:04:05.100
+that's the thing. But actually, if you go and look, where's the link? The release notes are
+
+00:04:05.100 --> 00:04:15.100
+in here somewhere. So you click here and you, there's a release notes. Oh, really? Where did it go?
+
+00:04:15.100 --> 00:04:20.540
+Maybe I haven't had notes. But anyway, Brian, there's a ton of changes, a ton of changes from there.
+
+00:04:20.540 --> 00:04:23.740
+I think, oh, I know where it is. They don't call it release notes. Here's how you do it.
+
+00:04:24.540 --> 00:04:30.300
+You click on the PEP and then you scroll down until you get past the PEP and it has other changes.
+
+00:04:30.300 --> 00:04:35.020
+So yeah. So there's, if you go to either of those links, it'll tell you about their message,
+
+00:04:35.020 --> 00:04:40.940
+tell you about the PEP. But then there's, if you look at the scroll bar, a bunch of stuff below that.
+
+00:04:40.940 --> 00:04:45.420
+For example, incorrect use. Yeah. I think that's actually the news, not the stuff that was called out.
+
+00:04:45.420 --> 00:04:52.300
+Incorrect usage of await and asynchronous comprehensions is now detected. I don't know exactly what you could have
+
+00:04:52.300 --> 00:04:58.060
+done wrong before, but if you're doing it wrong, I guess. Anyway, if you're doing it wrong.
+
+00:04:58.060 --> 00:05:02.940
+Well, apparently like assert await one. Yeah. So I think what the issue is, you could await a thing
+
+00:05:02.940 --> 00:05:08.220
+that is not awaitable potentially in the list comprehension. So now you'll get a warning.
+
+00:05:08.220 --> 00:05:09.980
+Okay. Is it warning or error?
+
+00:05:09.980 --> 00:05:10.060
+Syntax error.
+
+00:05:10.060 --> 00:05:10.060
+Syntax error.
+
+00:05:10.060 --> 00:05:16.460
+Yeah. Syntax error. But you can disable the syntax error because apparently it used to work. If you want to
+
+00:05:16.460 --> 00:05:22.220
+just keep doing that, that's fine. Let's see. Some stuff about dunder debug. The numerical things. Now,
+
+00:05:22.220 --> 00:05:28.300
+have a float dot from number and complex dot from number, which converts to a float type or a complex
+
+00:05:28.300 --> 00:05:33.660
+type, which is somewhat interesting. So the thing is, this is not a parsing operation. It takes one
+
+00:05:33.660 --> 00:05:37.500
+number and converts it. And if you give it a string, it'll be an error. So this is like, I just want to
+
+00:05:37.500 --> 00:05:40.620
+make sure I'm always working in numbers and convert them in probably a more efficient way.
+
+00:05:40.620 --> 00:05:45.100
+Oh, better than like a cast thing. Yeah. Yeah. Yeah. Where the cast is just
+
+00:05:45.100 --> 00:05:50.620
+with a type annotation type of deal. Whereas this is a true transformation, right?
+
+00:05:50.620 --> 00:05:56.540
+Nice. So we get the new annotation lib, which talks about, which provides those features that I talked about for
+
+00:05:56.540 --> 00:06:03.820
+PEP 749, the deferred type annotations. Arg pars, get some updates. AST, concurrent features,
+
+00:06:03.820 --> 00:06:10.300
+C types, decimal, daytime, disk, fractions, functools, HTTP. It's funny. You know, HTTP, this was something
+
+00:06:10.300 --> 00:06:16.140
+nice. You can say Python dash M HTTP, that server, I think is it, whatever. So if you have just
+
+00:06:16.140 --> 00:06:22.140
+a directory and you're like, I need to have this as a web view. For example, if you have a, an HTML file
+
+00:06:22.140 --> 00:06:27.580
+there and it says, I want to open up forward slash some CSS file or forward slash some JavaScript file
+
+00:06:27.580 --> 00:06:32.140
+or something along those lines. If you just open it, it goes, I don't know what these files are. Right. But if this
+
+00:06:32.140 --> 00:06:36.620
+web server were to serve it, it would easily work. So you could just type Python dash M space,
+
+00:06:36.620 --> 00:06:42.300
+ACP dot server, enter, and it'll pull up a little web, like no, no op web server that you can then
+
+00:06:42.300 --> 00:06:45.260
+actually interact with that stuff with. So it now has a dark mode. Okay.
+
+00:06:45.260 --> 00:06:48.700
+Oh, you should have led with that, man. That's cool.
+
+00:06:48.700 --> 00:06:55.260
+Yeah. This is contributed by Jorick Hanson. And I thought, okay, Jorick must be a huge fan of dark
+
+00:06:55.260 --> 00:06:56.220
+mode to want.
+
+00:06:56.220 --> 00:06:57.900
+As am I. Yes. Yeah.
+
+00:06:57.900 --> 00:07:01.980
+Right. Okay. Jason, get some updates. Operator ops,
+
+00:07:02.220 --> 00:07:05.500
+Pathlib, Pathlib, actually the changes to Pathlib are interesting. I'm going through this list to
+
+00:07:05.500 --> 00:07:11.260
+point out, like there's a lot of changes just in this alpha one release, but Pathlib now has,
+
+00:07:11.260 --> 00:07:17.020
+add methods like new functionality to Pathlib to recursively copy and move files and directories.
+
+00:07:17.020 --> 00:07:22.700
+Oh yes. I'm here for this. Yeah. Copy. Copy is a file or directory tree to a destination. Copy
+
+00:07:22.700 --> 00:07:27.580
+into copies into a destination directory, move and then move into. That's awesome.
+
+00:07:27.580 --> 00:07:30.940
+That's good. So Barney Gale did that. Thank you. PDB, pickle,
+
+00:07:30.940 --> 00:07:36.140
+PyDoc, sim table, sys, and unit tests. It ain't dead. No, it ain't.
+
+00:07:36.140 --> 00:07:36.860
+Anyway.
+
+00:07:36.860 --> 00:07:37.740
+In space.
+
+00:07:37.740 --> 00:07:43.260
+So there's also optimizations. For example, asyncio is now implemented using doubly linked list
+
+00:07:43.260 --> 00:07:46.860
+implementations. Hat tip for the, comp side data structures.
+
+00:07:46.860 --> 00:07:53.420
+Level up there for native tasks, which speeds up execution by 10% on standards, standard high
+
+00:07:53.420 --> 00:07:57.020
+performance benchmarks and reduces memory usage. So who wouldn't want that? That sounds great.
+
+00:07:57.020 --> 00:07:57.020
+Exactly.
+
+00:07:57.020 --> 00:08:01.100
+Exactly. All right. There's more you can read about it. And I just touched on it. Like each
+
+00:08:01.100 --> 00:08:06.380
+thing I said had a paragraph or list of bullet points you could go into if you wanted. So that's it. Now
+
+00:08:06.380 --> 00:08:10.300
+back to the future, back to the present, whatever, back to their current time.
+
+00:08:10.300 --> 00:08:17.500
+Yeah. Or the fast time. So just last week on October 21st, episode 406, we talked about,
+
+00:08:17.500 --> 00:08:22.860
+we talked about a lot of stuff, but one of the things was PEP 735 with dependency groups in
+
+00:08:22.860 --> 00:08:28.940
+pyproject.toml and I didn't know when we could play with them. And the answer is now because,
+
+00:08:28.940 --> 00:08:36.460
+um, because UV decided to do that right away. So, UV just had a, put a change in,
+
+00:08:36.460 --> 00:08:45.740
+in, in, in, in version 0.4.27, in the change log, they say, they're the dependency groups are
+
+00:08:45.740 --> 00:08:52.220
+supported, which is super cool. there's even a PEP support for PEP 735. I couldn't believe this
+
+00:08:52.220 --> 00:08:56.860
+was so fast. It was like just a few days after we talked about it. so they must listen to the
+
+00:08:56.860 --> 00:09:01.340
+podcast. That's pretty awesome. Yeah, probably. And this was like, oh yeah, three days ago, the,
+
+00:09:01.340 --> 00:09:07.820
+it was merged in. so this is pretty cool. So there's a whole bunch of added stuff. And so I went
+
+00:09:07.820 --> 00:09:14.460
+off and played with it. so there's, there's a --group is that added to UV add and UV remove.
+
+00:09:14.460 --> 00:09:19.100
+So the, when you add dependencies or remove dependencies, you can say group and it puts
+
+00:09:19.100 --> 00:09:24.700
+them in groups, the --dev and things like that. There's a couple of those, those,
+
+00:09:24.700 --> 00:09:31.580
+so --dev used to be an extra dependency. Now it's a dependency group called dev. And,
+
+00:09:31.580 --> 00:09:38.540
+and so --dev is the same as saying --group dev. it's more clear in the,
+
+00:09:38.540 --> 00:09:43.660
+in, in the list, in the documentation, if the documentation is updated. So there's a couple
+
+00:09:43.660 --> 00:09:49.500
+of things where it, it isn't quite updated. So, there's a lot of, it was very clear on how to
+
+00:09:49.500 --> 00:09:56.380
+add dependencies to dependency groups with UV. Now you can see, you say UV add or, UV remove,
+
+00:09:56.380 --> 00:10:03.020
+um, that, that works great. but how do you install them then? So that's what I tried to play with.
+
+00:10:03.020 --> 00:10:07.980
+So, also, the, the documentation for default groups is up so you can,
+
+00:10:07.980 --> 00:10:13.900
+click around in the UV talks about, default groups and dependency groups. and here we have
+
+00:10:13.900 --> 00:10:19.420
+like the dev for pitests. Of course, you're going to have pitests in your dev dependencies. and
+
+00:10:19.420 --> 00:10:25.980
+there's the, there's the little tip for the, the --dev flags. Okay. So I'm like, okay,
+
+00:10:25.980 --> 00:10:32.380
+so how do I install stuff? So I expected what I expected to have work is to say UV pip install dash dash
+
+00:10:32.380 --> 00:10:38.220
+--group dev and be able to just install those and not the project. Well, that doesn't
+
+00:10:38.220 --> 00:10:47.020
+work yet. So, there is a issue, filed by Hinnick and the, of this, this should work and it
+
+00:10:47.020 --> 00:10:53.420
+doesn't, pip install group, but the, the issue is that they want to, they want to be like the same
+
+00:10:53.420 --> 00:10:59.420
+compatibility with the interface for pit. So they're just waiting for a pipe EA to define what that interface
+
+00:10:59.420 --> 00:11:04.860
+uses. And that's fair. So, so we've got all these dependencies and you can't install stuff, right?
+
+00:11:04.860 --> 00:11:12.540
+No, not quite. So I asked, I also asked on LinkedIn, if anybody knew and, Tushar,
+
+00:11:12.540 --> 00:11:19.660
+responded saying, Hey, the docs, which they don't, but it says UV sync group will work. So I checked out
+
+00:11:19.660 --> 00:11:25.180
+the docs and I can't find it. The sync doesn't talk about groups, but it does work. I tried it. You could,
+
+00:11:25.180 --> 00:11:31.500
+so essentially this works. So, so what do you do? You create, you have a, you say you added a
+
+00:11:31.500 --> 00:11:36.140
+dependency group, then you can say UV sync. And if you add the group like --group,
+
+00:11:36.140 --> 00:11:41.660
+and then the group name, and you can add a bunch of those, then your virtual environment will sync
+
+00:11:41.660 --> 00:11:47.580
+to match what your project says. So basically that's how you can install. You can use sync to install your
+
+00:11:47.580 --> 00:11:52.460
+stuff, long winded, but that's a, that's how you can do it. So nice. Oh, that's awesome.
+
+00:11:52.460 --> 00:11:57.420
+Anyway. Yeah. So this lets you say, unlike a requirements.dev, it lets you say,
+
+00:11:57.420 --> 00:12:03.660
+here's a separate set of dependencies that I need for a certain action or set of tasks on my project.
+
+00:12:03.660 --> 00:12:07.820
+It doesn't necessarily pull in the base dependencies, right? That's the big, the big difference.
+
+00:12:07.820 --> 00:12:13.500
+Well, that's the, that's the idea, but with UV, it's different. So with UV currently with using
+
+00:12:13.500 --> 00:12:20.380
+sync, it will pull in your base dependencies and the extras. you can't do just the group yet.
+
+00:12:20.380 --> 00:12:24.460
+Got it. Cause it's not defined. It's not agreed upon yet. How to say it.
+
+00:12:24.460 --> 00:12:29.340
+Right. So, the syntax is there though. So you can play with syntax and I'm, it's very
+
+00:12:29.340 --> 00:12:35.820
+comfortable. I'm actually, I probably, there would be very seldom, like for me, I'm okay with this being,
+
+00:12:35.820 --> 00:12:40.300
+having to install the project and then the dependencies, but there's just, there are times
+
+00:12:40.300 --> 00:12:45.100
+where you just want to install a group, like to build the documentation or something like that.
+
+00:12:45.100 --> 00:12:50.220
+Yeah. I'm, I'm fine with it as well. You know, one that might be, on most people wouldn't
+
+00:12:50.220 --> 00:12:55.660
+guess for, but in the ML space, some of these dependencies are massive. For example, if you want
+
+00:12:55.660 --> 00:13:02.140
+to use the large English model for spacey, you specify that as specified as a dependency, you don't
+
+00:13:02.140 --> 00:13:07.180
+Python, maybe you run it as a Python call. Anyway, that, that thing is like 500 megs or something.
+
+00:13:07.180 --> 00:13:10.060
+Right. So you might want to just not download it and install that as well.
+
+00:13:10.060 --> 00:13:15.420
+Right. Especially if a, if you have like a modular CI system where one of the build stages is like,
+
+00:13:15.420 --> 00:13:19.820
+uh, built in documentation or linting, static linting or something like that, you might not
+
+00:13:19.820 --> 00:13:25.420
+want to pull in the world just to do one of your stages. So yeah, that's a great, great case. Okay.
+
+00:13:25.420 --> 00:13:33.020
+Let's dive into the next thing, huh? Okay. Dive comes to us unknowingly by Mike feeder.
+
+00:13:33.020 --> 00:13:39.820
+let's see. Yeah. Mike Fiedler. So he mentioned this in a group discussion that I was also looking at.
+
+00:13:39.820 --> 00:13:43.660
+I don't know that he sent it in specifically for us, but here it is. I'm taking it because
+
+00:13:43.660 --> 00:13:50.540
+it's a cool idea. So here's the thing. If you have some sort of container system, like a Docker image,
+
+00:13:50.540 --> 00:13:55.580
+you have a bunch of steps. And when you apply the way you make the containers, as you go to a Docker
+
+00:13:55.580 --> 00:14:00.860
+file and you put in lines, like do this action, then this action, then this action. And they can be,
+
+00:14:00.860 --> 00:14:06.620
+they're usually some kind of Linux command, or maybe you'll copy these files or run this Python command
+
+00:14:06.620 --> 00:14:11.740
+once you've copied the right stuff over. And so they can be big, like apt install this one thing,
+
+00:14:11.740 --> 00:14:18.220
+but this one thing has 20 dependencies, or you might be running, install the development requirements or a
+
+00:14:18.220 --> 00:14:24.300
+compiler that you didn't need. So you might end up with slow builds and large images. What do you do
+
+00:14:24.300 --> 00:14:29.260
+about that? You run this dive thing on it. So this thing's pretty cool. So what it does is there's a little,
+
+00:14:29.260 --> 00:14:34.940
+a animated graphic you can have here if you go to the GitHub page and, you know, hat tip for anything
+
+00:14:34.940 --> 00:14:43.100
+UI, please animated GIF would be awesome, wouldn't it? So anyway, you can have this here. And the idea is,
+
+00:14:43.100 --> 00:14:49.900
+it basically allows you to see every layer. So each line of code that you've run, like make a directory,
+
+00:14:49.900 --> 00:14:56.620
+copy these files, UV pip install dash R requirements, or something along those lines. And each line you click on,
+
+00:14:56.620 --> 00:15:03.020
+it gives you all the files, like a tree that you can explore with the file size of the, of the
+
+00:15:03.020 --> 00:15:08.220
+image, the resulting image, and then also kind of a delta. So as you click around, it'll say these files
+
+00:15:08.220 --> 00:15:13.340
+were added, these files were changed, these files were deleted on this step. So you can see this is the
+
+00:15:13.340 --> 00:15:18.620
+reason this file is here because on line four, we ran this command, which added these files. Why is that?
+
+00:15:18.620 --> 00:15:19.500
+Oh, that's cool.
+
+00:15:19.500 --> 00:15:20.300
+Isn't it? Right?
+
+00:15:20.300 --> 00:15:20.780
+Yeah.
+
+00:15:20.780 --> 00:15:26.140
+So if you were shipping containers around, shipping images around, you know, like pushing it to Docker
+
+00:15:26.140 --> 00:15:29.580
+Hub and then pulling it somewhere else, like you should definitely look at this. It's not something
+
+00:15:29.580 --> 00:15:33.340
+I'll probably care about because I just build my containers on the server, then use them, which is
+
+00:15:33.340 --> 00:15:38.620
+also a way to do it. But if you ship them around and you care about their size or they're building slow
+
+00:15:38.620 --> 00:15:40.220
+or whatever, this is awesome. Check this out.
+
+00:15:40.220 --> 00:15:44.060
+Also for security concerns to make sure things don't get added that you don't know about.
+
+00:15:44.060 --> 00:15:49.100
+Right. Or even just, I want to make sure that there's no compilers on here because if somebody
+
+00:15:49.100 --> 00:15:53.420
+were to break into the container and they could use the compiler, then they could say, upload some
+
+00:15:53.420 --> 00:15:58.860
+C++ code, compile it and run it. Right. You know, the so-called living off the land sort of issues
+
+00:15:58.860 --> 00:16:05.820
+after somebody breaks into a thing. So you just say dive space your image, or you can alias it to,
+
+00:16:05.820 --> 00:16:11.340
+this is pretty nice actually. So there's something I've started doing with some of the tools if I'm
+
+00:16:11.340 --> 00:16:15.740
+already on a system that has Docker. So you can do this with glances. You can do this with dive.
+
+00:16:15.740 --> 00:16:21.020
+You can do this with other things as one way to do this is I could brew install dive onto my Mac,
+
+00:16:21.020 --> 00:16:25.980
+but then who knows what that's doing to my computer. I'm running arbitrary code off the internet. I
+
+00:16:25.980 --> 00:16:32.220
+probably trust it, but you know, right. So what you can do is you can alias. So you can run this from
+
+00:16:32.220 --> 00:16:38.220
+Docker and then you can alias dive to just be the sequence of Docker commands that you want to run. So
+
+00:16:38.220 --> 00:16:42.380
+even dive itself runs in Docker and then it talks to the other Docker container that you pointed at,
+
+00:16:42.380 --> 00:16:45.900
+and that's it, which is a really nice pattern that's getting to be more popular.
+
+00:16:45.900 --> 00:16:47.100
+It's Docker inception.
+
+00:16:47.100 --> 00:16:51.500
+It's, it's Dockers all the way down, but yeah, you just create an alias and then it's just Docker run
+
+00:16:51.500 --> 00:16:57.500
+dash it, remove the image, map the volume it needs over and then off it goes. Yeah, it's really cool.
+
+00:16:57.500 --> 00:17:02.540
+All right. What else real quick? I'll wrap this up. so it'll show your image broken down by layer.
+
+00:17:02.540 --> 00:17:09.260
+Like I said, what's changed. It has a metric like cyclomatic complexity equivalent, but for Docker,
+
+00:17:09.260 --> 00:17:15.020
+they made this up, I believe an estimated image efficiency. The lower left pane of the base layer
+
+00:17:15.020 --> 00:17:19.340
+shows an experimental metric that'll guess how much wasted space your image contains. That's kind of
+
+00:17:19.340 --> 00:17:24.460
+interesting. you could do a quick build analytic, a bit, a quick build test. So instead of going and
+
+00:17:24.460 --> 00:17:30.220
+building the thing and then running dive, you can say dive build and it'll actually build the thing
+
+00:17:30.220 --> 00:17:35.980
+and then test it instantly. So it was like one line. And then there's CI integration, for, you know,
+
+00:17:35.980 --> 00:17:40.380
+basically doing some of this stuff in CI and ways in which you can make it fail the CI if it fails
+
+00:17:40.380 --> 00:17:44.780
+some metrics and so on. Oh, that's cool. Yeah. Pat Decker out there says, I've been using
+
+00:17:44.780 --> 00:17:49.420
+dive for a while. Neat. Awesome. Glad to hear the testimony. Yeah. So yeah. And people can check
+
+00:17:49.420 --> 00:17:55.660
+out obviously it's, it's open source written and go 46,000 get up stars. So it's, pretty well
+
+00:17:55.660 --> 00:18:00.940
+known and used. That's pretty nice. Also, I like the, this CI integration because if I can't get it
+
+00:18:00.940 --> 00:18:07.900
+from to a feature from the command line, it doesn't exist. I was concerned. So anyway, cool. Nice.
+
+00:18:07.900 --> 00:18:13.500
+I've, I've got to just, I guess a little like blast. We talked about the future. Let's talk about the past
+
+00:18:13.500 --> 00:18:18.540
+a little bit. I had a question. I haven't talked about pytest metadata for a while,
+
+00:18:18.540 --> 00:18:22.620
+but I had a question just this last week. Somebody, got ahold of me and said, Hey,
+
+00:18:22.620 --> 00:18:28.780
+um, I'm, I've got these, these, pytest CI system, the pytest CI system put together. I'd like to,
+
+00:18:28.780 --> 00:18:35.420
+I'd like to send some extra data from the test environment to, to the, to the report server.
+
+00:18:35.420 --> 00:18:42.140
+Is there a way to get metadata, like extra metadata and pytest to like add it to the, to the results and
+
+00:18:42.140 --> 00:18:46.940
+then put it somewhere else in the, in the result system. And I said, well, have you checked out the
+
+00:18:46.940 --> 00:18:53.500
+plugin called pytest metadata? It does exactly that. so I guess I'm just reminding everybody
+
+00:18:53.500 --> 00:18:58.380
+that pytest metadata is a really cool plugin. It does exactly what you would think it would do.
+
+00:18:58.380 --> 00:19:03.420
+It bundles metadata with your results, or at least that's exactly what I think it would do.
+
+00:19:03.420 --> 00:19:07.180
+it isn't testing your metadata. It's adding metadata to the, to the results.
+
+00:19:07.180 --> 00:19:12.940
+So some of the things that does right off the bat, which is kind of fun, is it automatically stuffs in,
+
+00:19:12.940 --> 00:19:19.740
+uh, for the account, right? Yep. Four different keys. It's key value pairs for the metadata. It does
+
+00:19:19.740 --> 00:19:25.740
+the Python version, the platform. So Python version is like, you know, whatever Python version,
+
+00:19:25.740 --> 00:19:30.460
+the platform is a string that, that we get out from Python to say what kind of like, you know,
+
+00:19:30.460 --> 00:19:37.340
+for macOS it's Darwin or something else. and then, the packages, it lists all the pytest,
+
+00:19:37.340 --> 00:19:43.500
+all the pytest packages that are there. and then actually it says the description pytest packages.
+
+00:19:43.500 --> 00:19:47.740
+I think it's, I'm gonna have to check this out. I'm not sure if it's all packages that are available
+
+00:19:47.740 --> 00:19:51.180
+or just the ones associated with it. Yeah. The name says pytest, but the example
+
+00:19:51.180 --> 00:19:56.620
+lists more than pytest, right? Yeah. Yeah. So I'm not sure. but then there's plugins,
+
+00:19:56.620 --> 00:20:01.580
+and it lists all the, the pytest plugins that are there, that you have, bundled,
+
+00:20:01.580 --> 00:20:07.580
+but I don't really use it for that. I mean, that's interesting, but really I add stuff. So we've got
+
+00:20:07.580 --> 00:20:13.260
+like my, I I'm often the, the target environment that I'm testing. What version is that? What, what,
+
+00:20:13.260 --> 00:20:19.180
+what extra packages are on that? So if I'm, I'm testing, you know, embedded systems, so I'm,
+
+00:20:19.180 --> 00:20:23.820
+I'm checking information about the system. I'm testing and adding that to the metadata frequently,
+
+00:20:23.820 --> 00:20:27.420
+but you can do whatever you want, but this adding is cool and it's really easy to do.
+
+00:20:27.420 --> 00:20:32.860
+You can add it during, you can even add it at the beginning, like on command line,
+
+00:20:32.860 --> 00:20:36.940
+if you know it at command line, but within the test, you can do it within, within a fixture,
+
+00:20:36.940 --> 00:20:41.420
+within a test as well. You're going to add metadata and it's reported. It's reported in the command
+
+00:20:41.420 --> 00:20:47.820
+line. If you do dash, the, the --verbose that gets, or dash B, will it, it adds like
+
+00:20:47.820 --> 00:20:54.300
+reports all the metadata, but it also comes out in the J unit XML. and, and a lot of,
+
+00:20:54.300 --> 00:21:00.460
+JSON results and other plugins, will pull this metadata out also because it's a very widely used
+
+00:21:00.460 --> 00:21:06.940
+plugin. so, very useful if you want to pass that along. it's, it was, I believe it was
+
+00:21:06.940 --> 00:21:13.580
+generated specifically for the, by test HTML, plugin because it's a same contributor,
+
+00:21:13.580 --> 00:21:19.500
+Dave Hunt and others, but, but it's, the metadata is used even without the HTML,
+
+00:21:19.500 --> 00:21:27.100
+um, in the, in our top pie test plugins list. the metadata is number five and HTML is number six.
+
+00:21:27.100 --> 00:21:31.660
+So they're both very popular, but, metadata is popular by itself. So yeah,
+
+00:21:31.660 --> 00:21:38.140
+very cool. I love it. That's a great idea. Anyway. So that's, those are our items.
+
+00:21:38.140 --> 00:21:40.940
+I have a couple extras or one extra. Do you have any extras?
+
+00:21:40.940 --> 00:21:45.740
+Hit them. Okay. Yeah. I got a few, but they're quick as well. I'll, it makes sense to start
+
+00:21:45.740 --> 00:21:52.060
+right here because I did make some changes to the plugin list. So just the other day, I was looking
+
+00:21:52.060 --> 00:21:59.260
+through, the top pie test plugins list on over on python test.com and notice that there was stuff
+
+00:21:59.260 --> 00:22:03.900
+in there that I don't like talking about because they're deprecated and even the developers don't
+
+00:22:03.900 --> 00:22:08.380
+want you to use them. So I've started to start filtering those. So I'm sorry, I'm going to go
+
+00:22:08.380 --> 00:22:14.300
+through the list and check out to see if they're deprecated ones, because, you can already find
+
+00:22:14.300 --> 00:22:19.660
+this information out if you want to find out with the, with the list of, what, which ones I'm
+
+00:22:19.660 --> 00:22:23.340
+pulling out, but why would you want to do that? You want, we want to know, the top
+
+00:22:23.340 --> 00:22:28.140
+pie test plugins that I should look at. And if there's ones you shouldn't don't. So yeah,
+
+00:22:28.140 --> 00:22:34.300
+those are coming out. And then I thought, you know, I've, I've been wondering to do,
+
+00:22:34.300 --> 00:22:41.020
+a new series. I'm on, the testing code podcast. And I thought, why not look at these plugins? So
+
+00:22:41.020 --> 00:22:46.940
+I'm, I'm not going to go through the entire list. Plus it changes like every month, a little bit,
+
+00:22:46.940 --> 00:22:50.780
+but I'm going to go through some of these and pull out some that I think people should know
+
+00:22:50.780 --> 00:22:57.260
+about. So I'm going to do like a series of plugin episodes. So that'll be coming up. How about you?
+
+00:22:57.260 --> 00:23:05.260
+Any extras? A couple. Let's see what we got. So let's start here. So Hugo van Camande said,
+
+00:23:05.260 --> 00:23:12.140
+guess what? Pillow, you know, the Python image library, 11.0.0 is out with not just support for
+
+00:23:12.140 --> 00:23:18.700
+Python 3.13, but free threaded Python wheels. So you're doing a bunch of image processing.
+
+00:23:18.700 --> 00:23:23.260
+You want to speed that up, the free threaded Python T or whatever it is you run is good.
+
+00:23:23.260 --> 00:23:27.820
+Drop support for three, eight, cause that's so old school or moved a bunch of stuff and then added,
+
+00:23:27.820 --> 00:23:34.380
+uh, many things. So if you go look here, I believe you look at the, look at all the changes in this.
+
+00:23:34.380 --> 00:23:40.780
+So pretty, pretty awesome. How much has changed here? So if you do stuff with images and Python,
+
+00:23:40.780 --> 00:23:45.180
+use pillow, there's a new one. That's a big release. But if you're like, what could I do with images in
+
+00:23:45.180 --> 00:23:50.780
+Python? Well, check out pillow. It does a lot. So that's cool. We have, you know, you've heard
+
+00:23:50.780 --> 00:23:56.540
+of pip install anti-gravity. You've heard pip install this or sorry, import this and import anti-gravity.
+
+00:23:56.540 --> 00:24:04.140
+But what about pip install Deutschland? And what does that do? So this comes from Grandknapp says,
+
+00:24:04.140 --> 00:24:10.060
+"Hello, Michael and Brian, here's a recommendation for the 14% of your listeners who are in Germany."
+
+00:24:10.060 --> 00:24:15.340
+I remember I talked about that as analytics from Imam a while ago. And it says, "Just pip install Deutschland
+
+00:24:15.340 --> 00:24:20.620
+for lots of useful German datasets regularly updated." And so you go over here and it's got things like,
+
+00:24:21.820 --> 00:24:32.380
+"Do you want to go and find addresses, barrier lines, building areas, building borders, I suppose,
+
+00:24:32.380 --> 00:24:38.300
+and so on." My, German construction terms are not that good, but anyway, something along these lines,
+
+00:24:38.300 --> 00:24:44.140
+right? and you basically, it just has data for all these different components or things you might
+
+00:24:44.140 --> 00:24:49.340
+want to know about in Germany, which is pretty cool. Yeah, that's pretty cool. That's a lot more than just
+
+00:24:49.340 --> 00:24:53.980
+buildings. There's, there's a, there's quite a bit there, isn't there? Yeah. Yeah. Addresses,
+
+00:24:53.980 --> 00:25:01.580
+history points, underground stuff. It's got Autobahn information. Yeah. Yeah. We need a pip install for
+
+00:25:01.580 --> 00:25:07.260
+a lot of countries like pip install USA. It chants a little USA, USA, USA, then it installs it.
+
+00:25:07.260 --> 00:25:17.100
+All right. America, America, America's got borders. Okay. So, and another big thing that's fun is I just
+
+00:25:17.100 --> 00:25:22.620
+released a talk Python blog. So I've got my personal blog and there's tons of RSS at talk Python, like for
+
+00:25:22.620 --> 00:25:27.660
+the podcast and stuff, as you would guess, but a dedicated blog so I can post interesting things
+
+00:25:27.660 --> 00:25:33.900
+and series that I plan on working on that are more talk Python related, not just for my personal blog.
+
+00:25:33.900 --> 00:25:39.820
+So anyway, it's got a couple of posts already and yeah, I tried to go for the super clean, super
+
+00:25:39.820 --> 00:25:47.100
+readable version here, Brian. So trying to make it just, yeah, thanks. So this is built. Yeah, go ahead.
+
+00:25:47.100 --> 00:25:51.020
+I was going to ask you what it's built with. Well, it's built with Hugo, which is a glorious
+
+00:25:51.020 --> 00:25:58.460
+static site builder. But what's interesting is it's hosted under talk Python.fm/blog, not like blog.talkpython.fm.
+
+00:25:58.460 --> 00:26:05.100
+And I'm using engine X to point different sub URLs to different sections. So like most of talk Python
+
+00:26:05.100 --> 00:26:10.460
+is a Python app, obviously, but then this part is Hugo and they just kind of coexist under the same
+
+00:26:10.460 --> 00:26:15.020
+URL structure, which is fun. Okay, nice. Yeah, I might write about that actually at some point. But
+
+00:26:15.020 --> 00:26:18.140
+yeah, it's built with Hugo, kind of like our own stuff, right? Our own personal things.
+
+00:26:18.700 --> 00:26:22.220
+Yeah, I'm just having some Hugo. I'm having Hugo issues, but...
+
+00:26:22.220 --> 00:26:28.300
+Are you? Well, I'm still having Hugo love, so it's okay. We'll even it out there. All right. I got a
+
+00:26:28.300 --> 00:26:34.060
+joke for you, but I can't find... This is a cartoon I saw, but I can't find it again. I thought I bookmarked
+
+00:26:34.060 --> 00:26:39.340
+it in our thing that bookmarks it and the title of it is there, but the URL to it is not. It just says dog
+
+00:26:39.340 --> 00:26:43.500
+joke. I'm like, huh, I wonder where that is. And I've tried to search for it. I can't find it,
+
+00:26:43.500 --> 00:26:49.260
+but I can tell you the joke, okay? Okay. Are you ready? Yes. Imagine, imagine if you will,
+
+00:26:49.260 --> 00:26:56.060
+a little girl just getting her first puppy. The dad is brought it home and they're out in the backyard
+
+00:26:56.060 --> 00:27:02.620
+and he's about to share some wise advice with his daughter to help her become accustomed to having a
+
+00:27:02.620 --> 00:27:08.060
+puppy and all the new responsibilities and so on, right? Yeah. So he, he, she's just sitting there like
+
+00:27:08.060 --> 00:27:12.140
+gleefully petting the new puppy and says, now they're thinking of a name for it, right? He says,
+
+00:27:12.140 --> 00:27:17.900
+now, sweetie, you need to think very carefully about the name for this puppy because you're
+
+00:27:17.900 --> 00:27:22.860
+going to have to remember it for the rest of your life and enter it on every webpage that has a stupid
+
+00:27:22.860 --> 00:27:27.820
+security question. Yeah. So that's the advice of the dad. Remember this name of your first pet
+
+00:27:27.820 --> 00:27:32.220
+because you're going to have to remember that for the rest of your life. Yeah. That was the joke.
+
+00:27:32.220 --> 00:27:37.500
+That's good. No picture because I can't find it. I've got a dog joke. So we, let's, let's add another
+
+00:27:37.500 --> 00:27:43.420
+joke. So let's do it. Okay. So kind of a dog joke. So a guy walks into a library and he's,
+
+00:27:43.420 --> 00:27:48.940
+looking for a book and he's, and he walks up to the, the librarian says, says, there's a
+
+00:27:48.940 --> 00:27:53.500
+particular book I'm looking for, but I can't remember the name of it. it's a, it's, it's a,
+
+00:27:53.500 --> 00:27:59.500
+it's a book about Pavlov's dog and Schrodinger's cat. And the librarian says that rings a bell,
+
+00:27:59.500 --> 00:28:05.980
+but I'm not sure whether we have it here or not. Perfect. Pretty good. A lot of science in there.
+
+00:28:05.980 --> 00:28:11.660
+A lot of some social science, some hard science. I love it. Yeah. Yeah. All right. Some uncertainty.
+
+00:28:11.660 --> 00:28:17.340
+Yeah. Yeah. Might be there. Might be there. And it rings a bell. cool. Well, awesome episode
+
+00:28:17.340 --> 00:28:23.660
+again. I think so. Thank you, Michael. And thank you everybody for listening. So I guess we'll,
+
+00:28:23.660 --> 00:28:26.140
+uh, talk next week. Bye. Yep. Bye.
+
