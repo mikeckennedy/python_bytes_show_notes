@@ -1,0 +1,1862 @@
+WEBVTT
+
+00:00:00.001 --> 00:00:05.060
+Hello and welcome to Python Bytes, where we deliver Python news and headlines directly to your earbuds.
+
+00:00:05.060 --> 00:00:10.320
+This is episode 412, recorded Monday, December 2nd, 2024.
+
+00:00:10.320 --> 00:00:11.560
+I am Michael Kennedy.
+
+00:00:11.560 --> 00:00:12.980
+And I am Brian Okken.
+
+00:00:12.980 --> 00:00:17.080
+This episode is brought to you by us, especially our Black Friday things.
+
+00:00:17.080 --> 00:00:19.540
+Visit our website for the Black Friday things.
+
+00:00:19.540 --> 00:00:23.360
+You have 14 hours, so make haste.
+
+00:00:23.360 --> 00:00:26.040
+Make haste. Hopefully you listen straight away.
+
+00:00:26.040 --> 00:00:30.220
+And if not, thanks for supporting our work and check out our courses and things like that.
+
+00:00:30.220 --> 00:00:31.540
+Links are in the show notes.
+
+00:00:31.540 --> 00:00:37.560
+You can also get the summary of every episode delivered directly to you.
+
+00:00:37.560 --> 00:00:41.560
+Handcrafted, artisanal newsletter by Brian Okken here.
+
+00:00:41.560 --> 00:00:42.340
+So check that out.
+
+00:00:42.340 --> 00:00:46.560
+And we mentioned this last time, but we are now Blue Skyians.
+
+00:00:46.560 --> 00:00:48.980
+We now live in the sky, the blue sky.
+
+00:00:48.980 --> 00:00:54.360
+In particular, Python Bytes is over there with the handle Python, you know, at pythonbytes.fm.
+
+00:00:54.620 --> 00:00:57.860
+And both Brian and I are linked directly from there.
+
+00:00:57.860 --> 00:00:59.360
+So come follow us.
+
+00:00:59.360 --> 00:01:07.720
+I have a little extra, extra, extra to follow up on Blue Sky and Mastodon and Twitter, X Twitter, whatever.
+
+00:01:07.720 --> 00:01:09.000
+All of these things.
+
+00:01:09.000 --> 00:01:11.800
+So I think you will find that interesting.
+
+00:01:11.800 --> 00:01:14.840
+But right now, I would like to know, Brian, what you find interesting.
+
+00:01:14.840 --> 00:01:19.080
+I find interesting that there's a controversy over loop targets.
+
+00:01:20.480 --> 00:01:23.320
+This is so inside baseball, I think.
+
+00:01:23.320 --> 00:01:24.320
+But okay.
+
+00:01:24.320 --> 00:01:34.740
+So Ned Batchelder wrote a blog post and apparently a social media post on Blue Sky, actually.
+
+00:01:34.740 --> 00:01:38.040
+But about what loop targets are.
+
+00:01:38.040 --> 00:01:40.160
+So what I'm talking about is a for loop.
+
+00:01:40.280 --> 00:01:48.840
+So if you say for, like for X in range 10 or something like that, then X gets assigned 10, like 0 through 9, right?
+
+00:01:48.840 --> 00:01:50.400
+So what's the controversy?
+
+00:01:50.400 --> 00:01:53.260
+The controversy is what you should put in for X.
+
+00:01:53.260 --> 00:01:59.580
+So in his little code example, he's got for param, he's got a parameter dictionary.
+
+00:01:59.580 --> 00:02:02.100
+And there's a query and a page size.
+
+00:02:02.100 --> 00:02:05.320
+There's no page element, but we're going to fill that in later.
+
+00:02:05.600 --> 00:02:13.800
+So what he's doing is he has coded for params, quote, page in iter tools count.
+
+00:02:13.800 --> 00:02:23.660
+And what that's going to do is it's just going to go through and get 100 things at a time and put them in a page dictionary until it's empty.
+
+00:02:23.660 --> 00:02:28.820
+And there's a break to get out of the loop once there are no results left.
+
+00:02:29.060 --> 00:02:31.880
+I think this is kind of clever and I don't see the problem here.
+
+00:02:31.880 --> 00:02:37.120
+So the problem is this kind of this params, this index into the dictionary.
+
+00:02:37.120 --> 00:02:38.980
+And that's where you're putting the loop parameters.
+
+00:02:38.980 --> 00:02:48.620
+Yeah, this is wild because I've seen exploding or expanding tuples into multiple things like for thing in dictionary, the items,
+
+00:02:48.620 --> 00:02:52.100
+it's a maybe key comma value in the loop target.
+
+00:02:52.100 --> 00:02:53.120
+And that's perfectly normal.
+
+00:02:53.120 --> 00:02:56.420
+But assigning a key in the dictionary, this is new to me.
+
+00:02:56.420 --> 00:02:56.920
+Really?
+
+00:02:56.920 --> 00:02:57.360
+OK.
+
+00:02:57.360 --> 00:02:57.880
+Yeah.
+
+00:02:58.040 --> 00:03:04.080
+I'm not necessarily I'm neutral on it, whether or not it should be done, but I'm just learning about it now.
+
+00:03:04.080 --> 00:03:04.460
+OK.
+
+00:03:04.460 --> 00:03:13.160
+So in the discussion, so really what's happening is there's in the discussion, he talks about it, that you could have like an extra variable.
+
+00:03:13.160 --> 00:03:14.160
+You could say page num.
+
+00:03:14.160 --> 00:03:17.240
+So for page num in iter tools count, it makes it more clear.
+
+00:03:17.240 --> 00:03:21.660
+And then you assign the page num to the, you assign that to the dictionary.
+
+00:03:21.660 --> 00:03:27.220
+But really, you're just using this page num just as a temporary variable just to stuff it in there.
+
+00:03:27.480 --> 00:03:32.480
+So I say, why not just put just to just assign it where you're going to use it.
+
+00:03:32.480 --> 00:03:38.020
+And because this extra line of code, I don't know, I'm kind of on the fence because this is more clear.
+
+00:03:38.020 --> 00:03:40.080
+I think it's more clear to use a temporary variable.
+
+00:03:40.080 --> 00:03:41.000
+It's more readable.
+
+00:03:41.000 --> 00:03:43.300
+However, there's an extra line of code.
+
+00:03:43.300 --> 00:03:45.280
+So it is like that much more.
+
+00:03:45.280 --> 00:03:47.340
+It's not that much more readable, I don't think.
+
+00:03:47.340 --> 00:03:47.980
+And it's not.
+
+00:03:47.980 --> 00:03:49.260
+And there's that.
+
+00:03:49.480 --> 00:03:52.940
+If this in this short code snippet, not a big deal.
+
+00:03:52.940 --> 00:04:02.480
+But in a larger for loop, you may have more reason to possibly have something break because somebody like, you know, commented that line out or something and it suddenly doesn't work.
+
+00:04:02.480 --> 00:04:05.320
+So anyway, I'm like, this is weird.
+
+00:04:05.320 --> 00:04:06.240
+This is controversy.
+
+00:04:06.420 --> 00:04:11.100
+But even so he wrote this up just to talk about it and ask what people think.
+
+00:04:11.100 --> 00:04:14.400
+And most of the responses are like, no.
+
+00:04:14.400 --> 00:04:16.680
+Or one, I think it's a cool idea.
+
+00:04:16.940 --> 00:04:19.420
+And I think it's a terrible idea.
+
+00:04:19.420 --> 00:04:28.840
+Anyway, I guess I'm bringing this up because I just want to point out that with for loops, there's an implicit assignment.
+
+00:04:28.840 --> 00:04:33.180
+And so you can use that assignment to assign to wherever you want to use the variable.
+
+00:04:33.180 --> 00:04:35.760
+So I'm going to make an observation here.
+
+00:04:35.760 --> 00:04:36.640
+You tell me what you think.
+
+00:04:36.640 --> 00:04:41.500
+I believe the people who are for this are also fans of the walrus operator.
+
+00:04:41.500 --> 00:04:44.080
+And people who are against this are anti-walrus.
+
+00:04:44.080 --> 00:04:45.560
+Oh, that might be true.
+
+00:04:45.560 --> 00:04:46.080
+Right.
+
+00:04:46.140 --> 00:04:47.120
+It's kind of the same thing.
+
+00:04:47.120 --> 00:04:53.280
+It's in a for loop, you're assigning to a variable and kind of sort of defining and assigning in a sense.
+
+00:04:53.280 --> 00:04:56.300
+Whereas, you know, the walrus operator does it for if statements.
+
+00:04:56.300 --> 00:04:59.380
+But it's like not assign the variable, then test it.
+
+00:04:59.380 --> 00:05:03.540
+It's like all at once do the assign and test or assign and loop.
+
+00:05:03.540 --> 00:05:06.220
+But there is already an assign in the for loop.
+
+00:05:06.220 --> 00:05:07.300
+It's always assignment.
+
+00:05:07.300 --> 00:05:08.960
+But is it colon equals?
+
+00:05:08.960 --> 00:05:09.520
+No, I'm just kidding.
+
+00:05:09.520 --> 00:05:10.460
+Is it colon in?
+
+00:05:10.460 --> 00:05:12.260
+Yeah.
+
+00:05:12.260 --> 00:05:13.560
+No, it's interesting.
+
+00:05:13.560 --> 00:05:14.060
+It does.
+
+00:05:14.060 --> 00:05:14.700
+Yeah.
+
+00:05:14.980 --> 00:05:17.120
+It's for loop, the original walrus operator.
+
+00:05:17.120 --> 00:05:17.660
+All right.
+
+00:05:17.660 --> 00:05:18.120
+All right.
+
+00:05:18.120 --> 00:05:20.440
+I'm actually going to come back to loops, but not yet.
+
+00:05:20.440 --> 00:05:23.400
+I want to talk about the standard library.
+
+00:05:23.400 --> 00:05:23.900
+No, no.
+
+00:05:23.900 --> 00:05:24.940
+Not the one that you know.
+
+00:05:24.940 --> 00:05:26.520
+Not the one that comes with CPython.
+
+00:05:26.520 --> 00:05:28.160
+The async standard library.
+
+00:05:28.300 --> 00:05:30.260
+It's the missing toolbox for an async world.
+
+00:05:30.260 --> 00:05:32.040
+Did you know we're living in an async world?
+
+00:05:32.040 --> 00:05:34.840
+I feel like a little Madonna is rocking in my back.
+
+00:05:34.840 --> 00:05:35.320
+Is that Madonna?
+
+00:05:35.320 --> 00:05:35.800
+I don't know.
+
+00:05:35.800 --> 00:05:37.380
+Yeah.
+
+00:05:37.580 --> 00:05:42.160
+So one of the problems is if you go and look at many of the things that you know and love,
+
+00:05:42.160 --> 00:05:48.680
+say, iter tools or functools, those things have not been kind of blowing my mind because
+
+00:05:48.680 --> 00:05:52.400
+they could be, have not been updated to support async.
+
+00:05:52.400 --> 00:05:53.220
+Okay.
+
+00:05:53.220 --> 00:05:59.920
+So when you do like functools, you know, say a decorator at functools.lrucache, that is
+
+00:05:59.920 --> 00:06:02.500
+perfect for a synchronous function.
+
+00:06:02.500 --> 00:06:04.740
+It doesn't work for an async one.
+
+00:06:04.740 --> 00:06:07.300
+And why do I think that it should work for it?
+
+00:06:07.360 --> 00:06:13.080
+Because just a couple of weeks ago, I covered my chameleon flask decorator for templates.
+
+00:06:13.080 --> 00:06:17.840
+And I, in a hundred lines of code, I wrote something that decorates and operates on both
+
+00:06:17.840 --> 00:06:18.980
+sync and async functions.
+
+00:06:18.980 --> 00:06:25.320
+So surely the people who create async.io could probably like write a multi-operator decorator
+
+00:06:25.320 --> 00:06:26.820
+deal, but they don't.
+
+00:06:26.820 --> 00:06:30.520
+And I have no idea if there's any intention ever for them to do so.
+
+00:06:30.520 --> 00:06:33.820
+So what this is, is it's kind of like a clone of those things.
+
+00:06:33.820 --> 00:06:34.660
+Not totally.
+
+00:06:34.660 --> 00:06:38.500
+It also has some other nice features, but it's like an async version of those.
+
+00:06:38.500 --> 00:06:41.920
+So if you have an async function, you want to apply an LRU cache to it.
+
+00:06:41.920 --> 00:06:43.560
+Well, go grab this bad boy.
+
+00:06:43.560 --> 00:06:50.220
+So it's got a bunch of built-ins for things like asynchronous zip sum, or even converting
+
+00:06:50.220 --> 00:06:50.720
+the list.
+
+00:06:50.720 --> 00:06:54.380
+It has functools that supports things like I talked about LRU cache.
+
+00:06:54.380 --> 00:06:58.240
+And if you look at it, it's looks a whole lot like you would imagine.
+
+00:06:58.240 --> 00:06:59.800
+It has a max size.
+
+00:06:59.800 --> 00:07:04.620
+It has typed and so on, but it operates on a waitable.
+
+00:07:04.620 --> 00:07:10.300
+And it returns an LRU async callable, something you can await like you should the function,
+
+00:07:10.300 --> 00:07:13.780
+rather than just a coroutine that is, I don't know, where you cache the coroutine.
+
+00:07:13.780 --> 00:07:14.640
+I don't know.
+
+00:07:14.640 --> 00:07:15.940
+It doesn't make a lot of sense.
+
+00:07:15.940 --> 00:07:17.780
+So this is what this is about.
+
+00:07:17.780 --> 00:07:19.080
+It's got a bunch of things like that.
+
+00:07:19.080 --> 00:07:20.120
+It has the built-ins.
+
+00:07:20.320 --> 00:07:26.880
+It's got a functools libraries for iterators, async caches, attributes, the context lib and
+
+00:07:26.880 --> 00:07:28.120
+async context lib.
+
+00:07:28.120 --> 00:07:35.260
+So I can do things like add async decorator in context that derives from a context decorator.
+
+00:07:35.260 --> 00:07:39.760
+And you can basically a short circuit, the implementation, a simple implementation of a
+
+00:07:39.760 --> 00:07:40.520
+enter and a exit.
+
+00:07:40.520 --> 00:07:41.420
+So on.
+
+00:07:41.420 --> 00:07:46.740
+It has a heap queue, which implements Python's heap queue, but for async, which is pretty cool.
+
+00:07:46.740 --> 00:07:48.640
+So you want to merge and stuff.
+
+00:07:48.800 --> 00:07:50.860
+And then it has some extra tools.
+
+00:07:50.860 --> 00:07:54.660
+And I don't really, I haven't done enough with this to know whether this is useful, how I
+
+00:07:54.660 --> 00:07:55.120
+would use it.
+
+00:07:55.120 --> 00:07:55.920
+So stick with it.
+
+00:07:55.920 --> 00:08:01.480
+Anyway, it has things like borrow, where you can borrow an async iterator to prevent it from
+
+00:08:01.480 --> 00:08:01.920
+closing.
+
+00:08:01.920 --> 00:08:02.640
+Okay.
+
+00:08:02.640 --> 00:08:03.480
+I don't know about that.
+
+00:08:03.480 --> 00:08:05.700
+You got scoped ones, but this one is really nice.
+
+00:08:05.700 --> 00:08:09.440
+I've written this code before and it's not easy to get completely right.
+
+00:08:09.440 --> 00:08:16.020
+It has a thing that you can just call async standard lib dot sync, giving it a async function
+
+00:08:16.020 --> 00:08:21.360
+and it'll just, sorry, the way around, given async function, it will turn it into an async
+
+00:08:21.360 --> 00:08:23.820
+function that you can await if you need to.
+
+00:08:23.820 --> 00:08:27.900
+Or, yeah, or you can give it an async one as well.
+
+00:08:27.900 --> 00:08:29.640
+And it doesn't really care.
+
+00:08:29.640 --> 00:08:30.380
+I think it adapts.
+
+00:08:30.380 --> 00:08:32.080
+But so a bunch of stuff going on here.
+
+00:08:32.080 --> 00:08:35.300
+If you're like, ah, there's a bunch of these cool built-ins that I'm used to and they don't
+
+00:08:35.300 --> 00:08:36.080
+work with async.
+
+00:08:36.080 --> 00:08:38.800
+Well, check out the async standard lib.
+
+00:08:38.800 --> 00:08:39.420
+Very cool.
+
+00:08:39.420 --> 00:08:43.680
+I think it seems like we have a typed Python and non-typed Python.
+
+00:08:43.680 --> 00:08:47.260
+And now we have async Python and synchronous Python.
+
+00:08:47.260 --> 00:08:50.320
+And then we're going to have free-threaded and non-free-threaded.
+
+00:08:50.320 --> 00:08:53.320
+We're going to have typed async free-threaded Python.
+
+00:08:53.320 --> 00:08:55.400
+Yeah.
+
+00:08:55.400 --> 00:08:58.280
+And every other combinatorial possibility there.
+
+00:08:58.280 --> 00:08:58.860
+It's going to be nuts.
+
+00:08:58.860 --> 00:08:59.260
+Yeah.
+
+00:08:59.260 --> 00:08:59.600
+Yeah.
+
+00:08:59.600 --> 00:09:01.140
+But I think this is a cool one.
+
+00:09:01.140 --> 00:09:02.180
+It's not super popular.
+
+00:09:02.180 --> 00:09:06.220
+Let me go back to it and see what its GitHub stars are.
+
+00:09:06.280 --> 00:09:10.200
+But it's kind of one of those things that's like, yeah, this is definitely worth it.
+
+00:09:10.200 --> 00:09:10.660
+I don't know.
+
+00:09:10.660 --> 00:09:12.120
+So it has some.
+
+00:09:12.120 --> 00:09:12.840
+Oh, here we go.
+
+00:09:12.840 --> 00:09:13.540
+No, don't say.
+
+00:09:13.540 --> 00:09:14.240
+240.
+
+00:09:14.240 --> 00:09:15.620
+So it's starting to pick up some speed.
+
+00:09:15.620 --> 00:09:17.340
+But I think it's real simple.
+
+00:09:17.340 --> 00:09:19.540
+It's like the kind of thing that's either going to work or not work.
+
+00:09:19.540 --> 00:09:21.500
+So if it's useful for you, go for it.
+
+00:09:21.500 --> 00:09:21.840
+Nice.
+
+00:09:21.840 --> 00:09:22.260
+Yeah.
+
+00:09:22.260 --> 00:09:22.600
+It's cool.
+
+00:09:22.600 --> 00:09:25.200
+I was going to talk about.
+
+00:09:25.200 --> 00:09:27.160
+I haven't had breakfast yet.
+
+00:09:27.160 --> 00:09:28.360
+So I was going to talk about some.
+
+00:09:28.360 --> 00:09:29.380
+Maybe getting a bagel.
+
+00:09:29.380 --> 00:09:29.980
+You want a bagel?
+
+00:09:29.980 --> 00:09:30.340
+Okay.
+
+00:09:30.340 --> 00:09:30.660
+Yeah.
+
+00:09:30.660 --> 00:09:31.540
+I love bagels.
+
+00:09:31.540 --> 00:09:33.180
+As long as it got everything, we're good.
+
+00:09:33.180 --> 00:09:34.080
+Everything bagel.
+
+00:09:34.080 --> 00:09:34.640
+Let's go.
+
+00:09:34.880 --> 00:09:38.560
+Well, I am taking a look at a project called Enhanced Jack.
+
+00:09:38.560 --> 00:09:41.400
+It's called Bagels from Enhanced Jack.
+
+00:09:41.400 --> 00:09:42.740
+Who's Enhanced Jack's?
+
+00:09:42.740 --> 00:09:44.320
+It's Jack's Tam.
+
+00:09:44.320 --> 00:09:45.300
+Cool.
+
+00:09:45.300 --> 00:09:46.960
+Aspiring student studying.
+
+00:09:46.960 --> 00:09:47.700
+Oh, no.
+
+00:09:47.700 --> 00:09:48.600
+University student.
+
+00:09:48.600 --> 00:09:48.900
+Cool.
+
+00:09:48.900 --> 00:09:50.360
+Anyway, why am I bringing up bagels?
+
+00:09:50.360 --> 00:09:55.040
+Well, bagels is kind of a fun little expense tracker.
+
+00:09:55.040 --> 00:10:02.500
+But I think it's a great example of using Textual for something that, you know, people probably
+
+00:10:02.500 --> 00:10:04.120
+could sink their teeth into pretty easy.
+
+00:10:04.280 --> 00:10:08.420
+So it's an expense tracker with multiple accounts using Textual.
+
+00:10:08.420 --> 00:10:09.440
+I've tried it out.
+
+00:10:09.440 --> 00:10:10.280
+It's really pretty easy.
+
+00:10:10.280 --> 00:10:12.500
+There's a bunch of stuff I like about this.
+
+00:10:12.500 --> 00:10:14.340
+And I'm bringing it up.
+
+00:10:14.340 --> 00:10:16.860
+Not really because I think everybody needs an expense tracker.
+
+00:10:16.860 --> 00:10:23.300
+But I think a lot of people look for a starter, like a starter project to possibly tweak and make
+
+00:10:23.300 --> 00:10:23.720
+their own.
+
+00:10:24.000 --> 00:10:27.360
+And I think this might be kind of a fun thing for people to look at.
+
+00:10:27.360 --> 00:10:28.800
+A few things about it.
+
+00:10:28.800 --> 00:10:31.160
+I like it that it's in the command line.
+
+00:10:31.160 --> 00:10:32.420
+It's a textual app.
+
+00:10:32.420 --> 00:10:34.620
+But it's also the install instructions.
+
+00:10:34.620 --> 00:10:35.640
+I love seeing this.
+
+00:10:35.640 --> 00:10:41.940
+It's starting to use the UV tool install so that you can just run bagels from anywhere.
+
+00:10:41.940 --> 00:10:42.900
+It's the way.
+
+00:10:42.900 --> 00:10:43.900
+This is the way.
+
+00:10:44.000 --> 00:10:44.720
+This is the way.
+
+00:10:44.720 --> 00:10:48.140
+And it's so fast to get started.
+
+00:10:49.280 --> 00:10:53.880
+I also like that the project is pretty new.
+
+00:10:53.880 --> 00:10:57.520
+But it's just a few weeks started.
+
+00:10:57.520 --> 00:11:00.820
+But there's already some features included.
+
+00:11:00.820 --> 00:11:02.300
+Features included is great.
+
+00:11:02.640 --> 00:11:07.640
+And then also how to development setup is listed.
+
+00:11:07.640 --> 00:11:10.060
+And it doesn't talk about how to run tests.
+
+00:11:10.060 --> 00:11:10.800
+But that's all right.
+
+00:11:10.800 --> 00:11:12.740
+It's running pytest, of course.
+
+00:11:12.740 --> 00:11:17.960
+But then a roadmap of sort of things that they'd like to add to it.
+
+00:11:17.960 --> 00:11:20.260
+It's heavily inspired by posting.
+
+00:11:20.260 --> 00:11:22.140
+So anyway, just a fun little project.
+
+00:11:22.140 --> 00:11:24.460
+The tests are in place.
+
+00:11:24.460 --> 00:11:27.460
+It's not a complete coverage yet.
+
+00:11:27.460 --> 00:11:28.920
+But it's a new project.
+
+00:11:28.920 --> 00:11:32.260
+So if you want to help out, I think it's a good thing for people to check out.
+
+00:11:32.580 --> 00:11:35.560
+Also, I've always wanted to write my own little expense tracker.
+
+00:11:35.560 --> 00:11:40.020
+And so this is a good start for even if it doesn't do everything I wanted to do,
+
+00:11:40.020 --> 00:11:43.760
+to take up the code base and maybe play with it, learn some stuff.
+
+00:11:43.760 --> 00:11:46.740
+It's also, it's written, it's using, I can't remember.
+
+00:11:46.740 --> 00:11:51.540
+It was using a PostgreSQL, like a SQLAlchemy.
+
+00:11:51.540 --> 00:11:56.900
+Also, if you want to have a simple, small project that uses SQLAlchemy to learn that,
+
+00:11:56.900 --> 00:11:58.320
+be a good one to take a look at.
+
+00:11:58.320 --> 00:11:58.640
+Awesome.
+
+00:11:58.640 --> 00:11:59.480
+Yeah, that's really cool.
+
+00:11:59.480 --> 00:12:01.540
+And we've covered Postling?
+
+00:12:01.920 --> 00:12:02.800
+What was it called?
+
+00:12:02.800 --> 00:12:03.600
+You covered it.
+
+00:12:03.600 --> 00:12:04.820
+The Posting.
+
+00:12:04.820 --> 00:12:05.380
+Yeah.
+
+00:12:05.380 --> 00:12:06.940
+A little app that was written in.
+
+00:12:06.940 --> 00:12:07.820
+Posting, what was that?
+
+00:12:07.820 --> 00:12:08.620
+Remember?
+
+00:12:08.620 --> 00:12:14.300
+That was the Postman alternative for the terminal written in textual, which is cool.
+
+00:12:14.300 --> 00:12:16.360
+Yeah, which is like a dream to work with.
+
+00:12:16.360 --> 00:12:17.660
+It's a fun one.
+
+00:12:17.660 --> 00:12:18.740
+Yeah, very nice.
+
+00:12:18.740 --> 00:12:21.580
+I want to, since you brought this up, I'll throw this out here.
+
+00:12:21.580 --> 00:12:23.140
+Not super necessarily relevant.
+
+00:12:23.320 --> 00:12:25.960
+But I recently ran across maybe.co.
+
+00:12:25.960 --> 00:12:26.720
+Okay.
+
+00:12:26.720 --> 00:12:29.520
+It's almost a company, but it lost the M along the way.
+
+00:12:29.520 --> 00:12:35.340
+Anyway, it's a fully open source OS for your personal finances running on Docker.
+
+00:12:35.340 --> 00:12:39.320
+If you want to do self-hosting, keep all of your data private instead of like sending off
+
+00:12:39.320 --> 00:12:41.920
+to Intuit or somewhere that it probably doesn't belong.
+
+00:12:42.120 --> 00:12:43.260
+So anyway, people can check that out.
+
+00:12:43.260 --> 00:12:43.760
+That's kind of cool.
+
+00:12:43.760 --> 00:12:44.040
+Cool.
+
+00:12:44.040 --> 00:12:44.680
+Not an endorsement.
+
+00:12:44.680 --> 00:12:46.480
+Haven't used it, but kind of thinking about it.
+
+00:12:46.480 --> 00:12:48.360
+I would rather bring it full circle.
+
+00:12:48.360 --> 00:12:49.940
+We began with loops.
+
+00:12:49.940 --> 00:12:51.480
+Let us end with loops.
+
+00:12:51.480 --> 00:12:52.880
+Isn't that perfect for a full circle?
+
+00:12:52.880 --> 00:12:53.840
+They go in circles, don't they?
+
+00:12:54.040 --> 00:12:54.320
+Yeah.
+
+00:12:54.320 --> 00:13:01.400
+So this is the early days sort of thing, but Giovanni, who is the creator of the Emmet framework
+
+00:13:01.400 --> 00:13:07.800
+and more relevant to us, the Grannion AsyncSync Rust-based web server that powers Python bytes
+
+00:13:07.800 --> 00:13:13.140
+and other things that we have, is creating this thing that is an alternative to UV loop.
+
+00:13:13.140 --> 00:13:16.480
+So UV loop is a, I think it's based on LibUV.
+
+00:13:16.480 --> 00:13:22.280
+I can't remember exactly the origins of it, but it's a loop that you can plug in as an alternative
+
+00:13:22.280 --> 00:13:25.900
+for the AsyncIO event loop implementation.
+
+00:13:25.900 --> 00:13:26.300
+Okay.
+
+00:13:26.300 --> 00:13:28.260
+So why would you do that?
+
+00:13:28.260 --> 00:13:34.180
+Well, it turns out that you can optimize some of the juggling of the little tasks.
+
+00:13:34.180 --> 00:13:38.420
+So if you have like three tasks, one is call the website, one is talk to the database,
+
+00:13:38.420 --> 00:13:40.560
+one is write a file or whatever, don't do anything.
+
+00:13:40.560 --> 00:13:41.660
+The built-in one's fine.
+
+00:13:41.660 --> 00:13:45.920
+But if you have a million tasks and you're breaking them into little tiny pieces and they're jumping
+
+00:13:45.920 --> 00:13:48.900
+all over, like that juggling could be faster with UV loop.
+
+00:13:48.900 --> 00:13:52.260
+And I think that's where we're going to see it go with our loop.
+
+00:13:52.560 --> 00:13:57.180
+So our loop is an Async event loop implemented in Rust and it's coming along.
+
+00:13:57.180 --> 00:13:59.400
+It is a work in progress and not ready.
+
+00:13:59.400 --> 00:14:03.960
+But the reason I bring it up early in its life here is it's a really cool option.
+
+00:14:03.960 --> 00:14:09.940
+We've seen how significant the improvements for other Rust things like Pydantic and UV have
+
+00:14:09.940 --> 00:14:10.180
+been.
+
+00:14:10.420 --> 00:14:13.860
+And so if you're passionate about this and you want to have maybe a little influence
+
+00:14:13.860 --> 00:14:17.880
+before it gets fully baked as this thing's coming to life, you know, jump in.
+
+00:14:17.880 --> 00:14:19.760
+The way you use it is just like UV.
+
+00:14:19.760 --> 00:14:20.660
+It's super easy.
+
+00:14:20.660 --> 00:14:26.520
+Just before you do Async things, you just say AsyncIO.setEventLoopPolicy, which is a factory,
+
+00:14:26.520 --> 00:14:27.300
+I'm thinking.
+
+00:14:27.300 --> 00:14:28.900
+Kind of a factory method more.
+
+00:14:28.900 --> 00:14:29.480
+I don't know, whatever.
+
+00:14:29.480 --> 00:14:31.560
+And you just give it Rloop.EventLoopPolicy.
+
+00:14:31.760 --> 00:14:36.600
+And that means anytime code creates a new event loop, it's going to be using the factory
+
+00:14:36.600 --> 00:14:38.860
+method from Rloop rather than the built-in one.
+
+00:14:38.860 --> 00:14:39.440
+Off you go.
+
+00:14:39.440 --> 00:14:40.100
+Cool.
+
+00:14:40.100 --> 00:14:40.360
+Yeah.
+
+00:14:40.360 --> 00:14:40.900
+Well, cool.
+
+00:14:40.900 --> 00:14:42.700
+Well, that's it for our items, right?
+
+00:14:42.700 --> 00:14:43.620
+I think so.
+
+00:14:43.620 --> 00:14:43.920
+Yeah.
+
+00:14:44.000 --> 00:14:44.800
+I think it is.
+
+00:14:44.800 --> 00:14:45.800
+Extras?
+
+00:14:45.800 --> 00:14:46.660
+What do you think?
+
+00:14:46.660 --> 00:14:47.100
+Extras?
+
+00:14:47.100 --> 00:14:48.260
+Yeah, I have a few.
+
+00:14:48.260 --> 00:14:49.180
+You want me to jump in?
+
+00:14:49.180 --> 00:14:49.740
+Jump in.
+
+00:14:49.740 --> 00:14:56.820
+I am, I've had a lot of stuff going on in personal life lately and trying to fit everything into
+
+00:14:56.820 --> 00:14:58.780
+my life is sometimes difficult.
+
+00:14:58.780 --> 00:15:04.780
+So I've been reading, reading, reading in quotes, listening to the audio book for 4,000
+
+00:15:04.780 --> 00:15:07.620
+weeks, a time management, time management for mortals.
+
+00:15:07.620 --> 00:15:09.200
+It's a book by Oliver Berkman.
+
+00:15:09.200 --> 00:15:13.020
+And I'm listening to it for the second time now in the last couple of weeks.
+
+00:15:13.100 --> 00:15:17.100
+I just picked it up a week or so ago, but I'm really enjoying it.
+
+00:15:17.100 --> 00:15:22.300
+And it's more of a, you can't get everything done, but that's okay.
+
+00:15:22.300 --> 00:15:26.460
+Just how to be okay with the limitations of life.
+
+00:15:26.460 --> 00:15:29.180
+So very refreshing time management book.
+
+00:15:29.180 --> 00:15:33.340
+It's also got some practical advice too, but it's great.
+
+00:15:33.340 --> 00:15:36.120
+So highly, highly recommend that.
+
+00:15:36.120 --> 00:15:39.820
+It's advent of, advent of code time.
+
+00:15:39.820 --> 00:15:46.420
+And I've heard of the, so I've definitely heard of the advent of code, but the advent of
+
+00:15:46.420 --> 00:15:47.140
+code.com.
+
+00:15:47.140 --> 00:15:47.800
+Very cool.
+
+00:15:47.800 --> 00:15:52.840
+A lot of people do that every year for in December to do little code snippets every year.
+
+00:15:53.100 --> 00:15:58.960
+But today I came across Adrian Roselli's development advent calendars for 2024.
+
+00:15:58.960 --> 00:16:04.400
+So if advent of code isn't quite what up your alley, there's a whole bunch here.
+
+00:16:04.400 --> 00:16:06.980
+There's HTML hell advent calendar.
+
+00:16:06.980 --> 00:16:10.400
+There's a whole bunch of code and code-based advent calendars here.
+
+00:16:10.600 --> 00:16:13.040
+So none of them Python specific.
+
+00:16:13.040 --> 00:16:17.180
+There's a Perl specific, but C# advent of cyber.
+
+00:16:17.180 --> 00:16:20.720
+Just quite a, quite a few fun, different calendars.
+
+00:16:20.720 --> 00:16:21.080
+CSS.
+
+00:16:21.080 --> 00:16:23.120
+If you wanted to learn CSS, maybe there's just CSS.
+
+00:16:23.120 --> 00:16:24.780
+The Joomla advent calendar.
+
+00:16:24.780 --> 00:16:27.120
+You too can host it.
+
+00:16:27.120 --> 00:16:28.420
+So yeah.
+
+00:16:28.420 --> 00:16:30.540
+And apparently it's gone, it's gone back.
+
+00:16:30.980 --> 00:16:33.360
+He's got links back to 2010.
+
+00:16:33.360 --> 00:16:34.500
+So it's fun.
+
+00:16:34.500 --> 00:16:34.800
+Wow.
+
+00:16:34.800 --> 00:16:35.680
+Yeah.
+
+00:16:35.680 --> 00:16:38.880
+If you get your homework done early, you can do more advent of calendars.
+
+00:16:38.880 --> 00:16:39.800
+Yeah.
+
+00:16:39.800 --> 00:16:43.620
+I don't, so I tried, I tried advent of code a couple of years ago.
+
+00:16:43.620 --> 00:16:48.700
+And then I just realized that like in my free time, I've, I'm doing so much code coding at
+
+00:16:48.700 --> 00:16:54.560
+work, side hustles and everything that I kind of want to do things like draw and paint and
+
+00:16:54.560 --> 00:16:58.300
+cook and things like that when, when I'm doing other stuff.
+
+00:16:58.300 --> 00:16:59.700
+So anyway, I hear you.
+
+00:16:59.700 --> 00:17:00.640
+I'm the same.
+
+00:17:00.640 --> 00:17:01.960
+I already do a lot of programming.
+
+00:17:01.960 --> 00:17:03.780
+Even in my spare time, I do more programming.
+
+00:17:03.780 --> 00:17:04.260
+Yeah.
+
+00:17:04.260 --> 00:17:07.740
+And so I don't need extra ones, but I know it helps people, especially people are trying
+
+00:17:07.740 --> 00:17:08.880
+to learn a topic.
+
+00:17:08.880 --> 00:17:11.340
+It can kind of force you if you don't have a way to apply it.
+
+00:17:11.340 --> 00:17:15.740
+And today is December 2nd, Monday, traditionally a cyber Monday.
+
+00:17:15.740 --> 00:17:23.680
+And it is the last day for the black Friday sale, turkey sale for the python test.com courses,
+
+00:17:23.680 --> 00:17:24.280
+however.
+
+00:17:24.280 --> 00:17:26.460
+And so I'll take, I'll take off the automatic.
+
+00:17:26.460 --> 00:17:32.040
+But if you, if you hit me, if you're listening to this later, you know, close in it, close
+
+00:17:32.040 --> 00:17:37.600
+ish to December 2nd, direct message me on, on blue sky and I'll hook you up.
+
+00:17:37.600 --> 00:17:38.840
+So anyway, that's it.
+
+00:17:38.840 --> 00:17:39.160
+Blue sky.
+
+00:17:39.160 --> 00:17:40.360
+That's a good transition.
+
+00:17:40.360 --> 00:17:41.700
+All right.
+
+00:17:41.740 --> 00:17:43.040
+Also black Friday at talk python.
+
+00:17:43.040 --> 00:17:47.400
+So talkpython.fm/ black Friday, 20 to 50% off the course library.
+
+00:17:47.400 --> 00:17:48.620
+Nice logo there.
+
+00:17:48.620 --> 00:17:49.700
+The image is great.
+
+00:17:49.700 --> 00:17:50.100
+Thanks.
+
+00:17:50.100 --> 00:17:51.480
+That's pure CSS, by the way.
+
+00:17:51.480 --> 00:17:53.020
+That's some mad glow in CSS.
+
+00:17:53.020 --> 00:17:54.260
+Yeah, it's cool.
+
+00:17:54.260 --> 00:17:54.520
+Yeah.
+
+00:17:54.520 --> 00:17:55.120
+Awesome.
+
+00:17:55.120 --> 00:17:55.640
+All right.
+
+00:17:55.640 --> 00:17:57.720
+So we'd talk blue sky.
+
+00:17:57.720 --> 00:18:03.340
+So I just, you know, last week when I finished producing the show and I published it onto the
+
+00:18:03.340 --> 00:18:06.100
+internet, typically go to the social networks and I'll do a quick post.
+
+00:18:06.100 --> 00:18:06.920
+Hey, new episodes out.
+
+00:18:06.920 --> 00:18:07.520
+Enjoy it.
+
+00:18:07.520 --> 00:18:07.920
+If you want it.
+
+00:18:07.920 --> 00:18:11.520
+This one had a little guitar solo at the end, which was super fun.
+
+00:18:11.520 --> 00:18:14.820
+And so it said latest episode out for 11 TLS client.
+
+00:18:14.820 --> 00:18:15.140
+Hello.
+
+00:18:15.140 --> 00:18:16.960
+Guitar solo was the name.
+
+00:18:16.960 --> 00:18:22.080
+And I published that and I published it at the same time with the same text to X,
+
+00:18:22.080 --> 00:18:25.200
+Fostadon, Mastadon and blue sky.
+
+00:18:25.200 --> 00:18:29.040
+And I just thought, huh, I wonder what the engagement looks like, because I don't know how you've been
+
+00:18:29.040 --> 00:18:34.080
+feeling, Brian, but I feel like people, I tried and tried to get folks to go to Mastadon
+
+00:18:34.080 --> 00:18:39.220
+and like some, some people came, came along, but a bunch just didn't, you know, they were
+
+00:18:39.220 --> 00:18:42.160
+just, you would go back to X and you would just see them all talking there.
+
+00:18:42.160 --> 00:18:43.400
+I'm like, man, I don't know.
+
+00:18:43.400 --> 00:18:45.400
+And I'm not necessarily super against X.
+
+00:18:45.400 --> 00:18:50.520
+I'm a little bit against it, but I'm not a lot, but it's just, it's become not very practical
+
+00:18:50.520 --> 00:18:51.820
+as you'll see in just a second.
+
+00:18:51.820 --> 00:18:52.340
+Not very useful.
+
+00:18:52.340 --> 00:18:55.600
+So, you know, you want to go talk to yourself in a closet.
+
+00:18:55.600 --> 00:18:56.320
+It's awesome.
+
+00:18:56.320 --> 00:18:57.600
+You want to talk to other people?
+
+00:18:57.600 --> 00:18:58.360
+Well, that's so.
+
+00:18:58.820 --> 00:19:03.960
+Anyway, so my, my test here, this is a non-scientific test that I put out there.
+
+00:19:03.960 --> 00:19:07.140
+What is the interaction level per platform?
+
+00:19:07.140 --> 00:19:11.860
+And what you have to keep in mind before I tell you guys this, there's a dramatic difference
+
+00:19:11.860 --> 00:19:16.020
+in number of followers, subscribers, whatever they're called at that particular location.
+
+00:19:16.020 --> 00:19:16.320
+Okay.
+
+00:19:16.320 --> 00:19:20.860
+So basically take the numbers, divide by the number of followers and consider that like
+
+00:19:20.860 --> 00:19:21.680
+the amount of interaction.
+
+00:19:21.680 --> 00:19:25.900
+The reason I tell you this is you may want to come follow us and join us on blue sky, but
+
+00:19:25.900 --> 00:19:27.260
+that's, that's a bit of a get in the head.
+
+00:19:27.260 --> 00:19:27.880
+So check this out.
+
+00:19:27.880 --> 00:19:32.140
+So over on X, we have 27,000 followers.
+
+00:19:32.140 --> 00:19:32.580
+Okay.
+
+00:19:32.580 --> 00:19:38.780
+Posting this exact message one week ago, we got eight likes and two retweets, reposts,
+
+00:19:38.780 --> 00:19:40.040
+boost, name it, whatever.
+
+00:19:40.040 --> 00:19:40.300
+Yeah.
+
+00:19:40.300 --> 00:19:42.060
+So I don't know what that is.
+
+00:19:42.060 --> 00:19:45.360
+Two divided by 27,000, but it's a small percentage.
+
+00:19:45.360 --> 00:19:45.640
+Okay.
+
+00:19:45.640 --> 00:19:47.660
+Fostadon, Mastodon, right?
+
+00:19:47.660 --> 00:19:51.060
+It's not Fostadon, Mastodon, because it's across all, all the Fediverse.
+
+00:19:51.060 --> 00:19:53.060
+Same posts, identical.
+
+00:19:53.060 --> 00:19:55.340
+Here we have 3,000.
+
+00:19:55.340 --> 00:19:55.800
+Let me see.
+
+00:19:55.800 --> 00:19:57.220
+3,100 followers.
+
+00:19:57.220 --> 00:19:57.700
+Okay.
+
+00:19:57.700 --> 00:19:59.160
+So yeah, that's great.
+
+00:19:59.160 --> 00:20:01.500
+But this is almost nine times less.
+
+00:20:01.500 --> 00:20:02.380
+Something like that, right?
+
+00:20:02.380 --> 00:20:07.200
+It's many, many less times, but four boosts, which is not out of control, honestly, but
+
+00:20:07.200 --> 00:20:08.840
+it's in two favorites, two likes.
+
+00:20:08.840 --> 00:20:13.280
+But as a ratio, it's still a lot more because multiply by nine, right?
+
+00:20:13.280 --> 00:20:13.780
+Yeah.
+
+00:20:13.780 --> 00:20:16.160
+Blue sky, which we've been there a couple of days.
+
+00:20:16.380 --> 00:20:17.640
+We have something like that.
+
+00:20:17.640 --> 00:20:23.720
+We only have a, somebody hover, different hover targets, 750 followers.
+
+00:20:23.720 --> 00:20:24.180
+Yeah.
+
+00:20:24.180 --> 00:20:25.240
+Follow us on blue sky.
+
+00:20:25.240 --> 00:20:25.900
+Get over there.
+
+00:20:25.900 --> 00:20:26.240
+Yeah.
+
+00:20:26.320 --> 00:20:31.840
+Anyway, we have 16 likes and two reposts and a quote posts and then some conversation
+
+00:20:31.840 --> 00:20:32.380
+about it.
+
+00:20:32.380 --> 00:20:37.400
+And that's 30 times less followers and more engagement than both platforms.
+
+00:20:37.940 --> 00:20:40.680
+So anyway, I, y'all take that for what it is.
+
+00:20:40.680 --> 00:20:42.280
+I just thought that was an interesting experiment.
+
+00:20:42.280 --> 00:20:42.860
+What do you think, Brian?
+
+00:20:43.060 --> 00:20:46.240
+Yeah, I'm finding, I'm finding blue sky more interactive.
+
+00:20:46.240 --> 00:20:53.180
+I've got about this approximate same numbers on a fostered on or mastodon and, and blue sky
+
+00:20:53.180 --> 00:21:00.140
+and, and I'll, I'll get like twice as much interaction on, I mean, approximate gut feel twice as
+
+00:21:00.140 --> 00:21:01.800
+much interaction on blue skies.
+
+00:21:01.800 --> 00:21:04.040
+I do on, on mastodon.
+
+00:21:04.040 --> 00:21:04.680
+Yeah.
+
+00:21:04.680 --> 00:21:05.400
+Yeah.
+
+00:21:05.400 --> 00:21:05.840
+Yeah.
+
+00:21:05.840 --> 00:21:10.640
+And I'm not saying this to bag on some social network or try to promote other too much.
+
+00:21:10.640 --> 00:21:12.640
+I was like, people are trying to find their community.
+
+00:21:12.640 --> 00:21:15.400
+I think right now this is where the community is.
+
+00:21:15.400 --> 00:21:19.440
+And if you go here, you can go to my account and go to the starter pack and there's the
+
+00:21:19.440 --> 00:21:22.260
+Python personalities and you can follow a bunch of us.
+
+00:21:22.260 --> 00:21:24.440
+The onboarding experience is way better.
+
+00:21:24.440 --> 00:21:30.720
+The, the onboarding experience for mastodon still feels like it's too many decisions right
+
+00:21:30.720 --> 00:21:31.120
+at once.
+
+00:21:31.120 --> 00:21:35.220
+And then it's like, if you wanted to play games on Linux, you probably could.
+
+00:21:35.220 --> 00:21:37.900
+Yeah.
+
+00:21:37.900 --> 00:21:38.560
+Yeah.
+
+00:21:38.560 --> 00:21:41.400
+And I'm a, by the way, I'm, I'm no longer on X.
+
+00:21:41.400 --> 00:21:42.800
+So don't notify me there.
+
+00:21:42.800 --> 00:21:43.220
+Yeah.
+
+00:21:43.220 --> 00:21:43.800
+Sounds good.
+
+00:21:43.800 --> 00:21:44.060
+All right.
+
+00:21:44.060 --> 00:21:47.560
+A couple of other real quick things on episode 277, I believe.
+
+00:21:47.560 --> 00:21:49.500
+I don't have my show notes up, but I'm pretty sure that was the number.
+
+00:21:49.500 --> 00:21:55.800
+Way back when I talked about certain string enumeration, which is a thing that basically
+
+00:21:55.800 --> 00:22:00.120
+backports the string enum from Python 3.11.
+
+00:22:00.360 --> 00:22:01.620
+So it can be used in other places.
+
+00:22:01.620 --> 00:22:02.600
+It's super cool.
+
+00:22:02.600 --> 00:22:04.860
+It's even better than the built-in one, by the way.
+
+00:22:04.860 --> 00:22:10.740
+So I can have, I can say, give me a string enum and derive a class from that.
+
+00:22:10.740 --> 00:22:15.380
+That becomes an enumeration where you say that thing dot, but then you have the fields and
+
+00:22:15.380 --> 00:22:16.960
+just say equals auto, auto, auto, auto.
+
+00:22:17.100 --> 00:22:20.100
+And it'll actually set it to the text of whatever the variable is.
+
+00:22:20.100 --> 00:22:25.620
+If you refactor, rename it, it will apply that refactoring to the string version and the variable
+
+00:22:25.620 --> 00:22:26.340
+version of it.
+
+00:22:26.340 --> 00:22:32.460
+And you can even do things like use a lowercase or an uppercase one as the base class, a lowercase
+
+00:22:32.460 --> 00:22:33.160
+string enum.
+
+00:22:33.160 --> 00:22:35.600
+And that will make the string version lowercase.
+
+00:22:35.600 --> 00:22:40.040
+Even if you have a different, a different representation for the variable names.
+
+00:22:40.040 --> 00:22:41.300
+Anyway, the re why did I do this?
+
+00:22:41.340 --> 00:22:45.740
+Because on my list monk little client, somebody came and said, why doesn't this work on anything
+
+00:22:45.740 --> 00:22:46.760
+less than 3.11?
+
+00:22:46.760 --> 00:22:50.140
+I'm like, because it uses string enum from 3.11.
+
+00:22:50.140 --> 00:22:51.000
+So I'm like, you know what?
+
+00:22:51.000 --> 00:22:53.200
+I'll just, I'll just derive from the other class.
+
+00:22:53.200 --> 00:22:54.840
+Add that as a dependency.
+
+00:22:54.840 --> 00:22:55.680
+I already had dependencies.
+
+00:22:55.680 --> 00:22:56.920
+That's one more small one.
+
+00:22:56.920 --> 00:22:57.540
+And guess what?
+
+00:22:57.540 --> 00:22:59.520
+Now it supports older versions of Python.
+
+00:22:59.520 --> 00:23:03.080
+I stopped it at 3.10 because I want nice type-ins.
+
+00:23:03.080 --> 00:23:04.540
+I don't want ugly type-ins.
+
+00:23:04.540 --> 00:23:06.480
+You're nicer than me, man.
+
+00:23:06.480 --> 00:23:09.060
+I'm like, it doesn't support it.
+
+00:23:09.240 --> 00:23:11.700
+It doesn't, because I don't want to support it.
+
+00:23:11.700 --> 00:23:12.200
+Yeah.
+
+00:23:12.200 --> 00:23:14.060
+But then I was curious, like, well, why doesn't it?
+
+00:23:14.060 --> 00:23:15.480
+And I remember we talked about this thing.
+
+00:23:15.480 --> 00:23:19.760
+And if I literally just change a base class and don't do anything else, that was pretty
+
+00:23:19.760 --> 00:23:20.220
+low effort.
+
+00:23:20.220 --> 00:23:22.080
+So, you know, it took like five minutes, right?
+
+00:23:22.080 --> 00:23:22.780
+All right.
+
+00:23:22.780 --> 00:23:23.720
+Yeah.
+
+00:23:23.720 --> 00:23:24.920
+So anyway.
+
+00:23:24.920 --> 00:23:25.600
+All right.
+
+00:23:25.600 --> 00:23:26.340
+That's it for my extras.
+
+00:23:26.340 --> 00:23:29.280
+Shall we close it out with a joke?
+
+00:23:29.280 --> 00:23:29.860
+Yeah.
+
+00:23:29.860 --> 00:23:30.760
+Let's do something funny.
+
+00:23:30.760 --> 00:23:31.200
+Man.
+
+00:23:31.200 --> 00:23:35.960
+I know we were just talking, we just experienced a food holiday in the United States last week
+
+00:23:35.960 --> 00:23:36.840
+with Thanksgiving and all.
+
+00:23:36.840 --> 00:23:38.200
+And I hope everyone's was good.
+
+00:23:38.200 --> 00:23:38.880
+If you celebrate it.
+
+00:23:39.000 --> 00:23:43.520
+However, sometimes there's a lot of food prep and it can be, it can be hard, right?
+
+00:23:43.520 --> 00:23:44.180
+It can be hard.
+
+00:23:44.180 --> 00:23:47.820
+Like you're shopping, you're chopping all of these things.
+
+00:23:47.820 --> 00:23:52.480
+So here is a programmer or just a computer user really who has a grocery list.
+
+00:23:52.480 --> 00:23:56.120
+And the grocery list says eggs, corn, tomatoes, onions, rice, milk.
+
+00:23:56.120 --> 00:23:57.660
+They decide they don't want the onions.
+
+00:23:57.660 --> 00:24:02.500
+So they highlight it and they hit control X and a tear forms in their eye because of course
+
+00:24:02.500 --> 00:24:03.460
+it does when you cut onions.
+
+00:24:03.460 --> 00:24:06.620
+That's really funny.
+
+00:24:06.620 --> 00:24:07.680
+It's pretty good, right?
+
+00:24:07.820 --> 00:24:09.380
+I mean, yeah, it's good.
+
+00:24:09.380 --> 00:24:10.580
+I don't know why.
+
+00:24:10.580 --> 00:24:11.160
+It's cheesy.
+
+00:24:11.160 --> 00:24:11.440
+It's cheesy.
+
+00:24:11.440 --> 00:24:12.640
+It's a little cheesy.
+
+00:24:12.640 --> 00:24:13.620
+A little cheesy.
+
+00:24:13.620 --> 00:24:15.620
+Yeah.
+
+00:24:15.620 --> 00:24:17.100
+I'll do one more for us.
+
+00:24:17.100 --> 00:24:20.560
+That's straight out of the comments because Cohen did a pretty good one.
+
+00:24:20.560 --> 00:24:23.940
+When we were talking about the loop targets, it says, how about this?
+
+00:24:23.940 --> 00:24:25.660
+We're putting two controversial ideas together.
+
+00:24:25.660 --> 00:24:31.360
+Sum of sum of numbers plus X for numbers of zero in numbers.
+
+00:24:31.480 --> 00:24:35.020
+If X colon equal numbers squared is such and such.
+
+00:24:35.020 --> 00:24:36.920
+Like, oh my goodness.
+
+00:24:36.920 --> 00:24:38.720
+This is a lot of stuff going.
+
+00:24:38.720 --> 00:24:40.700
+I said, here's a job interview for you.
+
+00:24:40.700 --> 00:24:42.000
+Job interview question.
+
+00:24:42.000 --> 00:24:43.800
+If you answer with a straight face, you fail.
+
+00:24:43.800 --> 00:24:46.940
+No, it's good.
+
+00:24:46.940 --> 00:24:47.180
+Yeah.
+
+00:24:47.700 --> 00:24:48.860
+If you think that's all right.
+
+00:24:48.860 --> 00:24:49.140
+Nope.
+
+00:24:49.140 --> 00:24:49.520
+You're out.
+
+00:24:49.520 --> 00:24:50.980
+I don't know.
+
+00:24:50.980 --> 00:24:53.100
+Not seriously, but as a joke, it's pretty good.
+
+00:24:53.100 --> 00:24:53.740
+Yeah.
+
+00:24:53.740 --> 00:24:56.000
+Job interview stuff.
+
+00:24:56.000 --> 00:24:57.100
+Job interviews are tough.
+
+00:24:57.100 --> 00:24:58.640
+I know a lot of people are going through that now.
+
+00:24:58.640 --> 00:24:59.280
+Yeah.
+
+00:24:59.280 --> 00:25:03.120
+Well, you know, the control X part and also the job interview might bring a tear to the
+
+00:25:03.120 --> 00:25:03.360
+heights.
+
+00:25:03.360 --> 00:25:05.080
+I don't know.
+
+00:25:05.180 --> 00:25:10.100
+I haven't, I haven't applied for a job in, well, since the nineties, however, which is
+
+00:25:10.100 --> 00:25:10.600
+insane.
+
+00:25:10.600 --> 00:25:12.100
+That is insane, man.
+
+00:25:12.100 --> 00:25:13.680
+It's actually insane.
+
+00:25:13.680 --> 00:25:17.940
+Um, but because all my job transitions have been like, Hey, you'd be awesome.
+
+00:25:17.940 --> 00:25:21.120
+Like, why don't you consider working for, it was more of the other way around, you know,
+
+00:25:21.120 --> 00:25:26.460
+which is pretty fortunate, but it sounds like your resume has like, like a lawn mowing
+
+00:25:26.460 --> 00:25:27.600
+on it still or something.
+
+00:25:27.600 --> 00:25:28.960
+Exactly.
+
+00:25:28.960 --> 00:25:30.640
+I work for companies.
+
+00:25:30.640 --> 00:25:33.280
+They just reached out to me and said, would you consider working for us?
+
+00:25:33.620 --> 00:25:36.940
+I know, but you probably didn't have to, you haven't probably had to update your resume
+
+00:25:36.940 --> 00:25:37.680
+for a long time.
+
+00:25:37.680 --> 00:25:37.960
+Yeah.
+
+00:25:37.960 --> 00:25:43.720
+My LinkedIn is like, I'm, I've had some experience at a pizza place and I've done lawn mowing.
+
+00:25:43.720 --> 00:25:45.020
+So that was good.
+
+00:25:45.020 --> 00:25:45.540
+No, but I do.
+
+00:25:45.540 --> 00:25:47.460
+I was just going to say, I think it's probably pretty brutal.
+
+00:25:47.460 --> 00:25:52.400
+You've got to, you know, pass the AI gauntlets and all sorts of weird business and take home
+
+00:25:52.400 --> 00:25:52.740
+quizzes.
+
+00:25:52.740 --> 00:25:54.840
+And I can see why there would be tears.
+
+00:25:54.840 --> 00:25:56.740
+But not for this in the show.
+
+00:25:56.740 --> 00:25:58.140
+Thank you everyone for coming.
+
+00:25:58.140 --> 00:25:58.980
+Thank you, Brian.
+
+00:25:58.980 --> 00:25:59.700
+See y'all later.
+

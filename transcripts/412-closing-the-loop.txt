@@ -1,0 +1,1240 @@
+00:00:00 Hello and welcome to Python Bytes, where we deliver Python news and headlines directly to your earbuds.
+
+00:00:05 This is episode 412, recorded Monday, December 2nd, 2024.
+
+00:00:10 I am Michael Kennedy.
+
+00:00:11 And I am Brian Okken.
+
+00:00:12 This episode is brought to you by us, especially our Black Friday things.
+
+00:00:17 Visit our website for the Black Friday things.
+
+00:00:19 You have 14 hours, so make haste.
+
+00:00:23 Make haste. Hopefully you listen straight away.
+
+00:00:26 And if not, thanks for supporting our work and check out our courses and things like that.
+
+00:00:30 Links are in the show notes.
+
+00:00:31 You can also get the summary of every episode delivered directly to you.
+
+00:00:37 Handcrafted, artisanal newsletter by Brian Okken here.
+
+00:00:41 So check that out.
+
+00:00:42 And we mentioned this last time, but we are now Blue Skyians.
+
+00:00:46 We now live in the sky, the blue sky.
+
+00:00:48 In particular, Python Bytes is over there with the handle Python, you know, at pythonbytes.fm.
+
+00:00:54 And both Brian and I are linked directly from there.
+
+00:00:57 So come follow us.
+
+00:00:59 I have a little extra, extra, extra to follow up on Blue Sky and Mastodon and Twitter, X Twitter, whatever.
+
+00:01:07 All of these things.
+
+00:01:09 So I think you will find that interesting.
+
+00:01:11 But right now, I would like to know, Brian, what you find interesting.
+
+00:01:14 I find interesting that there's a controversy over loop targets.
+
+00:01:20 This is so inside baseball, I think.
+
+00:01:23 But okay.
+
+00:01:24 So Ned Batchelder wrote a blog post and apparently a social media post on Blue Sky, actually.
+
+00:01:34 But about what loop targets are.
+
+00:01:38 So what I'm talking about is a for loop.
+
+00:01:40 So if you say for, like for X in range 10 or something like that, then X gets assigned 10, like 0 through 9, right?
+
+00:01:48 So what's the controversy?
+
+00:01:50 The controversy is what you should put in for X.
+
+00:01:53 So in his little code example, he's got for param, he's got a parameter dictionary.
+
+00:01:59 And there's a query and a page size.
+
+00:02:02 There's no page element, but we're going to fill that in later.
+
+00:02:05 So what he's doing is he has coded for params, quote, page in iter tools count.
+
+00:02:13 And what that's going to do is it's just going to go through and get 100 things at a time and put them in a page dictionary until it's empty.
+
+00:02:23 And there's a break to get out of the loop once there are no results left.
+
+00:02:29 I think this is kind of clever and I don't see the problem here.
+
+00:02:31 So the problem is this kind of this params, this index into the dictionary.
+
+00:02:37 And that's where you're putting the loop parameters.
+
+00:02:38 Yeah, this is wild because I've seen exploding or expanding tuples into multiple things like for thing in dictionary, the items,
+
+00:02:48 it's a maybe key comma value in the loop target.
+
+00:02:52 And that's perfectly normal.
+
+00:02:53 But assigning a key in the dictionary, this is new to me.
+
+00:02:56 Really?
+
+00:02:56 OK.
+
+00:02:57 Yeah.
+
+00:02:58 I'm not necessarily I'm neutral on it, whether or not it should be done, but I'm just learning about it now.
+
+00:03:04 OK.
+
+00:03:04 So in the discussion, so really what's happening is there's in the discussion, he talks about it, that you could have like an extra variable.
+
+00:03:13 You could say page num.
+
+00:03:14 So for page num in iter tools count, it makes it more clear.
+
+00:03:17 And then you assign the page num to the, you assign that to the dictionary.
+
+00:03:21 But really, you're just using this page num just as a temporary variable just to stuff it in there.
+
+00:03:27 So I say, why not just put just to just assign it where you're going to use it.
+
+00:03:32 And because this extra line of code, I don't know, I'm kind of on the fence because this is more clear.
+
+00:03:38 I think it's more clear to use a temporary variable.
+
+00:03:40 It's more readable.
+
+00:03:41 However, there's an extra line of code.
+
+00:03:43 So it is like that much more.
+
+00:03:45 It's not that much more readable, I don't think.
+
+00:03:47 And it's not.
+
+00:03:47 And there's that.
+
+00:03:49 If this in this short code snippet, not a big deal.
+
+00:03:52 But in a larger for loop, you may have more reason to possibly have something break because somebody like, you know, commented that line out or something and it suddenly doesn't work.
+
+00:04:02 So anyway, I'm like, this is weird.
+
+00:04:05 This is controversy.
+
+00:04:06 But even so he wrote this up just to talk about it and ask what people think.
+
+00:04:11 And most of the responses are like, no.
+
+00:04:14 Or one, I think it's a cool idea.
+
+00:04:16 And I think it's a terrible idea.
+
+00:04:19 Anyway, I guess I'm bringing this up because I just want to point out that with for loops, there's an implicit assignment.
+
+00:04:28 And so you can use that assignment to assign to wherever you want to use the variable.
+
+00:04:33 So I'm going to make an observation here.
+
+00:04:35 You tell me what you think.
+
+00:04:36 I believe the people who are for this are also fans of the walrus operator.
+
+00:04:41 And people who are against this are anti-walrus.
+
+00:04:44 Oh, that might be true.
+
+00:04:45 Right.
+
+00:04:46 It's kind of the same thing.
+
+00:04:47 It's in a for loop, you're assigning to a variable and kind of sort of defining and assigning in a sense.
+
+00:04:53 Whereas, you know, the walrus operator does it for if statements.
+
+00:04:56 But it's like not assign the variable, then test it.
+
+00:04:59 It's like all at once do the assign and test or assign and loop.
+
+00:05:03 But there is already an assign in the for loop.
+
+00:05:06 It's always assignment.
+
+00:05:07 But is it colon equals?
+
+00:05:08 No, I'm just kidding.
+
+00:05:09 Is it colon in?
+
+00:05:10 Yeah.
+
+00:05:12 No, it's interesting.
+
+00:05:13 It does.
+
+00:05:14 Yeah.
+
+00:05:14 It's for loop, the original walrus operator.
+
+00:05:17 All right.
+
+00:05:17 All right.
+
+00:05:18 I'm actually going to come back to loops, but not yet.
+
+00:05:20 I want to talk about the standard library.
+
+00:05:23 No, no.
+
+00:05:23 Not the one that you know.
+
+00:05:24 Not the one that comes with CPython.
+
+00:05:26 The async standard library.
+
+00:05:28 It's the missing toolbox for an async world.
+
+00:05:30 Did you know we're living in an async world?
+
+00:05:32 I feel like a little Madonna is rocking in my back.
+
+00:05:34 Is that Madonna?
+
+00:05:35 I don't know.
+
+00:05:35 Yeah.
+
+00:05:37 So one of the problems is if you go and look at many of the things that you know and love,
+
+00:05:42 say, iter tools or functools, those things have not been kind of blowing my mind because
+
+00:05:48 they could be, have not been updated to support async.
+
+00:05:52 Okay.
+
+00:05:53 So when you do like functools, you know, say a decorator at functools.lrucache, that is
+
+00:05:59 perfect for a synchronous function.
+
+00:06:02 It doesn't work for an async one.
+
+00:06:04 And why do I think that it should work for it?
+
+00:06:07 Because just a couple of weeks ago, I covered my chameleon flask decorator for templates.
+
+00:06:13 And I, in a hundred lines of code, I wrote something that decorates and operates on both
+
+00:06:17 sync and async functions.
+
+00:06:18 So surely the people who create async.io could probably like write a multi-operator decorator
+
+00:06:25 deal, but they don't.
+
+00:06:26 And I have no idea if there's any intention ever for them to do so.
+
+00:06:30 So what this is, is it's kind of like a clone of those things.
+
+00:06:33 Not totally.
+
+00:06:34 It also has some other nice features, but it's like an async version of those.
+
+00:06:38 So if you have an async function, you want to apply an LRU cache to it.
+
+00:06:41 Well, go grab this bad boy.
+
+00:06:43 So it's got a bunch of built-ins for things like asynchronous zip sum, or even converting
+
+00:06:50 the list.
+
+00:06:50 It has functools that supports things like I talked about LRU cache.
+
+00:06:54 And if you look at it, it's looks a whole lot like you would imagine.
+
+00:06:58 It has a max size.
+
+00:06:59 It has typed and so on, but it operates on a waitable.
+
+00:07:04 And it returns an LRU async callable, something you can await like you should the function,
+
+00:07:10 rather than just a coroutine that is, I don't know, where you cache the coroutine.
+
+00:07:13 I don't know.
+
+00:07:14 It doesn't make a lot of sense.
+
+00:07:15 So this is what this is about.
+
+00:07:17 It's got a bunch of things like that.
+
+00:07:19 It has the built-ins.
+
+00:07:20 It's got a functools libraries for iterators, async caches, attributes, the context lib and
+
+00:07:26 async context lib.
+
+00:07:28 So I can do things like add async decorator in context that derives from a context decorator.
+
+00:07:35 And you can basically a short circuit, the implementation, a simple implementation of a
+
+00:07:39 enter and a exit.
+
+00:07:40 So on.
+
+00:07:41 It has a heap queue, which implements Python's heap queue, but for async, which is pretty cool.
+
+00:07:46 So you want to merge and stuff.
+
+00:07:48 And then it has some extra tools.
+
+00:07:50 And I don't really, I haven't done enough with this to know whether this is useful, how I
+
+00:07:54 would use it.
+
+00:07:55 So stick with it.
+
+00:07:55 Anyway, it has things like borrow, where you can borrow an async iterator to prevent it from
+
+00:08:01 closing.
+
+00:08:01 Okay.
+
+00:08:02 I don't know about that.
+
+00:08:03 You got scoped ones, but this one is really nice.
+
+00:08:05 I've written this code before and it's not easy to get completely right.
+
+00:08:09 It has a thing that you can just call async standard lib dot sync, giving it a async function
+
+00:08:16 and it'll just, sorry, the way around, given async function, it will turn it into an async
+
+00:08:21 function that you can await if you need to.
+
+00:08:23 Or, yeah, or you can give it an async one as well.
+
+00:08:27 And it doesn't really care.
+
+00:08:29 I think it adapts.
+
+00:08:30 But so a bunch of stuff going on here.
+
+00:08:32 If you're like, ah, there's a bunch of these cool built-ins that I'm used to and they don't
+
+00:08:35 work with async.
+
+00:08:36 Well, check out the async standard lib.
+
+00:08:38 Very cool.
+
+00:08:39 I think it seems like we have a typed Python and non-typed Python.
+
+00:08:43 And now we have async Python and synchronous Python.
+
+00:08:47 And then we're going to have free-threaded and non-free-threaded.
+
+00:08:50 We're going to have typed async free-threaded Python.
+
+00:08:53 Yeah.
+
+00:08:55 And every other combinatorial possibility there.
+
+00:08:58 It's going to be nuts.
+
+00:08:58 Yeah.
+
+00:08:59 Yeah.
+
+00:08:59 But I think this is a cool one.
+
+00:09:01 It's not super popular.
+
+00:09:02 Let me go back to it and see what its GitHub stars are.
+
+00:09:06 But it's kind of one of those things that's like, yeah, this is definitely worth it.
+
+00:09:10 I don't know.
+
+00:09:10 So it has some.
+
+00:09:12 Oh, here we go.
+
+00:09:12 No, don't say.
+
+00:09:13 240.
+
+00:09:14 So it's starting to pick up some speed.
+
+00:09:15 But I think it's real simple.
+
+00:09:17 It's like the kind of thing that's either going to work or not work.
+
+00:09:19 So if it's useful for you, go for it.
+
+00:09:21 Nice.
+
+00:09:21 Yeah.
+
+00:09:22 It's cool.
+
+00:09:22 I was going to talk about.
+
+00:09:25 I haven't had breakfast yet.
+
+00:09:27 So I was going to talk about some.
+
+00:09:28 Maybe getting a bagel.
+
+00:09:29 You want a bagel?
+
+00:09:29 Okay.
+
+00:09:30 Yeah.
+
+00:09:30 I love bagels.
+
+00:09:31 As long as it got everything, we're good.
+
+00:09:33 Everything bagel.
+
+00:09:34 Let's go.
+
+00:09:34 Well, I am taking a look at a project called Enhanced Jack.
+
+00:09:38 It's called Bagels from Enhanced Jack.
+
+00:09:41 Who's Enhanced Jack's?
+
+00:09:42 It's Jack's Tam.
+
+00:09:44 Cool.
+
+00:09:45 Aspiring student studying.
+
+00:09:46 Oh, no.
+
+00:09:47 University student.
+
+00:09:48 Cool.
+
+00:09:48 Anyway, why am I bringing up bagels?
+
+00:09:50 Well, bagels is kind of a fun little expense tracker.
+
+00:09:55 But I think it's a great example of using Textual for something that, you know, people probably
+
+00:10:02 could sink their teeth into pretty easy.
+
+00:10:04 So it's an expense tracker with multiple accounts using Textual.
+
+00:10:08 I've tried it out.
+
+00:10:09 It's really pretty easy.
+
+00:10:10 There's a bunch of stuff I like about this.
+
+00:10:12 And I'm bringing it up.
+
+00:10:14 Not really because I think everybody needs an expense tracker.
+
+00:10:16 But I think a lot of people look for a starter, like a starter project to possibly tweak and make
+
+00:10:23 their own.
+
+00:10:24 And I think this might be kind of a fun thing for people to look at.
+
+00:10:27 A few things about it.
+
+00:10:28 I like it that it's in the command line.
+
+00:10:31 It's a textual app.
+
+00:10:32 But it's also the install instructions.
+
+00:10:34 I love seeing this.
+
+00:10:35 It's starting to use the UV tool install so that you can just run bagels from anywhere.
+
+00:10:41 It's the way.
+
+00:10:42 This is the way.
+
+00:10:44 This is the way.
+
+00:10:44 And it's so fast to get started.
+
+00:10:49 I also like that the project is pretty new.
+
+00:10:53 But it's just a few weeks started.
+
+00:10:57 But there's already some features included.
+
+00:11:00 Features included is great.
+
+00:11:02 And then also how to development setup is listed.
+
+00:11:07 And it doesn't talk about how to run tests.
+
+00:11:10 But that's all right.
+
+00:11:10 It's running pytest, of course.
+
+00:11:12 But then a roadmap of sort of things that they'd like to add to it.
+
+00:11:17 It's heavily inspired by posting.
+
+00:11:20 So anyway, just a fun little project.
+
+00:11:22 The tests are in place.
+
+00:11:24 It's not a complete coverage yet.
+
+00:11:27 But it's a new project.
+
+00:11:28 So if you want to help out, I think it's a good thing for people to check out.
+
+00:11:32 Also, I've always wanted to write my own little expense tracker.
+
+00:11:35 And so this is a good start for even if it doesn't do everything I wanted to do,
+
+00:11:40 to take up the code base and maybe play with it, learn some stuff.
+
+00:11:43 It's also, it's written, it's using, I can't remember.
+
+00:11:46 It was using a PostgreSQL, like a SQLAlchemy.
+
+00:11:51 Also, if you want to have a simple, small project that uses SQLAlchemy to learn that,
+
+00:11:56 be a good one to take a look at.
+
+00:11:58 Awesome.
+
+00:11:58 Yeah, that's really cool.
+
+00:11:59 And we've covered Postling?
+
+00:12:01 What was it called?
+
+00:12:02 You covered it.
+
+00:12:03 The Posting.
+
+00:12:04 Yeah.
+
+00:12:05 A little app that was written in.
+
+00:12:06 Posting, what was that?
+
+00:12:07 Remember?
+
+00:12:08 That was the Postman alternative for the terminal written in textual, which is cool.
+
+00:12:14 Yeah, which is like a dream to work with.
+
+00:12:16 It's a fun one.
+
+00:12:17 Yeah, very nice.
+
+00:12:18 I want to, since you brought this up, I'll throw this out here.
+
+00:12:21 Not super necessarily relevant.
+
+00:12:23 But I recently ran across maybe.co.
+
+00:12:25 Okay.
+
+00:12:26 It's almost a company, but it lost the M along the way.
+
+00:12:29 Anyway, it's a fully open source OS for your personal finances running on Docker.
+
+00:12:35 If you want to do self-hosting, keep all of your data private instead of like sending off
+
+00:12:39 to Intuit or somewhere that it probably doesn't belong.
+
+00:12:42 So anyway, people can check that out.
+
+00:12:43 That's kind of cool.
+
+00:12:43 Cool.
+
+00:12:44 Not an endorsement.
+
+00:12:44 Haven't used it, but kind of thinking about it.
+
+00:12:46 I would rather bring it full circle.
+
+00:12:48 We began with loops.
+
+00:12:49 Let us end with loops.
+
+00:12:51 Isn't that perfect for a full circle?
+
+00:12:52 They go in circles, don't they?
+
+00:12:54 Yeah.
+
+00:12:54 So this is the early days sort of thing, but Giovanni, who is the creator of the Emmet framework
+
+00:13:01 and more relevant to us, the Grannion AsyncSync Rust-based web server that powers Python bytes
+
+00:13:07 and other things that we have, is creating this thing that is an alternative to UV loop.
+
+00:13:13 So UV loop is a, I think it's based on LibUV.
+
+00:13:16 I can't remember exactly the origins of it, but it's a loop that you can plug in as an alternative
+
+00:13:22 for the AsyncIO event loop implementation.
+
+00:13:25 Okay.
+
+00:13:26 So why would you do that?
+
+00:13:28 Well, it turns out that you can optimize some of the juggling of the little tasks.
+
+00:13:34 So if you have like three tasks, one is call the website, one is talk to the database,
+
+00:13:38 one is write a file or whatever, don't do anything.
+
+00:13:40 The built-in one's fine.
+
+00:13:41 But if you have a million tasks and you're breaking them into little tiny pieces and they're jumping
+
+00:13:45 all over, like that juggling could be faster with UV loop.
+
+00:13:48 And I think that's where we're going to see it go with our loop.
+
+00:13:52 So our loop is an Async event loop implemented in Rust and it's coming along.
+
+00:13:57 It is a work in progress and not ready.
+
+00:13:59 But the reason I bring it up early in its life here is it's a really cool option.
+
+00:14:03 We've seen how significant the improvements for other Rust things like Pydantic and UV have
+
+00:14:09 been.
+
+00:14:10 And so if you're passionate about this and you want to have maybe a little influence
+
+00:14:13 before it gets fully baked as this thing's coming to life, you know, jump in.
+
+00:14:17 The way you use it is just like UV.
+
+00:14:19 It's super easy.
+
+00:14:20 Just before you do Async things, you just say AsyncIO.setEventLoopPolicy, which is a factory,
+
+00:14:26 I'm thinking.
+
+00:14:27 Kind of a factory method more.
+
+00:14:28 I don't know, whatever.
+
+00:14:29 And you just give it Rloop.EventLoopPolicy.
+
+00:14:31 And that means anytime code creates a new event loop, it's going to be using the factory
+
+00:14:36 method from Rloop rather than the built-in one.
+
+00:14:38 Off you go.
+
+00:14:39 Cool.
+
+00:14:40 Yeah.
+
+00:14:40 Well, cool.
+
+00:14:40 Well, that's it for our items, right?
+
+00:14:42 I think so.
+
+00:14:43 Yeah.
+
+00:14:44 I think it is.
+
+00:14:44 Extras?
+
+00:14:45 What do you think?
+
+00:14:46 Extras?
+
+00:14:47 Yeah, I have a few.
+
+00:14:48 You want me to jump in?
+
+00:14:49 Jump in.
+
+00:14:49 I am, I've had a lot of stuff going on in personal life lately and trying to fit everything into
+
+00:14:56 my life is sometimes difficult.
+
+00:14:58 So I've been reading, reading, reading in quotes, listening to the audio book for 4,000
+
+00:15:04 weeks, a time management, time management for mortals.
+
+00:15:07 It's a book by Oliver Berkman.
+
+00:15:09 And I'm listening to it for the second time now in the last couple of weeks.
+
+00:15:13 I just picked it up a week or so ago, but I'm really enjoying it.
+
+00:15:17 And it's more of a, you can't get everything done, but that's okay.
+
+00:15:22 Just how to be okay with the limitations of life.
+
+00:15:26 So very refreshing time management book.
+
+00:15:29 It's also got some practical advice too, but it's great.
+
+00:15:33 So highly, highly recommend that.
+
+00:15:36 It's advent of, advent of code time.
+
+00:15:39 And I've heard of the, so I've definitely heard of the advent of code, but the advent of
+
+00:15:46 code.com.
+
+00:15:47 Very cool.
+
+00:15:47 A lot of people do that every year for in December to do little code snippets every year.
+
+00:15:53 But today I came across Adrian Roselli's development advent calendars for 2024.
+
+00:15:58 So if advent of code isn't quite what up your alley, there's a whole bunch here.
+
+00:16:04 There's HTML hell advent calendar.
+
+00:16:06 There's a whole bunch of code and code-based advent calendars here.
+
+00:16:10 So none of them Python specific.
+
+00:16:13 There's a Perl specific, but C# advent of cyber.
+
+00:16:17 Just quite a, quite a few fun, different calendars.
+
+00:16:20 CSS.
+
+00:16:21 If you wanted to learn CSS, maybe there's just CSS.
+
+00:16:23 The Joomla advent calendar.
+
+00:16:24 You too can host it.
+
+00:16:27 So yeah.
+
+00:16:28 And apparently it's gone, it's gone back.
+
+00:16:30 He's got links back to 2010.
+
+00:16:33 So it's fun.
+
+00:16:34 Wow.
+
+00:16:34 Yeah.
+
+00:16:35 If you get your homework done early, you can do more advent of calendars.
+
+00:16:38 Yeah.
+
+00:16:39 I don't, so I tried, I tried advent of code a couple of years ago.
+
+00:16:43 And then I just realized that like in my free time, I've, I'm doing so much code coding at
+
+00:16:48 work, side hustles and everything that I kind of want to do things like draw and paint and
+
+00:16:54 cook and things like that when, when I'm doing other stuff.
+
+00:16:58 So anyway, I hear you.
+
+00:16:59 I'm the same.
+
+00:17:00 I already do a lot of programming.
+
+00:17:01 Even in my spare time, I do more programming.
+
+00:17:03 Yeah.
+
+00:17:04 And so I don't need extra ones, but I know it helps people, especially people are trying
+
+00:17:07 to learn a topic.
+
+00:17:08 It can kind of force you if you don't have a way to apply it.
+
+00:17:11 And today is December 2nd, Monday, traditionally a cyber Monday.
+
+00:17:15 And it is the last day for the black Friday sale, turkey sale for the python test.com courses,
+
+00:17:23 however.
+
+00:17:24 And so I'll take, I'll take off the automatic.
+
+00:17:26 But if you, if you hit me, if you're listening to this later, you know, close in it, close
+
+00:17:32 ish to December 2nd, direct message me on, on blue sky and I'll hook you up.
+
+00:17:37 So anyway, that's it.
+
+00:17:38 Blue sky.
+
+00:17:39 That's a good transition.
+
+00:17:40 All right.
+
+00:17:41 Also black Friday at talk python.
+
+00:17:43 So talkpython.fm/ black Friday, 20 to 50% off the course library.
+
+00:17:47 Nice logo there.
+
+00:17:48 The image is great.
+
+00:17:49 Thanks.
+
+00:17:50 That's pure CSS, by the way.
+
+00:17:51 That's some mad glow in CSS.
+
+00:17:53 Yeah, it's cool.
+
+00:17:54 Yeah.
+
+00:17:54 Awesome.
+
+00:17:55 All right.
+
+00:17:55 So we'd talk blue sky.
+
+00:17:57 So I just, you know, last week when I finished producing the show and I published it onto the
+
+00:18:03 internet, typically go to the social networks and I'll do a quick post.
+
+00:18:06 Hey, new episodes out.
+
+00:18:06 Enjoy it.
+
+00:18:07 If you want it.
+
+00:18:07 This one had a little guitar solo at the end, which was super fun.
+
+00:18:11 And so it said latest episode out for 11 TLS client.
+
+00:18:14 Hello.
+
+00:18:15 Guitar solo was the name.
+
+00:18:16 And I published that and I published it at the same time with the same text to X,
+
+00:18:22 Fostadon, Mastadon and blue sky.
+
+00:18:25 And I just thought, huh, I wonder what the engagement looks like, because I don't know how you've been
+
+00:18:29 feeling, Brian, but I feel like people, I tried and tried to get folks to go to Mastadon
+
+00:18:34 and like some, some people came, came along, but a bunch just didn't, you know, they were
+
+00:18:39 just, you would go back to X and you would just see them all talking there.
+
+00:18:42 I'm like, man, I don't know.
+
+00:18:43 And I'm not necessarily super against X.
+
+00:18:45 I'm a little bit against it, but I'm not a lot, but it's just, it's become not very practical
+
+00:18:50 as you'll see in just a second.
+
+00:18:51 Not very useful.
+
+00:18:52 So, you know, you want to go talk to yourself in a closet.
+
+00:18:55 It's awesome.
+
+00:18:56 You want to talk to other people?
+
+00:18:57 Well, that's so.
+
+00:18:58 Anyway, so my, my test here, this is a non-scientific test that I put out there.
+
+00:19:03 What is the interaction level per platform?
+
+00:19:07 And what you have to keep in mind before I tell you guys this, there's a dramatic difference
+
+00:19:11 in number of followers, subscribers, whatever they're called at that particular location.
+
+00:19:16 Okay.
+
+00:19:16 So basically take the numbers, divide by the number of followers and consider that like
+
+00:19:20 the amount of interaction.
+
+00:19:21 The reason I tell you this is you may want to come follow us and join us on blue sky, but
+
+00:19:25 that's, that's a bit of a get in the head.
+
+00:19:27 So check this out.
+
+00:19:27 So over on X, we have 27,000 followers.
+
+00:19:32 Okay.
+
+00:19:32 Posting this exact message one week ago, we got eight likes and two retweets, reposts,
+
+00:19:38 boost, name it, whatever.
+
+00:19:40 Yeah.
+
+00:19:40 So I don't know what that is.
+
+00:19:42 Two divided by 27,000, but it's a small percentage.
+
+00:19:45 Okay.
+
+00:19:45 Fostadon, Mastodon, right?
+
+00:19:47 It's not Fostadon, Mastodon, because it's across all, all the Fediverse.
+
+00:19:51 Same posts, identical.
+
+00:19:53 Here we have 3,000.
+
+00:19:55 Let me see.
+
+00:19:55 3,100 followers.
+
+00:19:57 Okay.
+
+00:19:57 So yeah, that's great.
+
+00:19:59 But this is almost nine times less.
+
+00:20:01 Something like that, right?
+
+00:20:02 It's many, many less times, but four boosts, which is not out of control, honestly, but
+
+00:20:07 it's in two favorites, two likes.
+
+00:20:08 But as a ratio, it's still a lot more because multiply by nine, right?
+
+00:20:13 Yeah.
+
+00:20:13 Blue sky, which we've been there a couple of days.
+
+00:20:16 We have something like that.
+
+00:20:17 We only have a, somebody hover, different hover targets, 750 followers.
+
+00:20:23 Yeah.
+
+00:20:24 Follow us on blue sky.
+
+00:20:25 Get over there.
+
+00:20:25 Yeah.
+
+00:20:26 Anyway, we have 16 likes and two reposts and a quote posts and then some conversation
+
+00:20:31 about it.
+
+00:20:32 And that's 30 times less followers and more engagement than both platforms.
+
+00:20:37 So anyway, I, y'all take that for what it is.
+
+00:20:40 I just thought that was an interesting experiment.
+
+00:20:42 What do you think, Brian?
+
+00:20:43 Yeah, I'm finding, I'm finding blue sky more interactive.
+
+00:20:46 I've got about this approximate same numbers on a fostered on or mastodon and, and blue sky
+
+00:20:53 and, and I'll, I'll get like twice as much interaction on, I mean, approximate gut feel twice as
+
+00:21:00 much interaction on blue skies.
+
+00:21:01 I do on, on mastodon.
+
+00:21:04 Yeah.
+
+00:21:04 Yeah.
+
+00:21:05 Yeah.
+
+00:21:05 And I'm not saying this to bag on some social network or try to promote other too much.
+
+00:21:10 I was like, people are trying to find their community.
+
+00:21:12 I think right now this is where the community is.
+
+00:21:15 And if you go here, you can go to my account and go to the starter pack and there's the
+
+00:21:19 Python personalities and you can follow a bunch of us.
+
+00:21:22 The onboarding experience is way better.
+
+00:21:24 The, the onboarding experience for mastodon still feels like it's too many decisions right
+
+00:21:30 at once.
+
+00:21:31 And then it's like, if you wanted to play games on Linux, you probably could.
+
+00:21:35 Yeah.
+
+00:21:37 Yeah.
+
+00:21:38 And I'm a, by the way, I'm, I'm no longer on X.
+
+00:21:41 So don't notify me there.
+
+00:21:42 Yeah.
+
+00:21:43 Sounds good.
+
+00:21:43 All right.
+
+00:21:44 A couple of other real quick things on episode 277, I believe.
+
+00:21:47 I don't have my show notes up, but I'm pretty sure that was the number.
+
+00:21:49 Way back when I talked about certain string enumeration, which is a thing that basically
+
+00:21:55 backports the string enum from Python 3.11.
+
+00:22:00 So it can be used in other places.
+
+00:22:01 It's super cool.
+
+00:22:02 It's even better than the built-in one, by the way.
+
+00:22:04 So I can have, I can say, give me a string enum and derive a class from that.
+
+00:22:10 That becomes an enumeration where you say that thing dot, but then you have the fields and
+
+00:22:15 just say equals auto, auto, auto, auto.
+
+00:22:17 And it'll actually set it to the text of whatever the variable is.
+
+00:22:20 If you refactor, rename it, it will apply that refactoring to the string version and the variable
+
+00:22:25 version of it.
+
+00:22:26 And you can even do things like use a lowercase or an uppercase one as the base class, a lowercase
+
+00:22:32 string enum.
+
+00:22:33 And that will make the string version lowercase.
+
+00:22:35 Even if you have a different, a different representation for the variable names.
+
+00:22:40 Anyway, the re why did I do this?
+
+00:22:41 Because on my list monk little client, somebody came and said, why doesn't this work on anything
+
+00:22:45 less than 3.11?
+
+00:22:46 I'm like, because it uses string enum from 3.11.
+
+00:22:50 So I'm like, you know what?
+
+00:22:51 I'll just, I'll just derive from the other class.
+
+00:22:53 Add that as a dependency.
+
+00:22:54 I already had dependencies.
+
+00:22:55 That's one more small one.
+
+00:22:56 And guess what?
+
+00:22:57 Now it supports older versions of Python.
+
+00:22:59 I stopped it at 3.10 because I want nice type-ins.
+
+00:23:03 I don't want ugly type-ins.
+
+00:23:04 You're nicer than me, man.
+
+00:23:06 I'm like, it doesn't support it.
+
+00:23:09 It doesn't, because I don't want to support it.
+
+00:23:11 Yeah.
+
+00:23:12 But then I was curious, like, well, why doesn't it?
+
+00:23:14 And I remember we talked about this thing.
+
+00:23:15 And if I literally just change a base class and don't do anything else, that was pretty
+
+00:23:19 low effort.
+
+00:23:20 So, you know, it took like five minutes, right?
+
+00:23:22 All right.
+
+00:23:22 Yeah.
+
+00:23:23 So anyway.
+
+00:23:24 All right.
+
+00:23:25 That's it for my extras.
+
+00:23:26 Shall we close it out with a joke?
+
+00:23:29 Yeah.
+
+00:23:29 Let's do something funny.
+
+00:23:30 Man.
+
+00:23:31 I know we were just talking, we just experienced a food holiday in the United States last week
+
+00:23:35 with Thanksgiving and all.
+
+00:23:36 And I hope everyone's was good.
+
+00:23:38 If you celebrate it.
+
+00:23:39 However, sometimes there's a lot of food prep and it can be, it can be hard, right?
+
+00:23:43 It can be hard.
+
+00:23:44 Like you're shopping, you're chopping all of these things.
+
+00:23:47 So here is a programmer or just a computer user really who has a grocery list.
+
+00:23:52 And the grocery list says eggs, corn, tomatoes, onions, rice, milk.
+
+00:23:56 They decide they don't want the onions.
+
+00:23:57 So they highlight it and they hit control X and a tear forms in their eye because of course
+
+00:24:02 it does when you cut onions.
+
+00:24:03 That's really funny.
+
+00:24:06 It's pretty good, right?
+
+00:24:07 I mean, yeah, it's good.
+
+00:24:09 I don't know why.
+
+00:24:10 It's cheesy.
+
+00:24:11 It's cheesy.
+
+00:24:11 It's a little cheesy.
+
+00:24:12 A little cheesy.
+
+00:24:13 Yeah.
+
+00:24:15 I'll do one more for us.
+
+00:24:17 That's straight out of the comments because Cohen did a pretty good one.
+
+00:24:20 When we were talking about the loop targets, it says, how about this?
+
+00:24:23 We're putting two controversial ideas together.
+
+00:24:25 Sum of sum of numbers plus X for numbers of zero in numbers.
+
+00:24:31 If X colon equal numbers squared is such and such.
+
+00:24:35 Like, oh my goodness.
+
+00:24:36 This is a lot of stuff going.
+
+00:24:38 I said, here's a job interview for you.
+
+00:24:40 Job interview question.
+
+00:24:42 If you answer with a straight face, you fail.
+
+00:24:43 No, it's good.
+
+00:24:46 Yeah.
+
+00:24:47 If you think that's all right.
+
+00:24:48 Nope.
+
+00:24:49 You're out.
+
+00:24:49 I don't know.
+
+00:24:50 Not seriously, but as a joke, it's pretty good.
+
+00:24:53 Yeah.
+
+00:24:53 Job interview stuff.
+
+00:24:56 Job interviews are tough.
+
+00:24:57 I know a lot of people are going through that now.
+
+00:24:58 Yeah.
+
+00:24:59 Well, you know, the control X part and also the job interview might bring a tear to the
+
+00:25:03 heights.
+
+00:25:03 I don't know.
+
+00:25:05 I haven't, I haven't applied for a job in, well, since the nineties, however, which is
+
+00:25:10 insane.
+
+00:25:10 That is insane, man.
+
+00:25:12 It's actually insane.
+
+00:25:13 but because all my job transitions have been like, Hey, you'd be awesome.
+
+00:25:17 Like, why don't you consider working for, it was more of the other way around, you know,
+
+00:25:21 which is pretty fortunate, but it sounds like your resume has like, like a lawn mowing
+
+00:25:26 on it still or something.
+
+00:25:27 Exactly.
+
+00:25:28 I work for companies.
+
+00:25:30 They just reached out to me and said, would you consider working for us?
+
+00:25:33 I know, but you probably didn't have to, you haven't probably had to update your resume
+
+00:25:36 for a long time.
+
+00:25:37 Yeah.
+
+00:25:37 My LinkedIn is like, I'm, I've had some experience at a pizza place and I've done lawn mowing.
+
+00:25:43 So that was good.
+
+00:25:45 No, but I do.
+
+00:25:45 I was just going to say, I think it's probably pretty brutal.
+
+00:25:47 You've got to, you know, pass the AI gauntlets and all sorts of weird business and take home
+
+00:25:52 quizzes.
+
+00:25:52 And I can see why there would be tears.
+
+00:25:54 But not for this in the show.
+
+00:25:56 Thank you everyone for coming.
+
+00:25:58 Thank you, Brian.
+
+00:25:58 See y'all later.
+
