@@ -1,0 +1,1940 @@
+WEBVTT
+
+00:00:00.001 --> 00:00:05.080
+Hello and welcome to Python Bytes, where we deliver Python news and headlines directly to your earbuds.
+
+00:00:05.080 --> 00:00:09.760
+This is episode 413, recorded December 9, 2024.
+
+00:00:09.760 --> 00:00:11.100
+And I'm Brian Okken.
+
+00:00:11.100 --> 00:00:12.060
+And I'm Michael Kennedy.
+
+00:00:12.060 --> 00:00:16.120
+This episode is sponsored by us, so check out the links in our show notes,
+
+00:00:16.120 --> 00:00:20.720
+but also check out Talk Python Training and PythonTest.com.
+
+00:00:20.720 --> 00:00:21.680
+There's courses over there.
+
+00:00:21.680 --> 00:00:23.640
+And of course, thank you to Patreon supporters.
+
+00:00:23.640 --> 00:00:25.260
+And we have links.
+
+00:00:25.260 --> 00:00:29.120
+If you want to get a hold of us, you can reach us on BlueSky or Mastodon.
+
+00:00:29.120 --> 00:00:30.280
+The links are in the show notes.
+
+00:00:30.280 --> 00:00:35.520
+And also, if you're listening to the show, thank you.
+
+00:00:35.520 --> 00:00:37.220
+And please share it with a friend.
+
+00:00:37.220 --> 00:00:42.340
+Also, if you'd like to participate in the discussion while we're recording,
+
+00:00:42.340 --> 00:00:46.920
+you can head on over to pythonbytes.fm/live and see when we're recording next.
+
+00:00:46.920 --> 00:00:50.060
+But usually it's Monday at 10 a.m. Pacific time.
+
+00:00:50.060 --> 00:00:51.560
+Sometimes it shifts, though.
+
+00:00:51.560 --> 00:00:53.940
+And during the holiday season, who knows what we might do.
+
+00:00:53.940 --> 00:00:56.020
+But so far, we're sticking with that.
+
+00:00:56.940 --> 00:01:02.680
+And if you'd like to get the links in your email inbox, go ahead and go and sign up for
+
+00:01:02.680 --> 00:01:04.860
+the newsletter at pythonbytes.fm.
+
+00:01:04.860 --> 00:01:08.400
+And we will send you all of the links in the show notes right in your inbox.
+
+00:01:08.400 --> 00:01:10.700
+So, Michael, let's kick it off.
+
+00:01:10.700 --> 00:01:12.160
+Let's kick it off.
+
+00:01:12.160 --> 00:01:14.440
+I want to talk about a little bit of jitter.
+
+00:01:14.440 --> 00:01:17.040
+Maybe I've had too much coffee this morning or something.
+
+00:01:17.040 --> 00:01:17.560
+I don't know.
+
+00:01:17.560 --> 00:01:18.060
+What do you think?
+
+00:01:18.320 --> 00:01:22.220
+Jitter is a thing from the folks at Pydantic.
+
+00:01:22.220 --> 00:01:30.140
+And the idea here is they need really fast JSON parsing as the foundation of Pydantic.
+
+00:01:30.140 --> 00:01:37.080
+Basically, Pydantic is about how do I exchange, validate, and transform JSON data with Python
+
+00:01:37.080 --> 00:01:38.040
+classes, right?
+
+00:01:38.040 --> 00:01:39.020
+Into Python classes.
+
+00:01:39.020 --> 00:01:39.440
+Okay.
+
+00:01:39.780 --> 00:01:39.940
+Yeah.
+
+00:01:39.940 --> 00:01:41.700
+So, you want that to be fast.
+
+00:01:41.700 --> 00:01:46.240
+The folks over at Pydantic created this thing called Jitter, G-I-T-E-R.
+
+00:01:46.240 --> 00:01:49.920
+And it is a fast iterable JSON parser.
+
+00:01:49.920 --> 00:01:57.420
+Now, if the Pydantic usage does not catch your attention, OpenAI is also using Jitter, which is
+
+00:01:57.420 --> 00:01:58.220
+pretty interesting.
+
+00:01:58.220 --> 00:01:59.600
+Ask ChatShiftPT about it.
+
+00:01:59.600 --> 00:02:05.340
+So, the reason that they were interested in it is they want to be able to work with,
+
+00:02:05.340 --> 00:02:10.580
+I believe Pydantic as well, but they want to work with responses coming out of LLMs.
+
+00:02:10.580 --> 00:02:15.780
+And anyone who's used LLMs until maybe very recently knows that they kind of like spit out
+
+00:02:15.780 --> 00:02:19.340
+the answers in a little progressive way, right?
+
+00:02:19.340 --> 00:02:25.020
+And so, with this, you can parse parts of data as it comes down, which is pretty cool.
+
+00:02:25.020 --> 00:02:28.340
+So, there's some examples of partial in here.
+
+00:02:28.420 --> 00:02:32.560
+You can go look for somewhere, I think maybe on the docs website or something like that.
+
+00:02:32.560 --> 00:02:37.240
+But, you know, you can give it like a partially formed string and it'll come up with like
+
+00:02:37.240 --> 00:02:38.680
+perfectly good answers for it.
+
+00:02:38.680 --> 00:02:40.340
+So, that's pretty neat.
+
+00:02:40.340 --> 00:02:42.400
+And that's one of its features.
+
+00:02:42.400 --> 00:02:47.740
+The other is that it's faster than what I think the default Rust JSON parser is.
+
+00:02:47.740 --> 00:02:52.160
+Even for non-iterable, just straight parse it, which is, that's pretty impressive.
+
+00:02:52.160 --> 00:02:52.680
+Okay.
+
+00:02:52.680 --> 00:02:57.220
+And then there's also, this is why we are talking about it, there's Python parse, which
+
+00:02:57.220 --> 00:03:00.640
+parses JSON strings into a Python object.
+
+00:03:00.640 --> 00:03:04.620
+So, you can go and run that as well, which is pretty cool.
+
+00:03:04.620 --> 00:03:06.080
+Shooter example.
+
+00:03:06.080 --> 00:03:07.760
+Yeah, yeah, yeah.
+
+00:03:07.760 --> 00:03:08.480
+Anyway, yeah.
+
+00:03:08.480 --> 00:03:13.240
+So, you can go and parse it into different pieces using, basically, if you need a really
+
+00:03:13.240 --> 00:03:18.840
+fast JSON parser with Python, you can use Python parse and it'll parse into a structure, right?
+
+00:03:18.840 --> 00:03:19.240
+Yeah.
+
+00:03:19.480 --> 00:03:20.440
+So, awesome.
+
+00:03:20.440 --> 00:03:26.960
+I thought people might be interested in both an iterable, iterating JSON parser, and back
+
+00:03:26.960 --> 00:03:27.440
+to this one.
+
+00:03:27.440 --> 00:03:30.520
+Iterating JSON parser and also a really fast one.
+
+00:03:30.520 --> 00:03:34.280
+Plus, it's being built by the folks at Pydantic, Sam Colvin and team.
+
+00:03:34.280 --> 00:03:36.120
+And yeah, excellent.
+
+00:03:36.120 --> 00:03:36.800
+Nice work.
+
+00:03:37.140 --> 00:03:37.500
+Oh, yeah.
+
+00:03:37.500 --> 00:03:39.960
+I think I've got several uses for this.
+
+00:03:39.960 --> 00:03:40.380
+This is cool.
+
+00:03:40.380 --> 00:03:40.960
+Yeah, cool.
+
+00:03:40.960 --> 00:03:41.700
+Yeah.
+
+00:03:41.740 --> 00:03:48.760
+I recently had Samuel Colvin on with David Seddon to talk about building Rust extensions
+
+00:03:48.760 --> 00:03:52.680
+or integrating Rust with Python and things like that and talk Python.
+
+00:03:52.680 --> 00:03:56.100
+And he talked about this as one of the things they're building, which is like, oh, okay, this
+
+00:03:56.100 --> 00:03:56.660
+is pretty interesting.
+
+00:03:56.660 --> 00:03:57.820
+Yeah, definitely.
+
+00:03:58.820 --> 00:04:01.680
+Well, I'm going to talk about Python pre-built a little bit.
+
+00:04:01.680 --> 00:04:04.320
+This is big news, Brian.
+
+00:04:04.320 --> 00:04:05.600
+I'm glad you're covering it.
+
+00:04:05.600 --> 00:04:12.520
+So, Python build standalone is a project that we've talked about on the show, but mostly we
+
+00:04:12.520 --> 00:04:15.020
+talked about it in association with UV.
+
+00:04:15.020 --> 00:04:23.280
+Because if you use UV sync or UV install Python or UV virtual environment or UV vnv and then install
+
+00:04:23.280 --> 00:04:29.440
+and use Python there, if it can't find it on your system, the Python in your system, it's
+
+00:04:29.440 --> 00:04:34.360
+going to pull it from Python build standalone, which is a separate project, not part of UV.
+
+00:04:34.360 --> 00:04:36.120
+So, we've discussed that.
+
+00:04:36.120 --> 00:04:42.740
+But the big news right now is that Python build standalone is now part of Astral or under the
+
+00:04:42.740 --> 00:04:44.820
+Astral umbrella, which is huge.
+
+00:04:44.820 --> 00:04:52.740
+So, yeah, we're going to link to an article from Charlie Marsh, head of Astral, saying a new
+
+00:04:52.740 --> 00:04:54.160
+home for Python build standalone.
+
+00:04:54.160 --> 00:05:01.640
+There's also a, it just says we'll be taking over, we'll be taking stewardship of this project
+
+00:05:01.640 --> 00:05:05.080
+from Gregory Zork, I don't know, cool last name.
+
+00:05:05.080 --> 00:05:09.740
+Anyway, the foundational project for building and installing portable Python distributions.
+
+00:05:09.740 --> 00:05:13.440
+And there's a link to Gregory's announcement also.
+
+00:05:13.440 --> 00:05:21.480
+And the discussion around that, like the Python build standalone powers UV, powers Rai, also
+
+00:05:22.200 --> 00:05:24.040
+PipX and Hatch and more.
+
+00:05:24.040 --> 00:05:28.840
+And it's got like 70, 70 million downloads so far.
+
+00:05:28.840 --> 00:05:29.380
+Wow.
+
+00:05:29.380 --> 00:05:35.980
+Pretty big project and definitely instrumental to going forward with Python or with Python
+
+00:05:35.980 --> 00:05:37.500
+packaging and using Python.
+
+00:05:37.660 --> 00:05:47.980
+So, Astral is really like trying to make UV with along with this Python build standalone project, the new way to install Python.
+
+00:05:47.980 --> 00:05:49.300
+And for me, it is.
+
+00:05:49.300 --> 00:05:51.380
+I'm using it all every day now.
+
+00:05:51.380 --> 00:05:53.180
+So 100% same for me.
+
+00:05:53.780 --> 00:05:56.460
+So pretty short article talking about this.
+
+00:05:56.460 --> 00:05:58.180
+But it is kind of interesting.
+
+00:05:58.180 --> 00:06:02.220
+It talks about what the project is at first.
+
+00:06:02.220 --> 00:06:05.800
+It talks about the future of Python standalone Python distributions.
+
+00:06:05.800 --> 00:06:09.460
+Also, what they have in mind for the project.
+
+00:06:09.460 --> 00:06:13.640
+It looks like they want to keep the project up to date with Python releases, of course.
+
+00:06:14.020 --> 00:06:17.620
+And then upstream changes to the CPython build system, possibly.
+
+00:06:17.620 --> 00:06:22.820
+And then remove some of the third is remove some of the project's existing limitations.
+
+00:06:22.820 --> 00:06:24.480
+What are the existing ones?
+
+00:06:25.320 --> 00:06:27.980
+It ships some MUSL-based Python builds.
+
+00:06:27.980 --> 00:06:31.220
+They're incompatible with Python extension modules.
+
+00:06:31.220 --> 00:06:32.420
+I don't know what that means.
+
+00:06:32.420 --> 00:06:35.560
+I don't know what MUSL is, so I'm going to move on from that.
+
+00:06:35.560 --> 00:06:36.080
+Okay.
+
+00:06:36.080 --> 00:06:40.200
+And then improve the project's Python build and release process.
+
+00:06:40.200 --> 00:06:44.800
+Just a good stewardship for this project, and I'm really happy about that.
+
+00:06:44.800 --> 00:06:54.760
+Along with this, I was interested to read a thread from Charlie Marsh about what said Python build standalone has exploded
+
+00:06:54.760 --> 00:06:58.340
+in popularity with over 70 million downloads all time.
+
+00:06:58.340 --> 00:07:07.340
+I'm going to put a link to this thread on Blue Sky into the show notes also, because it's an interesting discussion.
+
+00:07:07.340 --> 00:07:13.040
+And I learned something through here that I didn't know before.
+
+00:07:13.040 --> 00:07:14.480
+It said that the Python...
+
+00:07:14.480 --> 00:07:15.360
+I didn't know this.
+
+00:07:15.360 --> 00:07:24.180
+That the Python.org download, the download from Python.org, it actually downloads an installer that builds Python from source on your machine.
+
+00:07:24.200 --> 00:07:25.180
+For Linux.
+
+00:07:25.180 --> 00:07:26.000
+For Linux.
+
+00:07:26.000 --> 00:07:26.400
+Okay.
+
+00:07:26.400 --> 00:07:28.720
+It says for Linux.
+
+00:07:28.720 --> 00:07:29.200
+Okay.
+
+00:07:29.200 --> 00:07:30.100
+So for Linux.
+
+00:07:30.100 --> 00:07:34.140
+Yeah, because the macOS and the Windows ones install way too fast.
+
+00:07:34.140 --> 00:07:39.480
+The building Python from source is like a 10-minute deal if it runs the tests and stuff.
+
+00:07:39.480 --> 00:07:40.200
+Okay.
+
+00:07:40.200 --> 00:07:40.640
+Yeah.
+
+00:07:40.780 --> 00:07:44.360
+So I didn't think I was doing that on...
+
+00:07:44.360 --> 00:07:44.520
+Yeah.
+
+00:07:44.520 --> 00:07:44.960
+Anyway.
+
+00:07:44.960 --> 00:07:47.420
+You didn't get the error VCVars bat that couldn't be found?
+
+00:07:47.420 --> 00:07:49.020
+No.
+
+00:07:49.020 --> 00:07:50.700
+I haven't seen that for a while.
+
+00:07:50.700 --> 00:07:57.640
+So yeah, I guess a bigger deal for people that are not running Windows or Mac, but that's really like all the servers and stuff.
+
+00:07:58.360 --> 00:07:58.800
+Yeah.
+
+00:07:58.800 --> 00:08:05.840
+Well, I think the other thing that's really non-obvious here is like, what is this build standalone anyway?
+
+00:08:05.840 --> 00:08:12.260
+Why don't we just download the installer and just run it or just take the result of the installer and clunk it out into your machine or something?
+
+00:08:12.260 --> 00:08:21.480
+So my understanding is the non-standalone one depends on other foundational things in the system, especially in Linux, but also in other places.
+
+00:08:21.480 --> 00:08:24.740
+If you want to be able to just copy it over, you can't do that.
+
+00:08:24.740 --> 00:08:35.980
+And so one of the things that they're talking about, one of the four points of the direction that they're trying to go that Charlie laid out was trying to upstream some of these changes back into CPython itself.
+
+00:08:35.980 --> 00:08:39.160
+I think it might be number one of the future.
+
+00:08:39.160 --> 00:08:39.700
+Yeah.
+
+00:08:39.700 --> 00:08:40.320
+Upstream the...
+
+00:08:40.320 --> 00:08:41.040
+No, number two.
+
+00:08:41.040 --> 00:08:41.440
+Yeah.
+
+00:08:41.660 --> 00:08:50.860
+Upstream the changes to the CPython build system because they have to patch Python in order to make this actually build, which is why it's a pain in the butt to maintain.
+
+00:08:50.860 --> 00:08:56.600
+And then how many combinatorial variations of that do you get for different platforms and stuff, right?
+
+00:08:56.600 --> 00:08:57.000
+Yeah.
+
+00:08:57.000 --> 00:09:01.980
+And so trying to say, look, we've done these things to make it build more simply with fewer dependencies.
+
+00:09:01.980 --> 00:09:03.860
+Let's maybe make that part of Python.
+
+00:09:03.860 --> 00:09:11.560
+I don't know about you, but I have not seen a single problem with UV Python, Python build standalone Python, compared to system Python.
+
+00:09:11.560 --> 00:09:19.900
+It's not like, oh, well, the certificates don't validate or this thing doesn't work or it doesn't have SSL or some weird thing like a dependency might be missing.
+
+00:09:19.900 --> 00:09:20.880
+It seems fine to me.
+
+00:09:21.080 --> 00:09:37.280
+And actually, I would be more worried about installing it separately and building it on each of the machines I'm installing it on than I would having one install that goes everywhere.
+
+00:09:37.280 --> 00:09:39.520
+Yeah.
+
+00:09:39.760 --> 00:09:40.000
+Yeah.
+
+00:09:40.000 --> 00:09:40.400
+Anyway.
+
+00:09:40.400 --> 00:09:41.040
+Yeah.
+
+00:09:41.040 --> 00:09:49.520
+And I can tell you that Pythonbytes.fm is powered by Python 313.1 based, derived from, or gotten from, this method here.
+
+00:09:49.520 --> 00:09:49.940
+Yeah.
+
+00:09:49.940 --> 00:09:50.300
+Yeah.
+
+00:09:50.300 --> 00:09:50.680
+Anyway.
+
+00:09:52.280 --> 00:10:08.240
+Big news that actually probably doesn't mean much to individual users other than I think that we can try, we had a little bit of concern about whether or not, you know, this one project, it was sitting heavily on one person, one developers to maintain.
+
+00:10:08.240 --> 00:10:11.540
+And I'm glad that it's Astral helping out with this now, too.
+
+00:10:11.540 --> 00:10:11.880
+Yeah.
+
+00:10:11.880 --> 00:10:12.620
+I agree.
+
+00:10:12.620 --> 00:10:25.400
+And if you read Greg's announcement there, transferring Python build standalone stewardship to Astral, that he talks about how the Astral folks actually for a while have been core contributors to the project.
+
+00:10:25.400 --> 00:10:30.720
+And they've been working from the outside to help keep this thing going because they realize how important it is to this feature, right?
+
+00:10:30.720 --> 00:10:31.280
+Yeah.
+
+00:10:31.280 --> 00:10:41.140
+And also, I read, I don't know if it was in this or somewhere else, but I essentially read that the project was, I mean, Astral was really working on it for several months anyway.
+
+00:10:41.140 --> 00:10:41.900
+Yeah.
+
+00:10:41.900 --> 00:10:42.300
+Exactly.
+
+00:10:42.300 --> 00:10:46.500
+This is mostly an official announcement is all.
+
+00:10:46.500 --> 00:10:47.340
+Yeah.
+
+00:10:47.340 --> 00:10:51.700
+But one final parting thought, Brian, is right there in where you are.
+
+00:10:51.700 --> 00:10:55.360
+It says, as, this is in Greg's announcement, as I wrote in my Shifting Open Source,
+
+00:10:55.360 --> 00:10:56.280
+priorities in March.
+
+00:10:56.280 --> 00:10:56.740
+Yeah.
+
+00:10:56.740 --> 00:11:01.640
+This is an interesting challenge that people can run into with projects that are run by one person, right?
+
+00:11:01.640 --> 00:11:02.060
+Yeah.
+
+00:11:02.060 --> 00:11:08.380
+The guy had a kid, wanted to spend more time with the kid, was feeling worn out by the projects and decided.
+
+00:11:08.380 --> 00:11:15.400
+Well, and also talks about how he really just cares way more about Rust than he does about Python these days, which is fine.
+
+00:11:15.400 --> 00:11:22.560
+Like, you're not married, you know, for life to a technology, you know, go where your heart takes you.
+
+00:11:22.620 --> 00:11:25.480
+But that's a challenge for projects that are run by one person.
+
+00:11:25.480 --> 00:11:34.960
+So I think it's worth reading this thing as well, just for people to get a sense of, you know, when open source projects take off, but it's not necessarily a good fit.
+
+00:11:34.960 --> 00:11:35.280
+Yeah.
+
+00:11:35.500 --> 00:11:35.940
+Yeah.
+
+00:11:35.940 --> 00:11:38.520
+But thanks to Gregory for creating this and keeping it going.
+
+00:11:38.520 --> 00:11:45.720
+He's also known for the PyOxidizer project, which came close, but didn't quite get us a single binary of our Python apps.
+
+00:11:45.720 --> 00:11:46.900
+Interesting.
+
+00:11:46.900 --> 00:11:47.400
+Okay.
+
+00:11:47.720 --> 00:11:47.960
+Yeah.
+
+00:11:47.960 --> 00:11:48.920
+I really am.
+
+00:11:48.920 --> 00:11:53.540
+It's really cool that he made sure that this was in good hands before shifting it over.
+
+00:11:53.540 --> 00:11:54.460
+Yeah, absolutely.
+
+00:11:54.460 --> 00:11:55.200
+Absolutely.
+
+00:11:55.200 --> 00:11:56.740
+All right.
+
+00:11:56.740 --> 00:11:57.160
+All right.
+
+00:11:57.160 --> 00:11:58.680
+On to the next.
+
+00:11:58.680 --> 00:12:00.100
+On to the next thing.
+
+00:12:00.100 --> 00:12:02.220
+So I talked about, there's a theme here.
+
+00:12:02.220 --> 00:12:05.020
+I talked about the jitters from having too much coffee.
+
+00:12:05.020 --> 00:12:06.060
+Well, let's talk about Moka.
+
+00:12:06.060 --> 00:12:09.640
+Maybe if we can put some hot chocolate and some sugar in with it, it'll be better.
+
+00:12:09.640 --> 00:12:10.540
+No, probably not.
+
+00:12:10.540 --> 00:12:15.600
+So this project, this project is by Delario and it's called Moka Pie.
+
+00:12:15.600 --> 00:12:18.540
+So Moka, let's like work our way inside out.
+
+00:12:18.540 --> 00:12:28.220
+So Moka is a high performance concurrent caching library for Rust, not a concurrent caching server like Redis.
+
+00:12:28.220 --> 00:12:31.280
+Think SQLite, but for caching, right?
+
+00:12:31.280 --> 00:12:37.240
+SQLite is written in C, not Rust, but it's an in-process sort of deal, which is pretty, pretty neat.
+
+00:12:37.240 --> 00:12:40.020
+And this itself is inspired by Caffeine for Java, right?
+
+00:12:40.080 --> 00:12:43.260
+This is kind of like turtles all the way down, like ports all the way down.
+
+00:12:43.260 --> 00:12:46.860
+So it provides a caching implementation on top of dictionaries.
+
+00:12:46.860 --> 00:12:52.940
+They support full concurrency of retrievals in the high expected concurrencies for updates.
+
+00:12:52.940 --> 00:12:53.500
+All right.
+
+00:12:53.500 --> 00:13:06.740
+So thread safe, highly concurrent in-memory cache implementation, sync and async can be bounded by the maximum number of entries, the total weighted size, size aware eviction, like kicking large things out versus small things.
+
+00:13:07.340 --> 00:13:12.620
+You can have cache controlled by least frequently used by last recently used.
+
+00:13:12.620 --> 00:13:16.960
+It's like, I want to kick out things that are over two minutes.
+
+00:13:16.960 --> 00:13:19.780
+But if you've got room based on something, that's fine.
+
+00:13:19.780 --> 00:13:23.200
+You can give them a time to live, a time to idle, right?
+
+00:13:23.200 --> 00:13:24.860
+Idle is a really cool, interesting one.
+
+00:13:24.860 --> 00:13:26.600
+Like when was this last access?
+
+00:13:26.600 --> 00:13:35.780
+So if you've got something that's old, but is used all the time in your app, and then something that's somewhat new, but you have, it kind of hasn't got used that much.
+
+00:13:35.840 --> 00:13:38.380
+It'd be better to kick out that new one rather than the old one, right?
+
+00:13:38.380 --> 00:13:39.020
+Oh, yeah.
+
+00:13:39.020 --> 00:13:39.500
+Okay.
+
+00:13:39.500 --> 00:13:41.160
+So that's all just straight Moka.
+
+00:13:41.160 --> 00:13:41.840
+Moka.
+
+00:13:41.840 --> 00:13:44.120
+Pi is Python binding for this.
+
+00:13:44.120 --> 00:13:45.220
+Here we go again.
+
+00:13:45.220 --> 00:13:46.780
+Rust library for Python.
+
+00:13:46.780 --> 00:13:49.760
+They're probably getting VC money from this.
+
+00:13:49.760 --> 00:13:50.620
+I'm telling you.
+
+00:13:50.620 --> 00:13:51.180
+Okay.
+
+00:13:51.180 --> 00:13:52.020
+No, just joking.
+
+00:13:52.020 --> 00:13:52.620
+Sort of.
+
+00:13:53.460 --> 00:13:58.720
+So for the Moka Pi thing, it has a synchronous cache, which supports basically thread save memory.
+
+00:13:58.720 --> 00:13:59.860
+It just like wraps the thing.
+
+00:13:59.860 --> 00:14:06.240
+So time to live, time to idle, size of concurrency, all these things that you can imagine.
+
+00:14:06.240 --> 00:14:08.060
+And so there's a couple interesting ways.
+
+00:14:08.060 --> 00:14:12.560
+You can just say cache.set some value, or you can say cache.get some value.
+
+00:14:12.560 --> 00:14:13.740
+That's one way to use it.
+
+00:14:13.740 --> 00:14:18.380
+Another one is you can use it as, this is actually pretty amazing.
+
+00:14:18.380 --> 00:14:22.900
+You can use it as an LRU cache function decorator alternative.
+
+00:14:23.420 --> 00:14:23.760
+Oh, wow.
+
+00:14:23.760 --> 00:14:24.200
+Right?
+
+00:14:24.200 --> 00:14:28.980
+So one of the things you can do that's really easy to speed up Python code with not writing
+
+00:14:28.980 --> 00:14:33.440
+much code, you have to maintain much, is you just put a decorator, functools.lru cache,
+
+00:14:33.440 --> 00:14:38.020
+onto it, and it'll look at the hash value of all the inbound parameters and say, if you
+
+00:14:38.020 --> 00:14:41.200
+pass me the same parameters, you're getting the same output, right?
+
+00:14:41.200 --> 00:14:41.620
+Yeah.
+
+00:14:41.620 --> 00:14:43.680
+And it just does that, just straight in Python memory.
+
+00:14:43.680 --> 00:14:48.480
+But this would be backed by this high-performance concurrent Rust internal library.
+
+00:14:48.480 --> 00:14:49.580
+It's still in process, right?
+
+00:14:49.580 --> 00:14:50.000
+Yeah.
+
+00:14:50.000 --> 00:14:50.600
+So you can say.
+
+00:14:50.600 --> 00:14:51.100
+Yeah, go ahead.
+
+00:14:51.100 --> 00:14:51.280
+Sorry.
+
+00:14:51.600 --> 00:14:54.420
+With the time to live and time to, you know.
+
+00:14:54.420 --> 00:14:55.580
+Time to idle, yeah.
+
+00:14:55.580 --> 00:14:55.940
+Especially.
+
+00:14:55.940 --> 00:14:57.660
+That's cool.
+
+00:14:57.660 --> 00:14:58.280
+Yeah.
+
+00:14:58.280 --> 00:14:59.080
+This is pretty cool.
+
+00:14:59.080 --> 00:15:05.320
+And there's so much talk about the thing supporting the Moka itself, the Rust version, supporting
+
+00:15:05.320 --> 00:15:07.380
+asynchronous behavior, right?
+
+00:15:07.380 --> 00:15:08.520
+I'm like, okay.
+
+00:15:08.900 --> 00:15:15.360
+If it has all these asynchronous capabilities, what's the story with Python and its async and
+
+00:15:15.360 --> 00:15:15.880
+await, right?
+
+00:15:15.880 --> 00:15:16.280
+Yeah.
+
+00:15:16.280 --> 00:15:20.340
+So I filed an issue, which I don't really like to do, but that's how you ask questions,
+
+00:15:20.340 --> 00:15:21.360
+apparently, and then you close it.
+
+00:15:21.360 --> 00:15:24.000
+So I said, hey, cool project.
+
+00:15:24.000 --> 00:15:29.740
+Since it says thread safe, highly concurrent in-memory implementation, what's the Python async
+
+00:15:29.740 --> 00:15:30.120
+story?
+
+00:15:30.360 --> 00:15:35.160
+And so they responded, this will work if you put the decorator on there.
+
+00:15:35.160 --> 00:15:40.900
+So remember how I was complaining that it's sort of weird that the functools and iter
+
+00:15:40.900 --> 00:15:42.300
+tools don't support async?
+
+00:15:42.300 --> 00:15:42.820
+Yeah.
+
+00:15:43.040 --> 00:15:48.640
+This, this functool like thing, supports async and sync functions as well.
+
+00:15:48.640 --> 00:15:48.860
+Right?
+
+00:15:48.860 --> 00:15:52.260
+So they just have a implementation in the center that says, is it a coroutine?
+
+00:15:52.260 --> 00:15:53.660
+Do this else do that.
+
+00:15:53.660 --> 00:15:56.520
+So you can use the cache, the caching decorator.
+
+00:15:56.520 --> 00:16:02.160
+Like we talked about, like the LRU cache thing already async on async functions and sync functions.
+
+00:16:02.160 --> 00:16:02.800
+So that's fine.
+
+00:16:02.800 --> 00:16:05.000
+And then I said, well, what about cache, get and set?
+
+00:16:05.000 --> 00:16:08.460
+And Deliro says, probably doesn't make sense to do it.
+
+00:16:08.460 --> 00:16:10.680
+It takes 230 nanoseconds.
+
+00:16:11.200 --> 00:16:18.840
+So you can do 4.4 million calls a second and set is a 1.3 million sets per second for a
+
+00:16:18.840 --> 00:16:22.900
+cache size of 10,000 that's fully occupied on a simply M1 Mac.
+
+00:16:22.900 --> 00:16:23.900
+So, you know what?
+
+00:16:23.900 --> 00:16:24.500
+Hmm.
+
+00:16:24.500 --> 00:16:30.160
+Probably not, but there might be some, some, ways to expand this in the future.
+
+00:16:30.160 --> 00:16:30.660
+I don't know.
+
+00:16:30.660 --> 00:16:34.520
+But yeah, I would say probably not, probably not needed because you're going to probably
+
+00:16:34.520 --> 00:16:36.860
+add more overhead just to juggle the async stuff.
+
+00:16:36.860 --> 00:16:37.160
+Right?
+
+00:16:37.160 --> 00:16:38.080
+Yeah.
+
+00:16:38.080 --> 00:16:38.140
+Yeah.
+
+00:16:38.440 --> 00:16:44.300
+And also just if the, if the supported method is through the decorator and whatever you need,
+
+00:16:44.300 --> 00:16:46.980
+you could just put like your code in a function to do.
+
+00:16:46.980 --> 00:16:47.340
+Yeah.
+
+00:16:47.340 --> 00:16:50.780
+I mean, if that were Redis, you would absolutely want an async version because you're talking
+
+00:16:50.780 --> 00:16:51.580
+to another server.
+
+00:16:51.580 --> 00:16:52.100
+Yeah.
+
+00:16:52.100 --> 00:16:55.920
+And there's that latency in the network and all, but yeah, if you can do 4 million a second,
+
+00:16:55.920 --> 00:16:58.800
+then probably I doubt you can do 4 million awaits a second.
+
+00:16:58.960 --> 00:17:00.140
+So the, but it's much lower.
+
+00:17:00.140 --> 00:17:05.440
+So the cache get and set really are just that where you, the benefit of those is, is probably
+
+00:17:05.440 --> 00:17:09.840
+just for, because we want a really fast caching system or something.
+
+00:17:09.840 --> 00:17:10.220
+Yeah.
+
+00:17:10.220 --> 00:17:10.900
+Yeah, exactly.
+
+00:17:10.900 --> 00:17:15.420
+And you, there's plenty of times where you say in this situation, I want to get this out
+
+00:17:15.420 --> 00:17:16.780
+of the cache and then keep it for a while.
+
+00:17:16.780 --> 00:17:21.120
+Like if I had a user who logged in and I want to just hold their user account with all their
+
+00:17:21.120 --> 00:17:25.900
+details and I've used their ID as the key and their actual user object as the object that
+
+00:17:25.900 --> 00:17:26.880
+goes in, that's fine.
+
+00:17:26.880 --> 00:17:31.340
+But you wouldn't, you wouldn't use that as a cache decorator because typically you might
+
+00:17:31.340 --> 00:17:34.180
+see that coming out of a database, something like that.
+
+00:17:34.180 --> 00:17:38.900
+And then if you pass the same user in, it's like, it's similar, but it's a different database
+
+00:17:38.900 --> 00:17:39.560
+object.
+
+00:17:39.560 --> 00:17:40.060
+Right.
+
+00:17:40.060 --> 00:17:43.380
+You can run into real weird situations where they're equivalent, but they're not equivalent,
+
+00:17:43.380 --> 00:17:46.480
+you know, and then you end up not using cache.
+
+00:17:46.480 --> 00:17:48.660
+So anyway, I think that might be where you would do it.
+
+00:17:48.660 --> 00:17:49.780
+But anyway, I think this is pretty cool.
+
+00:17:50.060 --> 00:17:51.380
+People can check it out.
+
+00:17:51.380 --> 00:17:56.320
+And it's, it is not, I don't believe it is like super popular here and, you know, a hundred
+
+00:17:56.320 --> 00:17:58.360
+stars, it kind of has shined a light on it.
+
+00:17:58.360 --> 00:18:02.920
+But if you go over to the Moka thing, you know, it's got a thousand, 700 stars and this
+
+00:18:02.920 --> 00:18:06.780
+is kind of just a Python UI on top or API on top of it.
+
+00:18:06.780 --> 00:18:07.220
+Yeah.
+
+00:18:07.220 --> 00:18:08.900
+But it's, it's pretty recent.
+
+00:18:08.900 --> 00:18:11.060
+I mean, it's a few weeks old, looks like.
+
+00:18:11.060 --> 00:18:12.400
+So it's just a baby.
+
+00:18:12.400 --> 00:18:13.280
+It's just a baby.
+
+00:18:13.280 --> 00:18:15.620
+It's okay to have a hundred stars.
+
+00:18:15.620 --> 00:18:16.260
+Pretty good for.
+
+00:18:16.260 --> 00:18:17.340
+That is pretty good actually.
+
+00:18:17.340 --> 00:18:18.160
+Yeah, it's pretty good.
+
+00:18:18.160 --> 00:18:18.740
+It looks cool.
+
+00:18:19.000 --> 00:18:20.240
+So now, you know.
+
+00:18:20.240 --> 00:18:20.820
+All right.
+
+00:18:20.820 --> 00:18:22.500
+I want to shift back to UV.
+
+00:18:22.500 --> 00:18:24.140
+I'm kind of in a UV mood.
+
+00:18:24.140 --> 00:18:26.700
+I'm missing the sun apparently.
+
+00:18:26.700 --> 00:18:34.940
+But the, there's an article from SAP, from, from the SAS Pegasus blog about UV and in-depth
+
+00:18:34.940 --> 00:18:38.000
+guide to Python's fast and ambitious new package manager.
+
+00:18:38.180 --> 00:18:41.680
+And a lot of people have written about UV already, which is great.
+
+00:18:41.680 --> 00:18:47.680
+But I really, I have been really excited about when I thought, when I learned about UV sync
+
+00:18:47.680 --> 00:18:51.580
+and started using that and all the different ways to use UV.
+
+00:18:51.820 --> 00:18:53.320
+It's a pretty powerful tool.
+
+00:18:53.320 --> 00:18:55.140
+So it's not really one thing.
+
+00:18:55.140 --> 00:18:56.520
+It's designed to be a lot.
+
+00:18:56.520 --> 00:19:02.240
+So, so I appreciate, you know, articles like this, but also I really like this one.
+
+00:19:02.740 --> 00:19:08.760
+So it starts out with pretty much who is, which is, with a funny meme of, of a whole bunch
+
+00:19:08.760 --> 00:19:14.900
+of different commands to install, install Python and update it and install, create a virtual
+
+00:19:14.900 --> 00:19:17.020
+environment and sync your requirements.
+
+00:19:17.020 --> 00:19:19.480
+And all of that is just done with UV sync.
+
+00:19:19.480 --> 00:19:22.140
+Now you can do it all in one, which is pretty sweet.
+
+00:19:22.140 --> 00:19:23.980
+So I don't use UV sync.
+
+00:19:23.980 --> 00:19:28.500
+I use UV, V, and V --Python 313 or something, but you know, same.
+
+00:19:28.500 --> 00:19:28.940
+Yeah.
+
+00:19:28.940 --> 00:19:33.080
+I'm using both depending on whether or not I have a project set up already.
+
+00:19:33.080 --> 00:19:37.200
+So it talks about what is UV, why use it.
+
+00:19:37.200 --> 00:19:41.200
+And we're just going to assume that you already know if you listen to this podcast because it's
+
+00:19:41.200 --> 00:19:41.780
+really fast.
+
+00:19:43.180 --> 00:19:49.060
+And, but the, the, a lot of discussion of different workflows talks about installing,
+
+00:19:49.060 --> 00:19:53.160
+adopting UV into your existing workflows, doing a install.
+
+00:19:53.160 --> 00:19:58.300
+And, but I'm going to, I'm going to pop down to the end adopting UV into your workflow.
+
+00:19:58.300 --> 00:19:59.560
+There's this cool cheat sheet.
+
+00:19:59.560 --> 00:20:01.580
+This is pretty much what the entire article talks about.
+
+00:20:01.580 --> 00:20:07.440
+The different parts is you can use a UV, a UV Python install to install Python.
+
+00:20:07.440 --> 00:20:11.740
+You can use a virtual environment or V and V to create virtual environments.
+
+00:20:11.740 --> 00:20:12.600
+It's really fast.
+
+00:20:12.600 --> 00:20:16.000
+And then install packages with UV pip install.
+
+00:20:16.000 --> 00:20:20.280
+But then also you can build your dependencies.
+
+00:20:20.280 --> 00:20:22.260
+Like we would have used pip compile.
+
+00:20:22.260 --> 00:20:24.100
+You can use UV pip compile.
+
+00:20:24.100 --> 00:20:27.740
+But it's all in one place to all these different commands.
+
+00:20:27.740 --> 00:20:32.100
+And these really are the commands, the commands listed in this article are really the, the way
+
+00:20:32.100 --> 00:20:33.460
+I use UV as well.
+
+00:20:33.460 --> 00:20:35.020
+So that's why I appreciated it.
+
+00:20:35.200 --> 00:20:47.320
+And then a discussion about how to adopt this into your workflow and what that means to get, you know, talking about, I mean, some of this, a lot of people might not have used sort of lock files before.
+
+00:20:47.320 --> 00:20:51.840
+But using lock files with UV or it's so easy that, you know, why not?
+
+00:20:52.400 --> 00:20:54.580
+And pinning your dependencies.
+
+00:20:54.580 --> 00:20:56.740
+Just some good workflow.
+
+00:20:56.740 --> 00:21:00.740
+It's good Python project practices anyway.
+
+00:21:00.940 --> 00:21:01.600
+So why not?
+
+00:21:01.600 --> 00:21:02.520
+Yeah.
+
+00:21:02.520 --> 00:21:03.120
+Yeah.
+
+00:21:03.120 --> 00:21:03.400
+That's great.
+
+00:21:03.400 --> 00:21:07.900
+And there's even a few more that you could throw in for the tool, like the equivalency table there.
+
+00:21:07.900 --> 00:21:08.360
+Yeah.
+
+00:21:08.600 --> 00:21:13.300
+You know, there's you, there's you for installing CLI tools.
+
+00:21:13.300 --> 00:21:15.060
+You could say pip X.
+
+00:21:15.060 --> 00:21:15.480
+Yeah.
+
+00:21:15.480 --> 00:21:24.760
+And just create a virtual environment and install the things and make that in the path and all those sorts of things versus UV tool install or UV run.
+
+00:21:24.760 --> 00:21:25.180
+Right.
+
+00:21:25.180 --> 00:21:26.140
+Those kind of things as well.
+
+00:21:26.140 --> 00:21:26.800
+So, yeah.
+
+00:21:26.800 --> 00:21:27.640
+Yeah.
+
+00:21:27.640 --> 00:21:32.140
+It's missing that, which is, you know, I wish I'll feed it back to Corey.
+
+00:21:32.560 --> 00:21:41.620
+So one of the reasons why this, this came up on my radar is I'm working on a project that uses SAS Pegasus.
+
+00:21:41.620 --> 00:21:43.540
+So I'm in touch with Corey a lot.
+
+00:21:43.540 --> 00:21:45.340
+Yeah.
+
+00:21:45.340 --> 00:21:50.180
+But like the UV, the tool thing instead, I'm not using pip X anymore.
+
+00:21:50.180 --> 00:21:54.300
+I'm the UV tool install is, is like super cool.
+
+00:21:54.300 --> 00:21:55.860
+So, yeah, it's super cool.
+
+00:21:55.860 --> 00:21:56.380
+It is.
+
+00:21:56.380 --> 00:21:59.620
+I've also started using Docker for certain things as well.
+
+00:21:59.620 --> 00:22:02.300
+So, yeah, it's kind of kind of similar.
+
+00:22:02.520 --> 00:22:06.880
+Like, for example, glances, which is a Python based server UI visualization tool.
+
+00:22:06.880 --> 00:22:10.500
+You can just say Docker run glances versus installing glances.
+
+00:22:10.500 --> 00:22:12.140
+And you just leave this machine a little more.
+
+00:22:12.140 --> 00:22:13.140
+I'm one of the.
+
+00:22:13.140 --> 00:22:13.620
+Yeah.
+
+00:22:13.620 --> 00:22:31.560
+One of the interesting things about this article was the the point of view, because at the start, Corey talks about how he's not usually somebody to jump on like multi tool fads like pip env or pyenv for installing.
+
+00:22:32.480 --> 00:22:43.100
+Uh, for doing virtual environments better and big project wides and and I I like hatch, but I'm not really a using hatch for my entire workflow sort of person.
+
+00:22:43.100 --> 00:22:45.160
+I was using it just for a packager.
+
+00:22:45.160 --> 00:22:53.600
+So, yeah, I'm I'm in the same boat of like I didn't really need an all in one tool, but this one changed my mind and I really like this all in one tool.
+
+00:22:53.840 --> 00:22:58.880
+So, yeah, I'm still not bought into the project management side, but I love using UV for the stuff.
+
+00:22:58.880 --> 00:22:59.380
+Yeah.
+
+00:22:59.380 --> 00:22:59.880
+Yeah.
+
+00:22:59.880 --> 00:23:00.220
+Yeah.
+
+00:23:00.220 --> 00:23:00.320
+Yeah.
+
+00:23:00.320 --> 00:23:02.540
+Anyway, what do we got next?
+
+00:23:02.540 --> 00:23:04.760
+We have a quick bit of follow up here.
+
+00:23:04.760 --> 00:23:05.000
+Okay.
+
+00:23:05.000 --> 00:23:06.860
+I just did a, I did some searching.
+
+00:23:06.860 --> 00:23:08.060
+So over on PIPX.
+
+00:23:08.060 --> 00:23:16.300
+So one of the things that, you know, you could say like you could use PIPX or there is an open issue on PIPX that says integrate UV in some way.
+
+00:23:16.300 --> 00:23:16.540
+Right.
+
+00:23:16.540 --> 00:23:23.080
+Because PIPX is really just a wrapper around create virtual environment, pip install package, pip install dash U package.
+
+00:23:23.080 --> 00:23:23.580
+Right.
+
+00:23:23.580 --> 00:23:31.140
+And so if they just change the internals to say UV pip install, then PIPX would all of a sudden become super awesome.
+
+00:23:31.140 --> 00:23:37.060
+This recommendation is unfortunately over half a year old, but it does have 21 upvotes.
+
+00:23:37.060 --> 00:23:37.700
+So, you know what?
+
+00:23:37.700 --> 00:23:38.120
+Yeah.
+
+00:23:38.120 --> 00:23:38.660
+Who knows?
+
+00:23:38.660 --> 00:23:39.280
+That's there.
+
+00:23:39.280 --> 00:23:39.740
+Yeah.
+
+00:23:39.740 --> 00:23:40.180
+Okay.
+
+00:23:40.180 --> 00:23:40.960
+Yeah.
+
+00:23:40.960 --> 00:23:41.420
+Okay.
+
+00:23:41.420 --> 00:23:43.040
+Uh, but that's not what I want to cover next.
+
+00:23:43.040 --> 00:23:45.200
+Come on, computer respawn.
+
+00:23:45.200 --> 00:23:45.720
+There we go.
+
+00:23:45.940 --> 00:23:47.160
+I think that's it for our items, right?
+
+00:23:47.160 --> 00:23:48.880
+We're on to extras.
+
+00:23:48.880 --> 00:23:49.720
+Let's have extras now.
+
+00:23:49.720 --> 00:23:50.160
+Yeah.
+
+00:23:50.160 --> 00:23:51.320
+Let's, let's extra it up.
+
+00:23:51.320 --> 00:23:51.760
+Extra.
+
+00:23:51.760 --> 00:23:54.360
+So, registered for PyCon.
+
+00:23:54.360 --> 00:23:54.840
+I did.
+
+00:23:54.840 --> 00:23:55.620
+Oh, cool.
+
+00:23:55.620 --> 00:23:56.300
+It's yeah.
+
+00:23:56.300 --> 00:23:57.860
+Registration came out two days ago.
+
+00:23:57.860 --> 00:23:58.200
+I don't know.
+
+00:23:58.200 --> 00:24:03.460
+Whenever I posted some message on blue sky and Mastodon saying, I registered.
+
+00:24:03.460 --> 00:24:03.900
+How about you?
+
+00:24:03.900 --> 00:24:06.280
+Whenever that was, that's when the announcement came out.
+
+00:24:06.280 --> 00:24:08.080
+So I think a day and a half ago or something like that.
+
+00:24:08.080 --> 00:24:11.580
+So there's early bird pricing and all details on there.
+
+00:24:11.580 --> 00:24:15.420
+Uh, if you want to go and check it out, it's normally 450 bucks.
+
+00:24:15.420 --> 00:24:16.100
+For individuals.
+
+00:24:16.100 --> 00:24:20.640
+Uh, but you could save $50 if you register before January, which is pretty cool.
+
+00:24:20.640 --> 00:24:21.360
+There's a bunch of stuff.
+
+00:24:21.360 --> 00:24:24.760
+It has all the, the detailed timeline, which is always interesting.
+
+00:24:24.760 --> 00:24:28.980
+You know, like if I want to make sure I time attend the Pied Ladies auction, when do I need
+
+00:24:28.980 --> 00:24:29.520
+to do that?
+
+00:24:29.520 --> 00:24:31.220
+When is the main thing?
+
+00:24:31.220 --> 00:24:32.040
+When is the job fair?
+
+00:24:32.040 --> 00:24:32.380
+Et cetera.
+
+00:24:32.380 --> 00:24:36.320
+So most importantly, main conferences, six, May 16th, May 18th, 2025.
+
+00:24:36.320 --> 00:24:38.020
+So there it is.
+
+00:24:38.020 --> 00:24:41.140
+And congruent with current times mask policy.
+
+00:24:41.140 --> 00:24:41.620
+Hooray.
+
+00:24:42.540 --> 00:24:44.160
+Optional and encouraged, but not required.
+
+00:24:44.160 --> 00:24:44.560
+Yeah.
+
+00:24:44.560 --> 00:24:45.020
+How about that?
+
+00:24:45.020 --> 00:24:45.660
+Yeah.
+
+00:24:45.660 --> 00:24:45.980
+Cool.
+
+00:24:45.980 --> 00:24:46.740
+Okay.
+
+00:24:46.740 --> 00:24:48.540
+Uh, I've got a few more real quick ones here.
+
+00:24:48.540 --> 00:24:49.960
+Uh, I recommend, you know what?
+
+00:24:49.960 --> 00:24:53.700
+It's something I came across just thinking like, why don't I support more open source projects?
+
+00:24:53.700 --> 00:24:57.940
+Looking at my, my dependencies and stuff that I'm working on.
+
+00:24:57.940 --> 00:25:03.580
+Like how much, you know, if everybody who used flask put $1 towards it per month, everybody
+
+00:25:03.580 --> 00:25:06.940
+who used it in an important way where it's not just like, oh, I did a tutorial with flask,
+
+00:25:06.940 --> 00:25:09.700
+but like, no, I have a project that is important to me.
+
+00:25:09.700 --> 00:25:10.420
+And I use flask.
+
+00:25:10.420 --> 00:25:14.840
+If everyone put $1 towards it, it would transform that project.
+
+00:25:14.840 --> 00:25:19.420
+If everyone who used G unicorn put $1 towards it, that would transform it.
+
+00:25:19.420 --> 00:25:19.640
+Right.
+
+00:25:19.640 --> 00:25:20.820
+So I decided, you know what?
+
+00:25:20.820 --> 00:25:22.900
+I'm going to just go to some projects and find the one that I use most.
+
+00:25:22.900 --> 00:25:27.480
+And, yeah, just, I found four that had sponsorships that were off available.
+
+00:25:27.480 --> 00:25:32.920
+I was going to support, UV and Pynantic as well, but they, for some reason they do
+
+00:25:32.920 --> 00:25:36.280
+like corporate sponsorships or I tried to do individuals and it didn't work.
+
+00:25:36.280 --> 00:25:40.540
+And then some other ones like Beanie don't currently have sponsorships, but you know, are
+
+00:25:40.540 --> 00:25:42.660
+really important for the database layer stuff.
+
+00:25:42.660 --> 00:25:46.380
+But just think about, you know, put a couple of dollars towards some of these projects.
+
+00:25:46.380 --> 00:25:50.640
+It'll make zero difference to you if you have a job as a software developer and in the
+
+00:25:50.640 --> 00:25:53.540
+aggregate, it'll make a big difference to the health of the ecosystem.
+
+00:25:53.540 --> 00:25:54.120
+Yeah.
+
+00:25:54.120 --> 00:25:56.520
+It's interesting to think about like that.
+
+00:25:56.600 --> 00:26:00.280
+Like just, you know, a couple less coffees a month and, yeah.
+
+00:26:00.280 --> 00:26:00.760
+What?
+
+00:26:00.760 --> 00:26:03.040
+You probably cover like three or four projects.
+
+00:26:03.040 --> 00:26:03.620
+Yeah.
+
+00:26:03.620 --> 00:26:04.160
+Yeah.
+
+00:26:04.160 --> 00:26:09.580
+Anyway, I want to encourage people to do that, but you know, can't obviously don't, but I
+
+00:26:09.580 --> 00:26:10.800
+don't think it's a big deal.
+
+00:26:10.800 --> 00:26:14.760
+Uh, computer, very slow for some reason.
+
+00:26:14.760 --> 00:26:15.700
+Don't know why.
+
+00:26:15.700 --> 00:26:16.480
+There we go.
+
+00:26:16.480 --> 00:26:16.720
+All right.
+
+00:26:16.720 --> 00:26:17.840
+Uh, this is the joke.
+
+00:26:17.840 --> 00:26:19.540
+So that I'm skipping the joke for a second.
+
+00:26:19.540 --> 00:26:20.120
+We'll come back to it.
+
+00:26:20.120 --> 00:26:22.500
+There's two things that I wasn't planning on covering, but I'll throw out here really
+
+00:26:22.500 --> 00:26:22.800
+quick.
+
+00:26:23.120 --> 00:26:27.580
+Uh, yeah, here's my rich for by con also wrote a quick, people said, Oh my God,
+
+00:26:27.580 --> 00:26:27.940
+Hetzner.
+
+00:26:27.940 --> 00:26:31.420
+We moved to Hetzner and they changed this huge thing where they changed their bandwidth and
+
+00:26:31.420 --> 00:26:31.920
+their price.
+
+00:26:32.040 --> 00:26:36.680
+it's like a no nothing sort of deal, like $5 a month more.
+
+00:26:36.680 --> 00:26:39.800
+So anyway, I wrote that up so people can check that out on Mastodon.
+
+00:26:39.800 --> 00:26:43.480
+And then, yeah, that's, that's it for all my, my items.
+
+00:26:43.480 --> 00:26:45.380
+And then I just got the joke when you're ready for that.
+
+00:26:45.380 --> 00:26:46.480
+So let's do your ears.
+
+00:26:46.480 --> 00:26:48.780
+I've got a few, I don't have much commentary on these.
+
+00:26:48.780 --> 00:26:51.720
+I just have a few extra things I would want to point out.
+
+00:26:51.920 --> 00:26:58.860
+Um, Pydantic AI was announced, which, Pydantic AI is a Python agent framework
+
+00:26:58.860 --> 00:27:03.500
+designed to make it less painful to build production grade applications with generative AI.
+
+00:27:03.500 --> 00:27:08.340
+I don't have really in the commentary about this other than I didn't see this coming, but
+
+00:27:08.340 --> 00:27:08.880
+interesting.
+
+00:27:08.880 --> 00:27:09.700
+Yeah.
+
+00:27:09.700 --> 00:27:09.980
+Very.
+
+00:27:09.980 --> 00:27:15.140
+I've seen messages for, or tweets or whatever from people who do machine learning stuff saying,
+
+00:27:15.140 --> 00:27:16.480
+yeah, just need Pydantic.
+
+00:27:16.480 --> 00:27:20.440
+I mean, a lot of this is like, I got a JSON thing here and then I'm going to call some other
+
+00:27:20.440 --> 00:27:24.380
+thing with other JSON and just suggesting, Hey, you could probably use Pydantic to make
+
+00:27:24.380 --> 00:27:25.020
+these connections.
+
+00:27:25.020 --> 00:27:27.380
+I bet the Pydantic team noticed that as well.
+
+00:27:27.380 --> 00:27:27.860
+Okay.
+
+00:27:27.860 --> 00:27:35.060
+Um, a couple of commentaries on maybe society and anyway, I'll leave it, leave the, the couple
+
+00:27:35.060 --> 00:27:36.420
+other articles I thought was interesting.
+
+00:27:36.420 --> 00:27:43.240
+Uh, blue sky, announced, I guess this is all this from August, but, anti toxicity
+
+00:27:43.240 --> 00:27:44.400
+features on blue sky.
+
+00:27:44.400 --> 00:27:47.520
+And, I just actually appreciate some of these.
+
+00:27:47.520 --> 00:27:49.000
+I, I already have hit.
+
+00:27:49.220 --> 00:27:50.800
+Um, I had a troll come by.
+
+00:27:50.800 --> 00:27:56.860
+Um, and so there's some things where you can, if people, you can, detach a quoted post
+
+00:27:56.860 --> 00:28:00.860
+if, if somebody quotes you and you don't want them to, you can detach yourself from that.
+
+00:28:00.860 --> 00:28:04.320
+Um, I had, hiding replies.
+
+00:28:04.320 --> 00:28:10.760
+I had some, a troll, you can't like delete replies, but I had, somebody just, just idiotic
+
+00:28:10.760 --> 00:28:12.460
+reply to something I said.
+
+00:28:12.460 --> 00:28:14.960
+And it was obviously a, just a bot or a troll.
+
+00:28:14.960 --> 00:28:16.680
+So you can, you can hide that.
+
+00:28:16.680 --> 00:28:21.280
+Um, and as you know, as blue sky grows, we'll, we'll get trolls also.
+
+00:28:21.280 --> 00:28:25.700
+Um, if they're, if they're not affecting you yet, they, they may in the future.
+
+00:28:25.700 --> 00:28:29.960
+So, so we do appreciate that there's, there are features around to protect yourself.
+
+00:28:29.960 --> 00:28:31.300
+So there's, there's that.
+
+00:28:31.300 --> 00:28:36.800
+And then, this, I don't know what to make of this really, but wired fairly mainstream magazine,
+
+00:28:36.800 --> 00:28:42.580
+I think, has released the wired guide to protecting yourself from government surveillance.
+
+00:28:42.580 --> 00:28:44.440
+Wow.
+
+00:28:44.700 --> 00:28:49.540
+I'm, I just, this is a head shaker of like, I guess we need this.
+
+00:28:49.540 --> 00:28:51.680
+I wish we didn't, but wow.
+
+00:28:51.680 --> 00:28:53.360
+Um, yeah, there's that.
+
+00:28:53.360 --> 00:28:54.740
+So, yeah.
+
+00:28:54.740 --> 00:28:56.640
+I probably say that about some state governments as well.
+
+00:28:56.640 --> 00:28:57.280
+Right.
+
+00:28:57.280 --> 00:28:59.080
+Every state's different, but yeah.
+
+00:28:59.080 --> 00:28:59.880
+Yeah.
+
+00:28:59.880 --> 00:29:04.860
+Pitting on your gender and things, you know, it's touching ghosts in places.
+
+00:29:04.860 --> 00:29:05.220
+Yeah.
+
+00:29:05.220 --> 00:29:05.680
+Anyway.
+
+00:29:05.680 --> 00:29:08.360
+So, that's a little bit of a downer.
+
+00:29:08.360 --> 00:29:09.740
+So maybe we need something funny.
+
+00:29:09.740 --> 00:29:10.440
+Uh, we do.
+
+00:29:10.440 --> 00:29:14.340
+I don't want to spend all the time going down that, that deep rabbit hole instead.
+
+00:29:14.340 --> 00:29:16.580
+Let's go infinitely down the rabbit hole.
+
+00:29:16.580 --> 00:29:17.000
+Yes.
+
+00:29:17.000 --> 00:29:18.380
+So check this out, Brian.
+
+00:29:18.380 --> 00:29:26.360
+Somebody who goes by bits, very personal on, on, blue sky posted what the comments
+
+00:29:26.360 --> 00:29:31.900
+seem to indicate is probably a textbook, a print, this is printed by the way, a printed textbook
+
+00:29:31.900 --> 00:29:33.900
+on a latech.
+
+00:29:33.900 --> 00:29:34.200
+Okay.
+
+00:29:34.200 --> 00:29:34.760
+Okay.
+
+00:29:34.760 --> 00:29:43.300
+In the index at the back on page 252, there's an entry for infinite loop and it says, see page
+
+00:29:43.300 --> 00:29:43.980
+252.
+
+00:29:43.980 --> 00:29:45.440
+I love it so much.
+
+00:29:45.440 --> 00:29:46.720
+It's so simple.
+
+00:29:46.720 --> 00:29:47.500
+I love it.
+
+00:29:47.500 --> 00:29:47.720
+Yeah.
+
+00:29:47.720 --> 00:29:51.700
+It's a really good, just like a little Easter egg in there, isn't it?
+
+00:29:51.700 --> 00:29:52.220
+Yeah.
+
+00:29:52.220 --> 00:29:54.540
+I, I've, I haven't seen it for infinite loop.
+
+00:29:54.540 --> 00:29:58.260
+I saw that, somebody did that for recursion in some, yeah.
+
+00:29:58.260 --> 00:30:02.540
+They, they, if you look in the comments, it says that, Carrington and Richie has the
+
+00:30:02.540 --> 00:30:04.100
+same, I guess that's probably C or something.
+
+00:30:04.100 --> 00:30:04.560
+Yeah.
+
+00:30:04.560 --> 00:30:06.840
+The same in under the index for recursion.
+
+00:30:06.840 --> 00:30:08.940
+And, it's pretty, pretty good.
+
+00:30:08.940 --> 00:30:09.640
+People love it.
+
+00:30:09.640 --> 00:30:10.000
+Yeah.
+
+00:30:10.000 --> 00:30:11.200
+No, that's funny.
+
+00:30:11.200 --> 00:30:14.780
+And there's somebody that says, for those who can't be bothered, search, Google
+
+00:30:14.780 --> 00:30:15.700
+search for recursion.
+
+00:30:15.700 --> 00:30:16.740
+Did you mean recursion?
+
+00:30:16.740 --> 00:30:19.440
+Yeah.
+
+00:30:19.440 --> 00:30:23.300
+Um, I kind of feel bad for people that actually really need to know what that means.
+
+00:30:23.300 --> 00:30:25.780
+Good luck.
+
+00:30:25.780 --> 00:30:26.520
+Yeah.
+
+00:30:26.520 --> 00:30:27.200
+Good luck with that.
+
+00:30:27.200 --> 00:30:27.380
+Huh?
+
+00:30:27.380 --> 00:30:28.360
+Uh, so.
+
+00:30:28.360 --> 00:30:29.100
+Wow.
+
+00:30:29.100 --> 00:30:29.300
+Yeah.
+
+00:30:29.440 --> 00:30:29.880
+All good.
+
+00:30:29.880 --> 00:30:30.680
+All good here.
+
+00:30:30.680 --> 00:30:34.360
+We know what recursion and infinite loops are, but we're going to break the loop and get
+
+00:30:34.360 --> 00:30:34.560
+out of here.
+
+00:30:34.560 --> 00:30:34.720
+Right?
+
+00:30:34.720 --> 00:30:35.140
+Yeah.
+
+00:30:35.140 --> 00:30:35.620
+Yeah.
+
+00:30:35.620 --> 00:30:37.920
+Let's break the loop and say goodbye until next time.
+
+00:30:37.920 --> 00:30:38.860
+So thanks a lot.
+

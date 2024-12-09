@@ -1,0 +1,1292 @@
+00:00:00 Hello and welcome to Python Bytes, where we deliver Python news and headlines directly to your earbuds.
+
+00:00:05 This is episode 413, recorded December 9, 2024.
+
+00:00:09 And I'm Brian Okken.
+
+00:00:11 And I'm Michael Kennedy.
+
+00:00:12 This episode is sponsored by us, so check out the links in our show notes,
+
+00:00:16 but also check out Talk Python Training and PythonTest.com.
+
+00:00:20 There's courses over there.
+
+00:00:21 And of course, thank you to Patreon supporters.
+
+00:00:23 And we have links.
+
+00:00:25 If you want to get a hold of us, you can reach us on BlueSky or Mastodon.
+
+00:00:29 The links are in the show notes.
+
+00:00:30 And also, if you're listening to the show, thank you.
+
+00:00:35 And please share it with a friend.
+
+00:00:37 Also, if you'd like to participate in the discussion while we're recording,
+
+00:00:42 you can head on over to pythonbytes.fm/live and see when we're recording next.
+
+00:00:46 But usually it's Monday at 10 a.m. Pacific time.
+
+00:00:50 Sometimes it shifts, though.
+
+00:00:51 And during the holiday season, who knows what we might do.
+
+00:00:53 But so far, we're sticking with that.
+
+00:00:56 And if you'd like to get the links in your email inbox, go ahead and go and sign up for
+
+00:01:02 the newsletter at pythonbytes.fm.
+
+00:01:04 And we will send you all of the links in the show notes right in your inbox.
+
+00:01:08 So, Michael, let's kick it off.
+
+00:01:10 Let's kick it off.
+
+00:01:12 I want to talk about a little bit of jitter.
+
+00:01:14 Maybe I've had too much coffee this morning or something.
+
+00:01:17 I don't know.
+
+00:01:17 What do you think?
+
+00:01:18 Jitter is a thing from the folks at Pydantic.
+
+00:01:22 And the idea here is they need really fast JSON parsing as the foundation of Pydantic.
+
+00:01:30 Basically, Pydantic is about how do I exchange, validate, and transform JSON data with Python
+
+00:01:37 classes, right?
+
+00:01:38 Into Python classes.
+
+00:01:39 Okay.
+
+00:01:39 Yeah.
+
+00:01:39 So, you want that to be fast.
+
+00:01:41 The folks over at Pydantic created this thing called Jitter, G-I-T-E-R.
+
+00:01:46 And it is a fast iterable JSON parser.
+
+00:01:49 Now, if the Pydantic usage does not catch your attention, OpenAI is also using Jitter, which is
+
+00:01:57 pretty interesting.
+
+00:01:58 Ask ChatShiftPT about it.
+
+00:01:59 So, the reason that they were interested in it is they want to be able to work with,
+
+00:02:05 I believe Pydantic as well, but they want to work with responses coming out of LLMs.
+
+00:02:10 And anyone who's used LLMs until maybe very recently knows that they kind of like spit out
+
+00:02:15 the answers in a little progressive way, right?
+
+00:02:19 And so, with this, you can parse parts of data as it comes down, which is pretty cool.
+
+00:02:25 So, there's some examples of partial in here.
+
+00:02:28 You can go look for somewhere, I think maybe on the docs website or something like that.
+
+00:02:32 But, you know, you can give it like a partially formed string and it'll come up with like
+
+00:02:37 perfectly good answers for it.
+
+00:02:38 So, that's pretty neat.
+
+00:02:40 And that's one of its features.
+
+00:02:42 The other is that it's faster than what I think the default Rust JSON parser is.
+
+00:02:47 Even for non-iterable, just straight parse it, which is, that's pretty impressive.
+
+00:02:52 Okay.
+
+00:02:52 And then there's also, this is why we are talking about it, there's Python parse, which
+
+00:02:57 parses JSON strings into a Python object.
+
+00:03:00 So, you can go and run that as well, which is pretty cool.
+
+00:03:04 Shooter example.
+
+00:03:06 Yeah, yeah, yeah.
+
+00:03:07 Anyway, yeah.
+
+00:03:08 So, you can go and parse it into different pieces using, basically, if you need a really
+
+00:03:13 fast JSON parser with Python, you can use Python parse and it'll parse into a structure, right?
+
+00:03:18 Yeah.
+
+00:03:19 So, awesome.
+
+00:03:20 I thought people might be interested in both an iterable, iterating JSON parser, and back
+
+00:03:26 to this one.
+
+00:03:27 Iterating JSON parser and also a really fast one.
+
+00:03:30 Plus, it's being built by the folks at Pydantic, Sam Colvin and team.
+
+00:03:34 And yeah, excellent.
+
+00:03:36 Nice work.
+
+00:03:37 Oh, yeah.
+
+00:03:37 I think I've got several uses for this.
+
+00:03:39 This is cool.
+
+00:03:40 Yeah, cool.
+
+00:03:40 Yeah.
+
+00:03:41 I recently had Samuel Colvin on with David Seddon to talk about building Rust extensions
+
+00:03:48 or integrating Rust with Python and things like that and talk Python.
+
+00:03:52 And he talked about this as one of the things they're building, which is like, oh, okay, this
+
+00:03:56 is pretty interesting.
+
+00:03:56 Yeah, definitely.
+
+00:03:58 Well, I'm going to talk about Python pre-built a little bit.
+
+00:04:01 This is big news, Brian.
+
+00:04:04 I'm glad you're covering it.
+
+00:04:05 So, Python build standalone is a project that we've talked about on the show, but mostly we
+
+00:04:12 talked about it in association with UV.
+
+00:04:15 Because if you use UV sync or UV install Python or UV virtual environment or UV vnv and then install
+
+00:04:23 and use Python there, if it can't find it on your system, the Python in your system, it's
+
+00:04:29 going to pull it from Python build standalone, which is a separate project, not part of UV.
+
+00:04:34 So, we've discussed that.
+
+00:04:36 But the big news right now is that Python build standalone is now part of Astral or under the
+
+00:04:42 Astral umbrella, which is huge.
+
+00:04:44 So, yeah, we're going to link to an article from Charlie Marsh, head of Astral, saying a new
+
+00:04:52 home for Python build standalone.
+
+00:04:54 There's also a, it just says we'll be taking over, we'll be taking stewardship of this project
+
+00:05:01 from Gregory Zork, I don't know, cool last name.
+
+00:05:05 Anyway, the foundational project for building and installing portable Python distributions.
+
+00:05:09 And there's a link to Gregory's announcement also.
+
+00:05:13 And the discussion around that, like the Python build standalone powers UV, powers Rai, also
+
+00:05:22 PipX and Hatch and more.
+
+00:05:24 And it's got like 70, 70 million downloads so far.
+
+00:05:28 Wow.
+
+00:05:29 Pretty big project and definitely instrumental to going forward with Python or with Python
+
+00:05:35 packaging and using Python.
+
+00:05:37 So, Astral is really like trying to make UV with along with this Python build standalone project, the new way to install Python.
+
+00:05:47 And for me, it is.
+
+00:05:49 I'm using it all every day now.
+
+00:05:51 So 100% same for me.
+
+00:05:53 So pretty short article talking about this.
+
+00:05:56 But it is kind of interesting.
+
+00:05:58 It talks about what the project is at first.
+
+00:06:02 It talks about the future of Python standalone Python distributions.
+
+00:06:05 Also, what they have in mind for the project.
+
+00:06:09 It looks like they want to keep the project up to date with Python releases, of course.
+
+00:06:14 And then upstream changes to the CPython build system, possibly.
+
+00:06:17 And then remove some of the third is remove some of the project's existing limitations.
+
+00:06:22 What are the existing ones?
+
+00:06:25 It ships some MUSL-based Python builds.
+
+00:06:27 They're incompatible with Python extension modules.
+
+00:06:31 I don't know what that means.
+
+00:06:32 I don't know what MUSL is, so I'm going to move on from that.
+
+00:06:35 Okay.
+
+00:06:36 And then improve the project's Python build and release process.
+
+00:06:40 Just a good stewardship for this project, and I'm really happy about that.
+
+00:06:44 Along with this, I was interested to read a thread from Charlie Marsh about what said Python build standalone has exploded
+
+00:06:54 in popularity with over 70 million downloads all time.
+
+00:06:58 I'm going to put a link to this thread on Blue Sky into the show notes also, because it's an interesting discussion.
+
+00:07:07 And I learned something through here that I didn't know before.
+
+00:07:13 It said that the Python...
+
+00:07:14 I didn't know this.
+
+00:07:15 That the Python.org download, the download from Python.org, it actually downloads an installer that builds Python from source on your machine.
+
+00:07:24 For Linux.
+
+00:07:25 For Linux.
+
+00:07:26 Okay.
+
+00:07:26 It says for Linux.
+
+00:07:28 Okay.
+
+00:07:29 So for Linux.
+
+00:07:30 Yeah, because the macOS and the Windows ones install way too fast.
+
+00:07:34 The building Python from source is like a 10-minute deal if it runs the tests and stuff.
+
+00:07:39 Okay.
+
+00:07:40 Yeah.
+
+00:07:40 So I didn't think I was doing that on...
+
+00:07:44 Yeah.
+
+00:07:44 Anyway.
+
+00:07:44 You didn't get the error VCVars bat that couldn't be found?
+
+00:07:47 No.
+
+00:07:49 I haven't seen that for a while.
+
+00:07:50 So yeah, I guess a bigger deal for people that are not running Windows or Mac, but that's really like all the servers and stuff.
+
+00:07:58 Yeah.
+
+00:07:58 Well, I think the other thing that's really non-obvious here is like, what is this build standalone anyway?
+
+00:08:05 Why don't we just download the installer and just run it or just take the result of the installer and clunk it out into your machine or something?
+
+00:08:12 So my understanding is the non-standalone one depends on other foundational things in the system, especially in Linux, but also in other places.
+
+00:08:21 If you want to be able to just copy it over, you can't do that.
+
+00:08:24 And so one of the things that they're talking about, one of the four points of the direction that they're trying to go that Charlie laid out was trying to upstream some of these changes back into CPython itself.
+
+00:08:35 I think it might be number one of the future.
+
+00:08:39 Yeah.
+
+00:08:39 Upstream the...
+
+00:08:40 No, number two.
+
+00:08:41 Yeah.
+
+00:08:41 Upstream the changes to the CPython build system because they have to patch Python in order to make this actually build, which is why it's a pain in the butt to maintain.
+
+00:08:50 And then how many combinatorial variations of that do you get for different platforms and stuff, right?
+
+00:08:56 Yeah.
+
+00:08:57 And so trying to say, look, we've done these things to make it build more simply with fewer dependencies.
+
+00:09:01 Let's maybe make that part of Python.
+
+00:09:03 I don't know about you, but I have not seen a single problem with UV Python, Python build standalone Python, compared to system Python.
+
+00:09:11 It's not like, oh, well, the certificates don't validate or this thing doesn't work or it doesn't have SSL or some weird thing like a dependency might be missing.
+
+00:09:19 It seems fine to me.
+
+00:09:21 And actually, I would be more worried about installing it separately and building it on each of the machines I'm installing it on than I would having one install that goes everywhere.
+
+00:09:37 Yeah.
+
+00:09:39 Yeah.
+
+00:09:40 Anyway.
+
+00:09:40 Yeah.
+
+00:09:41 And I can tell you that Pythonbytes.fm is powered by Python 313.1 based, derived from, or gotten from, this method here.
+
+00:09:49 Yeah.
+
+00:09:49 Yeah.
+
+00:09:50 Anyway.
+
+00:09:52 Big news that actually probably doesn't mean much to individual users other than I think that we can try, we had a little bit of concern about whether or not, you know, this one project, it was sitting heavily on one person, one developers to maintain.
+
+00:10:08 And I'm glad that it's Astral helping out with this now, too.
+
+00:10:11 Yeah.
+
+00:10:11 I agree.
+
+00:10:12 And if you read Greg's announcement there, transferring Python build standalone stewardship to Astral, that he talks about how the Astral folks actually for a while have been core contributors to the project.
+
+00:10:25 And they've been working from the outside to help keep this thing going because they realize how important it is to this feature, right?
+
+00:10:30 Yeah.
+
+00:10:31 And also, I read, I don't know if it was in this or somewhere else, but I essentially read that the project was, I mean, Astral was really working on it for several months anyway.
+
+00:10:41 Yeah.
+
+00:10:41 Exactly.
+
+00:10:42 This is mostly an official announcement is all.
+
+00:10:46 Yeah.
+
+00:10:47 But one final parting thought, Brian, is right there in where you are.
+
+00:10:51 It says, as, this is in Greg's announcement, as I wrote in my Shifting Open Source,
+
+00:10:55 priorities in March.
+
+00:10:56 Yeah.
+
+00:10:56 This is an interesting challenge that people can run into with projects that are run by one person, right?
+
+00:11:01 Yeah.
+
+00:11:02 The guy had a kid, wanted to spend more time with the kid, was feeling worn out by the projects and decided.
+
+00:11:08 Well, and also talks about how he really just cares way more about Rust than he does about Python these days, which is fine.
+
+00:11:15 Like, you're not married, you know, for life to a technology, you know, go where your heart takes you.
+
+00:11:22 But that's a challenge for projects that are run by one person.
+
+00:11:25 So I think it's worth reading this thing as well, just for people to get a sense of, you know, when open source projects take off, but it's not necessarily a good fit.
+
+00:11:34 Yeah.
+
+00:11:35 Yeah.
+
+00:11:35 But thanks to Gregory for creating this and keeping it going.
+
+00:11:38 He's also known for the PyOxidizer project, which came close, but didn't quite get us a single binary of our Python apps.
+
+00:11:45 Interesting.
+
+00:11:46 Okay.
+
+00:11:47 Yeah.
+
+00:11:47 I really am.
+
+00:11:48 It's really cool that he made sure that this was in good hands before shifting it over.
+
+00:11:53 Yeah, absolutely.
+
+00:11:54 Absolutely.
+
+00:11:55 All right.
+
+00:11:56 All right.
+
+00:11:57 On to the next.
+
+00:11:58 On to the next thing.
+
+00:12:00 So I talked about, there's a theme here.
+
+00:12:02 I talked about the jitters from having too much coffee.
+
+00:12:05 Well, let's talk about Moka.
+
+00:12:06 Maybe if we can put some hot chocolate and some sugar in with it, it'll be better.
+
+00:12:09 No, probably not.
+
+00:12:10 So this project, this project is by Delario and it's called Moka Pie.
+
+00:12:15 So Moka, let's like work our way inside out.
+
+00:12:18 So Moka is a high performance concurrent caching library for Rust, not a concurrent caching server like Redis.
+
+00:12:28 Think SQLite, but for caching, right?
+
+00:12:31 SQLite is written in C, not Rust, but it's an in-process sort of deal, which is pretty, pretty neat.
+
+00:12:37 And this itself is inspired by Caffeine for Java, right?
+
+00:12:40 This is kind of like turtles all the way down, like ports all the way down.
+
+00:12:43 So it provides a caching implementation on top of dictionaries.
+
+00:12:46 They support full concurrency of retrievals in the high expected concurrencies for updates.
+
+00:12:52 All right.
+
+00:12:53 So thread safe, highly concurrent in-memory cache implementation, sync and async can be bounded by the maximum number of entries, the total weighted size, size aware eviction, like kicking large things out versus small things.
+
+00:13:07 You can have cache controlled by least frequently used by last recently used.
+
+00:13:12 It's like, I want to kick out things that are over two minutes.
+
+00:13:16 But if you've got room based on something, that's fine.
+
+00:13:19 You can give them a time to live, a time to idle, right?
+
+00:13:23 Idle is a really cool, interesting one.
+
+00:13:24 Like when was this last access?
+
+00:13:26 So if you've got something that's old, but is used all the time in your app, and then something that's somewhat new, but you have, it kind of hasn't got used that much.
+
+00:13:35 It'd be better to kick out that new one rather than the old one, right?
+
+00:13:38 Oh, yeah.
+
+00:13:39 Okay.
+
+00:13:39 So that's all just straight Moka.
+
+00:13:41 Moka.
+
+00:13:41 Pi is Python binding for this.
+
+00:13:44 Here we go again.
+
+00:13:45 Rust library for Python.
+
+00:13:46 They're probably getting VC money from this.
+
+00:13:49 I'm telling you.
+
+00:13:50 Okay.
+
+00:13:51 No, just joking.
+
+00:13:52 Sort of.
+
+00:13:53 So for the Moka Pi thing, it has a synchronous cache, which supports basically thread save memory.
+
+00:13:58 It just like wraps the thing.
+
+00:13:59 So time to live, time to idle, size of concurrency, all these things that you can imagine.
+
+00:14:06 And so there's a couple interesting ways.
+
+00:14:08 You can just say cache.set some value, or you can say cache.get some value.
+
+00:14:12 That's one way to use it.
+
+00:14:13 Another one is you can use it as, this is actually pretty amazing.
+
+00:14:18 You can use it as an LRU cache function decorator alternative.
+
+00:14:23 Oh, wow.
+
+00:14:23 Right?
+
+00:14:24 So one of the things you can do that's really easy to speed up Python code with not writing
+
+00:14:28 much code, you have to maintain much, is you just put a decorator, functools.lru cache,
+
+00:14:33 onto it, and it'll look at the hash value of all the inbound parameters and say, if you
+
+00:14:38 pass me the same parameters, you're getting the same output, right?
+
+00:14:41 Yeah.
+
+00:14:41 And it just does that, just straight in Python memory.
+
+00:14:43 But this would be backed by this high-performance concurrent Rust internal library.
+
+00:14:48 It's still in process, right?
+
+00:14:49 Yeah.
+
+00:14:50 So you can say.
+
+00:14:50 Yeah, go ahead.
+
+00:14:51 Sorry.
+
+00:14:51 With the time to live and time to, you know.
+
+00:14:54 Time to idle, yeah.
+
+00:14:55 Especially.
+
+00:14:55 That's cool.
+
+00:14:57 Yeah.
+
+00:14:58 This is pretty cool.
+
+00:14:59 And there's so much talk about the thing supporting the Moka itself, the Rust version, supporting
+
+00:15:05 asynchronous behavior, right?
+
+00:15:07 I'm like, okay.
+
+00:15:08 If it has all these asynchronous capabilities, what's the story with Python and its async and
+
+00:15:15 await, right?
+
+00:15:15 Yeah.
+
+00:15:16 So I filed an issue, which I don't really like to do, but that's how you ask questions,
+
+00:15:20 apparently, and then you close it.
+
+00:15:21 So I said, hey, cool project.
+
+00:15:24 Since it says thread safe, highly concurrent in-memory implementation, what's the Python async
+
+00:15:29 story?
+
+00:15:30 And so they responded, this will work if you put the decorator on there.
+
+00:15:35 So remember how I was complaining that it's sort of weird that the functools and iter
+
+00:15:40 tools don't support async?
+
+00:15:42 Yeah.
+
+00:15:43 This, this functool like thing, supports async and sync functions as well.
+
+00:15:48 Right?
+
+00:15:48 So they just have a implementation in the center that says, is it a coroutine?
+
+00:15:52 Do this else do that.
+
+00:15:53 So you can use the cache, the caching decorator.
+
+00:15:56 Like we talked about, like the LRU cache thing already async on async functions and sync functions.
+
+00:16:02 So that's fine.
+
+00:16:02 And then I said, well, what about cache, get and set?
+
+00:16:05 And Deliro says, probably doesn't make sense to do it.
+
+00:16:08 It takes 230 nanoseconds.
+
+00:16:11 So you can do 4.4 million calls a second and set is a 1.3 million sets per second for a
+
+00:16:18 cache size of 10,000 that's fully occupied on a simply M1 Mac.
+
+00:16:22 So, you know what?
+
+00:16:23 Hmm.
+
+00:16:24 Probably not, but there might be some, some, ways to expand this in the future.
+
+00:16:30 I don't know.
+
+00:16:30 But yeah, I would say probably not, probably not needed because you're going to probably
+
+00:16:34 add more overhead just to juggle the async stuff.
+
+00:16:36 Right?
+
+00:16:37 Yeah.
+
+00:16:38 Yeah.
+
+00:16:38 And also just if the, if the supported method is through the decorator and whatever you need,
+
+00:16:44 you could just put like your code in a function to do.
+
+00:16:46 Yeah.
+
+00:16:47 I mean, if that were Redis, you would absolutely want an async version because you're talking
+
+00:16:50 to another server.
+
+00:16:51 Yeah.
+
+00:16:52 And there's that latency in the network and all, but yeah, if you can do 4 million a second,
+
+00:16:55 then probably I doubt you can do 4 million awaits a second.
+
+00:16:58 So the, but it's much lower.
+
+00:17:00 So the cache get and set really are just that where you, the benefit of those is, is probably
+
+00:17:05 just for, because we want a really fast caching system or something.
+
+00:17:09 Yeah.
+
+00:17:10 Yeah, exactly.
+
+00:17:10 And you, there's plenty of times where you say in this situation, I want to get this out
+
+00:17:15 of the cache and then keep it for a while.
+
+00:17:16 Like if I had a user who logged in and I want to just hold their user account with all their
+
+00:17:21 details and I've used their ID as the key and their actual user object as the object that
+
+00:17:25 goes in, that's fine.
+
+00:17:26 But you wouldn't, you wouldn't use that as a cache decorator because typically you might
+
+00:17:31 see that coming out of a database, something like that.
+
+00:17:34 And then if you pass the same user in, it's like, it's similar, but it's a different database
+
+00:17:38 object.
+
+00:17:39 Right.
+
+00:17:40 You can run into real weird situations where they're equivalent, but they're not equivalent,
+
+00:17:43 you know, and then you end up not using cache.
+
+00:17:46 So anyway, I think that might be where you would do it.
+
+00:17:48 But anyway, I think this is pretty cool.
+
+00:17:50 People can check it out.
+
+00:17:51 And it's, it is not, I don't believe it is like super popular here and, you know, a hundred
+
+00:17:56 stars, it kind of has shined a light on it.
+
+00:17:58 But if you go over to the Moka thing, you know, it's got a thousand, 700 stars and this
+
+00:18:02 is kind of just a Python UI on top or API on top of it.
+
+00:18:06 Yeah.
+
+00:18:07 But it's, it's pretty recent.
+
+00:18:08 I mean, it's a few weeks old, looks like.
+
+00:18:11 So it's just a baby.
+
+00:18:12 It's just a baby.
+
+00:18:13 It's okay to have a hundred stars.
+
+00:18:15 Pretty good for.
+
+00:18:16 That is pretty good actually.
+
+00:18:17 Yeah, it's pretty good.
+
+00:18:18 It looks cool.
+
+00:18:19 So now, you know.
+
+00:18:20 All right.
+
+00:18:20 I want to shift back to UV.
+
+00:18:22 I'm kind of in a UV mood.
+
+00:18:24 I'm missing the sun apparently.
+
+00:18:26 But the, there's an article from SAP, from, from the SAS Pegasus blog about UV and in-depth
+
+00:18:34 guide to Python's fast and ambitious new package manager.
+
+00:18:38 And a lot of people have written about UV already, which is great.
+
+00:18:41 But I really, I have been really excited about when I thought, when I learned about UV sync
+
+00:18:47 and started using that and all the different ways to use UV.
+
+00:18:51 It's a pretty powerful tool.
+
+00:18:53 So it's not really one thing.
+
+00:18:55 It's designed to be a lot.
+
+00:18:56 So, so I appreciate, you know, articles like this, but also I really like this one.
+
+00:19:02 So it starts out with pretty much who is, which is, with a funny meme of, of a whole bunch
+
+00:19:08 of different commands to install, install Python and update it and install, create a virtual
+
+00:19:14 environment and sync your requirements.
+
+00:19:17 And all of that is just done with UV sync.
+
+00:19:19 Now you can do it all in one, which is pretty sweet.
+
+00:19:22 So I don't use UV sync.
+
+00:19:23 I use UV, V, and V --Python 313 or something, but you know, same.
+
+00:19:28 Yeah.
+
+00:19:28 I'm using both depending on whether or not I have a project set up already.
+
+00:19:33 So it talks about what is UV, why use it.
+
+00:19:37 And we're just going to assume that you already know if you listen to this podcast because it's
+
+00:19:41 really fast.
+
+00:19:43 And, but the, the, a lot of discussion of different workflows talks about installing,
+
+00:19:49 adopting UV into your existing workflows, doing a install.
+
+00:19:53 And, but I'm going to, I'm going to pop down to the end adopting UV into your workflow.
+
+00:19:58 There's this cool cheat sheet.
+
+00:19:59 This is pretty much what the entire article talks about.
+
+00:20:01 The different parts is you can use a UV, a UV Python install to install Python.
+
+00:20:07 You can use a virtual environment or V and V to create virtual environments.
+
+00:20:11 It's really fast.
+
+00:20:12 And then install packages with UV pip install.
+
+00:20:16 But then also you can build your dependencies.
+
+00:20:20 Like we would have used pip compile.
+
+00:20:22 You can use UV pip compile.
+
+00:20:24 But it's all in one place to all these different commands.
+
+00:20:27 And these really are the commands, the commands listed in this article are really the, the way
+
+00:20:32 I use UV as well.
+
+00:20:33 So that's why I appreciated it.
+
+00:20:35 And then a discussion about how to adopt this into your workflow and what that means to get, you know, talking about, I mean, some of this, a lot of people might not have used sort of lock files before.
+
+00:20:47 But using lock files with UV or it's so easy that, you know, why not?
+
+00:20:52 And pinning your dependencies.
+
+00:20:54 Just some good workflow.
+
+00:20:56 It's good Python project practices anyway.
+
+00:21:00 So why not?
+
+00:21:01 Yeah.
+
+00:21:02 Yeah.
+
+00:21:03 That's great.
+
+00:21:03 And there's even a few more that you could throw in for the tool, like the equivalency table there.
+
+00:21:07 Yeah.
+
+00:21:08 You know, there's you, there's you for installing CLI tools.
+
+00:21:13 You could say pip X.
+
+00:21:15 Yeah.
+
+00:21:15 And just create a virtual environment and install the things and make that in the path and all those sorts of things versus UV tool install or UV run.
+
+00:21:24 Right.
+
+00:21:25 Those kind of things as well.
+
+00:21:26 So, yeah.
+
+00:21:26 Yeah.
+
+00:21:27 It's missing that, which is, you know, I wish I'll feed it back to Corey.
+
+00:21:32 So one of the reasons why this, this came up on my radar is I'm working on a project that uses SAS Pegasus.
+
+00:21:41 So I'm in touch with Corey a lot.
+
+00:21:43 Yeah.
+
+00:21:45 But like the UV, the tool thing instead, I'm not using pip X anymore.
+
+00:21:50 I'm the UV tool install is, is like super cool.
+
+00:21:54 So, yeah, it's super cool.
+
+00:21:55 It is.
+
+00:21:56 I've also started using Docker for certain things as well.
+
+00:21:59 So, yeah, it's kind of kind of similar.
+
+00:22:02 Like, for example, glances, which is a Python based server UI visualization tool.
+
+00:22:06 You can just say Docker run glances versus installing glances.
+
+00:22:10 And you just leave this machine a little more.
+
+00:22:12 I'm one of the.
+
+00:22:13 Yeah.
+
+00:22:13 One of the interesting things about this article was the the point of view, because at the start, Corey talks about how he's not usually somebody to jump on like multi tool fads like pip env or pyenv for installing.
+
+00:22:32 for doing virtual environments better and big project wides and and I I like hatch, but I'm not really a using hatch for my entire workflow sort of person.
+
+00:22:43 I was using it just for a packager.
+
+00:22:45 So, yeah, I'm I'm in the same boat of like I didn't really need an all in one tool, but this one changed my mind and I really like this all in one tool.
+
+00:22:53 So, yeah, I'm still not bought into the project management side, but I love using UV for the stuff.
+
+00:22:58 Yeah.
+
+00:22:59 Yeah.
+
+00:22:59 Yeah.
+
+00:23:00 Yeah.
+
+00:23:00 Anyway, what do we got next?
+
+00:23:02 We have a quick bit of follow up here.
+
+00:23:04 Okay.
+
+00:23:05 I just did a, I did some searching.
+
+00:23:06 So over on PIPX.
+
+00:23:08 So one of the things that, you know, you could say like you could use PIPX or there is an open issue on PIPX that says integrate UV in some way.
+
+00:23:16 Right.
+
+00:23:16 Because PIPX is really just a wrapper around create virtual environment, pip install package, pip install dash U package.
+
+00:23:23 Right.
+
+00:23:23 And so if they just change the internals to say UV pip install, then PIPX would all of a sudden become super awesome.
+
+00:23:31 This recommendation is unfortunately over half a year old, but it does have 21 upvotes.
+
+00:23:37 So, you know what?
+
+00:23:37 Yeah.
+
+00:23:38 Who knows?
+
+00:23:38 That's there.
+
+00:23:39 Yeah.
+
+00:23:39 Okay.
+
+00:23:40 Yeah.
+
+00:23:40 Okay.
+
+00:23:41 but that's not what I want to cover next.
+
+00:23:43 Come on, computer respawn.
+
+00:23:45 There we go.
+
+00:23:45 I think that's it for our items, right?
+
+00:23:47 We're on to extras.
+
+00:23:48 Let's have extras now.
+
+00:23:49 Yeah.
+
+00:23:50 Let's, let's extra it up.
+
+00:23:51 Extra.
+
+00:23:51 So, registered for PyCon.
+
+00:23:54 I did.
+
+00:23:54 Oh, cool.
+
+00:23:55 It's yeah.
+
+00:23:56 Registration came out two days ago.
+
+00:23:57 I don't know.
+
+00:23:58 Whenever I posted some message on blue sky and Mastodon saying, I registered.
+
+00:24:03 How about you?
+
+00:24:03 Whenever that was, that's when the announcement came out.
+
+00:24:06 So I think a day and a half ago or something like that.
+
+00:24:08 So there's early bird pricing and all details on there.
+
+00:24:11 if you want to go and check it out, it's normally 450 bucks.
+
+00:24:15 For individuals.
+
+00:24:16 but you could save $50 if you register before January, which is pretty cool.
+
+00:24:20 There's a bunch of stuff.
+
+00:24:21 It has all the, the detailed timeline, which is always interesting.
+
+00:24:24 You know, like if I want to make sure I time attend the Pied Ladies auction, when do I need
+
+00:24:28 to do that?
+
+00:24:29 When is the main thing?
+
+00:24:31 When is the job fair?
+
+00:24:32 Et cetera.
+
+00:24:32 So most importantly, main conferences, six, May 16th, May 18th, 2025.
+
+00:24:36 So there it is.
+
+00:24:38 And congruent with current times mask policy.
+
+00:24:41 Hooray.
+
+00:24:42 Optional and encouraged, but not required.
+
+00:24:44 Yeah.
+
+00:24:44 How about that?
+
+00:24:45 Yeah.
+
+00:24:45 Cool.
+
+00:24:45 Okay.
+
+00:24:46 I've got a few more real quick ones here.
+
+00:24:48 I recommend, you know what?
+
+00:24:49 It's something I came across just thinking like, why don't I support more open source projects?
+
+00:24:53 Looking at my, my dependencies and stuff that I'm working on.
+
+00:24:57 Like how much, you know, if everybody who used flask put $1 towards it per month, everybody
+
+00:25:03 who used it in an important way where it's not just like, oh, I did a tutorial with flask,
+
+00:25:06 but like, no, I have a project that is important to me.
+
+00:25:09 And I use flask.
+
+00:25:10 If everyone put $1 towards it, it would transform that project.
+
+00:25:14 If everyone who used G unicorn put $1 towards it, that would transform it.
+
+00:25:19 Right.
+
+00:25:19 So I decided, you know what?
+
+00:25:20 I'm going to just go to some projects and find the one that I use most.
+
+00:25:22 And, yeah, just, I found four that had sponsorships that were off available.
+
+00:25:27 I was going to support, UV and Pynantic as well, but they, for some reason they do
+
+00:25:32 like corporate sponsorships or I tried to do individuals and it didn't work.
+
+00:25:36 And then some other ones like Beanie don't currently have sponsorships, but you know, are
+
+00:25:40 really important for the database layer stuff.
+
+00:25:42 But just think about, you know, put a couple of dollars towards some of these projects.
+
+00:25:46 It'll make zero difference to you if you have a job as a software developer and in the
+
+00:25:50 aggregate, it'll make a big difference to the health of the ecosystem.
+
+00:25:53 Yeah.
+
+00:25:54 It's interesting to think about like that.
+
+00:25:56 Like just, you know, a couple less coffees a month and, yeah.
+
+00:26:00 What?
+
+00:26:00 You probably cover like three or four projects.
+
+00:26:03 Yeah.
+
+00:26:03 Yeah.
+
+00:26:04 Anyway, I want to encourage people to do that, but you know, can't obviously don't, but I
+
+00:26:09 don't think it's a big deal.
+
+00:26:10 computer, very slow for some reason.
+
+00:26:14 Don't know why.
+
+00:26:15 There we go.
+
+00:26:16 All right.
+
+00:26:16 this is the joke.
+
+00:26:17 So that I'm skipping the joke for a second.
+
+00:26:19 We'll come back to it.
+
+00:26:20 There's two things that I wasn't planning on covering, but I'll throw out here really
+
+00:26:22 quick.
+
+00:26:23 yeah, here's my rich for by con also wrote a quick, people said, Oh my God,
+
+00:26:27 Hetzner.
+
+00:26:27 We moved to Hetzner and they changed this huge thing where they changed their bandwidth and
+
+00:26:31 their price.
+
+00:26:32 it's like a no nothing sort of deal, like $5 a month more.
+
+00:26:36 So anyway, I wrote that up so people can check that out on Mastodon.
+
+00:26:39 And then, yeah, that's, that's it for all my, my items.
+
+00:26:43 And then I just got the joke when you're ready for that.
+
+00:26:45 So let's do your ears.
+
+00:26:46 I've got a few, I don't have much commentary on these.
+
+00:26:48 I just have a few extra things I would want to point out.
+
+00:26:51 Pydantic AI was announced, which, Pydantic AI is a Python agent framework
+
+00:26:58 designed to make it less painful to build production grade applications with generative AI.
+
+00:27:03 I don't have really in the commentary about this other than I didn't see this coming, but
+
+00:27:08 interesting.
+
+00:27:08 Yeah.
+
+00:27:09 Very.
+
+00:27:09 I've seen messages for, or tweets or whatever from people who do machine learning stuff saying,
+
+00:27:15 yeah, just need Pydantic.
+
+00:27:16 I mean, a lot of this is like, I got a JSON thing here and then I'm going to call some other
+
+00:27:20 thing with other JSON and just suggesting, Hey, you could probably use Pydantic to make
+
+00:27:24 these connections.
+
+00:27:25 I bet the Pydantic team noticed that as well.
+
+00:27:27 Okay.
+
+00:27:27 a couple of commentaries on maybe society and anyway, I'll leave it, leave the, the couple
+
+00:27:35 other articles I thought was interesting.
+
+00:27:36 blue sky, announced, I guess this is all this from August, but, anti toxicity
+
+00:27:43 features on blue sky.
+
+00:27:44 And, I just actually appreciate some of these.
+
+00:27:47 I, I already have hit.
+
+00:27:49 I had a troll come by.
+
+00:27:50 and so there's some things where you can, if people, you can, detach a quoted post
+
+00:27:56 if, if somebody quotes you and you don't want them to, you can detach yourself from that.
+
+00:28:00 I had, hiding replies.
+
+00:28:04 I had some, a troll, you can't like delete replies, but I had, somebody just, just idiotic
+
+00:28:10 reply to something I said.
+
+00:28:12 And it was obviously a, just a bot or a troll.
+
+00:28:14 So you can, you can hide that.
+
+00:28:16 and as you know, as blue sky grows, we'll, we'll get trolls also.
+
+00:28:21 if they're, if they're not affecting you yet, they, they may in the future.
+
+00:28:25 So, so we do appreciate that there's, there are features around to protect yourself.
+
+00:28:29 So there's, there's that.
+
+00:28:31 And then, this, I don't know what to make of this really, but wired fairly mainstream magazine,
+
+00:28:36 I think, has released the wired guide to protecting yourself from government surveillance.
+
+00:28:42 Wow.
+
+00:28:44 I'm, I just, this is a head shaker of like, I guess we need this.
+
+00:28:49 I wish we didn't, but wow.
+
+00:28:51 yeah, there's that.
+
+00:28:53 So, yeah.
+
+00:28:54 I probably say that about some state governments as well.
+
+00:28:56 Right.
+
+00:28:57 Every state's different, but yeah.
+
+00:28:59 Yeah.
+
+00:28:59 Pitting on your gender and things, you know, it's touching ghosts in places.
+
+00:29:04 Yeah.
+
+00:29:05 Anyway.
+
+00:29:05 So, that's a little bit of a downer.
+
+00:29:08 So maybe we need something funny.
+
+00:29:09 we do.
+
+00:29:10 I don't want to spend all the time going down that, that deep rabbit hole instead.
+
+00:29:14 Let's go infinitely down the rabbit hole.
+
+00:29:16 Yes.
+
+00:29:17 So check this out, Brian.
+
+00:29:18 Somebody who goes by bits, very personal on, on, blue sky posted what the comments
+
+00:29:26 seem to indicate is probably a textbook, a print, this is printed by the way, a printed textbook
+
+00:29:31 on a latech.
+
+00:29:33 Okay.
+
+00:29:34 Okay.
+
+00:29:34 In the index at the back on page 252, there's an entry for infinite loop and it says, see page
+
+00:29:43 252.
+
+00:29:43 I love it so much.
+
+00:29:45 It's so simple.
+
+00:29:46 I love it.
+
+00:29:47 Yeah.
+
+00:29:47 It's a really good, just like a little Easter egg in there, isn't it?
+
+00:29:51 Yeah.
+
+00:29:52 I, I've, I haven't seen it for infinite loop.
+
+00:29:54 I saw that, somebody did that for recursion in some, yeah.
+
+00:29:58 They, they, if you look in the comments, it says that, Carrington and Richie has the
+
+00:30:02 same, I guess that's probably C or something.
+
+00:30:04 Yeah.
+
+00:30:04 The same in under the index for recursion.
+
+00:30:06 And, it's pretty, pretty good.
+
+00:30:08 People love it.
+
+00:30:09 Yeah.
+
+00:30:10 No, that's funny.
+
+00:30:11 And there's somebody that says, for those who can't be bothered, search, Google
+
+00:30:14 search for recursion.
+
+00:30:15 Did you mean recursion?
+
+00:30:16 Yeah.
+
+00:30:19 I kind of feel bad for people that actually really need to know what that means.
+
+00:30:23 Good luck.
+
+00:30:25 Yeah.
+
+00:30:26 Good luck with that.
+
+00:30:27 Huh?
+
+00:30:27 so.
+
+00:30:28 Wow.
+
+00:30:29 Yeah.
+
+00:30:29 All good.
+
+00:30:29 All good here.
+
+00:30:30 We know what recursion and infinite loops are, but we're going to break the loop and get
+
+00:30:34 out of here.
+
+00:30:34 Right?
+
+00:30:34 Yeah.
+
+00:30:35 Yeah.
+
+00:30:35 Let's break the loop and say goodbye until next time.
+
+00:30:37 So thanks a lot.
+
