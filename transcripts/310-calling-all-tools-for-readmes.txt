@@ -1350,7 +1350,7 @@
 
 00:37:20 You know, when I go to an open source project and I see, oh, there's PRs for the last three months and they're all open.
 
-00:37:27 And like, I probably don't want to contribute to this because the chances are it's just going to be another thing sitting there for months and it's going to get ignored and I don't care.
+00:37:27 And like, I probably don't want to contribute to this because the chances are it's just going to be another thing sitting there for months and it's going to .gitignored and I don't care.
 
 00:37:35 Right.
 
