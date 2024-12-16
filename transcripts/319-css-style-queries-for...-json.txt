@@ -1,124 +1,1212 @@
-00:00:00 Hello, and welcome to python bytes where we deliver Python news and headlines directly to your earbuds. This is Episode 319, recorded January 17 2023. And I'm Brian Aachen. And I'm
+00:00:00 Hello and welcome to Python Bytes, where we deliver Python news and headlines directly to your earbuds.
 
-00:00:11 Michael Kennedy.
+00:00:04 This is episode 319, recorded January 17, 2023.
 
-00:00:12 Well, I'm super excited to talk about whatever you have to share with us. But before we go, before we get started, I just want to say thanks to Microsoft for startup founders hub for sponsoring this episode. Listen to their spot later in the show. And let's see what you have to talk about Michael,
+00:00:09 And I'm Brian Okken.
 
-00:00:27 what do I got to talk about also, when remind people they can go to Python bisetta FM, like on the live stream and see all the upcoming live streams and be part of that so it's always awesome to have them there and follow us on Mastodon we got all of our our things there, believe it or not, we actually do a couple things on Mastodon every now and then. But what I want to do is actually talk about this article that Ned Batchelder wrote, which I found on Mastodon when we did our tools for READMEs, and other repo page types of things, called the secure maintain our workflow. So Brian, we got to we got to judge the level of paranoia here. Do you? Do you worry about people get into like pi test check? You worry about people getting on your computer and accessing SSH keys or or things like that? I
+00:00:10 And I'm Michael Kennedy.
 
-00:01:11 don't? I don't know if I should, but I don't?
+00:00:11 Well, I'm super excited to talk about whatever you have to share with us.
 
-00:01:15 Well, Ned does. And I, I share some of his concern. You know, like, on my hard drive, I have SSH keys. If you could figure out what computers those went to, you could remotely log into them, there's a few layers of indirection that make that more difficult than you would imagine. But still not not that tricky. And there's been a bunch of issues. For example, let's see, there's the circle CI breach, I believe it's probably a fair search term, because CI is super scary, because they build the things that companies ship. So if if you ship, a website or a mobile app, or you ship a desktop app, or any of those types of things, it's automated potentially through circle CI, and you send it out. So if somebody say were to take over your circle CI, that would be bad. Believe what happened was somebody had gotten ahold of someone's who works on circle CI gone into their GitHub account, right? That could be through an SSH key or, or when you're on your terminal, you could just type git add git push all those types of things, right? So Ned says, Well, what can I do so that if someone did get access to run code on my behalf, that it maybe wouldn't be able to push directly to coverage up high? And like, just start going out? And that's the next thing is like, once that goes out? That goes to everybody's servers? Many of them anyway, right? And then you potentially have bad code running on people's servers. So that like the consequences, not just oh, Ned might get hacked, but everyone using coverage.py, which is many, many, many, many, many people might get hacked, right?
+00:00:16 But before we go, before we get started, I just want to say thanks to Microsoft for Startup Founders Hub for sponsoring this episode.
 
-00:02:50 Yeah. And it's also used on developer workstations. So it's going on developers computers as well.
+00:00:22 Listen to their spot later in the show.
 
-00:02:55 Exactly. And then rinse and repeat. Right? Now they have SSH keys to that, what are they building and Ana, you know, like it goes, it goes sideways fast. So he's like, Well, I have this I've terminal session that have implicit access to credentials, peipsi, get, and so on, it would be better. You know, for example, you push to get without asking for a password, right, either through credential cache, or an SSH key or something like that. This is problematic in a couple of ways, the less likely less concerning, although a lot of advice sort of worries about this, I agree that it's not very concerned at all, as somebody actually gets physical access to your computer. So I don't know what most people do. But you should be turning on full disk encryption, especially if you have a laptop, right? If it if it could be stolen, or especially if you travel around with it, and it could be lost somewhere picked up lifted off, like the subway or something, you don't want to be able to just take the disk out and read all the data off it right. So a super easy way to do that with low overhead is like File Vault, which is built into macOS, and I'm pretty sure Windows has something built in. So anyway, full disk encryption. So chances are something bad happens. There's it's really, really small. On the other hand, though, is if you run some evil code. Now evil code could come from traditional places like spam, or fishing or those other areas. But for developers, especially people maintaining popular projects, like coverage.pi, and the many other things that net does is somebody could somebody could try to send him malicious code through Python and through source control. For example, what if somebody says, hey, MIT, I've got this issue with coverage.py Check out this repo and run it to see the bug to reproduce it. Like know what that might do? Well, whatever Ned can do on his computers what it might do and he says look, if I get a huge repo, not a PR to cover shop, hi, but a huge set of code that covers.pi is applied to you know what, what does that potentially going to do? He can't go code review every huge PR or that is sent to him when it refers to someone else's repo. All right, so there's things you can do but but it's that's, that's his primary concern is how do you deal with people sending him bad code? So first thing is one password one password is awesome. Also, not LastPass. Don't use LastPass more than that at the end, but oh my god, don't use LastPass one password or bit Warden are really good choices and says, Look, I store my credentials in there. And then you can have to shell functions that will load those variables into and out of environment, the environment just for a moment. So load the GitHub credential into the environment, do a git push unloaded, for example, something like that, right? That's pretty cool. Similarly, things that are very less likely because you're like peipsi credentials, right? How often do you really do a push, it says, but also I have SSH, a dot SSH directory, which on Mac, and I think Linux as well as where the default SSH keys just live unencrypted hanging out there. So that would be something you want to keep away. Now he says, I don't know what to do with that. The comments here are very helpful. But the other thing is, if I've got to run that PR, and somebody gives me some huge bit of code, I'm running that in Docker. So get one of the base Docker files for Python log into their interactive shell, get clone, try it out. So you know, who cares if somebody hacks your your Docker file, right, or your Docker container? You're gonna throw it away anyway. Right? So he asked, What else can I be doing to keep safe and luckily, there are comments on his. on his blog here it says you could piggyback on the one password workflow to export extra SSH config, and go down here, Dirk Shawn says I use secretive which keeps SSH keys on the Mac locked up some comments for protecting Docker, although I don't really see any reason I would care about protecting a base Docker image. But crucial DOS, another core developer says one password can do SSH. So one password will run an SSH agent that will serve up the keys on demand but like prompt you for a fingerprint reading or verifying your your watch or enter your one password password type thing, which is cool. And you also suggest using pod man which has higher security than Dr. Again, I'm not sure why you need that. But finally, Brett Cannon says one password for SSH. Let's go. That seems pretty awesome. So interesting. Anyway, anyway, these are some ideas. I think it's only scratching the surface. But yeah, and then Christopher, just follow up, says BitLocker is the File Vault equivalent for window? That's right. Thanks, Christopher.
+00:00:25 And let's see what you have to talk about, Michael.
 
-00:07:31 So one of the things that I mean, okay, so yes, protecting against, you know, losing your laptop or somebody taking it or reading your whatever. These are kind of cool. One of the my concern isn't really that somebody's going to try to access it is that I can't anymore. Like, like, my laptop just dies, and I can't use it anymore. So things like one password, I assume their backup a bowl so that I can get access to it. Yeah, so
+00:00:28 What do I got to talk about?
 
-00:07:57 one password stores all that information on their servers. Were where you control a super long encryption key that they don't have. So if you lose it, there's no I'll get my thing back part of the setup process for when passwords, they're like, here's your 30 character secret key that is combined with your password. And if you don't have both of those, we can't help you. It's encrypted with this and we don't know what it is. So it's, it's pretty good. It's pretty good. It's not LastPass. Again, which we'll touch on. Right? So that seems to like it syncs to your phone, it syncs to your different computers. There's a web version, it syncs it works on Windows, Mac or Linux, it's a pretty good option honestly, it's paid but it's it's not much like five bucks a month. You don't want that bit Warden but bit Warden is not quite as secure. Because I don't think it has the secret key. It's just the password. So you need a longer password. And it will go in bit down too far down that rabbit hole maybe. But yeah, it's it's pretty interesting, and certainly is a concern. But so for example, you can have file attachments in your one password. So you can attach like your SSH folder to like a logins thing that you put in there. So if I go to a new computer, you can just, you know, open that thing up and get your SSH keys, drop them in there and off you go. Great, but never never lose that. That 30 character secret key because you're not getting back in without him. Alright, over to you. What do you got?
+00:00:29 I also want to remind people they can go to Python by Set FM, click on the live stream and see all the upcoming live streams and be part of that.
 
-00:09:20 What do I have? I've got some web scraping so or tool. I actually have a couple tools for parsing HTML and parsing JSON that I thought were just pretty darn cool. So I was reading this article, which is a decent article called a year of writing about web scraping in review. So somebody that got a got a, you know, job doing a whole bunch of blog posts about web scraping. But one of the things when he talks about doing it in Python had the HTTP HTTPS and yeah you and I both like that alive that's great stuff pretty popular, but I hadn't heard of parcel or Jas path or Jas path is j m e s path If and so I wanted to check that out. These are some pretty cool tools. So what Parcell does is it's a Python library to extract and remove data from HTML and XML. Sure, I guess I'm using XPath and CSS. So the CSS part is the part that I'm excited about. But so the idea is like, here's, here's an example bit of HTML that we're showing on the live stream. And, and you could just, like access elements, like you would CSS access, like, you know, h1, colon, colon text, sure why it's colon, colon stood dot, but anyway,
+00:00:35 So it's always awesome to have them there.
 
-00:10:38 I think those are, what are they called, like special classes in CSS? Okay. The text the text is that but you can do things like h1 colon hover, and that like only triggers when it hovers. But yeah, colon colon taxi. Right, that okay, I get it. That is weird.
+00:00:37 And follow us on Mastodon.
 
-00:10:54 But anyway, kind of interesting. Like the and then I'm used to the like, the greater than I think that's like some child love or something.
+00:00:38 We got all of our things there.
 
-00:11:04 Immediate child. Immediate. Yeah, it has to be made a child. Yeah.
+00:00:40 Believe it or not, we actually do a couple of things on Mastodon every now and then.
 
-00:11:08 Okay. But but there's, it's fairly clear to read then to be able to pull out some some some stuff out of your HTML using these selectors. So that's pretty cool.
+00:00:43 But what I want to do is actually talk about this article that Ned Batchelder wrote, which I found on Mastodon when we did our tools for readmes and other repo homepage types of things called the Secure Maintainer Workflow.
 
-00:11:18 Yeah, that's really nice. I've always thought of beautiful soup for that. But that sounds really nice.
+00:00:58 So, Brian, we got to judge the level of paranoia here.
 
-00:11:23 The other the other one that I thought was great, and which I probably do more often is grabbing JSON stuff out of JSON. And so I hadn't heard of Jas path. And it's just something pretty cool expressions to be able to pull out some stuff. So if you've got like, this example of foo, and foo is a dictionary element, and it has another dictionary inside with bar and the value of baz, you can just say foo dot bar, and it'll return that. So those are pretty cool. Just simple, the simple little tools about getting JSON data. So that's
+00:01:02 Do you worry about people getting into like pytest check?
 
-00:12:01 interesting, because I never really thought of parsing JSON with like a search. Yeah, with a query CSS, like search, I've always just thought of as well, I'm just going to load it up and navigate it. But this is, I just want to go to this section and grab this array, and I don't care what's in the middle.
+00:01:06 Do you worry about people getting on your computer and accessing SSH keys or things like that?
 
-00:12:18 Yeah, well, and actually, so I need to play with it. So you're right. I've never really thought about too much about doing searches or something. I just, like loaded up and just navigate it. But but if it's somewhere buried deep inside my document, I wouldn't know how to get it. So. Yeah. Or you're possibly if it changes over time. So it's like, you know, there's a component on the site on the page, but it's, it might be loaded anywhere on the page.
+00:01:11 Don't.
 
-00:12:44 Yeah, yeah, exactly. Yeah. It's kind of like a CSS selector for JSON, which, that is a cool discovery. So
+00:01:12 I don't know if I should, but I don't.
 
-00:12:50 anyway, that's it a couple of short items, but nice out there.
+00:01:15 Well, Ned does.
 
-00:12:53 We'll McGuigan says pseudo classes. And yes, pseudo classes, for sure. Absolutely. So that's like the colon hover and stuff. But these are all like colon read only colon valid colon, you know, these colon visited. But I don't know about the double colon. Maybe that's something else. Maybe it's just a special specialization of pseudo classes.
+00:01:16 And I share some of his concern.
 
-00:13:14 But I don't have to dig and dig into a little bit more.
+00:01:19 You know, like on my hard drive, I have SSH keys.
 
-00:13:16 Same. I've only been doing the web for like a few weeks. I went to this boot camp, I'm getting getting good at HTML. Tell us about our sponsor. This episode
+00:01:22 If you could figure out what computers those went to, you could remotely log into them.
 
-00:13:25 of Python Bytes is brought to you by Microsoft for startups. So Microsoft for startups is built founders hub to help startups be successful. Founders hub provides founders at any stage with free resources to help solve startup challenges. That digital platform provides technology benefits, access to expert guidance, skilling resources, mentorship, and networking connections and so much more. vendors have is truly hope and open to all along with free access to GitHub and Microsoft Cloud with the build with the ability to unlock credits over time. founders have also has partnered with other innovative companies to provide exclusive benefits and discounts. You will also have access to their mentorship network, giving you access to a pool of hundreds of mentors across a range of disciplines. You'll be able to book a one on one meeting with mentors, many of whom are former founders themselves. Make your idea reality today with critical support you'll get from Microsoft for startups founders hub to join the program, please visit Python bytes.fm/founders habit 2022. The link is in your show notes. Indeed.
+00:01:27 There's a few layers of indirection that make that more difficult than you would imagine.
 
-00:14:32 Thank you, Microsoft for sponsoring the show. Let's see, what do I got next back to get? But this time not protecting git understanding your Git repository? Brian, do you know what your largest git repository is in science? No, I don't either. But I'm pretty sure that Talk Python Training, the website is just under a gig. And that's quite a bit so maybe I haven't looked at all the others but that one's one of the larger ones that I managed and it's pretty big, but Is it big? Because that's a bunch of binary stuff that I should maybe find and remove? Is it big? Because there's just a lot of files.
+00:01:31 But still not that tricky.
 
-00:15:07 If you have directories named like backup one, backup to storage,
+00:01:33 And there's been a bunch of issues.
 
-00:15:11 no, no, no. version, version one, version two, version one final version. Final, final fact, I zip those. I don't just have enough directories. Yeah. So anyway, what I want to tell you all about is a tool called Get sizer so it computes various size metrics for Git repositories, and pointing out aspects of your repository that might cause problems. So if you've got a small repo that cook errs, don't worry about this stuff. But on the other hand, if you got one where it's like, I think it's a pain to checkout or CI builds are really dragging because of this, this segment, if not necessarily this tool that will be helpful for you. So I recently did an episode on mono repos, David V, Ik, and we, we uncovered a bunch of cool tools. One of them is this git sizer, because mono repos are like, I don't just have a repository for this project, I have a repository for the company and all 100 people put all of their projects into that one repository, which is a bit of a mind bender. But if you do stuff like that, you need to think way more carefully about how you work with files and get and so on. So you can ask questions like is the repo too big overall, ideally, it should be under one gig. Well, actually, maybe I'm over by like a couple bites, but whatever. And they started to get out of control at five gigs, like Git doesn't behave well, sort of thing. So you can do things like avoiding compiled output. So if you have JAR files, right, or wheels, I guess in our case, we have less compiled output. But if you have, say, like wheels, and you want to keep a version of every release, maybe don't store that in Git, maybe store that somewhere else and link to it and get, I don't know, you also use get large file system, instead of putting large files directly in there and things is not very compressible, and cannot be deferred. They're very much hated by Git, because Git say, does a lot of its work by doing deltas, like, Hey, here's the main one. And then here's just the difference of these versions, I need to keep like there's one line in this text file changed, that could be what's stored, right? But if it's just a binary thing that can't be deaf, then that's always a copy. Yeah. So you can go through here and download it to get started. It says, you run it, it'll tell you things like processing, you know, go through the blog, basically analyzing the system and his overall repository size, here's how many commits that are, how big the commit history is, here's how many trees as in folders and stuff, and how overall size them and the blobs, right, so this one has 55 gigs of blobs, 1.6 5 million blobs, that is a serious, serious bit of history there, whatever this project they ran it on. But he will go through and tell you, you know what's going on? And yeah, you know, you can sort of look in and get a better understanding of what's happening in your Git repository.
+00:01:35 For example, let's see.
 
-00:17:54 Cool. Something else that I'm sure everybody knows this already, but especially in CI and stuff, it's helpful to when you're going to clone a branch to clone it to depth one so that you're not cloning all the history, you don't need it for Yeah, so
+00:01:37 There's the CircleCI breach, I believe.
 
-00:18:10 I have, I have some interesting, interesting, newer version of that guidance for you, Brian. Okay, so I was looking at watch some of the presentations at GitHub universe. And so what you're talking about is what's called a shallow copy. So it says we're only going to pretend that there's three, three commits deep in this branch, in which case, you only see like three level three commits worth of history, and so on, right, but it is much smaller, because it doesn't keep all that all those files over time. But you make the trade off that you don't have all the history, if you wanted to go back and read that potentially even checkout back to one of those, you'd have to like delete the thing or check it out again, and somehow. And another less shallow way to what you can do that's real similar is you can do a partial clone. I don't know how how I ended up on this page. But there's docs for it on the GitHub documentation page. So with a shallow clone, all that it will check out is the like depth one that started with partial clone is all it will check out is level one of files, but all of the commit history and messages. So like this file has 10 changes, and here's the messages, but it doesn't check out those nine others. But what's cool is if you were to like switch a branch or go back in history, Git will on demand, download that other one. So what you end up typing as you type something like Git clone, --filter, colon blob equals none, or you can even say I want all the files except for anything over a certain size that might be in history, so anything over 100k But other than that give me every file forever throughout its whole history. So this partial clone is a is like a similar type of thing. But it's a little more flexible in that it's like a transparent proxy to the full history of the repo without cloning it, so it makes sense.
+00:01:40 It's probably a fair search term.
 
-00:19:58 Yeah, so that might be a good workflow. For like in a development environment, yes, exactly. Yeah.
+00:01:42 CircleCI is super scary because they build the things that companies ship.
 
-00:20:02 If if you're not hoping that you're going to be able to go offline, and completely disassociate yourself from GitHub, right? If you're assuming I still have online access, and I don't want this folder to be the true, complete full history forever of the repo, I trust that it's other places, then you'd be totally good. The one place where the shallow clone would be really awesome. Is for CI. Yeah, that's what I was mentioning. Yeah. Yeah. If you're doing it for CI, then like, your CI system does not care what the history is, it only cares what the current is. Right? So shallow clone. And then similarly related to that is you have sparse checkout. So you can say I know there's a huge repo, but I just want these three directories and stuff under them. And you can mix that with a partial clone. So you can like combine these, I only with a partial clone, but of just these three directories, even though there's 1000s.
+00:01:47 So if you ship a website or a mobile app or you ship a desktop app or any of those types of things, it's automated potentially through CircleCI and you send it out.
 
-00:20:51 Oh, right. And well, in some companies do the whole like Mega repo thing where it's exactly the one.
+00:01:57 So if somebody, say, were to take over your CircleCI, that would be bad.
 
-00:20:56 And that's where it would matter, because you're like, Well, I don't want to check out seven terabytes, I don't whatever it turns out to be. So anyway, there's like a couple of interesting things. I present to you all the Git sizer to give you a little bit of advice. But then also some of these other tools to help you deal with it more. If you are already in this realm, partial clone shallow clones, and sparse checkouts all might be tools you can apply what are just built in to get that make this? Yeah.
+00:02:01 I believe what happened was somebody had gotten hold of someone who works on CircleCI, got into their GitHub account, right?
 
-00:21:23 And also LFS is not that hard to use. So if you really have to use LFS Yeah,
+00:02:11 That could be through an SSH key or when you're on your terminal, you could just type git add, git push, all those types of things, right?
 
-00:21:28 I have one other thing for you. I did this on the Talk Python Training, I did a partial clone. Well, filter blob equals none, ball, blob, colon, none. And without. So without I had the deltas was 71,000 deltas and 118,000 objects with 10,000 objects 1400. Deltas, much, much faster checkout. And like I said, it's kind of on demand, it'll go get the older files if it needs to. Cool. Anyway, it seems like it's a pretty handy. Lots to get. What are we getting to next? Oh, we've
+00:02:19 So Ned says, well, what can I do so that if someone did get access to run code on my behalf, that it maybe wouldn't be able to push directly to coverage.py and just start going out?
 
-00:21:59 right now we've got bad advice. So I guess this may be under category of Do not try this at home or just don't listen to Brian. But it wasn't me. It was this other guy, Adrian. So this is a fun article called Data classes without type annotations. So I'm using data classes a lot. Now I like and adders, too. I like both adders and data classes. But anyway. So apparently, I didn't know this. But data classes don't really care what the type is.
+00:02:32 And that's the next thing is once that goes out, that goes to everybody's servers, many of them anyway, right?
 
-00:22:33 You can put a type but it's not. It doesn't use the type.
+00:02:38 And then you potentially have bad code running on people's servers.
 
-00:22:36 It doesn't use the type at all, apparently. So you can, you can do something like dot dot dot, for instance, is the type. And you can do some crazy things this so that doesn't even make any sense. But apparently works fine. And I'm like, I don't believe it. So I tried it in there, right? Doesn't do doesn't do that. So there's a whole bunch of discussion around types here and type hints. And in some people just kind of are, they don't want to use types. And that's fine. But but if you wanted to use type class or data classes, they kind of require you to use types, but apparently you can get around it in. And I just really wanted to show this horrible example of code. And there's a there's a data class that is called literally and it has a variable it'll anything with the type is a tuple with two strings in it saying can go in here. And we've got other variables with like lambdas expressions as types. And in also a try I tried this you have to put from future import annotations in your in your file, but then you can put all sorts of horrible things in there. It doesn't even have these these symbols don't even have to be anywhere in your file. As long as it parses it works fine.
+00:02:41 So the consequence is not just, oh, Ned might get hacked, but everyone using coverage.py, which is many, many, many, many, many people might get hacked, right?
 
-00:23:55 For example, The first type is a tuple. It's not saying the type is tuple. It just is a tuple like parenthese string, comma string. Yeah. The second one is a lambda, where the Type value would go and so on. Yeah.
+00:02:50 Yeah, and it's also used on developer workstations.
 
-00:24:11 Is that even a valid lambda that Well, I guess it is, you can have a lambda
+00:02:53 So it's going on developers' computers as well.
 
-00:24:15 parameterless lambda
+00:02:55 Exactly.
 
-00:24:17 that only returns a string. How about not not as an expression for a type not even evaluate even dot evaluate was is it is currently valid type. And then the last one is just awful. Just dot has as two equals B as the parameter to has and multiplied by syntactically bracket valid. These are this is a nightmare, but it parses fine. So
+00:02:56 And then rinse and repeat, right?
 
-00:24:47 crazy. Yeah, your editor might not like it. My pi might not like it.
+00:02:57 Now they have SSH keys to what are they building in Onyx.
 
-00:24:51 Yeah. But, but there there is some discussion of things that might be useful about this. Like if you're really not using Add type annotations, but you want to use data classes, you perhaps want to put some strings in there as the type to declare is a comment for what the thing is, instead of, you know, I don't know, this is bad advice. Don't follow this, but it's fun.
+00:03:00 It goes sideways fast.
 
-00:25:17 It does break some conceptions that people might have about data classes, unlike, say, Pydantic, where this stuff matters, after like data classes, but apparently validated. Yeah,
+00:03:03 So he's like, well, I have this, I have terminal sessions that have implicit access to credentials, PyPI, Git, and so on.
 
-00:25:28 and apparently this so this was apparently popular or enough this was written last year. And if you want to try to do something similar to data classes, where it's similar to adders where you have like an attribute or something, apparently, there's this other you can say a type plus a type plus data class, and you can just say it's a field and and get around it. And this is, this is available in a IPI package.
+00:03:11 It would be better, you know, for example, you can push to Git without asking for a password, right?
 
-00:25:56 Okay, cool. typeless data classes fun. Alright, well, is that all of our topics? Brian,
+00:03:17 Either through a credential cache or an SSH key or something like that.
 
-00:26:04 I think it is you I don't have any extras either. Do you have any extras for us?
+00:03:20 This is problematic in a couple of ways.
 
-00:26:09 I have to. Let's see, what have I got going on here? So my notes in the show show notes. My comment is the LastPass story just keeps getting worse. What I have on the screen here, what I linked to does not fully communicate the degree to which it has gotten worse. So keep that in mind with LastPass. It turns out that someone guess what broke into the GitHub repository of a developer sometime last year like November, they then use that access to further their access, and eventually got the ability to copy every single customer's users last pass encrypted Vault, which sounds terrifying shouldn't be, but it does, because that's theoretically encrypted with your big long not reused password. That's a big if but it should be right. And then it probably should have some kind of secret key type of thing like one password. So even if my password was the letter A for one password, it's still 27 characters. For the person have this perspective. LastPass doesn't have that it's just the letter A. So that's not ideal. There's some posts like oh, well, don't worry, it's gonna take like 100 years to decrypt this. If if if there would be if they had the latest settings, which are like if I just created a new account, and it used like 100,000 iterations of folding the password and other things about how long the password has to be. But here's the the getting worst part, the older versions didn't enforce that. And they didn't use password folding. Instead of using 100,000 or a million iterations, they used one. So instead of taking 100 years, or whatever it is to decrypt it with a regular sort of cracking GPU system, it takes about 25 seconds to crack the password. And those passwords are versioned and changed in this way, depending on when you last use them over time. So if you created a password 10 years ago, but then changed the settings, I don't think it goes back not 100% Sure, but I think it's still you can have historical older passwords in your vault that are like that. On top of that, it turns out that things like the URL of where that password belongs to and your email address were stored in plaintext. Not to that word not to with one password, but with LastPass stored in plain text. Well, it's not plain text, its base 64 encoded, but we all know what that means. Just not readable by humans. But that's plaintext. So and when was it last access. So you can do things like I want to go to the vault and see who has accessed some shady site, like who has access Tinder, but also seems to be married? Can I blackmail that person without even figuring out what their password is just say, Look, that's a little shady. I'm going to tell your wife about your Tinder account, you know, so I mean, there's all sorts of really bad things plus, I can see that some of those passwords are going to my bank with a with a password full, you know, one or 500 or 5000, which I can just break straight away. So you can use the unencrypted bits to target which ones you want to go after is really bad. So just PSA if you use LastPass. Change your passwords. Yeah. appeared because this is out there. And it's in plain text, except for the password. Not ideal. Okay, so anyways, I figured that was bad enough. I wanted to kind of point out I know because a lot of people I don't worry, it's super encrypted, like, sometimes. Yeah, but
+00:03:23 The less likely, less concerning, although a lot of advice sort of worries about this, I agree that it's not very concerning at all, is somebody actually gets physical access to your computer.
 
-00:29:26 who will actually do it for 25 seconds?
+00:03:33 So I don't know what most people do, but you should be turning on full disk encryption, especially if you have a laptop, right?
 
-00:29:29 I know Come on. I mean, if it just said no, like Bank of America account.com/logon I don't know. That worked 20 seconds probably. I mean, banks are like kind of a unique case because they often have like a to FA or you know, what's your cat's favorite toys name or whatever, right? You gotta answer but like there's many places that aren't don't have like a some kind of second check like that.
+00:03:40 If it could be stolen, or especially if you travel around with it and it could be lost somewhere or picked up and lifted off like the subway or something,
 
-00:29:50 And my bank even has the feature of even if I tell them to remember my device, they won't. So I have to to FA every single time I
+00:03:47 you don't want to be able just to take the disk out and read all the data off it, right?
 
-00:29:59 know It drives me nuts. It drives me nuts. All right. The other thing is I woke up this morning with a couple $1,000. And unfortunately, by the time of the recording, I no longer have that money. But I have a new Mac Mini come in Brian. He's just announced new Mac Mini him to grow and the new MacBook Air pros and maxes and all that. So we are waiting.
+00:03:51 So a super easy way to do that with low overhead is like FileVault, which is built into macOS, and I'm pretty sure Windows has something built in.
 
-00:30:24 It says 600 bucks. How Where are you down? 2000?
+00:03:59 So anyway, full disk encryption.
 
-00:30:27 Wow, let us go. Let us go on on the passive 600 bucks is the m two version, which is basically the upgrade of what I have now, which is awesome. But what I want is the empty Pro for all the video editing, which is like 1300 to start but then you're like, you know, I really could use a little more. A little more RAM. And it's that all the video and podcast stuff. I need some more storage. And all of a sudden it's like, oh, I'll just sell my car. I'll get a mini that'd be cool. But anyway, I'm very excited about this coming out. I'll let people know what I think when I get it. But I'm sure it'll be lovely.
+00:04:00 So chances something bad happens there is really, really small.
 
-00:30:59 Cooper Mini or Mac Mini. They're about the same price Exactly.
+00:04:03 On the other hand, though, is if you run some evil code.
 
-00:31:04 Once made in Cupertino by Apple, the other one is Cooper made by BMW in London or England somewhere. All right. That's it for extra though. Got some jokes if you want to joke. Yeah, let's do something funny. Yeah. All right. So this one's about debugging. And have you ever done like, I've got a section and I need a breakpoint here. But there's not a great way to put the breakpoint there. Or where you might say I would say, if user equals such and such, or this value is in the range of what I expected, then I want it to break. So you might say if something created just a variable set a value and give it a break point. Well, this is kind of about the philosophical wonderings of this situation here. So there's a variable, it just says var A equals zero JavaScript, I guess, or it could be C#, but it has a little squiggly, which is clearly like, unused variable, right? Yes. And the variable asks, Dear programmer, what is my purpose? And then the programmer says, You're a dumb, dumb dummy variable to place a breakpoint on? Oh my god. That's pretty funny. Yeah, the existential despair of the dummy variable. But it's short lived, but it can be quite helpful in love. So don't let it don't let it get you down dummy variable.
+00:04:07 Now, evil code could come from traditional places like spam or phishing or those other areas.
 
-00:32:23 Yeah. Or it could have been used so once before, and then somebody refactored the code and forgot to delete the declaration.
+00:04:15 But for developers, especially people maintaining popular projects like coverage.py and many other things that Ned does, is somebody could try to send him malicious code through Python and through source control.
 
-00:32:30 Exactly. Then then you live a long time. I will. That's it.
+00:04:30 For example, what if somebody says, hey, Ned, I've got this issue with coverage.py.
 
-00:32:33 All right. That was funny. So thanks a lot. And thanks for joining me again today. And thanks, of course to Microsoft vendors up to sponsor us.
+00:04:35 Check out this repo and run it to see the bug to reproduce it.
 
-00:32:41 You bet. And thanks, everyone for listening. Bye. Oh, hi.
+00:04:39 It's like, you know what that might do?
+
+00:04:41 Well, whatever Ned can do on his computer is what it might do.
+
+00:04:44 And he says, look, if I get a huge repo, not a PR to coverage.py, but a huge set of code that coverage.py is applied to, you know, what is that potentially going to do?
+
+00:04:54 He can't go code review every huge PR that is sent to him when it, you know, refers to someone else's repo, right?
+
+00:05:00 So there's things you can do, but that's his primary concern is how do you deal with people sending him bad code?
+
+00:05:07 So first thing is 1Password.
+
+00:05:10 1Password is awesome.
+
+00:05:11 Also, not LastPass.
+
+00:05:13 Don't use LastPass.
+
+00:05:14 More on that at the end.
+
+00:05:15 But oh my God, don't use LastPass.
+
+00:05:17 1Password or Bitwarden are really good choices.
+
+00:05:19 And it says, look, I store my credentials in there.
+
+00:05:23 And then you can have two shell functions that will load those variables into and out of the environment just for a moment.
+
+00:05:34 So load the GitHub credential into the environment, do a git push, unload it, for example.
+
+00:05:40 Something like that, right?
+
+00:05:41 That's pretty cool.
+
+00:05:41 Similarly, things that are very less likely to be used are like PyPI credentials, right?
+
+00:05:46 How often do you really do a push?
+
+00:05:47 It says, but also I have SSH, a .SSH directory, which on Mac and I think Linux as well is where the default SSH keys just live, unencrypted, hanging out there.
+
+00:05:57 So that would be something you want to keep away.
+
+00:05:59 Now he says, I don't know what to do with that.
+
+00:06:01 The comments here are very helpful.
+
+00:06:03 But the other thing is, he says, if I've got to run that PR and somebody gives me some huge bit of code, I'm running that in Docker.
+
+00:06:09 So get one of the base Docker files for Python, log into their interactive shell, git clone, try it out.
+
+00:06:17 So, you know, who cares if somebody hacks your Docker file, right?
+
+00:06:21 Or your Docker container.
+
+00:06:22 You're going to throw it away anyway, right?
+
+00:06:24 So he asked, what else can I be doing to keep safe?
+
+00:06:26 And luckily there are comments on his blog here.
+
+00:06:31 It says, you could piggyback on the one password workflow to export extra SSH config.
+
+00:06:36 And go down here.
+
+00:06:39 Dirk Sean says, I use secretive, which keeps SSH keys on the Mac locked up.
+
+00:06:45 Some comments for protecting Docker, although I don't really see any reason I would care about protecting a base Docker image.
+
+00:06:50 But Kushal Das, another core developer, says one password can do SSH.
+
+00:06:57 So one password will run an SSH agent that will serve up the keys on demand, but like prompt you for a fingerprint reading or verify on your watch or, you know, enter your one password password type thing, which is cool.
+
+00:07:09 And he also suggests using Podman, which has higher security than Docker.
+
+00:07:13 And I'm not sure why you need that.
+
+00:07:14 But finally, Brett Cannon says one password for SSH.
+
+00:07:17 Let's go.
+
+00:07:17 That seems pretty awesome.
+
+00:07:18 So interesting.
+
+00:07:19 Anyway, these are some ideas.
+
+00:07:21 I think it's only scratching the surface.
+
+00:07:23 But yeah, and then Christopher, just to follow up, says BitLocker is the file vault equivalent for window.
+
+00:07:30 That's right.
+
+00:07:30 Thanks, Christopher.
+
+00:07:31 So one of the things that I mean, OK, so yes, protecting against, you know, losing your laptop or somebody taking it or reading your whatever.
+
+00:07:39 These are all kind of cool.
+
+00:07:41 One of the my concern isn't really that somebody is going to try to access it is that I can't anymore.
+
+00:07:47 Like like my laptop just dies and I can't use it anymore.
+
+00:07:52 So things like one password, I assume they're backupable so that I can get access to it again.
+
+00:07:57 Yeah.
+
+00:07:57 So one password stores all that information on their servers where you control a super long encryption key that they don't have.
+
+00:08:06 So if you lose it, there's no I'll get my thing back.
+
+00:08:09 Part of the setup process for one password is they're like, here's your 30 character secret key that is combined with your password.
+
+00:08:15 And if you don't have both of those, we can't help you.
+
+00:08:18 It's encrypted with this and we don't know what it is.
+
+00:08:21 So it's it's pretty good.
+
+00:08:23 It's pretty good.
+
+00:08:24 It's not LastPass again, which we'll touch on.
+
+00:08:27 But so that syncs to all like it syncs to your phone.
+
+00:08:30 It syncs to your different computers.
+
+00:08:32 There's a web version.
+
+00:08:34 It's it works on Windows, Mac, Linux.
+
+00:08:37 It's a pretty good option, honestly.
+
+00:08:39 It's paid, but it's it's not much like five bucks a month.
+
+00:08:42 You don't want that Bitwarden, but Bitwarden is not quite as secure because I don't think it has the secret key.
+
+00:08:46 It's just the password.
+
+00:08:47 So you need a longer password.
+
+00:08:49 I don't know.
+
+00:08:49 We're going a bit down too far down that rabbit hole, maybe.
+
+00:08:52 But yeah, it's it's pretty interesting.
+
+00:08:54 Certainly it's a concern.
+
+00:08:56 But so, for example, you can have file attachments in your one password.
+
+00:09:00 So you can attach like your SSH folder to like a logins thing that you put in there.
+
+00:09:06 So if you go to a new computer, you can just, you know, open that thing up and get your SSH keys, drop them in there and off you go.
+
+00:09:12 Right.
+
+00:09:12 But never, never lose that that that 30 character secret key because you're not getting back in without it.
+
+00:09:19 All right.
+
+00:09:19 Over to you.
+
+00:09:20 What you got?
+
+00:09:20 What do I have?
+
+00:09:22 I've got some web scraping.
+
+00:09:24 So or a tool.
+
+00:09:26 Actually, a couple of tools for parsing HTML and parsing JSON that I thought were just pretty darn cool.
+
+00:09:31 So I was reading this article, which is a decent article called A Year of Writing About Web Scraping in Review.
+
+00:09:37 So somebody that got a got a job doing a whole bunch of blog posts about web scraping.
+
+00:09:43 But one of the things when he talks about doing it in Python, it had HTTP, HTTPX.
+
+00:09:50 And yeah, you and I both like that a lot.
+
+00:09:52 Yeah, that's great stuff.
+
+00:09:53 Pretty popular.
+
+00:09:54 But I hadn't heard of Parcel or James Path or James Path is J-M-E-S path.
+
+00:10:00 And so I wanted to check that out.
+
+00:10:02 These are some pretty cool tools.
+
+00:10:04 So what Parcel does is it's a Python library to extract and remove data from HTML and XML.
+
+00:10:12 Sure, I guess.
+
+00:10:13 Using XPath and CSS.
+
+00:10:16 So the CSS part is the part that I'm excited about.
+
+00:10:19 But so the idea is like, here's an example bit of HTML that we're showing on the live stream.
+
+00:10:26 And you can just like access elements like you would CSS access.
+
+00:10:32 Like, you know, H1 colon colon text.
+
+00:10:35 I'm not sure why it's colon colon instead of dot.
+
+00:10:37 But anyway.
+
+00:10:38 I think those are what they're called.
+
+00:10:41 Like special classes in CSS.
+
+00:10:43 Okay.
+
+00:10:44 Yeah, the text is odd.
+
+00:10:46 But you can do things like H1 colon hover.
+
+00:10:48 And that like only triggers when it hovers.
+
+00:10:50 Yeah, colon colon text.
+
+00:10:51 You're right.
+
+00:10:52 Okay, I get it.
+
+00:10:52 That is weird.
+
+00:10:53 But anyway.
+
+00:10:55 Kind of interesting.
+
+00:10:57 I like the.
+
+00:10:58 And then I'm used to the like the greater than.
+
+00:11:02 I think that's like some child of or something.
+
+00:11:04 Immediate child.
+
+00:11:05 Immediate child.
+
+00:11:06 Yeah, it has to be immediate child.
+
+00:11:07 Yeah.
+
+00:11:08 Okay.
+
+00:11:08 But it's fairly clear to read then to be able to pull out some stuff out of your HTML using these selectors.
+
+00:11:17 So that's pretty cool.
+
+00:11:18 Yeah, that's really nice.
+
+00:11:19 I've always thought of beautiful soup for that.
+
+00:11:22 But this sounds really nice.
+
+00:11:23 The other the other one that I thought was great and which I probably do more often is grabbing Jason's stuff out of Jason.
+
+00:11:29 And so I hadn't heard of James path.
+
+00:11:32 And it's just something some pretty cool expressions to be able to pull out some stuff.
+
+00:11:38 So if you've got like this example of foo and foo is a dictionary element and it has another dictionary inside with bar and the value of baz, you can just say foo dot bar and it'll return baz.
+
+00:11:53 So those are pretty cool.
+
+00:11:57 Just simple, simple little tools about getting Jason data.
+
+00:12:00 So that's interesting because I never really thought of parsing Jason with like a search.
+
+00:12:06 Yeah.
+
+00:12:07 With a query CSS like search, I've always just thought of it as well, I'm just going to load it up and navigate it.
+
+00:12:13 But this is I just want to go to this section and grab this array and I don't care what's in the middle.
+
+00:12:18 Yeah.
+
+00:12:18 Well, and actually, so I need to play with it.
+
+00:12:20 So you're right.
+
+00:12:22 I've never really thought about too much about doing searches or something.
+
+00:12:25 I just like load it up and just navigate it.
+
+00:12:28 But but if it's somewhere buried deep inside my document, I wouldn't know how to get it.
+
+00:12:33 So yeah, or possibly if it changes over time.
+
+00:12:37 So it's like, you know, there's a component on the site on the page, but it's it might be loaded anywhere on the page.
+
+00:12:43 Yeah.
+
+00:12:44 Yeah, exactly.
+
+00:12:45 Yeah.
+
+00:12:45 It's kind of like a CSS selector for Jason, which that is a cool discovery.
+
+00:12:49 Yeah.
+
+00:12:50 So anyway, that's it.
+
+00:12:51 A couple of short items, but nice out there.
+
+00:12:53 Well, McGuigan says pseudo classes.
+
+00:12:56 And yes, pseudo classes for sure.
+
+00:12:58 Absolutely.
+
+00:12:59 So that's like the colon hover and stuff.
+
+00:13:01 But these are all like colon read only colon valid colon, you know, these colon visited.
+
+00:13:08 But I don't know about the double colon.
+
+00:13:10 Maybe that's something else.
+
+00:13:10 Maybe it's just a special specialization of pseudo classes.
+
+00:13:13 Yeah.
+
+00:13:14 But I don't know.
+
+00:13:15 I have to dig into it a little bit more.
+
+00:13:16 Same.
+
+00:13:17 I've only been doing the web for like a few weeks.
+
+00:13:19 I went to this boot camp.
+
+00:13:21 I'm getting getting good at HTML.
+
+00:13:22 All right.
+
+00:13:23 Tell us about our sponsor.
+
+00:13:25 This episode of Python Bytes is brought to you by Microsoft for Startups.
+
+00:13:29 So Microsoft for Startups has built Founders Hub to help startups be successful.
+
+00:13:34 Founders Hub provides founders at any stage with free resources to help solve startup challenges.
+
+00:13:39 The digital platform provides technology benefits, access to expert guidance,
+
+00:13:44 skilling resources, mentorship, and network connections, and so much more.
+
+00:13:49 Founders Hub is truly open to all, along with free access to GitHub and Microsoft Cloud,
+
+00:13:55 with the ability to unlock credits over time.
+
+00:13:59 Founders Hub also has partnered with other innovative companies to provide exclusive benefits and discounts.
+
+00:14:05 You'll also have access to their mentorship network, giving you access to a pool of hundreds of mentors
+
+00:14:10 across a range of disciplines.
+
+00:14:12 You'll be able to book a one-on-one meeting with mentors, many of whom are former founders themselves.
+
+00:14:17 Make your idea reality today with critical support you'll get from Microsoft for Startups Founders Hub.
+
+00:14:24 To join the program, please visit pythonbytes.fm/foundershub at 2022.
+
+00:14:29 The link is in your show notes.
+
+00:14:31 Indeed.
+
+00:14:32 Thank you, Microsoft, for sponsoring the show.
+
+00:14:35 Let's see.
+
+00:14:36 What do I got next?
+
+00:14:37 Back to Git.
+
+00:14:38 But this time, not protecting Git.
+
+00:14:40 Understanding your Git repository.
+
+00:14:42 Brian, do you know what your largest Git repository is in size?
+
+00:14:45 No.
+
+00:14:46 Not either.
+
+00:14:47 But I'm pretty sure that Talk Python training, the website, is just under a gig.
+
+00:14:52 And that's quite a bit.
+
+00:14:53 So maybe.
+
+00:14:54 I haven't looked at all the others, but that one's one of the larger ones that I manage.
+
+00:14:59 But is it big because it has a bunch of binary stuff that I should maybe find and remove?
+
+00:15:03 Is it big because there's just a lot of files?
+
+00:15:06 If you have directories named like backup one, backup two, stored in there?
+
+00:15:11 No, no, no.
+
+00:15:12 Version, version one, version two, version one final, version one final, final.
+
+00:15:17 I zip those.
+
+00:15:18 I don't just have enough directories.
+
+00:15:20 Yeah, so anyway, what I want to tell you all about is a tool called Git Sizer.
+
+00:15:24 So it computes various size metrics for Git repositories and pointing out aspects of your
+
+00:15:29 repository that might cause problems.
+
+00:15:31 So if you've got a small repo, like who cares?
+
+00:15:33 Don't worry about this stuff.
+
+00:15:34 But on the other hand, if you've got one where it's like, this thing is a pain to check out
+
+00:15:39 or CI builds are really dragging because of this, this segment, if not necessarily this
+
+00:15:43 tool, I think will be helpful for you.
+
+00:15:45 So I recently did an episode on monorepos with David Vyek and we uncovered a bunch of
+
+00:15:54 cool tools.
+
+00:15:54 One of them is this Git Sizer because monorepos are like, I don't just have a repository for
+
+00:15:59 this project.
+
+00:16:00 I have a repository for the company and all hundred people put all of their projects into that
+
+00:16:04 one repository, which is a bit of a mind bender.
+
+00:16:06 But if you do stuff like that, you need to think way more carefully about how you work with
+
+00:16:11 files and Git and so on.
+
+00:16:13 So you can ask questions like, is the repo too big overall?
+
+00:16:17 Ideally, it should be under one gig.
+
+00:16:19 Well, actually, maybe I'm over by like a couple of bytes, but whatever.
+
+00:16:22 And they start to get out of control at five gigs.
+
+00:16:25 Like Git doesn't behave well sort of thing.
+
+00:16:27 So you can do things like avoiding compiled output.
+
+00:16:31 So if you have jar files, right, or wheels, I guess in our case, we have less compiled output.
+
+00:16:37 But if you have say like wheels, you want to keep a version of every release, maybe don't
+
+00:16:40 store that in Git, maybe store that somewhere else and link to it in Git.
+
+00:16:44 I don't know.
+
+00:16:44 You also use Git large file system instead of putting large files directly in there.
+
+00:16:50 And things that's not very compressible and cannot be diffed.
+
+00:16:54 They're very much hated by Git because Git does a lot of its work by doing Deltas.
+
+00:16:59 Like, okay, here's the main one.
+
+00:17:00 And then here's just the difference of these versions I need to keep.
+
+00:17:03 Like this one line in this text file changed.
+
+00:17:05 That could be what's stored, right?
+
+00:17:06 But if it's just a binary thing that can't be diffed, then that's always a copy.
+
+00:17:11 So you can go through here and you download it to get started.
+
+00:17:16 It says you run it.
+
+00:17:17 It'll tell you things like processing, you know, go through the blog, basically analyzing the system.
+
+00:17:22 It says overall repository size.
+
+00:17:23 Here's how many commits there are, how big the commit history is.
+
+00:17:26 Here's how many trees as in folders and stuff and how overall size of them and the blobs, right?
+
+00:17:33 So this one has 55 gigs of blobs with 1.65 million blobs.
+
+00:17:39 That is a serious, serious bit of history there, whatever this project they ran it on.
+
+00:17:44 But it'll go through and tell you, you know, what's going on.
+
+00:17:47 And yeah, you can sort of look and get a better understanding of what's happening in your Git repository.
+
+00:17:53 Cool.
+
+00:17:54 Something else that I'm sure everybody knows this already, but especially in CI and stuff,
+
+00:18:00 it's helpful to, when you're going to clone a branch, to clone it to depth one so that you're not cloning all the history.
+
+00:18:08 You don't need it for...
+
+00:18:10 Yeah, so I have some interesting newer version of that guidance for you, Brian.
+
+00:18:16 Okay.
+
+00:18:17 So I was looking, I watched some of the presentations at GitHub Universe.
+
+00:18:21 And so what you're talking about is what's called a shallow copy.
+
+00:18:24 So it says, we're only going to pretend that there's three commits deep in this branch,
+
+00:18:29 in which case you only see like three commits worth of history and so on, right?
+
+00:18:34 But it is much smaller because it doesn't keep all those files over time.
+
+00:18:38 But you make the trade-off that you don't have all the history.
+
+00:18:41 If you wanted to go back and read that and potentially even check out back to one of those,
+
+00:18:46 you'd have to like delete the thing or check it out again and somehow in another less shallow way.
+
+00:18:51 So what you can do that's real similar is you can do a partial clone.
+
+00:18:56 I don't know how I ended up on this page, but there's docs for it on the GitHub documentation page.
+
+00:19:02 So with a shallow clone, all that it will check out is the like depth one.
+
+00:19:07 Sorry, not shallow.
+
+00:19:07 Partial clone is...
+
+00:19:09 All it will check out is level one of files, but all of the commit history and messages.
+
+00:19:15 So like this file has 10 changes and here's the messages, but it doesn't check out those nine others.
+
+00:19:20 But what's cool is if you were to like switch a branch or go back in history,
+
+00:19:25 Git will on demand download that other one.
+
+00:19:27 So what you end up typing is you type something like Git clone --filter,
+
+00:19:33 colon blob equals none.
+
+00:19:35 Or you can even say, I want all the files except for anything over a certain size that might be in history.
+
+00:19:41 So anything over 100K.
+
+00:19:42 But other than that, give me every file forever throughout us all history.
+
+00:19:46 So this partial clone is like a similar type of thing, but it's a little more flexible in that it's like a transparent proxy to the full history of the repo without cloning it.
+
+00:19:57 Does that make sense?
+
+00:19:58 Yeah.
+
+00:19:58 So that might be a good workflow for like in a development environment.
+
+00:20:01 Yes, exactly.
+
+00:20:02 Yeah.
+
+00:20:03 If you're not hoping that you're going to be able to go offline and completely disassociate yourself from GitHub, right?
+
+00:20:10 If you are assuming I still have online access and I don't want this folder to be the true,
+
+00:20:15 complete full history forever of the repo, I trust that it's other places, then you'd be totally good.
+
+00:20:20 The one place where the shallow clone would be really awesome is for CI.
+
+00:20:24 Yeah.
+
+00:20:25 That's what I was mentioning.
+
+00:20:26 Yeah.
+
+00:20:26 Right.
+
+00:20:27 Yeah.
+
+00:20:27 Yeah.
+
+00:20:27 Yeah.
+
+00:20:27 Yeah.
+
+00:20:28 If you're doing it for CI, then like your CI system does not care what the history is.
+
+00:20:31 It only cares what the current is.
+
+00:20:33 Yeah.
+
+00:20:34 Right.
+
+00:20:34 So shallow clone.
+
+00:20:35 And then similarly related to that is you have sparse checkouts where you can say,
+
+00:20:40 I know there's a huge repo, but I just want these three directories and stuff under them.
+
+00:20:43 And you can mix that with a partial clone.
+
+00:20:45 So you can like combine these only with a partial clone, but of just these three directories,
+
+00:20:49 even though there's thousands.
+
+00:20:50 Oh, right.
+
+00:20:51 And well, and some companies do the whole like mega repo thing where everything's in one.
+
+00:20:56 So.
+
+00:20:56 And that's where it would matter.
+
+00:20:57 Cause you're like, well, I don't want to check out seven terabytes.
+
+00:21:00 I don't want whatever it turns out to be.
+
+00:21:01 Yeah.
+
+00:21:01 So anyway, there's like a couple of interesting things.
+
+00:21:04 I present to you all the get sizer to give you a little bit of advice, but then also some
+
+00:21:10 of these other tools to help you deal with it more.
+
+00:21:12 You know, if you were already in this realm, partial clone, shallow clones, and sparse checkouts
+
+00:21:18 all might be tools you can apply.
+
+00:21:20 What are just built into get that make this a lot better.
+
+00:21:23 Yeah.
+
+00:21:23 And also LFS is not that hard to use.
+
+00:21:25 So if you really have to use LFS.
+
+00:21:28 Yeah.
+
+00:21:28 I have one other thing for you.
+
+00:21:29 I did this on the Talk Python Training.
+
+00:21:31 I did a partial clone.
+
+00:21:32 Well, filter blob equals none, blob colon none.
+
+00:21:36 And without, so without, I had the deltas was 71,000 deltas and 118,000 objects with 10,000
+
+00:21:45 objects, 1,400 deltas, much, much faster checkout.
+
+00:21:50 And like I said, it's kind of on demand.
+
+00:21:52 It'll go get the older files if it needs to.
+
+00:21:53 Cool.
+
+00:21:54 Yeah.
+
+00:21:54 Anyway, it seems like it's a pretty handy.
+
+00:21:56 Lots to get.
+
+00:21:57 What are we getting to next?
+
+00:21:58 Oh, we've oops.
+
+00:22:00 Right now we've got bad advice.
+
+00:22:02 So I guess this may be under category of do not try this at home or just don't listen
+
+00:22:08 to Brian, but it wasn't me.
+
+00:22:09 It was this other guy, Adrian.
+
+00:22:11 So this is a fun article called data classes without type annotations.
+
+00:22:16 So I'm, I'm using data classes a lot now.
+
+00:22:19 I like them.
+
+00:22:19 And adders too.
+
+00:22:21 I like both adders and data classes, but anyway.
+
+00:22:24 So apparently I didn't know this, but data classes don't really care what the type is.
+
+00:22:31 So you can put a type, but it's not a, it doesn't use the type.
+
+00:22:36 It doesn't use the type at all.
+
+00:22:38 Apparently.
+
+00:22:39 So you can, you can do something like dot, dot, dot, for instance, as the type.
+
+00:22:43 And you can do some crazy things.
+
+00:22:47 So that doesn't even make any sense, but apparently it works fine.
+
+00:22:49 And I'm like, I don't believe it.
+
+00:22:50 So I tried it and they're right.
+
+00:22:52 Doesn't do, doesn't do that.
+
+00:22:55 So I, there's a whole bunch of discussion around types here and type hints and, and some people just kind of are, they don't want to use types and that's fine.
+
+00:23:05 But, but if you want to use type class or data classes, they kind of require you to use types, but apparently you can get around it.
+
+00:23:12 And, and I just really wanted to show this horrible example of code.
+
+00:23:17 And there's a, and there's a data class that is called literally, and it has a variable, anything with the type is a tuple with two strings in it saying can go in, in here.
+
+00:23:33 And we've got other variables with like lambdas expressions as types.
+
+00:23:37 And, and also I tried, I tried this.
+
+00:23:40 You have to put from future import annotations in your, in your file, but then you can put all sorts of horrible things in there.
+
+00:23:49 It doesn't even have these, these symbols don't even have to be anywhere in your file.
+
+00:23:53 As long as it parses, it works fine.
+
+00:23:55 For example, the first type is a, a tuple.
+
+00:23:59 It's not saying the type is tuple.
+
+00:24:01 It just is a tuple, like parenthesis string comma string.
+
+00:24:05 Yeah.
+
+00:24:05 The second one is a lambda where the type value would go and so on.
+
+00:24:10 Yeah.
+
+00:24:10 And it's not even a valid lambda.
+
+00:24:12 Well, I guess it is.
+
+00:24:14 You can have a lambda.
+
+00:24:15 It's a parameterless lambda.
+
+00:24:17 That only returns a string.
+
+00:24:19 How about not, not as an expression for a type, not even evaluate, even dot evaluate was, is it, is apparently a valid type.
+
+00:24:30 And then the last one is just awful.
+
+00:24:32 Just dot has, as a, two equals B as the parameter to has multiplied by syntactically bracket valid.
+
+00:24:41 These are, this is a nightmare, but it parses fine.
+
+00:24:45 So.
+
+00:24:46 Crazy.
+
+00:24:47 Yeah.
+
+00:24:48 Your editor might not like it.
+
+00:24:49 My pie might not like it.
+
+00:24:51 Yeah.
+
+00:24:51 Wow.
+
+00:24:53 But, but there, there, there is some discussion of things that might be useful about this.
+
+00:24:58 Like if you're really not using data type annotations, but you want to use data classes, you perhaps want to put some strings in there as the type to declare as a comment for what the thing is instead of, you know, I don't know.
+
+00:25:13 This is bad advice.
+
+00:25:14 Don't follow this, but it's fun.
+
+00:25:16 It does break some conceptions that people might have about data classes.
+
+00:25:22 Unlike say Pydantic, where this stuff matters.
+
+00:25:25 You're like data classes, but apparently validated.
+
+00:25:28 Yeah.
+
+00:25:28 And apparently this, so this was apparently popular or enough.
+
+00:25:32 This was written last year.
+
+00:25:34 And if you want to try to do something similar to data classes where, or similar to adders where you have like atrib or something, apparently there's this other, you can say a typeless, a typeless data class.
+
+00:25:48 And you can just say it's a field and, and get around it.
+
+00:25:52 And this is a, this is available in a IPI package.
+
+00:25:56 Yeah.
+
+00:25:57 Okay, cool.
+
+00:25:57 Cool.
+
+00:25:58 Typeless data classes.
+
+00:25:59 Fun.
+
+00:25:59 All right.
+
+00:26:02 Well, is that all of our topics, Brian?
+
+00:26:04 I think it is.
+
+00:26:05 I don't have any extras either.
+
+00:26:07 Do you have any extras for us?
+
+00:26:09 I have two.
+
+00:26:10 Let's see.
+
+00:26:11 What have I got going on here?
+
+00:26:12 So my notes in the show, show notes, my comment is the last pass story just keeps getting worse.
+
+00:26:19 What I have on the screen here, what I link to does not fully communicate the degree to which it has gotten worse.
+
+00:26:25 So keep that in mind.
+
+00:26:26 With last pass, it turns out that someone, guess what, broke into the GitHub repository of a developer sometime last year, like November.
+
+00:26:34 They then use that access to further their access and eventually got the ability to copy every single customer's user's last pass encrypted vault, which sounds terrifying.
+
+00:26:46 It shouldn't be, but it does because that's theoretically encrypted with your big, long, not reused password.
+
+00:26:55 That's a big if, but it should be right.
+
+00:26:56 Then it probably should have some kind of secret key type of thing like one password.
+
+00:27:02 So even if my password was the letter A for one password, it's still 27 characters from the person of this perspective.
+
+00:27:08 Last pass doesn't have that.
+
+00:27:09 It's just the letter A.
+
+00:27:10 So that's not ideal.
+
+00:27:12 There's some posts like, oh, well, don't worry.
+
+00:27:13 It's going to take like a hundred years to decrypt this.
+
+00:27:15 If, if, big if, that would be if they had the latest settings, which are like if I just created a new account and it used like a hundred thousand iterations of folding the password and other things about how long the password has to be.
+
+00:27:29 But here's the getting worse part.
+
+00:27:31 The older versions didn't enforce that and they didn't use password folding instead of using a hundred thousand or a million iterations.
+
+00:27:39 They used one.
+
+00:27:40 So instead of taking a hundred years or whatever it is to decrypt it with a regular sort of cracking GPU system, it takes about 25 seconds to crack the password.
+
+00:27:49 And those passwords are versioned and changed in this way, depending on when you last use them over time.
+
+00:27:56 So if you created a password 10 years ago, but then changed the settings, I don't think it goes back.
+
+00:28:00 Not a hundred percent sure, but I think it's still, you can have historical older passwords in your vault that are like that.
+
+00:28:06 On top of that, it turns out that things like the URL of where that password belongs to and your email address were stored in plain text.
+
+00:28:14 Not true with Bitwarden, not true with one password, but with LastPass stored in plain text.
+
+00:28:20 Well, it's not plain text.
+
+00:28:21 It's base 64 encoded, but we all know what that means.
+
+00:28:25 It's just not readable by humans, but that's plain text.
+
+00:28:27 So, and when was it last accessed?
+
+00:28:29 So you can do things like, I want to go to the vault and see who has accessed some shady site, like who has accessed Tinder, but also seems to be married.
+
+00:28:38 Can I blackmail that person without even figuring out what their password is?
+
+00:28:41 Just say, look, that's a little shady.
+
+00:28:43 I'm going to tell your wife about your Tinder account.
+
+00:28:44 You know, so, I mean, there's all sorts of really bad things.
+
+00:28:47 Plus, I can see that some of those passwords are going to my bank with a password folding of one or 500 or 5,000, which I can just break straight away.
+
+00:28:57 So you can use the unencrypted bits to target which ones you want to go after.
+
+00:29:02 It's really bad.
+
+00:29:03 So just PSA, if you use LastPass, change your passwords.
+
+00:29:07 Yeah.
+
+00:29:07 Period.
+
+00:29:08 Because this is out there and it's in plain text, except for the password.
+
+00:29:13 Not ideal.
+
+00:29:15 Okay.
+
+00:29:15 So anyway, I figured that was bad enough.
+
+00:29:17 I wanted to kind of point out, I know because a lot of people are like, don't worry.
+
+00:29:22 It's super encrypted.
+
+00:29:23 Like, sometimes.
+
+00:29:24 Yeah.
+
+00:29:26 But who would actually do it for 25 seconds?
+
+00:29:28 I know.
+
+00:29:29 Come on.
+
+00:29:30 I mean, if it just said, you know, like bank of America account dot com slash log on.
+
+00:29:35 I don't know.
+
+00:29:36 That were 25 seconds.
+
+00:29:37 Probably.
+
+00:29:38 Yeah.
+
+00:29:38 I mean, banks are like kind of a unique case because they often have like a 2FA or, you know, what's your cat's favorite toy's name or whatever you got to answer.
+
+00:29:46 But like there's many places that don't have like some kind of second check like that.
+
+00:29:50 And my bank even has the feature of even if I tell them to remember my device, they won't.
+
+00:29:56 So I have to 2FA every single time.
+
+00:29:59 I know.
+
+00:30:00 It drives me nuts.
+
+00:30:01 It drives me nuts.
+
+00:30:02 All right.
+
+00:30:03 The other thing is I woke up this morning with a couple thousand dollars.
+
+00:30:08 And unfortunately, by the time of the recording, I no longer have that money.
+
+00:30:11 But I have a new Mac Mini coming, Brian.
+
+00:30:13 I want one of these.
+
+00:30:15 They just announced a new Mac Mini M2 Pro and the new MacBook Air Pros and Maxes and all that.
+
+00:30:22 So we've been waiting.
+
+00:30:23 It says 600 bucks.
+
+00:30:25 Where are you down 2,000?
+
+00:30:27 Well, let us go.
+
+00:30:28 Let us go on the path.
+
+00:30:30 So 600 bucks is the M2 version, which is basically the upgrade of what I have now, which is awesome.
+
+00:30:36 But what I want is the M2 Pro for all the video editing, which is like 1,300 to start.
+
+00:30:41 But then you're like, you know, I really could use a little more RAM.
+
+00:30:46 And now it's that.
+
+00:30:47 Then with all the video and podcast stuff, I need some more storage.
+
+00:30:51 And all of a sudden, it's like, oh, I'll just sell my car.
+
+00:30:53 I'll get a Mini.
+
+00:30:53 That'll be great.
+
+00:30:55 But anyway, I'm very excited about this coming.
+
+00:30:56 I'll let people know what I think when I get it.
+
+00:30:58 But I'm sure it'll be lovely.
+
+00:30:59 Hmm.
+
+00:30:59 Cooper Mini or Mac Mini.
+
+00:31:01 They're about the same price.
+
+00:31:02 Exactly.
+
+00:31:02 One's made in Cupertino by Apple.
+
+00:31:07 The other one is Cooper made by BMW in London or England somewhere.
+
+00:31:11 All right.
+
+00:31:12 That's it for extras, though.
+
+00:31:13 I got some jokes if you want to joke.
+
+00:31:14 Yeah.
+
+00:31:15 Let's do something funny.
+
+00:31:16 Yeah.
+
+00:31:17 All right.
+
+00:31:18 So this one's about debugging.
+
+00:31:19 And have you ever done like, I've got a section and I need a breakpoint here, but there's
+
+00:31:25 not a great way to put the breakpoint there.
+
+00:31:28 Or you might say, I would say, if, you know, user equals such and such, or this value is in
+
+00:31:34 the range of what I expected, then I want it to break.
+
+00:31:37 So you might say, if something created just a variable, set a value and give it a breakpoint.
+
+00:31:41 Well, this is kind of about the philosophical wonderings of this situation here.
+
+00:31:47 So there's a variable.
+
+00:31:48 It just says var a equals zero JavaScript, I guess, or it could be C#, but it has
+
+00:31:53 a little squiggly, which is clearly like unused variable, right?
+
+00:31:56 Yes.
+
+00:31:57 And the variable asks, dear programmer, what is my purpose?
+
+00:32:00 And then the programmer says, you're a dummy variable to place a breakpoint on.
+
+00:32:06 Oh my God.
+
+00:32:08 Isn't that crazy?
+
+00:32:11 That's pretty funny.
+
+00:32:12 Yeah.
+
+00:32:12 The existential despair of the dummy variable.
+
+00:32:16 But it's short-lived, but it can be quite helpful and loved.
+
+00:32:20 So don't let it get you down dummy variable.
+
+00:32:23 Yeah.
+
+00:32:23 Or it could have been used once before and then somebody refactored the code and forgot
+
+00:32:28 to delete the declaration.
+
+00:32:30 Exactly.
+
+00:32:30 Then you live a long time.
+
+00:32:32 Yeah.
+
+00:32:33 All right.
+
+00:32:33 Well, that's it.
+
+00:32:33 All right.
+
+00:32:34 That was funny.
+
+00:32:35 So thanks a lot.
+
+00:32:36 And thanks for joining me again today.
+
+00:32:38 And thanks, of course, to Microsoft Founders Hub to sponsor us.
+
+00:32:41 You bet.
+
+00:32:42 Thanks everyone for listening.
 

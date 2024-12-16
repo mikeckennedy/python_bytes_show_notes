@@ -1,5388 +1,1937 @@
+WEBVTT
 
-00:00:00.000 --> 00:00:01.960
-Hey there, thanks for listening.
+00:00:00.001 --> 00:00:03.880
+Hey there, thanks for listening. Before we jump into this episode, I just want to remind you
 
+00:00:03.880 --> 00:00:09.680
+that this episode is brought to you by us over at Talk Python Training and Brian through his pytest
 
-00:00:01.960 --> 00:00:05.220
-Before we jump into this episode, I just want to remind you that this episode is brought
+00:00:09.680 --> 00:00:14.940
+book. So if you want to get hands-on and learn something with Python, be sure to consider our
 
+00:00:14.940 --> 00:00:21.720
+courses over at Talk Python Training. Visit them via pythonbytes.fm/courses. And if you're
 
-00:00:05.220 --> 00:00:10.360
-to you by us over at TalkBython Training, and Brian through his pytest book.
+00:00:21.720 --> 00:00:27.320
+looking to do testing and get better with pytest, check out Brian's book at pythonbytes.fm slash
 
+00:00:27.320 --> 00:00:32.620
+pytest. Enjoy the episode. Hello and welcome to Python Bytes, where we deliver Python news and
 
-00:00:10.360 --> 00:00:15.460
-So if you want to get hands on and learn something with Python, be sure to consider our courses
+00:00:32.620 --> 00:00:39.840
+headlines directly to your earbuds. This is episode 271. Really? Wow. Recorded February 16th,
 
+00:00:39.840 --> 00:00:46.280
+2022. I'm Brian Okken. Hi, I'm Michael Kennedy. And I'm Steve Dower. Welcome, Steve. So who's
 
-00:00:15.460 --> 00:00:17.320
-over at TalkBython Training.
+00:00:46.280 --> 00:00:52.740
+Steve Dower? Who's Steve Dower? Yeah. Number of things. Probably most interesting to this audience
 
+00:00:52.740 --> 00:00:57.300
+is I'm a core developer on CPython, one of our Windows experts. So I spend a lot of my time
 
-00:00:17.320 --> 00:00:21.040
-Visit them via pythonbytes.fm/courses.
+00:00:57.300 --> 00:01:04.500
+focusing on making Python run better on Windows. I also work at Microsoft, where I also spend a lot
 
+00:01:04.500 --> 00:01:09.500
+of my time making Python run better on Windows. So I'm kind of a bit of a one-trick pony, I guess.
 
-00:00:21.040 --> 00:00:25.420
-And if you're looking to do testing and get better with pytest, check out Brian's book
+00:01:09.500 --> 00:01:15.540
+But I feel like it's good work and it helps a lot of people. So if I have a problem with Python on
 
+00:01:15.540 --> 00:01:22.060
+Windows, it's your fault. If there's solutions for Python on Windows, then it's my fault. I'll let
 
-00:00:25.420 --> 00:00:28.440
-at pythonbytes.fm/pytest.
+00:01:22.060 --> 00:01:30.140
+other people own the problems. So if I go to the Windows store, I can now install Python from there.
 
+00:01:30.140 --> 00:01:34.400
+And you were part of that, right? Oh, I should have had that up on screen, shouldn't I?
 
-00:00:28.440 --> 00:00:29.440
-Enjoy the episode.
+00:01:34.400 --> 00:01:41.420
+Yeah, that was actually... The request came from people within Microsoft were like,
 
+00:01:41.480 --> 00:01:47.140
+hey, why can't we get Python up on the store? And my response to all of these is like, well,
 
-00:00:29.440 --> 00:00:33.480
-Hello and welcome to Python Bytes, where we deliver Python news and headlines directly
+00:01:47.140 --> 00:01:52.060
+if the community is willing to do it, which is half me and is half the people who would have to take over
 
+00:01:52.060 --> 00:01:58.320
+if I stopped doing it, then yeah, we'll go ahead and do it. And so I got actual work time for that.
 
-00:00:33.480 --> 00:00:34.480
-to your earbuds.
+00:01:58.320 --> 00:02:03.560
+That was a contribution from Microsoft for that one. But yeah, the community was on board and
 
+00:02:03.560 --> 00:02:10.360
+it's going really well. That's also the one that we tied into the default Python.exe that's on every
 
-00:00:34.480 --> 00:00:36.040
-This is episode 271.
+00:02:10.360 --> 00:02:14.980
+Windows machine now. So if you go to a brand new machine and just type in Python, you'll get straight
 
+00:02:14.980 --> 00:02:22.420
+to the PSF's Python. Microsoft is not doing it anymore. We just contributed the change. And now I
 
-00:00:36.040 --> 00:00:37.040
-Really?
+00:02:22.420 --> 00:02:27.980
+switch hat and do it with the other hat on. So it's real Python, right? It's exactly the same as what you
 
+00:02:27.980 --> 00:02:32.640
+get from python.org. It's just delivered, you know, easily fast install automatic updates.
 
-00:00:37.040 --> 00:00:38.040
-Wow.
+00:02:32.640 --> 00:02:40.620
+And a couple of edge issues that we're working on bringing down. So yeah, fantastic.
 
+00:02:40.620 --> 00:02:45.360
+Automatic update. I know this wasn't one of the topics, but now I think I might have to rethink
 
-00:00:38.040 --> 00:00:41.080
-Recorded February 16th, 2022.
+00:02:45.360 --> 00:02:50.600
+how I'm installing Python on my desktop at work. So that's a cool idea.
 
+00:02:50.600 --> 00:02:57.360
+I have only had store installs on my own machines since 3.8. I think I haven't,
 
-00:00:41.080 --> 00:00:42.080
-I'm Brian Okken.
+00:02:57.360 --> 00:03:01.720
+apart from testing, I haven't actually used the regular installer on my own.
 
+00:03:01.720 --> 00:03:03.820
+But I mean, you, of course that makes sense, but.
 
-00:00:42.080 --> 00:00:43.480
-Hi, I'm Michael Kennedy.
+00:03:03.820 --> 00:03:08.200
+I mean, you know, it's always testing, right? Every time I'm using Python, I'm testing.
 
+00:03:08.200 --> 00:03:08.840
+So.
 
-00:00:43.480 --> 00:00:44.480
-And I'm Steve Dower.
+00:03:08.840 --> 00:03:13.740
+Chris May out there says, thank you so much for making my work life in Windows easier.
 
+00:03:13.740 --> 00:03:14.460
+Anytime.
 
-00:00:44.480 --> 00:00:45.480
-Welcome, Steve.
+00:03:14.460 --> 00:03:18.040
+Yeah. Well, Michael, why don't you kick us off with a story or topic?
 
+00:03:18.040 --> 00:03:25.040
+I have got a good one. So I'm a big fan of FastAPI and FastAPI being built on Starlet.
 
-00:00:45.480 --> 00:00:46.480
-So, who's Steve Dower?
+00:03:25.200 --> 00:03:30.560
+So by the transitive property, I'm also a fan of Starlet. And there's this thing I want to cover
 
+00:03:30.560 --> 00:03:38.960
+called FastAPI events. So when a request comes in to a particular API endpoint, or if you convert it
 
-00:00:46.480 --> 00:00:47.480
-Who's Steve Dower?
+00:03:38.960 --> 00:03:44.260
+over to a web app, to a web page sort of request or something, you might want to dispatch that out to
 
+00:03:44.260 --> 00:03:49.440
+say like WebSocket listeners or something along those lines. So there's this cool project called FastAPI
 
-00:00:47.480 --> 00:00:48.480
+00:03:49.440 --> 00:03:54.340
+events. It's pretty small and new. So I'm going to try to give it some visibility. It's only got 36 stars.
+
+00:03:54.340 --> 00:03:59.780
+It's pretty new, but the idea is that you can go through and basically create this middleware
+
+00:03:59.780 --> 00:04:05.400
+handler that will let you say when a request comes in, here's the way when an event is raised,
+
+00:04:05.400 --> 00:04:09.880
+here's the thing that's going to handle it. And then in some API endpoint, you can say dispatch,
+
+00:04:09.880 --> 00:04:15.340
+give the event a name and some dictionary data to be passed along. I suppose it doesn't have to be
+
+00:04:15.340 --> 00:04:19.640
+a dictionary. It could be whatever. And then in other parts of your code and say, I want to just hear
+
+00:04:19.640 --> 00:04:26.920
+about this event that happens no matter what API endpoint received it, no matter where in like how
+
+00:04:26.920 --> 00:04:33.820
+deep down in the code it was received and so on. So then way down here, you just put a role handler
+
+00:04:33.820 --> 00:04:38.600
+decorator on there. You say, I want to capture all the events that start with some substring like cat
+
+00:04:38.600 --> 00:04:45.200
+star for like category, whatever, or this one is actually literally about cats. And then you can just go
+
+00:04:45.200 --> 00:04:50.740
+through and write these functions that will then handle that. And you can also pass them off to
+
+00:04:50.740 --> 00:04:57.260
+queues like you can use the SQS, the simple queuing service from AWS, I believe that is, as the endpoint
+
+00:04:57.260 --> 00:05:01.280
+instead of it just being your app. So if you've got like lots of scale out and stuff like that.
+
+00:05:01.280 --> 00:05:06.080
+Wow. Of course. So just like a neat way to do logging or even distributed logging, I guess,
+
+00:05:06.080 --> 00:05:08.400
+if you've got forwarding handlers in there, you can just...
+
+00:05:08.400 --> 00:05:14.220
+Yeah. Yeah. It seems like it, right? Like, or if you want to sort of build up, like, here's the
+
+00:05:14.220 --> 00:05:18.580
+request transaction and here we're at this stage, or like you could maybe do like visibility into
+
+00:05:18.580 --> 00:05:21.880
+long running workflows with this kind of thing or something along those lines, I would think.
+
+00:05:21.880 --> 00:05:27.320
+So yeah, there's also an echo handler for debugging. I kind of like that. Like if I just need to see what
+
+00:05:27.320 --> 00:05:31.620
+is happening, it'll just print whatever's happening. It'll just start printing out all the behaviors that
+
+00:05:31.620 --> 00:05:32.400
+you're logging. So...
+
+00:05:32.400 --> 00:05:36.500
+And then when you want to stop doing that, you just take away the handler and you don't have to
+
+00:05:36.500 --> 00:05:41.380
+search the entire code base for print and find everywhere that you added it in for debugging.
+
+00:05:41.380 --> 00:05:50.320
+Exactly. Alvaro out there says this looks similar to Django events. Yeah, I suspect. I suspect it is
+
+00:05:50.320 --> 00:05:55.620
+similar. Yeah. Anyway, pretty short and simple, but if you're looking for a way to sort of
+
+00:05:55.620 --> 00:06:01.280
+put notifications in a structured way into a FastAPI app, well, here you go.
+
+00:06:01.280 --> 00:06:04.720
+Oh, I'm thinking of a whole bunch of more abusive ways to use this.
+
+00:06:04.720 --> 00:06:11.180
+Yeah, you can write some really impressive spaghetti code with this.
+
+00:06:11.180 --> 00:06:14.840
+Yeah, I'm sure that you can. Get the cloud involved in everything.
+
+00:06:14.840 --> 00:06:22.060
+Yeah. So let's switch gears a little bit and talk about testing. Imagine that. I've got a testing topic.
+
+00:06:23.220 --> 00:06:30.120
+So this is... I'm pretty excited. This is... I've been asked a lot about testing pipelines,
+
+00:06:30.120 --> 00:06:35.980
+testing data science stuff, and I'm not... That's not something I do day to day. So I'm really glad
+
+00:06:35.980 --> 00:06:41.600
+to find people talking about it. So this... We've got an article from Peter Baumgartner.
+
+00:06:42.600 --> 00:06:48.760
+Ways to use testing... Ways I use testing as a data scientist. And I actually just really love this
+
+00:06:48.760 --> 00:06:56.040
+article. It's great. To start with, he starts off with what he uses testing for. As a data scientist,
+
+00:06:56.040 --> 00:07:03.580
+he uses testing to make sure things work, to document his understanding, and to prevent future
+
+00:07:03.580 --> 00:07:10.420
+errors. Well, that seems straightforward. But the reason why he wrote this up is apparently because
+
+00:07:10.420 --> 00:07:15.580
+there's a lot of software... There's a lot of testing stuff out on the web, but it's not... It's like geared
+
+00:07:15.580 --> 00:07:21.860
+towards test engineers or software developers. And he's like, I'm not a software developer. I'm a...
+
+00:07:21.860 --> 00:07:27.060
+And, you know, I'm doing something else. I'm doing analysis. I'm not a software person, even though... Yeah,
+
+00:07:27.060 --> 00:07:36.900
+you are. But to write this up in a context where data people might understand it better. For instance,
+
+00:07:36.900 --> 00:07:43.460
+he doesn't even start off with writing... Having written tests. His analysis is like, if you're doing
+
+00:07:43.460 --> 00:07:52.020
+notebooks or other code, just use a cert a lot. So he's using a cert all over the place, including... He says,
+
+00:07:52.020 --> 00:07:59.140
+"Where do you have? Use it for as many intermediate calculations and processes as you can, as it makes
+
+00:07:59.140 --> 00:08:07.780
+sense." Because... And doing things like checking obvious stuff. Like he's got an example of a table
+
+00:08:07.780 --> 00:08:11.940
+count where he's counting up all the yeses. Well, you can do a little bit of math just to make sure
+
+00:08:11.940 --> 00:08:17.060
+the math works. So like all the yeses and nos and missings should all add up to the same count. Go
+
+00:08:17.060 --> 00:08:22.420
+ahead and throw an assert in there because sometimes it doesn't. And in this example, he said that he
+
+00:08:22.420 --> 00:08:29.780
+actually caught an error because he was looking at two different data frames. So they really weren't,
+
+00:08:29.780 --> 00:08:35.300
+they didn't add up to the same. So you can catch things like that. So just double checking yourself on
+
+00:08:35.300 --> 00:08:43.620
+things as you go wrong away, go as you're developing. One of the cool quotes he has in here is like,
+
+00:08:43.620 --> 00:08:50.100
+as he has a habit of when he's using notebooks to whenever he's visually inspecting the output,
+
+00:08:50.100 --> 00:08:56.660
+if you're visually looking at the data that comes out, maybe write an assert statement to do that
+
+00:08:56.660 --> 00:09:04.020
+analysis so that it's always checked. And this is a cool use of putting asserts in notebooks. I like this
+
+00:09:04.020 --> 00:09:12.340
+idea. The article goes on, it's pretty extensive, talking about checking the data, using hypothesis
+
+00:09:12.340 --> 00:09:20.260
+to, well, not the data, not the data at this part, but your assumptions around the data. So using hypothesis
+
+00:09:20.260 --> 00:09:26.100
+to check your assumptions and hypothesis will think, show you things that maybe you didn't consider like
+
+00:09:26.660 --> 00:09:32.820
+NANDs, are you handling those correctly? Empty series or empty data structures that are going into your
+
+00:09:32.820 --> 00:09:39.540
+into your code? Are you handling those? If I mean, hypothesis does have take some handholding,
+
+00:09:39.540 --> 00:09:46.100
+but it does make you think about really what is the shape of the data going in? And do you, can you,
+
+00:09:46.100 --> 00:09:51.300
+do you need to limit it? What hypothesis is looking at, or do you need to change your code to handle more things?
+
+00:09:51.300 --> 00:09:58.020
+Hypothesis is great. I've used that for a couple of, you know, parsing projects or combining projects.
+
+00:09:58.020 --> 00:10:04.660
+I spent way too long adding all the strategies to be able to test a URL parser that I was calling into.
+
+00:10:04.660 --> 00:10:11.060
+But it's fantastic for finding kind of things that you would not have thought of.
+
+00:10:11.060 --> 00:10:16.740
+Yeah. I mean, it's finding things, but it's also, and it does make, yeah, that aspect of it seems like
+
+00:10:16.740 --> 00:10:22.740
+the point of it. But the real value I get on a hypothesis is thinking, making sure I really
+
+00:10:22.740 --> 00:10:28.660
+understand the data that's going to come in and thinking through those. It goes on to talk about
+
+00:10:28.660 --> 00:10:33.300
+actually testing your data using things like Pandera, which I wasn't familiar with, and another
+
+00:10:33.300 --> 00:10:39.380
+package called great expectations to look at like putting schemas around the data coming in and making
+
+00:10:39.380 --> 00:10:45.380
+sure that the data always matches a schema. Going on to talk about a range act assert and using
+
+00:10:45.380 --> 00:10:51.140
+pytest. pytest comes in with, he's only really writing formal tests when he's writing libraries
+
+00:10:51.140 --> 00:10:57.140
+for other people. But all these other packages to be able to test with data science, I think this is a
+
+00:10:57.140 --> 00:10:59.220
+great addition to the data science community.
+
+00:10:59.220 --> 00:11:05.060
+Yeah. Alvaro talks about how this is often referred to as defensive programming. And then,
+
+00:11:05.060 --> 00:11:11.460
+you know, I feel for him a little bit, says that work, we use this with our Fortran code. So there's that.
+
+00:11:11.460 --> 00:11:16.420
+But I do think this is a really interesting way of thinking about defensive code. You know, I just,
+
+00:11:16.420 --> 00:11:20.420
+I think of writing defensive code as like, oh, I'm gonna have a bunch of is statements to verify this
+
+00:11:20.420 --> 00:11:25.860
+thing's not none or verify that this is the right type and that it has like a reasonable value and raise
+
+00:11:25.860 --> 00:11:31.460
+exceptions. I haven't really thought so much of it for like notebooks. So that's pretty interesting.
+
+00:11:31.460 --> 00:11:36.820
+And one of the neat things about like, if you're actually putting a search in your code, you can actually, you can write
+
+00:11:36.820 --> 00:11:43.460
+tests against your code that don't even have any certs in them. And because the search will happen
+
+00:11:43.460 --> 00:11:47.140
+within your code and the test will still fail and catch it. So it's kind of cool.
+
+00:11:47.140 --> 00:11:49.060
+Yeah. Yeah. Very cool. Good stuff.
+
+00:11:49.060 --> 00:11:49.620
 Yeah.
 
+00:11:49.620 --> 00:11:52.980
+Steve, I am super excited to hear about what you're,
 
-00:00:48.480 --> 00:00:51.480
-A number of things.
+00:11:52.980 --> 00:11:58.420
+you got coming up because this is brand new being a core developer. I feel it is appropriate that you
 
+00:11:58.420 --> 00:11:58.900
+break this.
 
-00:00:51.480 --> 00:00:55.440
-Probably most interesting to this audience is I'm a core developer on CPython, one of
+00:11:58.900 --> 00:12:03.700
+I mean, I'm not going to lie when it came to, you know, what am I going to talk about? Okay.
 
+00:12:03.700 --> 00:12:09.780
+What's the most recently accepted PEP that was somewhat controversial? And I think just as you
 
-00:00:55.440 --> 00:00:56.440
-our Windows experts.
+00:12:09.780 --> 00:12:16.420
+kind of look down to the section on rejected ideas, which is considerably longer than the accepted ideas,
 
+00:12:16.420 --> 00:12:24.580
+you can probably get a bit of a sense for just what went on with, with exception groups. And I know,
 
-00:00:56.440 --> 00:01:00.600
-So I spend a lot of my time focusing on making Python run better on Windows.
+00:12:24.580 --> 00:12:28.340
+Michael, you've just had a conversation, you've learned all about them. So you can, you can take
 
+00:12:28.340 --> 00:12:33.220
+over when I run out here, but I'll share my thoughts with it, but yeah, go ahead. I'd love
 
-00:01:00.600 --> 00:01:03.240
-I also work on Microsoft, work at Microsoft,
+00:12:33.220 --> 00:12:36.740
+to hear about it. This is sort of inspired by trio, right?
 
+00:12:36.740 --> 00:12:40.900
+The, the end goal kind of is, so this is an interesting PEP and we've got a few of these on
 
-00:01:03.240 --> 00:01:06.340
-where I also spend a lot of my time making Python run better on Windows.
+00:12:40.900 --> 00:12:46.340
+the go at the moment. It's kind of like a stepping stone towards a better programming model or a stepping
 
+00:12:46.340 --> 00:12:53.860
+stone towards better libraries. So it's, it's something that I think in, in my opinion, very few kind of
 
-00:01:06.340 --> 00:01:09.960
-So I'm kind of a bit of a one trick pony, I guess, but it's,
+00:12:53.860 --> 00:12:59.460
+application developers, kind of the, the last developer in the chain is like, I'm often not
 
+00:12:59.460 --> 00:13:04.340
+going to use them and they're not going to need them. But as you go further in towards the lower
 
-00:01:09.960 --> 00:01:13.640
-I feel like it's good work and it helps a lot of people. So,
+00:13:04.340 --> 00:13:09.620
+levels of libraries, especially people writing async schedulers are going to find incredible value out
 
+00:13:09.620 --> 00:13:15.460
+of them. Essentially what the idea is, is that when you're running multiple tasks in parallel,
 
-00:01:13.640 --> 00:01:16.480
-So if I have a problem with Python on Windows, it's your fault.
+00:13:15.460 --> 00:13:21.780
+if some of them fail, we don't currently have a, have a neat way to capture the exceptions from all
 
+00:13:21.780 --> 00:13:25.700
+of the ones that failed. There, there's some approaches that would be like, wait for all of
 
-00:01:16.480 --> 00:01:21.280
-I, if there's solutions for Python on Windows, then it's, it's my fault.
+00:13:25.700 --> 00:13:30.740
+them to complete and wrap it in a list. And then you get some exception that contains a list of exceptions,
 
+00:13:30.740 --> 00:13:36.420
+but that's lost a whole lot of context. you can get just whichever exception happens first,
 
-00:01:21.280 --> 00:01:23.600
-I'll let other people own the problems.
+00:13:36.420 --> 00:13:40.900
+but then you lose all the other exceptions and there's just been no real way to handle it. So an
 
+00:13:40.900 --> 00:13:46.660
+exception group essentially does bundle up all the exceptions, internally in some way. But the
 
-00:01:25.240 --> 00:01:30.240
-So if I go to the Windows store, I can now install Python from there.
+00:13:46.660 --> 00:13:51.380
+really interesting thing is the except star syntax, which I'm going to have to scroll a long way down
 
+00:13:51.380 --> 00:13:59.220
+to find where that comes up. but, but this is really clever because if you're in that situation where
 
-00:01:30.240 --> 00:01:32.420
-And you were you were part of that, right?
+00:13:59.780 --> 00:14:04.980
+say you're running 10 parallel processes, so here's kind of the first example of it, then
 
+00:14:04.980 --> 00:14:11.140
+exceptions are no longer control flow at this level. Cause if you're, if you've run 10 things and you're
 
-00:01:32.420 --> 00:01:34.920
-Oh, I should I should have had that up on screen, shouldn't I?
+00:14:11.140 --> 00:14:15.220
+waiting for 10 things to complete, you're not actually doing control flow with the exceptions anymore.
 
+00:14:15.220 --> 00:14:20.660
+What you're doing is handling the exception, but then the control flow is going to go back to where it
 
-00:01:34.920 --> 00:01:37.620
-Yeah, that was that that was actually
+00:14:20.660 --> 00:14:25.780
+was anyway, because you, because you, you're going to, you know, be doing something different. So for
 
+00:14:25.780 --> 00:14:30.980
+example, if a file doesn't open, then you, you would want to, you know, do something different,
 
-00:01:37.620 --> 00:01:42.120
-the request came from people within Microsoft to like, hey, why can't
+00:14:30.980 --> 00:14:36.260
+right? You're going to stop going on and trying to read from the file. but if you've tried to open
 
+00:14:36.260 --> 00:14:41.940
+10 files and three of them failed, you at the outside level. So at the end, at the inner level
 
-00:01:42.120 --> 00:01:45.280
-why can't we get Python up on the store to it?
+00:14:41.940 --> 00:14:45.380
+for each file that may have failed, you'll do something different at the outer level.
 
+00:14:45.380 --> 00:14:50.020
+All you're really going to do is say, Hey, this task failed because a file couldn't be opened.
 
-00:01:45.280 --> 00:01:48.520
-And my response to all of these is like, well, if the community is willing to do it,
+00:14:50.020 --> 00:14:54.660
+And maybe you do something else, but it's at the outside level. So except star takes that exception
 
+00:14:54.660 --> 00:14:59.220
+group and it's going to give you a chance to handle each exception, essentially on its own.
 
-00:01:48.520 --> 00:01:52.080
-which is half me and is half the people who would have to take over
+00:14:59.220 --> 00:15:04.820
+It will group them together. So in this example, if you know, five tasks report spam error,
 
+00:15:04.820 --> 00:15:11.220
+then you'll get into this except spam error block with all five of them at once. which is just
 
-00:01:52.080 --> 00:01:55.320
-If I stop doing it, then yeah, we'll go ahead and do it.
+00:15:11.220 --> 00:15:16.580
+what is that a list of spam exception, spam error exceptions, something like, or a tuple, something
 
+00:15:16.580 --> 00:15:22.020
+like that. I think it's a tuple. I think with the, the stars in time, I believe, something
 
-00:01:55.320 --> 00:01:58.360
-And so I got actual work time for that.
+00:15:22.020 --> 00:15:27.300
+iterable basically. Yeah. Yeah. so something you can iterate over to see the exceptions, but
 
+00:15:27.300 --> 00:15:34.580
+it's really just, you know, this happened at some point and you process it. And if the group actually
 
-00:01:58.360 --> 00:02:01.560
-That was a contribution from Microsoft for that one.
+00:15:34.580 --> 00:15:39.380
+contains multiple types of exceptions, then each handler that matches is going to be called for all the
 
+00:15:39.380 --> 00:15:45.780
+exceptions that match that. So you could have this tri block raise an exception group that has some spam
 
-00:02:01.560 --> 00:02:03.160
-But yeah, the community was on board
+00:15:45.780 --> 00:15:51.060
+errors. It has some full errors. It has some bar errors and all three except, except star blocks are
 
+00:15:51.060 --> 00:15:56.500
+going to get called with the exceptions that match those, which is a bit, it's, it's definitely going
 
-00:02:03.160 --> 00:02:06.000
-and it's going really well.
+00:15:56.500 --> 00:16:01.300
+to confuse a lot of people. It confuses me, which is, you know, why I was keen to actually spend
 
+00:16:01.300 --> 00:16:07.220
+a bit more time digging into it, and trying to figure out what's really valuable about this.
 
-00:02:06.000 --> 00:02:09.680
-That's also the one that we tied into the default Python.exe
+00:16:07.220 --> 00:16:12.420
+and I do think the most valuable one is really where the error is canceled error, because if for
 
+00:16:12.420 --> 00:16:17.940
+whatever reason, five of your tasks have been canceled, then you need to capture that and do
 
-00:02:09.680 --> 00:02:11.440
-that's on every Windows machine now.
+00:16:17.940 --> 00:16:22.820
+something with that outside of it. But it doesn't necessarily mean you want to throw away the five
 
+00:16:22.820 --> 00:16:30.180
+successful results. And so you do kind of want to, to keep a bit of everything going on. it's,
 
-00:02:11.440 --> 00:02:12.720
-So if you go to a brand new machine
+00:16:30.180 --> 00:16:36.180
+and like I say, it's a building block on its own. This isn't enough to do anything new and useful.
 
+00:16:36.180 --> 00:16:41.060
+The next thing that comes along is task groups and that's, you know, being worked on by,
 
-00:02:12.720 --> 00:02:14.260
-and just type in Python,
+00:16:41.060 --> 00:16:45.380
+uh, you know, I expect a lot of the same people who worked on exception groups because with task
 
+00:16:45.380 --> 00:16:50.900
+groups, now you can actually start, there we go. Guido has just merged task groups. Excellent.
 
-00:02:14.260 --> 00:02:18.180
-you'll get straight to the PSF's Python.
+00:16:50.900 --> 00:16:58.500
+Uh, then now you can actually, like run the task group. And if the group raises any errors,
 
+00:16:58.500 --> 00:17:04.740
+then you'll catch them through an exception group. And so that enables a whole lot of, new uses
 
-00:02:18.180 --> 00:02:19.580
-Microsoft is not doing it anymore.
+00:17:04.740 --> 00:17:10.980
+and new ways to use asyncio or just async generally, no matter the library, as you say,
 
+00:17:10.980 --> 00:17:15.220
+trios already had something like this for a while. and from their nursery thing.
 
-00:02:19.580 --> 00:02:20.720
-We just contributed the change
+00:17:15.220 --> 00:17:21.940
+Yeah. And so that is now being standardized. So libraries can kind of share their implementations
 
+00:17:21.940 --> 00:17:28.180
+and work together on it. So one of the reasons you need this is if I start two web requests and
 
-00:02:20.720 --> 00:02:24.160
-and now I switch hat and do it with the other hat on.
+00:17:28.180 --> 00:17:33.620
+three database queries, and then I go to wait on them, you know, then the, if, if several of them
 
+00:17:33.620 --> 00:17:40.740
+fail, the, the error state captured in totality is a, a tree of errors that represent, well, this,
 
-00:02:24.160 --> 00:02:26.920
-So, you know, it's real Python, right?
+00:17:40.740 --> 00:17:45.060
+this, this, this task started this other task, which then had this error, this other one.
 
+00:17:45.060 --> 00:17:48.980
+Right. So you need some way to deal with a, a group of errors that could happen
 
-00:02:26.920 --> 00:02:28.960
-It's exactly the same as what you get from python.org.
+00:17:48.980 --> 00:17:52.500
+kind of all at once. Right. And one of these task groups that gets kicked off.
 
+00:17:52.500 --> 00:17:52.900
+Yeah.
 
-00:02:28.960 --> 00:02:30.520
-It's just delivered, you know,
+00:17:52.900 --> 00:17:58.580
+Yeah. So the new task group thing is super cool. So you say async with task group as TG,
 
+00:17:58.580 --> 00:18:03.300
+and there's two things that are neat about it. One is right now, if you fire off a bunch of tasks
 
-00:02:30.520 --> 00:02:32.920
-easily fast install automatic updates
+00:18:03.300 --> 00:18:08.100
+and async and await style, they're basically unrelated. Like if one fails, that means nothing
 
+00:18:08.100 --> 00:18:11.620
+for the other, right? They're just like, well, here's a bunch of stuff that happened. And this
 
-00:02:32.920 --> 00:02:36.840
-and a couple of edge issues
+00:18:11.620 --> 00:18:16.420
+creates a relationship between them. Right. So that if one fails, I think it might not schedule new ones,
 
+00:18:16.420 --> 00:18:20.420
+something to that. Like it's brand new. I'm just seeing the tweets. So I think that that's the
 
-00:02:36.840 --> 00:02:38.680
-that we're working on bringing down.
+00:18:20.420 --> 00:18:25.780
+story. I believe that was the story of Rio. The other thing that's interesting here that in this
 
+00:18:25.780 --> 00:18:33.220
+example, which I all linked to from Yuri that he posted, he tweeted about the news was notice that
 
-00:02:38.680 --> 00:02:40.400
-So, yeah.
+00:18:33.220 --> 00:18:38.900
+the first one says task group, create task for some task, and then it awaits something that creates
 
+00:18:38.900 --> 00:18:44.660
+another task. There's nowhere where you say, store all those values into like some lists of tasks,
 
-00:02:40.400 --> 00:02:41.240
-- Fantastic.
+00:18:44.660 --> 00:18:48.580
+then go to the task and iterate them and wait for them or gather them or whatever the heck it was
 
+00:18:48.580 --> 00:18:54.340
+you had to do before. This now makes tasks fire and forget. I can say, run this, run this. And within
 
-00:02:41.240 --> 00:02:42.060
-- Automatic update.
+00:18:54.340 --> 00:19:00.500
+that, I could do more of those types of things. And then you just block at the with context manager
 
+00:19:00.500 --> 00:19:05.140
+level to wait for all the tasks to finish, which I think is a real big improvement. Because right now
 
-00:02:42.060 --> 00:02:43.400
-I know this wasn't one of the topics,
+00:19:05.140 --> 00:19:08.900
+you've got to like constantly juggle, well, I've got to return a task from this so I can go wait on it
 
+00:19:08.900 --> 00:19:12.180
+later and all those sort of oddities. And this cleans up a lot of that.
 
-00:02:43.400 --> 00:02:45.440
-but now I think I might have to rethink
+00:19:12.820 --> 00:19:17.460
+Right. And of course, being Python, I don't know exactly how the syntax works, but being Python,
 
+00:19:17.460 --> 00:19:21.940
+that TG object, the task group doesn't actually disappear at the end of the with block. So if
 
-00:02:45.440 --> 00:02:48.440
-how I'm installing Python on my desktop at work.
+00:19:21.940 --> 00:19:27.220
+that's got results stored into it, then you still have access to those and all of the information
 
+00:19:27.220 --> 00:19:30.180
+about the task group, even after you've waited for it to complete running.
 
-00:02:48.440 --> 00:02:50.800
-So that's a cool idea.
+00:19:30.180 --> 00:19:34.820
+Oh yeah, that's cool. Yeah. So I think this is a nice addition to async
 
+00:19:34.820 --> 00:19:37.620
+I/O and Python. This is cool. And apparently 3.11 is coming.
 
-00:02:50.800 --> 00:02:56.160
->> I have only had store installs on my own machines since 3.8.
-
-
-00:02:56.160 --> 00:02:58.320
-I think I haven't, apart from testing,
-
-
-00:02:58.320 --> 00:03:01.560
-I haven't actually used the regular installer on my own.
-
-
-00:03:01.560 --> 00:03:04.400
->> But I mean, you, of course, that makes sense.
-
-
-00:03:04.400 --> 00:03:06.640
->> It's always testing.
-
-
-00:03:06.640 --> 00:03:09.320
-Every time I'm using Python, I'm testing.
-
-
-00:03:09.320 --> 00:03:11.400
->> Chris May out there says,
-
-
-00:03:11.400 --> 00:03:14.000
-"Thank you so much for making my work life in Windows easier."
-
-
-00:03:14.000 --> 00:03:14.560
->> Anytime.
-
-
-00:03:14.560 --> 00:03:18.120
->> Yeah. Well, Michael, why don't you kick us off with a story or a topic?
-
-
-00:03:18.120 --> 00:03:20.680
-I have got a good one.
-
-
-00:03:20.680 --> 00:03:24.560
-So I'm a big fan of FastAPI and FastAPI being built
-
-
-00:03:24.560 --> 00:03:25.440
-on Starlet.
-
-
-00:03:25.440 --> 00:03:28.320
-So by the transit of property, I'm also a fan of Starlet.
-
-
-00:03:28.320 --> 00:03:30.720
-And there's this thing I want to cover
-
-
-00:03:30.720 --> 00:03:33.360
-called FastAPI events.
-
-
-00:03:33.360 --> 00:03:38.040
-So when a request comes in to a particular API endpoint,
-
-
-00:03:38.040 --> 00:03:39.760
-or if you convert it over to a web app,
-
-
-00:03:39.760 --> 00:03:42.280
-to a webpage sort of request or something,
-
-
-00:03:42.280 --> 00:03:44.520
-you might want to dispatch that out to say
-
-
-00:03:44.520 --> 00:03:47.400
-like WebSocket listeners or something along those lines.
-
-
-00:03:47.400 --> 00:03:49.960
-So there's this cool project called FastAPI Events.
-
-
-00:03:49.960 --> 00:03:51.640
-It's pretty small and new.
-
-
-00:03:51.640 --> 00:03:53.080
-So I'm gonna try to give it some visibility.
-
-
-00:03:53.080 --> 00:03:54.460
-It's only got 36 stars.
-
-
-00:03:54.460 --> 00:03:57.480
-It's pretty new, but the idea is that you can go through
-
-
-00:03:57.480 --> 00:04:00.640
-and basically create this middleware handler
-
-
-00:04:00.640 --> 00:04:03.400
-that will let you say, when a request comes in,
-
-
-00:04:03.400 --> 00:04:05.480
-here's the way, when an event is raised,
-
-
-00:04:05.480 --> 00:04:06.960
-here's the thing that's going to handle it.
-
-
-00:04:06.960 --> 00:04:10.000
-And then in some API endpoint, you can say dispatch,
-
-
-00:04:10.000 --> 00:04:13.040
-give the event a name and some dictionary data
-
-
-00:04:13.040 --> 00:04:13.880
-to be passed along.
-
-
-00:04:13.880 --> 00:04:16.080
-I suppose it doesn't have to be a dictionary,
-
-
-00:04:16.080 --> 00:04:16.960
-it could be whatever.
-
-
-00:04:16.960 --> 00:04:18.680
-And then in other parts of your code, you say,
-
-
-00:04:18.680 --> 00:04:21.860
-I wanna just hear about this event that happens
-
-
-00:04:21.860 --> 00:04:24.400
-no matter what API endpoint received it,
-
-
-00:04:24.400 --> 00:04:27.860
-no matter where in like how deep down in the code
-
-
-00:04:27.860 --> 00:04:30.160
-it was received and so on.
-
-
-00:04:30.160 --> 00:04:31.960
-So then way down here,
-
-
-00:04:31.960 --> 00:04:34.720
-you just put a role handler decorator on there.
-
-
-00:04:34.720 --> 00:04:37.080
-You say, I wanna capture all the events that start with,
-
-
-00:04:37.080 --> 00:04:39.100
-you know, some substring like cat star
-
-
-00:04:39.100 --> 00:04:41.040
-for like category, whatever,
-
-
-00:04:41.040 --> 00:04:43.480
-or this one is actually literally about cats.
-
-
-00:04:43.480 --> 00:04:46.500
-And then you can just go through and write these functions
-
-
-00:04:46.500 --> 00:04:48.540
-that will then handle that and you know,
-
-
-00:04:48.540 --> 00:04:51.100
-you can, you can also pass them off to queues
-
-
-00:04:51.100 --> 00:04:54.300
-like you can use the SQS, the simple queuing service
-
-
-00:04:54.300 --> 00:04:57.420
-from AWS I believe that is, as the endpoint
-
-
-00:04:57.420 --> 00:04:59.140
-instead of it just being your app, right?
-
-
-00:04:59.140 --> 00:05:01.540
-So if you've got like lots of scale out and stuff like that.
-
-
-00:05:01.540 --> 00:05:02.380
-- Wow, cool.
-
-
-00:05:02.380 --> 00:05:04.820
-So is this like a neat way to do logging
-
-
-00:05:04.820 --> 00:05:06.100
-or even distributed logging, I guess,
-
-
-00:05:06.100 --> 00:05:08.340
-if you've got forwarding handlers in there, you can just--
-
-
-00:05:08.340 --> 00:05:10.020
-- Yeah, yeah, it seems like it, right?
-
-
-00:05:10.020 --> 00:05:13.740
-Like, or if you know, you want to sort of build up
-
-
-00:05:13.740 --> 00:05:15.500
-like here's the request transaction
-
-
-00:05:15.500 --> 00:05:16.560
-and here we're at this stage,
-
-
-00:05:16.560 --> 00:05:18.500
-or you could maybe do visibility
-
-
-00:05:18.500 --> 00:05:20.420
-into long-running workflows with this kind of thing,
-
-
-00:05:20.420 --> 00:05:22.260
-or something along those lines, I would think.
-
-
-00:05:22.260 --> 00:05:25.540
-So, yeah, there's also an echo handler for debugging.
-
-
-00:05:25.540 --> 00:05:26.380
-I kind of like that.
-
-
-00:05:26.380 --> 00:05:27.900
-If I just need to see what is happening,
-
-
-00:05:27.900 --> 00:05:29.780
-it'll just print whatever's happening.
-
-
-00:05:29.780 --> 00:05:31.560
-It'll just start printing out all the behaviors
-
-
-00:05:31.560 --> 00:05:32.940
-that you're logging.
-
-
-00:05:32.940 --> 00:05:34.500
-- And then when you want to stop doing that,
-
-
-00:05:34.500 --> 00:05:35.820
-you just take away the handler,
-
-
-00:05:35.820 --> 00:05:39.100
-and you don't have to search the entire code base for print
-
-
-00:05:39.100 --> 00:05:42.220
-and find everywhere that you added it in for debugging.
-
-
-00:05:42.220 --> 00:05:43.320
-- Exactly.
-
-
-00:05:44.400 --> 00:05:47.320
-- Alvaro out there says, "This looks similar
-
-
-00:05:47.320 --> 00:05:48.240
-"to Django events."
-
-
-00:05:48.240 --> 00:05:51.840
-Yeah, I suspect it is similar.
-
-
-00:05:51.840 --> 00:05:53.580
-Anyway, pretty short and simple,
-
-
-00:05:53.580 --> 00:05:56.320
-but if you're looking for a way to sort of
-
-
-00:05:56.320 --> 00:05:58.840
-put notifications in a structured way
-
-
-00:05:58.840 --> 00:06:01.640
-into a FastAPI app, well, here you go.
-
-
-00:06:01.640 --> 00:06:03.040
-- Oh, I'm thinking of a whole bunch
-
-
-00:06:03.040 --> 00:06:04.880
-of more abusive ways to use this.
-
-
-00:06:04.880 --> 00:06:07.920
-(both laughing)
-
-
-00:06:07.920 --> 00:06:10.240
-- I mean, yeah, you can write some really impressive
-
-
-00:06:10.240 --> 00:06:11.640
-spaghetti code with this.
-
-
-00:06:11.640 --> 00:06:13.760
-- Yeah, I'm sure that you can.
-
-
-00:06:13.760 --> 00:06:15.760
-cloud involved in everything.
-
-
-00:06:15.760 --> 00:06:20.440
->> Yeah. Let's switch gears a little bit and talk about testing.
-
-
-00:06:20.440 --> 00:06:23.040
-Imagine that I've got a testing topic.
-
-
-00:06:23.040 --> 00:06:25.560
-I'm pretty excited.
-
-
-00:06:25.560 --> 00:06:30.280
-I've been asked a lot about testing pipelines,
-
-
-00:06:30.280 --> 00:06:31.760
-testing data science stuff,
-
-
-00:06:31.760 --> 00:06:35.280
-and that's not something I do day-to-day.
-
-
-00:06:35.280 --> 00:06:38.480
-I'm really glad to find people talking about it.
-
-
-00:06:38.480 --> 00:06:42.180
-We've got an article from Peter Baumgartner,
-
-
-00:06:42.180 --> 00:06:46.260
-ways to use testing, ways I use testing as a data scientist.
-
-
-00:06:46.260 --> 00:06:49.180
-And I just really love this article.
-
-
-00:06:49.180 --> 00:06:50.660
-It's great.
-
-
-00:06:50.660 --> 00:06:56.300
-To start with, he starts off with what he uses testing for as a data scientist.
-
-
-00:06:56.300 --> 00:06:59.420
-He uses testing to make sure things work,
-
-
-00:06:59.420 --> 00:07:01.420
-to document his understanding,
-
-
-00:07:01.420 --> 00:07:04.100
-and to prevent future errors.
-
-
-00:07:04.100 --> 00:07:06.100
-Well, that seems straightforward.
-
-
-00:07:06.100 --> 00:07:09.580
-But the reason why he wrote this up is
-
-
-00:07:09.580 --> 00:07:11.700
-apparently because there's a lot of software,
-
-
-00:07:11.700 --> 00:07:14.020
-there's a lot of testing stuff out on the web,
-
-
-00:07:14.020 --> 00:07:18.700
-but it's geared towards test engineers or software developers.
-
-
-00:07:18.700 --> 00:07:20.380
-He's like, "I'm not a software developer.
-
-
-00:07:20.380 --> 00:07:23.380
-I'm doing something else.
-
-
-00:07:23.380 --> 00:07:25.940
-I'm doing analysis. I'm not a software person."
-
-
-00:07:25.940 --> 00:07:28.100
-Even though, yeah, you are.
-
-
-00:07:28.100 --> 00:07:31.780
-But to write this up in
-
-
-00:07:31.780 --> 00:07:35.980
-a context where data people might understand it better.
-
-
-00:07:35.980 --> 00:07:38.220
-For instance, he doesn't even start off with
-
-
-00:07:38.220 --> 00:07:43.140
-writing, having written tests, his, his analysis is like, if
-
-
-00:07:43.140 --> 00:07:47.820
-you're doing notebooks or other code, just use assert a lot. So
-
-
-00:07:47.820 --> 00:07:52.820
-he's using assert all over the place, including he says, I
-
-
-00:07:52.820 --> 00:07:57.020
-already have use it for as many intermediate calculations and
-
-
-00:07:57.020 --> 00:08:02.180
-processes as as you can, as it makes sense. Because in doing
-
-
-00:08:02.180 --> 00:08:05.540
-things like checking obvious stuff, like he's got an example
-
-
-00:08:05.540 --> 00:08:09.620
-of a table count where he's counting up all the yeses.
-
-
-00:08:09.620 --> 00:08:11.420
-Well, you can do a little bit of math
-
-
-00:08:11.420 --> 00:08:12.780
-just to make sure the math works.
-
-
-00:08:12.780 --> 00:08:14.700
-So like all the yeses and nos and missing
-
-
-00:08:14.700 --> 00:08:17.060
-should all add up to the same count.
-
-
-00:08:17.060 --> 00:08:18.700
-Go ahead and throw an assert in there
-
-
-00:08:18.700 --> 00:08:20.560
-because sometimes it doesn't.
-
-
-00:08:20.560 --> 00:08:23.920
-And in this example, he said that he actually caught an error
-
-
-00:08:23.920 --> 00:08:28.380
-because he was looking at two different data frames.
-
-
-00:08:28.380 --> 00:08:31.340
-So they really weren't, they didn't add up to the same.
-
-
-00:08:31.340 --> 00:08:33.080
-So you can catch things like that.
-
-
-00:08:33.080 --> 00:08:36.880
-So just double checking yourself on things
-
-
-00:08:36.880 --> 00:08:41.660
-as you go away, go as you're developing.
-
-
-00:08:41.660 --> 00:08:43.740
-One of the cool quotes he has in here is like,
-
-
-00:08:43.740 --> 00:08:47.000
-as he has a habit of when he's using notebooks
-
-
-00:08:47.000 --> 00:08:50.200
-to whenever he's visually inspecting the output,
-
-
-00:08:50.200 --> 00:08:53.080
-if you're visually looking at the data that comes out,
-
-
-00:08:53.080 --> 00:08:57.800
-maybe write an assert statement to do that analysis
-
-
-00:08:57.800 --> 00:09:00.420
-so that it's always checked.
-
-
-00:09:00.420 --> 00:09:03.660
-And this is a cool use of putting asserts in notebooks.
-
-
-00:09:03.660 --> 00:09:04.680
-I like this idea.
-
-
-00:09:04.680 --> 00:09:08.540
-The article goes on, it's pretty extensive,
-
-
-00:09:08.540 --> 00:09:13.540
-talking about checking the data, using hypothesis to,
-
-
-00:09:13.540 --> 00:09:16.640
-well, not the data at this part,
-
-
-00:09:16.640 --> 00:09:19.180
-but your assumptions around the data.
-
-
-00:09:19.180 --> 00:09:21.980
-So using hypothesis to check your assumptions
-
-
-00:09:21.980 --> 00:09:24.860
-and hypothesis will show you things
-
-
-00:09:24.860 --> 00:09:25.960
-that maybe you didn't consider,
-
-
-00:09:25.960 --> 00:09:29.660
-like NANDs, are you handling those correctly?
-
-
-00:09:29.660 --> 00:09:34.340
-empty series or empty data structures that are going into your code?
-
-
-00:09:34.340 --> 00:09:35.740
-Are you handling those?
-
-
-00:09:35.740 --> 00:09:39.540
-I mean, hypothesis does take some hand-holding,
-
-
-00:09:39.540 --> 00:09:44.140
-but it does make you think about really what is the shape of the data going in,
-
-
-00:09:44.140 --> 00:09:47.540
-and do you need to limit it?
-
-
-00:09:47.540 --> 00:09:49.620
-What hypothesis is looking at or do you
-
-
-00:09:49.620 --> 00:09:51.660
-need to change your code to handle more things?
-
-
-00:09:51.660 --> 00:09:54.220
->> Hypothesis is great. I've used that for a couple
-
-
-00:09:54.220 --> 00:09:58.200
-of parsing projects or combining projects.
-
-
-00:09:58.200 --> 00:10:01.100
-I spent way too long adding all the strategies
-
-
-00:10:01.100 --> 00:10:05.020
-to be able to test a URL parser that I was calling into.
-
-
-00:10:05.020 --> 00:10:09.460
-But it's fantastic for finding kind of things
-
-
-00:10:09.460 --> 00:10:11.140
-that you would not have thought of.
-
-
-00:10:11.140 --> 00:10:13.180
-- Yeah, I mean, it's finding things,
-
-
-00:10:13.180 --> 00:10:14.980
-but it's also, and it does make, yeah,
-
-
-00:10:14.980 --> 00:10:17.660
-that aspect of it seems like the point of it,
-
-
-00:10:17.660 --> 00:10:20.580
-but the real value I get out of hypothesis
-
-
-00:10:20.580 --> 00:10:23.500
-is thinking, making sure I really understand
-
-
-00:10:23.500 --> 00:10:27.620
-the data that's gonna come in and thinking through those.
-
-
-00:10:27.620 --> 00:10:29.860
-It goes on to talk about actually testing your data
-
-
-00:10:29.860 --> 00:10:32.880
-using things like Pandera, which I wasn't familiar with,
-
-
-00:10:32.880 --> 00:10:35.200
-and another package called Great Expectations
-
-
-00:10:35.200 --> 00:10:39.120
-to look at like putting schemas around the data coming in
-
-
-00:10:39.120 --> 00:10:42.360
-and making sure that the data always matches the schema,
-
-
-00:10:42.360 --> 00:10:46.400
-going on to talk about Arrange Act Insert and using pytest.
-
-
-00:10:46.400 --> 00:10:47.780
-pytest comes in with,
-
-
-00:10:47.780 --> 00:10:49.880
-he's only really writing formal tests
-
-
-00:10:49.880 --> 00:10:52.280
-when he's writing libraries for other people,
-
-
-00:10:52.280 --> 00:10:54.280
-but all these other packages
-
-
-00:10:54.280 --> 00:10:56.640
-to be able to test with data science,
-
-
-00:10:56.640 --> 00:10:57.880
-I think this is a great addition
-
-
-00:10:57.880 --> 00:10:59.600
-to the data science community.
-
-
-00:10:59.600 --> 00:11:02.700
-- Yeah. Alvaro talks about how this is,
-
-
-00:11:02.700 --> 00:11:04.880
-you know, often referred to as defensive programming.
-
-
-00:11:04.880 --> 00:11:07.080
-And then, you know, I feel for him a little bit,
-
-
-00:11:07.080 --> 00:11:09.280
-he says, "At work we use this with our Fortran code."
-
-
-00:11:09.280 --> 00:11:12.720
-So there's that, but I do think this is a really
-
-
-00:11:12.720 --> 00:11:15.720
-interesting way of thinking about defensive code.
-
-
-00:11:15.720 --> 00:11:17.980
-You know, I just, I think of writing defensive code
-
-
-00:11:17.980 --> 00:11:19.920
-as like, oh, I'm gonna have a bunch of if statements
-
-
-00:11:19.920 --> 00:11:21.360
-to verify this thing's not none,
-
-
-00:11:21.360 --> 00:11:23.020
-or verify that this is the right type
-
-
-00:11:23.020 --> 00:11:26.900
-and that it has a reasonable value and raise exceptions.
-
-
-00:11:26.900 --> 00:11:30.500
-I haven't really thought so much of it for notebooks.
-
-
-00:11:30.500 --> 00:11:31.620
-So that's pretty interesting.
-
-
-00:11:31.620 --> 00:11:33.260
-- And one of the neat things about
-
-
-00:11:33.260 --> 00:11:35.660
-if you're actually putting asserts in your code,
-
-
-00:11:35.660 --> 00:11:38.580
-you can write tests against your code
-
-
-00:11:38.580 --> 00:11:41.300
-that don't even have any asserts in them.
-
-
-00:11:41.300 --> 00:11:44.380
-And because the asserts will happen within your code
-
-
-00:11:44.380 --> 00:11:46.140
-and the test will still fail and catch it.
-
-
-00:11:46.140 --> 00:11:47.380
-So it's kind of cool.
-
-
-00:11:47.380 --> 00:11:48.740
-- Yeah, yeah, very cool.
-
-
-00:11:48.740 --> 00:11:49.580
-Good stuff.
-
-
-00:11:49.580 --> 00:11:50.820
-- Yeah.
-
-
-00:11:50.820 --> 00:11:52.540
-- Steve, I am super excited to hear
-
-
-00:11:52.540 --> 00:11:54.540
-about what you're, you got coming up
-
-
-00:11:54.540 --> 00:11:56.140
-because this is brand new.
-
-
-00:11:56.140 --> 00:11:58.260
-Being a core developer, I feel it is appropriate
-
-
-00:11:58.260 --> 00:12:00.500
-that you break this news here.
-
-
-00:12:00.500 --> 00:12:02.420
-- I mean, I'm not gonna lie when it came to,
-
-
-00:12:02.420 --> 00:12:03.640
-you know, what am I gonna talk about?
-
-
-00:12:03.640 --> 00:12:05.900
-Okay, what's the most recently accepted pep
-
-
-00:12:05.900 --> 00:12:07.500
-that was somewhat controversial?
-
-
-00:12:07.500 --> 00:12:11.540
-And I think just as you kind of look down
-
-
-00:12:11.540 --> 00:12:13.940
-to the section on rejected ideas,
-
-
-00:12:13.940 --> 00:12:16.780
-which is considerably longer than the accepted ideas,
-
-
-00:12:16.780 --> 00:12:21.420
-you probably get a bit of a sense for just what went on
-
-
-00:12:21.420 --> 00:12:24.080
-with exception groups.
-
-
-00:12:24.080 --> 00:12:26.080
-And I know, Michael, you just had a conversation.
-
-
-00:12:26.080 --> 00:12:27.320
-You've learned all about them.
-
-
-00:12:27.320 --> 00:12:30.720
-So you can take over when I run out here.
-
-
-00:12:30.720 --> 00:12:31.220
-But--
-
-
-00:12:31.220 --> 00:12:32.520
-I'll share my thoughts with it.
-
-
-00:12:32.520 --> 00:12:33.080
-But yeah, go ahead.
-
-
-00:12:33.080 --> 00:12:34.180
-I'd love to hear about it.
-
-
-00:12:34.180 --> 00:12:37.200
-This is sort of inspired by Trio, right?
-
-
-00:12:37.200 --> 00:12:40.020
-The end goal kind of is-- so this is an interesting pep.
-
-
-00:12:40.020 --> 00:12:42.220
-And we've got a few of these on the go at the moment.
-
-
-00:12:42.220 --> 00:12:44.560
-It's kind of like a stepping stone towards a better
-
-
-00:12:44.560 --> 00:12:46.720
-programming model or a stepping stone
-
-
-00:12:46.720 --> 00:12:48.120
-towards better libraries.
-
-
-00:12:48.120 --> 00:12:52.440
-So it's something that I think in my opinion,
-
-
-00:12:52.440 --> 00:12:57.080
-very few application developers, the last developer
-
-
-00:12:57.080 --> 00:13:00.200
-in the chain, are often not going to use them,
-
-
-00:13:00.200 --> 00:13:02.160
-and they're not going to need them.
-
-
-00:13:02.160 --> 00:13:05.440
-But as you go further in towards the lower levels of libraries,
-
-
-00:13:05.440 --> 00:13:08.280
-especially people writing async schedulers,
-
-
-00:13:08.280 --> 00:13:10.200
-are going to find incredible value out of them.
-
-
-00:13:10.200 --> 00:13:13.440
-Essentially, what the idea is that when you're
-
-
-00:13:13.440 --> 00:13:16.840
-running multiple tasks in parallel, if some of them
-
-
-00:13:16.840 --> 00:13:19.720
-fail, we don't currently have a neat way
-
-
-00:13:19.720 --> 00:13:23.560
-to capture the exceptions from all of the ones that failed.
-
-
-00:13:23.560 --> 00:13:26.520
-There's some approaches that would be like, wait for all of them to complete
-
-
-00:13:26.520 --> 00:13:30.320
-and wrap it in a list, and then you get some exception that contains a list of
-
-
-00:13:30.320 --> 00:13:33.840
-exceptions, but that's lost a whole lot of context.
-
-
-00:13:33.840 --> 00:13:37.360
-You can get just whichever exception happens first, but then you lose all the
-
-
-00:13:37.360 --> 00:13:40.680
-other exceptions and there's just been no real way to handle it.
-
-
-00:13:40.680 --> 00:13:45.120
-So an exception group essentially does bundle up all the exceptions
-
-
-00:13:45.120 --> 00:13:46.560
-internally in some way.
-
-
-00:13:46.560 --> 00:13:49.860
-But the really interesting thing is the accept star syntax,
-
-
-00:13:49.860 --> 00:13:53.160
-which I'm going to have to scroll a long way down to find where that comes up.
-
-
-00:13:53.160 --> 00:13:58.260
-But this is really clever because if you're in that
-
-
-00:13:58.260 --> 00:14:02.340
-situation where say you're running 10 parallel processes,
-
-
-00:14:02.340 --> 00:14:04.380
-so here's kind of the first example of it,
-
-
-00:14:04.380 --> 00:14:08.300
-then exceptions are no longer control flow at this level.
-
-
-00:14:08.300 --> 00:14:09.140
-Cause if you're,
-
-
-00:14:09.140 --> 00:14:12.540
-if you've run 10 things and you're waiting for 10 things to complete,
-
-
-00:14:12.540 --> 00:14:14.940
-you're not actually doing control flow with the exceptions anymore.
-
-
-00:14:14.940 --> 00:14:18.220
-What you're doing is handling the exception,
-
-
-00:14:18.220 --> 00:14:22.500
-but then the control flow is going to go back to where it was anyway, because,
-
-
-00:14:22.500 --> 00:14:26.260
-because you're going to be doing something different. So for example,
-
-
-00:14:26.260 --> 00:14:31.060
-if a file doesn't open, then you would want to do something different,
-
-
-00:14:31.060 --> 00:14:34.220
-right? You're going to stop going on and trying to read from the file.
-
-
-00:14:34.220 --> 00:14:39.980
-But if you've tried to open 10 files and three of them failed you at the
-
-
-00:14:39.980 --> 00:14:43.460
-outside level. So at the end, at the inner level for each file that may have failed,
-
-
-00:14:43.460 --> 00:14:46.820
-you'll do something different at the outer level. All you're really going to do is say,
-
-
-00:14:46.820 --> 00:14:51.500
-hey, this task failed because a file couldn't be opened and maybe you do something else,
-
-
-00:14:51.500 --> 00:14:55.300
-but it's at the outside level. So except star takes that exception group and it's going
-
-
-00:14:55.300 --> 00:14:59.780
-to give you a chance to handle each exception, essentially on its own. It will group
-
-
-00:14:59.780 --> 00:15:05.300
-them together. So in this example, if you know, five tasks report spam error, then you'll
-
-
-00:15:05.300 --> 00:15:11.140
-get into this except spam error block with all five of them at once, which is just...
-
-
-00:15:11.140 --> 00:15:16.340
-Is that a list of spam exception, spam error exceptions? Something like, or a tuple,
-
-
-00:15:16.340 --> 00:15:20.820
-something like that? I think it's a tuple. I think with the star syntax, I believe.
-
-
-00:15:20.820 --> 00:15:23.620
-Something iterable, basically, yeah.
-
-
-00:15:23.620 --> 00:15:29.460
-Yeah. Something you can iterate over to see the exceptions, but it's really just,
-
-
-00:15:29.460 --> 00:15:34.980
-you know, this happened at some point and you process it. And if the group actually contains
-
-
-00:15:34.980 --> 00:15:39.380
-multiple types of exceptions, then each handler that matches is going to be called for all the
-
-
-00:15:39.380 --> 00:15:45.460
-exceptions that match that. So you could have this try block raise an exception group that has some
-
-
-00:15:45.460 --> 00:15:51.060
-spam errors, it has some foo errors, it has some bar errors, and all three except star blocks are
-
-
-00:15:51.060 --> 00:15:56.660
-going to get called with the exceptions that match those, which is a bit, it's definitely going to
-
-
-00:15:56.660 --> 00:16:01.860
-confuse a lot of people. It confuses me, which is why I was keen to actually spend a bit more time
-
-
-00:16:01.860 --> 00:16:08.100
-digging into it and trying to figure out what's really valuable about this. And I do think the
-
-
-00:16:08.100 --> 00:16:13.540
-most valuable one is really where the error is cancelled error. Because if for whatever reason,
-
-
-00:16:13.540 --> 00:16:18.660
-five of your tasks have been cancelled, then you need to capture that and do something with that
-
-
-00:16:18.660 --> 00:16:24.180
-outside of it. But it doesn't necessarily mean you want to throw away the five successful results.
-
-
-00:16:24.180 --> 00:16:28.340
-And so you do kind of want to keep a bit of everything going on.
-
-
-00:16:28.340 --> 00:16:33.780
-And like I say, it's a building block on its own. This isn't enough to
-
-
-00:16:33.780 --> 00:16:38.580
-do anything new and useful. The next thing that comes along is task groups.
-
-
-00:16:38.580 --> 00:16:44.500
-And that's being worked on by... I expect a lot of the same people who worked on exception groups,
-
-
-00:16:44.500 --> 00:16:48.260
-because with task groups, now you can actually start... There we go.
-
-
-00:16:48.980 --> 00:16:56.500
-Guidos just merged task groups. Excellent. Then now you can actually run the task group. And if
-
-
-00:16:56.500 --> 00:17:00.500
-the group raises any errors, then you'll catch them through an exception group.
-
-
-00:17:00.500 --> 00:17:09.620
-And so that enables a whole lot of new uses and new ways to use async.io or just async generally,
-
-
-00:17:09.620 --> 00:17:12.820
-no matter the library. As you say, Trios already has something like this for a while.
-
-
-00:17:12.820 --> 00:17:15.220
->> Yeah, from their nursery thing.
-
-
-00:17:15.220 --> 00:17:18.940
-- Yeah, and so that is now being standardized
-
-
-00:17:18.940 --> 00:17:22.020
-so libraries can kind of share their implementations
-
-
-00:17:22.020 --> 00:17:23.680
-and work together on it.
-
-
-00:17:23.680 --> 00:17:27.100
-- So one of the reasons you need this is if I start
-
-
-00:17:27.100 --> 00:17:29.860
-two web requests and three database queries,
-
-
-00:17:29.860 --> 00:17:31.360
-and then I go to wait on them,
-
-
-00:17:31.360 --> 00:17:34.140
-you know, then if several of them fail,
-
-
-00:17:34.140 --> 00:17:39.140
-the error state captured in totality is a tree of errors
-
-
-00:17:39.140 --> 00:17:42.940
-that represent, well, this task started this other task,
-
-
-00:17:42.940 --> 00:17:45.740
-which then had this error, this other one, right?
-
-
-00:17:45.740 --> 00:17:48.300
-So you need some way to deal with a group of errors
-
-
-00:17:48.300 --> 00:17:50.580
-that could happen kind of all at once, right?
-
-
-00:17:50.580 --> 00:17:52.860
-In one of these task groups that gets kicked off.
-
-
-00:17:52.860 --> 00:17:53.700
-- Yeah.
-
-
-00:17:53.700 --> 00:17:55.900
-- So the new task group thing is super cool.
-
-
-00:17:55.900 --> 00:17:59.120
-So you say async with task group as TG,
-
-
-00:17:59.120 --> 00:18:00.580
-and there's two things that are neat about it.
-
-
-00:18:00.580 --> 00:18:03.380
-One is right now, if you fire off a bunch of tasks
-
-
-00:18:03.380 --> 00:18:06.540
-in async and await style, they're basically unrelated.
-
-
-00:18:06.540 --> 00:18:09.340
-Like if one fails, that means nothing for the other, right?
-
-
-00:18:09.340 --> 00:18:10.500
-They're just like, well, here's a bunch of stuff
-
-
-00:18:10.500 --> 00:18:12.900
-that happened, and this creates a relationship
-
-
-00:18:12.900 --> 00:18:14.020
-between them, right?
-
-
-00:18:14.020 --> 00:18:16.540
-So that if one fails, I think it might not schedule new ones
-
-
-00:18:16.540 --> 00:18:18.220
-something to that of like it's brand new.
-
-
-00:18:18.220 --> 00:18:19.100
-I'm just seeing the tweets.
-
-
-00:18:19.100 --> 00:18:20.860
-So I think that that's the story.
-
-
-00:18:20.860 --> 00:18:23.420
-I believe that was the story of Rio.
-
-
-00:18:23.420 --> 00:18:25.580
-The other thing that's interesting here that
-
-
-00:18:25.580 --> 00:18:29.460
-in this example, which I'll link to from Yuri
-
-
-00:18:29.460 --> 00:18:31.900
-that he posted, he tweeted about the news
-
-
-00:18:31.900 --> 00:18:34.700
-was notice that the first one says,
-
-
-00:18:34.700 --> 00:18:37.260
-task group create task for some task
-
-
-00:18:37.260 --> 00:18:40.040
-and then await something that creates another task.
-
-
-00:18:40.040 --> 00:18:41.520
-There's nowhere where you say,
-
-
-00:18:41.520 --> 00:18:44.840
-store all those values into like some lists of tasks,
-
-
-00:18:44.840 --> 00:18:47.000
-then go to the task and iterate them and wait for them
-
-
-00:18:47.000 --> 00:18:48.700
-or gather them or whatever the heck it was
-
-
-00:18:48.700 --> 00:18:49.800
-you had to do before.
-
-
-00:18:49.800 --> 00:18:52.880
-This now makes tasks fire and forget.
-
-
-00:18:52.880 --> 00:18:54.120
-I can say, run this, run this,
-
-
-00:18:54.120 --> 00:18:56.840
-and within that, I could do more of those types of things.
-
-
-00:18:56.840 --> 00:19:01.000
-And then you just block at the with context manager level
-
-
-00:19:01.000 --> 00:19:02.680
-to wait for all the tasks to finish,
-
-
-00:19:02.680 --> 00:19:04.640
-which I think is a real big improvement
-
-
-00:19:04.640 --> 00:19:06.880
-'cause right now you've got to like constantly juggle,
-
-
-00:19:06.880 --> 00:19:08.080
-well, I've got to return a task from this
-
-
-00:19:08.080 --> 00:19:09.360
-so I can go wait on it later
-
-
-00:19:09.360 --> 00:19:10.840
-and all those sort of oddities.
-
-
-00:19:10.840 --> 00:19:12.920
-And this cleans up a lot of that.
-
-
-00:19:12.920 --> 00:19:14.480
-- Right, and of course being Python,
-
-
-00:19:14.480 --> 00:19:16.400
-I don't know exactly how the syntax works,
-
-
-00:19:16.400 --> 00:19:19.600
-but being Python, that TG object, the task group,
-
-
-00:19:19.600 --> 00:19:21.640
-doesn't actually disappear at the end of the with block.
-
-
-00:19:21.640 --> 00:19:24.320
-So if that's got results stored into it,
-
-
-00:19:24.320 --> 00:19:26.100
-then you still have access to those
-
-
-00:19:26.100 --> 00:19:28.240
-and all of the information about the task group,
-
-
-00:19:28.240 --> 00:19:30.720
-even after you've waited for it to complete running.
-
-
-00:19:30.720 --> 00:19:31.800
-- Oh yeah, that's cool.
-
-
-00:19:31.800 --> 00:19:33.560
-Yeah, so I think this is a nice addition
-
-
-00:19:33.560 --> 00:19:35.720
-to asyncio in Python.
-
-
-00:19:35.720 --> 00:19:36.560
-This is cool.
-
-
-00:19:36.560 --> 00:19:38.000
-And apparently 3.11 is coming.
-
-
-00:19:38.000 --> 00:19:40.120
+00:19:37.620 --> 00:19:38.820
 Yeah, coming in 3.11.
 
+00:19:38.820 --> 00:19:39.460
+Yeah.
 
-00:19:40.120 --> 00:19:42.240
-I do see a question from Sam Morley in the chat there.
+00:19:39.460 --> 00:19:43.220
+I do see a question from Sam Morley in the chat there. Is there a way to short circuit
 
+00:19:43.220 --> 00:19:48.180
+so that you don't re-catch certain exceptions? My understanding, and Michael, if you've got a
 
-00:19:42.240 --> 00:19:43.360
-Is there a way to short circuit
+00:19:48.180 --> 00:19:54.260
+better one, correct me, is that the exception, the accept blocks work in the same way as regular ones.
 
+00:19:55.460 --> 00:20:00.420
+The first one that matches a particular exception will handle it, and the later ones don't, even if they
 
-00:19:43.360 --> 00:19:45.800
-so that you don't recatch certain exceptions?
+00:20:00.420 --> 00:20:07.860
+would also match. So if you have, so if the spam error is a subclass of foo error, but there's another
 
+00:20:07.860 --> 00:20:13.380
+subclass of foo error, then spam errors will get handled by the spam error handler. The foo
 
-00:19:45.800 --> 00:19:47.720
-My understanding, and Michael,
+00:20:13.380 --> 00:20:18.100
+and foo error handler will handle all the other ones apart from the spam error subclass.
 
+00:20:18.100 --> 00:20:23.620
+Nice. Yeah. I don't know much about the accept star other than it was basically a requirement for the
 
-00:19:47.720 --> 00:19:50.200
-if you've got a better one, correct me,
+00:20:23.620 --> 00:20:28.420
+task group stuff to be implemented properly. So once one came in, then the other could come in. Yeah.
 
+00:20:28.420 --> 00:20:34.980
+It's the only feasible way to actually do something as a result of an exception group. Otherwise,
 
-00:19:50.200 --> 00:19:53.400
-is that the except blocks work in the same way
+00:20:34.980 --> 00:20:42.420
+you do end up with a very generic exception, and then you write a for loop over all the exceptions that
 
+00:20:42.420 --> 00:20:47.060
+are handled and try and figure it out yourself. So you'd end up rewriting the code, and it was just
 
-00:19:53.400 --> 00:19:56.400
-as regular ones, and the first one
+00:20:47.060 --> 00:20:53.060
+not going to be feasible. It needed to be syntax. And so it is. Yeah. Right on. Very, very exciting and
 
+00:20:53.060 --> 00:20:58.580
+very timely. Thanks, Steve. I'm kind of glad that I put off learning how to do async code until 3.11.
 
-00:19:56.400 --> 00:19:58.680
-that matches a particular exception will handle it,
+00:20:58.580 --> 00:21:05.060
+This looks easier. It's a good band and a good time for async.io. Well, cool. All right. I guess I'm
 
+00:21:05.060 --> 00:21:10.740
+up with the next one, huh, Brian? Yeah. Let's see what you got. I have got some other interesting things.
 
-00:19:58.680 --> 00:20:01.940
-and the later ones don't, even if they would also match.
+00:21:10.740 --> 00:21:16.900
+I'm here about showing off the underappreciated projects or the new projects. Just a couple of stars here.
 
+00:21:16.900 --> 00:21:21.140
+And we talked about overloading before, but I thought this was a clean way to do it that people
 
-00:20:01.940 --> 00:20:05.840
-So if you have, so if the spam error
+00:21:21.140 --> 00:21:25.060
+can think about. And Steve, I would definitely love to hear your thoughts on this. So Felix the cat
 
+00:21:25.060 --> 00:21:32.340
+created this library called pyoverload. And the idea is basically once you have type information,
 
-00:20:05.840 --> 00:20:07.360
-is a subclass of foo error,
+00:21:32.340 --> 00:21:37.700
+then you can have method or function overloading. The idea of being like, okay, I have a function called
 
+00:21:37.700 --> 00:21:42.740
+foo or whatever. And you can say, if it takes an integer, I want this implementation to run. If it takes a
 
-00:20:07.360 --> 00:20:09.240
-but there's another subclass of foo error,
+00:21:42.740 --> 00:21:47.540
+string, I want some other implementation to run. Right. That's sort of the traditional C++,
 
+00:21:47.540 --> 00:21:53.460
+C# definition of it. Right. But in Python, we don't have that really because the language started
 
-00:20:09.240 --> 00:20:12.680
-then spam errors will get handled by the spam error handler.
+00:21:53.460 --> 00:21:56.580
+without type. So how are you going to figure out the type to overload it? You know, right. That just
 
+00:21:56.580 --> 00:22:01.220
+like, doesn't make any sense. So with this one, you could sort of use like traditionally, you could use
 
-00:20:12.680 --> 00:20:16.320
-The foo error handler will handle all the other ones
+00:22:01.220 --> 00:22:05.140
+this instance. We're going to do one thing or another. Is it a single thing? Or is it a list of those
 
+00:22:05.140 --> 00:22:10.580
+things? What are we going to do? But with this one, you can put just at overload and then whatever the
 
-00:20:16.320 --> 00:20:18.640
-apart from the spam error subclass.
+00:22:10.580 --> 00:22:15.940
+signature is, if you can say it has no functions or has no parameters, or it has like two integers,
 
+00:22:15.940 --> 00:22:21.940
+or it has three integers, or it has like a list of them, whatever. And there's even a way to sort of
 
-00:20:18.640 --> 00:20:21.640
-- Nice, yeah, I don't know much about the accept star
+00:22:21.940 --> 00:22:26.980
+say somewhere down here, there's a way to say like, if none of them match call this particular one.
 
+00:22:26.980 --> 00:22:31.940
+So basically it's, it's just straight function overloading in Python. If that's the thing you want,
 
-00:20:21.640 --> 00:20:23.560
-other than it was basically a requirement
+00:22:31.940 --> 00:22:38.980
+Steve, does this make you cringe or do you like it? Well, you know, I'm, I'm, I'm not going to lie.
 
+00:22:38.980 --> 00:22:46.100
+I'm not the, the most into static typing in my Python code as a lot of other people. And, and there's a
 
-00:20:23.560 --> 00:20:26.200
-for the task group stuff to be implemented properly.
+00:22:46.100 --> 00:22:49.700
+lot of, you know, there's a lot of complicated reasons, but I think for a situation like this,
 
+00:22:49.700 --> 00:22:55.380
+I mean, if I know if I was writing a function that took a string or an int, the very first line would be
 
-00:20:26.200 --> 00:20:28.800
-So when one came in, then the other could come in, yeah.
+00:22:55.380 --> 00:22:59.940
+converted to whichever type I actually want. And then the rest of the function is going to look identical.
 
+00:22:59.940 --> 00:23:05.460
+Yeah. And that's sure. And that, in that case where like, there might be a, an unparse type of thing,
 
-00:20:28.800 --> 00:20:32.860
-- It's the only feasible way to actually do something
+00:23:05.460 --> 00:23:08.820
+for sure. I think you wouldn't really do an overload. That would be insane.
 
+00:23:08.820 --> 00:23:14.100
+And my, my kind of gut feel, and you know, I'm always open to, to examples proving me wrong.
 
-00:20:32.860 --> 00:20:34.600
-as a result of an exception group.
+00:23:14.100 --> 00:23:19.460
+Um, in which case I, you know, I would write the is instance code that's in those examples.
 
+00:23:19.460 --> 00:23:23.060
+You know, my, my kind of gut feeling is that if you're doing two drastically different things in
 
-00:20:34.600 --> 00:20:39.000
-Otherwise, you do end up with a very generic exception,
+00:23:23.060 --> 00:23:27.780
+the function based on the type, you need two functions. and once you've got two separate
 
+00:23:27.780 --> 00:23:32.980
+functions, you know, if the people calling don't know what they're passing you, then that's, you know,
 
-00:20:39.000 --> 00:20:42.440
-and then you write a for loop over all the exceptions
+00:23:32.980 --> 00:23:37.620
+they've got a problem and it's not, you know, so much my responsibility to fix it with overloading.
 
+00:23:37.620 --> 00:23:43.540
+That said, overloading is really cool. and you know, I am the exact opposite person when it comes
 
-00:20:42.440 --> 00:20:44.060
-that it handled and try and figure it out yourself.
+00:23:43.540 --> 00:23:48.420
+to like C and C++. I will do all the craziest possible stuff with overloading in those languages,
 
+00:23:48.420 --> 00:23:53.220
+because I think it fits the language and it's a lot of fun. and, and there's definitely occasions
 
-00:20:44.060 --> 00:20:46.240
-So you'd end up rewriting the code,
+00:23:53.220 --> 00:23:58.340
+and value for having it in Python. we do have the single dispatch decorator has been part of Python
 
+00:23:58.340 --> 00:24:05.460
+for a while, which will do this on the very first parameter. this, you know, very trivially extending
 
-00:20:46.240 --> 00:20:48.540
-and it was just not gonna be feasible.
+00:24:05.460 --> 00:24:12.660
+it to the whole function signature is, is really cool. So, you know, it's, if, if I needed to do this,
 
+00:24:12.660 --> 00:24:17.620
+I would probably want to use this, a library like this. would I, would I, you know,
 
-00:20:48.540 --> 00:20:50.800
-It needed to be syntax, and so it is.
+00:24:17.620 --> 00:24:22.660
+I'd probably, I, I would probably reconsider my API design choices up to that point.
 
+00:24:22.660 --> 00:24:28.420
+but, but I can understand the, the attraction of, of getting to, you know, to, to reuse,
 
-00:20:50.800 --> 00:20:52.480
-- Yeah, right on.
+00:24:28.420 --> 00:24:33.940
+reuse the name and not make the person calling it think too hard about how, you know, what's actually
 
+00:24:33.940 --> 00:24:39.220
+going to run. Yeah. The place where this sort of seems interesting to me is, you know, there's some,
 
-00:20:52.480 --> 00:20:54.080
-Very exciting and very timely.
+00:24:39.220 --> 00:24:43.700
+a lot of like tricks and juggling people do with like star, star, star, star, KWRs where like,
 
+00:24:43.700 --> 00:24:48.340
+okay, depending on how you pass it stuff, we'll do a bunch of things. Yeah. And I'm always looking
 
-00:20:54.080 --> 00:20:54.920
-Thanks, Steve.
+00:24:48.340 --> 00:24:54.820
+for a way to like, not do that. Yeah. How, how can I not, how can I remove that? Like,
 
+00:24:54.820 --> 00:24:58.900
+it's completely opaque. I have to do a Google search and read the docs to figure out what is
 
-00:20:54.920 --> 00:20:56.480
-- I'm kinda glad that I put off learning
+00:24:58.900 --> 00:25:03.620
+at all possible here. Well, one of these days I I'm going, probably going to take all of the kind
 
+00:25:03.620 --> 00:25:07.460
+of patents for that kind of thing that I've collected and turn it into a book, but writing
 
-00:20:56.480 --> 00:20:58.880
-how to do async code until 3.11.
+00:25:07.460 --> 00:25:13.380
+book just feels like way too much work. So anytime soon. Sorry. my, my colleagues at work can
 
+00:25:13.380 --> 00:25:17.860
+ping me at any time and I'll, I'll give them a patent for what they're trying to do. But that's,
 
-00:20:58.880 --> 00:21:00.760
-This looks easier.
+00:25:17.860 --> 00:25:24.580
+um, I, I do have quite a set of, oh, you, you're trying to make stuff weirdly work in this way.
 
+00:25:24.580 --> 00:25:29.860
+Here's, here's a nice way that you can enable that without having to resort to, you know, type checks and
 
-00:21:00.760 --> 00:21:03.560
-- It's a good band and a good time for async I/O.
+00:25:29.860 --> 00:25:34.420
+everything. Yeah. Yeah. I've been using, I mean, I've been using Python for a long time and I do
 
+00:25:34.420 --> 00:25:39.220
+remember one of the first things that I noticed is I couldn't do overloading. And at the time,
 
-00:21:03.560 --> 00:21:04.400
-- Well, cool.
+00:25:39.220 --> 00:25:44.660
+so this was, you know, many years ago, I was using a lot of overloading in my C and C++ code.
 
+00:25:44.660 --> 00:25:49.460
+Um, and, and I was like, oh, I can't do overloading. But one of the things I've noticed
 
-00:21:04.400 --> 00:21:06.280
-- All right, I guess I'm up with the next one, huh, Brian?
+00:25:49.460 --> 00:25:55.540
+is actually the, instead of keeping wishing that I had overloading in Python, I've noticed that I
 
+00:25:55.540 --> 00:26:00.500
+don't really use it in C and C++ anymore. I've, it's gone the other way.
 
-00:21:06.280 --> 00:21:08.480
-- Yeah, let's see what you got.
+00:26:00.500 --> 00:26:06.820
+Yeah. I really, I'd rather be more explicit about the, and just have a function that two functions
 
+00:26:06.820 --> 00:26:12.100
+that, that are some, maybe they're similarly named, but they have an appendix that's,
 
-00:21:08.480 --> 00:21:10.920
-- I have got some other interesting things.
+00:26:12.100 --> 00:26:16.100
+that's different so that if you have different data, you pass it. And I'm with you, Michael,
 
+00:26:16.100 --> 00:26:21.940
+I'd rather have people go, well, which one do I need? I'll look it up. Then just, passing the
 
-00:21:10.920 --> 00:21:15.040
-I'm here about showing off the underappreciated projects,
+00:26:21.940 --> 00:26:26.660
+wrong data type and having me, so because, you know, sometimes if they've, if they haven't
 
+00:26:26.660 --> 00:26:32.020
+converted the data, like the string string versus number is a scary one for me because I'm often
 
-00:21:15.040 --> 00:21:17.360
-or the new projects, just a couple of stars here.
+00:26:32.020 --> 00:26:38.660
+getting, getting my numbers from an API or something and they come in as a string. If you forgot to
 
+00:26:38.660 --> 00:26:42.900
+convert it and you passed it to the wrong thing and you're really doing something completely different,
 
-00:21:17.360 --> 00:21:18.880
-And we've talked about overloading before,
+00:26:42.900 --> 00:26:47.460
+um, that's, that's not a good thing, but I, I got bit by that one just yesterday,
 
+00:26:47.460 --> 00:26:54.340
+updating one of my, one of my CI builds to use Python 3.1, I mean, 3.10. but you know,
 
-00:21:18.880 --> 00:21:20.960
-but I thought this was a clean way to do it
+00:26:54.340 --> 00:27:03.300
+is it, is it a string or is it a number? Interesting. Yes. But yeah, certainly that conversion would be,
 
+00:27:03.300 --> 00:27:07.860
+you know, would be worrying. The other one is, is it a string or is it a list of strings? And that's
 
-00:21:20.960 --> 00:21:21.800
-that people could think about.
+00:27:07.860 --> 00:27:13.540
+the one that bites us in Python all the time. And I don't even know how you resolve an overloaded function
 
+00:27:13.540 --> 00:27:19.380
+based on, is it a string or can I iterate it? Well, like in that case, actually, I would rather
 
-00:21:21.800 --> 00:21:23.120
-And Steve, I would definitely love
+00:27:19.380 --> 00:27:24.100
+just have that part be part of the function at the, at the top of it, if it can handle both to,
 
+00:27:24.100 --> 00:27:30.420
+to check the type and, and iterate or not, but you know. Yeah. Well, all right, let me close this out
 
-00:21:23.120 --> 00:21:24.000
-to hear your thoughts on this.
+00:27:30.420 --> 00:27:36.900
+with two quick thoughts. first, I think this is interesting because it's one of the things that's
 
+00:27:36.900 --> 00:27:41.700
+possible with modern Python. Like once we've added typing, now you could consider this as a thing,
 
-00:21:24.000 --> 00:21:29.000
-So Felix the cat created this library called PyOverload.
+00:27:41.700 --> 00:27:48.740
+whereas previously it really was highly impractical, I think as a way to do, do it. So I think that's
 
+00:27:48.740 --> 00:27:53.620
+kind of cool. And then two, I think it might be an, an entryway for people who are not where Brian
 
-00:21:29.000 --> 00:21:32.900
-And the idea is basically once you have type information,
+00:27:53.620 --> 00:27:58.420
+and I'll put myself in there as well yet of going like, actually these things I thought I need,
 
+00:27:58.420 --> 00:28:02.340
+I don't need those, right? There's a lot of stuff I thought I needed and I haven't used it for three
 
-00:21:32.900 --> 00:21:35.560
-then you can have method or function overloading.
+00:28:02.340 --> 00:28:06.020
+years. So maybe I actually don't need it, but that's not how you maybe first approach,
 
+00:28:06.020 --> 00:28:10.340
+approach solving your first problem in Python that you're coming from C++ or whatever,
 
-00:21:35.560 --> 00:21:36.540
-The idea being like, okay,
+00:28:10.340 --> 00:28:15.380
+C#, whatever. This might be a gateway. So anyway, those are my two thoughts.
 
+00:28:15.380 --> 00:28:19.860
+One more thought from Dean after Python 3.11, do we get Python 95?
 
-00:21:36.540 --> 00:21:38.720
-if a function called boo or whatever,
+00:28:19.860 --> 00:28:27.220
+I, there, there was, you know, there was a windows 3.12. So I think Python gets to do a 3.12 as well.
 
+00:28:29.940 --> 00:28:34.740
+I think it was only available in China. Interesting. And I believe I like to follow
 
-00:21:38.720 --> 00:21:40.820
-and if it, you can say, if it takes an integer,
+00:28:34.740 --> 00:28:41.540
+on with that Dean. Very funny. I believe that Windows 10 was named, you let me know if you
 
+00:28:41.540 --> 00:28:46.820
+know different, Steve. Windows 10 was named Windows 10 because there used to be the check Windows 9 as
 
-00:21:40.820 --> 00:21:42.380
-I want this implementation run.
+00:28:46.820 --> 00:28:52.260
+the, the starting string for 95 and 98. So you can't be nine because then you're going to be 95. So we got a
 
+00:28:52.260 --> 00:29:00.180
+kick on past it. There was some embarrassingly big, language run times out there still doing that
 
-00:21:42.380 --> 00:21:43.220
-If it takes a string,
+00:29:00.180 --> 00:29:07.540
+check. that, that really struggled with Windows 9. and, and showed up in enough places that,
 
+00:29:07.540 --> 00:29:12.260
+yeah, I think it just made sense for everyone to just skip it.
 
-00:21:43.220 --> 00:21:45.780
-I want some other implementation to run, right?
+00:29:12.260 --> 00:29:18.980
+Not skipping 13. We're skipping nine. It's too unlucky. All right. Awesome. Brian, what you got for us?
 
+00:29:18.980 --> 00:29:27.540
+Oh, what do I have next? I have, the next generation, Seaborn interface. So Seaborn is a really awesome,
 
-00:21:45.780 --> 00:21:49.460
-That's sort of the traditional C++, C# definition of it.
+00:29:27.540 --> 00:29:34.980
+uh, plotting library built on matplotlib. and I, you know, actually I don't use it that much, but I've always been
 
+00:29:34.980 --> 00:29:41.140
+intrigued by it and what kind of watching what plotting libraries do and stuff. And one of the things I was curious about,
 
-00:21:49.460 --> 00:21:52.100
-But in Python, we don't have that really
+00:29:41.140 --> 00:29:46.420
+which I'm really grateful for this article, is some of the history behind it. So the,
 
+00:29:46.420 --> 00:29:51.780
+the article starts off a next generation Seaborn interface talks about the background and goals.
 
-00:21:52.100 --> 00:21:54.140
-because the language started without type.
+00:29:51.780 --> 00:29:58.380
+Um, but, some of the, some of the great things in here, let me grab, grab some notes.
 
+00:29:58.380 --> 00:30:04.780
+this work grew out of a long running effort to refactor Seaborn internals. so that, functions,
 
-00:21:54.140 --> 00:21:56.100
-So how are you gonna figure out the type to overload it?
+00:30:04.780 --> 00:30:10.160
+you know, anyway, where I wanted to get at was he was developing a refactor of the internals.
 
+00:30:10.160 --> 00:30:14.140
+And he's like, wait, wait a second. If I want to refactor it, maybe I should expose more stuff.
 
-00:21:56.100 --> 00:21:56.940
-You know, right?
+00:30:14.140 --> 00:30:21.260
+And some of the background was originally Seaborn was originally conceived of as a toolbox to do,
 
+00:30:21.260 --> 00:30:28.140
+uh, of domain specific statistical graphics to be used alongside matplotlib. So the intent was people
 
-00:21:56.940 --> 00:21:58.120
-That just like, doesn't make any sense.
+00:30:28.140 --> 00:30:33.720
+would use both Seaborn and matplotlib together. However, things that people have doing, are doing
 
+00:30:33.720 --> 00:30:39.240
+things differently. A lot of people just grab Seaborn by itself. Some people even just learn Seaborn before they
 
-00:21:58.120 --> 00:22:00.260
-So with this one, you could sort of use,
+00:30:39.240 --> 00:30:44.020
+even learn matplotlib, which is an interesting thing. And that's how I thought you were supposed
 
+00:30:44.020 --> 00:30:49.600
+to be doing this, but the concept was, and, and then at over time, there's a whole bunch of features
 
-00:22:00.260 --> 00:22:01.960
-like traditionally you could use is instance.
+00:30:49.600 --> 00:30:54.680
+that have been added to Seaborn to where it's like really slick looking, but to do the same thing by
 
+00:30:54.680 --> 00:31:01.580
+hand in matplotlib is a lot of work. So there's some things that like, if you, if you Seaborn's almost
 
-00:22:01.960 --> 00:22:03.520
-we're gonna do one thing or another.
+00:31:01.580 --> 00:31:05.320
+there, but you need to tweak it a little bit and you have to do things manually. Well, then you have to
 
+00:31:05.320 --> 00:31:10.700
+just do everything by yourself and it's a lot of work. So the idea around this, this, a rewrite
 
-00:22:03.520 --> 00:22:05.560
-Is it a single thing or is it a list of those things?
+00:31:10.700 --> 00:31:17.380
+of the API is let's rework some of the internals so that a lot of the little sub components that go
 
+00:31:17.380 --> 00:31:24.440
+inside of a plot are exposed. that way people can get access to it to do a more fine tune
 
-00:22:05.560 --> 00:22:06.600
-What are we gonna do?
+00:31:24.440 --> 00:31:30.160
+configuration, within the, so they don't really have to just do everything by hand. It's either all
 
+00:31:30.160 --> 00:31:35.220
+or nothing Seaborn or matplotlib, you can kind of do both more easily, which is a kind of a cool idea.
 
-00:22:06.600 --> 00:22:09.720
-But with this one, you can put just @overload
+00:31:35.220 --> 00:31:39.980
+Um, there's a whole bunch of great details in here that talk about some of the API changes,
 
+00:31:39.980 --> 00:31:45.980
+basically exposing the internal. If you create a plot, there's nothing there and it won't show up.
 
-00:22:09.720 --> 00:22:11.860
-and then whatever the signature is,
+00:31:45.980 --> 00:31:50.500
+You have to create layers on the plot. And then within the layers, you've got marks and,
 
+00:31:50.500 --> 00:31:55.500
+and different components that go into it. I kind of like this idea of building things up,
 
-00:22:11.860 --> 00:22:14.600
-if you can say it has no functions or has no parameters
+00:31:55.500 --> 00:32:00.820
+what I really like is the public aspect of this. So you've got a, you've got a library that's out
 
+00:32:00.820 --> 00:32:06.320
+in the open. it's being used by a lot of people already. And somebody saying, maybe we should tweak
 
-00:22:14.600 --> 00:22:17.680
-or it has like two integers or it has three integers
+00:32:06.320 --> 00:32:11.160
+the API and do something different and just go ahead and doing that in the open saying, Hey, we're going
 
+00:32:11.160 --> 00:32:15.620
+to do this. There's a note at the top, or I'm thinking about doing this note at the top saying
 
-00:22:17.680 --> 00:22:20.840
-or it has like a list of them, whatever.
+00:32:15.620 --> 00:32:20.020
+it's a work in progress. Don't depend on these examples because things might change,
 
+00:32:20.020 --> 00:32:25.340
+but this is the direction we're trying to go. trying to get feedback from people. And,
 
-00:22:20.840 --> 00:22:22.800
-And there's even a way to sort of say
+00:32:25.340 --> 00:32:29.300
+I think this is a lot of thing, things that a lot of people struggle with when they're maintaining
 
+00:32:29.300 --> 00:32:34.260
+packages that have been around for a long time is, I want to do things a little different,
 
-00:22:22.800 --> 00:22:24.560
-somewhere down here, there's a way to say like,
+00:32:34.260 --> 00:32:39.980
+but am I going to break everybody? and talking through it. So anyway, this is a great read,
 
-
-00:22:24.560 --> 00:22:27.120
-if none of them match, call this particular one.
-
-
-00:22:27.120 --> 00:22:30.040
-So basically it's just straight function overloading
-
-
-00:22:30.040 --> 00:22:31.680
-in Python if that's the thing you want.
-
-
-00:22:31.680 --> 00:22:33.680
-Steve, does this make you cringe or do you like it?
-
-
-00:22:33.680 --> 00:22:35.680
-Uh, well, it's...
-
-
-00:22:35.680 --> 00:22:37.680
-Both?
-
-
-00:22:37.680 --> 00:22:39.680
-You know, I'm not going to lie, I'm not
-
-
-00:22:39.680 --> 00:22:41.680
-the most into
-
-
-00:22:41.680 --> 00:22:43.680
-static typing in my Python code
-
-
-00:22:43.680 --> 00:22:45.680
-as a lot of other people.
-
-
-00:22:45.680 --> 00:22:47.680
-And there's a lot of
-
-
-00:22:47.680 --> 00:22:49.680
-complicated reasons, but I think for a situation like this
-
-
-00:22:49.680 --> 00:22:51.680
-I mean, I know if I was
-
-
-00:22:51.680 --> 00:22:53.680
-writing a function that took a string or an int
-
-
-00:22:53.680 --> 00:22:55.680
-the very first line would be
-
-
-00:22:55.680 --> 00:22:57.680
-converted to whichever type I actually want
-
-
-00:22:57.680 --> 00:22:59.680
-and then the rest of the function is going to look
-
-
-00:22:59.680 --> 00:23:05.040
-identical. And that's sure. And that in that case where like there might be a unparsed
-
-
-00:23:05.040 --> 00:23:09.560
-type of thing for sure. I think you wouldn't really do an overload. That would be insane.
-
-
-00:23:09.560 --> 00:23:15.280
-And my kind of gut feel and you know, I'm always open to to examples proving me wrong.
-
-
-00:23:15.280 --> 00:23:19.480
-In which case I, you know, I would write the is instance code that's in those examples.
-
-
-00:23:19.480 --> 00:23:22.960
-You know, my kind of gut feeling is that if you're doing two drastically different things
-
-
-00:23:22.960 --> 00:23:28.240
-in the function based on the type, you need two functions. And once you've got two separate
-
-
-00:23:28.240 --> 00:23:32.140
-And if the people calling don't know what they're passing you,
-
-
-00:23:32.140 --> 00:23:34.180
-then they've got a problem.
-
-
-00:23:34.180 --> 00:23:36.440
-And it's not so much my responsibility
-
-
-00:23:36.440 --> 00:23:37.700
-to fix it with overloading.
-
-
-00:23:37.700 --> 00:23:40.380
-That said, overloading is really cool.
-
-
-00:23:40.380 --> 00:23:43.300
-And I am the exact opposite person
-
-
-00:23:43.300 --> 00:23:45.020
-when it comes to C and C++.
-
-
-00:23:45.020 --> 00:23:47.220
-I will do all the craziest possible stuff
-
-
-00:23:47.220 --> 00:23:48.500
-with overloading in those languages,
-
-
-00:23:48.500 --> 00:23:50.040
-because I think it fits the language,
-
-
-00:23:50.040 --> 00:23:51.500
-and it's a lot of fun.
-
-
-00:23:51.500 --> 00:23:53.780
-And there's definitely occasions and value
-
-
-00:23:53.780 --> 00:23:55.340
-for having it in Python.
-
-
-00:23:55.340 --> 00:23:57.540
-We do have the single dispatch decorator.
-
-
-00:23:57.540 --> 00:23:59.860
-has been part of Python for a while, which will do this
-
-
-00:23:59.860 --> 00:24:02.700
-on the very first parameter.
-
-
-00:24:02.700 --> 00:24:06.820
-This, very trivially extending it to the whole function
-
-
-00:24:06.820 --> 00:24:09.660
-signature is really cool.
-
-
-00:24:09.660 --> 00:24:14.020
-So if I needed to do this, I would probably
-
-
-00:24:14.020 --> 00:24:15.620
-want to use a library like this.
-
-
-00:24:15.620 --> 00:24:21.140
-I would probably reconsider my API design choices
-
-
-00:24:21.140 --> 00:24:23.100
-up to that point.
-
-
-00:24:23.100 --> 00:24:26.240
-But I can understand the attraction of getting to,
-
-
-00:24:26.240 --> 00:24:29.460
-you know, to reuse the name
-
-
-00:24:29.460 --> 00:24:31.860
-and not make the person calling it think too hard
-
-
-00:24:31.860 --> 00:24:35.360
-about how, you know, what's actually gonna run.
-
-
-00:24:35.360 --> 00:24:38.060
-- Yeah, the place where this sort of seems interesting
-
-
-00:24:38.060 --> 00:24:39.460
-to me is, you know, there's some,
-
-
-00:24:39.460 --> 00:24:41.480
-lot of like tricks and juggling people do
-
-
-00:24:41.480 --> 00:24:43.460
-with like star args, star star kW args,
-
-
-00:24:43.460 --> 00:24:45.700
-where like, okay, depending on how you pass it,
-
-
-00:24:45.700 --> 00:24:47.220
-stuff will do a bunch of things.
-
-
-00:24:47.220 --> 00:24:48.060
-- Yeah.
-
-
-00:24:48.060 --> 00:24:51.180
-- And I'm always looking for a way to like not do that.
-
-
-00:24:51.180 --> 00:24:52.020
-- Yeah.
-
-
-00:24:52.020 --> 00:24:57.140
-How can I not? How can I remove that? Like it's completely opaque. I have to do a Google search
-
-
-00:24:57.140 --> 00:25:02.260
-and read the docs to figure out what is at all possible here. Well, one of these days I'm going
-
-
-00:25:02.260 --> 00:25:05.700
-probably going to take all of the kind of patents for that kind of thing that I've collected and
-
-
-00:25:05.700 --> 00:25:10.900
-turn it into a book. But writing a book just feels like way too much work. So not anytime soon. Sorry.
-
-
-00:25:10.900 --> 00:25:16.100
-My colleagues at work can ping me at any time and I'll give them a patent for what they're
-
-
-00:25:16.100 --> 00:25:24.020
-trying to do. But that's, I do have quite a set of, oh, you're trying to make stuff weirdly work
-
-
-00:25:24.020 --> 00:25:29.460
-in this way. Here's a nice way that you can enable that without having to resort to, you know, type
-
-
-00:25:29.460 --> 00:25:34.020
-checks and everything. Yeah, yeah. I've been using, I mean, I've been using Python for a long time.
-
-
-00:25:34.020 --> 00:25:38.900
-And I do remember one of the first things that I noticed is I couldn't do overloading. And at the
-
-
-00:25:38.900 --> 00:25:44.420
-time, so this is, you know, many years ago, I was using a lot of overloading in my C and C++ code.
-
-
-00:25:45.220 --> 00:25:48.300
-and I was like, "Oh, I can't do overloading."
-
-
-00:25:48.300 --> 00:25:50.300
-But one of the things I've noticed is actually,
-
-
-00:25:50.300 --> 00:25:54.660
-instead of wishing that I had overloading in Python,
-
-
-00:25:54.660 --> 00:25:58.980
-I've noticed that I don't really use it in C and C++ anymore.
-
-
-00:25:58.980 --> 00:26:00.540
->> It's gone the other way.
-
-
-00:26:00.540 --> 00:26:03.780
->> Yeah. I'd rather be more explicit about
-
-
-00:26:03.780 --> 00:26:09.660
-the two functions that maybe they're similarly named,
-
-
-00:26:09.660 --> 00:26:13.020
-but they have an appendix that's different.
-
-
-00:26:13.020 --> 00:26:15.260
-so that if you have different data, you pass it.
-
-
-00:26:15.260 --> 00:26:17.660
-And I'm with you, Michael, I'd rather have people go,
-
-
-00:26:17.660 --> 00:26:19.180
-well, which one do I need?
-
-
-00:26:19.180 --> 00:26:22.940
-I'll look it up, then just passing the wrong data type
-
-
-00:26:22.940 --> 00:26:25.860
-and having me, because sometimes
-
-
-00:26:25.860 --> 00:26:27.600
-if they haven't converted the data,
-
-
-00:26:27.600 --> 00:26:31.380
-like string versus number is a scary one for me
-
-
-00:26:31.380 --> 00:26:33.860
-because I'm often getting my numbers
-
-
-00:26:33.860 --> 00:26:38.020
-from an API or something, and they come in as a string
-
-
-00:26:38.020 --> 00:26:39.420
-if you forgot to convert it
-
-
-00:26:39.420 --> 00:26:41.120
-and you passed it to the wrong thing,
-
-
-00:26:41.120 --> 00:26:43.680
-and you're really doing something completely different.
-
-
-00:26:43.680 --> 00:26:45.600
-That's not a good thing.
-
-
-00:26:45.600 --> 00:26:47.640
-- I got bit by that one just yesterday,
-
-
-00:26:47.640 --> 00:26:51.840
-updating one of my CI builds to use Python 3.1,
-
-
-00:26:51.840 --> 00:26:52.860
-I mean 3.10.
-
-
-00:26:52.860 --> 00:26:54.680
-(laughing)
-
-
-00:26:54.680 --> 00:26:55.520
-- Exactly.
-
-
-00:26:55.520 --> 00:26:57.140
-- Is it a string or is it a number?
-
-
-00:26:57.140 --> 00:26:59.000
-(laughing)
-
-
-00:26:59.000 --> 00:27:00.080
-- Interesting, yeah.
-
-
-00:27:00.080 --> 00:27:05.120
-- But yeah, certainly that conversion would be worrying.
-
-
-00:27:05.120 --> 00:27:07.680
-The other one is, is it a string or is it a list of strings?
-
-
-00:27:07.680 --> 00:27:10.000
-And that's the one that bites us in Python all the time.
-
-
-00:27:10.000 --> 00:27:13.680
-and I don't even know how you resolve an overloaded function
-
-
-00:27:13.680 --> 00:27:17.640
-based on, is it a string or can I iterate it?
-
-
-00:27:17.640 --> 00:27:19.040
-- Well, like in that case, actually,
-
-
-00:27:19.040 --> 00:27:21.600
-I would rather just have that part be part of the function.
-
-
-00:27:21.600 --> 00:27:23.920
-At the top of it, if it can handle both,
-
-
-00:27:23.920 --> 00:27:28.880
-to check the type and iterate or not, but you know.
-
-
-00:27:28.880 --> 00:27:30.520
-- Yeah, well, all right, let me close this out
-
-
-00:27:30.520 --> 00:27:32.720
-with two quick thoughts.
-
-
-00:27:32.720 --> 00:27:34.840
-First, I think this is interesting
-
-
-00:27:34.840 --> 00:27:37.560
-because it's one of the things that's possible
-
-
-00:27:37.560 --> 00:27:38.680
-with modern Python.
-
-
-00:27:38.680 --> 00:27:40.000
-Like once we've added typing,
-
-
-00:27:40.000 --> 00:27:41.840
-now you could consider this as a thing,
-
-
-00:27:41.840 --> 00:27:45.640
-whereas previously it really was highly impractical,
-
-
-00:27:45.640 --> 00:27:48.320
-I think, as a way to do it.
-
-
-00:27:48.320 --> 00:27:49.520
-So I think that's kind of cool.
-
-
-00:27:49.520 --> 00:27:52.240
-And then two, I think it might be an entryway
-
-
-00:27:52.240 --> 00:27:53.760
-for people who are not where Brian,
-
-
-00:27:53.760 --> 00:27:55.600
-and I'll put myself in there as well,
-
-
-00:27:55.600 --> 00:27:57.400
-yet of going like, actually,
-
-
-00:27:57.400 --> 00:27:59.480
-these things I thought I need, I don't need those, right?
-
-
-00:27:59.480 --> 00:28:00.840
-There's a lot of stuff I thought I needed
-
-
-00:28:00.840 --> 00:28:02.560
-and I haven't used it for three years,
-
-
-00:28:02.560 --> 00:28:03.980
-so maybe I actually don't need it.
-
-
-00:28:03.980 --> 00:28:06.640
-But that's not how you maybe first approach
-
-
-00:28:06.640 --> 00:28:08.560
-solving your first problem in Python,
-
-
-00:28:08.560 --> 00:28:11.800
-that you're coming from C++ or whatever, C#, whatever,
-
-
-00:28:11.800 --> 00:28:13.720
-this might be a gateway.
-
-
-00:28:13.720 --> 00:28:15.480
-So anyway, those are my two thoughts.
-
-
-00:28:15.480 --> 00:28:18.720
-- One more thought from Dean after Python 3.11,
-
-
-00:28:18.720 --> 00:28:20.280
-do we get Python 95?
-
-
-00:28:20.280 --> 00:28:22.080
-(laughing)
-
-
-00:28:22.080 --> 00:28:24.960
-- There was a Windows 3.12.
-
-
-00:28:24.960 --> 00:28:27.600
-So I think Python gets to do a 3.12 as well.
-
-
-00:28:27.600 --> 00:28:28.440
-(laughing)
-
-
-00:28:28.440 --> 00:28:29.280
-- 3.12.
-
-
-00:28:29.280 --> 00:28:32.560
-- I think it was only available in China.
-
-
-00:28:32.560 --> 00:28:33.400
-- Interesting.
-
-
-00:28:33.400 --> 00:28:35.560
-- And I believe, I like to follow on with that, Dean,
-
-
-00:28:35.560 --> 00:28:36.800
-very funny.
-
-
-00:28:36.800 --> 00:28:40.760
-I believe that Windows 10 was named--
-
-
-00:28:40.760 --> 00:28:42.920
-you let me know if you know a difference, Steve.
-
-
-00:28:42.920 --> 00:28:44.760
-Windows 10 was named Windows 10 because there
-
-
-00:28:44.760 --> 00:28:47.800
-used to be the check Windows 9 as the starting
-
-
-00:28:47.800 --> 00:28:49.480
-string for 95 and 98.
-
-
-00:28:49.480 --> 00:28:51.880
-So you can't be 9 because then you're going to be 95.
-
-
-00:28:51.880 --> 00:28:53.200
-So we got to kick on past it.
-
-
-00:28:53.200 --> 00:28:54.580
-It's kind of like your 310 thing.
-
-
-00:28:54.580 --> 00:28:58.600
-There was some embarrassingly big language run times
-
-
-00:28:58.600 --> 00:29:03.000
-out there still doing that check that really struggled
-
-
-00:29:03.000 --> 00:29:07.480
-with Windows 9 and showed up in enough places
-
-
-00:29:07.480 --> 00:29:11.400
-that, yeah, I think it just made sense for everyone
-
-
-00:29:11.400 --> 00:29:14.520
-to just skip it.
-
-
-00:29:14.520 --> 00:29:15.440
-Not skipping 13.
-
-
-00:29:15.440 --> 00:29:16.200
-We're skipping 9.
-
-
-00:29:16.200 --> 00:29:17.000
-It's too unlucky.
-
-
-00:29:17.000 --> 00:29:17.680
-All right.
-
-
-00:29:17.680 --> 00:29:18.180
-Awesome.
-
-
-00:29:18.180 --> 00:29:19.360
-Brian, what you got for us?
-
-
-00:29:19.360 --> 00:29:20.480
-Oh, what do I have next?
-
-
-00:29:20.480 --> 00:29:24.960
-I have the next generation Seaborn interface.
-
-
-00:29:24.960 --> 00:29:29.520
-So Seaborn is a really awesome plotting library
-
-
-00:29:29.520 --> 00:29:31.520
-built on Matplotlib.
-
-
-00:29:31.520 --> 00:29:34.360
-And I, you know, actually I don't use it that much,
-
-
-00:29:34.360 --> 00:29:36.360
-but I've always been intrigued by it
-
-
-00:29:36.360 --> 00:29:39.560
-and kind of watching what plotting libraries do and stuff.
-
-
-00:29:39.560 --> 00:29:41.440
-And one of the things I was curious about,
-
-
-00:29:41.440 --> 00:29:44.320
-which I'm really grateful for this article,
-
-
-00:29:44.320 --> 00:29:46.080
-is some of the history behind it.
-
-
-00:29:46.080 --> 00:29:48.000
-So the article starts off,
-
-
-00:29:48.000 --> 00:29:50.240
-next generation Seaboard interface,
-
-
-00:29:50.240 --> 00:29:52.760
-talks about the background and goals,
-
-
-00:29:52.760 --> 00:29:56.000
-but some of the great things in here,
-
-
-00:29:56.000 --> 00:29:57.900
-let me grab some notes.
-
-
-00:29:57.900 --> 00:30:00.760
-This work grew out of a long running effort
-
-
-00:30:00.760 --> 00:30:05.240
-to refactor Seaborn internals, so that functions,
-
-
-00:30:05.240 --> 00:30:08.120
-you know, anyway, where I wanted to get at
-
-
-00:30:08.120 --> 00:30:10.240
-was he was developing a refactor of the internals.
-
-
-00:30:10.240 --> 00:30:11.440
-And he's like, wait, wait a second,
-
-
-00:30:11.440 --> 00:30:12.400
-if I want to refactor it,
-
-
-00:30:12.400 --> 00:30:14.480
-maybe I should expose more stuff.
-
-
-00:30:14.480 --> 00:30:18.440
-And some of the background was Seaborn
-
-
-00:30:18.440 --> 00:30:20.720
-was originally conceived of as a toolbox
-
-
-00:30:20.720 --> 00:30:25.040
-to do of domain-specific statistical graphics
-
-
-00:30:25.040 --> 00:30:27.040
-to be used alongside Matplotlib.
-
-
-00:30:27.040 --> 00:30:29.200
-So the intent was people would use both Seaborn
-
-
-00:30:29.200 --> 00:30:30.640
-and Matplotlib together.
-
-
-00:30:30.640 --> 00:30:34.480
-However, things that people are doing things differently.
-
-
-00:30:34.480 --> 00:30:36.860
-A lot of people just grab Seaborn by itself.
-
-
-00:30:36.860 --> 00:30:38.800
-Some people even just learn Seaborn
-
-
-00:30:38.800 --> 00:30:40.760
-before they even learn Matplotlib,
-
-
-00:30:40.760 --> 00:30:42.400
-which is an interesting thing.
-
-
-00:30:42.400 --> 00:30:45.200
-And that's how I thought you were supposed to be doing this.
-
-
-00:30:45.200 --> 00:30:48.580
-But the concept was, and then over time,
-
-
-00:30:48.580 --> 00:30:49.700
-there's a whole bunch of features
-
-
-00:30:49.700 --> 00:30:50.920
-that have been added to Seaborn
-
-
-00:30:50.920 --> 00:30:53.280
-to where it's like really slick looking,
-
-
-00:30:53.280 --> 00:30:56.040
-but to do the same thing by hand in Matplotlib
-
-
-00:30:56.040 --> 00:30:57.080
-is a lot of work.
-
-
-00:30:57.080 --> 00:30:59.240
-So there's some things that,
-
-
-00:30:59.240 --> 00:31:02.000
-Like if you see born is almost there,
-
-
-00:31:02.000 --> 00:31:03.240
-but you need to tweak it a little bit
-
-
-00:31:03.240 --> 00:31:04.760
-and you have to do things manually,
-
-
-00:31:04.760 --> 00:31:06.860
-well, then you have to just do everything by yourself
-
-
-00:31:06.860 --> 00:31:07.980
-and it's a lot of work.
-
-
-00:31:07.980 --> 00:31:12.060
-So the idea around this, a rewrite of the API
-
-
-00:31:12.060 --> 00:31:14.700
-is let's rework some of the internals
-
-
-00:31:14.700 --> 00:31:17.040
-so that a lot of the little sub components
-
-
-00:31:17.040 --> 00:31:20.380
-that go inside of a plot are exposed.
-
-
-00:31:20.380 --> 00:31:22.540
-That way people can get access to it
-
-
-00:31:22.540 --> 00:31:26.940
-to do a more fine tune configuration within the,
-
-
-00:31:26.940 --> 00:31:28.900
-so they don't really have to just do everything
-
-
-00:31:28.900 --> 00:31:31.860
-It's either all or nothing Seaborn or Matplotlib.
-
-
-00:31:31.860 --> 00:31:34.020
-You can kind of do both more easily,
-
-
-00:31:34.020 --> 00:31:36.060
-which is a kind of a cool idea.
-
-
-00:31:36.060 --> 00:31:37.940
-There's a whole bunch of great details in here
-
-
-00:31:37.940 --> 00:31:40.380
-that talk about some of the API changes.
-
-
-00:31:40.380 --> 00:31:43.580
-Basically, it's exposing the internal.
-
-
-00:31:43.580 --> 00:31:45.260
-If you create a plot, there's nothing there
-
-
-00:31:45.260 --> 00:31:46.100
-and it won't show up.
-
-
-00:31:46.100 --> 00:31:48.060
-You have to create layers on the plot.
-
-
-00:31:48.060 --> 00:31:50.340
-And then within the layers, you've got marks
-
-
-00:31:50.340 --> 00:31:53.100
-and different components that go into it.
-
-
-00:31:53.100 --> 00:31:55.820
-I kind of like this idea of building things up.
-
-
-00:31:55.820 --> 00:31:58.620
-But what I really like is the public aspect of this.
-
-
-00:31:58.620 --> 00:32:01.760
-You've got a library that's out in the open.
-
-
-00:32:01.760 --> 00:32:04.140
-It's being used by a lot of people already,
-
-
-00:32:04.140 --> 00:32:06.360
-and somebody's saying, "Maybe we should tweak
-
-
-00:32:06.360 --> 00:32:08.020
-the API and do something different."
-
-
-00:32:08.020 --> 00:32:10.660
-Just going ahead and doing that in the open saying,
-
-
-00:32:10.660 --> 00:32:11.880
-"Hey, we're going to do this.
-
-
-00:32:11.880 --> 00:32:13.180
-There's a note at the top,
-
-
-00:32:13.180 --> 00:32:14.620
-or I'm thinking about doing this,
-
-
-00:32:14.620 --> 00:32:15.860
-note at the top saying,
-
-
-00:32:15.860 --> 00:32:17.140
-it's a work in progress.
-
-
-00:32:17.140 --> 00:32:20.220
-Don't depend on these examples because things might change,
-
-
-00:32:20.220 --> 00:32:22.800
-but this is the direction we're trying to go,
-
-
-00:32:22.800 --> 00:32:25.100
-trying to get feedback from people."
-
-
-00:32:25.100 --> 00:32:28.020
-I think this is a lot of things that a lot of people
-
-
-00:32:28.020 --> 00:32:30.340
-struggle with when they're maintaining packages
-
-
-00:32:30.340 --> 00:32:32.980
-that have been around for a long time is,
-
-
-00:32:32.980 --> 00:32:34.380
-I wanna do things a little different,
-
-
-00:32:34.380 --> 00:32:36.660
-but am I gonna break everybody?
-
-
-00:32:36.660 --> 00:32:37.980
-And talking through it.
-
-
-00:32:37.980 --> 00:32:40.060
-So anyway, this is a great read,
-
-
-00:32:40.060 --> 00:32:43.380
+00:32:39.980 --> 00:32:43.020
 especially if you're a data plotting kind of person.
 
+00:32:43.020 --> 00:32:47.660
+Yeah. Very nice. I always want to do more with visualization and I'm sure that I have some good
 
-00:32:43.380 --> 00:32:44.220
-- Yeah, very nice.
+00:32:47.660 --> 00:32:52.180
+data I could pull up. Yeah. I ended up basically just writing APIs and websites these days,
 
+00:32:52.180 --> 00:32:56.780
+but, but I really should be pulling this up and doing some of these graphs and I'm really happy
 
-00:32:44.220 --> 00:32:46.340
-I always wanna do more with visualization,
+00:32:56.780 --> 00:32:58.920
+these are, these are around. Steve, how about you?
 
+00:32:58.920 --> 00:33:04.620
+See, Seaborn's great. It's always, like back when I first discovered it, one of its major
 
-00:32:46.340 --> 00:32:48.780
-and I'm sure that I have some good data I could pull up.
+00:33:04.620 --> 00:33:10.600
+selling points was simply importing Seaborn would magically make your default map plot.lib charts look
 
+00:33:10.600 --> 00:33:13.580
+nicer. which, which map.lib is.
 
-00:32:48.780 --> 00:32:49.620
-- Yeah.
+00:33:13.580 --> 00:33:15.640
+I love it. It's like the bootstrap of map plot.lib.
 
+00:33:15.720 --> 00:33:21.640
+It really was. It's like they, they just apply their style by default and every map plot.lib chart
 
-00:32:49.620 --> 00:32:51.180
-- I end up basically just writing APIs
+00:33:21.640 --> 00:33:26.280
+suddenly looked nicer, which, you know, map plot.lib's done their own styling work now. So it's
 
+00:33:26.280 --> 00:33:32.540
+less valuable for that. I, I do like this API. It looks good. And, and as Dean's pointing out in
 
-00:32:51.180 --> 00:32:52.700
-on websites these days.
+00:33:32.540 --> 00:33:37.220
+chat, it's like map plot.lib has an object oriented plotting API similar to this, possibly identical,
 
+00:33:37.220 --> 00:33:43.080
+just like everyone else. I've never learned the object oriented API. but, but it is there.
 
-00:32:52.700 --> 00:32:54.660
-But I really should be pulling this up
+00:33:43.080 --> 00:33:48.280
+And it's, it's, you know, it's, that's the modern one. It's like, I know a lot of people say map
 
+00:33:48.280 --> 00:33:53.320
+plot.lib is impenetrable, and kind of hard to build things up, but it does have a really nice API
 
-00:32:54.660 --> 00:32:55.760
-and doing some of these graphs,
+00:33:53.320 --> 00:34:01.880
+there. It's just not the, the pipe plot one that kind of imitates mat labs old API. and, and so,
 
+00:34:01.880 --> 00:34:06.760
+you know, having it there is, is really nice. And Seaborn, you know, having their own is also great.
 
-00:32:55.760 --> 00:32:58.180
-And I'm really happy these are around.
+00:34:06.920 --> 00:34:14.280
+Um, another, nice, thing that to read about in this is, he's does a hat tip to a
 
+00:34:14.280 --> 00:34:21.480
+ggplot or ggplot two or whatever it's called. saying that, yes, it's going to look, a lot of
 
-00:32:58.180 --> 00:32:59.260
-Steve, how about you?
+00:34:21.480 --> 00:34:28.040
+this is similar to ggplot, but, it isn't that I'm trying to copy it or maybe that's, that's definitely
 
+00:34:28.040 --> 00:34:35.280
+influence, but, it is, that Seaborn is, is important because we think about things
 
-00:32:59.260 --> 00:33:00.320
-- See, Seaborn's great.
+00:34:35.280 --> 00:34:42.800
+differently in Python than we do in R and, and, and just having, it would be, but also a hat tip to
 
+00:34:42.800 --> 00:34:48.440
+another library that is a, a wrapper around ggplot. If you just want that, you can do that in Python too.
 
-00:33:00.320 --> 00:33:04.000
-It's always, like, back when I first discovered it,
+00:34:48.440 --> 00:34:54.200
+That's available. So, I, it is interesting to, these are, we think of these as competing libraries,
 
+00:34:54.200 --> 00:34:58.120
+but they're really not competing with each other. They're working together to push the, push
 
-00:33:04.000 --> 00:33:07.600
-one of its major selling points was simply importing Seaborn
+00:34:58.120 --> 00:35:06.920
+plotting forward. So, yeah. Nice. Dean out there points out you can do plot.style.useSeaborn or ggplot,
 
+00:35:06.920 --> 00:35:10.040
+which is another one. Let me throw out. Oh yeah, go ahead, Steve.
 
-00:33:07.600 --> 00:33:09.320
-would magically make your default
+00:35:10.040 --> 00:35:15.400
+ggplot's certainly the one to copy from. I mean, that's the, there's a reason that one is, you know,
 
+00:35:15.400 --> 00:35:22.360
+as universally popular as, you know, any plotting library can possibly be. it's probably even,
 
-00:33:09.320 --> 00:33:11.140
-Matplotlib charts look nicer.
+00:35:22.360 --> 00:35:27.800
+you know, it's probably competing with Excel for popularity of plotting data. Realistically, it's,
 
+00:35:27.800 --> 00:35:32.920
+it's, it's a really nice API and it looks good and everyone's familiar with it. And so, you know,
 
-00:33:11.140 --> 00:33:13.600
-Which Matplotlib is--
+00:35:32.920 --> 00:35:37.960
+there's nothing wrong with copying from ggplot. Nice. I got one more shout out to throw,
 
+00:35:37.960 --> 00:35:46.120
+into this conversation, the XKCD plotting style for, matplotlib. So you've got, I mean, this is
 
-00:33:13.600 --> 00:33:15.920
-- I love it, it's like the bootstrap of Matplotlib.
+00:35:46.120 --> 00:35:54.040
+fantastic. It looks like the, it really does look like XKCD would, you know, the comic would do
 
+00:35:54.040 --> 00:35:59.400
+for, for these. So, this is fantastic. I love it. What I love is I actually see this. I see this
 
-00:33:15.920 --> 00:33:16.760
-- It really was.
+00:35:59.400 --> 00:36:05.160
+in papers and stuff like that. People just go ahead and use the XKCD style and for serious stuff. And it
 
+00:36:05.160 --> 00:36:10.600
+just is, it's awesome. I love it. I think there's actually some value to having like cartoony looking
 
-00:33:16.760 --> 00:33:19.760
-It's like they just apply their style by default
+00:36:10.600 --> 00:36:15.240
+graphics, like UI sketches and graphs to say like, look, this is speculative. This is just like,
 
+00:36:15.240 --> 00:36:20.120
+don't read too much into it. I'm trying to give you an idea rather than an exact thing. And I think
 
-00:33:19.760 --> 00:33:22.680
-and every Matplotlib chart suddenly look nicer.
+00:36:20.120 --> 00:36:26.280
+sort of a UI like cartoony looking sketches. And this also plays into that. Yeah. Right. Steve,
 
+00:36:26.280 --> 00:36:31.960
+you got the last one. I got the last one. Yeah. So this is another kind of recent, delivery from,
 
-00:33:22.680 --> 00:33:24.840
-Which, you know, Matplotlib's done their own
+00:36:31.960 --> 00:36:39.160
+from the CPython core team. we can now compile CPython to WebAssembly. so, and to a lot of
 
+00:36:39.160 --> 00:36:43.880
+people that probably means very little, but I guess the brief, brief summary is,
 
-00:33:24.840 --> 00:33:28.200
-styling work now, so it's less valuable for that.
+00:36:43.880 --> 00:36:50.440
+is WebAssembly is, kind of what the JavaScript in your browser compiles to before it runs.
 
+00:36:50.440 --> 00:36:56.200
+So it's skipped that initial step of being JavaScript and it's now ready to run in the browser.
 
-00:33:28.200 --> 00:33:30.120
-I do like this API.
+00:36:56.200 --> 00:37:01.800
+so it's, it's a lower level, there are tool chains out there that can compile all sorts of languages
 
+00:37:01.800 --> 00:37:08.040
+directly to WebAssembly. and so in this case we've taken, I believe we use one of the,
 
-00:33:30.120 --> 00:33:30.760
-It looks good.
+00:37:08.680 --> 00:37:13.320
+I don't know the exact tool chain that's used and it may not matter, but it basically takes the C code
 
+00:37:13.320 --> 00:37:19.400
+and compiles that to WebAssembly gives you a package that can be brought into an electron app
 
-00:33:30.760 --> 00:33:32.880
-And as Dean's pointing out in chat,
+00:37:19.400 --> 00:37:25.720
+or a node JS app or a web browser, modern web browser and be run in the browser. there is,
 
+00:37:25.720 --> 00:37:30.360
+so this page is a little bit dated. there's been a bit more work since then, but I found this is the
 
-00:33:32.880 --> 00:33:35.720
-it's like, Matplotlib has an object-oriented plotting API
+00:37:30.360 --> 00:37:35.720
+best overview of where things are kind of at long list of C extensions that don't work. Probably unsurprising,
 
+00:37:35.720 --> 00:37:40.200
+like the browser doesn't have a lot of this stuff in it. Yeah. You don't have,
 
-00:33:35.720 --> 00:33:37.800
-similar to this, possibly identical,
+00:37:40.200 --> 00:37:45.560
+what no TK, all the different APIs, the win 32 API underneath or whatever it was delegating to you.
 
+00:37:45.560 --> 00:37:53.320
+Yeah. Don't no Tkinter. What? No. Yeah. No, no Tkinter, no sub process, C types. Apparently
 
-00:33:37.800 --> 00:33:38.920
-just like everyone else.
+00:37:53.320 --> 00:38:00.760
+you can do, I've, I've heard there is a lib FFI port to, to the M script and kind of platform.
 
+00:38:00.760 --> 00:38:07.640
+so how, how, how this kind of works is kind of when you take WebAssembly in, into a browser,
 
-00:33:38.920 --> 00:33:42.440
-I've never learned the object-oriented API.
+00:38:07.640 --> 00:38:12.440
+it has access to nothing. Like it starts off in a really enclosed kind of box of things that it can
 
+00:38:12.440 --> 00:38:17.080
+do. and, and that doesn't actually work for Python at all because the very early thing that
 
-00:33:42.440 --> 00:33:43.120
-But it is there.
+00:38:17.080 --> 00:38:23.320
+tries to do is search the file system for what files it should be loading. so, so you, we actually
 
+00:38:23.320 --> 00:38:31.080
+build it as part of another platform. And script is one platform that kind of poly fills a whole lot of
 
-00:33:43.120 --> 00:33:47.000
-And that's the modern one.
+00:38:31.080 --> 00:38:37.480
+native looking APIs so that code that's compiled on top of them script and is able to use it. And that
 
+00:38:37.480 --> 00:38:43.480
+this little demo, which I just hit start REPL, this is running on that. So this is a build of
 
-00:33:47.000 --> 00:33:48.640
-I know a lot of people say Matplotlib
+00:38:43.480 --> 00:38:51.480
+Python 3 11 alpha four built with clang running on em script. And I can, I believe I can do this
 
+00:38:51.480 --> 00:38:56.040
+and be like OS Lister. And, and it thinks there's a file system there. Now that's not my file system.
 
-00:33:48.640 --> 00:33:51.840
-is impenetrable and kind of hard to build things up.
+00:38:56.040 --> 00:39:01.000
+That's in memory. it can be changed to browser storage. but this is entirely in the
 
+00:39:01.000 --> 00:39:04.200
+browser. Like there's nothing downloaded. There's nothing running on my machine here.
 
-00:33:51.840 --> 00:33:53.720
-But it does have a really nice API there.
+00:39:04.200 --> 00:39:08.040
+There's nothing running in the cloud. it's literally in the browser. I can probably freeze
 
+00:39:08.040 --> 00:39:13.640
+my browser with this. Like I can do an infinite loop and do it, do it. Let's see if this cuts me off.
 
-00:33:53.720 --> 00:33:57.640
-It's just not the PiPlot one that kind of imitates
+00:39:13.640 --> 00:39:18.200
+Uh, I'll just let that run. What happens if you hit clear?
 
+00:39:18.200 --> 00:39:25.400
+Started again. We're going to start again. No, no, no, no. It's done. I'll just refresh. And yeah.
 
-00:33:57.640 --> 00:34:00.760
-MATLAB's old API.
+00:39:26.440 --> 00:39:32.440
+Uh, so yeah. And, and the, there's a second one that the actual builders, it was committed supports,
 
+00:39:32.440 --> 00:39:38.440
+which is WASI W-A-S-I. that's a slightly different approach to adding all the functionality
 
-00:34:00.760 --> 00:34:03.880
-And so having it there is really nice.
+00:39:38.440 --> 00:39:44.280
+around a WebAssembly module. it's, so it's a little bit more flexible, a little bit more controlled.
 
+00:39:44.280 --> 00:39:51.240
+And scripted is really like, give me POSIX system inside my browser, all in memory. and so, and so
 
-00:34:03.880 --> 00:34:07.440
-And Seaborn, having their own is also great.
+00:39:51.240 --> 00:39:58.040
+we have two options, and these are available in the, in the main branch. I don't, at the moment,
 
+00:39:58.040 --> 00:40:03.240
+we're not shipping prebuilt modules for WebAssembly. That might be a possibility. if that's something
 
-00:34:07.440 --> 00:34:10.480
-Another nice thing to read about in this
+00:40:03.240 --> 00:40:08.440
+that you'd like to see, then I guess go to discuss.python.org and post about it. It's probably
 
+00:40:08.440 --> 00:40:14.440
+a post there. I should have looked for a post there. but we're not currently doing prebuilt releases,
 
-00:34:10.480 --> 00:34:18.080
-is he does a hat tip to ggplot2 or whatever it's called,
+00:40:14.440 --> 00:40:20.120
+but, but I think we could, I think this is one of these options where the, the WebAssembly build is
 
+00:40:20.120 --> 00:40:25.880
+totally portable. And so if we build it, we can distribute it. And then, you know, websites that
 
-00:34:18.080 --> 00:34:21.080
-saying that, yes, it's going to look--
+00:40:25.880 --> 00:40:30.520
+want to do something like this could just download it from our servers and, and run it. So I think
 
+00:40:30.520 --> 00:40:36.120
+there's, there's a lot of potential here. what I'm, you know, and, and, and it's at the potential
 
-00:34:21.080 --> 00:34:23.600
-a lot of this is similar to ggplot.
+00:40:36.120 --> 00:40:42.040
+stage, right? This is another stepping stone to bigger and better things. our kind of responsibility
 
+00:40:42.040 --> 00:40:46.680
+as the core team is to enable it. And now we really want people to come in and pick this up and do
 
-00:34:23.600 --> 00:34:26.040
-but it isn't that I'm trying to copy it
+00:40:46.680 --> 00:40:51.720
+awesome things with it. Firstly, so we can figure out what gaps still need to be filled. but also just,
 
+00:40:51.720 --> 00:40:55.800
+just to, just to expand, you know, the growth and the reach of Python, to bring it into places
 
-00:34:26.040 --> 00:34:29.000
-or maybe that's definitely influence,
+00:40:55.800 --> 00:41:01.800
+that currently doesn't exist or can't work, and you know, give it new life and new places,
 
+00:41:01.800 --> 00:41:07.480
+open it up to new people. This is fantastic. Congratulations. and so the work for this
 
-00:34:29.000 --> 00:34:33.520
-but it is that Seaborn is important
+00:41:07.480 --> 00:41:14.280
+primarily done by Katie Bell, Christian Himes, and Ethan Smith. So I think Christian got to do all the
 
+00:41:14.280 --> 00:41:19.320
+merge commits, but it's definitely been number of people working on this for a while. those are the,
 
-00:34:33.520 --> 00:34:36.320
-because we think about things differently in Python
+00:41:19.320 --> 00:41:25.720
+the, the primary three. I'm really excited for the possibility for this. I think one of the
 
+00:41:25.720 --> 00:41:30.840
+things that could be amazing, obviously running it in the front end is a thing that could be done.
 
-00:34:36.320 --> 00:34:37.760
-than we do in R.
+00:41:30.840 --> 00:41:36.680
+I saw the documentation said it was about 10 megs to download it. I'm sure you can put that on like a
 
+00:41:36.680 --> 00:41:41.960
+CDN. So you kind of hit it once somewhere for a particular version of Python. That's pretty good.
 
-00:34:37.760 --> 00:34:41.600
-And just having, it would be,
+00:41:41.960 --> 00:41:46.280
+You know, it's, we all have pretty fast things these days. Yeah. It's still bigger than doing it.
 
+00:41:46.280 --> 00:41:52.440
+Yeah. What gets me really excited though, is, putting that into an Electron JS app.
 
-00:34:41.600 --> 00:34:43.640
-but also a hat tip to another library
+00:41:52.440 --> 00:41:58.200
+Yeah, absolutely. Right. Because Electron JS is a really interesting way to bring web technologies
 
+00:41:58.200 --> 00:42:04.600
+cross platform as much as I, I like, oh, I said an Electron app. Still it's, it's really opened up the
 
-00:34:43.640 --> 00:34:45.840
-that is a wrapper around ggplot.
+00:42:04.600 --> 00:42:08.160
+possibility for a lot of things, but it really has meant, okay, you're doing TypeScript, you're doing
 
+00:42:08.160 --> 00:42:13.520
+JavaScript and you just have to go full on in that world. So here you could still do like your front
 
-00:34:45.840 --> 00:34:48.480
-If you just want that, you can do that in Python too,
+00:42:13.520 --> 00:42:19.040
+end and whatever, but having the core logic of that desktop app being in Python running in this,
 
+00:42:19.040 --> 00:42:21.520
+that's exciting. If that's, that can be put together.
 
-00:34:48.480 --> 00:34:49.320
-that's available.
+00:42:21.520 --> 00:42:27.200
+I should also add two things. Pyodide is a project that people have probably heard of before,
 
+00:42:27.200 --> 00:42:31.840
+which has been working on this for considerably longer than the core team has. And so I think a
 
-00:34:49.320 --> 00:34:52.520
-So it is interesting to,
+00:42:31.840 --> 00:42:37.360
+lot of the patches that needed to happen have come from them and they now get to spend more time focusing
 
+00:42:37.360 --> 00:42:43.040
+on the data science stack, which, cause they've got ports of NumPy and pandas and other libraries,
 
-00:34:52.520 --> 00:34:54.320
-We think of these as competing libraries,
+00:42:43.040 --> 00:42:49.200
+uh, to actually do data science in the browser. and the other interesting thing that I saw was
 
+00:42:49.200 --> 00:42:54.320
+someone from, from CondorForge suggesting that they could elevate was wasn't builds to
 
-00:34:54.320 --> 00:34:56.120
-but they're really not competing with each other.
+00:42:54.320 --> 00:43:00.560
+their kind of automated level. And so all of CondorForge may suddenly become available to use
 
+00:43:00.560 --> 00:43:03.680
+in the browser on top of a build of Python like this.
 
-00:34:56.120 --> 00:34:59.760
-They're working together to push the push plotting forward.
+00:43:03.680 --> 00:43:07.280
+Wow. So that, that would unlock so much. That would be incredible.
 
+00:43:07.280 --> 00:43:08.640
+Yeah. Interesting.
 
-00:34:59.760 --> 00:35:01.100
-- So yeah, nice.
+00:43:08.640 --> 00:43:14.720
+I imagine initially it would unlock a lot of bug reports, but, but we need to work through those first.
 
+00:43:14.720 --> 00:43:19.040
+Yeah. I was just thinking of, you know, take the top 1000 most popular packages,
 
-00:35:01.100 --> 00:35:05.560
-Dean out there points out you can do plot.style.useSeaborne
+00:43:19.040 --> 00:43:24.480
+you know, could you get 90% of those compiled to like other WebAssembly things that then could be
 
+00:43:24.480 --> 00:43:26.640
+included and then imported here somehow.
 
-00:35:05.560 --> 00:35:07.400
-or ggplot, which is another.
+00:43:26.640 --> 00:43:32.560
+Exactly. And the top 1000 with native code, cause it's only the native code, right? The Python code
 
+00:43:32.560 --> 00:43:36.000
+still compiles in the browser, just like it would in the CPython interpreter.
 
-00:35:07.400 --> 00:35:08.920
-- You can use ggplot.
+00:43:37.040 --> 00:43:42.240
+Uh, it's only the native code that has to be ported and built. And so once that's done, then,
 
+00:43:42.240 --> 00:43:46.320
+you know, grow up and running. So the top 1000 is probably more than you need.
 
-00:35:08.920 --> 00:35:10.280
-- Let me throw out, oh yeah, go ahead, Steve.
+00:43:46.320 --> 00:43:50.880
+Yeah, absolutely. All right. Awesome. I'm looking forward to seeing where this goes.
 
+00:43:50.880 --> 00:43:56.240
+So many neat options. There's, there's just cool ways to say, like ship the Python runtime
 
-00:35:10.280 --> 00:35:12.200
-- ggplot's certainly the one to copy from.
+00:43:56.240 --> 00:44:01.280
+to places where maybe it would have been hard to get. Now you drop this WASM file plus something that
 
+00:44:01.280 --> 00:44:05.360
+can run WASM. And then now you've got a deployable shipable. Yeah.
 
-00:35:12.200 --> 00:35:15.480
-I mean, there's a reason that one is
+00:44:05.360 --> 00:44:09.600
+See Python runtime without Tkinter and a few things, but still you might not miss it.
 
+00:44:09.600 --> 00:44:14.720
+It depends what you're doing. I mean, most apps are not Tkinter apps is all I'm saying.
 
-00:35:15.480 --> 00:35:19.340
-as universally popular as any plotting library
-
-
-00:35:19.340 --> 00:35:21.040
-can possibly be.
-
-
-00:35:21.040 --> 00:35:26.000
-It's probably competing with Excel for popularity
-
-
-00:35:26.000 --> 00:35:27.680
-of plotting data, realistically.
-
-
-00:35:27.680 --> 00:35:30.640
-It's a really nice API, and it looks good,
-
-
-00:35:30.640 --> 00:35:32.360
-and everyone's familiar with it.
-
-
-00:35:32.360 --> 00:35:35.560
-And so there's nothing wrong with copying from ggplot.
-
-
-00:35:35.560 --> 00:35:36.320
-MARK MANDEL: Nice.
-
-
-00:35:36.320 --> 00:35:39.560
-I got one more shout out to throw into this conversation.
-
-
-00:35:39.560 --> 00:35:43.880
-The XKCD plotting style for Matplotlib.
-
-
-00:35:43.880 --> 00:35:45.080
-So you've got--
-
-
-00:35:45.080 --> 00:35:46.920
-I mean, this is fantastic.
-
-
-00:35:46.920 --> 00:35:48.920
-It looks like the--
-
-
-00:35:48.920 --> 00:35:52.440
-It really does look like XKCD would,
-
-
-00:35:52.440 --> 00:35:55.040
-you know, the comic would do for these.
-
-
-00:35:55.040 --> 00:35:57.440
-So this is fantastic, I love it.
-
-
-00:35:57.440 --> 00:35:59.040
-- What I love is I actually see this.
-
-
-00:35:59.040 --> 00:36:00.840
-I see this in papers and stuff like that.
-
-
-00:36:00.840 --> 00:36:03.360
-People just go ahead and use the XKCD style
-
-
-00:36:03.360 --> 00:36:05.000
-and for serious stuff.
-
-
-00:36:05.000 --> 00:36:06.680
-And it just is, it's awesome.
-
-
-00:36:06.680 --> 00:36:07.520
-I love it.
-
-
-00:36:07.520 --> 00:36:08.840
-- I think there's actually some value
-
-
-00:36:08.840 --> 00:36:11.120
-to having like cartoony looking graphics,
-
-
-00:36:11.120 --> 00:36:13.160
-like UI sketches and graphs to say like,
-
-
-00:36:13.160 --> 00:36:14.520
-look, this is speculative.
-
-
-00:36:14.520 --> 00:36:16.880
-This is just like, don't read too much into it.
-
-
-00:36:16.880 --> 00:36:17.900
-I'm trying to give you an idea
-
-
-00:36:17.900 --> 00:36:19.780
-rather than an exact thing.
-
-
-00:36:19.780 --> 00:36:22.940
-And I think sort of UI, like cartoony looking sketches
-
-
-00:36:22.940 --> 00:36:25.220
-and this also plays into that.
-
-
-00:36:25.220 --> 00:36:26.060
-- Yeah.
-
-
-00:36:26.060 --> 00:36:27.580
-- Right, Steve, you got the last one?
-
-
-00:36:27.580 --> 00:36:28.620
-- I got the last one, yeah.
-
-
-00:36:28.620 --> 00:36:31.580
-So this is another kind of recent delivery
-
-
-00:36:31.580 --> 00:36:34.100
-from the CPython core team.
-
-
-00:36:34.100 --> 00:36:37.180
-We can now compile CPython to WebAssembly.
-
-
-00:36:37.180 --> 00:36:38.460
-- Wow.
-
-
-00:36:38.460 --> 00:36:41.260
-- And to a lot of people, that probably means very little.
-
-
-00:36:41.260 --> 00:36:44.980
-But I guess the brief, brief summary is WebAssembly
-
-
-00:36:44.980 --> 00:36:48.740
-is kind of what the JavaScript in your browser
-
-
-00:36:48.740 --> 00:36:50.580
-compiles to before it runs.
-
-
-00:36:50.580 --> 00:36:53.540
-So it's skipped that initial step of being JavaScript,
-
-
-00:36:53.540 --> 00:36:56.380
-and it's now ready to run in the browser.
-
-
-00:36:56.380 --> 00:36:58.580
-So it's a lower level.
-
-
-00:36:58.580 --> 00:37:00.060
-There are tool chains out there that
-
-
-00:37:00.060 --> 00:37:01.940
-can compile all sorts of languages
-
-
-00:37:01.940 --> 00:37:03.700
-directly to WebAssembly.
-
-
-00:37:03.700 --> 00:37:05.500
-And so in this case, we've taken--
-
-
-00:37:05.500 --> 00:37:08.900
-I believe we use one of the--
-
-
-00:37:08.900 --> 00:37:11.020
-I don't know the exact tool chain that's used,
-
-
-00:37:11.020 --> 00:37:11.940
-and it may not matter.
-
-
-00:37:11.940 --> 00:37:13.560
-But it basically takes the C code
-
-
-00:37:13.560 --> 00:37:15.440
-and compiles that to WebAssembly,
-
-
-00:37:15.440 --> 00:37:19.520
-gives you a package that can be brought into an Electron app
-
-
-00:37:19.520 --> 00:37:22.000
-or a Node.js app or a web browser,
-
-
-00:37:22.000 --> 00:37:25.360
-modern web browser, and be run in the browser.
-
-
-00:37:25.360 --> 00:37:28.480
-There is, so this page is a little bit dated.
-
-
-00:37:28.480 --> 00:37:29.720
-There's been a bit more work since then,
-
-
-00:37:29.720 --> 00:37:31.280
-but I found this is the best overview
-
-
-00:37:31.280 --> 00:37:32.760
-of where things are kind of at.
-
-
-00:37:32.760 --> 00:37:34.720
-Long list of C extensions that don't work.
-
-
-00:37:34.720 --> 00:37:37.720
-Probably unsurprising, like the browser doesn't have
-
-
-00:37:37.720 --> 00:37:39.000
-a lot of this stuff in it.
-
-
-00:37:39.000 --> 00:37:42.560
-- Yeah, you don't have all the different APIs,
-
-
-00:37:42.560 --> 00:37:45.560
-the Win32 API underneath or whatever it was delegating to.
-
-
-00:37:45.560 --> 00:37:46.060
-Yeah.
-
-
-00:37:46.060 --> 00:37:47.360
-No Tkinter?
-
-
-00:37:47.360 --> 00:37:49.400
-What?
-
-
-00:37:49.400 --> 00:37:52.440
-Yeah, no Tkinter, no subprocess.
-
-
-00:37:52.440 --> 00:37:53.880
-C types, apparently, you can do.
-
-
-00:37:53.880 --> 00:37:59.000
-I've heard there is a libffi port to the Emscripten
-
-
-00:37:59.000 --> 00:38:00.880
-kind of platform.
-
-
-00:38:00.880 --> 00:38:05.440
-So how this kind of works is when
-
-
-00:38:05.440 --> 00:38:07.680
-you take WebAssembly into a browser,
-
-
-00:38:07.680 --> 00:38:09.080
-it has access to nothing.
-
-
-00:38:09.080 --> 00:38:12.200
-It starts off in a really enclosed kind of box of things
-
-
-00:38:12.200 --> 00:38:13.520
-that it can do.
-
-
-00:38:13.520 --> 00:38:15.560
-And that doesn't actually work for Python at all,
-
-
-00:38:15.560 --> 00:38:17.760
-because the very only thing that it tries to do
-
-
-00:38:17.760 --> 00:38:19.840
-is search the file system for what
-
-
-00:38:19.840 --> 00:38:22.640
-files it should be loading.
-
-
-00:38:22.640 --> 00:38:25.680
-So we actually build it as part of another platform.
-
-
-00:38:25.680 --> 00:38:30.320
-Emscripten is one platform that kind of polyfills
-
-
-00:38:30.320 --> 00:38:32.840
-a whole lot of native-looking APIs
-
-
-00:38:32.840 --> 00:38:35.320
-so that code that's compiled on top of Emscripten
-
-
-00:38:35.320 --> 00:38:36.840
-is able to use it.
-
-
-00:38:36.840 --> 00:38:40.360
-And this little demo, which I just hit Start,
-
-
-00:38:40.360 --> 00:38:42.440
-REPL. This is running on that.
-
-
-00:38:42.440 --> 00:38:44.520
-So this is a build of Python 3.11,
-
-
-00:38:44.520 --> 00:38:48.520
-Alpha 4 built with Clang running on Emscripten.
-
-
-00:38:48.520 --> 00:38:51.600
-And I can, I believe I can do this,
-
-
-00:38:51.600 --> 00:38:53.400
-do like OSLister.
-
-
-00:38:53.400 --> 00:38:54.960
-And it thinks there's a file system there.
-
-
-00:38:54.960 --> 00:38:56.200
-Now that's not my file system.
-
-
-00:38:56.200 --> 00:38:57.760
-That's in memory.
-
-
-00:38:57.760 --> 00:38:59.960
-It can be changed to browser storage,
-
-
-00:38:59.960 --> 00:39:01.400
-but this is entirely in the browser.
-
-
-00:39:01.400 --> 00:39:02.680
-Like there's nothing downloaded.
-
-
-00:39:02.680 --> 00:39:04.400
-There's nothing running on my machine here.
-
-
-00:39:04.400 --> 00:39:06.080
-There's nothing running in the cloud.
-
-
-00:39:06.080 --> 00:39:07.080
-It's literally in the browser.
-
-
-00:39:07.080 --> 00:39:09.120
-I can probably freeze my browser with this.
-
-
-00:39:09.120 --> 00:39:10.700
-Like I can do an infinite loop.
-
-
-00:39:10.700 --> 00:39:11.560
->> Yeah, do it.
-
-
-00:39:11.560 --> 00:39:14.780
->> Do it. Let's see if this cuts me off.
-
-
-00:39:14.780 --> 00:39:16.660
-I'll just let that run.
-
-
-00:39:16.660 --> 00:39:18.340
->> Hit clear. What happens if you hit clear?
-
-
-00:39:18.340 --> 00:39:20.020
->> [LAUGHTER]
-
-
-00:39:20.020 --> 00:39:20.820
->> Started again?
-
-
-00:39:20.820 --> 00:39:21.260
->> No.
-
-
-00:39:21.260 --> 00:39:22.140
->> We're going to start again?
-
-
-00:39:22.140 --> 00:39:22.420
->> No.
-
-
-00:39:22.420 --> 00:39:23.540
->> No, it's done.
-
-
-00:39:23.540 --> 00:39:25.780
->> I'll refresh.
-
-
-00:39:25.780 --> 00:39:30.340
-There's a second one that
-
-
-00:39:30.340 --> 00:39:32.820
-the actual build as it was committed support,
-
-
-00:39:32.820 --> 00:39:35.420
-which is WASI, W-A-S-I.
-
-
-00:39:35.420 --> 00:39:37.420
-That's a slightly different approach to adding
-
-
-00:39:37.420 --> 00:39:41.500
-all the functionality around a WebAssembly module.
-
-
-00:39:41.500 --> 00:39:44.420
-It's a little bit more flexible, a little bit more controlled.
-
-
-00:39:44.420 --> 00:39:46.860
-Emscripten is really like, give me
-
-
-00:39:46.860 --> 00:39:51.140
-POSIX system inside my browser, all in memory.
-
-
-00:39:51.140 --> 00:39:52.780
-And so we have two options.
-
-
-00:39:52.780 --> 00:39:57.660
-And these are available in the main branch.
-
-
-00:39:57.660 --> 00:40:00.140
-At the moment, we're not shipping pre-built modules
-
-
-00:40:00.140 --> 00:40:01.260
-for WebAssembly.
-
-
-00:40:01.260 --> 00:40:02.920
-That might be a possibility.
-
-
-00:40:02.920 --> 00:40:05.380
-If that's something that you'd like to see, then I guess
-
-
-00:40:05.380 --> 00:40:08.260
-go to discuss.python.org and post about it.
-
-
-00:40:08.260 --> 00:40:09.380
-It's probably a post there.
-
-
-00:40:09.380 --> 00:40:11.460
-I should've looked for a post there.
-
-
-00:40:11.460 --> 00:40:15.500
-But we're not currently doing pre-built releases.
-
-
-00:40:15.500 --> 00:40:16.660
-But I think we could.
-
-
-00:40:16.660 --> 00:40:19.540
-I think this is one of these options where the WebAssembly
-
-
-00:40:19.540 --> 00:40:21.460
-build is totally portable.
-
-
-00:40:21.460 --> 00:40:24.220
-And so if we build it, we can distribute it.
-
-
-00:40:24.220 --> 00:40:26.980
-And then websites that want to do something like this
-
-
-00:40:26.980 --> 00:40:29.940
-could just download it from our servers and run it.
-
-
-00:40:29.940 --> 00:40:32.340
-So I think there's a lot of potential here.
-
-
-00:40:34.900 --> 00:40:36.800
-And it's at the potential stage, right?
-
-
-00:40:36.800 --> 00:40:40.980
-This is another stepping stone to bigger and better things.
-
-
-00:40:40.980 --> 00:40:43.800
-Our kind of responsibility as the core team is to enable it.
-
-
-00:40:43.800 --> 00:40:46.340
-And now we really want people to come in and pick this up
-
-
-00:40:46.340 --> 00:40:48.100
-and do awesome things with it.
-
-
-00:40:48.100 --> 00:40:49.940
-Firstly, so we can figure out what gaps still
-
-
-00:40:49.940 --> 00:40:53.380
-need to be filled, but also just to expand
-
-
-00:40:53.380 --> 00:40:54.940
-the growth in the reach of Python,
-
-
-00:40:54.940 --> 00:40:57.740
-to bring it into places that currently doesn't exist
-
-
-00:40:57.740 --> 00:41:02.140
-or can't work, and give it new life and new places,
-
-
-00:41:02.140 --> 00:41:03.380
-open it up to new people.
-
-
-00:41:03.380 --> 00:41:05.220
-This is fantastic.
-
-
-00:41:05.220 --> 00:41:06.300
-Congratulations.
-
-
-00:41:06.300 --> 00:41:09.060
-- And so the work for this primarily done
-
-
-00:41:09.060 --> 00:41:12.220
-by Katie Bell, Christian Himes, and Ethan Smith.
-
-
-00:41:12.220 --> 00:41:15.140
-So I think Christian got to do all the merge commits,
-
-
-00:41:15.140 --> 00:41:17.220
-but it's definitely been a number of people
-
-
-00:41:17.220 --> 00:41:18.820
-working on this for a while.
-
-
-00:41:18.820 --> 00:41:22.200
-Those are the primary three.
-
-
-00:41:22.200 --> 00:41:24.500
-- I'm really excited for the possibility for this.
-
-
-00:41:24.500 --> 00:41:27.400
-I think one of the things that could be amazing,
-
-
-00:41:27.400 --> 00:41:29.660
-obviously running it in the front end
-
-
-00:41:29.660 --> 00:41:31.500
-is a thing that could be done.
-
-
-00:41:31.500 --> 00:41:34.200
-I saw the documentation said it was about 10 megs
-
-
-00:41:34.200 --> 00:41:35.140
-to download it.
-
-
-00:41:35.140 --> 00:41:37.460
-I'm sure you can put that on like a CDN.
-
-
-00:41:37.460 --> 00:41:39.620
-So you kind of hit it once somewhere
-
-
-00:41:39.620 --> 00:41:41.480
-for a particular version of Python.
-
-
-00:41:41.480 --> 00:41:42.380
-That's pretty good.
-
-
-00:41:42.380 --> 00:41:44.740
-You know, we all have pretty fast things these days.
-
-
-00:41:44.740 --> 00:41:46.580
-- Yeah, it's still bigger than Doodle.
-
-
-00:41:46.580 --> 00:41:48.180
-- Yeah.
-
-
-00:41:48.180 --> 00:41:49.640
-What gets me really excited though
-
-
-00:41:49.640 --> 00:41:52.760
-is putting that into an ElectronJS app.
-
-
-00:41:52.760 --> 00:41:53.600
-- Yeah, absolutely.
-
-
-00:41:53.600 --> 00:41:54.420
-- Right?
-
-
-00:41:54.420 --> 00:41:56.760
-Because ElectronJS is a really interesting way
-
-
-00:41:56.760 --> 00:41:59.320
-to bring web technologies across platform.
-
-
-00:41:59.320 --> 00:42:02.280
-As much as I'm like, oh, it's an Electron app.
-
-
-00:42:02.280 --> 00:42:05.080
-Still, it's really opened up the possibility
-
-
-00:42:05.080 --> 00:42:05.920
-for a lot of things.
-
-
-00:42:05.920 --> 00:42:07.960
-But it really has meant, OK, you're doing TypeScript,
-
-
-00:42:07.960 --> 00:42:09.600
-you're doing JavaScript, and you just
-
-
-00:42:09.600 --> 00:42:11.000
-have to go full on in that world.
-
-
-00:42:11.000 --> 00:42:14.240
-So here, you could still do your front end and whatever.
-
-
-00:42:14.240 --> 00:42:17.840
-But having the core logic of that desktop app being
-
-
-00:42:17.840 --> 00:42:19.880
-in Python running in this, that's
-
-
-00:42:19.880 --> 00:42:22.000
-exciting if that can be put together.
-
-
-00:42:22.000 --> 00:42:23.720
-- I should also add two things.
-
-
-00:42:23.720 --> 00:42:26.560
-Pyodide is a project that people have probably
-
-
-00:42:26.560 --> 00:42:28.460
-heard of before, which has been working
-
-
-00:42:28.460 --> 00:42:30.860
-this for considerably longer than the core team has.
-
-
-00:42:30.860 --> 00:42:34.380
-And so I think a lot of the patches that needed to happen have come from them.
-
-
-00:42:34.380 --> 00:42:39.420
-And they now get to spend more time focusing on the data science stack,
-
-
-00:42:39.420 --> 00:42:43.060
-which because they've got ports of NumPy and pandas and other libraries
-
-
-00:42:43.060 --> 00:42:46.140
-to actually do data science in the browser.
-
-
-00:42:46.140 --> 00:42:50.620
-And the other interesting thing that I saw was someone from from Condor
-
-
-00:42:50.620 --> 00:42:54.540
-Forge suggesting that they could elevate was wasn't builds to
-
-
-00:42:54.540 --> 00:42:56.700
-their kind of automated level.
-
-
-00:42:56.700 --> 00:43:03.960
-And so all of conda forge may suddenly become available to use in the browser on top of a build of Python like this.
-
-
-00:43:03.960 --> 00:43:04.560
-Wow.
-
-
-00:43:04.560 --> 00:43:07.600
-That would unlock so much. That would be incredible.
-
-
-00:43:07.600 --> 00:43:08.880
-Interesting.
-
-
-00:43:08.880 --> 00:43:11.600
-I imagine initially would unlock a lot of bug reports.
-
-
-00:43:11.600 --> 00:43:14.960
-But we need to work through those first.
-
-
-00:43:14.960 --> 00:43:19.440
-Yeah, I was just thinking of, you know, take the top 1000 most popular packages.
-
-
-00:43:19.440 --> 00:43:22.280
-Could you get 90% of those compiled to like
-
-
-00:43:22.280 --> 00:43:24.280
-other WebAssembly things that then could be
-
-
-00:43:24.280 --> 00:43:26.280
-included and then imported here
-
-
-00:43:26.280 --> 00:43:27.680
-somehow. - Exactly.
-
-
-00:43:27.680 --> 00:43:29.920
-And the top 1000 with native code,
-
-
-00:43:29.920 --> 00:43:32.480
-because it's only the native code, right? The Python code
-
-
-00:43:32.480 --> 00:43:36.640
-still compiles in the browser just like it would in the CPython interpreter.
-
-
-00:43:36.640 --> 00:43:39.320
-It's only the native code that has to be
-
-
-00:43:39.320 --> 00:43:40.320
-ported and built.
-
-
-00:43:40.320 --> 00:43:42.840
-And so once that's done, then
-
-
-00:43:42.840 --> 00:43:45.240
-you know, we're up and running. So the top 1000 is
-
-
-00:43:45.240 --> 00:43:47.960
-probably more than you need. - Yeah, absolutely.
-
-
-00:43:47.960 --> 00:43:48.360
-All right.
-
-
-00:43:48.360 --> 00:43:48.800
-Awesome.
-
-
-00:43:48.800 --> 00:43:50.680
-I'm looking forward to seeing where this goes.
-
-
-00:43:50.680 --> 00:43:52.440
-So many neat options.
-
-
-00:43:52.440 --> 00:43:57.000
-There's, there's just cool ways to say like ship the Python runtime, the places
-
-
-00:43:57.000 --> 00:43:58.880
-where maybe it would have been hard to get.
-
-
-00:43:58.880 --> 00:44:02.640
-Now you drop this WASM file plus something that can run WASM.
-
-
-00:44:02.640 --> 00:44:07.160
-And then now you've got a deployable shippable CPython runtime without TK
-
-
-00:44:07.160 --> 00:44:09.640
-enter and a few things, but still you might not miss it.
-
-
-00:44:09.640 --> 00:44:11.840
-Depending on what you're doing.
-
-
-00:44:11.840 --> 00:44:14.760
-I mean, most apps are not Tkinter apps is all I'm saying.
-
-
-00:44:14.760 --> 00:44:15.840
+00:44:14.720 --> 00:44:16.080
 I'm not trying to bang on it.
 
+00:44:16.080 --> 00:44:20.960
+No, no, but I just haven't. Every time it comes up that it's still there. I'm like,
 
-00:44:15.840 --> 00:44:16.880
-No, no.
+00:44:20.960 --> 00:44:22.640
+really? We still have that. Okay.
 
+00:44:22.640 --> 00:44:28.320
+Don't ask me what I've been spending my week working on, Brian. It's not going to make you happy.
 
-00:44:16.920 --> 00:44:20.520
-But I just haven't every time it comes up that it's still there.
+00:44:28.320 --> 00:44:33.680
+Are you, are you creating a Tkinter base killer for against textual?
 
-
-00:44:20.520 --> 00:44:22.720
-I'm like, really? We still have that. OK.
-
-
-00:44:22.720 --> 00:44:26.420
-Don't ask me what I've been spending my week working on.
-
-
-00:44:26.420 --> 00:44:29.820
-Brian, it's not going to make you happy.
-
-
-00:44:29.820 --> 00:44:33.720
-Are you are you creating a Tkinter base killer for against textual?
-
-
-00:44:33.720 --> 00:44:38.420
+00:44:33.680 --> 00:44:37.200
 No, no, unfortunately not.
 
+00:44:37.200 --> 00:44:43.920
+Awesome. All right. Well, Brian, are we at extras?
 
-00:44:38.420 --> 00:44:42.080
-Awesome. All right.
+00:44:43.920 --> 00:44:46.400
+We are at extras. Do you want to kick us off?
 
+00:44:46.400 --> 00:44:51.360
+I will kick us off. So I've got a couple of things that I think are interesting. Let's
 
-00:44:42.080 --> 00:44:43.980
-Well, Brian, are we at extras?
+00:44:51.360 --> 00:44:57.200
+start with this one. So we've talked about, oh, oh, my Z shell, right? Yeah.
 
+00:44:57.200 --> 00:45:03.760
+A lot. Love it. I just came across, realizing that actually this is a Portland company that puts
 
-00:44:43.980 --> 00:44:45.560
-We are at extras.
+00:45:03.760 --> 00:45:09.840
+together the sort of core maintainers of, that. So I just thought it was funny to give a quick
 
+00:45:09.840 --> 00:45:14.720
+shout out to, planet Argonne. They're not really in the Python space, but they're in Portland,
 
-00:44:45.560 --> 00:44:46.600
-Do you want to kick us off?
+00:45:14.720 --> 00:45:20.880
+which I thought was kind of fun. and then what is this? This, next one comes to us, I think
 
+00:45:20.880 --> 00:45:28.000
+via PyCoders. That's where I got this. Django just reformatted all of Django with black. And I know
 
-00:44:46.600 --> 00:44:47.680
-I will kick us off.
+00:45:28.000 --> 00:45:31.600
+I know I was just having a discussion with somebody like, oh, your code doesn't have,
 
+00:45:31.600 --> 00:45:35.120
+doesn't follow PEP 8. Oh, like, oh, I don't want it to follow PEP 8. Yeah. But if people are
 
-00:44:47.680 --> 00:44:51.160
-So I've got a couple of things that I think are interesting.
+00:45:35.120 --> 00:45:39.680
+going to use your code, you know, like literally you got to import it, then it probably should follow,
 
+00:45:39.680 --> 00:45:43.120
+like it should not come up with all sorts of warnings. And so I thought it was interesting that
 
-00:44:51.160 --> 00:44:52.120
-Let's start with this one.
+00:45:43.120 --> 00:45:47.520
+Django just said everything, make it black. Steve, what do you think about that?
 
+00:45:47.520 --> 00:45:53.200
+I'm totally on board with, with just using black on everything. I don't agree a hundred percent with
 
-00:44:52.120 --> 00:44:56.280
-We've talked about, Oh, Oh, my Z shell.
+00:45:53.200 --> 00:46:00.160
+the style, but I agree a hundred percent with not arguing about it. So yeah, it's close enough.
 
+00:46:00.160 --> 00:46:06.240
+Yeah. Plus, there's enough tweaks like that make it good. Like I really, I'm really grateful
 
-00:44:56.280 --> 00:44:56.880
-Right.
+00:46:06.240 --> 00:46:12.000
+that that has, you can tweak the line length for instance. Yes. Because I mean, here's example.
 
+00:46:12.000 --> 00:46:18.480
+What if I want it really short? So, for no, for seriously, for formatting the code for the,
 
-00:44:56.880 --> 00:44:57.260
-Yeah.
+00:46:18.480 --> 00:46:24.640
+the pie test book, I wanted them all quite a bit shorter so that they fit better in a book format.
 
+00:46:24.640 --> 00:46:31.120
+And I could use black to cover with that and convert everything with, with black to make them like that.
 
-00:44:57.260 --> 00:44:57.680
-A lot.
+00:46:31.120 --> 00:46:37.360
+So it was great. Nice. Awesome. All right. And the final one is I have been doing some stuff with,
 
+00:46:37.360 --> 00:46:41.920
+more fun things on YouTube, trying to put these little short videos together. So here's
 
-00:44:57.680 --> 00:44:58.320
-Love it.
+00:46:41.920 --> 00:46:47.120
+a, how long are the six minutes, 44 second video on using time Delta to get like,
 
+00:46:47.120 --> 00:46:51.360
+how many weeks are in some time span that, you know, the cool tricks you can do there.
 
-00:44:58.320 --> 00:45:03.560
-I just came across, realizing that actually this is a Portland company that
+00:46:51.360 --> 00:46:55.920
+So people should check that out. That's my latest Python short thing. And yeah, that's,
 
+00:46:55.920 --> 00:47:01.600
+that's it for my extras. okay. So I've got a quick one. Just, I've got,
 
-00:45:03.560 --> 00:45:09.040
-puts together the sort of core maintainers of, that, so I just thought it was
+00:47:01.600 --> 00:47:06.720
+I don't have a graph, something to throw up, but I just, I was looking at looking at the get history of,
 
+00:47:06.720 --> 00:47:11.840
+um, of, a repo and trying to figure out whether I included one of my coworkers,
 
-00:45:09.040 --> 00:45:12.160
-funny to give a quick shout out to, play to Argon.
+00:47:11.840 --> 00:47:16.640
+uh, branches in it, if I merged it yet or not, things like that. And I was on the command line
 
+00:47:16.640 --> 00:47:21.440
+and I just learned, I'm like, can I just do this with the command line? Apparently I didn't know this
 
-00:45:12.160 --> 00:45:15.240
-They're not really in the Python space, but they're in Portland, which I thought
+00:47:21.440 --> 00:47:28.400
+exists. So apparently a get log --graph just shows you the, the get graph that your branch
 
+00:47:28.400 --> 00:47:34.080
+history or the branch graph on the command line. And I didn't know it was there until today.
 
-00:45:15.240 --> 00:45:16.600
-That was kind of fun.
+00:47:34.080 --> 00:47:38.000
+uh, I started using it, tweeted about it. And then a whole bunch of people said,
 
+00:47:38.000 --> 00:47:43.840
+uh, Oh, you should use these flags too. That makes it even nicer. So, so it's fun to,
 
-00:45:16.600 --> 00:45:18.180
-And then, what is this?
+00:47:43.840 --> 00:47:51.040
+to learn something old as a new thing. And then somebody else told me, how about get K? So,
 
+00:47:51.040 --> 00:47:58.720
+get K is a, is a graphical browser of your repository that just comes with most
 
-00:45:18.180 --> 00:45:22.360
-This next one comes to us, I think, via PyCoders.
+00:47:58.720 --> 00:48:03.600
+get installs that I didn't know was there. I'm like, do I need to install it? I'll just type it and see what
 
+00:48:03.600 --> 00:48:08.160
+happens. And it popped up this graphical interface. I'm like, this is great. This is exactly what I
 
-00:45:22.360 --> 00:45:24.100
-That's where I got this.
+00:48:08.160 --> 00:48:13.120
+wanted. So get K is pretty cool. I didn't know about that one. I I've seen the command. I've never
 
+00:48:13.120 --> 00:48:18.640
+actually run it to see what happens. So I was not feeling quite brave enough.
 
-00:45:24.100 --> 00:45:27.960
-Django just reformatted all of Django with black.
+00:48:18.640 --> 00:48:22.640
+Did it mean get kill or was it something else?
 
+00:48:22.640 --> 00:48:28.320
+I was just most get commands scare me until I've run them the first hundred times or so.
 
-00:45:27.960 --> 00:45:29.780
-I know I was just having a discussion with somebody like,
+00:48:29.040 --> 00:48:32.880
+How about you? Yeah, I got, I got a couple of extras. Okay. Can I get my screen back up there?
 
+00:48:32.880 --> 00:48:36.960
+Uh, there's, I was feeling a little bad about, you know, being a bit self-serving here,
 
-00:45:29.780 --> 00:45:32.840
-oh, your code doesn't have, doesn't follow pep8.
+00:48:36.960 --> 00:48:40.000
+but then Michael just promoted his video series. So I don't feel too bad anymore.
 
+00:48:40.000 --> 00:48:41.680
+Get it. Get it on, man.
 
-00:45:32.840 --> 00:45:34.200
-Or like, oh, I don't want it to follow pep8.
+00:48:41.680 --> 00:48:46.640
+This is the, the Python 3.11 alpha five download page. And we have a new addition this time around,
 
+00:48:46.640 --> 00:48:53.440
+which is this windows installer for arm 64. So arm 64 is not a massive, massive platform for windows yet,
 
-00:45:34.200 --> 00:45:36.760
-Yeah, but if people are gonna use your code,
+00:48:53.440 --> 00:48:59.440
+but it's growing and, we want to have Python support on it. So the builds have been running in
 
+00:48:59.440 --> 00:49:03.600
+the background for a while, but we've never actually released it. We're hoping to get it out with 3.11.
 
-00:45:36.760 --> 00:45:38.480
-you know, like literally you gotta import it,
+00:49:03.600 --> 00:49:09.040
+That is going to depend largely on, do people use it? Do they love it? Do they hate it?
 
+00:49:09.040 --> 00:49:16.000
+My experience so far with it has been that it is noticeably faster, on at least on the arm 64
 
-00:45:38.480 --> 00:45:39.920
-then it probably should follow,
+00:49:16.000 --> 00:49:22.800
+devices I've had access to compared to the Intel devices, which is really, really cool. and
 
+00:49:22.800 --> 00:49:30.560
+there's, there's like the test suite is, kind of 30 to 50% faster, which is huge, huge really. So,
 
-00:45:39.920 --> 00:45:41.760
-like it should not come up with all sorts of warnings.
+00:49:30.560 --> 00:49:34.080
+so I think there's a lot of potential here. I may just have had awesome hardware. I'm not sure it was
 
+00:49:34.080 --> 00:49:39.200
+a virtual machine, so it's kind of hard to tell. Yeah. but this is fantastic. This is new.
 
-00:45:41.760 --> 00:45:42.880
-And so I thought it was interesting
+00:49:39.200 --> 00:49:43.840
+if you have an arm 64 device, like a surface pro X, or there's a couple out there from other
 
+00:49:44.320 --> 00:49:50.400
+manufacturers, I'm running windows 11 arm on my MacBook pro and through parallels.
 
-00:45:42.880 --> 00:45:45.660
-that Django just said, everything, make it black.
+00:49:50.400 --> 00:49:56.800
+I then use please in download and install it and let, let me know how it goes. If you get it
 
+00:49:56.800 --> 00:50:01.440
+through the windows store, which is currently still not public, you need to get the link from basically
 
-00:45:45.660 --> 00:45:48.060
-Steve, what do you think about that?
+00:50:01.440 --> 00:50:06.960
+from one of my tweets, to the windows store, you'll automatically get the arm 64 version on arm 64
 
+00:50:06.960 --> 00:50:12.640
+as well. So this installer is the traditional one. otherwise you get it through the store.
 
-00:45:48.060 --> 00:45:51.980
-- I'm totally on board with just using black on everything.
+00:50:12.640 --> 00:50:16.000
+The other thing, which I wasn't going to do, and then I spent a bit of time working on this,
 
+00:50:16.000 --> 00:50:22.960
+uh, a couple, couple of years back at the, at the core dev sprints, I forget who I was chatting
 
-00:45:51.980 --> 00:45:54.340
-I don't agree 100% with the style,
+00:50:22.960 --> 00:50:28.320
+with. I was chatting with one of the other core devs about everyone typing from collections, import deck,
 
+00:50:28.320 --> 00:50:33.760
+uh, and misspelling it. And it's like, you tell, you know, so a deck D Q U E is double ended Q,
 
-00:45:54.340 --> 00:45:56.480
-but I agree 100% with not arguing about it.
+00:50:34.320 --> 00:50:39.840
+very useful data type for certain purposes, but people would type it deck, like deck as in D E C K.
 
-
-00:45:56.480 --> 00:45:59.460
-So, it's close enough. - Exactly.
-
-
-00:45:59.460 --> 00:46:00.900
-Yeah. - It's close enough.
-
-
-00:46:00.900 --> 00:46:04.580
-- Yeah, plus there's enough tweaks that make it good.
-
-
-00:46:04.580 --> 00:46:08.740
-I'm really grateful that you can tweak the line length,
-
-
-00:46:08.740 --> 00:46:10.300
-for instance. - Yes.
-
-
-00:46:10.300 --> 00:46:12.300
-- Because, I mean, here's an example.
-
-
-00:46:12.300 --> 00:46:13.600
-What if I want it really short?
-
-
-00:46:13.600 --> 00:46:18.140
-So for, no, seriously, for formatting the code
-
-
-00:46:18.140 --> 00:46:22.320
-for the pytest book, I wanted them all quite a bit shorter
-
-
-00:46:22.320 --> 00:46:25.100
-so that they fit better in a book format.
-
-
-00:46:25.100 --> 00:46:27.720
-And I could use black to cover with that
-
-
-00:46:27.720 --> 00:46:31.200
-and convert everything with black to make them like that.
-
-
-00:46:31.200 --> 00:46:32.440
-So it was great.
-
-
-00:46:32.440 --> 00:46:33.400
-- Nice, awesome.
-
-
-00:46:33.400 --> 00:46:36.240
-All right, and the final one is I have been doing
-
-
-00:46:36.240 --> 00:46:40.000
-some stuff with more fun things on YouTube,
-
-
-00:46:40.000 --> 00:46:41.520
-trying to put these little short videos together.
-
-
-00:46:41.520 --> 00:46:42.720
-So here's a how long is it?
-
-
-00:46:42.720 --> 00:46:46.360
-Six minutes, 44 second video on using time delta
-
-
-00:46:46.360 --> 00:46:49.640
-to get like how many weeks are in some time span.
-
-
-00:46:49.640 --> 00:46:51.480
-You know, the cool tricks you can do there.
-
-
-00:46:51.480 --> 00:46:52.880
-So people should check that out.
-
-
-00:46:52.880 --> 00:46:54.840
-That's my latest Python short thing.
-
-
-00:46:54.840 --> 00:46:57.780
-And yeah, that's it for my extras.
-
-
-00:46:57.780 --> 00:47:00.320
-- Okay, so I've got a quick one.
-
-
-00:47:00.320 --> 00:47:03.840
-Just I've got, I don't have a graph, something to throw up,
-
-
-00:47:03.840 --> 00:47:08.600
-but I just, I was looking at the get history of a repo
-
-
-00:47:08.600 --> 00:47:10.840
-and trying to figure out whether I included
-
-
-00:47:10.840 --> 00:47:13.120
-one of my coworkers branches in it,
-
-
-00:47:13.120 --> 00:47:15.600
-if I merged it yet or not, things like that.
-
-
-00:47:15.600 --> 00:47:17.600
-And I was on the command line and I just learned,
-
-
-00:47:17.600 --> 00:47:20.040
-I'm like, can I just do this with the command line?
-
-
-00:47:20.040 --> 00:47:22.000
-Apparently I didn't know this exists.
-
-
-00:47:22.000 --> 00:47:25.400
-So apparently a get log --graph
-
-
-00:47:25.400 --> 00:47:27.900
-just shows you the get graph,
-
-
-00:47:27.900 --> 00:47:31.560
-your branch history or the branch graph on the command line.
-
-
-00:47:31.560 --> 00:47:33.820
-And I didn't know it was there until today.
-
-
-00:47:33.820 --> 00:47:36.680
-I started using it, tweeted about it.
-
-
-00:47:36.680 --> 00:47:39.080
-And then a whole bunch of people said,
-
-
-00:47:39.080 --> 00:47:40.720
-oh, you should use these flags too.
-
-
-00:47:40.720 --> 00:47:41.780
-that makes it even nicer.
-
-
-00:47:41.780 --> 00:47:46.780
-So it's fun to learn something old as a new thing.
-
-
-00:47:46.780 --> 00:47:50.300
-And then somebody else told me, how about GitK?
-
-
-00:47:50.300 --> 00:47:55.300
-So GitK is a graphical browser of your repository
-
-
-00:47:55.300 --> 00:48:00.300
-that just comes with most Git installs
-
-
-00:48:00.300 --> 00:48:01.600
-that I didn't know was there.
-
-
-00:48:01.600 --> 00:48:02.820
-I'm like, do I need to install it?
-
-
-00:48:02.820 --> 00:48:04.420
-I'll just type it and see what happens.
-
-
-00:48:04.420 --> 00:48:06.380
-And it popped up this graphical interface.
-
-
-00:48:06.380 --> 00:48:07.380
-I'm like, this is great.
-
-
-00:48:07.380 --> 00:48:09.060
-This is exactly what I wanted.
-
-
-00:48:09.060 --> 00:48:10.740
-So, GitK is pretty cool.
-
-
-00:48:10.740 --> 00:48:11.980
-- I didn't know about that one.
-
-
-00:48:11.980 --> 00:48:12.980
-I've seen the command,
-
-
-00:48:12.980 --> 00:48:14.980
-I've never actually run it to see what happens.
-
-
-00:48:14.980 --> 00:48:17.460
-So, (laughs)
-
-
-00:48:17.460 --> 00:48:19.260
-was not feeling quite brave enough.
-
-
-00:48:19.260 --> 00:48:21.040
-(laughs)
-
-
-00:48:21.040 --> 00:48:22.980
-- Did it mean GitKill or was it something else?
-
-
-00:48:22.980 --> 00:48:25.180
-(laughs)
-
-
-00:48:25.180 --> 00:48:26.620
-- I was just most Git commands scare me
-
-
-00:48:26.620 --> 00:48:29.220
-until I've run them the first hundred times or so.
-
-
-00:48:29.220 --> 00:48:30.060
-- How about you?
-
-
-00:48:30.060 --> 00:48:31.580
-- Yeah, I got a couple of extras.
-
-
-00:48:31.580 --> 00:48:33.980
-Okay, can I get my screen back up there?
-
-
-00:48:33.980 --> 00:48:36.080
-There's, I was feeling a little bad about, you know,
-
-
-00:48:36.080 --> 00:48:37.100
-being a bit self-serving here,
-
-
-00:48:37.100 --> 00:48:39.100
-but then Michael just promoted his video series.
-
-
-00:48:39.100 --> 00:48:40.380
-So I don't feel too bad anymore.
-
-
-00:48:40.380 --> 00:48:41.880
-- Get it on man.
-
-
-00:48:41.880 --> 00:48:44.980
-- This is the Python 3.11 Alpha 5 download page.
-
-
-00:48:44.980 --> 00:48:46.740
-And we have a new addition this time round,
-
-
-00:48:46.740 --> 00:48:49.540
-which is this Windows Installer for ARM64.
-
-
-00:48:49.540 --> 00:48:53.620
-So ARM64 is not a massive, massive platform for Windows yet,
-
-
-00:48:53.620 --> 00:48:57.300
-but it's growing and we wanna have Python support on it.
-
-
-00:48:57.300 --> 00:49:00.340
-So the builds have been running in the background for a while
-
-
-00:49:00.340 --> 00:49:01.580
-but we've never actually released it.
-
-
-00:49:01.580 --> 00:49:03.700
-We're hoping to get it out with 3.11.
-
-
-00:49:03.700 --> 00:49:07.380
-that is going to depend largely on do people use it?
-
-
-00:49:07.380 --> 00:49:09.700
-Do they love it? Do they hate it?
-
-
-00:49:09.700 --> 00:49:13.620
-My experience so far with it has been that it is noticeably faster
-
-
-00:49:13.620 --> 00:49:19.380
-on at least on the arm 64 devices I've had access to compared to the Intel devices,
-
-
-00:49:19.380 --> 00:49:22.540
-which is really, really cool.
-
-
-00:49:22.540 --> 00:49:26.980
-And that's like the test suite is kind of 30 to 50 percent faster,
-
-
-00:49:26.980 --> 00:49:30.300
-which is huge, huge, really.
-
-
-00:49:30.300 --> 00:49:31.940
-So so I think there's a lot of potential here.
-
-
-00:49:31.940 --> 00:49:33.340
-I may just have had awesome hardware.
-
-
-00:49:33.340 --> 00:49:35.800
-I'm not sure it was a virtual machine, so it's kind of hard to tell.
-
-
-00:49:35.800 --> 00:49:38.040
-Yeah, but this is fantastic.
-
-
-00:49:38.040 --> 00:49:39.240
-This is new.
-
-
-00:49:39.240 --> 00:49:42.200
-If you have an arm 64 device like a Surface Pro X
-
-
-00:49:42.200 --> 00:49:45.100
-or there's a couple out there from other manufacturers.
-
-
-00:49:45.100 --> 00:49:50.200
-I'm running Windows 11 arm on my MacBook Pro through parallels.
-
-
-00:49:50.200 --> 00:49:55.600
-I then use please in download and install it and let let me know how it goes.
-
-
-00:49:55.600 --> 00:49:59.240
-If you get it through the Windows store, which is currently still not public,
-
-
-00:49:59.240 --> 00:50:02.400
-you need to get the the link from basically from one of my tweets
-
-
-00:50:02.960 --> 00:50:07.520
-to the Windows Store, you'll automatically get the ARM64 version on ARM64 as well.
-
-
-00:50:07.520 --> 00:50:09.700
-So this installer is the traditional one.
-
-
-00:50:09.700 --> 00:50:12.700
-Otherwise, you get it through the store.
-
-
-00:50:12.700 --> 00:50:15.460
-The other thing which I wasn't going to do, and then I spent a bit of time
-
-
-00:50:15.460 --> 00:50:19.660
-working on this a couple couple of years back at the
-
-
-00:50:19.660 --> 00:50:22.100
-at the Core Dev Sprints.
-
-
-00:50:22.100 --> 00:50:23.300
-I forget who I was chatting with.
-
-
-00:50:23.300 --> 00:50:26.700
-I was chatting with one of the other core devs about everyone typing
-
-
-00:50:26.700 --> 00:50:30.100
-from collections, import deck and misspelling it.
-
-
-00:50:30.100 --> 00:50:34.000
-And it's like you tell, you know, so a deck DQE is double ended queue,
-
-
-00:50:34.000 --> 00:50:38.360
-very useful data type for certain purposes, but people would type it deck,
-
-
-00:50:38.360 --> 00:50:39.940
-like deck as in DECK.
-
-
-00:50:39.940 --> 00:50:41.880
+00:50:39.840 --> 00:50:41.760
 Because it's phonetically what it sounds like.
 
+00:50:41.760 --> 00:50:47.680
+Exactly. And so as, as a bit of a joke, I made a package that when you, when you installed it,
 
-00:50:41.880 --> 00:50:46.400
-Exactly. And so as, as a bit of a joke, I made a package that when you,
+00:50:47.680 --> 00:50:52.080
+it would give you from collections, import deck. and obviously the thing that that collection
 
+00:50:52.080 --> 00:50:58.000
+should be is a, a deck, a double ended Q of 52 cards representing the cards in a normal deck.
 
-00:50:46.400 --> 00:50:50.320
-when you installed it, it would give you from collections import deck.
+00:50:58.000 --> 00:51:03.920
+Uh, and over time for various reasons, it's just kind of grown. And, and I recently, you know,
 
+00:51:03.920 --> 00:51:08.800
+added support for calculating poker hands to it. And so now you could build a game with this.
 
-00:50:50.320 --> 00:50:53.720
-and obviously the thing that that collection should be is a, a deck,
+00:51:08.800 --> 00:51:16.000
+it does, it uses enums. It's got shuffling, dealing, jokers are optional. and you can
 
+00:51:16.000 --> 00:51:22.320
+calculate a poker hand and yeah, my, my little compare them poker hand one greater than poker hand two.
 
-00:50:53.720 --> 00:50:58.040
-a double ended queue of 52 cards representing the cards in a normal deck.
+00:51:22.320 --> 00:51:27.680
+I, I spent a lot of time. most of my work on this over the last week was writing the tests
 
+00:51:27.680 --> 00:51:33.200
+that proved how incorrect that function was until I wrote the tests for it. but now at this point,
 
-00:50:59.040 --> 00:51:01.300
-And over time, for various reasons, it's just kind of grown.
+00:51:33.200 --> 00:51:38.640
+yeah, it's, yeah, you can look at the values it gives back. It's actually a tuple with an enumeration
 
+00:51:38.640 --> 00:51:43.520
+saying what the hand is and then a selection of the card values in a way that makes the tuples
 
-00:51:01.300 --> 00:51:06.300
-And and I recently, you know, added support for calculating poker hands to it.
+00:51:43.520 --> 00:51:49.520
+comparable. So you can actually look and see, you know, it's a pair of, of aces that will have the
 
+00:51:49.520 --> 00:51:55.280
+number 14 there for the ace. And the next highest card was a 10. So if someone else has a pair of aces
 
-00:51:06.300 --> 00:51:08.840
-And so now you can build a game with this.
+00:51:55.280 --> 00:51:59.120
+and their next highest card was a nine, then you're still going to compare higher. So I'm pretty proud
 
+00:51:59.120 --> 00:52:03.040
+of that function. Yeah, that's clever. But, but yeah, this is, and, and,
 
-00:51:08.840 --> 00:51:10.580
-It does. It uses enums.
+00:52:03.040 --> 00:52:10.560
+and it's code style black. Nice. Oh, very nice. So yeah, it's, it's one short file. and it does
 
+00:52:10.560 --> 00:52:18.800
+still override deck in the collections module for you. So I love it. It doesn't over. So, so that deck
 
-00:51:10.580 --> 00:51:13.180
-It's got shuffling, dealing.
+00:52:18.800 --> 00:52:24.480
+isn't there, right? It's like DQ is, is untouched, but if you try and import DCK from collections,
 
+00:52:24.480 --> 00:52:30.080
+then you'll get it. Nice. Hey, one of the quick things to shout out, we're hiring contractors
 
-00:51:13.180 --> 00:51:17.240
-Jokers are optional and you can calculate a poker hand.
+00:52:30.080 --> 00:52:35.760
+to help develop features for pypi.org. It says at the top of pypi.org. That's, do you know anything
 
+00:52:35.760 --> 00:52:40.240
+about this? I guess if people want to work on pypi.org, that's pretty neat. Yeah, no, they, they have
 
-00:51:17.240 --> 00:51:22.440
-And yeah, my little compare them poker hand one greater than poker hand to.
+00:52:40.240 --> 00:52:46.800
+funding and, there, there is a post that describes the surveys. I believe this is the organizational
 
+00:52:46.800 --> 00:52:54.560
+accounts project they're looking at. Yeah. Organization accounts. So, if, if like me,
 
-00:51:22.440 --> 00:51:24.840
-I spent a lot of time.
+00:52:54.560 --> 00:52:59.600
+you are kind of the, one of the primary Python people at your company, then you'll spend a lot
 
+00:52:59.600 --> 00:53:04.560
+of time helping people publish packages to pypi. If that's the business you're in certainly is for,
 
-00:51:24.840 --> 00:51:27.740
-Most of my work on this over the last week was writing the tests
+00:53:04.560 --> 00:53:10.720
+for us, there's a lot of packages from Microsoft up on pypi. and the, the, the kind of corporate
 
+00:53:10.720 --> 00:53:17.920
+account for that is, but it does exist. We have a user account with 483 projects. This is all manually
 
-00:51:27.740 --> 00:51:31.020
-that proved how incorrect that function was until I wrote the test for it.
+00:53:17.920 --> 00:53:23.680
+curated right now. cause pypi just doesn't have the functionality to kind of hand out permissions
 
+00:53:23.680 --> 00:53:30.240
+to it safely. The teams and all that kind of stuff. Yeah. Yeah. So, so I believe the, the idea of this
 
-00:51:31.020 --> 00:51:37.020
-But now at this point, yeah, you can look at the values it gives back. It's actually a tuple
+00:53:30.240 --> 00:53:36.560
+is to add that functionality to pypi. So I would love it if someone comes along and does this. I, I believe
 
+00:53:36.560 --> 00:53:40.560
+we've contributed some of the funding towards this. So, you know, yeah, it looks like it.
 
-00:51:37.020 --> 00:51:42.940
-with an enumeration saying what the hand is and then a selection of the card values in a way that
+00:53:40.560 --> 00:53:47.040
+Okay. Oh, so Steve, I've got a 3.11 question for you. So, 3.11 is an alpha. So what does,
 
+00:53:47.040 --> 00:53:52.080
+what does that mean really? does that mean I can like start using 3.11 or should I wait?
 
-00:51:42.940 --> 00:51:49.180
-makes the tuples comparable. So you can actually look and see, you know, it's a pair of aces that
+00:53:52.080 --> 00:53:58.960
+Uh, it, it means you can, it means we still may change stuff that will break you and we won't
 
+00:53:58.960 --> 00:54:07.040
+apologize. Okay. But if my code runs, can I trust it or? Yeah. If, if you're, if all of your tests pass,
 
-00:51:49.180 --> 00:51:54.620
-will have the number 14 there for the ace and the next highest card was a 10. So if someone else has
+00:54:07.040 --> 00:54:11.840
+then you should be, you should be out of trust it fairly well, certainly existing code.
 
+00:54:11.840 --> 00:54:17.200
+there will be new features available in the alpha that have not been as thoroughly tested yet or may
 
-00:51:54.620 --> 00:51:56.820
-has a pair of aces and their next highest card was a nine,
+00:54:17.200 --> 00:54:22.480
+change again. But again, if you're running existing code, you won't be using those. So, so that won't
 
+00:54:22.480 --> 00:54:28.960
+matter, but yeah, it's totally viable to use. You can specify 3.11 dev on GitHub actions. I believe it
 
-00:51:56.820 --> 00:51:58.020
-then you're still going to compare higher.
+00:54:28.960 --> 00:54:34.320
+compiles from source when you do that. Now, they don't have a build there. They should for beta.
 
+00:54:34.320 --> 00:54:40.000
+Uh, beta is when we really want people to start doing stuff at this point. alpha is so that
 
-00:51:58.020 --> 00:52:00.540
-So I'm pretty proud of that function.
+00:54:40.000 --> 00:54:45.040
+people can test the new features kind of targeted testing on anything new that we've put in beta is
 
+00:54:45.040 --> 00:54:51.440
+when we really want people to start, porting libraries, especially kind of the core libraries to
 
-00:52:00.540 --> 00:52:01.700
->> Yeah, that's clever.
+00:54:51.440 --> 00:54:57.120
+be able to work with it. and, and just test it because if existing code doesn't work on the beta,
 
+00:54:57.120 --> 00:55:02.080
+we want to hear about that so we can fix it in the runtime and not force you to fix it in your code.
 
-00:52:01.700 --> 00:52:04.700
->> But yeah, this is and it's code style block.
+00:55:02.080 --> 00:55:06.080
+Okay. But if I'm like a package maintainer, I can start, if it's got GitHub actions for it,
 
+00:55:06.080 --> 00:55:09.760
+I can start testing, having my CI test against 3.11 then two.
 
-00:52:04.700 --> 00:52:07.140
->> Nice. Very nice.
+00:55:09.760 --> 00:55:14.240
+Absolutely. Okay. You will likely want to market as it's okay if it fails.
 
+00:55:14.240 --> 00:55:19.360
+Okay. Yeah. Awesome. Okay. Thanks. should we do a joke?
 
-00:52:07.140 --> 00:52:09.700
->> It's one short file.
+00:55:19.360 --> 00:55:25.360
+Let's do a joke. Let's, let's do a joke. All right. So this one coming from the programming humor
 
+00:55:25.360 --> 00:55:30.080
+one and it's a, like you talked about the visualization stuff, right? And this one,
 
-00:52:09.700 --> 00:52:13.940
-It does still override deck in the collections module for you.
+00:55:30.080 --> 00:55:36.400
+it says there's a search that says how to get labels on MATLAB bar charts to be horizontal.
 
+00:55:36.400 --> 00:55:42.960
+Well, look what the results came back from Google was says you're not alone. Help is available. If
 
-00:52:13.940 --> 00:52:17.780
->> I love it.
+00:55:42.960 --> 00:55:47.600
+you're experiencing difficult thoughts, please call one one six dash one two three, or if you,
 
+00:55:47.600 --> 00:55:54.080
+this is an emergency called nine nine nine. And the underlying bit here is it isn't that drastic
 
-00:52:17.780 --> 00:52:19.580
->> So that deck isn't there.
+00:55:54.080 --> 00:55:59.600
+Google, but thanks. And I, I believe it might also work on being, I'm not sure.
 
+00:55:59.600 --> 00:56:05.280
+There's a few scrolling on. I think there's a being equivalent down here. Yeah. Not just Google
 
-00:52:19.580 --> 00:52:22.140
-It's like DQE is untouched.
+00:56:05.280 --> 00:56:13.760
+being thinks you're an emergency as well. yeah, that's awesome. Yeah. So it's not that,
 
+00:56:13.760 --> 00:56:16.640
+that, that much of an emergency. I'll go to stack over for it.
 
-00:52:22.140 --> 00:52:24.500
-But if you try and import DECK from collections,
+00:56:16.640 --> 00:56:20.400
+Nice to know that the big search engines are looking out for our mental health.
 
+00:56:20.400 --> 00:56:25.040
+That's right. People become very upset after failing to get those bar charts.
 
-00:52:24.500 --> 00:52:26.160
-then you'll get it.
+00:56:27.040 --> 00:56:30.400
+This is not the emergency, but it's coming next when you realize what the answer is.
 
+00:56:30.400 --> 00:56:32.400
+It's something that I don't know.
 
-00:52:26.160 --> 00:52:27.000
-- Nice.
+00:56:32.400 --> 00:56:34.080
+Nice. All right.
 
+00:56:34.080 --> 00:56:35.920
+Anyway, that's the joke I found for us guys.
 
-00:52:27.000 --> 00:52:28.820
-Hey, one other quick thing to shout out.
+00:56:35.920 --> 00:56:40.400
+Well, thanks everybody. Thanks, Steve for coming and thanks Michael again.
 
+00:56:40.400 --> 00:56:41.440
+Yeah. Thanks for having me.
 
-00:52:28.820 --> 00:52:31.220
-We're hiring contractors to help develop features
+00:56:41.440 --> 00:56:42.400
+Thanks all. Bye. Bye.
 
-
-00:52:31.220 --> 00:52:32.420
-for pypi.org.
-
-
-00:52:32.420 --> 00:52:34.740
-It says at the top of pipi.org.
-
-
-00:52:34.740 --> 00:52:36.500
-That's, do you know anything about this?
-
-
-00:52:36.500 --> 00:52:38.220
-I guess if people want to work on pipi.org,
-
-
-00:52:38.220 --> 00:52:39.060
-that's pretty neat.
-
-
-00:52:39.060 --> 00:52:41.020
-- Yeah, no, they have funding.
-
-
-00:52:41.020 --> 00:52:45.380
-And there is a post that describes the surveys.
-
-
-00:52:45.380 --> 00:52:48.260
-I believe this is the organizational accounts project
-
-
-00:52:48.260 --> 00:52:49.100
-they're looking at.
-
-
-00:52:49.100 --> 00:52:51.100
-Yeah, organization accounts.
-
-
-00:52:51.100 --> 00:52:57.680
-So if like me, you are kind of the one of the primary Python
-
-
-00:52:57.680 --> 00:53:00.000
-people at your company, then you'll spend a lot of time
-
-
-00:53:00.000 --> 00:53:02.740
-helping people publish packages to PyPI if that's the business
-
-
-00:53:02.740 --> 00:53:03.360
-you're in.
-
-
-00:53:03.360 --> 00:53:05.080
-Certainly is for us.
-
-
-00:53:05.080 --> 00:53:08.600
-There's a lot of packages from Microsoft up on PyPI.
-
-
-00:53:08.600 --> 00:53:12.960
-And the kind of corporate account for that is--
-
-
-00:53:12.960 --> 00:53:13.840
-it does exist.
-
-
-00:53:13.840 --> 00:53:17.120
-We have a user account with 483 projects.
-
-
-00:53:17.120 --> 00:53:19.720
-This is all manually curated right now,
-
-
-00:53:19.720 --> 00:53:24.520
-Because PyPI just doesn't have the functionality to kind of hand out permissions to it safely.
-
-
-00:53:24.520 --> 00:53:26.280
-The teams and all that kind of stuff.
-
-
-00:53:26.280 --> 00:53:26.780
-Yeah.
-
-
-00:53:26.780 --> 00:53:32.360
-So I believe the idea of this is to add that functionality to PyPI.
-
-
-00:53:32.360 --> 00:53:35.360
-So I would love it if someone comes along and does this.
-
-
-00:53:35.360 --> 00:53:38.800
-I believe we've contributed some of the funding towards this.
-
-
-00:53:38.800 --> 00:53:40.000
-So, you know.
-
-
-00:53:40.000 --> 00:53:41.000
-Yeah, looks like it.
-
-
-00:53:41.000 --> 00:53:44.000
-So Steve, I've got a 3.11 question for you.
-
-
-00:53:44.000 --> 00:53:46.560
-So 3.11 is in alpha.
-
-
-00:53:46.560 --> 00:53:48.160
-So what does that mean really?
-
-
-00:53:48.160 --> 00:53:51.960
-Does that mean I can like start using 3.11 or should I wait?
-
-
-00:53:51.960 --> 00:53:59.440
-It means you can. It means we still may change stuff that will break you and we won't apologize.
-
-
-00:53:59.440 --> 00:54:03.720
-Okay, but if my code runs, can I trust it?
-
-
-00:54:03.720 --> 00:54:10.240
-Yeah, if all of your tests pass, then you should be able to trust it fairly well.
-
-
-00:54:10.240 --> 00:54:11.540
-Certainly existing code.
-
-
-00:54:11.540 --> 00:54:17.820
-There will be new features available in the alpha that have not been as thoroughly tested yet or may change again.
-
-
-00:54:17.820 --> 00:54:19.780
-But again, if you're running existing code,
-
-
-00:54:19.780 --> 00:54:21.180
-you won't be using those.
-
-
-00:54:21.180 --> 00:54:23.220
-So that won't matter.
-
-
-00:54:23.220 --> 00:54:25.100
-But yeah, it's totally viable to use.
-
-
-00:54:25.100 --> 00:54:28.460
-You can specify 3.11 dev on GitHub Actions.
-
-
-00:54:28.460 --> 00:54:32.060
-I believe it compiles from source when you do that now.
-
-
-00:54:32.060 --> 00:54:33.580
-They don't have a build there.
-
-
-00:54:33.580 --> 00:54:34.980
-They should for beta.
-
-
-00:54:34.980 --> 00:54:37.740
-Beta is when we really want people to start doing stuff.
-
-
-00:54:37.740 --> 00:54:40.420
-At this point, alpha is so that people
-
-
-00:54:40.420 --> 00:54:43.040
-can test the new features, kind of targeted testing
-
-
-00:54:43.040 --> 00:54:44.660
-on anything new that we've put in.
-
-
-00:54:44.660 --> 00:54:49.000
-Beta is when we really want people to start porting
-
-
-00:54:49.000 --> 00:54:51.440
-libraries, especially kind of the core libraries,
-
-
-00:54:51.440 --> 00:54:53.600
-to be able to work with it.
-
-
-00:54:53.600 --> 00:54:54.720
-And just test it.
-
-
-00:54:54.720 --> 00:54:57.280
-Because if existing code doesn't work on the beta,
-
-
-00:54:57.280 --> 00:55:00.320
-we want to hear about that so we can fix it in the runtime
-
-
-00:55:00.320 --> 00:55:02.280
-and not force you to fix it in your code.
-
-
-00:55:02.280 --> 00:55:04.080
-OK, but if I'm like a package maintainer,
-
-
-00:55:04.080 --> 00:55:06.160
-I can start-- if it's got GitHub Actions for it,
-
-
-00:55:06.160 --> 00:55:10.200
-I can start testing, having my CI test against 3.11, then 2.
-
-
-00:55:10.200 --> 00:55:11.280
-Absolutely.
-
-
-00:55:11.280 --> 00:55:14.720
-You will likely want to mark it as it's okay if it fails.
-
-
-00:55:14.720 --> 00:55:16.560
-- Okay. - Yeah, awesome.
-
-
-00:55:16.560 --> 00:55:17.480
-- Okay, thanks.
-
-
-00:55:17.480 --> 00:55:19.520
-Should we do a joke?
-
-
-00:55:19.520 --> 00:55:21.040
-- Let's do a joke.
-
-
-00:55:21.040 --> 00:55:22.160
-Let's do a joke.
-
-
-00:55:22.160 --> 00:55:25.880
-All right, so this one coming from the programming humor one
-
-
-00:55:25.880 --> 00:55:27.840
-and it's a, like you talked about
-
-
-00:55:27.840 --> 00:55:29.760
-the visualization stuff, Brian.
-
-
-00:55:29.760 --> 00:55:32.520
-And this one it says, there's a search that says,
-
-
-00:55:32.520 --> 00:55:37.080
-how to get labels on MATLAB bar charts to be horizontal.
-
-
-00:55:37.080 --> 00:55:39.600
-Look what the result came back from Google was.
-
-
-00:55:40.880 --> 00:55:42.920
-says, "You're not alone, help is available.
-
-
-00:55:42.920 --> 00:55:44.680
-If you're experiencing difficult thoughts,
-
-
-00:55:44.680 --> 00:55:49.680
-please call 116-123, or if this is an emergency, call 999."
-
-
-00:55:49.680 --> 00:55:50.920
-(laughing)
-
-
-00:55:50.920 --> 00:55:52.920
-And the underlying bit here is,
-
-
-00:55:52.920 --> 00:55:55.120
-"It isn't that drastic, Google, but thanks."
-
-
-00:55:55.120 --> 00:55:56.880
-(laughing)
-
-
-00:55:56.880 --> 00:55:59.940
-And I believe it might also work on Bing, I'm not sure.
-
-
-00:55:59.940 --> 00:56:02.200
-There's a, if you scroll down,
-
-
-00:56:02.200 --> 00:56:03.840
-I think there's a Bing equivalent down here.
-
-
-00:56:03.840 --> 00:56:06.560
-Yeah, not just Google, Bing thinks you're an emergency.
-
-
-00:56:06.560 --> 00:56:08.280
-So, well, yeah.
-
-
-00:56:08.280 --> 00:56:10.320
-(laughing)
-
-
-00:56:10.320 --> 00:56:11.760
-- That's awesome. - Wow.
-
-
-00:56:11.760 --> 00:56:12.920
-- Yeah.
-
-
-00:56:12.920 --> 00:56:15.740
-So it's not that much of an emergency.
-
-
-00:56:15.740 --> 00:56:17.840
-I'll go to Stack Overflow.
-
-
-00:56:17.840 --> 00:56:19.260
-- Nice to know that the big search engines
-
-
-00:56:19.260 --> 00:56:21.320
-are looking out for our mental health.
-
-
-00:56:21.320 --> 00:56:22.200
-- That's right.
-
-
-00:56:22.200 --> 00:56:24.040
-People become very upset after failing
-
-
-00:56:24.040 --> 00:56:26.000
-to get those bar charts in your result.
-
-
-00:56:26.000 --> 00:56:27.160
-(laughing)
-
-
-00:56:27.160 --> 00:56:29.120
-This is not the emergency, but it's coming next
-
-
-00:56:29.120 --> 00:56:30.720
-when you realize what the answer is.
-
-
-00:56:30.720 --> 00:56:31.780
-Something, I don't know.
-
-
-00:56:31.780 --> 00:56:34.240
-(laughing)
-
-
-00:56:34.240 --> 00:56:36.440
-Anyway, that's the joke I found for us, guys.
-
-
-00:56:36.440 --> 00:56:38.000
-- Well, thanks everybody.
-
-
-00:56:38.000 --> 00:56:39.760
-Thanks, Steve, for coming.
-
-
-00:56:39.760 --> 00:56:40.760
-And thanks, Michael, again.
-
-
-00:56:40.760 --> 00:56:41.760
-Yeah.
-
-
-00:56:41.760 --> 00:56:42.760
-Thanks for having me.
-
-
-00:56:42.760 --> 00:56:43.760
-Thanks, all.
-
-
-00:56:43.760 --> 00:56:44.760
+00:56:42.400 --> 00:56:42.960
 Bye.
 
-
-00:56:44.760 --> 00:56:45.760
-Bye.
-
-
-00:56:45.760 --> 00:56:46.760
+00:56:42.960 --> 00:56:43.360
 Bye, everyone.
 
+00:56:43.360 --> 00:56:45.360
+Thanks for listening to Python bytes.
 
-00:56:46.760 --> 00:56:47.760
-Thanks for listening to Python Bytes.
+00:56:45.360 --> 00:56:48.320
+Follow the show on Twitter via at Python bytes.
 
+00:56:48.320 --> 00:56:51.200
+That's Python bytes as in B Y T E S.
 
-00:56:47.760 --> 00:56:48.760
-Follow the show on Twitter via @pythonbytes.
+00:56:51.200 --> 00:56:54.320
+Get the full show notes over at Python bytes.fm.
 
+00:56:54.320 --> 00:56:59.360
+If you have a news item we should cover, just visit Python bytes.fm and click submit in the nav bar.
 
-00:56:48.760 --> 00:56:51.680
-That's Python Bytes as in B-Y-T-E-S.
-
-
-00:56:51.680 --> 00:56:54.520
-Get the full show notes over at pythonbytes.fm.
-
-
-00:56:54.520 --> 00:56:58.920
-If you have a news item we should cover, just visit pythonbytes.fm and click Submit in the
-
-
-00:56:58.920 --> 00:56:59.920
-nav bar.
-
-
-00:56:59.920 --> 00:57:02.000
+00:56:59.360 --> 00:57:01.760
 We're always on the lookout for sharing something cool.
 
+00:57:01.760 --> 00:57:06.080
+If you want to join us for the live recording, just visit the website and click live stream to
 
-00:57:02.000 --> 00:57:06.060
-If you want to join us for the live recording, just visit the website and click Live Stream
+00:57:06.080 --> 00:57:12.560
+get notified of when our next episode goes live. That's usually happening at noon Pacific on Wednesdays
 
+00:57:12.560 --> 00:57:16.880
+over at YouTube on behalf of myself and Brian Okken. This is Michael Kennedy.
 
-00:57:06.060 --> 00:57:09.260
-to get notified of when our next episode goes live.
-
-
-00:57:09.260 --> 00:57:12.640
-That's usually happening at noon Pacific on Wednesdays
-
-
-00:57:12.640 --> 00:57:13.620
-over at YouTube.
-
-
-00:57:13.620 --> 00:57:15.700
-On behalf of myself and Brian Okken,
-
-
-00:57:15.700 --> 00:57:17.020
-this is Michael Kennedy.
-
-
-00:57:17.020 --> 00:57:19.220
-Thank you for listening and sharing this podcast
-
-
-00:57:19.220 --> 00:57:20.820
-with your friends and colleagues.
+00:57:16.880 --> 00:57:20.720
+Thank you for listening and sharing this podcast with your friends and colleagues.
 

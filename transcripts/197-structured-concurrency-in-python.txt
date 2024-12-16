@@ -1,346 +1,552 @@
-00:00:00 Hello and welcome to Python Bytes where we deliver Python news and headlines directly to your earbuds. This is episode 197 recorded August 26th 2020 Brian, can you believe it's the end of August even if I can't say it it still is true No, I can't I don't know where August went I just I thought this whole pandemic thing would make the summer seem long and slow. It seems like it just went faster Yeah, I've got like a Lego kit that I was planning on doing like the first week week of summer vacation and it's still sitting here.
+00:00:00 Hello and welcome to Python Bytes, where we deliver Python news and headlines directly to
 
-00:00:30 - Yeah, for sure.
+00:00:04 your earbuds. This is episode 197, recorded August 26th, 2020. Brian, can you believe it's
 
-00:00:32 Yeah, there's a lot of things I want to get done before the sun goes away and rain starts for six months straight.
+00:00:12 the end of August? Even if I can't say it, it still is true?
 
-00:00:37 That's a Pacific Northwest problem, but it's our problem.
+00:00:15 No, I can't. I don't know where August went. I just don't.
 
-00:00:39 All right, now this episode is brought to you by us as well.
+00:00:18 I thought this whole pandemic thing would make the summer seem long and slow. It seems like it
 
-00:00:42 We'll tell you more about the things that we're doing that we think you will appreciate later.
+00:00:23 just went faster.
 
-00:00:46 Right now, I want to talk about something that I think we might've covered before, but I don't know if we've ever satisfactorily covered it.
+00:00:23 Yeah, I've got like a Lego kit that I was planning on doing like the first week of summer vacation,
 
-00:00:52 Maybe this time we'll get a little closer and that's asyncio.
+00:00:28 and it's still sitting here. So yeah, for sure. Yeah, there's a lot of things I want to get done
 
-00:00:55 - Oh yeah, I think that's a new topic.
+00:00:33 before the sun goes away and rain starts for six months straight. That's a Pacific Northwest problem,
 
-00:00:57 - It's a totally new topic.
+00:00:38 but it's our problem. All right. Now this episode is brought to you by us as well. We'll tell you
 
-00:00:58 Covered only less than GUIs now.
+00:00:42 more about the things that we're doing that we think you will appreciate later. Right now,
 
-00:01:01 So there's a new, how should I put it?
+00:00:46 I want to talk about something that I think we might've covered before, but I don't know if we've
 
-00:01:05 A new compatibility-like layer library that allows you to work a little bit better with AsyncIO and some of the other Async libraries that are not directly, immediately the same as or built right on top of AsyncIO.
+00:00:50 ever satisfactorily covered it. Maybe this time we'll get a little closer and that's AsyncIO.
 
-00:01:23 Curio from David Beasley and Trio from Nathaniel Smith.
+00:00:55 Oh yeah, I think that's a new topic.
 
-00:01:28 So there's an article that talks about this.
+00:00:56 It's a totally new topic. Covered only less than GUIs. No. So there's a new, how should I put it,
 
-00:01:30 I'm gonna mention as part of this conversation.
+00:01:05 a new compatibility-like layer library that allows you to work a little bit better with AsyncIO
 
-00:01:33 And then say, "Hey, Python has three well-known "concurrency libraries built around async "and await syntax, asyncIO, curio, and trio." True, but where's unsync, people?
+00:01:14 and some of the other Async libraries that are not directly immediately the same as or built right on top of AsyncIO.
 
-00:01:43 Unsync is the best of all four of those.
+00:01:23 Curio from David Beasley and Trio from Nathaniel Smith. So there's an article that talks about this. I'm going to mention as part of this conversation.
 
-00:01:44 I don't know where unsync is.
+00:01:32 And then say, Hey, Python has three well-known concurrency libraries built around Async and await syntax. AsyncIO, Curio, and Trio.
 
-00:01:46 Anyway, unsync is not part of this conversation, but unsync plays a role a little bit like this thing I'm gonna mention today is anyIO.
+00:01:40 True. But where's Unsync, people? Unsync is the best of all four of those. I don't know where Unsync is.
 
-00:01:55 And it's a pretty clever name because the idea is that it provides structured concurrency primitives built on top of AsyncIO.
+00:01:46 Anyway, Unsync is not part of this conversation, but Unsync plays a role a little bit like this thing I'm going to mention today is AnyIO.
 
-00:02:04 - Okay.
+00:01:56 And it's a pretty clever name because the idea is that it provides structured concurrency primitives built on top of AsyncIO.
 
-00:02:04 - Right, so one of the challenges with AsyncIO is you can kick off a bunch of tasks and then not wait for them, and your program can exit, or you can do other things, and maybe you've seen runtime warnings like task such and such was never awaited.
+00:02:03 Okay.
 
-00:02:17 You're like, hmm, I wonder what that means.
+00:02:04 Right? So one of the challenges with AsyncIO is you can kick off a bunch of tasks and then not wait for them.
 
-00:02:20 Well, that probably means your program exited while it was halfway done, or something like that, right?
+00:02:10 And your program can exit or you can do other things.
 
-00:02:24 Or your thing returned a value before it waited for it to finish, right?
+00:02:12 And maybe you've seen runtime warnings like task such and such was never awaited.
 
-00:02:28 And at the low level, something that's a little bit frustrating or annoying that you gotta deal with is that you've got to make sure that all the stuff you started on the async event loop, that you wait for that event loop to finish before your program completely shuts down or completely carries on.
+00:02:17 You're like, Hmm, I wonder what that means.
+
+00:02:19 Well, that probably means your program exited while it was halfway done or something like that. Right?
+
+00:02:24 Or your thing returned a value before it waited for it to finish. Right?
+
+00:02:28 And at the low level, something that's a little bit frustrating or annoying that you've got to deal with is that you've got to make sure that all the stuff you started on the Async event loop,
+
+00:02:36 that you wait for that event loop to finish before your program completely shuts down or completely carries on.
 
 00:02:43 And so that's basically the idea of this library.
 
-00:02:47 It's a compatibility layer across those three types, those three different well-known concurrency libraries that provides this structured concurrency.
+00:02:46 It's a compatibility layer across those three types, those three different well-known concurrency libraries that provides this structured concurrency.
 
-00:02:56 So you look at Wikipedia, they say structured concurrency is a programming paradigm aimed at improving the clarity, quality, and development time of a computer program by using a structured approach to concurrent programming.
+00:02:55 So you look at Wikipedia, they say structured concurrency is a programming paradigm aimed at improving the clarity, quality, and development time of a computer program by using a structured approach to concurrent programming.
 
-00:03:09 The core concept is the encapsulations of threads of execution by way of control flow constructs that have a clear entry and exit points.
+00:03:08 The core concept is encapsulations of threads of execution by way of control flow constructs that have a clear entry and exit points.
 
-00:03:18 In Python, this mostly manifests itself through this library as async with blocks or async context managers.
+00:03:17 In Python, this mostly manifests itself through this library as async with blocks or async context managers.
 
-00:03:27 You're like, "I'm going to do some async work, so let's create a with block, do all the work in there." And then by the way, when you leave the with block, it's going to have made sure all the tasks that were started and the tasks started by those tasks and so on, all finished.
+00:03:28 So you're like, I'm going to do some async work.
+
+00:03:30 So let's create a width block, do all the work in there.
+
+00:03:32 And then by the way, when you leave the width block, it's going to have made sure all the tasks that were started and the tasks started by those tasks and so on all finished.
 
 00:03:41 Oh, that's nice.
 
 00:03:42 Yeah, that's pretty cool.
 
-00:03:44 So the way it works is you basically go anyio.createTaskGroup, and then from the task group you can spawn other subtasks, and it will keep track of those.
+00:03:44 So the way it works is you basically go anyio.createTaskGroup and then from the task group, you can spawn other subtasks and it will keep track of those.
 
-00:03:55 If there's an exception, I believe it will cancel the other undone ones, the unfinished ones, and so on.
+00:03:55 If there's an exception, I believe it will cancel the other undone ones, the unfinished ones and so on.
 
-00:04:00 So it's about, say, we're just gonna go through this thing and it's all gonna run here, and it enters at the top and it exits at the bottom of the with block.
+00:04:00 So it's about saying we're just going to go through this thing and it's all going to run here and like it enters at the top and it exits at the bottom of the width block.
+
+00:04:08 Okay.
 
 00:04:09 That's pretty cool, right?
 
-00:04:10 - Yeah.
+00:04:10 Yeah.
 
-00:04:11 - Yeah, so I think that that's pretty neat.
+00:04:10 Yeah.
 
-00:04:12 Also, it has other primitives, that's like a real simple example.
+00:04:10 So I think that that's pretty neat.
 
-00:04:15 Other example or other things it does include synchronization primitives, locks.
+00:04:12 Also has other primitives.
 
-00:04:21 So if you create a re-entrant lock in Python, often called a critical section and things like C++ and whatnot, it's never ever gonna help you.
+00:04:13 So that's like a real simple example.
 
-00:04:31 Well, maybe that's a little bit strong.
+00:04:15 Other example or other things it does include synchronization, primitives, locks.
 
-00:04:32 It's likely not gonna help you because those mechanisms come from the operating system process level.
+00:04:20 So if you create a reentrant lock in Python, often called a critical section and things like C++ and whatnot, it's never, ever going to help you.
+
+00:04:30 Well, maybe that's a little bit strong.
+
+00:04:32 It's likely not going to help you because those mechanisms come from the operating system process level.
 
 00:04:39 And what they do is they make sure two threads don't run at the same time.
 
-00:04:42 Well, with async I/O, it's all a bunch of stuff that's being broken apart on a single thread, right?
+00:04:42 Well, with asyncio, it's all a bunch of stuff that's being broken apart on a single thread, right?
 
-00:04:49 It's all on the one, wherever the event loop.run is, run till complete or whatever, like wherever that's happening, that's the thread.
+00:04:49 It's all on the one, wherever the event loop.run is, run to complete or whatever, like wherever that's happening, that's the thread.
 
 00:04:56 So like the thread locks don't matter.
 
 00:04:57 It's all the same thread.
 
-00:04:59 Like you're not gonna block anything.
+00:04:59 Like you're not going to block anything.
 
-00:05:00 So having primitives that will kind of function like threads to protect data while stuff is happening, while it's in temporarily invalid states, that's pretty cool for async I/O.
+00:05:00 So having primitives that will kind of function like threads to protect data while stuff is happening, while it's in temporarily invalid states, that's pretty cool for asyncio.
 
-00:05:10 - Okay, so you need it or you don't need it?
+00:05:10 Okay.
 
-00:05:12 - You probably need it.
+00:05:10 So you need it or you don't need it?
 
-00:05:13 I think people often don't really think too much about these invalid states or programs get into and you think, well, asyncio, it's gonna be fine.
+00:05:12 You probably need it.
 
-00:05:21 And a lot of times what you're doing with asyncio is kind of standalone, like I'm gonna kick off this thing and when it comes back, I'm gonna take the data and do something.
+00:05:13 I think people often don't really think too much about these invalid states that programs get into.
 
-00:05:30 But if you're modifying shared data structures, you can still end up in some kind of event loop erase condition.
+00:05:19 And you think, well, asyncio, it's going to be fine.
 
-00:05:36 It's not as bad as like true threading because you're not going to, I don't believe it's like a plus equals, right?
+00:05:21 And a lot of times what you're doing with asyncio is kind of standalone.
+
+00:05:26 Like I'm going to kick off this thing.
+
+00:05:28 And when it comes back, I'm going to take the data and do something.
+
+00:05:30 But if you're modifying shared data structures, you could still end up in some kind of event loop, erase condition.
+
+00:05:36 It's not as bad as like true threading because you're not going to, it's, I don't believe it's like a plus equals, right?
 
 00:05:43 Of something that actually might be multiple steps at the lower level runtime.
 
-00:05:47 I don't think that it would get broken up to that fine grained, but if you say like, debit this account, this amount of money, or a weight, debit this account, this amount of money, a weight, put that amount into the other one, and some other one is like reading in some kind of loop, like that level of higher order, like temporarily invalid state, that could be a problem for asyncio and you want some kind of lock.
+00:05:47 I don't think that it would get broken up to that fine grained.
 
-00:06:09 So this comes with that.
+00:05:50 But if you say like debit this account, this amount of money, or await, debit this account, this amount of money, await, put that amount into the other one.
 
-00:06:10 It comes with streams, which are similar to queues, timeouts through things like move on after or fail after a certain amount of time and so on.
+00:05:59 And some other one is like reading in some kind of loop, like that level of higher order, like temporarily invalid state.
 
-00:06:18 So it's a pretty cool little library.
+00:06:05 That could be a problem for asyncio and you want some kind of lock.
 
-00:06:19 - Yeah, that's nice.
+00:06:09 So this comes with that, it comes with streams, which are similar to queues, timeouts through things like move on after or fail after a certain amount of time and so on.
 
-00:06:20 - My vote still for Unsync is the best of the four, even though it was unmentioned.
+00:06:18 So it's pretty cool little library.
 
-00:06:24 (laughing)
+00:06:19 Yeah, that's nice.
 
-00:06:26 - Isn't Unsync built on those also?
+00:06:20 Nice.
 
-00:06:28 - It's a compatibility layer that takes asyncio, threading and multiprocessing and turns them all into things that you can await.
+00:06:20 My vote still for unsync is the best of the four, even though it was unmentioned.
 
-00:06:35 - Oh yeah.
+00:06:24 Isn't unsync built on those also?
 
-00:06:37 So don't you think there should be like a standard, like a, they should get together like some consortium and have a standard about this.
+00:06:28 It's a compatibility layer that takes asyncio, threading, and multiprocessing and turns them all into things that you can await.
 
-00:06:43 - Yeah, well they probably should, but we're still in the early stages of figuring out what the right API is.
+00:06:35 Oh, yeah.
 
-00:06:49 - That's right, that's why they haven't done it.
+00:06:36 Yeah.
 
-00:06:51 - There's something else that has, that could use some standards, and that's in a lot of data science libraries.
+00:06:36 So don't you think there should be like a standard, like a, they should get together like some consortium and have a standard about this?
+
+00:06:42 Yeah.
+
+00:06:43 Well, they probably should, but we're still in the early stages of figuring out what the right API is.
+
+00:06:48 That's right.
+
+00:06:50 That's why they haven't done it.
+
+00:06:51 There's something else that has, that could use some standards and that's in a lot of data science libraries.
 
 00:06:58 There's an announcement that there's a new consortium for Python data API standards.
 
-00:07:03 So there is one happening, and it's happening actually quite fast.
+00:07:03 So there is one happening and it's happening actually quite fast.
 
-00:07:07 They're getting started right away and there's activities to the announcements right away.
+00:07:06 They're getting started right away and there's activities to the announcements right away.
 
-00:07:13 Then in September, I believe, they're going to kick off some work on data frames or on, no, starting with arrays and then move on to data frames.
+00:07:13 Then in September, I believe they're going to kick off some work on data frames or on, no, starting with arrays and then move on to data frames.
 
 00:07:23 And so, okay, I'm getting ahead of myself.
 
-00:07:25 There are little blurbs says, one of the unintended consequences of the advances in multiple frameworks for data science, machine learning, deep learning and numerical computing is that there is fragmentation and in using the tools and there are differences in common function signatures. They have one example that shows what the generally mean function to get the average or mean. People are going to like flame me for calling average mean, but as a commoner I kind of think of those the same thing.
+00:07:25 There are little blurbs says, one of the unintended consequences of the advances in multiple frameworks for data science, machine learning, deep learning, and numerical computing is that there is fragmentation.
 
-00:07:58 They show a different frameworks than and some of them are common with other ones and so there's five different interfaces for over the eight frameworks for just the mean function for an array. Yeah and what's crazy is like they all are basically the same they're so so similar but they're not the same not code wise the same but they might as well be.
+00:07:37 And in using the tools and then there are differences in common function signatures.
 
-00:08:18 Yeah and so one of the issues is there's people are using more than one framework for different parts of their maybe different parts of their data flow And sometimes you can kind of forget which one you're using and having a lot of these things common.
+00:07:43 They have one example that shows what the, generally a mean function to get the average or mean, people are going to like flame me for calling average mean, but as a commoner, I kind of think of those the same thing.
 
-00:08:34 Actually, we just make life easier, I think. So I think I don't know how far they'll get with this, but I think it's a really, so they're trying to make all of these, these frameworks look exactly the same, but with commonalities in arrays and data frames.
+00:07:58 But anyway, they show eight different, frameworks then, and some of them are common with other ones.
 
-00:08:49 Or and they said note that a razor also called tensors so those are.
+00:08:04 And so there's five different interfaces for over the eight frameworks for just the mean function for an array.
 
-00:08:55 Trying to make some of those comments are i think a really good idea for some of the easy simple stuff why not seems like a great idea it seems like a huge challenge though like who's gonna give whose functions gonna be the one that's like yeah we're dropping this part of our API to make it look like everyone else's great and that's why i think that they've been through a lot of thought on how to go about with this process and try to convince people so So they're working with, they're trying to kind of be in between the framework authors and maintainers and the community and try to do some review process for different APIs, put a proposal out, have feedback from both from the different projects and from the community to have more input to try to make it.
+00:08:09 Yeah.
 
-00:09:43 It isn't just like one set of people saying, "Hey, I think this should be this way." Yeah, it's a good idea.
+00:08:10 And what's crazy is like, they all are basically the same.
+
+00:08:12 They're so, so similar, but they're not the same, not code wise the same, but they might as well be.
+
+00:08:18 Yeah.
+
+00:08:18 And so one of the issues is there's people are using more than one framework for different parts of their, maybe different parts of their data flow.
+
+00:08:27 And sometimes you can kind of forget which one you're using and having a lot of these things common actually would just make life easier, I think.
+
+00:08:37 So I think, I don't know how far they'll get with this, but I think it's a really, so they're not trying to make all of these, these frameworks look exactly the same, but with, commonalities in arrays and data frames.
+
+00:08:49 Or, and they note that arrays are also called tensors.
+
+00:08:53 So those are, trying to make some of those common is, I think a really good idea for some of the easy, simple stuff.
+
+00:09:01 why not?
+
+00:09:02 It seems like a great idea.
+
+00:09:03 It seems like a huge challenge though.
+
+00:09:05 Like who's going to give, whose function is going to be the one that's like, yeah, we're dropping this part of our API to make it look like everyone else's.
+
+00:09:12 Right.
+
+00:09:12 And that's why I think that they've, they've went through a lot of thought on how to go about with this process and try to convince people.
+
+00:09:19 So they're working with, they're trying to kind of be in between the framework authors and maintainers and the community and try to do some, some review process for different APIs, put a proposal out, have feedback from both from, from the different projects and from the community to have, have more of a, you know, more input to try to make it.
+
+00:09:43 It isn't just like one set of people saying, Hey, I think this should be this way.
+
+00:09:47 Yeah, no, it's, it's a good idea.
 
 00:09:49 It would be great if a lot of these applications or these frameworks may be renamed.
 
-00:09:53 If it's the same function, if it's like for instance, mean in this example, if it's spelled exactly the same, maybe it should be the same API.
+00:09:53 If it's the same function, if it's like, for instance, mean in this example, if it's spelled exactly the same, maybe it should be the same API.
 
-00:10:01 And if you want a special version of it, maybe have a underscore with an extra, you know, some reason why it's different.
+00:10:01 And if you want a special version of it, maybe have a, have a underscore with an extra, you know, some reason why it's different.
 
-00:10:08 You can have extra different functions.
+00:10:08 you can have extra different functions.
 
-00:10:10 Yeah, it seems like you could find some pretty good common ground here.
+00:10:10 Yeah.
+
+00:10:11 It seems like you could find some pretty good common ground here.
 
 00:10:13 It's a good idea.
 
-00:10:14 make it happen, you know, it'd just be easier to mix and match frameworks and use the best for different situations. Because I can certainly see you're like, "I'm working with Pandas here. It would be great if I could do this on CUDA cores with CuePy, but I don't really know that. It's close, but it's not the same. So I'm just gonna keep stroking along here." As opposed to change the import statement, now it runs there. Yep. I don't know if it's ever really gonna be like you can just swap out a different framework, but for some of the common stuff it'd really be great. And that's why one of the reasons we're bringing it up is so that people can get on board and start being part of this review process if they care about it. Yeah, also seems like there might be some room for like adaptive layers like from Coupa import pandas layer or something like that where basically you talk to the in terms of say a pandas API and it converts it to its internal. It's like oh these these arguments are switched in order or this keyword is named differently or whatever. And there's even things like differences and even if the API looks the same or it's very similar, the default might be like in some cases the default might be none versus false or versus no value or things. I don't know what no value means but anyway. Yeah cool, that's a good one. Now also good is the things that we're working on. Brian, you want to tell folks about our Patreon? Actually we've kind of silently announced it a while ago, but we have 47 patrons now and it's set up for a monthly contribution and we really appreciate people helping out because there are some expenses with the show.
+00:10:14 And if they make it happen, you know, it'd just be easier to mix and match frameworks and use the best or different situations.
 
-00:11:48 So that's really cool.
+00:10:21 Cause I can certainly see you're like, Oh, I'm working with pandas here.
+
+00:10:24 It would be great if I could do this on CUDA cores with QPy, but I don't really know that it's close, but it's not the same.
+
+00:10:31 So I'm just going to keep stroking along here as opposed to change the import statement.
+
+00:10:35 Now it runs there.
+
+00:10:36 Yep.
+
+00:10:36 I don't know if it's ever really going to be like, you can just swap out a different framework, but for some of the common stuff, it'd really be great.
+
+00:10:43 And that's why one of the reasons why we're bringing it up is so that people can get on board and start being part of this review process if they care about it.
+
+00:10:50 Yeah.
+
+00:10:50 It also seems like there might be some room for like adaptive layers, like from QPy import pandas layer or something like that, where it basically, you talk to the, in terms of say a pandas API and it converts it to its internal.
+
+00:11:04 It's like, Oh, these, these arguments are switched in order or this keyword is named differently or whatever.
+
+00:11:09 And there's even things like differences.
+
+00:11:11 And even if the API looks the same or it's very similar, the default might be like in some cases, the default might be none versus false or versus no value or things.
+
+00:11:22 I don't know what no value means, but anyway.
+
+00:11:25 Yep.
+
+00:11:26 Cool.
+
+00:11:27 That's a good one.
+
+00:11:28 Now, also good is the things that we're working on.
+
+00:11:31 Brian, you want to tell folks about our Patreon?
+
+00:11:34 Actually, we've kind of silently announced it a while ago, but we've got 47 patrons now and it's set up for a monthly contribution and we, everything really appreciate people helping out because there are some expenses with the show.
+
+00:11:48 So that's a really cool.
 
 00:11:50 We'd love to see that grow.
 
-00:11:52 We'd also like to hear from people about how we'd like to come up with some special thank you benefits for patrons.
+00:11:51 I don't, we'd also like to hear from people about how we'd like to come up with some special thank you benefits for patrons.
 
 00:11:57 And so I'd like to have ideas come from the community.
 
-00:12:00 If you can come up with some ideas, we'll think about it.
+00:12:00 If you can come up with some ideas, we will think about it.
 
-00:12:04 And I'm trying to figure out how to get to it.
+00:12:04 Yeah.
 
-00:12:06 So on our Python Bytes--
+00:12:04 So, and I'm trying to figure out how to get to it.
 
-00:12:08 - If you're on any episode page, it's there on the right.
+00:12:06 So on our Python bytes.
 
-00:12:11 - Okay, if you go to an episode page, got it.
+00:12:08 If you're on any episode page, it's there on the right.
 
-00:12:13 - Yep, and it says on the right, I believe somewhere, it says Sponsor Sun.
+00:12:11 Okay.
 
-00:12:18 I'll have to double check, but I believe it does.
+00:12:11 If you go to an episode page.
 
-00:12:20 - Okay, we'll double check.
+00:12:13 Got it.
 
-00:12:21 - It can for sure, if it doesn't already.
+00:12:13 Yep.
 
-00:12:24 (laughing)
+00:12:13 Then it says on the right, I believe somewhere it says sponsors on, off the double check.
 
-00:12:26 And also I wanna just tell folks about a couple things going on over at Talk Python Training.
+00:12:19 I believe it does.
 
-00:12:30 We're doing a webcast on helping people move from using Excel for all their data analysis to Pandas, basically moving from Excel to the Python data science stack, which has all sorts of cool benefits and really neat things you can do there.
+00:12:20 Okay.
 
-00:12:43 So Chris Moffett is gonna come on and write a course with us, and he's gonna do a webcast, which I announced it like 12, 15 hours ago, and it already has like 600 people signed up for it.
+00:12:20 We'll double check.
 
-00:12:54 So it's free, people can just come sign up.
+00:12:21 It can for sure.
 
-00:12:56 It happens late September 29th.
+00:12:23 If it doesn't already.
 
-00:12:59 I'll put the link at the extras section of the show notes so people can find it there.
+00:12:24 And also, I want to just tell folks about a couple of things going on over at Talk Python
 
-00:13:03 And also the Python Memory Management course is out for early access.
+00:12:29 training.
+
+00:12:30 We're doing a webcast on helping people move from using Excel for all their data analysis
+
+00:12:35 to pandas, basically moving from Excel to the Python data science stack, which has all sorts
+
+00:12:41 of cool benefits and really neat things you can do there.
+
+00:12:43 So Chris Moffitt is going to come on and writing a course with us and he's going to do a webcast,
+
+00:12:48 which I announced it like, well, yeah.
+
+00:12:51 It's 15 hours ago and already has like 600 people signed up for it.
+
+00:12:54 So it's free.
+
+00:12:55 People can just come sign up.
+
+00:12:56 It happens late September, September 29th.
+
+00:12:59 I'll put the link at the extra section of the show notes so people can find it there.
+
+00:13:03 And also the Python memory management course is out for early access.
 
 00:13:07 A bunch of people are signing up and enjoying it.
 
-00:13:08 So if you wanna get to it soon, get to it early, people can check that out as well.
+00:13:08 So if you want to get to it soon, get to it early, people can check that out as well.
 
-00:13:13 - Very exciting.
+00:13:13 Very exciting.
 
-00:13:14 - So this next one I wanna talk about has to do with manners.
+00:13:14 So this next one I want to talk about has to do with manners.
 
 00:13:17 What kind of developer are you?
 
 00:13:19 Are you a polite developer?
 
-00:13:21 Are you talking to the framework?
+00:13:21 You're talking to the framework.
 
-00:13:22 Are you, do you always check it in with it to see how it feels, what you're allowed to do?
+00:13:22 Are you always checking in with it to see how it feels, what you're allowed to do?
 
-00:13:27 Are you kind of a rebel?
+00:13:26 Are you kind of a rebel?
 
-00:13:28 You're just gonna do what you like, but every now and then you're gonna get smacked down by the framework with an exception.
+00:13:27 You're just going to do what you like.
 
-00:13:33 - I don't want to describe how a developer I am because I don't want the explicit tag on this episode.
+00:13:29 But every now and then you get smacked down by the framework with an exception.
 
-00:13:39 (laughing)
+00:13:33 I don't want to describe how a developer I am because I don't want the explicit tag on this episode.
 
-00:13:40 - So there's an article that talks about something I think is pretty fun and interesting to consider and it talks about the two types of error handling patterns or mechanisms that you might use when you're writing code.
+00:13:40 So there's an article that talks about something I think is pretty fun and interesting to consider.
 
-00:13:55 And Python naturally leans towards one, but there might be times you don't want to use it.
+00:13:46 And it talks about the two types of error handling patterns or mechanisms that you might use when you're writing code.
 
-00:14:01 And that is, the two patterns are, it's easier to ask for forgiveness than permission.
+00:13:55 And Python naturally leans towards one.
 
-00:14:06 That's one.
+00:13:57 But there might be times you don't want to use it.
 
-00:14:07 And the other one is look before you leap, or please may I, right?
+00:14:00 And that is it's the two patterns are it's easier to ask for forgiveness than permission.
+
+00:14:05 That's one.
+
+00:14:07 And the other one is look before you leap or please may I.
+
+00:14:10 All right.
 
 00:14:12 And with the look before you leap, it's a lot of checks, like something you might do in C code.
 
-00:14:19 So you would say, I'm gonna create a file.
+00:14:18 So you would say, I'm going to create a file.
 
 00:14:21 Oh, does the folder exist?
 
-00:14:24 If the folder doesn't exist, I'm gonna need to create the folder, and then I can put the file there.
+00:14:23 If the folder doesn't exist, I'm going to need to create the folder.
+
+00:14:27 And then I can put the file there.
 
 00:14:29 Do I have permission to write the file?
 
-00:14:30 Yes, okay, then I'll go ahead and write the file.
+00:14:30 Yes.
 
-00:14:32 Right, you're always checking if I can do this, if this is in the right state and so on.
+00:14:31 Okay.
+
+00:14:31 Then I'll go ahead and write the file.
+
+00:14:32 Right.
+
+00:14:33 You're always checking if I can do this, if this is in the right state and so on.
 
 00:14:37 That's the look before you leap style.
 
-00:14:40 The ask for forgiveness style is just try with open this thing, oh, that didn't work, catch exception, right, accept some IO error or something like that.
+00:14:39 The ask for forgiveness style is just try with open this thing.
 
-00:14:51 So there's reasons you might wanna use both.
+00:14:45 Oh, that didn't work.
 
-00:14:54 Python leans or nudges you towards the ask for forgiveness, try except version.
+00:14:46 Catch exception.
+
+00:14:48 Right.
+
+00:14:48 Except some IO error or something like that.
+
+00:14:51 So there's reasons you might want to use both.
+
+00:14:54 Python leans or nudges you towards the ask for forgiveness.
+
+00:14:58 Try except version.
 
 00:15:00 The reason is, let's say you're opening a file and it's a JSON file.
 
-00:15:04 You might check first, does the file exist?
+00:15:04 You might check first.
 
-00:15:07 Yes, do I have permission to read it?
+00:15:05 Does the file exist?
 
-00:15:08 Yes, okay, open the file.
+00:15:07 Yes.
+
+00:15:07 Do I have permission to read it?
+
+00:15:08 Yes.
+
+00:15:09 Okay.
+
+00:15:09 Open the file.
 
 00:15:10 Well, guess what?
 
-00:15:11 What if the file's malformed and you try to feed it over to like JSON load and you give it the file pointer, it's not gonna say, sorry, it's malformed, it's gonna raise an exception.
+00:15:11 What if the file's malformed and you try to feed it over to like JSON load and you give
 
-00:15:21 Not gonna return it like a value, like malformed constant weird thing.
+00:15:16 it the file pointer?
 
-00:15:25 It's just gonna throw an exception and say, you know, invalid thing on line seven or whatever, right?
+00:15:17 It's not going to say, sorry, it's malformed.
 
-00:15:30 And so what that means is, even if you wanted to do the look before you leap, you probably can't test everything and you're gonna end up in a situation where you're still gonna have to have the try except block anyway.
+00:15:20 It's going to raise an exception.
 
-00:15:41 So maybe you should just always do that, right?
+00:15:21 It's not going to return it like a value, like malformed, constant, weird thing.
 
-00:15:45 Maybe you should just go, well, if we're gonna have to have exception handling anyway, that's just, we're gonna do exception handling as much as possible and not do these tests.
+00:15:25 It's just going to throw an exception and say, you know, invalid thing on line seven or
 
-00:15:53 So that's the, this article over here, It's on switwoski.com.
+00:15:29 whatever.
 
-00:15:59 - Mike Wazowski.
+00:15:29 Right.
 
-00:16:00 - Oh yeah, it's on Sebastian Witowoski.
+00:15:30 And so what that means is even if you wanted to do the look before you leap, you probably can't
 
-00:16:03 So yeah, it's his, I didn't realize that it was his article.
+00:15:35 test everything and you're going to end up in a situation where you're still going to
 
-00:16:06 So it's his article.
+00:15:39 have to have the try except block anyway.
 
-00:16:09 Anyway, he talks about like, what is the relative performance of these things and tries to talk about it from a well, sure, it's cool to think of how it looks in code, but is one faster or one slower than the other?
+00:15:41 So maybe you should just always do that.
 
-00:16:22 And this actually came up on Talk Python as well.
+00:15:44 Right.
 
-00:16:25 And so I said, look, if we're going to come up with an example, let's have a class and a base class, and let's have the base class define an attribute.
+00:15:45 Maybe you should just go, well, we're going to have to have exception handling anyway.
+
+00:15:48 That's just, we're going to do exception handling as much as possible and not do these tests.
+
+00:15:52 So that's the, this article over here.
+
+00:15:55 It's on the switwoski.com.
+
+00:15:58 Oh yeah.
+
+00:16:00 It's on Sebastian.
+
+00:16:01 Widooski.
+
+00:16:02 So yeah, it's his, I didn't realize that it was his article.
+
+00:16:06 So it's, his article.
+
+00:16:09 Anyway, he talks about like, what is the relative performance of these things and tries to talk
+
+00:16:15 about it from a, well, sure.
+
+00:16:18 It's cool to think of how it looks in code, but is one faster or one slower than the other?
+
+00:16:22 Okay.
+
+00:16:22 And this actually came up on talk Python as well.
+
+00:16:25 And so I said, look, if we're going to come up with an example, let's have a class and a
+
+00:16:30 base class.
+
+00:16:31 And let's have the base class define an attribute.
 
 00:16:34 And sometimes let's try to access the attribute.
 
-00:16:37 And when you don't have the base class, or when you only have the base class, it'll crash, right?
+00:16:36 And when you don't have the base class, it'll, or when you only have the base class, it'll
 
-00:16:41 'Cause it's in the derived class.
+00:16:41 crash, right?
+
+00:16:41 Cause it's in the derived class.
 
 00:16:42 So let's say we have two ways to test.
 
-00:16:45 We could either ask, does it have the attribute, and then try to access it, or we could just write or access it.
+00:16:45 We could either ask, does it have the attribute and then try to access it?
 
-00:16:52 And it says, well look, if it works all the time, and you're not actually getting errors, and you're doing this, it's 30% slower to do the look before you leap.
+00:16:49 Or we could just right to access it.
 
-00:17:01 'Cause you're doing an extra test, and basically the try-except block is more or less free, like it doesn't cost anything, if there's not actually an error.
+00:16:52 And it says, well, look, if it, if it works all the time and you're not actually getting
 
-00:17:10 But if you turn it around, and you say, no it's not there, all of a sudden, it turns out the ask, the try-except block is four times slower.
+00:16:56 errors and you're doing this, it's 30% slower to do the look before you leap.
 
-00:17:21 That's a lot slower.
+00:17:00 Cause you're doing an extra test and basically the try accept block is more or less free.
 
-00:17:21 - Oh, really?
+00:17:05 Like it doesn't cost anything if there's not actually an error, but if you turn it around
 
-00:17:22 - Because the raising of the exception, figuring out this call stack, all that kind of stuff is expensive.
+00:17:11 and you say, no, it's not there.
+
+00:17:14 All of a sudden it turns out the ask the, the try accept block is four times slower.
+
+00:17:20 That's a lot slower.
+
+00:17:21 Oh really?
+
+00:17:22 Because the raising of the exception, figuring out this call stack, all that kind of stuff
+
+00:17:27 is expensive.
 
 00:17:28 So instead of just going, does it have the attribute?
 
@@ -350,65 +556,121 @@
 
 00:17:37 So it's a lot slower when there are errors.
 
-00:17:39 And anyway, it's an interesting thing to consider if you care about performance and things like parsing integers or parsing data that might sometimes fail, might not, you know, sometimes it doesn't fail.
+00:17:39 And anyway, it's a, an interesting thing to consider if you care about performance and things
 
-00:17:52 Yeah, okay.
+00:17:46 like parsing integers or parsing data that might sometimes fail, might not, you know, sometimes
 
-00:17:53 Devil's advocate here.
+00:17:51 it doesn't fail.
 
-00:17:54 His example doesn't have any activity in the ask for forgiveness if it isn't there.
+00:17:51 Yeah.
 
-00:18:01 That's the way I saw it when I first read it as well.
+00:17:52 Okay.
 
-00:18:03 There's two sections.
+00:17:52 Devil's advocate here.
 
-00:18:04 There's like one part where he says, let's do it with the attribute on the derived class and let's do it again a second time by taking away the attribute and seeing what it's like.
+00:17:54 His example doesn't have any activity in the ask for forgiveness.
 
-00:18:13 Right, but I mean, the code, if it doesn't exist, it just doesn't do anything.
+00:17:59 If it isn't there.
 
-00:18:17 Right, right, right.
+00:18:01 That's the way I saw when I first read it as well.
 
-00:18:18 In reality, you're still going to have to do something.
+00:18:02 There's two sections.
 
-00:18:20 Notify the user it's wrong, whatever.
+00:18:04 There's like one part where he says, let's do it with the attribute on the drive class
 
-00:18:22 Yeah, for sure. That's a good point.
+00:18:08 and let's do it again a second time by taking away the attribute and seeing what it's like.
 
-00:18:24 Like it's just basically a try, except pass.
+00:18:13 Right.
 
-00:18:26 Yeah. So what do you think about this?
+00:18:13 But I mean, the code that if it, if it isn't exist, it just doesn't do anything.
 
-00:18:28 So what I think is you're going to have to write the try, except anyway, almost all the time.
+00:18:17 Right.
 
-00:18:36 And you don't want both.
+00:18:17 Whereas in reality, you're still going to have to do something.
+
+00:18:20 Yeah.
+
+00:18:20 You got to do something.
+
+00:18:21 Notify the user.
+
+00:18:21 It's wrong.
+
+00:18:22 Yeah.
+
+00:18:22 Whatever.
+
+00:18:22 Yeah.
+
+00:18:23 Okay.
+
+00:18:23 Yeah.
+
+00:18:23 For sure.
+
+00:18:23 That's a good point.
+
+00:18:24 Like it's just basically a try except pass.
+
+00:18:26 Yeah.
+
+00:18:27 So what do you think about this?
+
+00:18:28 So what I think is you're going to have to write the try except anyway, almost all the
+
+00:18:35 time.
+
+00:18:35 And you don't want both.
 
 00:18:38 Like that doesn't seem good.
 
-00:18:40 That seems like just extra complexity.
+00:18:39 That seems like just extra complexity.
 
-00:18:43 So when it makes sense, just go with ask for forgiveness.
+00:18:42 So when it makes sense, just go with ask for forgiveness.
 
-00:18:46 Just embrace exceptions, right?
+00:18:46 Just embrace exceptions.
+
+00:18:47 Right.
 
 00:18:48 Remember you have a finally block that often can like get rid of a test as well.
 
-00:18:53 You have multiple types of error, except clauses are based on error type.
+00:18:52 You have multiple types of error except clauses are based on error type.
 
-00:18:58 I think people should do a lot with that.
+00:18:57 I think people should do a lot with that.
 
-00:19:00 That said, if your goal is to like parse specific data, right, like I'm gonna read this number I got off by, off of the internet by web scraping, and there's a million records here, I'm gonna parse it.
+00:19:00 That said, if your goal is to like parse specific data, right?
 
-00:19:12 If you wanna do that a lot, lot faster, that might make a lot of sense.
+00:19:04 Like I'm going to read this number I got off by off of the internet by web scraping and there's
 
-00:19:15 I actually have a gist example that I put up trying to compare the speed of these things in a mixed case.
+00:19:09 a million records here.
 
-00:19:22 So like the cases we're looking at here are kind of strange because it's like, well, there's, it's all errors or it's zero errors, right?
+00:19:10 I'm going to parse it.
+
+00:19:11 If you want to do that a lot, a lot faster, that might make a lot of sense.
+
+00:19:15 I actually have a gist example that I put up trying to compare the speed of these things
+
+00:19:20 in a mixed case.
+
+00:19:22 So like the cases we're looking at here are kind of strange because it's like, well,
+
+00:19:26 there's, it's all errors or it's zero errors.
+
+00:19:29 Right.
 
 00:19:29 And then it doesn't really do anything, which are both weird.
 
-00:19:32 So I have this one where it comes up with like a million records, strings, and most of the time they're legitimate numbers, like 4.2 as a string, and then you can parse it.
+00:19:31 So I have this one where it comes up with like a million records strings.
 
-00:19:42 And what I found was if you have more than 4% errors, I think it was four, like 4.5% or something errors, erroneous data, it's slower to use exceptions.
+00:19:35 And most of the time they're number, they're legitimate numbers, like 4.2 as a string.
+
+00:19:40 And then you can parse it.
+
+00:19:42 And what I found was if you have more than 4% errors, I think it was four, like 4.5% or
+
+00:19:48 something errors, Aaron's data, it's slower to use exceptions.
+
+00:19:53 Okay.
 
 00:19:54 The cutoff is 4% errors.
 
@@ -416,157 +678,411 @@
 
 00:19:58 That's right.
 
-00:19:59 So anyway, it's something that people can run and get real numbers out of and play with it in a slightly more concrete way.
+00:19:59 Anyway, it's something that people can run and get real numbers out of and play with it in
 
-00:20:04 But I don't know, what do you think?
+00:20:02 a slightly more concrete way.
 
-00:20:06 I think you start out by focusing on the code, making it easy and clear to understand, and then worry about this stuff.
+00:20:04 But I don't know.
 
-00:20:13 - Yeah, so I don't actually put either.
+00:20:05 What do you think?
 
-00:20:15 I don't usually do the checking stuff.
+00:20:06 I think you start out by focusing on the code and making it easy and clear to understand
 
-00:20:18 And that is one of the things that's good about bringing this up is that is more common in Python code is to not check stuff, just to just go ahead and do it.
+00:20:12 and then worry about this stuff.
 
-00:20:29 And then I write a lot of tests.
+00:20:13 Yeah.
+
+00:20:13 So I don't actually put either.
+
+00:20:15 I don't usually do the asking or the checking stuff.
+
+00:20:18 And that is one of the things that's good about bringing this up is that is more common in
+
+00:20:23 Python code is to not check stuff, just to, you know, to just go ahead and do it.
+
+00:20:28 And then I write a lot of tests.
 
 00:20:30 So I write a lot of tests around things.
 
-00:20:32 - Yeah, that's cool.
+00:20:32 Yeah.
 
-00:20:33 - And so either case, checking for things, or like for instance, if it is input, if I've got user input, I'm checking for things.
+00:20:33 And so either case checking for things or like, for instance, if it is, if it is input,
 
-00:20:41 I'm going to do it checks ahead of time because I want, because the behavior of what happens when it isn't there or when there's a problem, it isn't really a problem. It needs to be designed into the system as to what behavior to do when something unexpected happens. But the in normal code, like, well, what happens if there's not an attribute? Well, You shouldn't be in that situation, right?
+00:20:39 if I've got user input, I'm checking for things.
 
-00:21:03 You shouldn't be in that situation. And I usually push it up higher.
+00:20:41 Yeah.
 
-00:21:05 I don't have try except blocks all over the place. I have them around APIs that might not be trustworthy or around external systems or something. I don't put try accept locks around code that I'm calling on my own code.
+00:20:41 I'm going to do it checks ahead of time because I want, because the behavior of what happens
 
-00:21:20 Things like that. Yeah, I'm with you on that. That makes a lot of sense.
+00:20:45 when it isn't there or when there's a problem, it isn't really a problem.
 
-00:21:23 The one time that I'll do the test, the look before you leave style, is if I think I can fix it.
+00:20:50 It needs to be designed into the system as to what behavior to do when something unexpected
 
-00:21:28 Right? Does this directory not exist?
+00:20:55 happens.
 
-00:21:30 I'm going to write a file to it. Well, I'm just going to make the directory.
+00:20:55 But the, in normal code, like, well, what happens if there's not an attribute?
 
-00:21:32 Then I'm going to write to it, you know.
+00:21:00 Well, you shouldn't be in that situation, right?
 
-00:21:35 Those kinds of tests can get you out of trouble, but if you're just going to say this didn't work, Chances are you know, you still need the error handling and exception format anyway. Yeah, and you're probably gonna throw an exception. So yeah, anyway So you probably should Get your code right test it and then just stick it in github Get in your repository make sure it's all up to date, right? Oh, I was wondering how you're gonna do that transition So yeah, that's good was following a discussion on twitter And I think actually I think anthony shah may have started it but I can't remember. But dealing with different, if you've got a lot of repositories, just sometimes you have a lot of maintenance to do or a little, you know, some common things you're doing for a whole bunch of repos.
+00:21:03 You shouldn't be in that situation.
 
-00:22:17 And there's lots of different reasons why that might be the case or related tools or maybe just your work. You've got a lot of repos, but there's a project that came up in this discussion that I hadn't really played with before. And it's a project called My Repos.
+00:21:04 And I usually push it up higher.
 
-00:22:33 And on the site it says you've got a lot of version control repositories sometimes you want to update them all at once or push out all the local your local changes.
+00:21:05 I don't have try accept blocks all over the place.
 
-00:22:43 You may use special command lines in summer repose to implement specific workflows well the my repose project provides an mr command which is a tool to manage all your version control repositories.
+00:21:08 I have them around APIs that might not be trustworthy or around external systems or something.
 
-00:22:55 And the way it works is it's on directory structures.
+00:21:16 I don't put try accept blocks around code that I'm calling on my own code.
 
-00:22:59 So it's a, and I usually have all of my repos I'm working with under, under a common, like, projects directory or something so that I know where to look.
+00:21:19 Things like that.
+
+00:21:20 Yeah.
+
+00:21:21 I'm with you on that.
+
+00:21:22 That makes a lot of sense.
+
+00:21:23 The one time that I'll do the test, the look before you leave style, is if I think I can
+
+00:21:27 fix it, right?
+
+00:21:28 Does this directory not exist?
+
+00:21:30 I'm going to write a file to it.
+
+00:21:31 Well, I'm just going to make the directory.
+
+00:21:32 Then I'm going to write to it, you know?
+
+00:21:35 Those kinds of tests can get you out of trouble.
+
+00:21:37 But if you're just going to say this didn't work, chances are, you know, you still need
+
+00:21:41 the error handling and exception format anyway.
+
+00:21:44 Yeah.
+
+00:21:44 And you're probably going to throw an exception.
+
+00:21:45 So, anyway.
+
+00:21:46 Cool.
+
+00:21:47 So, you probably should get your code right, test it, and then just stick it in GitHub.
+
+00:21:52 Get in your repository.
+
+00:21:54 Make sure it's all up to date, right?
+
+00:21:56 Oh, I was wondering how you were going to do that transition.
+
+00:21:58 So, yeah.
+
+00:21:59 That's good.
+
+00:21:59 I was following a discussion on Twitter, and I think, actually, I think Anthony Shaw may
+
+00:22:05 have started it, but I can't remember.
+
+00:22:06 But dealing with different, if you've got a lot of repositories, just sometimes you have
+
+00:22:11 a lot of maintenance to do or a little, you know, some common things you're doing for
+
+00:22:16 a whole bunch of repos.
+
+00:22:17 And there's lots of different reasons why that might be the case or related tools or
+
+00:22:24 maybe just your work.
+
+00:22:25 You've got a lot of repos.
+
+00:22:26 But there's a project that came up in this discussion that I hadn't really played with
+
+00:22:31 before, and it's a project called My Repos.
+
+00:22:33 And on the site, it says you've got a lot of version control repositories.
+
+00:22:38 Sometimes you want to update them all at once or push out all your local changes.
+
+00:22:43 You may use special command lines in some repos to implement specific workflows.
+
+00:22:48 Well, the My Repos project provides an MR command, which is a tool to manage all your version
+
+00:22:54 control repositories.
+
+00:22:56 And the way it works is it's on directory structures.
+
+00:22:59 So it's a, and I usually have all of my repos that I'm working with under a common, like,
+
+00:23:05 projects directory or something so that I know where to look.
 
 00:23:08 And so I'm already set up for something like this might work.
 
-00:23:12 And you go into, into one of your repos and you type, if you have this installed, you type mr register, and it registers this under, registers that repo for common commands.
+00:23:12 And you go into, into one of your repos and you type, if you have this installed, you type
 
-00:23:24 And then whether you're in a parent tree, parent directory, or one of the specific directories, and type a command, like for instance, if you say mr status, it'll do status on all of the repos that you care about, or update, or diff, or something like that.
+00:23:17 MR register.
+
+00:23:18 And it registers this under, registers that repo for common commands.
+
+00:23:24 And then whether you're in a parent directory or one of the specific directories and type
+
+00:23:30 a command, like for instance, if you say MR status, it'll do status on all of the repos
+
+00:23:36 that you care about or update or diff or something like that.
 
 00:23:40 And then you can build up even more complex commands yourself to do more complicated things.
 
-00:23:47 But I would, I mean, I'm probably going to use it right away just for just checking the status or doing Polls or updates or something like that on on lots of repos. So this looks neat. Yeah, it looks neat I like the idea a lot So basically I'm the same as you I've got a directory maybe a couple levels But all of my github repos go in there I group them by like personal stuff or work stuff But other than that, they're just all next to each other and this would just let you say go do a get pull on all of Them that's great. Yeah, or like for instance at work. I've got often Like three or four different related repos that if I switch to another project that I'm working on I need to go through and make Sure, I'm not sure what branch I'm using or if everything's up-to-date So being able to just go through all like even two or three Being able to go and update them all at once or just even check the status of all it'll save time And then friend of the show at least somebody that interviewed for a testing code at least Adam Johnson wrote an article called "Maintaining Multiple Python Projects with MyRepos" and we'll link to his article in the show notes.
+00:23:47 But I would, I mean, I'm probably going to use it right away just for just checking the
 
-00:24:55 Yeah, perfect.
+00:23:51 status or doing polls or updates or something like that on, on lots of repos.
+
+00:23:56 So this looks neat.
+
+00:23:57 Yeah, it looks neat.
+
+00:23:57 I like the idea a lot.
+
+00:23:58 So basically I'm the same as you.
+
+00:24:01 I've got a directory, maybe a couple of levels, but all of my GitHub repos go in there, right?
+
+00:24:08 I grouped them by like personal stuff or work stuff.
+
+00:24:10 But other than that, they're just all next to each other.
+
+00:24:13 And this would just let you say, go do a Git poll on all of them.
+
+00:24:17 That's great.
+
+00:24:17 Yeah.
+
+00:24:17 Or like, for instance, at work, I've got often like three or four different related repos
+
+00:24:22 that if I switch to another project that I'm working on, I need to go through and make sure
+
+00:24:27 I'm not sure what branch I'm using or if everything's up to date.
+
+00:24:31 So being able to just go through all, like even two or three, being able to go and update
+
+00:24:37 them all at once or just even check the status of all, it'll save time.
+
+00:24:41 And then for the show, at least somebody that interviewed for a testing code, at least,
+
+00:24:47 Adam Johnson wrote an article called maintaining multiple Python projects with my repos.
+
+00:24:53 And we'll link to his article in the show notes.
+
+00:24:55 Yeah.
+
+00:24:56 Perfect.
 
 00:24:56 I like this idea enough that I wrote something like that already.
 
 00:24:59 You did.
 
-00:24:59 Well, what I wrote is something that will...
+00:24:59 Well, what I wrote is something that will, it'll go and actually synchronize my GitHub account
 
-00:25:01 it'll go and actually synchronize my GitHub account with a folder structure on my computer.
+00:25:05 with a folder structure on my computer.
 
-00:25:09 So I'll go and just say, like, "repo-sync" or whatever I called it, And it'll use the GitHub API to go and figure out all the repos that I've cloned or created in the different organizations like Talk Python organization versus my personal one.
+00:25:09 So I'll go and just say like repo sync or whatever I called it.
 
-00:25:25 And then it'll create folders based on the organization or where I forked it from and then clone it. And if it's already there, it'll update it within it'll like basically pull all this down. That's cool. I need that.
+00:25:15 And it'll use the GitHub API to go and figure out all the repos that I've cloned or created
 
-00:25:35 It was a lot of work. This seems like it's pre-built and pretty close. So it looks pretty nice. The one thing it doesn't do is it doesn't look like, doesn't go to GitHub and say, oh, "Oh, what other repos have you created "that you maybe don't have here?" You know, maybe you want that, maybe you don't.
+00:25:21 and the different organizations like talk Python organization versus my personal one.
 
-00:25:49 If you've like forked Windows source code and it's like 50 gigs, you don't want this tool that I'm talking about.
+00:25:26 And then it'll create folders based on the organization or where I forked it from and then
 
-00:25:55 But if you have reasonable sized things, like I forked a Linux, okay, great, that's gonna take a while.
+00:25:29 clone it.
 
-00:26:00 But normally it would be, I think it would be pretty neat.
+00:25:30 And if it's already there, it'll update it within.
+
+00:25:32 It'll like basically pull all this down.
+
+00:25:34 Oh, that's cool.
+
+00:25:34 I need that.
+
+00:25:35 It was a lot of work.
+
+00:25:37 This seems like it's pre-built and pretty close.
+
+00:25:39 So it looks pretty nice.
+
+00:25:41 The one thing it doesn't do is it doesn't look like it doesn't go to GitHub and say, oh,
+
+00:25:44 what other repos have you created that you maybe don't have here?
+
+00:25:47 Maybe you want that.
+
+00:25:48 Maybe you don't.
+
+00:25:49 If you've like forked Windows source code and it's like 50 gigs, you don't want this tool
+
+00:25:53 that I'm talking about.
+
+00:25:54 But if you have reasonable size things like I forked Linux.
+
+00:25:58 Okay, great.
+
+00:25:58 That's going to take a while.
+
+00:25:59 But normally it would be I think it would be pretty neat.
+
+00:26:03 Yeah.
 
 00:26:03 Another thing that's neat around managing these types of things is Docker.
 
 00:26:06 And did you know that Python has an official Docker image?
 
-00:26:10 - I did not. - I didn't either.
+00:26:10 I did not.
 
-00:26:11 Well, I recently heard that, but it's fairly new news to me that there's an official Docker Python image.
+00:26:11 I didn't either.
 
-00:26:18 So theoretically, if you wanna work with some kind of Linux Docker machine that uses Python, you can go and Docker run or to create the Python one, right?
+00:26:11 Well, I recently heard that, but it's fairly new news to me that there is an official Docker
 
-00:26:30 So it's not super surprising, it's just called Python, right?
+00:26:17 Python image.
 
-00:26:35 But it's, yeah, it's just called Python.
+00:26:18 So theoretically, if you want to work with some kind of Linux Docker machine that uses Python,
 
-00:26:37 That's it, I believe.
+00:26:24 you can go and Docker run or to create the Python one.
 
-00:26:38 So pretty straightforward working with it.
+00:26:29 Right.
 
-00:26:40 But I'm gonna talk about basically looking through that official Docker image.
+00:26:29 So it's not super surprising.
 
-00:26:48 So Itamar Turner-Trowering, he was on Talk Python not long ago, talking about Phil.
+00:26:32 It's just called Python.
 
-00:26:53 We also talked about Phil on Python Bytes, the data science focused memory tool.
+00:26:34 Right.
 
-00:26:58 He wrote an article called "A Deep Dive into the Official Docker Image for Python." So basically it's like, well, if there's an official Docker image for Python, what is it?
+00:26:35 But it's yeah, it's just called Python.
+
+00:26:37 That's it.
+
+00:26:37 I believe so.
+
+00:26:38 Pretty straightforward working with it.
+
+00:26:40 But I'm going to talk about like basically looking through that Docker, that official Docker
+
+00:26:47 image.
+
+00:26:48 So Itamar Turner Trouring, who was on Talk Python not long ago, talking about Phil.
+
+00:26:53 And we also talked about Phil and Python bytes, the data science focused memory tool.
+
+00:26:57 He wrote an article called a deep dive into the official Docker image for Python.
+
+00:27:02 So basically it's like, well, if there's an official Docker image for Python, what is it?
 
 00:27:09 How do you set it up?
 
-00:27:10 understanding how it's set up is basically how do you take a machine that has no Python whatsoever and configure it in a Python way.
+00:27:10 Because understanding how it's set up is basically how do you take a machine that has no Python
 
-00:27:18 So this is using Debian. That's just what it's based on. And it's using the Buster version because apparently Debian names all their releases after characters from Toy Story.
+00:27:15 whatsoever and configure it in a Python way?
 
-00:27:29 I didn't know that, but yep, Buster. Buster is the current one. So it's going to create a Docker image.
+00:27:18 So this is using Debian.
 
-00:27:36 you create the Docker file, you say this Docker image is based on some other foundational one, so Debian buster, and then it sets up slash user slash local slash bin for the environmental path 'cause that is the first thing in the path 'cause that's where it's going to put Python.
+00:27:20 That's just what it's based on.
 
-00:27:55 It sets the locale explicitly to the ENV language is to UTF-8.
+00:27:22 And it's using the Buster version because apparently Debian names all their releases after characters
 
-00:28:01 There's some debate about whether this is actually necessary 'cause current Python also defaults to UTF-8, but here it is.
+00:27:28 from Toy Story.
 
-00:28:08 And then it also sets an environment variable, Python_version, to whatever the Python version is.
+00:27:29 I didn't know that.
 
-00:28:14 Right now it's 385, but whatever it is.
+00:27:30 But yep.
 
-00:28:16 That's kinda cool, so you can ask, "Hey, what version is in this system "without actually touching Python?" That's cool.
+00:27:31 Buster.
+
+00:27:31 Buster is the current one.
+
+00:27:34 So it's going to create a Docker image.
+
+00:27:36 You create the Docker file.
+
+00:27:37 You say this Docker image is based on some other foundational one.
+
+00:27:42 So Debian Buster.
+
+00:27:43 And then it sets up slash user slash local slash bin for the environmental path.
+
+00:27:50 Because that is the first thing in the path.
+
+00:27:52 Because that's where it's going to put Python.
+
+00:27:54 It sets the locale explicitly to the EMV language is to UTF-8.
+
+00:28:01 There's some debate about whether this is actually necessary because current Python also defaults
+
+00:28:05 UTF-8.
+
+00:28:06 But, you know, here it is.
+
+00:28:08 And then it also sets an environment variable Python underscore version to whatever the Python
+
+00:28:13 version is.
+
+00:28:14 Right now it's 385.
+
+00:28:15 But whatever it is, that's kind of cool.
+
+00:28:17 So you can ask, hey, what version is in this system without actually touching Python?
+
+00:28:22 That's cool.
 
 00:28:23 And then it has to do a few things like register the CA certificates.
 
-00:28:28 I've had people sending me messages, are taking courses and they're trying to run the code from something that talks to requests, whether it's SSL certificate endpoint, HTTPS endpoint, and they'll say, this thing says the certificate is invalid.
+00:28:27 Like, I've had people sending me messages that are taking courses.
 
-00:28:46 The certificate's not valid, what's going on here?
+00:28:32 And they're trying to run the code from, you know, something that talks to requests,
 
-00:28:48 Right, and almost always, something about the way that Python got set up on their machine didn't run the create certificate command.
+00:28:36 whether it's SSL certificate endpoint, HTTPS endpoint.
 
-00:28:56 So there's like this step where Python will go download all the major certificate authorities and like trust them in the system.
+00:28:41 And they'll say, this thing says the certificate is invalid.
+
+00:28:45 I'm like, the certificate's not invalid.
+
+00:28:47 What's going on here?
+
+00:28:48 Right?
+
+00:28:48 And almost always, something about the way that Python got set up on their machine didn't
+
+00:28:53 run the create certificate command.
+
+00:28:55 So there's like this step where Python will go download all the major certificate authorities
+
+00:29:01 and like trust them in the system.
 
 00:29:02 So that happens next.
 
-00:29:04 And then it actually will set up things like GCC and whatnot so it can compile it, which is interesting.
+00:29:03 And then it actually will set up things like GCC and whatnot.
 
-00:29:11 Downloads the source code, compiles it, but then what's interesting is it uninstalls the compiler tools.
+00:29:07 So it can compile it.
 
-00:29:18 It's like, okay, we're gonna download Python and we're gonna compile it, but you didn't explicitly ask for GCC.
+00:29:09 It's interesting.
 
-00:29:24 We just needed it, so those are gone, right?
+00:29:10 Downloads the source code, compiles it.
+
+00:29:13 But then what's interesting is it uninstalls the compiler tools.
+
+00:29:17 It's like, okay, we're going to download Python and we're going to compile it.
+
+00:29:21 But you didn't explicitly ask for GCC.
+
+00:29:23 We just needed it.
+
+00:29:24 So those are gone.
+
+00:29:25 Right?
 
 00:29:26 Cleans up the PYC files and all those kinds of things.
 
-00:29:29 And then it gives an alias to say that Python 3 is the same as Python, like the command, you could do it without the 3.
+00:29:29 And then it gives an alias to say that Python 3 is the same as Python.
 
-00:29:37 Another thing that we've gone on about that's annoying is like, I created a virtual environment.
+00:29:34 Like the command, you could do it without the 3.
+
+00:29:36 Another thing that we've gone on about that's annoying is like, I created a virtual environment.
 
 00:29:41 Oh, it has the wrong version of pip.
 
@@ -576,175 +1092,261 @@
 
 00:29:45 Everyone's pip is out of date.
 
-00:29:47 Unless you're like a rare, like two week window where Python has been released at the same time like the modern pip has been released.
+00:29:46 Unless you're like a rare, like two-week window where Python has been released at the same time
+
+00:29:52 like the modern pip has been released.
 
 00:29:54 So guess what?
 
 00:29:56 They upgrade pip to the new version, which is cool.
 
-00:29:59 And then finally it sets the entry point of the Docker container, which is the default command to do if you just say Docker run this image, like Docker run Python 3.8-slim-buster.
+00:29:59 And then finally it sets the entry point of the Docker container, which is the default command to do if you just say Docker run this image,
 
-00:30:12 If you just say that by itself, what program is it gonna run?
+00:30:08 like Docker run Python 3.8-slim-buster.
 
-00:30:16 'Cause the way it works is it basically starts Linux and then runs one program.
+00:30:12 If you just say that by itself, what program is going to run?
 
-00:30:20 When that program exits, the Docker container goes away.
+00:30:16 Because the way it works is it basically starts Linux and then runs one program.
 
-00:30:23 And so it sets that to be the Python three command.
+00:30:19 And that program exits, the Docker container goes away.
+
+00:30:22 And so it sets that to be the Python 3 command.
 
 00:30:25 So basically, if you Docker run the Python Docker image, you're going to get just the REPL.
 
-00:30:33 - Interesting.
+00:30:32 Interesting.
 
-00:30:34 - Yeah, you can always run it with different endpoints like bash and then go in and like do stuff to it or run it with micro-WSGI or Nginx or whatever.
+00:30:33 Yeah, you can always run it with different endpoints like Bash and then go in and like do stuff to it
+
+00:30:37 or run it with MicroWSGI or Nginx or whatever.
 
 00:30:40 But if you don't, you're just going to get Python 3 REPL.
 
-00:30:45 Anyway, that's the way the official Python Docker image configures itself from a bare Debian buster over to Python 3.
+00:30:44 Anyway, that's the way the official Python Docker image configures itself from a bare Debian buster
 
-00:30:54 - Neat.
+00:30:52 over to Python 3.
+
+00:30:53 Neat.
+
+00:30:54 Yeah, neat.
 
 00:30:54 I thought it might be worth just thinking about like, what are all the steps?
 
-00:30:58 And you know, how does that happen on your computer?
+00:30:57 And you know, how does that happen on your computer?
 
-00:31:00 If you can.
+00:31:00 No, that's good.
 
-00:31:01 No, that's good.
+00:31:01 Because yeah, I have been curious about that.
 
-00:31:02 Because yeah, I have been curious about that.
-
-00:31:04 I was gonna throw Python on a Docker image.
+00:31:04 I was going to throw Python on a Docker image.
 
 00:31:07 What does that get me?
 
-00:31:08 And yeah, exactly.
+00:31:08 Yeah, exactly.
 
-00:31:09 That's what it is.
+00:31:09 And that's what it is.
 
 00:31:10 Oh, you could also apt install Python 3 dash dev.
 
-00:31:16 Yeah, that might be cheating.
+00:31:18 Yeah, that might be cheating.
 
 00:31:19 All right.
 
-00:31:20 What's this final one?
+00:31:19 What's this final one?
 
-00:31:21 It was recommended by, we covered some craziness that Anthony did, episode or two ago, and somebody commented that maybe we need only in a pandemic section.
+00:31:20 Oh, so it was recommended by, we covered some craziness that Anthony did an episode or two
 
-00:31:32 - Oh yeah, that sounds fun.
+00:31:27 ago.
 
-00:31:34 - So I selected Nanormost, no, sorry, Nanornest.
+00:31:27 And somebody commented that maybe we need to only in a pandemic section.
 
-00:31:39 It's optimal peanut butter and banana sandwich placement.
+00:31:32 Yeah, that sounds fun.
 
-00:31:42 So this is kind of an awesome article by Ethan Rosenthal, talks about during the pandemic, He's been sort of having trouble doing anything.
+00:31:33 So I selected Nanner Most.
 
-00:31:52 And so he really liked peanut butter sandwich, peanut butter and banana sandwiches when he was just still, even he got picked this habit up from his grandfather, I think.
+00:31:36 No, sorry.
 
-00:32:01 Anyway, this is using Python and computer vision and deep learning and machine learning and a whole bunch of cool libraries to come up with the best packing algorithm for a particular banana and the particular bread that you have.
+00:31:37 Nanner Nest.
 
-00:32:16 So you take a picture that includes both the bread and the bananas, or the banana you have, and it will come up with the optimal slicing and placement of the banana for your banana sandwich.
+00:31:38 It's an optimal peanut butter and banana sandwich placement.
 
-00:32:29 - Wow, this is like a banana maximization optimization problem.
+00:31:42 So this is kind of an awesome article by Ethan Rosenthal.
 
-00:32:33 So if you want, you gotta see the pictures to get this.
+00:31:46 Talks about during the pandemic, he's been sort of having trouble doing anything.
 
-00:32:36 So like, if you're gonna cut your banana into slices, and obviously the radius of the banana slice varies at where you cut it in the banana, right?
+00:31:52 And so he really liked peanut butter and banana sandwiches when he was just still even.
+
+00:31:58 He got picked this habit up from his grandfather, I think.
+
+00:32:01 Anyway, this is using Python and computer vision and deep learning and machine learning and a
+
+00:32:07 whole bunch of cool libraries to come up with the best packing algorithm for a particular
+
+00:32:13 banana and the particular bread that you have.
+
+00:32:16 So you take a picture that includes both the bread and the bananas or the banana you have.
+
+00:32:22 And it will come up with the optimal slicing and placement of the banana for your banana
+
+00:32:28 sandwich.
+
+00:32:28 Wow, this is like a banana maximization optimization problem.
+
+00:32:33 So if you want, you got to see the pictures to get this.
+
+00:32:36 So like, if you're going to cut your banana into slices, and obviously the radius of the
+
+00:32:42 banana slice varies at where you cut it in the banana, right?
 
 00:32:45 Is it near the top?
 
-00:32:46 Is it in the middle?
+00:32:45 Is it in the middle?
 
-00:32:47 It's going to result in different size slices.
+00:32:46 It's going to result in different size slices.
 
-00:32:49 On where do you place the banana circles on your bread to have maximum surface area of bananas relative to what's left of the bread, right?
+00:32:48 On where do you place your bread, the banana circles on your bread to have maximum surface
+
+00:32:56 area of bananas relative to the what's left of the bread, right?
 
 00:32:59 Something like that?
 
-00:33:00 Yes.
+00:32:59 Yes.
 
-00:33:01 He's trying to make it so that you have almost all of the bites of the sandwich have an equal ratio of banana, peanut butter, and bread.
+00:33:00 And he's trying to maximize, make it so that you have almost all of the bites of the sandwich
+
+00:33:05 have an equal ratio of banana, peanut butter, and bread.
 
 00:33:08 Oh yeah, okay.
 
 00:33:09 It's all about the flavor.
 
-00:33:10 I didn't understand the real motivation, but yeah, you wanna have an equal layer, right?
+00:33:10 I didn't understand like the real motivation, but yeah, you want to have an equal layer, right?
 
 00:33:16 So you don't want that spot where you just get bread.
 
-00:33:19 - You actually learn quite a bit about all these different processes, and there's quite a bit of math here.
+00:33:19 You actually learn quite a bit about all these different processes and there's quite a bit
 
-00:33:25 Talking about coming up with arcs for, you have to estimate the banana shape as part of an ellipse, and using the radius of that to determine banana slices, and estimates for, because you're looking at a banana sideways, you have to estimate what the shape of the banana circle will be, and it's not really a circle, it's more of an ellipse also.
+00:33:23 of math here talking about coming up with arcs for, you have to estimate the banana shape as
+
+00:33:31 part of an ellipse and using the radius of that to determine banana slices and estimates for,
+
+00:33:40 because you're looking at a banana sideways, you have to estimate what the shape of the banana
+
+00:33:45 circle will be and it's not really a circle, it's more of an ellipse also.
 
 00:33:49 Yeah, there's a lot going on here.
 
-00:33:52 Some advanced stuff to deliver your bananas perfectly.
+00:33:51 Some advanced stuff to deliver your bananas perfectly.
 
-00:33:57 I love it.
+00:33:56 I love it.
 
-00:33:58 Actually, this is really interesting.
+00:33:57 Actually, this is really interesting.
 
-00:33:59 This is cool.
+00:33:58 This is cool.
 
-00:34:00 And it's, I mean, it's a silly application, but it's also a neat example.
+00:33:59 And it's, I mean, it's a silly application, but it's also a neat example.
 
-00:34:03 Yeah, actually, and this would be, I think, a cool thing for to talk about difficult problems and packing for like a teaching, like in a school setting. I think this would be a great example to talk about some of these different complex problems. Yeah, totally.
+00:34:03 Yeah, actually, and this would be, I think, a cool thing for, to talk about difficult problems
 
-00:34:20 Well, that's it for our main items.
+00:34:09 and packing for like a teaching, like in a school setting.
 
-00:34:22 For the extras, I just want to say I'll put the links for the Excel and Python webcasts in the memory management course down there, and we'll put the Patreon link as well.
+00:34:14 I think this would be a great example to talk about some of these different complex problems.
 
-00:34:30 Let's see, do you have anything else you want to share?
+00:34:18 Yeah, totally.
+
+00:34:19 Well, that's it for our main items.
+
+00:34:21 For the extras, I just wanted to say I'll put the links for the Excel to Python webcast and
+
+00:34:26 the memory measurement course down there and we'll put the Patreon link as well.
+
+00:34:30 Let's see if you have anything else you want to share.
 
 00:34:32 No, that's good.
 
-00:34:33 Yeah, cool.
+00:34:32 Yeah, cool.
 
-00:34:34 How about sharing a joke?
+00:34:33 How about sharing a joke?
 
-00:34:35 A joke would be great.
+00:34:34 A joke would be great.
 
-00:34:36 So I'm going to describe the situation, and you can be the interviewer/boss who has the caption, okay?
+00:34:35 So I'm going to describe the situation and you can be the interviewer slash boss who has the
+
+00:34:41 caption, okay?
 
 00:34:42 Okay.
 
-00:34:43 So the first, there's two scenarios.
+00:34:42 So the first, there's two scenarios.
 
-00:34:45 The title is "Job Requirements." This comes to us from Eduardo Orochenas.
+00:34:45 The title is Job Requirements.
+
+00:34:47 This comes to us from Eduardo Orochena.
 
 00:34:49 Thanks for that.
 
-00:34:51 And the first scenario is the job interview, where you're getting hired.
+00:34:50 And the first scenario is the job interview where you're getting hired.
 
-00:34:57 And then there's the reality, which is later, which is the actual on-the-job day-to-day.
+00:34:56 And then there's the reality, which is later, which is the actual on the job day to day.
 
-00:35:02 So on the job interview, I come in, I'm an applicant here, and Brian, the boss, says, "Invert a binary tree on this whiteboard." Or some other random data structure, like quicksort this, but using some other weird thing, right?
+00:35:02 So on the job interview, I come in, I'm an applicant here and Brian, the boss says.
 
-00:35:15 kind of really computer science-y way out there.
+00:35:06 Invert a binary tree on this whiteboard.
 
-00:35:19 Probably not going to do, but maybe it makes sense, right?
+00:35:09 Or some other random data structure, like quick sort this, but using some other weird thing,
 
-00:35:22 Alright, now I'm at the job and I've got like my computer, I have a huge purple buy button on my website that I'm working on.
+00:35:15 right?
 
-00:35:28 And the bot says, "Make the button bigger!" Yep, that's the job.
+00:35:15 Yeah.
 
-00:35:33 [laughter]
+00:35:15 Something that is kind of really computer science-y, way out there, probably not going
 
-00:35:35 Yeah. Very nice.
+00:35:20 to do, but kind of maybe makes sense, right?
 
-00:35:38 Good, good. Alright, well, I love the jokes and all the tech we're covering.
+00:35:22 All right.
 
-00:35:41 Thanks, Brian.
+00:35:23 Now I'm at the job and I've got like my computer.
 
-00:35:42 Yeah, thank you.
+00:35:25 I have a huge purple buy button on my website that I'm working on.
 
-00:35:43 Bye. Thank you for listening to Python Bytes. Follow the show on Twitter via @pythonbytes.
+00:35:29 And the boss says, make the button bigger.
 
-00:35:48 That's Python Bytes as in B-Y-T-E-S. And get the full show notes at pythonbytes.fm.
+00:35:31 Yep.
+
+00:35:33 That's the job.
+
+00:35:33 Yeah.
+
+00:35:37 Very nice.
+
+00:35:38 Good, good.
+
+00:35:39 All right.
+
+00:35:40 Well, I love the jokes and all the tech we're covering.
+
+00:35:42 Thanks, Brian.
+
+00:35:42 Yeah.
+
+00:35:43 Thank you.
+
+00:35:43 Yeah.
+
+00:35:44 Bye.
+
+00:35:44 Thank you for listening to Python Bytes.
+
+00:35:46 Follow the show on Twitter via at Python Bytes.
+
+00:35:48 That's Python Bytes as in B-Y-T-E-S.
+
+00:35:51 And get the full show notes at pythonbytes.fm.
 
 00:35:54 If you have a news item you want featured, just visit pythonbytes.fm and send it our way.
 
-00:35:58 We're always on the lookout for sharing something cool. On behalf of myself and Brian Okken, this is Michael Kennedy. Thank you for listening and sharing this podcast with your friends and
+00:35:59 We're always on the lookout for sharing something cool.
+
+00:36:01 On behalf of myself and Brian Okken, this is Michael Kennedy.
+
+00:36:04 Thank you for listening and sharing this podcast with your friends and colleagues.
 

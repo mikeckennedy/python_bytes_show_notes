@@ -1,3008 +1,2078 @@
+WEBVTT
 
-00:00:00.000 --> 00:00:04.560
-Hello and welcome to Python Bytes where we deliver Python news and headlines directly to your earbuds.
+00:00:00.001 --> 00:00:04.440
+Hello and welcome to Python Bytes, where we deliver Python news and headlines directly to your earbuds.
 
+00:00:04.440 --> 00:00:09.640
+This is episode 207, recorded November 4th, 2020. I'm Michael Kennedy.
 
-00:00:04.560 --> 00:00:08.860
-This is episode 207 recorded November 4th, 2020.
-
-
-00:00:08.860 --> 00:00:09.700
-I'm Michael Kennedy.
-
-
-00:00:09.700 --> 00:00:10.560
+00:00:09.640 --> 00:00:10.540
 And I'm Brian Okken.
 
+00:00:10.540 --> 00:00:14.800
+And this episode is brought to you by us. We'll tell you more about that later.
 
-00:00:10.560 --> 00:00:12.660
-And this episode is brought to you by us.
-
-
-00:00:12.660 --> 00:00:14.960
-We'll tell you more about that later.
-
-
-00:00:14.960 --> 00:00:15.760
+00:00:14.800 --> 00:00:15.640
 Brian, how you been?
 
+00:00:15.640 --> 00:00:18.760
+I am excellent today. A little tired. How about you?
 
-00:00:15.760 --> 00:00:17.460
-I am excellent today.
+00:00:18.760 --> 00:00:22.520
+Yeah, quite tired, actually. Quite tired. But I'm doing all right.
 
-
-00:00:17.460 --> 00:00:18.300
-A little tired.
-
-
-00:00:18.300 --> 00:00:18.800
-How about you?
-
-
-00:00:18.800 --> 00:00:20.200
-Yeah, quite tired, actually.
-
-
-00:00:20.200 --> 00:00:22.560
-Quite tired, but I'm doing all right.
-
-
-00:00:22.560 --> 00:00:27.800
+00:00:22.520 --> 00:00:27.780
 Life goes on, and we continue to work from home and all those things.
 
+00:00:27.780 --> 00:00:32.180
+And, you know, luckily our industry and our tools were built for that world.
 
-00:00:27.800 --> 00:00:32.160
-and you know, luckily our industry and our tools were built for that world.
+00:00:32.180 --> 00:00:34.960
+Yes, I'm very fortunate. Yeah, absolutely.
 
+00:00:34.960 --> 00:00:40.580
+So speaking of fortunate, I think we're fortunate that Sebastian Ramirez created FastAPI,
 
-00:00:32.160 --> 00:00:33.960
-Yes, I'm very fortunate.
+00:00:40.580 --> 00:00:43.400
+because we've talked about FastAPI before. It's super neat.
 
+00:00:43.400 --> 00:00:49.440
+We've talked about Pydantic before, which is a really cool way to take data class-like things
 
-00:00:33.960 --> 00:00:35.840
-Yeah, absolutely.
+00:00:49.440 --> 00:00:55.500
+and automatically bind them with automatic conversion, validation, and whatnot for data.
 
+00:00:55.500 --> 00:00:58.700
+That just comes from a JSON dictionary somewhere or just a Python dictionary.
 
-00:00:35.840 --> 00:00:38.440
-So speaking of fortunate, I think we're fortunate that
+00:00:58.700 --> 00:01:04.320
+But it often is JSON being submitted to a web, some sort of web API.
 
+00:01:04.320 --> 00:01:07.400
+The reason I bring up FastAPI is I've been doing a lot of stuff with it,
 
-00:00:38.440 --> 00:00:40.680
-Sebastian Ramirez created FastAPI
+00:01:07.400 --> 00:01:12.120
+actually working on a series of courses around FastAPI as well, which is super exciting.
 
+00:01:12.120 --> 00:01:14.420
+And maybe I'll mention that briefly later.
 
-00:00:40.680 --> 00:00:43.400
-because we've talked about FastAPI before, it's super neat.
+00:01:14.960 --> 00:01:24.680
+But one of the things that bugs me about FastAPI is it's so API-oriented that it's tricky to know what to do
 
+00:01:24.680 --> 00:01:31.540
+when you just say, I just want to create a website that has like a couple of pages and then some APIs.
 
-00:00:43.400 --> 00:00:45.840
-We've talked about Pydantic before,
+00:01:31.540 --> 00:01:36.880
+So for example, if you just create a couple of APIs now and they're like, say it's about weather,
 
+00:01:36.940 --> 00:01:43.180
+it'd be like slash API slash weather slash report, API slash weather slash latest or whatever, right?
 
-00:00:45.840 --> 00:00:49.440
-which is a really cool way to take data class-like things
+00:01:43.180 --> 00:01:50.600
+Well, if you just click the, you know, you run it, you just click the little link in your IDE or VS Code or whatever
 
+00:01:50.600 --> 00:01:51.920
+and open it, what do you get?
 
-00:00:49.440 --> 00:00:52.680
-and automatically bind them with automatic conversion,
+00:01:51.920 --> 00:01:52.640
+404.
 
+00:01:53.720 --> 00:02:00.360
+Probably not the best response that you could imagine is that like the default behavior is just to like open up the site
 
-00:00:52.680 --> 00:00:55.440
-validation and whatnot for data
+00:02:00.360 --> 00:02:01.740
+and it says not found.
 
+00:02:01.740 --> 00:02:03.560
+So you got to like type in this stuff.
 
-00:00:55.440 --> 00:00:57.600
-that just comes from a JSON dictionary somewhere
+00:02:03.560 --> 00:02:10.860
+Anyway, it supports Jinja in like a sort of manual way, the same way that Flask does, I guess, more or less.
 
+00:02:10.860 --> 00:02:19.240
+But I wanted a better way to have HTML pages inside of my FastAPI app.
 
-00:00:57.600 --> 00:00:59.280
-or just a Python dictionary,
+00:02:20.100 --> 00:02:25.380
+Because if you're going to build an API, there's a very good chance there's like two or three pages that you need, right?
 
+00:02:25.380 --> 00:02:25.740
+Yeah.
 
-00:00:59.280 --> 00:01:03.400
-but it often is JSON being submitted to a web,
+00:02:25.740 --> 00:02:26.020
+Yeah.
 
-
-00:01:03.400 --> 00:01:04.640
-some sort of web API.
-
-
-00:01:04.640 --> 00:01:06.040
-The reason I bring up FastAPI
-
-
-00:01:06.040 --> 00:01:07.480
-is I've been doing a lot of stuff with it,
-
-
-00:01:07.480 --> 00:01:09.640
-actually working on a series of courses
-
-
-00:01:09.640 --> 00:01:12.120
-around FastAPI as well, which is super exciting,
-
-
-00:01:12.120 --> 00:01:15.040
-and maybe I'll mention that briefly later.
-
-
-00:01:15.040 --> 00:01:19.560
-But one of the things that bugs me about FastAPI
-
-
-00:01:19.560 --> 00:01:22.240
-is it's so API-oriented
-
-
-00:01:22.240 --> 00:01:24.600
-that it's tricky to know what to do
-
-
-00:01:24.600 --> 00:01:29.600
-when you just say, I just want to create a website that has like a couple of
-
-
-00:01:29.600 --> 00:01:31.560
-pages and then some API.
-
-
-00:01:31.560 --> 00:01:36.240
-So for example, if you just create a couple of APIs now and they're like, say
-
-
-00:01:36.240 --> 00:01:40.880
-it's about weather, it'd be like slash API slash weather slash report API slash
-
-
-00:01:40.880 --> 00:01:42.880
-weather slash latest or whatever.
-
-
-00:01:42.880 --> 00:01:43.160
-Right.
-
-
-00:01:43.160 --> 00:01:47.360
-Well, if you just click the, you know, you run it, you just click the little
-
-
-00:01:47.360 --> 00:01:51.920
-link in your IDE or VS Code or whatever and open it, what do you get?
-
-
-00:01:51.960 --> 00:01:58.520
-404. Probably not the best response that you could imagine. Is that like the default behavior
-
-
-00:01:58.520 --> 00:02:03.480
-is just to like open up the site and it says not found. So you got to like type in this stuff.
-
-
-00:02:03.480 --> 00:02:09.560
-Anyway, it supports Jinja in like a sort of manual way, the same way that Flask does, I guess,
-
-
-00:02:09.560 --> 00:02:19.640
-more or less. But I wanted a better way to have HTML pages inside of my FastAPI app.
-
-
-00:02:19.640 --> 00:02:24.940
-Because if you're going to build an API, there's a very good chance there's like two or three pages that you need.
-
-
-00:02:24.940 --> 00:02:26.140
-Right? Yeah.
-
-
-00:02:26.140 --> 00:02:29.240
+00:02:26.020 --> 00:02:29.260
 So I wanted to have a couple of things.
 
+00:02:29.260 --> 00:02:34.720
+I would like to be able to have a simple function that is a web view method.
 
-00:02:29.240 --> 00:02:31.540
-I would like to be able to have a simple function
+00:02:34.720 --> 00:02:40.140
+It could be something that is like a HTTP endpoint for an API, but more likely it's going to be one of these pages.
 
+00:02:40.140 --> 00:02:47.940
+And I want to just be able to have it return dictionaries and say that it takes some kind of template, right?
 
-00:02:31.540 --> 00:02:34.840
-that is a view method.
+00:02:48.160 --> 00:02:54.080
+So put a little decorator and say this one has a template home slash index.html.
 
+00:02:54.080 --> 00:03:00.540
+And it's automatically going to take that dictionary, send it over to whatever template engine you choose, turn it into HTML and send it back.
 
-00:02:34.840 --> 00:02:40.340
-Could be something that is like a HTTP endpoint for an API, but more likely it's going to be one of these pages.
+00:03:00.540 --> 00:03:05.680
+You know, set the content type to be HTML, all of those things, because by default it's JSON.
 
+00:03:05.680 --> 00:03:06.100
+Okay.
 
-00:02:40.340 --> 00:02:43.840
-And I want to just be able to have it return dictionaries
+00:03:06.100 --> 00:03:10.860
+So you'd like it to be the JSON data, but have it be formatted like HTML.
 
+00:03:11.040 --> 00:03:16.600
+Well, often with these templates, what you need to do is like, suppose you've got a bookstore and you want to say, here's the categories.
 
-00:02:43.840 --> 00:02:47.240
-and say that it takes some kind of template.
+00:03:16.600 --> 00:03:23.820
+You have to somehow pass data over to like categories.html and it'll get like a list of categories.
 
+00:03:23.820 --> 00:03:27.880
+And then you'll iterate over them and generate the HTML to that dictionary being passed over.
 
-00:02:49.240 --> 00:02:52.240
-put a little decorator and say this one has a template home
+00:03:27.880 --> 00:03:31.700
+That's the data that you're basically providing to the dynamic HTML, right?
 
+00:03:32.220 --> 00:03:36.460
+So what I did is I went and I created this thing called FastAPI dash chameleon.
 
-00:02:52.240 --> 00:02:56.240
-slash index dot html and it's automatically going to take that dictionary
+00:03:36.460 --> 00:03:36.960
+Oh, nice.
 
+00:03:36.960 --> 00:03:45.200
+So if you want to use the chameleon template language, which previously was not really in any direct way supported, you could import all the libraries and just make it do it yourself.
 
-00:02:56.240 --> 00:03:00.240
-send it over to whatever template engine you choose, turn it into html and send it back.
+00:03:45.200 --> 00:03:46.300
+But that's kind of painful.
 
+00:03:46.780 --> 00:03:56.020
+Now you can just put a decorator, you know, from FastAPI underscore chameleon import template and just say at template and point some file at it and boom, you return a dictionary.
 
-00:03:00.240 --> 00:03:04.240
-You know, set the content type to be html, all of those things
-
-
-00:03:04.240 --> 00:03:07.240
-because by default it's JSON. Okay, so you'd like it to be
-
-
-00:03:07.240 --> 00:03:10.240
-the JSON data but have it be formatted like html.
-
-
-00:03:10.240 --> 00:03:13.240
-Well, often with these templates what you need to do is like
-
-
-00:03:13.240 --> 00:03:16.240
-suppose you got a bookstore and you want to say here's the categories
-
-
-00:03:16.240 --> 00:03:21.240
-You have to somehow pass data over to like categories.html
-
-
-00:03:21.240 --> 00:03:24.020
-and it'll get like a list of categories
-
-
-00:03:24.020 --> 00:03:26.340
-and then you'll iterate over them and generate the HTML.
-
-
-00:03:26.340 --> 00:03:27.980
-So that dictionary being passed over,
-
-
-00:03:27.980 --> 00:03:30.400
-that's the data that you're basically providing
-
-
-00:03:30.400 --> 00:03:32.300
-to the dynamic HTML, right?
-
-
-00:03:32.300 --> 00:03:34.260
-So what I did is I went and I created this thing
-
-
-00:03:34.260 --> 00:03:36.660
-called fastAPI-chameleon.
-
-
-00:03:36.660 --> 00:03:37.500
-- Oh, nice.
-
-
-00:03:37.500 --> 00:03:38.820
-- So if you wanna use the chameleon template language,
-
-
-00:03:38.820 --> 00:03:42.620
-which previously was not really in any direct way supported,
-
-
-00:03:42.620 --> 00:03:43.940
-you could import all the libraries
-
-
-00:03:43.940 --> 00:03:45.340
-and just make it do it yourself,
-
-
-00:03:45.340 --> 00:03:46.940
-that's kind of painful.
-
-
-00:03:46.940 --> 00:03:48.740
-Now you can just put a decorator,
-
-
-00:03:48.740 --> 00:03:51.460
-you know, from FastAPI underscore chameleon import template
-
-
-00:03:51.460 --> 00:03:53.920
-and just say at template and point some file at it
-
-
-00:03:53.920 --> 00:03:56.180
-and boom, you return a dictionary.
-
-
-00:03:56.180 --> 00:03:58.500
+00:03:56.020 --> 00:03:58.080
 Now you have chameleon as your template language.
 
+00:03:58.080 --> 00:03:58.440
+Oh, cool.
 
-00:03:58.500 --> 00:03:59.660
+00:03:58.440 --> 00:03:59.040
 That's neat, right?
 
+00:03:59.040 --> 00:04:08.740
+And it also, I found a way to write a decorator that will automatically adapt whether it's an asynchronous or a non-asynchronous method, right?
 
-00:03:59.660 --> 00:04:02.180
-And also I found a way to write a decorator
+00:04:08.740 --> 00:04:17.120
+Because normally the decorator, what it does is it has like a wraps and has an inner and then like the inner function does stuff and then calls the actual thing it's decorating.
 
+00:04:17.120 --> 00:04:20.540
+Well, if the thing it's decorating is async, you got to do one thing.
 
-00:04:02.180 --> 00:04:06.280
-that will automatically adapt whether it's an asynchronous
+00:04:20.540 --> 00:04:22.340
+If it's not async, you got to do another thing.
 
-
-00:04:06.280 --> 00:04:08.780
-or a non asynchronous method, right?
-
-
-00:04:08.780 --> 00:04:10.400
-Because normally the decorator, what it does
-
-
-00:04:10.400 --> 00:04:12.140
-is it has like a wraps and has an inner
-
-
-00:04:12.140 --> 00:04:14.560
-and then like the inner function does stuff
-
-
-00:04:14.560 --> 00:04:17.760
-and then calls the actual thing it's decorating.
-
-
-00:04:17.760 --> 00:04:19.640
-Well, if the thing it's decorating is async,
-
-
-00:04:19.640 --> 00:04:20.560
-you gotta do one thing.
-
-
-00:04:20.560 --> 00:04:22.640
-If it's not async, you gotta do another thing.
-
-
-00:04:22.640 --> 00:04:23.480
+00:04:22.340 --> 00:04:23.320
 So how do you tell?
 
+00:04:23.320 --> 00:04:35.280
+There's a cool library called inspect, which will let you actually look, even if it has a little wraps decorator that tries to lie to you about what it is, it'll show you whether or not it's a coroutine, which is pretty cool.
 
-00:04:23.480 --> 00:04:25.440
-There's a cool library called inspect,
+00:04:35.280 --> 00:04:35.920
+Oh, nice.
 
+00:04:35.920 --> 00:04:36.180
+Yeah.
 
-00:04:25.440 --> 00:04:27.280
-which will let you actually look,
+00:04:36.180 --> 00:04:42.600
+So on top of this, Mark Brooks saw this and said, that's awesome, but I don't really like, I don't use chameleon.
 
+00:04:42.600 --> 00:04:43.320
+I like Jinja.
 
-00:04:27.280 --> 00:04:29.960
-even if it has a little wraps decorator
-
-
-00:04:29.960 --> 00:04:31.760
-that tries to lie to you about what it is,
-
-
-00:04:31.760 --> 00:04:34.680
-it'll show you whether or not it's a coroutine,
-
-
-00:04:34.680 --> 00:04:35.520
-which is pretty cool.
-
-
-00:04:35.520 --> 00:04:36.340
-- Oh, nice.
-
-
-00:04:36.340 --> 00:04:39.120
-- Yeah, so on top of this, Mark Brooks saw this
-
-
-00:04:39.120 --> 00:04:41.720
-and said, "That's awesome, but I don't really like,
-
-
-00:04:41.720 --> 00:04:43.840
-"I don't use Chameleon, I like Jinja."
-
-
-00:04:43.840 --> 00:04:47.840
+00:04:43.320 --> 00:04:47.400
 So he forked my repo and created a FastAPI dash Jinja.
 
-
-00:04:47.840 --> 00:04:50.600
+00:04:47.400 --> 00:04:50.200
 So now you can do exactly the same thing if you like Jinja.
 
-
-00:04:50.600 --> 00:04:51.440
+00:04:50.200 --> 00:04:51.140
 And guess what?
 
+00:04:51.140 --> 00:04:57.840
+If there's someone out there that really, really wants to use, I don't know, Django templates or Mako or whatever, right?
 
-00:04:51.440 --> 00:04:52.260
-If there's someone out there that really,
+00:04:57.840 --> 00:05:01.520
+That's like five lines of quote away from doing that as well.
 
+00:05:01.520 --> 00:05:07.780
+The reason I think it's important to add these other template languages, not just say, well, it supports Jinja, so you're good.
 
-00:04:52.260 --> 00:04:54.280
-really wants to use, I don't know,
+00:05:08.040 --> 00:05:18.960
+The reason I think it's important is if you've got some web application that has APIs, it already has chameleon templates or in the other example that doesn't exist yet, some Django thing.
 
+00:05:18.960 --> 00:05:24.520
+And you want to convert it to use mostly FastAPI, but you don't want to rewrite all the HTML, CSS and JavaScript.
 
-00:04:54.280 --> 00:04:57.920
-Django templates or Mako or whatever, right?
+00:05:24.520 --> 00:05:34.860
+If you can make it render those templates, then it's so much easier to move from some other web framework over to FastAPI because you don't have to touch the HTML.
 
+00:05:34.860 --> 00:05:35.920
+You don't have to touch the CSS.
 
-00:04:57.920 --> 00:05:01.720
-That's like five lines of code away from doing that as well.
+00:05:35.920 --> 00:05:37.020
+You don't have to touch the JavaScript.
 
+00:05:37.020 --> 00:05:40.820
+There's just that middle part where you like handle the request and that's actually pretty limited.
 
-00:05:01.720 --> 00:05:03.080
-And the reason I think it's important
-
-
-00:05:03.080 --> 00:05:05.240
-to add these other template languages,
-
-
-00:05:05.240 --> 00:05:08.340
-not just say, well, it supports a Jinja, so you're good.
-
-
-00:05:08.340 --> 00:05:09.600
-The reason I think it's important is
-
-
-00:05:09.600 --> 00:05:13.520
-if you've got some web application that has APIs,
-
-
-00:05:13.520 --> 00:05:15.960
-it already has chameleon templates,
-
-
-00:05:15.960 --> 00:05:17.760
-or in the other example that doesn't exist yet,
-
-
-00:05:17.760 --> 00:05:19.800
-some Django thing and you want to convert it
-
-
-00:05:19.800 --> 00:05:22.480
-to use mostly FastAPI, but you don't want to rewrite
-
-
-00:05:22.480 --> 00:05:25.280
-all the HTML, CSS, and JavaScript.
-
-
-00:05:25.280 --> 00:05:27.560
-If you can make it render those templates,
-
-
-00:05:27.560 --> 00:05:30.880
-then it's so much easier to move from some other
-
-
-00:05:30.880 --> 00:05:33.520
-web framework over to FastAPI.
-
-
-00:05:33.520 --> 00:05:35.000
-'Cause you don't have to touch the HTML,
-
-
-00:05:35.000 --> 00:05:35.840
-you don't have to touch the CSS,
-
-
-00:05:35.840 --> 00:05:37.160
-you don't have to touch the JavaScript,
-
-
-00:05:37.160 --> 00:05:39.620
-there's just that middle part where you handle the request,
-
-
-00:05:39.620 --> 00:05:41.200
-and that's actually pretty limited.
-
-
-00:05:41.200 --> 00:05:43.560
-So that was my idea for creating this,
-
-
-00:05:43.560 --> 00:05:46.000
-was hopefully to make it possible for people
-
-
-00:05:46.000 --> 00:05:48.560
-who have other stuff written in Chameleon
-
-
-00:05:48.560 --> 00:05:50.220
-to move to FastAPI really easily,
-
-
-00:05:50.220 --> 00:05:52.040
-and then also just to sort of inspire
-
-
-00:05:52.040 --> 00:05:53.360
-a cleaner programming model.
-
-
-00:05:53.360 --> 00:05:55.160
-- Yeah, I actually was gonna ask you
-
-
-00:05:55.160 --> 00:05:57.320
-if it was possible to do something like that with Jinja,
-
-
-00:05:57.320 --> 00:05:58.480
-and you already answered that.
-
-
-00:05:58.480 --> 00:06:00.480
-- Yeah, yeah, actually it's built in,
-
-
-00:06:00.480 --> 00:06:02.120
-but the way it's built into FastAPI
-
-
-00:06:02.120 --> 00:06:05.120
-is not with a template decorator.
-
-
-00:06:05.120 --> 00:06:08.840
-It's, you actually go in and you say the actual file name,
-
-
-00:06:08.840 --> 00:06:09.840
-and then you pass a bunch of,
-
-
-00:06:09.840 --> 00:06:11.840
-It's like, it's not super clean.
-
-
-00:06:11.840 --> 00:06:15.080
-So it is quite clean the other way around, which is cool.
-
-
-00:06:15.080 --> 00:06:16.560
-- Yeah, nice, cool.
-
-
-00:06:16.560 --> 00:06:18.760
-- Carrying on about APIs.
-
-
-00:06:18.760 --> 00:06:21.280
-- Yeah, maybe a little less clean of a way.
-
-
-00:06:21.280 --> 00:06:23.960
-So yeah, we've been very excited
-
-
-00:06:23.960 --> 00:06:27.060
-about FastAPI recently for APIs.
-
-
-00:06:27.060 --> 00:06:28.320
-And in the Django world,
-
-
-00:06:28.320 --> 00:06:32.400
-there's the Django REST framework is quite popular.
-
-
-00:06:32.400 --> 00:06:35.440
-But what if you just want to use vanilla Django
-
-
-00:06:35.440 --> 00:06:37.080
-and write a REST API?
-
-
-00:06:37.080 --> 00:06:39.280
-Adam Johnson took that on and said,
-
-
-00:06:39.280 --> 00:06:40.400
-Yeah, of course you can do it,
-
-
-00:06:40.400 --> 00:06:42.200
-but you can also do it in one file.
-
-
-00:06:42.200 --> 00:06:44.680
-So we're gonna link to a little article
-
-
-00:06:44.680 --> 00:06:48.600
-where he has a simple REST API
-
-
-00:06:48.600 --> 00:06:51.980
-completely written in one file as a one file application.
-
-
-00:06:51.980 --> 00:06:56.480
-It's a little API that gives you information
-
-
-00:06:56.480 --> 00:06:58.360
-on the characters from Rick and Morty,
-
-
-00:06:58.360 --> 00:07:01.160
-specifically just Rick and Morty, and that's it.
-
-
-00:07:01.160 --> 00:07:02.640
-But it's a good example.
-
-
-00:07:02.640 --> 00:07:03.480
-I like it.
-
-
-00:07:03.480 --> 00:07:06.880
-It shows you how you can do redirects.
-
-
-00:07:06.880 --> 00:07:10.160
-And so like for instance, the endpoint,
-
-
-00:07:10.160 --> 00:07:12.100
-one of his endpoints is characters.
-
-
-00:07:12.100 --> 00:07:15.860
-So if you type your application slash characters
-
-
-00:07:15.860 --> 00:07:20.560
-with a slash at the end, it should return a JSON data
-
-
-00:07:20.560 --> 00:07:22.980
-with the information about Rick and Morty.
-
-
-00:07:22.980 --> 00:07:25.220
-Now, what if you just don't put anything?
-
-
-00:07:25.220 --> 00:07:27.020
-If you put characters without the slash
-
-
-00:07:27.020 --> 00:07:30.180
-or don't put characters at all, like your homepage thing,
-
-
-00:07:30.180 --> 00:07:31.460
-he shows you how to do redirect
-
-
-00:07:31.460 --> 00:07:33.840
-so you can redirect to characters.
-
-
-00:07:33.840 --> 00:07:35.620
-And, you know, it's a pretty simple example,
-
-
-00:07:35.620 --> 00:07:40.120
-but it is kind of neat that you can do it off the shelf JSON or off the shelf Django.
-
-
-00:07:40.120 --> 00:07:45.120
-He also shows, he's got some hard-coded data classes within the application,
-
-
-00:07:45.120 --> 00:07:50.120
-but it's easy, you know, not that difficult to imagine you can extend that to something
-
-
-00:07:50.120 --> 00:07:53.120
-that reads it out of a database or some other part of your system.
-
-
-00:07:53.120 --> 00:07:59.120
-Yeah, absolutely. And it's like 63 lines of code, which is not too much for a non-trivial little example API.
-
-
-00:07:59.120 --> 00:08:03.120
-You know, I'm not necessarily on board of putting this in one file,
-
-
-00:08:03.120 --> 00:08:06.840
-But I am on board with this idea of like these simplified things.
-
-
-00:08:06.840 --> 00:08:11.760
-You know, when you hear about Django, you always say, okay, if I want an API,
-
-
-00:08:11.760 --> 00:08:14.980
-I'm going to have to add Django rest framework and all these other things to
-
-
-00:08:14.980 --> 00:08:15.180
-it.
-
-
-00:08:15.180 --> 00:08:18.960
-If say you're in flask and you want to work with users, like, well, I've got to
-
-
-00:08:18.960 --> 00:08:21.160
-add the flask SQLAlchemy add in.
-
-
-00:08:21.160 --> 00:08:24.040
-I've got to add the flask users add in as an extension.
-
-
-00:08:24.040 --> 00:08:25.400
-And maybe I want session.
-
-
-00:08:25.400 --> 00:08:26.680
-So I got to add flask session.
-
-
-00:08:26.680 --> 00:08:31.000
-Like none of those things are necessary per se, especially on the, on the flask
-
-
-00:08:31.000 --> 00:08:32.080
-side, like there's so much of it.
-
-
-00:08:32.080 --> 00:08:35.080
-It adds like one or two lines of code that you don't have to write.
-
-
-00:08:35.080 --> 00:08:39.080
-And now you have all the overhead of depending on making sure that that thing works right.
-
-
-00:08:39.080 --> 00:08:41.080
-And the way you work with it is the way you want.
-
-
-00:08:41.080 --> 00:08:45.080
-And so having just a, here's the bare bones view and you can add in stuff if you like.
-
-
-00:08:45.080 --> 00:08:46.080
-I'm a fan of that.
-
-
-00:08:46.080 --> 00:08:50.080
-Yeah, I'm also thinking like, let's say you have a Django application already.
-
-
-00:08:50.080 --> 00:08:54.080
-And you built it not intending anybody to use it as an API.
-
-
-00:08:54.080 --> 00:08:58.080
-And somebody says, like maybe an internal application in your business or something.
-
-
-00:08:58.080 --> 00:09:01.080
-And somebody says, oh, this data here where this graph is.
-
-
-00:09:01.080 --> 00:09:05.080
-Can we get that as an API so that we can use it in something else?
-
-
-00:09:05.080 --> 00:09:10.080
-And this would be a good example to be able to just add.
-
-
-00:09:10.080 --> 00:09:12.080
-You can use Django REST framework, of course,
-
-
-00:09:12.080 --> 00:09:15.080
-but if there's just something simple you need to add as an API,
-
-
-00:09:15.080 --> 00:09:16.080
-this is a way to do it.
-
-
-00:09:16.080 --> 00:09:17.080
-Yeah, no, it's cool.
-
-
-00:09:17.080 --> 00:09:21.080
-And I do feel like these add-ons and these extra layers that you add,
-
-
-00:09:21.080 --> 00:09:23.080
-they better add a ton of value
-
-
-00:09:23.080 --> 00:09:26.080
-because they're also adding overhead and dependencies
-
-
-00:09:26.080 --> 00:09:28.080
-and breaking changes and all that.
-
-
-00:09:28.080 --> 00:09:30.080
-So if you've got something working
-
-
-00:09:30.080 --> 00:09:32.960
-You want to just add a little bit of, you know, here's a few JSON endpoints.
-
-
-00:09:32.960 --> 00:09:33.520
-Let's do that.
-
-
-00:09:33.520 --> 00:09:33.840
+00:05:40.820 --> 00:05:41.100
 Yeah.
 
+00:05:41.100 --> 00:05:50.100
+So that was my idea for creating this was hopefully to make make it possible for people who have other stuff written in chameleon to move to FastAPI really easily.
 
-00:09:33.840 --> 00:09:38.080
-And for people that really enjoy this article and want to hear more from Adam,
+00:05:50.100 --> 00:05:53.220
+And then also just to like sort of inspire a cleaner programming model.
 
-
-00:09:38.080 --> 00:09:40.240
-I've had him on Test and Code a couple of times.
-
-
-00:09:40.240 --> 00:09:42.960
-So we'll drop links to those episodes in the show notes.
-
-
-00:09:42.960 --> 00:09:47.440
-Now, before we get to the next one, which is a pretty big item,
-
-
-00:09:47.440 --> 00:09:50.960
-I just want to say this episode is brought to you by us.
-
-
-00:09:50.960 --> 00:09:55.360
-Of course, it's over at Talk Python Training, Test and Code Podcasts,
-
-
-00:09:55.360 --> 00:09:56.640
-and something to do with pytest.
-
-
-00:09:56.640 --> 00:09:59.440
-Do you do anything with, I heard that pytest is a thing that people use.
-
-
-00:09:59.440 --> 00:10:00.440
-Do you do anything with that?
-
-
-00:10:00.440 --> 00:10:01.440
+00:05:53.220 --> 00:05:53.600
 Yeah.
 
+00:05:53.600 --> 00:05:58.440
+I actually was going to ask you if it was possible to do something like that with Jinja and you already answered that.
 
-00:10:01.440 --> 00:10:02.440
-So, yep.
-
-
-00:10:02.440 --> 00:10:03.440
-Wrote a book on pytest.
-
-
-00:10:03.440 --> 00:10:09.120
-I still think, and I still get callouts on Twitter saying it's the best book they've
-
-
-00:10:09.120 --> 00:10:14.000
-read to get started with testing, and they got excited about testing with reading Python
-
-
-00:10:14.000 --> 00:10:15.000
-testing with pytest.
-
-
-00:10:15.000 --> 00:10:16.440
-So, it's a good book.
-
-
-00:10:16.440 --> 00:10:17.440
+00:05:58.440 --> 00:05:58.700
 Yeah.
 
-
-00:10:17.440 --> 00:10:18.440
-Awesome.
-
-
-00:10:18.440 --> 00:10:21.880
-Yeah, and over at Talk Python Training, I'm now working on a three-part series, so like
-
-
-00:10:21.880 --> 00:10:28.720
-three, four-hour sections or so, on building FastAPI APIs and also like testing them and
-
-
-00:10:28.720 --> 00:10:30.560
-and put it in production and fun stuff like that.
-
-
-00:10:30.560 --> 00:10:32.000
-- Oh, that's exciting.
-
-
-00:10:32.000 --> 00:10:33.120
-Can't wait to watch that. - Yeah, that'll be fun.
-
-
-00:10:33.120 --> 00:10:34.400
-Yeah, yeah, it'll be super fun.
-
-
-00:10:34.400 --> 00:10:35.720
-So anyway, that's coming.
-
-
-00:10:35.720 --> 00:10:39.800
-People can go over there to training.python.fm,
-
-
-00:10:39.800 --> 00:10:42.560
-sign up to get notified and visit Testing Code
-
-
-00:10:42.560 --> 00:10:43.880
-and listen over there as well.
-
-
-00:10:43.880 --> 00:10:44.920
-We also have Patreon, right?
-
-
-00:10:44.920 --> 00:10:48.760
-- Oh yeah, so had somebody reach out to us for the Patreon
-
-
-00:10:48.760 --> 00:10:50.600
-and say, "Hey, you guys mentioned
-
-
-00:10:50.600 --> 00:10:52.020
-"that a whole bunch of people sponsor you
-
-
-00:10:52.020 --> 00:10:53.560
-"for a buck a month,"
-
-
-00:10:53.560 --> 00:10:56.480
-but they said, "That's the only tier you have."
-
-
-00:10:56.480 --> 00:10:58.680
-And so Michael and I are definitely gonna talk about
-
-
-00:10:58.680 --> 00:11:01.520
-in the future, whether we should add some more tiers.
-
-
-00:11:01.520 --> 00:11:02.840
-However, there is an option,
-
-
-00:11:02.840 --> 00:11:05.240
-even if you sign up for a dollar a month,
-
-
-00:11:05.240 --> 00:11:06.960
-if you want to send us more,
-
-
-00:11:06.960 --> 00:11:10.160
-you can change that within the Patreon thing.
-
-
-00:11:10.160 --> 00:11:11.640
-So we'd appreciate it.
-
-
-00:11:11.640 --> 00:11:13.760
-- Yeah, much appreciated to everyone who supports us
-
-
-00:11:13.760 --> 00:11:14.580
-in all the ways.
-
-
-00:11:14.580 --> 00:11:16.680
-Every way is valuable and appreciated.
-
-
-00:11:16.680 --> 00:11:18.080
-Speaking of valuable and appreciated,
-
-
-00:11:18.080 --> 00:11:21.120
-we often talk about the Stack Overflow Developer Survey.
-
-
-00:11:21.120 --> 00:11:23.800
-I mean, in my mind, there's two major surveys
-
-
-00:11:23.800 --> 00:11:26.080
-that take the pulse of the developer community.
-
-
-00:11:26.080 --> 00:11:28.180
-One is the Stack Overflow Developer Survey.
-
-
-00:11:28.180 --> 00:11:30.660
-The other is the PSF survey, which by the way,
-
-
-00:11:30.660 --> 00:11:33.900
-just got extended to three more days.
-
-
-00:11:33.900 --> 00:11:36.780
-By the time this comes out, that'll be already in the past.
-
-
-00:11:36.780 --> 00:11:38.940
-But you know, that's hopefully people have taken that.
-
-
-00:11:38.940 --> 00:11:40.740
-We've talked about it before.
-
-
-00:11:40.740 --> 00:11:44.100
-And we talked about the 2020 Stack Overflow survey
-
-
-00:11:44.100 --> 00:11:46.100
-coming out, I believe, and I told folks to go take it,
-
-
-00:11:46.100 --> 00:11:50.060
-or you did, and then we just didn't follow up, right?
-
-
-00:11:50.060 --> 00:11:51.220
-But the survey results are out,
-
-
-00:11:51.220 --> 00:11:52.100
-so I thought it might be fun
-
-
-00:11:52.100 --> 00:11:53.660
-to run through the survey results.
-
-
-00:11:53.660 --> 00:11:54.500
-- Yeah.
-
-
-00:11:54.500 --> 00:11:55.740
-- Yeah, and I just want to be clear,
-
-
-00:11:55.740 --> 00:11:57.980
-like I kind of lost track of this.
-
-
-00:11:57.980 --> 00:12:00.180
-I don't know exactly when this came out,
-
-
-00:12:00.180 --> 00:12:01.980
-but it's not brand new.
-
-
-00:12:01.980 --> 00:12:05.040
-It's like four, five, six months ago.
-
-
-00:12:05.040 --> 00:12:07.700
-But I just, you know, we didn't talk about the results.
-
-
-00:12:07.700 --> 00:12:09.120
-We just talked about the survey.
-
-
-00:12:09.120 --> 00:12:11.300
-So let's run through some of the things that are here.
-
-
-00:12:11.300 --> 00:12:15.260
-Now, the 2020 Stack Overflow survey
-
-
-00:12:15.260 --> 00:12:18.480
-is focused a lot on demographics and background
-
-
-00:12:18.480 --> 00:12:20.660
-and education and all those sorts of things.
-
-
-00:12:20.660 --> 00:12:21.740
-And if you're interested in that,
-
-
-00:12:21.740 --> 00:12:23.300
-definitely go check it out.
-
-
-00:12:23.300 --> 00:12:24.540
-There's a lot to see there.
-
-
-00:12:24.540 --> 00:12:25.460
-Just because of the format.
-
-
-00:12:25.460 --> 00:12:27.700
-I'm gonna focus mostly on the tech side
-
-
-00:12:27.700 --> 00:12:29.040
-that they covered here, okay?
-
-
-00:12:29.040 --> 00:12:31.400
-So not whether we have a full-time job,
-
-
-00:12:31.400 --> 00:12:33.180
-how many of us work from home, none of that.
-
-
-00:12:33.180 --> 00:12:35.700
-So some of the most popular technologies,
-
-
-00:12:35.700 --> 00:12:37.060
-and I just want to point out,
-
-
-00:12:37.060 --> 00:12:39.780
-I think the PSF survey and the JetBrains folks
-
-
-00:12:39.780 --> 00:12:41.340
-who worked with them to put that together
-
-
-00:12:41.340 --> 00:12:42.460
-is in a much better place.
-
-
-00:12:42.460 --> 00:12:45.360
-This is a wacky, wacky, wacky survey,
-
-
-00:12:45.360 --> 00:12:47.700
-but it does have some good questions.
-
-
-00:12:47.700 --> 00:12:49.380
-- Yeah.
-
-
-00:12:49.380 --> 00:12:50.500
-- I'll expand on the wacky a sec.
-
-
-00:12:50.500 --> 00:12:53.340
-But if we look at the most popular languages,
-
-
-00:12:53.340 --> 00:12:55.540
-most popular technologies, web frameworks,
-
-
-00:12:55.540 --> 00:12:57.360
-database and so on, certain languages.
-
-
-00:12:57.360 --> 00:13:04.120
-We have JavaScript, Python, and Java and JavaScript has 68%.
-
-
-00:13:04.120 --> 00:13:05.360
-Python has 44%.
-
-
-00:13:05.360 --> 00:13:06.800
-Java has 40%.
-
-
-00:13:06.800 --> 00:13:07.920
-That's good.
-
-
-00:13:07.920 --> 00:13:08.080
-Right?
-
-
-00:13:08.080 --> 00:13:10.180
-I mean, like everyone knows JavaScript is pretty popular.
-
-
-00:13:10.180 --> 00:13:12.320
-So what's, what's wacky here?
-
-
-00:13:12.320 --> 00:13:13.420
-Why is this weird?
-
-
-00:13:13.420 --> 00:13:18.120
-And I'm not necessarily saying there's not 68% of the people doing node JS.
-
-
-00:13:18.120 --> 00:13:22.680
-They may well be, but do you know what language is between JavaScript and Python?
-
-
-00:13:22.680 --> 00:13:23.800
-CSS.
-
-
-00:13:24.420 --> 00:13:28.640
-Dude, I know no application that is shipped running on CSS.
-
-
-00:13:28.640 --> 00:13:30.420
-I can't even compile CSS.
-
-
-00:13:30.420 --> 00:13:32.780
-I could probably compile SAS or less over to it, but I can't
-
-
-00:13:32.780 --> 00:13:34.740
-compile CSS to a running application.
-
-
-00:13:34.740 --> 00:13:36.020
-It's not a programming language.
-
-
-00:13:36.020 --> 00:13:39.420
-And SQL perhaps is true and complete, but yeah.
-
-
-00:13:39.420 --> 00:13:41.980
-And SQL, SQL is a thing you use within a language.
-
-
-00:13:41.980 --> 00:13:45.180
-It is not a programming language that builds things.
-
-
-00:13:45.180 --> 00:13:45.540
-Right.
-
-
-00:13:45.540 --> 00:13:48.380
-So they have this, this is what I was talking about where it's wacky
-
-
-00:13:48.380 --> 00:13:49.940
-and JavaScript is in this world.
-
-
-00:13:49.940 --> 00:13:50.220
-Right.
-
-
-00:13:50.620 --> 00:13:56.300
-They needed to ask very, very clearly, do you work exclusively in JavaScript
-
-
-00:13:56.300 --> 00:14:02.180
-as a Node.js developer or a pure front-end developer, or did you check,
-
-
-00:14:02.180 --> 00:14:08.220
-I also use JavaScript and CSS and Python, or I also use JavaScript and CSS and Java.
-
-
-00:14:08.220 --> 00:14:08.920
-Right.
-
-
-00:14:08.920 --> 00:14:11.940
-And so the JavaScript one has like bundled up all these.
-
-
-00:14:11.940 --> 00:14:17.320
-I do anything in the web on any language plus the Node.js developers.
-
-
-00:14:17.320 --> 00:14:17.620
-Right.
-
-
-00:14:18.100 --> 00:14:24.020
-I think the contention there is a little bit closer, but it still wouldn't surprise me if JavaScript was actually in the lead.
-
-
-00:14:24.020 --> 00:14:24.820
-I don't know.
-
-
-00:14:24.820 --> 00:14:30.300
-I feel like I'm all hyped up on like percentages and trajectories given all this election talk that we just went through.
-
-
-00:14:30.300 --> 00:14:35.060
-Well, I remember checking the box for JavaScript once and like, yes, I use JavaScript.
-
-
-00:14:35.060 --> 00:14:35.460
-Yeah, exactly.
-
-
-00:14:35.460 --> 00:14:36.340
-What does that mean?
-
-
-00:14:36.340 --> 00:14:41.300
-I have an app that does use a little bit of JavaScript and I looked at the code once.
-
-
-00:14:41.300 --> 00:14:41.580
-Right.
-
-
-00:14:41.580 --> 00:14:43.900
-Did you do dollar document dot ready?
-
-
-00:14:43.900 --> 00:14:45.220
-Okay.
-
-
-00:14:45.220 --> 00:14:46.380
-You're a JavaScript developer.
-
-
-00:14:46.380 --> 00:14:47.180
-Like not really.
-
-
-00:14:47.180 --> 00:14:47.820
+00:05:58.700 --> 00:05:59.000
 Yeah.
 
+00:05:59.000 --> 00:06:04.640
+It's actually, it's built in, but the way it's built into FastAPI is not with like a template decorator.
 
-00:14:47.900 --> 00:14:51.620
-So yeah, on the other hand, if you built an app with Vue.js or Angular,
+00:06:04.640 --> 00:06:11.320
+It's, you know, you actually go in and you say the actual file name and then you pass a bunch of it's like, it's not super clean.
 
+00:06:11.320 --> 00:06:14.900
+So it is, it is quite clean the other way around, which is cool.
 
-00:14:51.620 --> 00:14:52.740
-you're a JavaScript developer.
+00:06:14.900 --> 00:06:15.220
+Yeah.
 
-
-00:14:52.740 --> 00:14:55.180
-If you built something with Express and note, you're a JavaScript developer.
-
-
-00:14:55.180 --> 00:14:58.820
-So I think it's a little bit weird that they didn't like really clearly.
-
-
-00:14:58.820 --> 00:15:04.380
-Make that distinction because you can't put two buckets and add up those
-
-
-00:15:04.380 --> 00:15:07.140
-numbers next to other buckets and make that make sense, right?
-
-
-00:15:07.140 --> 00:15:08.340
-CSS is the same thing.
-
-
-00:15:08.340 --> 00:15:09.860
-Like no one would check it.
-
-
-00:15:09.860 --> 00:15:14.860
-If you said I primarily code in CSS to build apps and ship on the CSS platform.
-
-
-00:15:14.860 --> 00:15:15.500
-Anyway.
-
-
-00:15:15.500 --> 00:15:15.660
-Okay.
-
-
-00:15:15.660 --> 00:15:17.140
-So web web frameworks.
-
-
-00:15:17.460 --> 00:15:19.620
-You know what the most popular web framework is?
-
-
-00:15:19.620 --> 00:15:21.020
-Well, I do now that I just looked.
-
-
-00:15:21.020 --> 00:15:21.780
-Do you believe it?
-
-
-00:15:21.780 --> 00:15:22.820
-I wouldn't have guessed this.
-
-
-00:15:22.820 --> 00:15:23.940
-Do you believe it?
-
-
-00:15:23.940 --> 00:15:24.380
-No.
-
-
-00:15:24.380 --> 00:15:25.940
-It's jQuery.
-
-
-00:15:25.940 --> 00:15:27.220
-Nobody--
-
-
-00:15:27.220 --> 00:15:30.140
-How could jQuery be in the same category as like Django?
-
-
-00:15:30.140 --> 00:15:30.940
-Yeah, yeah, yeah.
-
-
-00:15:30.940 --> 00:15:35.140
-It's even on the front end side of the JavaScript front end framework.
-
-
-00:15:35.140 --> 00:15:35.980
-There's Vue, there's Angular.
-
-
-00:15:35.980 --> 00:15:37.820
-All those are really legitimate things.
-
-
-00:15:37.820 --> 00:15:42.340
-jQuery is not the primary way in which people write web applications.
-
-
-00:15:42.340 --> 00:15:43.700
-But a lot of people use it, so it's in there.
-
-
-00:15:43.700 --> 00:15:45.900
-All right, so anyway, those two are a little bit weird.
-
-
-00:15:45.900 --> 00:15:49.980
-I take away Python is really quite popular and up there, the Python web
-
-
-00:15:49.980 --> 00:15:53.220
-frameworks, I think there's just so many, they don't filter very high to
-
-
-00:15:53.220 --> 00:15:54.620
-the top individually.
-
-
-00:15:54.620 --> 00:15:56.180
-Databases is much clearer.
-
-
-00:15:56.180 --> 00:15:58.660
-You know, you don't have to talk about other funky stuff.
-
-
-00:15:58.660 --> 00:16:03.580
-So for the most popular ones, we have my SQL at 56%.
-
-
-00:16:03.580 --> 00:16:10.260
-Postgres SQL at 36%, Microsoft SQL server at 33% and MongoDB at 26%, which
-
-
-00:16:10.260 --> 00:16:12.700
-is actually pretty high in my understanding in the world, but that's,
-
-
-00:16:12.740 --> 00:16:16.360
-That's pretty cool for platforms as a developer.
-
-
-00:16:16.360 --> 00:16:17.840
-I work on not.
-
-
-00:16:17.840 --> 00:16:19.360
-I deploy my code too.
-
-
-00:16:19.360 --> 00:16:24.380
-We have windows at 46% macOS at 28 and Linux at 27.
-
-
-00:16:24.380 --> 00:16:27.900
-So again, most common platform for development is windows.
-
-
-00:16:27.900 --> 00:16:30.800
-So we can't forget them when we build our packages and whatnot.
-
-
-00:16:30.800 --> 00:16:31.040
-Right.
-
-
-00:16:31.040 --> 00:16:33.100
-Steve Dower goes on and on about that.
-
-
-00:16:33.100 --> 00:16:33.720
-Yeah, it's good.
-
-
-00:16:33.720 --> 00:16:37.580
-My favorite part of this, these surveys though, that these are legitimately
-
-
-00:16:37.580 --> 00:16:41.420
-good is the most loved and the most dreaded, the most wanted section.
-
-
-00:16:42.400 --> 00:16:47.320
-So the most loved languages are Rust, TypeScript and Python.
-
-
-00:16:47.320 --> 00:16:51.460
-Those are TypeScript personally drives me a little bit crazy because it's like so
-
-
-00:16:51.460 --> 00:16:55.500
-picky, it's like the type annotations, but you don't get it exactly right.
-
-
-00:16:55.500 --> 00:16:56.300
-You're just not going to work.
-
-
-00:16:56.300 --> 00:16:58.000
-Anyway, it's still pretty neat.
-
-
-00:16:58.000 --> 00:16:59.380
-Rust I would like to learn Python.
-
-
-00:16:59.380 --> 00:17:03.140
-I know something about the most wanted languages I think is also interesting.
-
-
-00:17:03.140 --> 00:17:06.460
-So most loved is I work with it and I love it versus I dread it.
-
-
-00:17:06.460 --> 00:17:08.900
-Or I don't get to work with it very often.
-
-
-00:17:08.900 --> 00:17:13.180
-I'd like to do more is the number one, Python, number two, JavaScript, number
-
-
-00:17:13.180 --> 00:17:14.700
-three, go, go figure.
-
-
-00:17:14.700 --> 00:17:14.980
+00:06:15.220 --> 00:06:15.620
 Nice.
 
-
-00:17:14.980 --> 00:17:15.300
-Yeah.
-
-
-00:17:15.300 --> 00:17:18.660
-Most dreaded VBA and objective C.
-
-
-00:17:18.660 --> 00:17:21.140
-Does that surprise you?
-
-
-00:17:21.140 --> 00:17:25.060
-Well, in pearls, number three is still interesting.
-
-
-00:17:25.060 --> 00:17:26.300
-It still brings dread.
-
-
-00:17:26.300 --> 00:17:27.260
-So that's the languages.
-
-
-00:17:27.260 --> 00:17:32.660
-And then the databases most loved Redis, Postgres, Elasticsearch.
-
-
-00:17:32.660 --> 00:17:34.820
-Again, Elasticsearch is like CSS a little bit to me.
-
-
-00:17:34.820 --> 00:17:36.060
-Is that really a database anyway?
-
-
-00:17:36.060 --> 00:17:37.300
-And MongoDB.
-
-
-00:17:37.780 --> 00:17:40.580
-So those are all quite high.
-
-
-00:17:40.580 --> 00:17:43.300
-Most wanted database is MongoDB and Postgres
-
-
-00:17:43.300 --> 00:17:44.580
-are neck and neck at the top.
-
-
-00:17:44.580 --> 00:17:46.580
-- Okay, and you still do both,
-
-
-00:17:46.580 --> 00:17:47.860
-you do a lot of Mongo, right?
-
-
-00:17:47.860 --> 00:17:49.020
-- Oh yeah, I love Mongo.
-
-
-00:17:49.020 --> 00:17:49.860
-That thing's sweet.
-
-
-00:17:49.860 --> 00:17:52.060
-It's so clean and easy to work with.
-
-
-00:17:52.060 --> 00:17:53.460
-It's been years since I've had to do
-
-
-00:17:53.460 --> 00:17:55.300
-a database migration in production.
-
-
-00:17:55.300 --> 00:17:56.120
-I love it.
-
-
-00:17:56.120 --> 00:17:57.460
-As in, like I change my schema,
-
-
-00:17:57.460 --> 00:17:59.900
-now the app won't run unless I apply the script.
-
-
-00:17:59.900 --> 00:18:02.260
-Yeah, so anyway, rounded out,
-
-
-00:18:02.260 --> 00:18:05.300
-most dreaded database, IBM DB2.
-
-
-00:18:05.300 --> 00:18:07.020
-Doesn't surprise at all.
-
-
-00:18:07.020 --> 00:18:08.420
-Anyway, that's the survey.
-
-
-00:18:08.420 --> 00:18:11.720
-I just want to give a shout out or like a call to the community.
-
-
-00:18:11.720 --> 00:18:15.720
-If you're, if you have any influence on this, find a way to separate.
-
-
-00:18:15.720 --> 00:18:18.540
-Things that are unequal, right?
-
-
-00:18:18.540 --> 00:18:23.140
-Don't put just, I do some JavaScript from, I do some C++ those are not
-
-
-00:18:23.140 --> 00:18:28.940
-equivalent, or I do some J query and angular and I do Django.
-
-
-00:18:28.940 --> 00:18:31.260
-Those are just not even in the same category.
-
-
-00:18:31.260 --> 00:18:33.660
-And it really drives me crazy that they're put this way.
-
-
-00:18:33.660 --> 00:18:36.700
-And it just makes me appreciate the Python software foundation survey more.
-
-
-00:18:36.700 --> 00:18:38.500
-because it had less of this weirdness.
-
-
-00:18:38.500 --> 00:18:39.000
-Yeah.
-
-
-00:18:39.000 --> 00:18:39.500
-Yeah.
-
-
-00:18:39.500 --> 00:18:42.100
-There's some weird things that get bucketed together.
-
-
-00:18:42.100 --> 00:18:42.600
-Yeah.
-
-
-00:18:42.600 --> 00:18:43.100
-Interesting.
-
-
-00:18:43.100 --> 00:18:46.400
-I would say the PSF one is more regular, wouldn't you say?
-
-
-00:18:46.400 --> 00:18:47.200
-More regular.
-
-
-00:18:47.200 --> 00:18:47.900
-Oh, yeah.
-
-
-00:18:47.900 --> 00:18:49.200
-Nice transition.
-
-
-00:18:49.200 --> 00:18:50.200
-Thank you.
-
-
-00:18:50.200 --> 00:18:53.200
-But before we move on, there was another...
-
-
-00:18:53.200 --> 00:18:55.200
-and nobody else will care about this but me,
-
-
-00:18:55.200 --> 00:18:58.500
-but what was the other survey that is closing in a couple days?
-
-
-00:18:58.500 --> 00:19:00.000
-The PSF survey.
-
-
-00:19:00.000 --> 00:19:02.900
-The one at python.org, I believe.
-
-
-00:19:02.900 --> 00:19:04.400
-Let's see if it's still up there.
-
-
-00:19:04.400 --> 00:19:05.700
-I don't know where it went.
-
-
-00:19:05.700 --> 00:19:07.760
-But yeah, yeah, it's right there the in the middle
-
-
-00:19:07.760 --> 00:19:11.420
-Can I mail in my ballot and get it as long as it's postmarked in time?
-
-
-00:19:11.420 --> 00:19:14.840
-Well, if you postmark it at the right time, yeah
-
-
-00:19:14.840 --> 00:19:18.780
-Sorry couldn't resist so regular expressions
-
-
-00:19:18.780 --> 00:19:25.460
-So I'm sure we've talked about regular expressions before but they occasionally crop up in my work. I always forget them
-
-
-00:19:25.460 --> 00:19:29.800
-I learn them and then I forget them. I have to learn them all over again. So this is gonna be helpful
-
-
-00:19:29.800 --> 00:19:34.780
-yeah, so Amit Chaudhry, I think wrote a visual guide to regular expressions and
-
-
-00:19:35.420 --> 00:19:40.580
-And this came out recently and this is kind of a very nice gentle introduction to regular
-
-
-00:19:40.580 --> 00:19:44.900
-expressions by building up, and I think it helps you build up a correct mental model
-
-
-00:19:44.900 --> 00:19:51.620
-of how they work by, he utilizes visual highlighting as if he kind of went through with a highlighter
-
-
-00:19:51.620 --> 00:19:54.980
-pen and highlighted the different things that could be matched.
-
-
-00:19:54.980 --> 00:19:56.820
-So it goes through a whole bunch of stuff.
-
-
-00:19:56.820 --> 00:19:58.560
-Starts with just a specific character.
-
-
-00:19:58.560 --> 00:20:05.180
-So like if you have a string and you're matching the character A or something like that, what
-
-
-00:20:05.180 --> 00:20:09.980
-would it hit? And then moves on to white space and digits and word characters.
-
-
-00:20:09.980 --> 00:20:14.780
-And a lot of these gentle introduction type things come to go through some of
-
-
-00:20:14.780 --> 00:20:19.740
-the basics and then sort of stop there. And what I really love about this is he
-
-
-00:20:19.740 --> 00:20:24.100
-talks about some of the more advanced things like pattern negations so like
-
-
-00:20:24.100 --> 00:20:28.740
-the and why they're why they're weird like /D is digits
-
-
-00:20:28.740 --> 00:20:34.340
-/D is everything that's not a digit and some of these exclusions
-
-
-00:20:34.340 --> 00:20:39.620
-talking about anchors like beginning and the end of the line, character sets with brackets,
-
-
-00:20:39.620 --> 00:20:45.460
-and then ranges with a dash within the ranges. You're talking about repetition, and this is
-
-
-00:20:45.460 --> 00:20:50.460
-kind of something that threw me off when I first learned about them. Using curly brackets, I was
-
-
-00:20:50.460 --> 00:20:56.220
-used to using star for zero or more items and plus for one or more item. I think, or maybe it's the
-
-
-00:20:56.220 --> 00:21:01.780
-other way around. Yeah, that's right. And then, but you can use a question mark for it only can
-
-
-00:21:01.780 --> 00:21:04.580
-be one, but it can be there or it doesn't have to be.
-
-
-00:21:04.580 --> 00:21:07.380
-And then if it has to be a certain number of times,
-
-
-00:21:07.380 --> 00:21:09.700
-you can use curly brackets for saying it needs to be
-
-
-00:21:09.700 --> 00:21:11.880
-two of these or something like that.
-
-
-00:21:11.880 --> 00:21:14.120
-And then it goes on and says, okay,
-
-
-00:21:14.120 --> 00:21:15.780
-well now you've learned all this stuff.
-
-
-00:21:15.780 --> 00:21:17.820
-How do you put it in place with Python?
-
-
-00:21:17.820 --> 00:21:22.460
-And with Python, you use one of the ways is the RE module
-
-
-00:21:22.460 --> 00:21:24.060
-for regular expressions.
-
-
-00:21:24.060 --> 00:21:26.580
-So it goes through a quick example of using
-
-
-00:21:26.580 --> 00:21:29.380
-find all, match and match group and search.
-
-
-00:21:29.380 --> 00:21:31.660
-So if you're a Python developer and you have to deal
-
-
-00:21:31.660 --> 00:21:32.980
-with some regular expressions,
-
-
-00:21:32.980 --> 00:21:34.740
-I think this is definitely something to check out.
-
-
-00:21:34.740 --> 00:21:36.020
-- Yeah, it's really nice,
-
-
-00:21:36.020 --> 00:21:38.560
-and it's a very gentle introduction,
-
-
-00:21:38.560 --> 00:21:41.820
-so people can just go through and the coloring and stuff.
-
-
-00:21:41.820 --> 00:21:46.180
-Yeah, 'cause normally a lot of these presentations
-
-
-00:21:46.180 --> 00:21:50.140
-of regular expressions, man, it's like write only.
-
-
-00:21:50.140 --> 00:21:51.840
-You know, you look at it, like, whoa, that is a mess,
-
-
-00:21:51.840 --> 00:21:54.060
-and then, you know, then it's gone.
-
-
-00:21:54.060 --> 00:21:54.900
-Like you could write it,
-
-
-00:21:54.900 --> 00:21:57.500
-but you couldn't go back and read it again type of thing.
-
-
-00:21:57.500 --> 00:21:59.220
-- Yeah. - Yeah.
-
-
-00:21:59.220 --> 00:22:00.860
-Yeah, so this is nice, this is good.
-
-
-00:22:00.860 --> 00:22:01.900
-- Yeah, cool, nice one.
-
-
-00:22:01.900 --> 00:22:04.420
-- Yeah, I can't take credit for that one though.
-
-
-00:22:04.420 --> 00:22:05.260
-Somebody else wrote it.
-
-
-00:22:05.260 --> 00:22:07.860
-- You probably shouldn't take credit for it.
-
-
-00:22:07.860 --> 00:22:08.700
-Did you create it?
-
-
-00:22:08.700 --> 00:22:09.940
-I mean, you probably shouldn't.
-
-
-00:22:09.940 --> 00:22:10.980
-- No, I just brought it up.
-
-
-00:22:10.980 --> 00:22:14.180
-- So I don't really know the whole story with this next one,
-
-
-00:22:14.180 --> 00:22:16.980
-but I entitled it Taking Credit.
-
-
-00:22:16.980 --> 00:22:19.940
-And this was based on a GitHub project
-
-
-00:22:19.940 --> 00:22:21.980
-and a tweet by Tim Nolet.
-
-
-00:22:21.980 --> 00:22:24.100
-Tim Nolet, I'm not entirely sure how to say his name.
-
-
-00:22:24.100 --> 00:22:26.100
-Hopefully one of those works.
-
-
-00:22:26.100 --> 00:22:29.780
-And he created this project, which is called,
-
-
-00:22:29.780 --> 00:22:34.260
-check it out, Headless Recorder over a Playwright, I believe.
-
-
-00:22:34.260 --> 00:22:35.020
-Let's see.
-
-
-00:22:35.020 --> 00:22:36.260
-It is.
-
-
-00:22:36.260 --> 00:22:37.940
-Yeah, it's called Headless Recorder.
-
-
-00:22:37.940 --> 00:22:41.220
-And so what it does is it allows-- it's a Chrome extension that
-
-
-00:22:41.220 --> 00:22:46.100
-allows you to create scripts that interact with either Puppeteer or Playwright
-
-
-00:22:46.100 --> 00:22:48.060
-that do just like web automation.
-
-
-00:22:48.060 --> 00:22:54.020
-A little bit like non-programmatic Selenium or those types of things, right?
-
-
-00:22:54.020 --> 00:22:54.380
-Yeah.
-
-
-00:22:54.380 --> 00:22:54.700
-Fine.
-
-
-00:22:54.700 --> 00:22:55.180
-That's all cool.
-
-
-00:22:55.180 --> 00:22:57.300
-So there's a bunch of JavaScript that you write in there
-
-
-00:22:57.300 --> 00:22:58.820
-that's pretty interesting.
-
-
-00:22:58.820 --> 00:23:02.860
-And the tweet says, I'll just read the tweet and then we'll go from there.
-
-
-00:23:02.860 --> 00:23:07.900
-It says, "Oh, AWS Cloud, I really do love you, but next time you fork my open source project
-
-
-00:23:07.900 --> 00:23:11.900
-and present it as your new service, please give the maintainers a short, nice,
-
-
-00:23:11.900 --> 00:23:13.660
-good job, kids or something.
-
-
-00:23:13.660 --> 00:23:17.620
-I mean, it doesn't necessarily have to follow the APL version 2 license and stuff,
-
-
-00:23:17.620 --> 00:23:19.620
-but at least a little credit would be great."
-
-
-00:23:19.620 --> 00:23:20.100
-Wow.
-
-
-00:23:20.100 --> 00:23:26.980
-So, there's also a linked announcement about this thing called AWS CloudWatch Synthetics
-
-
-00:23:26.980 --> 00:23:31.860
-launches a recorder to generate user flow scripts for canaries, which is, you look at
-
-
-00:23:31.860 --> 00:23:37.620
-the syntax in the examples, it does now say credits based on headless recorder at the
-
-
-00:23:37.620 --> 00:23:38.620
-bottom.
-
-
-00:23:38.620 --> 00:23:40.820
-But I'm pretty certain that it didn't say that in the beginning.
-
-
-00:23:40.820 --> 00:23:46.100
-I mean, I don't have like a diff of the web page, but it would not be surprising.
-
-
-00:23:46.100 --> 00:23:48.860
-I wouldn't think he would put that up there if at the bottom it said that.
-
-
-00:23:48.860 --> 00:23:49.860
-So now it does.
-
-
-00:23:49.860 --> 00:23:54.500
-Anyway, this is not relevant to this project really at all.
-
-
-00:23:54.500 --> 00:23:59.020
-It's more just a conversation about what do you do when big companies adopt your open
-
-
-00:23:59.020 --> 00:24:01.460
-source project but don't give you credit.
-
-
-00:24:01.460 --> 00:24:02.460
-I think that's lame.
-
-
-00:24:02.460 --> 00:24:04.900
-Well, I think it should be even more than that.
-
-
-00:24:04.900 --> 00:24:10.380
-I mean, I think anybody that personally, if somebody else, if I had, like let's say I
-
-
-00:24:10.380 --> 00:24:14.340
-have got a couple of small projects that I don't really do much with and if somebody
-
-
-00:24:14.340 --> 00:24:19.040
-else took that and forked it and then like did something big with it and started making
-
-
-00:24:19.040 --> 00:24:22.740
-a startup or some money with it, fine, good for them.
-
-
-00:24:22.740 --> 00:24:25.260
-But if it's a big company like Amazon.
-
-
-00:24:25.260 --> 00:24:29.540
-- It's a Google, Microsoft, Apple, AWS sort of thing.
-
-
-00:24:29.540 --> 00:24:31.700
-- Anytime I think credit is due.
-
-
-00:24:31.700 --> 00:24:33.220
-If you're not the one that came up with it,
-
-
-00:24:33.220 --> 00:24:34.980
-if you just forked it and ran with it,
-
-
-00:24:34.980 --> 00:24:36.980
-I think giving some, and that's typical.
-
-
-00:24:36.980 --> 00:24:38.980
-I mean, we often give credit to say,
-
-
-00:24:38.980 --> 00:24:41.740
-"Hey, I ran with it, it started here,
-
-
-00:24:41.740 --> 00:24:42.940
-but I did a whole bunch."
-
-
-00:24:42.940 --> 00:24:43.920
-That's fine.
-
-
-00:24:43.920 --> 00:24:46.780
-But a big company, I think they should both give credit
-
-
-00:24:46.780 --> 00:24:50.940
-and I think some cash should go to the original idea starter.
-
-
-00:24:50.940 --> 00:24:51.780
-So.
-
-
-00:24:51.780 --> 00:24:53.220
-- Yeah, I hear you.
-
-
-00:24:53.220 --> 00:24:56.220
-If it's not cash, which, you know,
-
-
-00:24:56.220 --> 00:24:58.100
-that might be a hard sell,
-
-
-00:24:58.100 --> 00:25:00.660
-how about as we maintain this project,
-
-
-00:25:00.660 --> 00:25:02.520
-we sort of forked from your stuff,
-
-
-00:25:02.520 --> 00:25:05.300
-we'll push changes back to make yours better, right?
-
-
-00:25:05.300 --> 00:25:09.220
-At least some sort of, hey, we've based this on your thing,
-
-
-00:25:09.220 --> 00:25:12.180
-but by doing so, we're gonna make that thing better
-
-
-00:25:12.180 --> 00:25:15.020
-because we've made a commitment to at least, you know,
-
-
-00:25:15.020 --> 00:25:18.320
-do a little bit of give back PRs improvements, right?
-
-
-00:25:19.420 --> 00:25:22.840
-And also, I don't know, like, I don't know this guy,
-
-
-00:25:22.840 --> 00:25:25.400
-but at the AWS reInvent conference,
-
-
-00:25:25.400 --> 00:25:26.760
-when they announced this, if they said,
-
-
-00:25:26.760 --> 00:25:29.080
-"Hey, this is based on this cool project by Tim,"
-
-
-00:25:29.080 --> 00:25:30.700
-you know, that would raise his profile,
-
-
-00:25:30.700 --> 00:25:33.120
-and I'm sure he would really appreciate it.
-
-
-00:25:33.120 --> 00:25:34.760
-Personally, a lot of my stuff's under MIT,
-
-
-00:25:34.760 --> 00:25:36.720
-and so people don't have to mention me,
-
-
-00:25:36.720 --> 00:25:38.480
-do anything, say anything, whatever.
-
-
-00:25:38.480 --> 00:25:41.080
-A few things are not, but it's, you know,
-
-
-00:25:41.080 --> 00:25:42.560
-a lot of it's just example code,
-
-
-00:25:42.560 --> 00:25:44.200
-and people are like, "Well, can I use this example
-
-
-00:25:44.200 --> 00:25:45.360
-"in my commercial application?"
-
-
-00:25:45.360 --> 00:25:46.560
-I'm like, "Yes, I really don't care
-
-
-00:25:46.560 --> 00:25:50.080
-if you like recreate my random sample in your project, that's fine, right?
-
-
-00:25:50.080 --> 00:25:53.920
-I don't want anybody to have those feelings, but if I was building something useful,
-
-
-00:25:53.920 --> 00:25:56.600
-I'd at least want, you know, a shout out.
-
-
-00:25:56.600 --> 00:25:58.280
-I guess that's all he's asking for as well.
-
-
-00:25:58.280 --> 00:25:58.600
-Yeah.
-
-
-00:25:58.600 --> 00:25:58.960
-Anyway.
-
-
-00:25:58.960 --> 00:26:00.000
-And they did it.
-
-
-00:26:00.000 --> 00:26:00.640
-So that's good.
-
-
-00:26:00.640 --> 00:26:01.720
-They did come around and do it.
-
-
-00:26:01.720 --> 00:26:02.440
-Yeah, they did.
-
-
-00:26:02.440 --> 00:26:06.240
-I had pretty sure that was not the beginning situation, but now it is.
-
-
-00:26:06.240 --> 00:26:08.040
-And so that's, that's quite good.
-
-
-00:26:08.040 --> 00:26:12.240
-And just given the amount of people who are in the Python space, who listen to
-
-
-00:26:12.240 --> 00:26:13.440
-podcasts, they do open source.
-
-
-00:26:13.440 --> 00:26:15.920
-I thought this story would be interesting, even though it's technically
-
-
-00:26:16.040 --> 00:26:20.600
-JavaScript. Yeah. Yeah. I bet you could even write that JavaScript on a Raspberry Pi, Brian.
-
-
-00:26:20.600 --> 00:26:26.040
-Maybe. So I was just curious, what was the first computer you programmed on?
-
-
-00:26:26.040 --> 00:26:32.840
-So the first computer that I programmed on was one of those Apple IIe's that was beige and had
-
-
-00:26:32.840 --> 00:26:36.040
-a green screen, I believe. Okay. You started on a IIe as well.
-
-
-00:26:36.040 --> 00:26:43.000
-Yeah, but that was like in middle school or now maybe even elementary school, where it was just,
-
-
-00:26:43.000 --> 00:26:47.400
-you know, something I went for class. The very first thing that I actually, actually got to
-
-
-00:26:47.400 --> 00:26:53.080
-sort of sit down and program on, my brother had a Commodore 64, but I didn't really use it for
-
-
-00:26:53.080 --> 00:27:00.360
-anything constructive. I would say a 286, IBM 286. Okay. I programmed a 2E, Apple 2E at school,
-
-
-00:27:00.360 --> 00:27:07.960
-but I wasn't, it was confusing enough to me that I didn't run with it right away. I kind of dropped
-
-
-00:27:07.960 --> 00:27:14.560
-Programming after that but but anyway, I bring this up because I there's a new computer out and it reminded me of this
-
-
-00:27:14.560 --> 00:27:20.200
-About the those early computers. So are the Commodore 64 is kind of the same category
-
-
-00:27:20.200 --> 00:27:24.900
-So Apple to II was kind of like cool was yeah, it was at higher end
-
-
-00:27:24.900 --> 00:27:29.400
-I had to our Commodore 64 was a little bit lower than 2e
-
-
-00:27:29.400 --> 00:27:34.860
-I guess I would think and then below that is the TRS-80 from Radio Shack. That's what I had
-
-
-00:27:34.860 --> 00:27:40.880
-I had my but anyway, so the the Raspberry Pi 400 is out now or it's
-
-
-00:27:40.880 --> 00:27:44.240
-Announced and it's going to be out by the holidays apparently
-
-
-00:27:44.240 --> 00:27:51.460
-It's really cool. It's like it kind of reminds me of these Apple to ease because it's the it's the computer in the keyboard
-
-
-00:27:51.460 --> 00:27:54.580
-so the the keyboard is the computer and
-
-
-00:27:54.580 --> 00:28:01.300
-You can even hook up two large monitors to it because it does it could supports two displays 4k video
-
-
-00:28:01.300 --> 00:28:05.180
-It'll do two 4k monitors out of your keyboard. Yeah, and
-
-
-00:28:05.180 --> 00:28:08.580
-That's cool. This one's got four gigabytes of RAM
-
-
-00:28:08.580 --> 00:28:15.800
-You both do Wi-Fi and lands as a hard landline entry point, which is good for core 64-bit processor
-
-
-00:28:15.800 --> 00:28:19.740
-It just looks fun. They're telling us as a whole kit for like a hundred bucks
-
-
-00:28:19.740 --> 00:28:22.380
-So you get like you can start somebody up on a computer
-
-
-00:28:22.380 --> 00:28:25.500
-I'm covering this cuz yeah, that's super neat
-
-
-00:28:25.500 --> 00:28:29.000
-I was thinking geez do I want to get this for my kid or do I want to get it for me?
-
-
-00:28:29.460 --> 00:28:35.800
-Yeah, exactly and it comes with a beginner's guide and shows you how to get started and even includes getting people a little bit
-
-
-00:28:35.800 --> 00:28:42.520
-Started on Python and apparently so that's good. Yeah, it seems super neat and the processor is pretty good
-
-
-00:28:42.520 --> 00:28:47.380
-Actually four core four gigs of RAM and it looks like just one of these little, you know
-
-
-00:28:47.380 --> 00:28:52.580
-Wi-Fi USB like over the little RF or radio frequency dongle thing
-
-
-00:28:52.580 --> 00:28:54.960
-Keyboards that you would get
-
-
-00:28:54.960 --> 00:29:01.700
-But that's the whole computer on the back of the keyboard. It's got the HDMI ports. It's got the other ports the power everything
-
-
-00:29:01.700 --> 00:29:03.780
-Yeah, so you gotta get your own monitor, of course
-
-
-00:29:03.780 --> 00:29:09.580
-But plug it in and you can get started and there's videos on the on the Raspberry Pi site that are
-
-
-00:29:09.580 --> 00:29:17.620
-Amazing watching this thing go it's it's powering two big monitors and it just feels looks like it's a zip as a normal computer
-
-
-00:29:17.620 --> 00:29:19.620
-so I think it'd be helpful for
-
-
-00:29:20.500 --> 00:29:23.060
-educational use and lots of uses.
-
-
-00:29:23.060 --> 00:29:24.820
-So it's pretty nice.
-
-
-00:29:24.820 --> 00:29:26.540
-- Even for just a travel computer.
-
-
-00:29:26.540 --> 00:29:27.820
-- A travel computer, yeah.
-
-
-00:29:27.820 --> 00:29:28.820
-- Right, imagine when,
-
-
-00:29:28.820 --> 00:29:30.460
-remember when people left their house?
-
-
-00:29:30.460 --> 00:29:32.480
-So imagine it were like that again,
-
-
-00:29:32.480 --> 00:29:33.520
-and then you could go places.
-
-
-00:29:33.520 --> 00:29:34.700
-But if you were just going on a trip
-
-
-00:29:34.700 --> 00:29:36.460
-and you're like, "Ah, maybe I'll just like,
-
-
-00:29:36.460 --> 00:29:37.820
-"need a computer I wanna plug in."
-
-
-00:29:37.820 --> 00:29:39.500
-And they'll bring you a HDMI cord,
-
-
-00:29:39.500 --> 00:29:42.220
-plug it into the TV at the hotel,
-
-
-00:29:42.220 --> 00:29:44.420
-plug it into some sort of monitor
-
-
-00:29:44.420 --> 00:29:46.300
-at like some office you're dropping in on.
-
-
-00:29:46.300 --> 00:29:47.980
-You could just take that and have,
-
-
-00:29:47.980 --> 00:29:50.300
-You know, do presentations and stuff out of it.
-
-
-00:29:50.300 --> 00:29:51.140
-It's cool.
-
-
-00:29:51.140 --> 00:29:53.140
-- Yeah, 'cause, well like, that's true,
-
-
-00:29:53.140 --> 00:29:55.860
-'cause the HDMI output, it's a lot of TVs
-
-
-00:29:55.860 --> 00:29:57.140
-just take that now too, so.
-
-
-00:29:57.140 --> 00:29:59.460
-- Yeah, exactly, just bring a little short HDMI cable
-
-
-00:29:59.460 --> 00:30:00.900
-with you if you need to, and then you're good.
-
-
-00:30:00.900 --> 00:30:04.020
-- I'm including a, linking to a video from Leigh Moore Freed
-
-
-00:30:04.020 --> 00:30:06.620
-from Agerfruit, in there she says that it reminds her
-
-
-00:30:06.620 --> 00:30:07.820
-of the Apple IIe as well.
-
-
-00:30:07.820 --> 00:30:09.140
-- Nice, I'll check that out.
-
-
-00:30:09.140 --> 00:30:09.980
-Super cool.
-
-
-00:30:09.980 --> 00:30:11.860
-So, that's our main items.
-
-
-00:30:11.860 --> 00:30:12.900
-That's quite an adventure.
-
-
-00:30:12.900 --> 00:30:15.940
-Brian, you got any other things you wanna just throw out
-
-
-00:30:15.940 --> 00:30:16.780
-there real quick?
-
-
-00:30:16.780 --> 00:30:21.860
-quick thing I got reminded of ran across this a while ago and I somebody
-
-
-00:30:21.860 --> 00:30:26.020
-reminded me of it on Twitter recently is a Vim Adventures it's Vim dash
-
-
-00:30:26.020 --> 00:30:32.180
-adventures dot-com remember the dash but it's a kind of like this adventure game
-
-
-00:30:32.180 --> 00:30:35.620
-like these old going through a dungeon sort of thing and picking up treasure
-
-
-00:30:35.620 --> 00:30:41.220
-and things like that and you just is to help you practice your Vim key bindings
-
-
-00:30:41.220 --> 00:30:44.660
-while playing an adventure game so if you're having trouble getting learning
-
-
-00:30:44.660 --> 00:30:46.660
-Maybe try this.
-
-
-00:30:46.660 --> 00:30:48.660
-Yeah, that looks quite cool actually.
-
-
-00:30:48.660 --> 00:30:50.660
-It's a neat little adventure game.
-
-
-00:30:50.660 --> 00:30:52.660
-Now, I just want to throw out something
-
-
-00:30:52.660 --> 00:30:54.660
-I got from Tyler Pettersen
-
-
-00:30:54.660 --> 00:30:56.660
-just a little bit ago.
-
-
-00:30:56.660 --> 00:30:58.660
-And this kind of comes back to the language talk
-
-
-00:30:58.660 --> 00:31:00.660
-around Stack Overflow
-
-
-00:31:00.660 --> 00:31:02.660
-that I mentioned. And this is an
-
-
-00:31:02.660 --> 00:31:04.660
-update for the TIOBE index.
-
-
-00:31:04.660 --> 00:31:06.660
-T-I-O-B-E index for November 2020.
-
-
-00:31:06.660 --> 00:31:08.660
-And
-
-
-00:31:08.660 --> 00:31:10.660
-my
-
-
-00:31:10.660 --> 00:31:12.660
-feeling and my theory is that
-
-
-00:31:12.660 --> 00:31:17.420
-Things like stack overflow and whatnot.
-
-
-00:31:17.420 --> 00:31:21.020
-Those places are often measuring
-
-
-00:31:21.020 --> 00:31:23.380
-like the pulse of the industry right now.
-
-
-00:31:23.380 --> 00:31:25.900
-Whereas TIOBE seems to have a little bit of a latency.
-
-
-00:31:25.900 --> 00:31:28.140
-Like how many legacy apps of this style
-
-
-00:31:28.140 --> 00:31:30.500
-are you working on and this technology and whatnot, right?
-
-
-00:31:30.500 --> 00:31:34.380
-So it's a little bit of a longer term moving average.
-
-
-00:31:34.380 --> 00:31:35.780
-Well, anyway, the headline is,
-
-
-00:31:35.780 --> 00:31:37.900
-November headline, Python is unstoppable
-
-
-00:31:37.900 --> 00:31:39.740
-and surpasses Java.
-
-
-00:31:39.740 --> 00:31:42.360
-For the first time since the start of the TIOBE index,
-
-
-00:31:42.360 --> 00:31:45.760
-nearly 20 years, Java and C don't make up the top two positions.
-
-
-00:31:45.760 --> 00:31:46.260
-Okay.
-
-
-00:31:46.260 --> 00:31:47.260
-In 20 years.
-
-
-00:31:47.260 --> 00:31:47.760
-Wow.
-
-
-00:31:47.760 --> 00:31:50.760
-So, Python's not on top, but it's right below C.
-
-
-00:31:50.760 --> 00:31:54.760
-It's right below C. And it's, you know, it's been a long time coming, right?
-
-
-00:31:54.760 --> 00:31:57.260
-So, anyway, I think this is pretty neat.
-
-
-00:31:57.260 --> 00:31:59.360
-And, Tyler, thanks for sending that along.
-
-
-00:31:59.360 --> 00:32:00.260
-People can check it out.
-
-
-00:32:00.260 --> 00:32:00.760
-Yeah.
-
-
-00:32:00.760 --> 00:32:01.260
+00:06:15.620 --> 00:06:16.040
 Cool.
 
+00:06:16.040 --> 00:06:16.360
+Nice.
 
-00:32:01.260 --> 00:32:02.060
-Ain't no joke.
+00:06:16.360 --> 00:06:18.280
+Carrying on about APIs.
 
+00:06:18.280 --> 00:06:19.000
+Yeah.
 
-00:32:02.060 --> 00:32:03.760
-But how about a joke?
+00:06:19.200 --> 00:06:21.080
+Maybe a little less clean of a way.
 
+00:06:21.080 --> 00:06:31.800
+So yeah, we've been very excited about FastAPI recently for APIs and in the Django world, there's the Django rest framework is quite popular.
 
-00:32:03.760 --> 00:32:04.660
-A joke would be great.
+00:06:31.800 --> 00:06:36.420
+But what if you just want to use vanilla Django and write a rest API?
 
+00:06:36.420 --> 00:06:42.060
+Adam Johnson took that on and said, yeah, of course you can do it, but you can also do it in one file.
 
-00:32:04.660 --> 00:32:04.960
+00:06:42.060 --> 00:06:51.640
+So we're going to link to a little article where he has a simple rest API completely written in one file as a one file application.
+
+00:06:51.640 --> 00:07:00.200
+It's a, it's a little API that gives you information on the characters from Rick and Morty, specifically just Rick and Morty.
+
+00:07:00.200 --> 00:07:00.720
+And that's it.
+
+00:07:00.720 --> 00:07:02.160
+But it's a good example.
+
+00:07:02.160 --> 00:07:03.180
+I'd like it.
+
+00:07:03.240 --> 00:07:06.800
+It shows, shows you how to do, how you can do redirects.
+
+00:07:06.800 --> 00:07:11.480
+And so like, like for instance, the endpoint, one of his endpoints is characters.
+
+00:07:11.480 --> 00:07:22.480
+So if you type your application slash characters with a slash at the end, it should return, Jason data with the information about Rick and Morty.
+
+00:07:22.680 --> 00:07:31.300
+Now, what if you just don't put anything, if you put characters without the slash or don't put characters at all, like your homepage thing, he shows you how to do redirect.
+
+00:07:31.300 --> 00:07:39.880
+So you can redirect two characters and, you know, it's pretty simple example, but it is kind of neat that you can do it off the shelf, Jason or off the shelf Django.
+
+00:07:40.180 --> 00:07:52.720
+He also shows he's got some hard coded data classes within the application, but it's easy, you know, not that difficult to imagine that you can extend that to something that reads it out of a database or some other part of your system.
+
+00:07:52.720 --> 00:07:53.080
+Yeah, absolutely.
+
+00:07:53.080 --> 00:07:59.140
+And it's like 63 lines of code, which is not too much for a non-trivial little example API.
+
+00:07:59.140 --> 00:08:06.820
+You know, I'm not necessarily on board with putting this in one file, but I am on board with this idea of like these simplified things.
+
+00:08:06.820 --> 00:08:10.760
+You know, when you hear about Django, you always say, go ahead.
+
+00:08:10.760 --> 00:08:15.220
+If I want an API, I'm going to have to add Django rest framework and all these other things to it.
+
+00:08:15.220 --> 00:08:21.180
+If say you're in Flask and you want to work with users, like, well, I've got to add the Flask SQLAlchemy add in.
+
+00:08:21.180 --> 00:08:23.860
+I've got to add the Flask users add in as an extension.
+
+00:08:23.860 --> 00:08:25.400
+And maybe I want session.
+
+00:08:25.400 --> 00:08:26.640
+So I got to add Flask session.
+
+00:08:26.640 --> 00:08:31.220
+Like none of those things are necessary per se, especially on the, on the Flask side.
+
+00:08:31.220 --> 00:08:32.180
+Like there's so much of it.
+
+00:08:32.180 --> 00:08:34.960
+It adds like one or two lines of code that you don't have to write.
+
+00:08:35.500 --> 00:08:38.880
+And now you have all the overhead of depending on making sure that that thing works right.
+
+00:08:38.880 --> 00:08:40.560
+And the way you work with it is the way you want.
+
+00:08:40.560 --> 00:08:44.700
+And so having just a, here's the bare bones view and you can add in stuff if you like.
+
+00:08:44.700 --> 00:08:45.720
+I'm a fan of that.
+
+00:08:45.720 --> 00:08:46.040
+Yeah.
+
+00:08:46.040 --> 00:08:51.400
+I'm also thinking like, let's say you have a Django application already and you built it,
+
+00:08:51.400 --> 00:08:53.560
+not intending anybody to use it as an API.
+
+00:08:53.560 --> 00:08:57.860
+And somebody says like maybe an internal application, your business or something.
+
+00:08:57.980 --> 00:09:04.880
+And somebody says, oh, this data here where this graph is, can we get that as an API so that we can, you know, use it in something else?
+
+00:09:04.880 --> 00:09:09.680
+And this would be, you know, a good example to be able to just add.
+
+00:09:09.680 --> 00:09:11.880
+You can use Django REST framework, of course.
+
+00:09:11.880 --> 00:09:16.080
+But if there's just something simple you need to add as an API, this is a way to do it.
+
+00:09:16.160 --> 00:09:16.280
+Yeah.
+
+00:09:16.280 --> 00:09:16.880
+No, it's cool.
+
+00:09:16.880 --> 00:09:28.260
+And like, I do feel like these add-ons and these extra layers that you add, they better add a ton of value because they're also adding overhead and dependencies and breaking changes and like all that.
+
+00:09:28.260 --> 00:09:32.980
+So yeah, if you've got something working, you want to just add a little bit of, you know, here's a few JSON endpoints.
+
+00:09:32.980 --> 00:09:33.640
+Let's do that.
+
+00:09:33.700 --> 00:09:33.820
+Yeah.
+
+00:09:33.820 --> 00:09:40.280
+And for people that really enjoy this article and want to hear more from Adam, I've had him on Test and Code a couple times.
+
+00:09:40.280 --> 00:09:43.080
+So we'll drop links to those episodes in the show notes.
+
+00:09:43.080 --> 00:09:43.660
+Yeah, right on.
+
+00:09:43.660 --> 00:09:51.160
+Now, before we get to the next one, which is a pretty big item, I just want to say this episode is brought to you by us.
+
+00:09:51.160 --> 00:09:56.660
+Of course, it's over at Talk Python Training, Test and Code Podcast, and something to do with pytest.
+
+00:09:56.660 --> 00:09:57.560
+Do you do anything with pytest?
+
+00:09:57.560 --> 00:09:59.560
+I heard that pytest is a thing that people use.
+
+00:09:59.560 --> 00:10:00.300
+Do you do anything with that?
+
+00:10:00.300 --> 00:10:00.900
+Yeah.
+
+00:10:01.460 --> 00:10:03.380
+So, yep, wrote a book on pytest.
+
+00:10:03.380 --> 00:10:10.700
+I still think, and I still get call outs on Twitter saying it's the best book they read to get started with testing,
+
+00:10:10.700 --> 00:10:15.040
+and they got excited about testing with reading Python, testing with pytest.
+
+00:10:15.040 --> 00:10:15.900
+So it's a good book.
+
+00:10:15.900 --> 00:10:16.140
+Yeah.
+
+00:10:16.140 --> 00:10:16.680
+Awesome.
+
+00:10:16.680 --> 00:10:17.400
+Yeah.
+
+00:10:17.400 --> 00:10:23.960
+And over at Talk Python Training, I'm now working on a three-part series, so like three, four-hour sections or so,
+
+00:10:23.960 --> 00:10:30.500
+on building FastAPIs and also like testing them and putting them in production and fun stuff like that.
+
+00:10:30.740 --> 00:10:31.660
+Oh, that's exciting.
+
+00:10:31.660 --> 00:10:32.360
+Can't wait to watch that.
+
+00:10:32.360 --> 00:10:32.800
+Yeah, that'll be fun.
+
+00:10:32.800 --> 00:10:34.120
+Yeah, yeah, that'll be super fun.
+
+00:10:34.120 --> 00:10:35.580
+So anyway, that's coming.
+
+00:10:35.580 --> 00:10:41.600
+People can go over there to training.talkpython.fm, you know, sign up to get notified and visit
+
+00:10:41.600 --> 00:10:43.560
+Testing Code and listen over there as well.
+
+00:10:43.560 --> 00:10:43.800
+Yep.
+
+00:10:43.800 --> 00:10:44.780
+We also have Patreon, right?
+
+00:10:44.780 --> 00:10:45.300
+Oh, yeah.
+
+00:10:45.300 --> 00:10:53.060
+So had somebody reach out to us for the Patreon and say, hey, you guys mentioned that a whole bunch of people sponsor you for a buck a month,
+
+00:10:53.060 --> 00:10:55.960
+but they said, that's the only tier you have.
+
+00:10:55.960 --> 00:11:00.980
+And so Michael and I are definitely going to talk about in the future whether we should add some more tiers.
+
+00:11:01.440 --> 00:11:02.740
+However, there is an option.
+
+00:11:02.740 --> 00:11:10.060
+Even if you sign up for a dollar a month, if you want to send us more, you can change that within the Patreon thing.
+
+00:11:10.060 --> 00:11:11.200
+So we'd appreciate it.
+
+00:11:11.200 --> 00:11:13.340
+Yeah, much appreciated to everyone who supports us.
+
+00:11:13.340 --> 00:11:14.320
+In all the ways.
+
+00:11:14.320 --> 00:11:16.020
+Every way is valuable and appreciated.
+
+00:11:16.020 --> 00:11:20.920
+Speaking of valuable and appreciated, we often talk about the Stack Overflow Developer Survey.
+
+00:11:21.140 --> 00:11:25.960
+I mean, in my mind, there's two major surveys that take the pulse of the developer community.
+
+00:11:25.960 --> 00:11:27.620
+One is the Stack Overflow Developer Survey.
+
+00:11:27.620 --> 00:11:33.440
+The other is the PSF survey, which, by the way, just got extended to three more days.
+
+00:11:33.440 --> 00:11:36.080
+By the time this comes out, that'll be already in the past.
+
+00:11:36.080 --> 00:11:38.860
+But, you know, that's hopefully people have taken that.
+
+00:11:38.860 --> 00:11:39.840
+We've talked about it before.
+
+00:11:39.840 --> 00:11:46.500
+And we talked about the 2020 Stack Overflow Survey coming out, I believe, and I told folks to go take it or you did.
+
+00:11:46.500 --> 00:11:49.980
+And then we just didn't follow up, right?
+
+00:11:50.020 --> 00:11:53.540
+But the survey results are out, so I thought it might be fun to run through the survey results.
+
+00:11:53.540 --> 00:11:53.900
+Yeah.
+
+00:11:53.900 --> 00:11:55.660
+Yeah, and I just want to be clear.
+
+00:11:55.660 --> 00:11:57.900
+Like, I kind of lost track of this.
+
+00:11:57.900 --> 00:12:01.940
+I don't know exactly when this came out, but it's not brand new.
+
+00:12:01.940 --> 00:12:04.980
+It's like four, five, six months ago.
+
+00:12:04.980 --> 00:12:07.640
+But I just, you know, we didn't talk about the results.
+
+00:12:07.640 --> 00:12:08.580
+We just talked about the survey.
+
+00:12:08.580 --> 00:12:11.260
+So let's run through some of the things that are here.
+
+00:12:11.260 --> 00:12:20.580
+Now, the 2020 Stack Overflow Survey is focused a lot on demographics and background and education and all those sorts of things.
+
+00:12:20.580 --> 00:12:22.920
+And if you're interested in that, definitely go check it out.
+
+00:12:22.920 --> 00:12:24.000
+There's a lot to see there.
+
+00:12:24.000 --> 00:12:25.340
+Just because of the format.
+
+00:12:25.340 --> 00:12:28.440
+I'm going to focus mostly on the tech side that they covered here.
+
+00:12:28.820 --> 00:12:32.780
+Okay, so not whether we have a full-time job, how many of us work from home, none of that.
+
+00:12:33.220 --> 00:12:42.200
+So some of the most popular technologies, and I just want to point out, I think the PSF survey and the JetBrains folks who worked with them to put that together is in a much better place.
+
+00:12:42.200 --> 00:12:47.420
+This is a wacky, wacky, wacky survey, but it does have some good questions.
+
+00:12:47.420 --> 00:12:48.700
+Yeah.
+
+00:12:48.700 --> 00:12:50.180
+I'll expand on the wacky a sec.
+
+00:12:50.180 --> 00:13:02.160
+But if we look at the most popular languages, most popular technologies, web frameworks, databases, and so on, certain languages, we have JavaScript, Python, and Java.
+
+00:13:02.600 --> 00:13:04.060
+And JavaScript has 68%.
+
+00:13:04.060 --> 00:13:05.300
+Python has 44%.
+
+00:13:05.300 --> 00:13:06.780
+Java has 40%.
+
+00:13:06.780 --> 00:13:08.080
+That's good, right?
+
+00:13:08.080 --> 00:13:10.020
+I mean, like, everyone knows JavaScript's pretty popular.
+
+00:13:10.020 --> 00:13:12.280
+So what's wacky here?
+
+00:13:12.280 --> 00:13:13.280
+Why is this weird?
+
+00:13:13.280 --> 00:13:18.020
+And I'm not necessarily saying there's not 68% of the people doing Node.js.
+
+00:13:18.020 --> 00:13:18.980
+They may well be.
+
+00:13:18.980 --> 00:13:22.540
+But do you know what language is between JavaScript and Python?
+
+00:13:22.540 --> 00:13:23.540
+CSS.
+
+00:13:23.540 --> 00:13:28.360
+Dude, I know no application that is shipped running on CSS.
+
+00:13:28.360 --> 00:13:30.220
+I can't even compile CSS.
+
+00:13:30.220 --> 00:13:32.420
+I could probably compile SAS or less over to it,
+
+00:13:32.460 --> 00:13:34.660
+but I can't compile CSS to a running application.
+
+00:13:34.660 --> 00:13:36.000
+It's not a programming language.
+
+00:13:36.000 --> 00:13:36.240
+Yeah.
+
+00:13:36.240 --> 00:13:37.540
+And SQL.
+
+00:13:37.540 --> 00:13:39.840
+Perhaps it's true and complete, but yeah, and SQL.
+
+00:13:39.840 --> 00:13:41.920
+SQL is a thing you use within a language.
+
+00:13:41.920 --> 00:13:42.260
+Yeah.
+
+00:13:42.260 --> 00:13:45.480
+It is not a programming language that builds things, right?
+
+00:13:45.480 --> 00:13:45.680
+Yeah.
+
+00:13:45.760 --> 00:13:48.400
+So they have this, this is what I was talking about where it's wacky.
+
+00:13:48.400 --> 00:13:50.160
+And JavaScript is in this world, right?
+
+00:13:50.160 --> 00:14:00.300
+They needed to ask very, very clearly, do you work exclusively in JavaScript as a Node.js developer or a pure front-end developer?
+
+00:14:00.800 --> 00:14:05.120
+Or did you check, I also use JavaScript and CSS and Python?
+
+00:14:05.120 --> 00:14:08.860
+I also use JavaScript and CSS and Java, right?
+
+00:14:08.920 --> 00:14:17.540
+And so the JavaScript one has like bundled up all these, I do anything in the web on any language plus the Node.js developers, right?
+
+00:14:17.540 --> 00:14:23.980
+I think the contention there is a little bit closer, but it still wouldn't surprise me if JavaScript was actually in the lead.
+
+00:14:24.260 --> 00:14:30.300
+I don't know, I feel like I'm all hyped up on like percentages and trajectories given all this election talk that we just went through.
+
+00:14:30.300 --> 00:14:34.940
+Well, I remember checking the box for JavaScript once and like, yes, I use JavaScript.
+
+00:14:34.940 --> 00:14:35.400
+Yeah, exactly.
+
+00:14:35.400 --> 00:14:36.300
+But what does that mean?
+
+00:14:36.300 --> 00:14:41.320
+I have an app that does use a little bit of JavaScript and I looked at the code once.
+
+00:14:41.320 --> 00:14:41.560
+Right.
+
+00:14:41.560 --> 00:14:43.760
+Did you do $document.ready?
+
+00:14:43.760 --> 00:14:47.160
+You're a JavaScript developer, like not really.
+
+00:14:47.160 --> 00:14:47.700
+Yeah.
+
+00:14:47.700 --> 00:14:52.720
+On the other hand, if you build an app with Vue.js or Angular, you're a JavaScript developer.
+
+00:14:52.720 --> 00:14:55.160
+If you build something with Express a Note, you're a JavaScript developer.
+
+00:14:55.160 --> 00:15:07.120
+So I think it's a little bit weird that they didn't like really clearly make that distinction because you can't put two buckets and add up those numbers next to other buckets and make that make sense, right?
+
+00:15:07.120 --> 00:15:08.380
+CSS is the same thing.
+
+00:15:08.380 --> 00:15:14.840
+Like no one would check it if you said I primarily code in CSS to build apps and ship on the CSS platform.
+
+00:15:14.840 --> 00:15:15.700
+Anyway, okay.
+
+00:15:15.700 --> 00:15:19.560
+So web frameworks, you know what the most popular web framework is?
+
+00:15:19.560 --> 00:15:21.020
+Well, I do now that I just looked.
+
+00:15:21.020 --> 00:15:21.800
+Do you believe it?
+
+00:15:21.800 --> 00:15:22.820
+But I wouldn't have guessed this.
+
+00:15:22.820 --> 00:15:23.680
+Do you believe it?
+
+00:15:23.680 --> 00:15:24.280
+No.
+
+00:15:24.280 --> 00:15:25.060
+It's jQuery.
+
+00:15:25.060 --> 00:15:26.300
+Nobody.
+
+00:15:26.300 --> 00:15:30.140
+How can jQuery be in the same category as like Django?
+
+00:15:30.140 --> 00:15:30.820
+Yeah, yeah, yeah.
+
+00:15:30.820 --> 00:15:35.120
+It's even on the front end side of the JavaScript front end frameworks.
+
+00:15:35.120 --> 00:15:35.980
+There's Vue, there's Angular.
+
+00:15:35.980 --> 00:15:37.540
+All those are really legitimate things.
+
+00:15:37.540 --> 00:15:42.160
+jQuery is not the primary way in which people write web applications.
+
+00:15:42.160 --> 00:15:43.400
+But a lot of people use it.
+
+00:15:43.400 --> 00:15:43.800
+So it's in there.
+
+00:15:43.800 --> 00:15:44.000
 All right.
 
+00:15:44.000 --> 00:15:45.620
+So anyway, those two are a little bit weird.
 
-00:32:04.960 --> 00:32:07.760
-So, we've got a cartoon, but this one is, super simple.
+00:15:45.620 --> 00:15:46.560
+I take away.
 
+00:15:46.940 --> 00:15:49.140
+Python is really quite popular and up there.
 
-00:32:07.760 --> 00:32:09.760
-And I think just the, the words will do it.
+00:15:49.140 --> 00:15:51.500
+The Python web frameworks, I think there's just so many.
 
+00:15:51.500 --> 00:15:54.540
+They don't filter very high to the top individually.
 
-00:32:09.760 --> 00:32:13.520
-So this is from geek and poke, which has some fun things.
+00:15:54.540 --> 00:15:56.040
+Databases is much clearer.
 
+00:15:56.040 --> 00:15:58.680
+You know, you don't have to talk about other funky stuff.
 
-00:32:13.520 --> 00:32:16.480
-And the title is you build it, you run it.
+00:15:58.840 --> 00:16:06.720
+So for the most popular ones, we have MySQL at 56%, PostgreSQL at 36%, Microsoft SQL Server
 
+00:16:06.720 --> 00:16:12.380
+at 33%, and MongoDB at 26%, which is actually pretty high in my understanding of the world.
 
-00:32:16.480 --> 00:32:18.040
-It's all about microservices.
+00:16:12.380 --> 00:16:13.280
+But that's pretty cool.
 
+00:16:13.780 --> 00:16:21.660
+For platforms, as a developer I work on, not I deploy my code too, we have Windows at 46%,
 
-00:32:18.040 --> 00:32:18.400
+00:16:21.660 --> 00:16:24.440
+macOS at 28%, and Linux at 27%.
+
+00:16:24.440 --> 00:16:27.800
+So again, most common platform for development is Windows.
+
+00:16:27.800 --> 00:16:31.000
+So we can't forget them when we build our packages and whatnot, right?
+
+00:16:31.000 --> 00:16:33.680
+Steve Dower goes on and on about that, which is good.
+
+00:16:33.680 --> 00:16:38.340
+My favorite part of these surveys, though, that these are legitimately good, is the most
+
+00:16:38.340 --> 00:16:41.320
+loved and the most dreaded, the most wanted section.
+
+00:16:42.160 --> 00:16:47.260
+So the most loved languages are Rust, TypeScript, and Python.
+
+00:16:47.260 --> 00:16:48.400
+Those are neat.
+
+00:16:48.400 --> 00:16:51.780
+TypeScript personally drives me a little bit crazy, because it's like so picky.
+
+00:16:51.780 --> 00:16:55.500
+It's like the type annotations, but you don't get it exactly right.
+
+00:16:55.500 --> 00:16:56.240
+It's not going to work.
+
+00:16:56.240 --> 00:16:58.020
+Anyway, it's still pretty neat.
+
+00:16:58.020 --> 00:16:59.000
+Rust, I would like to learn.
+
+00:16:59.000 --> 00:17:00.240
+Python, I know something about.
+
+00:17:00.240 --> 00:17:03.120
+The most wanted languages, I think, is also interesting.
+
+00:17:03.120 --> 00:17:06.520
+So most loved is I work with it and I love it, versus I dread it.
+
+00:17:06.520 --> 00:17:10.860
+Or I don't get to work with it very often and I'd like to do more, is the number one,
+
+00:17:10.860 --> 00:17:11.480
+Python.
+
+00:17:11.480 --> 00:17:11.640
+Python.
+
+00:17:11.640 --> 00:17:12.840
+Number two, JavaScript.
+
+00:17:12.840 --> 00:17:13.700
+Number three, go.
+
+00:17:13.700 --> 00:17:14.680
+Go figure.
+
+00:17:14.680 --> 00:17:14.960
+Nice.
+
+00:17:14.960 --> 00:17:15.240
+Yeah?
+
+00:17:15.240 --> 00:17:16.180
+Most dreaded?
+
+00:17:16.180 --> 00:17:18.580
+VBA and Objective-C.
+
+00:17:18.580 --> 00:17:21.140
+Does that surprise you?
+
+00:17:21.140 --> 00:17:24.960
+Well, in Perl's number three is still interesting.
+
+00:17:24.960 --> 00:17:26.260
+It still brings dread.
+
+00:17:26.260 --> 00:17:27.160
+So that's the languages.
+
+00:17:27.160 --> 00:17:32.600
+And then the databases, most loved, Redis, Postgres, Elasticsearch.
+
+00:17:32.600 --> 00:17:34.860
+Again, Elasticsearch is like CSS a little bit to me.
+
+00:17:34.860 --> 00:17:35.640
+Is that really a database?
+
+00:17:35.640 --> 00:17:36.000
+Anyway.
+
+00:17:36.600 --> 00:17:37.160
+And MongoDB.
+
+00:17:37.160 --> 00:17:39.720
+So those are all quite high.
+
+00:17:39.720 --> 00:17:44.460
+Most wanted database is MongoDB and Postgres are neck and neck at the top.
+
+00:17:44.460 --> 00:17:44.840
 Okay.
 
+00:17:44.840 --> 00:17:46.360
+And you still do both.
 
-00:32:18.400 --> 00:32:22.240
-So there's a woman developer and a guy developer just kind of staring at each
+00:17:46.360 --> 00:17:47.780
+You do a lot of Mongo, right?
 
+00:17:47.780 --> 00:17:48.060
+Oh yeah.
 
-00:32:22.240 --> 00:32:27.440
-other and it says, when we decide to create a new microservice, we just need
+00:17:48.060 --> 00:17:48.640
+I love Mongo.
 
+00:17:48.640 --> 00:17:49.580
+I think it's sweet.
 
-00:32:27.440 --> 00:32:31.440
-30 seconds to get a blank microservice running in that Kubernetes cluster.
+00:17:49.580 --> 00:17:49.780
+Okay.
 
+00:17:49.880 --> 00:17:51.780
+So clean and easy to work with.
 
-00:32:31.440 --> 00:32:32.520
+00:17:51.780 --> 00:17:55.100
+It's been years since I've had to do a database migration and production.
+
+00:17:55.100 --> 00:17:55.720
+I love it.
+
+00:17:55.720 --> 00:17:59.540
+As in, like, I changed my schema and now the app won't run unless I apply this script.
+
+00:17:59.540 --> 00:17:59.800
+Yeah.
+
+00:17:59.880 --> 00:18:00.060
+Yeah.
+
+00:18:00.060 --> 00:18:04.500
+So anyway, rounded out, most dreaded database, IBM DB2.
+
+00:18:04.500 --> 00:18:06.640
+Doesn't surprise at all.
+
+00:18:06.640 --> 00:18:08.340
+Anyway, that's the survey.
+
+00:18:08.340 --> 00:18:11.660
+I just want to give a shout out or like a call to the community.
+
+00:18:11.660 --> 00:18:18.480
+If you have any influence on this, find a way to separate things that are unequal, right?
+
+00:18:18.480 --> 00:18:22.320
+Don't put just I do some JavaScript from I do some C++.
+
+00:18:22.320 --> 00:18:23.560
+Those are not equivalent.
+
+00:18:23.960 --> 00:18:28.860
+Or I do some jQuery and Angular and I do Django.
+
+00:18:28.860 --> 00:18:31.040
+Those are just not even in the same category.
+
+00:18:31.040 --> 00:18:33.660
+And it really drives me crazy that they're put this way.
+
+00:18:33.660 --> 00:18:37.260
+And it just makes me appreciate the Python Software Foundation survey more because it had
+
+00:18:37.260 --> 00:18:38.460
+less of this weirdness.
+
+00:18:38.460 --> 00:18:38.800
+Yeah.
+
+00:18:38.800 --> 00:18:39.360
+Yeah.
+
+00:18:39.360 --> 00:18:41.960
+There's some weird things that get bucketed together.
+
+00:18:41.960 --> 00:18:42.580
+Yeah.
+
+00:18:42.580 --> 00:18:43.060
+Interesting.
+
+00:18:43.060 --> 00:18:46.320
+I would say the PSF one is more regular, wouldn't you say?
+
+00:18:46.320 --> 00:18:47.060
+More regular.
+
+00:18:47.060 --> 00:18:47.680
+Oh yeah.
+
+00:18:47.680 --> 00:18:48.980
+Nice transition.
+
+00:18:48.980 --> 00:18:49.700
+Thank you.
+
+00:18:49.700 --> 00:18:52.900
+But before we move on, there was another.
+
+00:18:53.500 --> 00:18:55.220
+Nobody else will care about this but me.
+
+00:18:55.220 --> 00:18:58.500
+But what was the other survey that is closing in a couple days?
+
+00:18:58.500 --> 00:18:59.620
+The PSF survey.
+
+00:18:59.620 --> 00:19:02.640
+The one at python.org, I believe.
+
+00:19:02.640 --> 00:19:03.380
+Let's see.
+
+00:19:03.380 --> 00:19:03.920
+Is it still up there?
+
+00:19:03.920 --> 00:19:03.960
+Okay.
+
+00:19:03.960 --> 00:19:05.740
+I don't know where it went.
+
+00:19:05.740 --> 00:19:06.100
+But yeah.
+
+00:19:06.100 --> 00:19:06.360
+Yeah.
+
+00:19:06.360 --> 00:19:07.720
+It's right there in the middle.
+
+00:19:07.720 --> 00:19:11.460
+Can I mail in my ballot and get it as long as it's postmarked in time?
+
+00:19:11.460 --> 00:19:14.900
+Well, if you postmark it at the right time, yeah.
+
+00:19:14.900 --> 00:19:16.420
+Sorry.
+
+00:19:16.420 --> 00:19:17.320
+Couldn't resist.
+
+00:19:17.320 --> 00:19:18.700
+So, regular expressions.
+
+00:19:18.700 --> 00:19:24.500
+So, I'm sure we've talked about regular expressions before, but they occasionally crop up in my work.
+
+00:19:24.500 --> 00:19:25.520
+I always forget them.
+
+00:19:25.520 --> 00:19:27.780
+I learn them and then I forget them.
+
+00:19:27.780 --> 00:19:28.980
+I have to learn them all over again.
+
+00:19:28.980 --> 00:19:29.900
+So, this is going to be helpful.
+
+00:19:30.180 --> 00:19:30.340
+Yeah.
+
+00:19:30.340 --> 00:19:34.500
+So, Amit Chaudhary, I think, wrote a visual guide to regular expressions.
+
+00:19:34.500 --> 00:19:36.940
+And this came out recently.
+
+00:19:36.940 --> 00:19:42.340
+And this is kind of a very nice, gentle introduction to regular expressions by building up.
+
+00:19:42.340 --> 00:19:46.420
+And I think it helps you build up a correct mental model of how they work.
+
+00:19:46.680 --> 00:19:54.180
+He utilizes visual highlighting as if he kind of went through it with a highlighter pen and highlighted the different things that could be matched.
+
+00:19:54.180 --> 00:19:56.520
+So, it goes through a whole bunch of stuff.
+
+00:19:56.520 --> 00:19:58.360
+It starts with just a specific character.
+
+00:19:58.360 --> 00:20:05.760
+So, like, if you have a string and you're matching, like, the character A or something like that, what would it hit?
+
+00:20:05.760 --> 00:20:10.000
+And then moves on to white space and digits and word characters.
+
+00:20:10.220 --> 00:20:16.580
+And a lot of these gentle introduction type things go through some of the basics and then sort of stop there.
+
+00:20:16.580 --> 00:20:23.460
+And what I really love about this is he talks about some of the more advanced things like pattern negations.
+
+00:20:23.460 --> 00:20:26.140
+So, like, and why they're weird.
+
+00:20:26.140 --> 00:20:28.760
+Like, slash lowercase d is digits.
+
+00:20:28.760 --> 00:20:31.840
+Slash uppercase d is everything that's not a digit.
+
+00:20:31.840 --> 00:20:34.400
+And some of these exclusions.
+
+00:20:34.400 --> 00:20:37.700
+Talking about anchors, like, beginning and the end of the line.
+
+00:20:37.700 --> 00:20:39.640
+Character sets with brackets.
+
+00:20:39.980 --> 00:20:42.780
+And then ranges with a dash within the ranges.
+
+00:20:42.780 --> 00:20:44.580
+You're talking about repetition.
+
+00:20:44.580 --> 00:20:48.300
+And this is kind of something that threw me off when I first learned about them.
+
+00:20:48.300 --> 00:20:49.900
+Using curly brackets.
+
+00:20:49.900 --> 00:20:54.840
+I was used to using star for zero or more items and plus for one or more item.
+
+00:20:54.840 --> 00:20:55.540
+I think.
+
+00:20:55.540 --> 00:20:56.740
+Or maybe it's the other way around.
+
+00:20:56.740 --> 00:20:57.560
+Yeah, that's right.
+
+00:20:57.560 --> 00:20:58.680
+Yeah, that's right.
+
+00:20:58.680 --> 00:21:01.200
+And then, but you can use a question mark for it.
+
+00:21:01.200 --> 00:21:04.140
+Only can be one, but it can be there or it doesn't have to be.
+
+00:21:04.320 --> 00:21:11.200
+And then the, if it has to be a certain number of times, you can use curly brackets for saying it needs to be two of these or something like that.
+
+00:21:11.200 --> 00:21:15.300
+And then it goes on and says, okay, well, now you've learned all this stuff.
+
+00:21:15.300 --> 00:21:17.540
+How do you put it in place with Python?
+
+00:21:17.760 --> 00:21:23.360
+And with Python, you use the, one of the ways is the RE module for regular expressions.
+
+00:21:23.360 --> 00:21:29.140
+So it goes through a quick example of using find all, match and match group and search.
+
+00:21:29.520 --> 00:21:34.660
+So if you're a Python developer and you have to deal with some regular expressions, I think there's definitely something to check out.
+
+00:21:34.660 --> 00:21:35.980
+Yeah, it's really nice.
+
+00:21:35.980 --> 00:21:38.420
+And it's a very gentle introduction.
+
+00:21:38.420 --> 00:21:41.440
+So people can just go through and the coloring and stuff.
+
+00:21:41.440 --> 00:21:42.040
+Yeah.
+
+00:21:42.040 --> 00:21:49.840
+Because normally a lot of these presentations of regular expressions, man, it's like write only.
+
+00:21:49.840 --> 00:21:51.800
+You know, you look at it like, whoa, that is a mess.
+
+00:21:51.800 --> 00:21:53.360
+And then, you know, then it's gone.
+
+00:21:53.360 --> 00:21:56.700
+Like you could write it, but you could go back and read it again type of thing.
+
+00:21:56.700 --> 00:21:57.680
+Yeah.
+
+00:21:58.020 --> 00:21:58.380
+Yeah.
+
+00:21:58.380 --> 00:21:59.380
+Yeah.
+
+00:21:59.380 --> 00:22:00.000
+So this is nice.
+
+00:22:00.000 --> 00:22:00.440
+This is good.
+
+00:22:00.440 --> 00:22:00.980
+Yeah.
+
+00:22:00.980 --> 00:22:01.260
+Cool.
+
+00:22:01.260 --> 00:22:01.800
+Nice one.
+
+00:22:01.800 --> 00:22:02.020
+Yeah.
+
+00:22:02.020 --> 00:22:03.760
+I can't take credit for that one though.
+
+00:22:03.760 --> 00:22:05.180
+Somebody else wrote it.
+
+00:22:05.180 --> 00:22:06.840
+You probably shouldn't take credit for it.
+
+00:22:06.840 --> 00:22:07.640
+Right.
+
+00:22:07.640 --> 00:22:08.580
+Did you, did you create it?
+
+00:22:08.580 --> 00:22:09.880
+I mean, like you probably shouldn't.
+
+00:22:09.880 --> 00:22:10.920
+No, I just brought it up.
+
+00:22:10.920 --> 00:22:16.700
+So I don't really know the whole story with this next one, but it's, I entitled it taking credit.
+
+00:22:16.700 --> 00:22:21.540
+And this was based on a GitHub project and a tweet by Tim Nolet.
+
+00:22:21.540 --> 00:22:23.880
+Tim Nolet, I'm not entirely sure how to say his name.
+
+00:22:23.880 --> 00:22:25.000
+Hopefully one of those works.
+
+00:22:26.080 --> 00:22:32.720
+And he created this project, which is called, let me check it out, Headless Recorder over
+
+00:22:32.720 --> 00:22:33.780
+at Playwright, I believe.
+
+00:22:33.780 --> 00:22:34.780
+Let's see.
+
+00:22:34.780 --> 00:22:37.400
+It is, yeah, it's called Headless Recorder.
+
+00:22:37.400 --> 00:22:43.800
+And so what it does is it allows, it's a Chrome extension that allows you to create scripts that
+
+00:22:43.800 --> 00:22:47.620
+interact with either Puppeteer or Playwright that do just like web automation.
+
+00:22:48.080 --> 00:22:54.080
+You know, a little bit like non-programmatic solenium or those types of things, right?
+
+00:22:54.080 --> 00:22:54.360
+Yeah.
+
+00:22:54.360 --> 00:22:54.660
+Fine.
+
+00:22:54.660 --> 00:22:55.180
+That's all cool.
+
+00:22:55.180 --> 00:22:57.120
+So there's a bunch of JavaScript that you write in there.
+
+00:22:57.120 --> 00:22:58.100
+That's pretty interesting.
+
+00:22:58.100 --> 00:23:02.860
+And the tweet says, I'll just read the tweet and then we'll go from there.
+
+00:23:02.860 --> 00:23:05.760
+It says, oh, AWS Cloud, I really do love you.
+
+00:23:05.760 --> 00:23:10.100
+But next time you fork my open source project and present it as your new service, please
+
+00:23:10.100 --> 00:23:13.240
+give the maintainers a short, nice, good job, kids, or something.
+
+00:23:13.240 --> 00:23:17.940
+I mean, it doesn't necessarily have to follow the APL version 2 license and stuff, but at
+
+00:23:17.940 --> 00:23:19.220
+least a little credit would be great.
+
+00:23:19.220 --> 00:23:19.920
+Wow.
+
+00:23:19.920 --> 00:23:26.420
+So there's also a linked announcement about this thing called AWS CloudWatch Synthetics
+
+00:23:26.420 --> 00:23:32.740
+launches a recorder to generate user flow scripts for Canaries, which is, you look at the syntax
+
+00:23:32.740 --> 00:23:38.760
+in the examples, it does now say credits based on headless recorder at the bottom, but I'm
+
+00:23:38.760 --> 00:23:40.840
+pretty certain that it didn't say that in the beginning.
+
+00:23:40.840 --> 00:23:45.880
+I mean, I don't have like a diff of the webpage, but it would not be surprising.
+
+00:23:45.880 --> 00:23:48.740
+I wouldn't think he would put that up there if at the bottom it said that.
+
+00:23:48.740 --> 00:23:49.660
+So now it does.
+
+00:23:50.620 --> 00:23:54.300
+Anyway, this is not relevant to this project really at all.
+
+00:23:54.300 --> 00:23:59.220
+It's more just a conversation about what do you do when big companies adopt your open source
+
+00:23:59.220 --> 00:24:01.380
+project, but don't give you credit.
+
+00:24:01.380 --> 00:24:02.380
+I think that's lame.
+
+00:24:02.380 --> 00:24:04.620
+Well, I think it should be even more than that.
+
+00:24:04.620 --> 00:24:10.500
+I mean, I think anybody that personally, if somebody else, if I had like, let's say I've
+
+00:24:10.500 --> 00:24:13.340
+got a couple of small projects that I don't really do much with.
+
+00:24:13.340 --> 00:24:18.020
+And if somebody else took that and forked it and then like did something big with it and
+
+00:24:18.020 --> 00:24:21.660
+started making a startup or some money with it, fine.
+
+00:24:21.660 --> 00:24:22.220
+Good for them.
+
+00:24:22.220 --> 00:24:25.060
+But if it's a big company like Amazon.
+
+00:24:25.060 --> 00:24:29.380
+It's a Google, Microsoft, Apple, AWS sort of thing.
+
+00:24:29.380 --> 00:24:29.900
+Anytime.
+
+00:24:29.900 --> 00:24:31.500
+I think credit is due.
+
+00:24:31.780 --> 00:24:35.100
+If you're not the one that came up with it, if you just forked it, ran with it, I think
+
+00:24:35.100 --> 00:24:36.700
+giving some, and that's typical.
+
+00:24:36.700 --> 00:24:40.400
+I mean, we often give credit to say, hey, I ran with it.
+
+00:24:40.400 --> 00:24:42.680
+It started here, but I did a whole bunch.
+
+00:24:42.680 --> 00:24:43.260
+That's fine.
+
+00:24:43.260 --> 00:24:46.580
+But a big company, I think they should both give credit.
+
+00:24:46.640 --> 00:24:50.480
+And I think some cash should go to the original idea starter.
+
+00:24:50.940 --> 00:24:51.420
+Yeah.
+
+00:24:51.420 --> 00:24:52.360
+Yeah.
+
+00:24:52.360 --> 00:24:53.000
+I hear you.
+
+00:24:53.000 --> 00:24:57.080
+If it's not cash, which, you know, that might be a hard sell.
+
+00:24:57.080 --> 00:25:02.080
+How about as we maintain this project, we sort of forked from your stuff.
+
+00:25:02.080 --> 00:25:04.260
+We'll push changes back to make yours better.
+
+00:25:04.260 --> 00:25:05.200
+Right.
+
+00:25:05.200 --> 00:25:10.440
+At least some sort of, hey, we've based this on your thing, but by doing so, we're going
+
+00:25:10.440 --> 00:25:15.160
+to make that thing better because we've made a commitment to at least, you know, do
+
+00:25:15.160 --> 00:25:17.720
+a little bit of give back PRs, improvements.
+
+00:25:17.720 --> 00:25:18.060
+Right.
+
+00:25:18.060 --> 00:25:25.300
+And also, I don't know, like, I don't know this guy, but at the AWS reInvent conference,
+
+00:25:25.300 --> 00:25:28.840
+when they announced this, if they said, hey, this is based on this cool project by Tim,
+
+00:25:28.840 --> 00:25:32.380
+you know, that would raise his profile and I'm sure he would really appreciate it.
+
+00:25:32.380 --> 00:25:34.580
+Personally, a lot of my stuff's under MIT.
+
+00:25:34.580 --> 00:25:38.180
+And so people don't have to mention me, do anything, say anything, whatever.
+
+00:25:38.180 --> 00:25:42.860
+A few things are not, but it's, you know, a lot of it's just example code and people
+
+00:25:42.860 --> 00:25:45.300
+are like, well, can I use this example in my commercial application?
+
+00:25:45.300 --> 00:25:49.360
+I'm like, yes, I really don't care if you like recreate my random sample in your project.
+
+00:25:49.360 --> 00:25:49.900
+That's fine.
+
+00:25:49.900 --> 00:25:50.100
+Right.
+
+00:25:50.100 --> 00:25:54.140
+I don't want anybody to have those feelings, but if I was building something useful, I'd
+
+00:25:54.140 --> 00:25:56.620
+at least want, you know, a shout out.
+
+00:25:56.620 --> 00:25:58.300
+I guess that's all he's asking for as well.
+
+00:25:58.300 --> 00:25:58.580
+Yeah.
+
+00:25:58.580 --> 00:25:58.920
+Anyway.
+
+00:25:58.920 --> 00:26:00.040
+And they did it.
+
+00:26:00.040 --> 00:26:00.640
+So that's good.
+
+00:26:00.640 --> 00:26:01.780
+They did come around and do it.
+
+00:26:01.780 --> 00:26:02.440
+Yeah, they did.
+
+00:26:02.440 --> 00:26:06.280
+I'm pretty sure that was not the beginning situation, but now it is.
+
+00:26:06.280 --> 00:26:08.100
+And so that's quite good.
+
+00:26:08.900 --> 00:26:12.360
+And just given the amount of people who are in the Python space, who listen to the
+
+00:26:12.360 --> 00:26:13.420
+podcast, they do open source.
+
+00:26:13.420 --> 00:26:16.440
+I thought this story would be interesting, even though it's technically JavaScript.
+
+00:26:16.440 --> 00:26:16.900
+Yeah.
+
+00:26:16.900 --> 00:26:17.200
+Yeah.
+
+00:26:17.200 --> 00:26:20.640
+I bet you could even write that JavaScript on a Raspberry Pi, Brian.
+
+00:26:20.640 --> 00:26:22.160
+Maybe.
+
+00:26:22.160 --> 00:26:26.060
+So I was just curious, what was the first computer you programmed on?
+
+00:26:26.120 --> 00:26:32.660
+So the first computer that I programmed on was one of those Apple IIEs that was beige and
+
+00:26:32.660 --> 00:26:34.400
+had a green screen, I believe.
+
+00:26:34.400 --> 00:26:34.800
+Okay.
+
+00:26:34.800 --> 00:26:36.020
+You started on a IIE as well.
+
+00:26:36.020 --> 00:26:36.360
+Yeah.
+
+00:26:36.360 --> 00:26:43.140
+But that was like in middle school or now, maybe even elementary school where it was just,
+
+00:26:43.140 --> 00:26:44.220
+you know, something that I went for class.
+
+00:26:44.300 --> 00:26:49.980
+The very first thing that I actually got to sort of sit down and program on, my brother
+
+00:26:49.980 --> 00:26:53.840
+had a Commodore 64, but I didn't really use it for anything constructive.
+
+00:26:53.840 --> 00:26:55.020
+I would say a 286.
+
+00:26:55.020 --> 00:26:56.260
+IBM 286.
+
+00:26:56.260 --> 00:26:56.580
+Okay.
+
+00:26:57.100 --> 00:27:05.320
+I programmed to Apple IIE at school, but it wasn't confusing enough to me that I didn't
+
+00:27:05.320 --> 00:27:07.120
+run with it right away.
+
+00:27:07.120 --> 00:27:09.040
+I kind of dropped programming after that.
+
+00:27:09.040 --> 00:27:14.700
+But anyway, I bring this up because there's a new computer out and it reminded me of this
+
+00:27:14.700 --> 00:27:17.180
+about those early computers.
+
+00:27:17.180 --> 00:27:20.180
+So, or the Commodore 64 is kind of the same category.
+
+00:27:20.180 --> 00:27:22.100
+So the Apple IIE was kind of like-
+
+00:27:22.100 --> 00:27:22.440
+This is cool.
+
+00:27:22.840 --> 00:27:25.040
+It was, yeah, it was a higher end.
+
+00:27:25.040 --> 00:27:30.840
+I had to, or Commodore 64 was a little bit lower than a IIE, I guess, I would think.
+
+00:27:30.840 --> 00:27:34.280
+And then below that is the TRS-80 from Radio Shack.
+
+00:27:34.280 --> 00:27:35.000
+That's what I had.
+
+00:27:35.000 --> 00:27:42.540
+I had my, but anyway, so the, the Raspberry Pi 400 is out now or it's announced and it's
+
+00:27:42.540 --> 00:27:44.160
+going to be out by the holidays, apparently.
+
+00:27:44.160 --> 00:27:45.800
+It's really cool.
+
+00:27:45.800 --> 00:27:50.720
+It's like, it kind of reminds me of these Apple IIEs because it's the, it's the computer
+
+00:27:50.720 --> 00:27:51.460
+in the keyboard.
+
+00:27:51.720 --> 00:27:57.660
+So the, the keyboard is the computer and you can even hook up two large monitors to it
+
+00:27:57.660 --> 00:28:01.440
+because it does, it supports two displays, 4K video.
+
+00:28:01.440 --> 00:28:04.460
+It'll do a two 4K monitors out of your keyboard.
+
+00:28:04.460 --> 00:28:04.960
+Yeah.
+
+00:28:04.960 --> 00:28:06.620
+And that's cool.
+
+00:28:06.620 --> 00:28:08.780
+This one's got four gigabytes of RAM.
+
+00:28:08.780 --> 00:28:11.260
+You both do wifi and LANs.
+
+00:28:11.260 --> 00:28:13.500
+It has a hard landline entry point, which is good.
+
+00:28:13.500 --> 00:28:15.740
+Four core 64 bit processor.
+
+00:28:15.740 --> 00:28:17.100
+It just looks fun.
+
+00:28:17.480 --> 00:28:19.860
+They're telling it as a whole kit for like a hundred bucks.
+
+00:28:19.860 --> 00:28:22.360
+So you get a, like you can start somebody up on a computer.
+
+00:28:22.360 --> 00:28:28.200
+Um, I'm covering this cause I'm, I was thinking, geez, do I want to get this for my kid or do
+
+00:28:28.200 --> 00:28:29.120
+I want to get it for me?
+
+00:28:29.120 --> 00:28:30.420
+Yeah, exactly.
+
+00:28:30.720 --> 00:28:34.600
+And it comes with a beginner's guide and shows you how to get started and even includes getting
+
+00:28:34.600 --> 00:28:37.340
+people a little bit started on Python and apparently.
+
+00:28:37.340 --> 00:28:38.300
+So that's good.
+
+00:28:38.300 --> 00:28:38.580
+Yeah.
+
+00:28:38.580 --> 00:28:40.120
+It seems super neat.
+
+00:28:40.220 --> 00:28:42.980
+And the processor is pretty good actually.
+
+00:28:42.980 --> 00:28:44.600
+Four core, four gigs of RAM.
+
+00:28:44.600 --> 00:28:50.600
+And it looks like just one of these little, you know, wifi, USB, like over the little RF
+
+00:28:50.600 --> 00:28:54.440
+or radio frequency dongle thing keyboards that you would get.
+
+00:28:54.440 --> 00:28:57.480
+But that's the whole computer on the back of the keyboard.
+
+00:28:57.480 --> 00:28:59.300
+It's got the HDMI ports.
+
+00:28:59.300 --> 00:29:01.680
+It's got the other ports, the power, everything.
+
+00:29:01.680 --> 00:29:02.080
+Yeah.
+
+00:29:02.340 --> 00:29:06.060
+So you got to get your own monitor, of course, but plug it in and you can get started.
+
+00:29:06.060 --> 00:29:11.680
+And there's videos on the, on the Raspberry Pi site that are amazing watching this thing
+
+00:29:11.680 --> 00:29:11.900
+go.
+
+00:29:11.900 --> 00:29:16.840
+It's, it's powering two big monitors and it's just feels, it looks like it's as zippy as
+
+00:29:16.840 --> 00:29:17.620
+a normal computer.
+
+00:29:17.620 --> 00:29:22.400
+So I think it'd be cool for educational use and lots of uses.
+
+00:29:22.400 --> 00:29:24.700
+So it's pretty nice.
+
+00:29:24.700 --> 00:29:26.200
+Even for just a travel computer.
+
+00:29:26.200 --> 00:29:27.380
+A travel computer.
+
+00:29:27.380 --> 00:29:27.680
+Yeah.
+
+00:29:27.680 --> 00:29:28.000
+Right.
+
+00:29:28.000 --> 00:29:30.080
+Imagine when, remember when people left their house.
+
+00:29:30.080 --> 00:29:31.960
+So imagine it were like that again.
+
+00:29:31.960 --> 00:29:33.400
+And then you could go places.
+
+00:29:33.400 --> 00:29:37.040
+But if you were just going on a trip and you're like, ah, maybe I'll just like need a computer.
+
+00:29:37.040 --> 00:29:37.740
+I want to plug in.
+
+00:29:37.740 --> 00:29:43.620
+You know, bring a HDMI cord, plug it into the, the TV at the hotel, plug it into some sort
+
+00:29:43.620 --> 00:29:46.220
+of monitor at like some office you're dropping in on.
+
+00:29:46.220 --> 00:29:50.000
+You could just take that and have, you know, do presentations and stuff.
+
+00:29:50.000 --> 00:29:50.520
+It's cool.
+
+00:29:50.520 --> 00:29:51.140
+Yeah.
+
+00:29:51.140 --> 00:29:53.080
+Cause like that's true.
+
+00:29:53.080 --> 00:29:56.860
+Cause the HDMI output, it's a lot of TVs just take that now too.
+
+00:29:56.860 --> 00:29:57.440
+So yeah, exactly.
+
+00:29:57.440 --> 00:30:00.200
+Just bring a little short HDMI cable with you if you need to.
+
+00:30:00.200 --> 00:30:00.780
+And then you're good.
+
+00:30:00.780 --> 00:30:05.380
+I'm including a linking to a video from Lee Moore Freed from Aja Fruit in there.
+
+00:30:05.380 --> 00:30:07.720
+She says that it reminds her of the Apple 2E as well.
+
+00:30:07.720 --> 00:30:08.120
+Nice.
+
+00:30:08.120 --> 00:30:08.880
+I'll check that out.
+
+00:30:08.880 --> 00:30:09.500
+Super cool.
+
+00:30:09.500 --> 00:30:11.260
+So that's our main items.
+
+00:30:11.260 --> 00:30:12.660
+That's quite an adventure.
+
+00:30:12.660 --> 00:30:16.420
+Brian, you got any other, other things you want to just throw out there real quick?
+
+00:30:16.420 --> 00:30:17.820
+Once quick thing.
+
+00:30:17.820 --> 00:30:18.540
+I got reminded.
+
+00:30:18.540 --> 00:30:24.560
+I ran across this a while ago and I, somebody reminded me of it on Twitter recently is a
+
+00:30:24.560 --> 00:30:25.140
+Vim adventures.
+
+00:30:25.380 --> 00:30:27.740
+It's Vim dash adventures.com.
+
+00:30:27.740 --> 00:30:34.000
+Remember the dash, but it's a kind of like this adventure game, like these old going through
+
+00:30:34.000 --> 00:30:36.580
+a dungeon sort of thing and picking up treasure and things like that.
+
+00:30:36.960 --> 00:30:42.560
+And you just is to help you practice your Vim key bindings while playing an adventure game.
+
+00:30:42.560 --> 00:30:46.580
+So if you're having trouble getting learning Vim, maybe try this.
+
+00:30:46.580 --> 00:30:46.860
+Yeah.
+
+00:30:46.860 --> 00:30:47.920
+That looks quite cool.
+
+00:30:47.920 --> 00:30:50.200
+Actually, it's a neat little adventure game.
+
+00:30:50.980 --> 00:30:55.940
+Now, I just want to throw out something I got from Tyler Pedersen just a little bit ago.
+
+00:30:55.940 --> 00:31:01.280
+And this kind of comes back to the language talk around Stack Overflow that I mentioned.
+
+00:31:01.280 --> 00:31:07.400
+And this is an update for the TOBE index, T-I-O-B-E index for November 2020.
+
+00:31:08.760 --> 00:31:18.160
+And my feeling and my theory is that things like Stack Overflow and whatnot, those places
+
+00:31:18.160 --> 00:31:25.200
+are often measuring like the pulse of the industry right now, whereas TOBE seems to have a little
+
+00:31:25.200 --> 00:31:29.860
+bit of a latency, like how many legacy apps of this style are you working on and this technology
+
+00:31:29.860 --> 00:31:30.500
+and whatnot, right?
+
+00:31:30.500 --> 00:31:34.220
+So it's a little bit of a longer term moving average.
+
+00:31:34.220 --> 00:31:38.940
+Well, anyway, the headline is November headline, Python is unstoppable and surpasses Java.
+
+00:31:38.940 --> 00:31:44.760
+For the first time since the start of the TOBE index, nearly 20 years, Java and C don't make up
+
+00:31:44.760 --> 00:31:45.700
+the top two positions.
+
+00:31:45.700 --> 00:31:46.200
+Okay.
+
+00:31:46.200 --> 00:31:47.180
+In 20 years.
+
+00:31:47.180 --> 00:31:47.680
+Wow.
+
+00:31:47.680 --> 00:31:50.700
+So Python's not a top, but it's right below C.
+
+00:31:50.700 --> 00:31:51.540
+It's right below C.
+
+00:31:51.540 --> 00:31:54.680
+And it's, you know, it's been a long time coming, right?
+
+00:31:54.680 --> 00:31:57.240
+So anyway, I think this is pretty neat.
+
+00:31:57.240 --> 00:31:59.380
+And Tyler, thanks for sending that along.
+
+00:31:59.380 --> 00:32:00.200
+People can check it out.
+
+00:32:00.200 --> 00:32:00.580
+Yeah.
+
+00:32:00.580 --> 00:32:01.280
+Cool.
+
+00:32:01.280 --> 00:32:01.960
+Ain't no joke.
+
+00:32:01.960 --> 00:32:03.780
+But how about a joke?
+
+00:32:03.880 --> 00:32:04.720
+A joke would be great.
+
+00:32:04.720 --> 00:32:04.960
+All right.
+
+00:32:04.960 --> 00:32:07.740
+So we've got a cartoon, but this one is super simple.
+
+00:32:07.740 --> 00:32:09.820
+And I think just the words will do it.
+
+00:32:09.820 --> 00:32:13.500
+So this is from Geek and Poke, which has some fun things.
+
+00:32:13.500 --> 00:32:16.440
+And the title is, You Build It, You Run It.
+
+00:32:16.440 --> 00:32:17.980
+It's all about microservices.
+
+00:32:17.980 --> 00:32:18.300
+Okay.
+
+00:32:18.300 --> 00:32:18.780
+Okay.
+
+00:32:18.780 --> 00:32:22.560
+So there's a woman developer and a guy developer just kind of staring at each other.
+
+00:32:22.560 --> 00:32:28.620
+And it says, when we decide to create a new microservice, we just need 30 seconds to
+
+00:32:28.620 --> 00:32:31.360
+get a blank microservice running in that Kubernetes cluster.
+
+00:32:31.360 --> 00:32:32.420
 So amazing.
 
+00:32:33.540 --> 00:32:35.900
+They kind of stare at each other for blankly for a minute.
 
-00:32:32.520 --> 00:32:35.920
-And they kind of stared each other for blankly for a minute.
+00:32:35.900 --> 00:32:38.120
+Then the woman says, and what?
 
+00:32:38.120 --> 00:32:41.960
+You just need another week to come up for with a funny name for it.
 
-00:32:35.920 --> 00:32:39.400
-Then the woman says, and what you just need a, another,
+00:32:41.960 --> 00:32:42.860
+Two weeks.
 
+00:32:42.860 --> 00:32:44.380
+Two weeks, says the guy.
 
-00:32:39.400 --> 00:32:44.200
-week to come up for with a funny name for it two weeks two weeks as the guy
+00:32:44.380 --> 00:32:47.640
+Yeah.
 
+00:32:47.640 --> 00:32:47.960
+Yeah.
 
-00:32:44.200 --> 00:32:53.340
-Yeah, yeah anyway, I thought people were running funky named microservices would definitely appreciate that one
+00:32:47.960 --> 00:32:53.020
+Anyway, I thought people running a funky name to microservices would definitely appreciate
 
+00:32:53.020 --> 00:32:53.460
+that one.
 
-00:32:53.340 --> 00:32:56.400
-Yeah, name is the hardest thing in programming. That's right. It sure is
+00:32:53.460 --> 00:32:53.760
+Yeah.
 
+00:32:53.760 --> 00:32:55.420
+Name is the hardest thing in programming.
 
-00:32:56.400 --> 00:33:01.400
-All right, but not this podcast. That was a lot of fun. Thanks for being here. It was yeah. Thank you
+00:32:55.420 --> 00:32:56.020
+That's right.
 
+00:32:56.020 --> 00:32:56.640
+It sure is.
 
-00:33:01.400 --> 00:33:07.200
-Yeah, you bet. Bye. Bye. Thank you for listening to Python bites follow the show on Twitter via at Python bites
+00:32:56.640 --> 00:32:57.660
+All right.
 
+00:32:57.660 --> 00:32:58.400
+But not this podcast.
 
-00:33:07.200 --> 00:33:13.400
-That's Python bytes as in B Y T E S and get the full show notes at Python bytes dot FM
+00:32:58.400 --> 00:32:59.040
+That was a lot of fun.
 
+00:32:59.040 --> 00:32:59.900
+Thanks for being here.
 
-00:33:13.400 --> 00:33:17.420
-If you have a news item you want featured just visit Python bytes dot FM and send it our way
+00:32:59.900 --> 00:33:00.320
+It was.
 
+00:33:00.320 --> 00:33:01.140
+Yeah.
 
-00:33:17.420 --> 00:33:23.520
-We're always on the lookout for sharing something cool on behalf of myself and Brian Okken. This is Michael Kennedy
+00:33:01.140 --> 00:33:01.560
+Thank you.
 
+00:33:01.560 --> 00:33:02.040
+You bet.
 
-00:33:23.520 --> 00:33:26.920
-Thank you for listening and sharing this podcast with your friends and colleagues
+00:33:02.040 --> 00:33:02.440
+Bye.
+
+00:33:02.440 --> 00:33:02.800
+Bye.
+
+00:33:02.800 --> 00:33:04.860
+Thank you for listening to Python Bytes.
+
+00:33:04.860 --> 00:33:07.380
+Follow the show on Twitter via at Python Bytes.
+
+00:33:07.380 --> 00:33:10.240
+That's Python Bytes as in B-Y-T-E-S.
+
+00:33:10.240 --> 00:33:13.480
+And get the full show notes at pythonbytes.fm.
+
+00:33:13.480 --> 00:33:17.680
+If you have a news item you want featured, just visit pythonbytes.fm and send it our way.
+
+00:33:17.680 --> 00:33:20.380
+We're always on the lookout for sharing something cool.
+
+00:33:20.380 --> 00:33:23.480
+On behalf of myself and Brian Okken, this is Michael Kennedy.
+
+00:33:23.800 --> 00:33:26.920
+Thank you for listening and sharing this podcast with your friends and colleagues.
 

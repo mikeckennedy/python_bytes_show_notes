@@ -1,0 +1,2441 @@
+WEBVTT
+
+00:00:00.001 --> 00:00:04.280
+Hello and welcome to Python Bytes, where we deliver Python news and headlines directly to
+
+00:00:04.280 --> 00:00:12.260
+your earbuds. This is episode 325, recorded February 28th, the last day of February in 2023.
+
+00:00:12.260 --> 00:00:17.320
+I am Brian Okken. And I'm Michael Kennedy. And before we jump in, I want to thank everybody
+
+00:00:17.320 --> 00:00:21.740
+that shows up for the live stream. If you haven't shown up for the live stream before,
+
+00:00:21.740 --> 00:00:25.860
+it's a lot of fun. People can stop and ask questions and chat and everything, and
+
+00:00:26.120 --> 00:00:32.560
+it's a good way to say hi. And we enjoy having you here or watch it afterwards if this is a bad
+
+00:00:32.560 --> 00:00:38.920
+time for you. Also want to thank Microsoft for Startup Founders Hub for sponsoring this episode.
+
+00:00:38.920 --> 00:00:44.920
+They've been an excellent sponsor of the show. And they've also agreed to have us be able to play with
+
+00:00:44.920 --> 00:00:49.880
+the sponsor spots and do some AI reading. So this one's going to be a fun one, this one. So I'm
+
+00:00:49.880 --> 00:00:54.920
+excited about it. I am too. It's going to be fun. So why don't you kick us off with our first
+
+00:00:54.920 --> 00:01:02.260
+topic today? All right. Let's jump right in. You like solid code. So how about some codesolid.com?
+
+00:01:02.260 --> 00:01:05.960
+Has nothing to do with solid code, but it's still interesting and it does have to do with code.
+
+00:01:05.960 --> 00:01:13.060
+This one is something called Parquet and Arrow. Have you heard of Apache Arrow or the Parquet file
+
+00:01:13.060 --> 00:01:17.640
+format, Brian? I don't. I've heard of Arrow, but I don't think I've heard of Parquet.
+
+00:01:17.640 --> 00:01:23.320
+So when people do a lot of data science, you'll see them do things like open up Jupyter Notebooks and
+
+00:01:23.320 --> 00:01:29.720
+import Pandas. And then from Pandas, they'll say load CSV. Well, if you could think of a whole bunch
+
+00:01:29.720 --> 00:01:35.060
+of different file formats and how fast and efficient they might be stored on disk in red, how do you
+
+00:01:35.060 --> 00:01:44.200
+think CSVs might turn out? Pretty slow, pretty large, and so on. And Arrow through PyArrow has some really
+
+00:01:44.200 --> 00:01:52.600
+interesting in-memory structures that are a little more efficient than Pandas, as well as it has access to this Parquet format.
+
+00:01:52.600 --> 00:02:01.940
+So does Pandas through an add-on, but you'll see that it's still faster using PyArrow. So basically, that's what this article that I found is about. It highlights how these things compare, and it basically asks the questions like, can we use Pandas data frames and Arrow tables together? Like if I have a Pandas data frame, but I want to then
+
+00:02:01.940 --> 00:02:23.940
+switch it into PyArrow for better performance at some point for some analysis, can I do that? Or if I start with PyArrow, could I then turn it into a data frame and hand it off to Seaborn or some other thing that expects a Pandas data frame?
+
+00:02:23.940 --> 00:02:49.540
+Answer is yes. Short version there. Are they better? In which ways are they better? Which way are they worse? And then the bulk of the analysis here is like, yeah, we could save our data, read and write our data from a bunch of different file formats. Parquet, but also things like Feather, Oryx, CSV, and others, even Excel. What should we maybe consider using?
+
+00:02:49.540 --> 00:03:17.080
+Okay. So installing it is just pip install. PyArrow, super easy, same type of story. If you want to use it with Pandas, so I've got some Pandas data frame, and then I want to then convert it over, that's super easy. So you can use, go to PyArrow, and you say PyArrow.table, say from Pandas, and give it a Pandas data frame, and then boom, you've got it in PyArrow format.
+
+00:03:17.400 --> 00:03:17.860
+Okay.
+
+00:03:17.860 --> 00:03:26.120
+One of the things that's interesting is with Pandas is a real nice wrangling, exploration style of data.
+
+00:03:26.120 --> 00:03:38.400
+So I can go and I can just show the data frame, and it'll tell me there are 14 columns, and this example, 6,433 rows, and it'll list off the headers and then the column data.
+
+00:03:38.400 --> 00:03:48.160
+If I do the same thing in PyArrow, I just get, it's kind of human readable. You just get like a dump of junk, basically. It's not real great.
+
+00:03:48.160 --> 00:03:52.800
+So that aspect, certainly using Pandas, is nice for this kind of exploration.
+
+00:03:53.020 --> 00:04:01.180
+Another thing about PyArrow is the data is immutable. So you can't say, oh, every time that this thing appears, actually replace it with this canonical version.
+
+00:04:01.180 --> 00:04:08.360
+You know, if you get like a Y, lowercase yes, and capital yes, you want to make them all just lowercase yes, or just the Y.
+
+00:04:08.580 --> 00:04:15.900
+Like, you got to make a copy instead of change it in place. So that's one of the reasons you might stick with Pandas, which is pretty interesting.
+
+00:04:16.100 --> 00:04:24.500
+But you can do a lot of really interesting parsing and performance stuff that you would do with, like you would do with Pandas.
+
+00:04:24.500 --> 00:04:32.280
+But if your goal is performance, and performance measured in different ways, how much memory does it take up in computer RAM?
+
+00:04:32.280 --> 00:04:37.940
+How much disk space type of memory does it take up? How fast is it to read and write from those?
+
+00:04:37.940 --> 00:04:41.760
+It's pretty much always better to go with PyArrow, you know?
+
+00:04:41.760 --> 00:04:50.920
+So for example, if I take those same sets of data, those two sets of data from, I think this is the New York City taxi data, some subset of that really common data set.
+
+00:04:50.920 --> 00:04:57.400
+It's like digit grouping. It's a little over three megs of memory for the data frame.
+
+00:04:57.400 --> 00:05:07.140
+And it's just under a hundred, sorry, three megs. Yeah, I don't know if I said three megs of data for Pandas, whereas it's just under one meg for PyArrow.
+
+00:05:07.140 --> 00:05:10.900
+So that's three times smaller, which is pretty interesting there. Yeah?
+
+00:05:10.900 --> 00:05:11.440
+Yeah.
+
+00:05:11.440 --> 00:05:24.380
+The other one is if you do like mathy things on it, like if you got a whole, you got tables of numbers, you're really likely to talk about things like the max or the mean or the average and so on.
+
+00:05:24.380 --> 00:05:34.520
+Now, if you do that to Pandas and you do it to PyArrow, you'll see it's about eight times faster to do math with PyArrow than it is to do it with Pandas.
+
+00:05:34.520 --> 00:05:35.540
+That's pretty cool, right?
+
+00:05:35.540 --> 00:05:36.240
+Yeah.
+
+00:05:36.660 --> 00:05:39.440
+The syntax is a little grosser, but yeah.
+
+00:05:39.440 --> 00:05:45.260
+The syntax is a little grosser. I will show you a way to get to this in a moment that is less gross, I believe.
+
+00:05:45.260 --> 00:05:45.760
+Okay.
+
+00:05:45.760 --> 00:05:46.300
+Okay.
+
+00:05:46.300 --> 00:05:53.420
+And then Alvaro out there does say, if you want fast data frames, polars plus parquet is the way to go.
+
+00:05:53.420 --> 00:05:54.000
+Okay.
+
+00:05:54.000 --> 00:05:58.460
+He's reading, skating to where the puck is going to be, indeed.
+
+00:05:58.940 --> 00:06:03.560
+And Kim says, presumably the immutability plays a large part in the performance.
+
+00:06:03.560 --> 00:06:04.880
+I suppose so.
+
+00:06:04.880 --> 00:06:05.320
+Yeah.
+
+00:06:06.040 --> 00:06:09.920
+And then also some feedback of real-time analytics here.
+
+00:06:09.920 --> 00:06:11.980
+Alvaro says, I got a broken script from a colleague.
+
+00:06:11.980 --> 00:06:15.500
+I rewrote it in Pandas and it took about two hours of process.
+
+00:06:15.500 --> 00:06:17.440
+In polars, it took three minutes.
+
+00:06:17.440 --> 00:06:21.960
+So that's a non-trivial sort of bonus there.
+
+00:06:21.960 --> 00:06:22.600
+All right.
+
+00:06:22.600 --> 00:06:27.640
+Let me go over the file formats and I'll just really quickly, I think we've talked about polars,
+
+00:06:27.640 --> 00:06:29.160
+but I'll just reintroduce it really quick.
+
+00:06:29.160 --> 00:06:34.440
+So if we go and look at the different file formats, we could use parquet.
+
+00:06:34.440 --> 00:06:38.700
+So we could say two parquet with pi arrow and you get it out.
+
+00:06:38.700 --> 00:06:41.320
+And these numbers are all kind of like insane.
+
+00:06:41.320 --> 00:06:44.380
+Four milliseconds versus reading it with two milliseconds.
+
+00:06:44.380 --> 00:06:50.620
+If you use the fast parquet, which is the thing that allows data frames to do it, it's 14 milliseconds,
+
+00:06:50.620 --> 00:06:54.560
+which is a little over three times slower, but it's still really, really fast, right?
+
+00:06:55.000 --> 00:07:00.820
+There's feather, which is the fastest of all the file formats with a two millisecond save time,
+
+00:07:00.820 --> 00:07:01.800
+which is blazing.
+
+00:07:01.800 --> 00:07:02.420
+There's orc.
+
+00:07:02.420 --> 00:07:03.740
+I have no idea what orc is.
+
+00:07:03.740 --> 00:07:04.800
+It's a little bit faster.
+
+00:07:04.800 --> 00:07:10.200
+Or if you want to show that you're taking lots of time and doing lots of processing,
+
+00:07:10.200 --> 00:07:14.860
+doing lots of data science-y things, you could always do Excel, which takes about a second almost.
+
+00:07:14.860 --> 00:07:17.620
+I mean, on a larger data set, it might take lots longer, right?
+
+00:07:17.620 --> 00:07:18.680
+You're like, oh, I'm busy.
+
+00:07:18.680 --> 00:07:19.300
+I can't work.
+
+00:07:19.300 --> 00:07:20.700
+I'm getting a coffee because I'm saving.
+
+00:07:21.400 --> 00:07:27.260
+Well, I mean, there's some people that really have to export it to Excel so that other people can make mistakes later.
+
+00:07:27.260 --> 00:07:28.180
+Yes, exactly.
+
+00:07:28.180 --> 00:07:30.560
+Because life is better when it's all go-tos.
+
+00:07:30.560 --> 00:07:31.100
+Yeah.
+
+00:07:31.100 --> 00:07:33.080
+But no, you're right.
+
+00:07:33.080 --> 00:07:36.140
+If the goal is to deliver an Excel file, then obviously.
+
+00:07:36.140 --> 00:07:39.540
+But this is more like considering what's a good intermediate just storage format.
+
+00:07:39.540 --> 00:07:42.960
+And then CSV is actually not that slow.
+
+00:07:42.960 --> 00:07:45.440
+It's still slower, but it's only 30 milliseconds.
+
+00:07:45.440 --> 00:07:49.920
+But the other part that's worth thinking about, remember, this is only 6,400 rows.
+
+00:07:50.120 --> 00:07:52.740
+The Parquet format is 191K.
+
+00:07:52.740 --> 00:07:56.700
+The Pandas one is almost 100K more, which is interesting.
+
+00:07:56.700 --> 00:07:58.460
+The Feather is almost half a meg.
+
+00:07:58.460 --> 00:08:00.340
+Oric is three-quarters of a meg.
+
+00:08:00.340 --> 00:08:01.540
+Excel is half a meg.
+
+00:08:01.540 --> 00:08:02.920
+CSV is a meg, right?
+
+00:08:02.920 --> 00:08:06.080
+So a meg, it's almost a five times file size increase.
+
+00:08:06.080 --> 00:08:14.240
+So if you're storing tons of data and it's 5 gigs versus 50 gigs, you know, you maybe want to think about storing it in a different format.
+
+00:08:14.240 --> 00:08:16.420
+Plus you read and write it faster, right?
+
+00:08:16.600 --> 00:08:18.880
+So these are all pretty interesting.
+
+00:08:18.880 --> 00:08:24.680
+And Polar.rs is the lightning-fast data frame built in Rust.
+
+00:08:24.680 --> 00:08:27.560
+And Python is built on top of PyArrow.
+
+00:08:27.560 --> 00:08:31.280
+I had a whole, you know, built on top of Apache Arrow.
+
+00:08:31.280 --> 00:08:33.760
+I had a whole Talk Python episode on it.
+
+00:08:33.800 --> 00:08:36.720
+I'm pretty sure I'd talked about Polar.rs before on here as well.
+
+00:08:36.720 --> 00:08:41.120
+But it's got like a really cool sort of fluent programming style.
+
+00:08:41.120 --> 00:08:43.600
+And under the covers, it's using PyArrow as well.
+
+00:08:43.600 --> 00:08:45.000
+So pretty neat.
+
+00:08:45.000 --> 00:08:45.460
+Yeah.
+
+00:08:45.460 --> 00:08:54.600
+So if you're really looking to say like, I just want to go all in on this, as Alvaro pointed out, I think it was Alvaro, that Polar is, yeah, that Polar is pretty cool.
+
+00:08:54.600 --> 00:08:55.220
+Okay.
+
+00:08:55.220 --> 00:08:55.800
+Neat.
+
+00:08:55.800 --> 00:09:03.880
+And Henry out there, real-time feedback is, Pandas is fully supporting PyArrow for all data types in the upcoming 1.5 and 2.0 releases.
+
+00:09:03.880 --> 00:09:08.220
+There was just a blog post on it on the DataPythonista blog.
+
+00:09:08.220 --> 00:09:10.660
+It's not clear if they're switching to it.
+
+00:09:11.140 --> 00:09:17.620
+I believe it's NumPy at the moment as the core, but it could be supporting it, which is awesome.
+
+00:09:17.620 --> 00:09:17.820
+Yeah.
+
+00:09:17.820 --> 00:09:19.640
+Thanks, Henry, for that live update there.
+
+00:09:19.640 --> 00:09:19.980
+Yeah.
+
+00:09:19.980 --> 00:09:28.680
+Well, then also, he said, but it did say basically starting to get native PyArrow speed with Pandas by just selecting the backend in the new Pandas version.
+
+00:09:28.680 --> 00:09:29.440
+So cool.
+
+00:09:29.440 --> 00:09:30.280
+Awesome.
+
+00:09:30.280 --> 00:09:30.900
+Yeah, yeah.
+
+00:09:30.900 --> 00:09:31.460
+Very, very cool.
+
+00:09:31.460 --> 00:09:32.880
+So lots of options here.
+
+00:09:33.140 --> 00:09:44.260
+But I think a takeaway that's kind of worth paying attention to here is choosing maybe Parquet as a file format, regardless of whether you're using Pandas or PyArrow or whatever, right?
+
+00:09:44.260 --> 00:09:46.260
+Because I think the default is read and write CSV.
+
+00:09:46.260 --> 00:09:51.040
+And if your CSV files are ginormous, that might be something you want to not do.
+
+00:09:51.040 --> 00:09:51.500
+Yeah.
+
+00:09:51.500 --> 00:09:51.680
+Okay.
+
+00:09:51.680 --> 00:09:52.180
+All right.
+
+00:09:52.180 --> 00:09:52.880
+Over to you.
+
+00:09:52.880 --> 00:09:55.680
+Well, you said I've ever heard of Parquet.
+
+00:09:55.680 --> 00:10:02.620
+And before we get to the next topic, I was thinking, like, is it Butter or is it Parquet?
+
+00:10:02.620 --> 00:10:04.740
+It was a whole thing from when we were kids.
+
+00:10:04.740 --> 00:10:06.160
+That's right.
+
+00:10:06.160 --> 00:10:07.320
+That's margarine.
+
+00:10:07.320 --> 00:10:08.680
+Yum.
+
+00:10:08.680 --> 00:10:09.480
+Parquet.
+
+00:10:09.480 --> 00:10:11.280
+Had a little tub that talked.
+
+00:10:11.280 --> 00:10:11.920
+It was neat.
+
+00:10:11.920 --> 00:10:13.280
+Oh, that's right.
+
+00:10:13.280 --> 00:10:13.680
+It did.
+
+00:10:13.680 --> 00:10:14.520
+It had a little mouth.
+
+00:10:14.520 --> 00:10:14.780
+Yeah.
+
+00:10:14.780 --> 00:10:15.260
+Yeah.
+
+00:10:15.260 --> 00:10:18.040
+I want to talk about FastAPI a bit.
+
+00:10:18.040 --> 00:10:22.560
+So this topic, FastAPIFilter, comes from us from Arthur Rio.
+
+00:10:22.560 --> 00:10:25.020
+And Arthur, actually, it's his library.
+
+00:10:25.020 --> 00:10:27.940
+FastAPIFilter.
+
+00:10:27.940 --> 00:10:30.180
+And this is pretty cool.
+
+00:10:31.180 --> 00:10:34.980
+So I'm going to pop over to the documentation quickly.
+
+00:10:34.980 --> 00:10:43.840
+But what it is, it's a query string filters for your API endpoints so that you can show them in Swagger and use them and stuff for cool things.
+
+00:10:43.840 --> 00:10:47.940
+So I'll pop over to the documentation.
+
+00:10:48.800 --> 00:10:51.560
+So it says query string filters.
+
+00:10:51.560 --> 00:10:54.960
+It supports backends SQLAlchemy and Mongo Engine.
+
+00:10:54.960 --> 00:10:56.260
+So that's nice.
+
+00:10:56.260 --> 00:10:59.940
+But let's say, well, we'll get to what the filters look like later.
+
+00:10:59.940 --> 00:11:02.340
+But in the Swagger interface, this is pretty neat.
+
+00:11:02.460 --> 00:11:07.480
+So let's say you're grabbing the users and you want to filter them by, like, the name.
+
+00:11:07.480 --> 00:11:13.720
+You can do a query in the name or the age less than or age greater than or equal.
+
+00:11:13.720 --> 00:11:15.640
+These are pretty nice.
+
+00:11:16.440 --> 00:11:21.200
+So it says the philosophy of FastAPIFilter is to be very declarative.
+
+00:11:21.200 --> 00:11:28.620
+You define fields that you want to be able to filter on as well as the type of operator and then tie your filters to a specific model.
+
+00:11:29.040 --> 00:11:30.540
+It's pretty easy to set up.
+
+00:11:30.540 --> 00:11:33.640
+The syntax is pretty, well, we'll let you look at it.
+
+00:11:33.640 --> 00:11:36.220
+But it's not that bad to set up the filters.
+
+00:11:36.220 --> 00:11:40.620
+Yeah, a lot of pydantic models, as you might expect, it being FastAPI.
+
+00:11:40.620 --> 00:11:41.140
+Yeah.
+
+00:11:41.140 --> 00:11:43.040
+So you plug in these filters.
+
+00:11:43.040 --> 00:11:51.260
+But then you get things like the built-in ones are, like, not equal, greater than, greater than, equal in, those sorts of things.
+
+00:11:51.260 --> 00:11:54.860
+But you can do some pretty complex query strings then.
+
+00:11:54.860 --> 00:11:57.360
+Like, oh, there's some good examples down here.
+
+00:11:57.360 --> 00:12:04.420
+So, like, the users, but order by descending name or order by ascending ID.
+
+00:12:04.420 --> 00:12:06.140
+There's, like, plus and minus for ascending.
+
+00:12:06.140 --> 00:12:07.380
+And you can have order by.
+
+00:12:07.380 --> 00:12:11.300
+And you can filter by, like, the name, custom orders.
+
+00:12:11.300 --> 00:12:18.020
+And actually putting some filters right in your API string is kind of an interesting idea.
+
+00:12:18.020 --> 00:12:20.340
+I don't know if it's a good idea or a bad idea, but it's interesting.
+
+00:12:20.640 --> 00:12:29.560
+Yeah, this is a real interesting philosophy of how do I access the data in my database as an API.
+
+00:12:29.560 --> 00:12:30.240
+Yeah.
+
+00:12:30.500 --> 00:12:35.140
+And I would say there's sort of two really common ways.
+
+00:12:35.140 --> 00:12:39.000
+And then there's a lot of abuse of what APIs look like and what you should do.
+
+00:12:39.000 --> 00:12:41.700
+You know, just remote procedure calls and all sorts of randomness.
+
+00:12:42.120 --> 00:12:46.680
+But the philosophy is I've got data in a database and I want to expose it over an API.
+
+00:12:46.680 --> 00:12:57.720
+Do I go and write a bunch of different functions in FastAPI in this example where I decide, here's a way where you can find the recent users.
+
+00:12:57.900 --> 00:13:04.900
+And you can then possibly take some kind of primer about a sort or maybe how recent of the users do you want to be.
+
+00:13:04.900 --> 00:13:08.440
+But you're writing the code that decides, here's the database query.
+
+00:13:08.440 --> 00:13:11.780
+And it's generally focused on recent users.
+
+00:13:11.780 --> 00:13:12.120
+Right.
+
+00:13:12.120 --> 00:13:14.140
+That's one way to do APIs.
+
+00:13:14.140 --> 00:13:19.500
+The other is I kind of want to take my database and just make it queryable over the Internet.
+
+00:13:19.500 --> 00:13:20.700
+Right.
+
+00:13:20.700 --> 00:13:22.320
+And this is with the right restrictions.
+
+00:13:22.320 --> 00:13:29.120
+It's not necessarily a security vulnerability, but it's just pushing all of the thinking about what the API is to the client side.
+
+00:13:29.120 --> 00:13:29.320
+Right.
+
+00:13:29.320 --> 00:13:33.080
+So if I'm doing Vue.js, it's like, well, we'll wrap this onto our database.
+
+00:13:33.080 --> 00:13:38.540
+And you ask it any question you can imagine as if you had a direct query line to the database.
+
+00:13:38.540 --> 00:13:38.980
+Right.
+
+00:13:38.980 --> 00:13:48.600
+So that's why you would do maybe the age greater than or you could do some of those filters where you say, give me all the users where the created date is less than such and such.
+
+00:13:48.600 --> 00:13:49.060
+Yeah.
+
+00:13:49.060 --> 00:13:49.680
+Or greater than such.
+
+00:13:49.680 --> 00:13:51.740
+You know, that would basically be like the new users.
+
+00:13:51.740 --> 00:13:51.960
+Right.
+
+00:13:51.960 --> 00:13:55.680
+But it's up to the client to kind of know the data schema and talk to it.
+
+00:13:55.680 --> 00:13:57.740
+And this, you know, this is that latter style.
+
+00:13:57.740 --> 00:13:58.480
+If you like that.
+
+00:13:58.480 --> 00:13:59.060
+Awesome.
+
+00:13:59.060 --> 00:14:04.320
+You know, you can you can expose a relational database over SQLAlchemy or MongoDB to Mongo Engine.
+
+00:14:04.320 --> 00:14:05.640
+And it looks pretty cool.
+
+00:14:05.640 --> 00:14:15.820
+My thoughts on where I probably I mean, I'm not using this in production, but my thoughts on where I might use this even disregarding like one of the Brandon's concerns.
+
+00:14:15.820 --> 00:14:20.020
+Brandon Brainer says exposing my API field names makes me nervous.
+
+00:14:20.420 --> 00:14:28.560
+But there's a there's a part of your, oops, part of your development where you're not quite sure what queries you want.
+
+00:14:28.760 --> 00:14:30.220
+So custom writing them.
+
+00:14:30.220 --> 00:14:34.040
+Maybe you're not ready to do that or it'll be like a lot of back and forth.
+
+00:14:34.040 --> 00:14:46.260
+So a great I think a great place to be for this would be when you're working with you've got your front end and your back end code, your API code, and you're you're trying to figure out what sort of searches you want.
+
+00:14:46.260 --> 00:14:52.360
+And you can use something like this to have it right be in the in the actual API query.
+
+00:14:52.360 --> 00:15:02.000
+And then once you figure out like all the stuff you need, then you could go back if you want to and hard code a different API invoice with similar stuff.
+
+00:15:02.000 --> 00:15:02.300
+Maybe.
+
+00:15:02.300 --> 00:15:02.980
+I don't know.
+
+00:15:02.980 --> 00:15:03.480
+Yeah.
+
+00:15:03.480 --> 00:15:03.740
+Yeah.
+
+00:15:03.740 --> 00:15:05.400
+And not everything's built the same.
+
+00:15:05.400 --> 00:15:05.720
+Right.
+
+00:15:05.780 --> 00:15:11.440
+Kim out there points out that many of the APIs that he uses or builds are for in-house use only.
+
+00:15:11.440 --> 00:15:11.880
+Yeah.
+
+00:15:11.880 --> 00:15:12.580
+Right.
+
+00:15:12.580 --> 00:15:18.280
+And so it's just like instead of coming up very, very focused API endpoints, it's like we'll kind of just leave it open.
+
+00:15:18.280 --> 00:15:23.960
+And people can use this service to access the data in a somewhat safe way, like a restricted way.
+
+00:15:23.960 --> 00:15:25.060
+Yeah.
+
+00:15:25.160 --> 00:15:26.520
+So it's what are you building?
+
+00:15:26.520 --> 00:15:30.520
+Like, are you putting it just on the open Internet or are you putting it, you know, inside?
+
+00:15:30.520 --> 00:15:31.780
+That's very true.
+
+00:15:31.780 --> 00:15:32.200
+Yeah.
+
+00:15:32.200 --> 00:15:39.880
+Like I've got a bunch of projects I'm working on that are internal and like I who cares if somebody knows what my data names are and stuff.
+
+00:15:39.880 --> 00:15:40.300
+Right.
+
+00:15:40.300 --> 00:15:41.360
+Well, and what is in it?
+
+00:15:41.360 --> 00:15:48.680
+Are you storing social security numbers and addresses or are you still storing voltage levels for RF devices?
+
+00:15:48.680 --> 00:15:49.420
+Exactly.
+
+00:15:49.420 --> 00:15:49.920
+Oh, no.
+
+00:15:49.920 --> 00:15:51.180
+The voltage levels have leaked.
+
+00:15:51.180 --> 00:15:51.800
+Oh, no.
+
+00:15:51.800 --> 00:15:52.600
+Right.
+
+00:15:52.600 --> 00:15:54.360
+I mean, that flexibility might be awesome.
+
+00:15:54.800 --> 00:15:55.280
+Yeah.
+
+00:15:55.280 --> 00:15:58.400
+I mean, the end, like it's secretive.
+
+00:15:58.400 --> 00:16:04.700
+We don't want it to get out in the public, but it's not like something that internal users are going to do anything with.
+
+00:16:04.700 --> 00:16:05.320
+So, yeah.
+
+00:16:05.320 --> 00:16:05.600
+Yeah.
+
+00:16:05.600 --> 00:16:06.260
+Yeah, exactly.
+
+00:16:06.260 --> 00:16:06.860
+Cool.
+
+00:16:06.860 --> 00:16:07.280
+Cool.
+
+00:16:07.280 --> 00:16:09.800
+Well, yeah, that's really, really a nice one.
+
+00:16:09.800 --> 00:16:12.140
+So, Brian, sponsor this week?
+
+00:16:12.140 --> 00:16:13.340
+Yeah.
+
+00:16:13.340 --> 00:16:15.380
+Microsoft for Startups Founders Hub.
+
+00:16:15.380 --> 00:16:25.000
+But if you remember last week, we did an ad where we asked an AI to come up with the ad text for us.
+
+00:16:25.280 --> 00:16:27.580
+In like an official sort of official sounding way.
+
+00:16:27.580 --> 00:16:27.960
+Yeah.
+
+00:16:27.960 --> 00:16:28.460
+Yep.
+
+00:16:28.460 --> 00:16:37.160
+So, this week, you pushed it through the filter and said to try to come up with the wording in a hipster voice.
+
+00:16:37.160 --> 00:16:37.440
+Right?
+
+00:16:38.440 --> 00:16:39.460
+So, here we go.
+
+00:16:39.460 --> 00:16:39.740
+Tell us about it.
+
+00:16:39.740 --> 00:16:40.960
+With a hipster style.
+
+00:16:40.960 --> 00:16:41.780
+I'll try.
+
+00:16:41.780 --> 00:16:43.520
+Yo, Python Bytes fam.
+
+00:16:43.520 --> 00:16:49.540
+This segment is brought to you by the sickest program out there for startup founders, Microsoft for Startup Founders Hub.
+
+00:16:49.760 --> 00:16:56.120
+If you're a boss at running a startup, you're going to want to listen up because this is the deal of a lifetime.
+
+00:16:56.120 --> 00:17:04.900
+Microsoft for Startup Founders Hub is your ticket to scaling efficiently and preserving your runway, all while keeping your cool factor intact.
+
+00:17:04.900 --> 00:17:09.520
+With over six figures worth of benefits, the program is serious next level.
+
+00:17:09.520 --> 00:17:25.800
+You'll get 150K in Azure credits, the richest cloud credit offering on the market, access to the OpenAI APIs, and the new Azure OpenAI service, where you can infuse some serious generative AI into your apps.
+
+00:17:25.800 --> 00:17:33.040
+And a one-on-one technical advisor from the Microsoft squad who will help you with your technical stack and architectural plans.
+
+00:17:33.040 --> 00:17:38.960
+This program is open to all, whether you're just getting started or already killing it.
+
+00:17:39.200 --> 00:17:41.500
+And the best part, there's no funding requirement.
+
+00:17:41.500 --> 00:17:45.700
+All it takes is five minutes to apply and you'll be reaping the benefits in no time.
+
+00:17:45.700 --> 00:17:52.860
+Check it out and sign up for Microsoft for Startup Founders Hub at pythonbytes.fm/foundershub 2022.
+
+00:17:52.860 --> 00:17:54.900
+Peace out and keep listening.
+
+00:17:54.900 --> 00:17:58.640
+It's insane the power of these AIs these days.
+
+00:17:58.640 --> 00:18:05.940
+And, you know, if you want to get access to OpenAI and Azure and GitHub and all those things, well, a lot of people seem to be liking that program.
+
+00:18:05.940 --> 00:18:06.540
+So it's cool.
+
+00:18:06.540 --> 00:18:07.280
+They're supporting us.
+
+00:18:07.280 --> 00:18:07.780
+Yeah.
+
+00:18:08.040 --> 00:18:10.060
+Also cool that they're letting us play with the ad.
+
+00:18:10.060 --> 00:18:10.580
+That's neat.
+
+00:18:10.580 --> 00:18:10.980
+Yes.
+
+00:18:10.980 --> 00:18:12.200
+With their own tools, indeed.
+
+00:18:12.200 --> 00:18:12.580
+Okay.
+
+00:18:12.580 --> 00:18:18.000
+What I got next, Brian, is stuff to take your code to the next level, brah.
+
+00:18:18.000 --> 00:18:19.600
+Twelve.
+
+00:18:19.600 --> 00:18:21.020
+But this sounds pretty interesting.
+
+00:18:21.020 --> 00:18:24.040
+Twelve Python decorators to take your code to the next level.
+
+00:18:24.040 --> 00:18:24.560
+Nice.
+
+00:18:24.560 --> 00:18:25.380
+Decorators are awesome.
+
+00:18:25.900 --> 00:18:32.240
+And they're kind of like a little bit of magic Python dust you can sprinkle onto a method and make things happen, right?
+
+00:18:32.240 --> 00:18:34.740
+Now, about half of these are homegrown.
+
+00:18:34.740 --> 00:18:36.360
+Half of those I'd recommend.
+
+00:18:36.360 --> 00:18:41.000
+And then a bunch of them are also, the other half is maybe the built-in ones that come from various places.
+
+00:18:41.200 --> 00:18:43.860
+So I'll just go through the list of 12 and you tell me what you think.
+
+00:18:43.860 --> 00:18:47.400
+The first one that they started off with in this article doesn't thrill me.
+
+00:18:47.400 --> 00:18:51.540
+It says, hey, I can wrap this function with this thing called logger and it'll tell me when it starts and stops.
+
+00:18:51.540 --> 00:18:52.940
+Like, yeah, no, no thanks.
+
+00:18:52.940 --> 00:18:53.680
+That doesn't seem interesting.
+
+00:18:54.160 --> 00:19:01.500
+But the next one, especially if you're already focused on decorators and psyched about that, is the functools wraps.
+
+00:19:01.500 --> 00:19:02.140
+Yeah.
+
+00:19:02.140 --> 00:19:02.400
+Right?
+
+00:19:02.400 --> 00:19:05.000
+Wraps is definitely, you've got to use it.
+
+00:19:05.000 --> 00:19:06.360
+Yeah, it's basically required.
+
+00:19:06.360 --> 00:19:14.860
+If you create a decorator, and they show you how to do that on the screen here, and you try to interact with the function that is decorated, well, you're going to get funky results.
+
+00:19:14.860 --> 00:19:16.000
+Like, what is the function's name?
+
+00:19:16.000 --> 00:19:18.360
+Well, it's the name of the decorator, not the actual thing.
+
+00:19:18.360 --> 00:19:19.200
+What if it's arguments?
+
+00:19:19.200 --> 00:19:21.460
+It's star, star, star, star, kwrs.
+
+00:19:21.460 --> 00:19:22.180
+What is documentation?
+
+00:19:22.740 --> 00:19:25.780
+Whatever the name, the documentation of the decorator is and all that.
+
+00:19:25.780 --> 00:19:32.120
+So with wrapper or with wraps, you can wrap it around and it'll actually kind of pass through that information, which is pretty cool.
+
+00:19:32.120 --> 00:19:36.260
+So if you're going to do decorators wrapped, that's kind of a meta decorator here.
+
+00:19:36.260 --> 00:19:36.820
+Yeah.
+
+00:19:36.820 --> 00:19:38.720
+Another one I think is really cool.
+
+00:19:38.720 --> 00:19:45.640
+Not for all use cases, not really great on the web because of the scale out of cross process story that often happens in deployment.
+
+00:19:45.640 --> 00:19:52.140
+But if you're doing data science-y things or a bunch of repetitive processing, the LRU cache is like magic.
+
+00:19:52.320 --> 00:19:54.460
+Unless you are really memory constrained or something.
+
+00:19:54.460 --> 00:19:55.000
+Yeah.
+
+00:19:55.000 --> 00:19:56.360
+Love LRU cache.
+
+00:19:56.360 --> 00:19:56.980
+Yeah.
+
+00:19:56.980 --> 00:20:01.820
+You just put it on a function and you say at LRU cache and you can even give it a max size.
+
+00:20:01.820 --> 00:20:07.860
+And it just says, as long as given us a fixed input, you'll get the same output every time.
+
+00:20:07.860 --> 00:20:10.080
+Then you can put the LRU cache on it.
+
+00:20:10.080 --> 00:20:12.540
+The second time you call it the same arguments, it just goes, you know what?
+
+00:20:12.540 --> 00:20:13.300
+I know that answer.
+
+00:20:13.300 --> 00:20:13.960
+Here you go.
+
+00:20:14.060 --> 00:20:21.500
+And it's an incredibly easy way to speed up stuff that takes like numbers and like well-known things that are not objects, but can be tested.
+
+00:20:21.500 --> 00:20:22.700
+Like, yeah, these are the same values.
+
+00:20:22.700 --> 00:20:26.760
+And if you don't care about the max size, you can just use the decorator cache now.
+
+00:20:26.760 --> 00:20:28.460
+You don't need to have the LRU part.
+
+00:20:28.860 --> 00:20:29.460
+Oh, nice.
+
+00:20:29.460 --> 00:20:30.280
+Great addition.
+
+00:20:30.280 --> 00:20:32.120
+Next up, we have at repeat.
+
+00:20:32.120 --> 00:20:36.120
+Suppose for some reason I want to call a function multiple times.
+
+00:20:36.260 --> 00:20:45.340
+Like if I want to try to say, what if I call this a bunch of times just for, say, load testing or I want to just, you know, kind of in during development.
+
+00:20:45.340 --> 00:20:47.760
+I can't see this being used in any realistic way.
+
+00:20:47.760 --> 00:20:49.780
+But you can just say this is one that they built.
+
+00:20:49.780 --> 00:20:52.160
+You just wrap it and say repeat this in number of times.
+
+00:20:52.160 --> 00:20:53.000
+That might be useful.
+
+00:20:53.000 --> 00:20:54.340
+Yeah.
+
+00:20:54.340 --> 00:20:55.380
+Time it.
+
+00:20:55.380 --> 00:20:59.640
+So time it is one that you could create that I think is pretty nice.
+
+00:20:59.640 --> 00:21:04.220
+Like this is one of the homegrown ones that I do think is good is a lot of times you want to know how long a function takes.
+
+00:21:04.220 --> 00:21:07.140
+And one thing you could do is you could grab the time at the start.
+
+00:21:07.140 --> 00:21:09.340
+Here are these imperfect counters, which is pretty excellent.
+
+00:21:09.340 --> 00:21:12.640
+And then at the end, grab the time, print it out.
+
+00:21:12.640 --> 00:21:14.340
+But then you're messing with your code, right?
+
+00:21:14.340 --> 00:21:16.000
+It'd be a lot easier to just go, you know what?
+
+00:21:16.000 --> 00:21:20.340
+I just want to wrap a decorator over some function and have it print out stuff.
+
+00:21:20.340 --> 00:21:23.640
+Just usually during development or debugging or something, not in production.
+
+00:21:23.640 --> 00:21:25.500
+But you're like, well, how long did this take?
+
+00:21:25.500 --> 00:21:28.720
+So just yesterday I was fiddling with a function.
+
+00:21:28.720 --> 00:21:31.220
+I'm like, if I change it this way, will it get any faster?
+
+00:21:31.220 --> 00:21:33.900
+It's a little more complicated, but maybe there's a big benefit.
+
+00:21:34.100 --> 00:21:37.920
+And I put something like this on there and like, yeah, it didn't make any difference.
+
+00:21:37.920 --> 00:21:40.140
+So we'll keep on the simple bit of code in place.
+
+00:21:40.140 --> 00:21:40.600
+Yeah.
+
+00:21:40.600 --> 00:21:46.500
+And if it's like super fast, you can also do things like loop it, like add a loop thing there
+
+00:21:46.500 --> 00:21:50.220
+so that it runs like 100 times and then do the division or something.
+
+00:21:50.220 --> 00:21:51.320
+That's a really good point.
+
+00:21:51.320 --> 00:21:54.800
+And these are composable, right?
+
+00:21:54.800 --> 00:21:55.840
+Decorators are composable.
+
+00:21:55.960 --> 00:21:59.780
+So you could say at time it, at repeat 1000, call your function.
+
+00:21:59.780 --> 00:21:59.880
+Oh, yeah.
+
+00:21:59.880 --> 00:22:00.340
+Yeah.
+
+00:22:00.340 --> 00:22:00.620
+Right?
+
+00:22:00.620 --> 00:22:03.020
+I mean, all of a sudden repeat's starting to sound useful.
+
+00:22:03.020 --> 00:22:06.620
+They have a retry one for retrying a bunch of times.
+
+00:22:06.620 --> 00:22:07.980
+No.
+
+00:22:07.980 --> 00:22:09.340
+Tenacity.
+
+00:22:09.340 --> 00:22:11.300
+Don't do that.
+
+00:22:11.740 --> 00:22:14.780
+There's some that are really, really fantastic with many options.
+
+00:22:14.780 --> 00:22:19.500
+Don't bother rewriting some of those because you've got things like tenacity that has exponential
+
+00:22:19.500 --> 00:22:25.800
+back off, limiting the number of retries, customizing different behaviors and plans based on exceptions.
+
+00:22:25.800 --> 00:22:27.480
+So grab something like tenacity.
+
+00:22:27.920 --> 00:22:30.300
+But the idea of understanding the retries is kind of cool.
+
+00:22:30.300 --> 00:22:32.780
+Thanks for reminding us about tenacity.
+
+00:22:32.780 --> 00:22:33.580
+I forgot about that.
+
+00:22:33.580 --> 00:22:33.740
+Yeah.
+
+00:22:33.740 --> 00:22:34.640
+That's a good one, right?
+
+00:22:34.640 --> 00:22:35.820
+Count call.
+
+00:22:35.820 --> 00:22:40.340
+If you're doing debugging or performance stuff, you're just like, why does it seem like this
+
+00:22:40.340 --> 00:22:41.840
+is getting called like five times?
+
+00:22:41.840 --> 00:22:42.840
+It should be called once.
+
+00:22:42.840 --> 00:22:43.500
+This is weird.
+
+00:22:43.500 --> 00:22:48.700
+And so you could actually, they introduced this count call decorator that just every time
+
+00:22:48.700 --> 00:22:52.380
+a function is called, it's now been called this many times, which sounds silly, but are
+
+00:22:52.380 --> 00:22:56.280
+you trying to track down like an N plus one database problem or other weird things like
+
+00:22:56.280 --> 00:22:56.520
+that?
+
+00:22:56.520 --> 00:23:00.940
+If you don't really know why something bizarre is happening a ton of times, this could be
+
+00:23:00.940 --> 00:23:01.540
+kind of helpful.
+
+00:23:01.540 --> 00:23:02.080
+Yeah.
+
+00:23:02.080 --> 00:23:03.980
+Rate limited.
+
+00:23:03.980 --> 00:23:05.600
+This one sounds cool as well.
+
+00:23:05.600 --> 00:23:11.420
+Like I only want you to call this function so often per second and you can decide what
+
+00:23:11.420 --> 00:23:11.860
+to do.
+
+00:23:11.860 --> 00:23:14.040
+In this case, it says we're going to time.sleep.
+
+00:23:14.040 --> 00:23:16.700
+I'm not so sure that makes a lot of sense, but it was asynchronous.
+
+00:23:16.700 --> 00:23:20.700
+You could await asyncio.sleep and it would cause no overhead on the system.
+
+00:23:20.700 --> 00:23:21.900
+It wouldn't clog anything up.
+
+00:23:21.900 --> 00:23:23.440
+It would just make the caller wait.
+
+00:23:23.440 --> 00:23:26.100
+So there's some interesting variations there as well.
+
+00:23:26.420 --> 00:23:27.960
+Keep scrolling.
+
+00:23:27.960 --> 00:23:29.600
+And then some more built-in ones.
+
+00:23:29.600 --> 00:23:30.500
+Data classes.
+
+00:23:30.500 --> 00:23:33.760
+If you want to have a data class, just at data class, the class.
+
+00:23:33.760 --> 00:23:35.280
+Brian, do you use data classes much?
+
+00:23:35.280 --> 00:23:36.500
+Yes, quite a bit.
+
+00:23:36.500 --> 00:23:37.040
+Nice.
+
+00:23:37.040 --> 00:23:39.600
+I like my classes to be VC funded.
+
+00:23:39.600 --> 00:23:41.700
+So I use Pydantic more often.
+
+00:23:41.700 --> 00:23:44.640
+Let's see last week.
+
+00:23:44.760 --> 00:23:47.040
+Congratulations to the Samuel team there.
+
+00:23:47.040 --> 00:23:52.500
+But honestly, I typically use Pydantic a little bit more because I'm often going to use it with
+
+00:23:52.500 --> 00:23:54.920
+FastAPI or Beanie or something over the wire.
+
+00:23:55.180 --> 00:23:58.100
+But I really like the idea of data classes too.
+
+00:23:58.100 --> 00:23:59.140
+All right.
+
+00:23:59.140 --> 00:24:00.020
+A couple more.
+
+00:24:00.020 --> 00:24:00.760
+Register.
+
+00:24:00.760 --> 00:24:02.760
+Let me know if you know about this one.
+
+00:24:02.760 --> 00:24:05.720
+I heard about it a little while, but I haven't ever had a chance to use it.
+
+00:24:05.720 --> 00:24:13.120
+But the AT at exit module in Python, it has a way to say when my program is shutting down,
+
+00:24:13.120 --> 00:24:17.980
+even if the user like control C is out of it, I need to make sure that I delete, say,
+
+00:24:17.980 --> 00:24:21.580
+some file I created or call an API and tell it real quick.
+
+00:24:21.580 --> 00:24:22.240
+Like, you know what?
+
+00:24:22.240 --> 00:24:22.720
+We're gone.
+
+00:24:22.720 --> 00:24:23.600
+Or I don't know.
+
+00:24:23.600 --> 00:24:24.340
+Something like that.
+
+00:24:24.340 --> 00:24:24.480
+Right.
+
+00:24:24.480 --> 00:24:25.000
+You just need.
+
+00:24:25.000 --> 00:24:26.900
+There's something you got to do on your way out.
+
+00:24:26.980 --> 00:24:28.680
+Even if it's a force exit.
+
+00:24:28.680 --> 00:24:29.420
+Yeah.
+
+00:24:29.420 --> 00:24:30.000
+You can go.
+
+00:24:30.000 --> 00:24:30.660
+I have.
+
+00:24:30.660 --> 00:24:32.120
+Sorry to interrupt.
+
+00:24:32.120 --> 00:24:32.940
+I have used this.
+
+00:24:32.940 --> 00:24:33.220
+No, I do.
+
+00:24:33.220 --> 00:24:33.640
+Yeah.
+
+00:24:33.640 --> 00:24:34.080
+Yeah.
+
+00:24:34.080 --> 00:24:34.720
+When did you use it?
+
+00:24:34.720 --> 00:24:35.360
+What do you use it for?
+
+00:24:35.360 --> 00:24:36.640
+Similar sort of thing.
+
+00:24:36.640 --> 00:24:40.440
+I've got like some thing in the background that I want to make sure that we.
+
+00:24:40.440 --> 00:24:44.300
+There's a little bit of cleanup that's done before it goes away.
+
+00:24:44.300 --> 00:24:46.820
+But I just wanted to correct this.
+
+00:24:46.820 --> 00:24:51.860
+This says from at exit import register and then decorate with register.
+
+00:24:52.200 --> 00:24:58.260
+I think it looks better if you just import at exit and do the decorator as at exit.register
+
+00:24:58.260 --> 00:24:59.660
+because it's better documentation.
+
+00:24:59.660 --> 00:25:00.620
+I totally agree.
+
+00:25:00.620 --> 00:25:01.380
+I totally agree.
+
+00:25:01.380 --> 00:25:06.260
+There's a couple of things in this article where the code is a little bit.
+
+00:25:06.260 --> 00:25:10.380
+No, it was the other article that I did that was a little bit that I talked about.
+
+00:25:10.380 --> 00:25:11.000
+It was a little bit weird.
+
+00:25:11.000 --> 00:25:11.860
+But I agree.
+
+00:25:11.860 --> 00:25:15.520
+Keeping the namespace tells you like, well, what the heck are you registering for?
+
+00:25:15.520 --> 00:25:15.760
+Right.
+
+00:25:15.760 --> 00:25:15.900
+Yeah.
+
+00:25:15.900 --> 00:25:17.840
+I think namespaces are a good idea.
+
+00:25:17.840 --> 00:25:18.700
+I definitely use them.
+
+00:25:18.700 --> 00:25:20.920
+But anyway, so you can just put this decorator on a function.
+
+00:25:21.120 --> 00:25:24.700
+And when you exit, they show an example of some loop going just while true.
+
+00:25:24.700 --> 00:25:25.740
+And they control C out of it.
+
+00:25:25.740 --> 00:25:27.580
+It says, hey, we're cleaning up here.
+
+00:25:27.580 --> 00:25:28.040
+Now, bye.
+
+00:25:28.040 --> 00:25:28.560
+Yeah.
+
+00:25:28.560 --> 00:25:32.900
+Which is, that's a pretty nice way to handle it instead of trying to catch all the use cases
+
+00:25:32.900 --> 00:25:35.120
+with exceptions and try finallys and so on.
+
+00:25:35.120 --> 00:25:35.740
+All right.
+
+00:25:35.740 --> 00:25:36.600
+Property.
+
+00:25:36.600 --> 00:25:40.360
+Give your fields, behaviors, and validation.
+
+00:25:40.360 --> 00:25:42.000
+Getter, setters, and so on.
+
+00:25:42.000 --> 00:25:42.420
+Love it.
+
+00:25:42.420 --> 00:25:47.720
+And single dispatch, I believe we've spoken about before, where you can give, basically,
+
+00:25:47.720 --> 00:25:50.740
+you do argument overloads for functions.
+
+00:25:51.040 --> 00:25:52.200
+So you can say, here's a function.
+
+00:25:52.200 --> 00:25:54.060
+And here's the one that takes an integer.
+
+00:25:54.060 --> 00:25:55.300
+And here's the one that takes a list.
+
+00:25:55.300 --> 00:25:57.920
+And these are separate functions and separate implementations.
+
+00:25:57.920 --> 00:26:00.440
+And you do that with that single dispatch decorator.
+
+00:26:00.440 --> 00:26:03.140
+You know, I actually always forget about this.
+
+00:26:03.140 --> 00:26:04.340
+But I do too.
+
+00:26:04.340 --> 00:26:06.700
+I kind of am glad I forget about it.
+
+00:26:06.700 --> 00:26:09.320
+Because I think I would use it too much.
+
+00:26:09.320 --> 00:26:09.980
+Maybe.
+
+00:26:10.700 --> 00:26:13.580
+I used to love function overloading.
+
+00:26:14.080 --> 00:26:18.600
+When I was doing C, C++, C Sharp type stuff, I would really count on it.
+
+00:26:18.600 --> 00:26:20.360
+And I thought I would miss it in Python.
+
+00:26:20.360 --> 00:26:21.500
+And I haven't.
+
+00:26:21.500 --> 00:26:27.340
+Well, I noticed that some people that convert to Python from C will just assume that it has
+
+00:26:27.340 --> 00:26:28.260
+function overloading.
+
+00:26:28.260 --> 00:26:29.940
+And it just doesn't work.
+
+00:26:30.480 --> 00:26:32.200
+That's known as function erasure.
+
+00:26:32.200 --> 00:26:33.120
+Function erasure.
+
+00:26:33.120 --> 00:26:34.620
+The last one wins, right?
+
+00:26:34.620 --> 00:26:34.920
+Yeah.
+
+00:26:34.920 --> 00:26:35.980
+We talked about that last time.
+
+00:26:35.980 --> 00:26:37.000
+Oh, no.
+
+00:26:37.000 --> 00:26:40.760
+We talked about that when we talked on Talk Python, which maybe we'll mention at the end.
+
+00:26:40.760 --> 00:26:42.100
+But yeah, last time we talked.
+
+00:26:42.100 --> 00:26:42.620
+Yeah.
+
+00:26:42.620 --> 00:26:43.220
+Yeah.
+
+00:26:44.540 --> 00:26:46.960
+Anyway, those are the 12 that they put in the article.
+
+00:26:46.960 --> 00:26:49.200
+Most of them are really great.
+
+00:26:49.200 --> 00:26:53.040
+Some of them point you at things like tenacity, which is also really good.
+
+00:26:53.040 --> 00:26:54.100
+So that's what I got.
+
+00:26:54.100 --> 00:26:54.620
+Nice.
+
+00:26:54.620 --> 00:26:58.180
+Well, I would like to talk about testing too a bit.
+
+00:26:58.180 --> 00:27:00.280
+Let's talk about Pyhamcrest.
+
+00:27:00.280 --> 00:27:08.280
+So this topic is contributed by TXLs on the socials.
+
+00:27:08.280 --> 00:27:09.500
+So thanks, TXLs.
+
+00:27:09.780 --> 00:27:15.080
+So Pyhamcrest, and the thought was, like, Brian talks about testing a lot.
+
+00:27:15.080 --> 00:27:16.560
+So why haven't you covered this?
+
+00:27:16.560 --> 00:27:25.040
+So what Pyhamcrest is, is a matcher object declarative rule matcher thing that helps you
+
+00:27:25.040 --> 00:27:27.040
+with the certs and stuff like that.
+
+00:27:27.040 --> 00:27:27.720
+Have you used this?
+
+00:27:27.720 --> 00:27:28.560
+I have not.
+
+00:27:28.560 --> 00:27:33.820
+My first thought it was like some kind of menu item on a holiday dinner.
+
+00:27:33.820 --> 00:27:34.800
+But no.
+
+00:27:34.800 --> 00:27:38.280
+I literally only heard about this because you put it in the show notes.
+
+00:27:38.280 --> 00:27:39.140
+So this is news to me.
+
+00:27:39.400 --> 00:27:42.340
+The idea is instead of, like, all the asserts.
+
+00:27:42.340 --> 00:27:46.880
+So you've got a whole bunch of assert things, like assert that, assert that, and equal to,
+
+00:27:46.880 --> 00:27:48.880
+and a bunch of hamcrest things that you can import.
+
+00:27:48.880 --> 00:27:55.560
+So you can do things like, instead of saying assert the biscuit equals my biscuit, you can
+
+00:27:55.560 --> 00:27:58.580
+say assert that the biscuit equal to my biscuit.
+
+00:27:58.580 --> 00:28:02.120
+So at first, so I've always thought asserts are fun.
+
+00:28:02.120 --> 00:28:04.320
+Like, I get this for unit test.
+
+00:28:04.320 --> 00:28:06.700
+But for pytest, do we need it?
+
+00:28:06.700 --> 00:28:08.640
+Because you could just use assert in pytest.
+
+00:28:09.020 --> 00:28:09.200
+Yeah.
+
+00:28:09.200 --> 00:28:15.500
+However, I'm kind of easing up on that argument because I can see a lot of places where just
+
+00:28:15.500 --> 00:28:20.620
+really, if you can make your assertions more readable in some contexts, then why not?
+
+00:28:20.620 --> 00:28:21.980
+Sure.
+
+00:28:21.980 --> 00:28:23.760
+And I don't know about this one.
+
+00:28:23.840 --> 00:28:28.420
+But if it's got things like go through a list and assert everything as equal in the list,
+
+00:28:28.420 --> 00:28:28.820
+right?
+
+00:28:28.820 --> 00:28:29.280
+Yeah.
+
+00:28:29.280 --> 00:28:35.340
+Or higher order things where it would be kind of complex to implement the test that is the
+
+00:28:35.340 --> 00:28:36.220
+thing you want to assert.
+
+00:28:36.220 --> 00:28:39.280
+Like, these three fields are equal of these three things, right?
+
+00:28:39.280 --> 00:28:40.980
+Then it becomes a little less obvious.
+
+00:28:40.980 --> 00:28:45.180
+And if this has a really nice story, it looks like it does.
+
+00:28:45.180 --> 00:28:45.580
+Yep.
+
+00:28:45.580 --> 00:28:47.580
+There's a whole bunch of matchers within it.
+
+00:28:47.800 --> 00:28:50.800
+Like, for objects, it's like equal to and has length.
+
+00:28:50.800 --> 00:28:51.640
+It has property.
+
+00:28:51.640 --> 00:28:54.180
+Has properties is interesting.
+
+00:28:54.180 --> 00:28:56.460
+So you could like assert on duck typing.
+
+00:28:56.460 --> 00:28:59.600
+Hopefully, it has these values or something.
+
+00:29:00.280 --> 00:29:03.360
+Numbers close to greater than, less than.
+
+00:29:03.360 --> 00:29:05.780
+Of course, these asserts are fine with this.
+
+00:29:05.780 --> 00:29:11.040
+But the logical stuff, the logical and sequences is, I think, where I probably might use it.
+
+00:29:11.040 --> 00:29:13.700
+Things like all of or any of or anything.
+
+00:29:13.700 --> 00:29:15.720
+Or that's neat.
+
+00:29:15.720 --> 00:29:17.560
+Like, all of these things are true.
+
+00:29:17.560 --> 00:29:20.700
+And you can combine this with or.
+
+00:29:20.700 --> 00:29:23.660
+Like, all of these or all of those or something.
+
+00:29:23.660 --> 00:29:28.060
+Sequences contains in any order.
+
+00:29:28.060 --> 00:29:29.620
+That's kind of interesting.
+
+00:29:30.340 --> 00:29:31.000
+Yeah, nice.
+
+00:29:31.000 --> 00:29:32.120
+Has items.
+
+00:29:32.120 --> 00:29:32.980
+Is in.
+
+00:29:32.980 --> 00:29:37.120
+Again, these are things that are testable in Python raw.
+
+00:29:37.120 --> 00:29:38.780
+Like, just raw tests.
+
+00:29:38.780 --> 00:29:40.100
+Not too bad.
+
+00:29:40.100 --> 00:29:43.380
+But if it's more readable, sure, why not?
+
+00:29:43.380 --> 00:29:47.080
+So there's some that are shown.
+
+00:29:47.080 --> 00:29:48.860
+Like, especially with raising error.
+
+00:29:48.860 --> 00:29:49.820
+Like, exceptions.
+
+00:29:49.820 --> 00:29:51.040
+Oh, where did I get it?
+
+00:29:51.040 --> 00:29:53.760
+Oh, the tutorial has a bunch of cool stuff in it.
+
+00:29:53.760 --> 00:29:59.120
+The things like assert that calling translate with args curse word.
+
+00:29:59.220 --> 00:30:00.460
+Raises a language error.
+
+00:30:00.460 --> 00:30:01.920
+Well, that's kind of neat.
+
+00:30:01.920 --> 00:30:04.080
+Very naughty.
+
+00:30:04.080 --> 00:30:06.820
+Assert that broken function raises exception.
+
+00:30:06.820 --> 00:30:07.440
+Okay.
+
+00:30:07.440 --> 00:30:12.940
+I mean, in pytest, you've got the raises thing with pytest raises.
+
+00:30:12.940 --> 00:30:13.900
+But it is.
+
+00:30:13.900 --> 00:30:15.260
+Some people have a hard.
+
+00:30:15.260 --> 00:30:16.740
+Like, it's not obvious.
+
+00:30:16.740 --> 00:30:17.820
+And this maybe.
+
+00:30:17.820 --> 00:30:19.280
+Maybe this looks better.
+
+00:30:19.280 --> 00:30:20.280
+The.
+
+00:30:20.280 --> 00:30:21.940
+This is kind of neat.
+
+00:30:21.940 --> 00:30:22.320
+It use.
+
+00:30:22.320 --> 00:30:26.100
+You can use assertion exceptions with async methods.
+
+00:30:26.280 --> 00:30:28.620
+So it has a resolved item.
+
+00:30:28.620 --> 00:30:35.920
+So you can say assert that await resolved future results in future raising value error or something.
+
+00:30:35.920 --> 00:30:36.560
+Yeah.
+
+00:30:36.560 --> 00:30:36.880
+Nice.
+
+00:30:36.880 --> 00:30:37.240
+That's cool.
+
+00:30:37.240 --> 00:30:37.780
+So.
+
+00:30:37.780 --> 00:30:38.800
+Yeah.
+
+00:30:38.900 --> 00:30:40.400
+So a lot of predefined matchers.
+
+00:30:40.400 --> 00:30:46.060
+And I guess it has some syntactic shirker things like is underscore.
+
+00:30:46.560 --> 00:30:50.160
+So just if it sounds better to have an is in there, you can add it.
+
+00:30:50.160 --> 00:30:52.660
+So assert that the biscuit is equal to.
+
+00:30:52.660 --> 00:30:54.280
+Doesn't do anything.
+
+00:30:54.280 --> 00:30:56.100
+But it, like, sounds better.
+
+00:30:56.100 --> 00:30:57.180
+So why not?
+
+00:30:57.180 --> 00:30:58.060
+I guess.
+
+00:30:58.060 --> 00:31:02.840
+If you wanted to read that English, like, insert a no-op verb.
+
+00:31:02.840 --> 00:31:03.580
+Yeah.
+
+00:31:03.580 --> 00:31:04.560
+But.
+
+00:31:04.560 --> 00:31:09.260
+But I guess I do want to highlight this because why not?
+
+00:31:09.260 --> 00:31:10.140
+I mean, I'm.
+
+00:31:10.140 --> 00:31:16.920
+Since I'm writing a lot of test code, I'm used to all the different ways you can check different equivalents of values or comparisons.
+
+00:31:16.920 --> 00:31:19.920
+So I don't know how much I would use this.
+
+00:31:20.040 --> 00:31:20.500
+But for.
+
+00:31:20.500 --> 00:31:24.840
+I've seen a lot of people struggle with how to how to write an assertion.
+
+00:31:24.840 --> 00:31:27.460
+And so having some help with the library, why not?
+
+00:31:27.460 --> 00:31:28.600
+So this is pretty neat.
+
+00:31:28.600 --> 00:31:28.980
+Yeah.
+
+00:31:28.980 --> 00:31:30.320
+This totally resonates with me.
+
+00:31:30.320 --> 00:31:30.780
+I like it.
+
+00:31:30.780 --> 00:31:31.120
+So.
+
+00:31:31.120 --> 00:31:34.180
+Well, that's our six items.
+
+00:31:34.180 --> 00:31:34.560
+Six.
+
+00:31:34.560 --> 00:31:35.320
+Four items.
+
+00:31:35.320 --> 00:31:40.880
+Do you have any extras for us this week?
+
+00:31:40.880 --> 00:31:42.640
+I do have a few extras.
+
+00:31:42.640 --> 00:31:44.160
+Let me throw them in here.
+
+00:31:44.160 --> 00:31:45.920
+First of all, it's a few weeks old.
+
+00:31:45.920 --> 00:31:48.340
+I didn't remember to put it up here.
+
+00:31:48.340 --> 00:31:53.660
+But Python 3.11.2 is out as well as 3.10.10.
+
+00:31:54.140 --> 00:31:56.380
+And the alpha 5 of 3.12.
+
+00:31:56.380 --> 00:32:05.620
+We're getting kind of close to beta, it feels like, for 3.12, which will be exciting because then we'll get real visibility into what's probably going to be happening for the next version of Python.
+
+00:32:05.620 --> 00:32:06.080
+That's cool.
+
+00:32:06.080 --> 00:32:06.760
+Yeah.
+
+00:32:07.180 --> 00:32:11.780
+I'm testing for 3.12 already with our CI builds.
+
+00:32:11.780 --> 00:32:12.640
+Nice.
+
+00:32:13.480 --> 00:32:19.300
+For example, with 3.11.2, there were 192 commits since 3.11.1.
+
+00:32:19.300 --> 00:32:20.440
+194, rather.
+
+00:32:20.440 --> 00:32:22.900
+So that's pretty non-trivial right there.
+
+00:32:22.900 --> 00:32:27.620
+And they link over to somewhere that looks, I don't know, what am I supposed to learn from that?
+
+00:32:27.620 --> 00:32:29.460
+Here's the changes from 3.11 to 3.12.
+
+00:32:29.740 --> 00:32:31.780
+So I always go to downloads, full list of downloads.
+
+00:32:31.780 --> 00:32:36.440
+Scroll down to the particular version here and go to release notes.
+
+00:32:36.440 --> 00:32:37.060
+And there you go.
+
+00:32:37.060 --> 00:32:38.500
+That's probably what they should be linking to.
+
+00:32:38.500 --> 00:32:39.700
+And here's all the things.
+
+00:32:39.700 --> 00:32:43.820
+There's some that are in here that are things that you might actually care about.
+
+00:32:43.820 --> 00:32:49.060
+Like, for example, fixed race condition while iterating over thread states in thread.local.
+
+00:32:49.060 --> 00:32:50.760
+You might not want that in your code.
+
+00:32:50.760 --> 00:32:52.120
+And various other things.
+
+00:32:52.120 --> 00:32:53.160
+Yeah.
+
+00:32:53.160 --> 00:32:55.240
+Look at all these changes here.
+
+00:32:55.240 --> 00:32:55.760
+This is a lot.
+
+00:32:55.760 --> 00:32:56.320
+Yeah.
+
+00:32:56.320 --> 00:32:56.920
+Nice.
+
+00:32:56.920 --> 00:32:58.180
+Go team.
+
+00:32:58.180 --> 00:32:59.080
+Yeah.
+
+00:32:59.080 --> 00:32:59.540
+Go team.
+
+00:32:59.540 --> 00:33:06.240
+You might think, oh, it's just a dot plus one, plus 0.0.1 sort of thing to it.
+
+00:33:06.240 --> 00:33:09.700
+But no, it's got some interesting changes.
+
+00:33:09.700 --> 00:33:15.260
+As well as I haven't looked at what's happening in others, but maybe some of those are important enough to pull backwards, those fixes.
+
+00:33:15.660 --> 00:33:22.160
+Also, more recent, as in eight days ago, we've got Django 4.2 beta.
+
+00:33:22.160 --> 00:33:23.320
+Beta one.
+
+00:33:23.320 --> 00:33:30.340
+And, you know, typically the philosophy is once it hits beta, the API should be stable, the features should be stable.
+
+00:33:30.340 --> 00:33:31.560
+It's just about fixing bugs.
+
+00:33:31.560 --> 00:33:33.900
+Doesn't always work out that way, but that's generally the idea.
+
+00:33:33.900 --> 00:33:37.800
+So, basically, here's your concrete look at Django 4.2.
+
+00:33:37.800 --> 00:33:38.340
+Yeah.
+
+00:33:38.340 --> 00:33:39.020
+Right?
+
+00:33:39.020 --> 00:33:40.900
+And 4.2 looks exciting.
+
+00:33:40.900 --> 00:33:42.380
+Yeah, absolutely.
+
+00:33:42.660 --> 00:33:46.760
+So, you know, they've got some release nodes and various things about what's going on.
+
+00:33:46.760 --> 00:33:47.840
+You can go check that out.
+
+00:33:47.840 --> 00:33:50.280
+So, they got Psycho PG3.
+
+00:33:50.280 --> 00:33:52.440
+So, Postgres support.
+
+00:33:52.440 --> 00:33:56.800
+It now supports Psycho PG version 3.1.8 or higher.
+
+00:33:56.800 --> 00:33:59.440
+You can update your code to use that as a back end.
+
+00:33:59.440 --> 00:34:02.800
+I'm still using 2, so I better, I didn't know there was a 3.
+
+00:34:02.800 --> 00:34:04.700
+It's the, no, careful, Brian.
+
+00:34:04.700 --> 00:34:08.540
+Psycho PG2 is likely to be deprecated and removed at some point in the future.
+
+00:34:08.540 --> 00:34:09.200
+Okay.
+
+00:34:10.400 --> 00:34:12.260
+Comments on columns and tables.
+
+00:34:12.260 --> 00:34:15.180
+So, that's kind of neat in the database model.
+
+00:34:15.180 --> 00:34:16.720
+So, the ORM gets some love there.
+
+00:34:16.720 --> 00:34:18.660
+No comment on that.
+
+00:34:18.660 --> 00:34:19.500
+Yeah, no comment.
+
+00:34:19.500 --> 00:34:20.020
+Very good.
+
+00:34:20.020 --> 00:34:22.840
+Some stuff about the so-called breach attack.
+
+00:34:22.840 --> 00:34:24.900
+I have no idea, but it seems to have to do with GZIP.
+
+00:34:24.900 --> 00:34:25.880
+So, check that out.
+
+00:34:25.880 --> 00:34:30.220
+Another one that's interesting is in-memory file storage and custom file stores.
+
+00:34:30.220 --> 00:34:32.840
+This is for making testing potentially faster.
+
+00:34:32.840 --> 00:34:37.180
+So, if you're going to write some files as part of a behavior, you can say, just write them
+
+00:34:37.180 --> 00:34:37.620
+in memory.
+
+00:34:37.620 --> 00:34:38.560
+Don't have to clean them up.
+
+00:34:38.780 --> 00:34:39.660
+And they write really fast.
+
+00:34:39.660 --> 00:34:40.460
+Yeah.
+
+00:34:40.460 --> 00:34:42.480
+It phenomenally speeds up testing.
+
+00:34:42.480 --> 00:34:42.920
+It's good.
+
+00:34:42.920 --> 00:34:43.540
+Yeah, I bet.
+
+00:34:43.540 --> 00:34:44.000
+All right.
+
+00:34:44.000 --> 00:34:45.560
+So, there's that.
+
+00:34:45.560 --> 00:34:48.180
+And then also, I want to give a shout out.
+
+00:34:48.180 --> 00:34:49.040
+I'll put it like this.
+
+00:34:49.040 --> 00:34:54.300
+I want to give a shout out to an app real quick that people might find useful by way of a journey.
+
+00:34:54.400 --> 00:35:00.780
+So, rewriting the Talk Python apps in Flutter, which all the APIs are Python, but we're having
+
+00:35:00.780 --> 00:35:04.700
+apps on macOS, Windows, Linux, iOS, and Android.
+
+00:35:04.700 --> 00:35:06.220
+That's really hard to do with Python.
+
+00:35:06.220 --> 00:35:07.520
+So, Flutter is what we're using.
+
+00:35:07.520 --> 00:35:09.040
+And it's going along really well.
+
+00:35:09.040 --> 00:35:12.660
+Here's a little screenshot for you, Brian, to show you what we've got so far.
+
+00:35:12.660 --> 00:35:13.400
+Isn't that cool?
+
+00:35:13.400 --> 00:35:13.960
+Yeah.
+
+00:35:14.240 --> 00:35:14.600
+Yes.
+
+00:35:14.600 --> 00:35:17.140
+And another, like, here's the little app and stuff.
+
+00:35:17.140 --> 00:35:18.760
+So, I think I'm really happy with how it's coming together.
+
+00:35:18.760 --> 00:35:23.920
+I think it's going to be a better mobile app experience for, and an existing desktop experience
+
+00:35:23.920 --> 00:35:25.980
+for, like, offline mode with the Talk Python courses.
+
+00:35:25.980 --> 00:35:26.620
+Oh, cool.
+
+00:35:26.900 --> 00:35:27.060
+Yeah.
+
+00:35:27.060 --> 00:35:28.460
+So, that'll be really neat.
+
+00:35:28.460 --> 00:35:31.340
+The thing I want to tell you about is something I just applied to it.
+
+00:35:31.340 --> 00:35:33.680
+This thing called ImageOptim.
+
+00:35:33.680 --> 00:35:36.980
+And what you can do is you can just take the top level of your project.
+
+00:35:36.980 --> 00:35:39.840
+So, I did this for, say, the Talk Python training website.
+
+00:35:39.840 --> 00:35:40.900
+I did this for the mobile app.
+
+00:35:40.900 --> 00:35:44.560
+Just take the very top level project folder and just throw it on this app.
+
+00:35:44.560 --> 00:35:50.420
+And it'll go find all the images, all the vector graphics, and everything, and minimize the heck out of them.
+
+00:35:50.420 --> 00:35:56.640
+So, for example, when I did that on the mobile app, it went from 10 megs of image assets to 8 megs of image assets.
+
+00:35:56.640 --> 00:35:57.500
+It's lossless.
+
+00:35:57.500 --> 00:36:00.980
+Like, no one will know the difference other than me that I've done it.
+
+00:36:00.980 --> 00:36:04.740
+And it dropped 20% of the file size, which is not the end of the world.
+
+00:36:04.740 --> 00:36:07.200
+But given how much work it is, it's not too bad.
+
+00:36:07.200 --> 00:36:09.720
+Well, the lossless part is the important bit.
+
+00:36:09.720 --> 00:36:11.300
+So, that's pretty exciting.
+
+00:36:11.300 --> 00:36:12.200
+Yeah, exactly.
+
+00:36:12.200 --> 00:36:18.820
+So, it'll do things like if it's a PNG and it sees you're using a smaller color palette than what it's actually holding.
+
+00:36:18.820 --> 00:36:23.260
+It's like, oh, we can rewrite that in a way that doesn't make it actually look different, but takes up less storage.
+
+00:36:23.540 --> 00:36:31.640
+Basically, it's a wrapper over things like Moe's JPEG, PNG Quaint, PNG Crush, Google Zapfali.
+
+00:36:31.640 --> 00:36:33.640
+I don't know how to say these things.
+
+00:36:33.640 --> 00:36:40.020
+But there are a bunch of lossless image manipulation tools, and it just applies those to all of them in a super easy way.
+
+00:36:40.020 --> 00:36:41.360
+And this thing's open source itself.
+
+00:36:41.360 --> 00:36:41.780
+Cool.
+
+00:36:41.780 --> 00:36:42.640
+So, yeah.
+
+00:36:42.640 --> 00:36:51.420
+Anyway, if people have websites out there, you know, they consider just like, take your website, throw it on here, and it'll tell you, you know, make sure it's all checked in and get.
+
+00:36:51.420 --> 00:36:52.060
+Do this.
+
+00:36:52.060 --> 00:36:52.860
+See what it says.
+
+00:36:52.860 --> 00:36:54.100
+It gives you a little report at the bottom.
+
+00:36:54.100 --> 00:36:58.100
+Like, you saved either 10K or you saved 5 megs, depending.
+
+00:36:58.100 --> 00:36:59.760
+You can decide whether to keep the changes.
+
+00:36:59.760 --> 00:37:00.320
+Yeah.
+
+00:37:00.320 --> 00:37:00.740
+Cool.
+
+00:37:00.740 --> 00:37:01.200
+Yep.
+
+00:37:01.200 --> 00:37:01.420
+All right.
+
+00:37:01.420 --> 00:37:02.540
+That's all my extras.
+
+00:37:02.540 --> 00:37:03.520
+How about you?
+
+00:37:03.520 --> 00:37:04.540
+I just have a couple.
+
+00:37:04.540 --> 00:37:08.100
+Yesterday, I talked with you on Python Byte.
+
+00:37:08.100 --> 00:37:11.720
+No, on Talk Python about pytest tips and tricks.
+
+00:37:11.720 --> 00:37:17.760
+And I just wanted to point out that the post is available for people to read if they want to go look through it.
+
+00:37:17.760 --> 00:37:21.920
+And if you have comments, please, or questions, let me know, of course.
+
+00:37:21.920 --> 00:37:27.580
+Also, in March, I think I've brought this up before, but I'll be speaking at PyCascades.
+
+00:37:27.580 --> 00:37:30.040
+There's a picture of me without hair.
+
+00:37:31.180 --> 00:37:42.920
+And I did stick up a blog post on pythontest.com, just a placeholder so that I can link the slides and code afterwards.
+
+00:37:42.920 --> 00:37:44.140
+So that's up.
+
+00:37:44.140 --> 00:37:44.600
+Yeah, awesome.
+
+00:37:44.600 --> 00:37:46.020
+And that's it.
+
+00:37:46.020 --> 00:37:48.260
+Yeah, that's going to be a really cool talk.
+
+00:37:48.260 --> 00:37:53.480
+I think a lot of people are interested in how you share fixtures and build them for the team or cross project.
+
+00:37:53.480 --> 00:37:59.020
+As well, as it was really great to have you on Talk Python, we talked a bunch of cool pytest things.
+
+00:37:59.020 --> 00:38:01.900
+And that'll be out in a few weeks for people, if they don't want to watch the YouTube version.
+
+00:38:01.900 --> 00:38:05.080
+And then we'll let people know when that's available.
+
+00:38:05.080 --> 00:38:06.280
+But yeah, absolutely.
+
+00:38:06.280 --> 00:38:09.060
+But hopefully they're all subscribed to Talk Python already anyway.
+
+00:38:09.060 --> 00:38:10.520
+Of course, I'm sure they are.
+
+00:38:10.520 --> 00:38:11.280
+Yeah, they are.
+
+00:38:11.280 --> 00:38:13.460
+How about a joke?
+
+00:38:13.460 --> 00:38:14.080
+Are we ready?
+
+00:38:14.080 --> 00:38:15.280
+Yes, let's do a joke.
+
+00:38:15.280 --> 00:38:16.360
+Let's do it.
+
+00:38:16.360 --> 00:38:18.320
+So this one, this is a quick and easy one.
+
+00:38:18.320 --> 00:38:20.200
+And for people listening, no pictures even.
+
+00:38:20.200 --> 00:38:24.040
+This one comes from Nick's Craft on Twitter.
+
+00:38:24.040 --> 00:38:28.680
+And it says, developers, let us describe you as a group, right?
+
+00:38:28.680 --> 00:38:32.400
+Things, groups of things sometimes have weird names, right?
+
+00:38:32.400 --> 00:38:35.300
+Like a group of wolves is called a pack.
+
+00:38:35.300 --> 00:38:37.420
+A group of crows is called a murder.
+
+00:38:37.420 --> 00:38:40.640
+We think we should call a group of developers, Brian.
+
+00:38:40.640 --> 00:38:42.220
+That's hilarious.
+
+00:38:42.220 --> 00:38:44.360
+A group of developers is called a merge conflict.
+
+00:38:44.360 --> 00:38:46.960
+Isn't that good?
+
+00:38:47.180 --> 00:38:48.200
+Yeah, it is.
+
+00:38:48.200 --> 00:38:49.960
+The comments are pretty good.
+
+00:38:49.960 --> 00:38:54.720
+If you scroll down here, some of them are silly.
+
+00:38:54.720 --> 00:38:56.360
+Some are just like, yep.
+
+00:38:56.360 --> 00:38:56.920
+Yeah.
+
+00:38:56.920 --> 00:38:58.780
+Yeah.
+
+00:38:58.780 --> 00:39:00.160
+Anyway, they're pretty good.
+
+00:39:00.160 --> 00:39:04.000
+But yeah, a group of developers is called a merge conflict.
+
+00:39:04.000 --> 00:39:05.240
+And so true it is.
+
+00:39:05.240 --> 00:39:07.920
+You can even have a merge conflict with yourself.
+
+00:39:07.920 --> 00:39:08.920
+Be a group of one.
+
+00:39:08.920 --> 00:39:15.140
+How about a group of tech CEOs with social media accounts?
+
+00:39:15.560 --> 00:39:17.100
+Be a lawsuit.
+
+00:39:17.100 --> 00:39:18.760
+That's right.
+
+00:39:18.760 --> 00:39:21.520
+An SEC investigation.
+
+00:39:21.520 --> 00:39:22.280
+That's right.
+
+00:39:22.280 --> 00:39:25.840
+Well, fun as always.
+
+00:39:25.840 --> 00:39:26.180
+Thank you.
+
+00:39:26.180 --> 00:39:26.640
+Yeah.
+
+00:39:26.640 --> 00:39:29.180
+Thanks, everybody for showing up, as always.
+
+00:39:29.180 --> 00:39:31.900
+And we'll see everybody next week.
+

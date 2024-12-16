@@ -1,4024 +1,1574 @@
+WEBVTT
 
-00:00:00.000 --> 00:00:03.280
-Hello and welcome to Python Bytes where we deliver Python news and headlines
+00:00:00.001 --> 00:00:04.680
+Hello and welcome to Python Bytes, where we deliver Python news and headlines directly to your earbuds.
 
+00:00:04.680 --> 00:00:13.020
+This is episode 276, recorded March 22nd, 2022. So many twos. I'm Michael Kennedy.
 
-00:00:03.280 --> 00:00:04.920
-directly to your earbuds.
+00:00:13.020 --> 00:00:14.000
+And I'm Brian Okken.
 
+00:00:14.000 --> 00:00:15.140
+And I'm Ian Hellen.
 
-00:00:04.920 --> 00:00:11.040
-This is episode 276 recorded March 22nd, 2022.
+00:00:15.140 --> 00:00:18.160
+Hey, Ian. Welcome to the show. It's great to have you here.
 
+00:00:18.160 --> 00:00:23.300
+Thank you very much. I've listened to the show a lot and feel very privileged to appear on it.
 
-00:00:11.040 --> 00:00:12.000
-So many twos.
+00:00:23.300 --> 00:00:29.040
+It's our privilege to have you here. Thank you so much for listening. And I know you got some
 
+00:00:29.040 --> 00:00:33.700
+cool stuff to share. So we're looking forward to hearing about that. Also, I do want to say
 
-00:00:12.000 --> 00:00:13.040
-I'm Michael Kennedy.
+00:00:33.700 --> 00:00:39.280
+thank you to Fusion Auth for sponsoring the show. I'll tell you more about them later.
 
+00:00:39.280 --> 00:00:42.780
+Before we get into the topics, Ian, tell people a quick bit about yourself.
 
-00:00:13.040 --> 00:00:14.040
-And I'm Brian Arkin.
+00:00:42.780 --> 00:00:48.160
+Sure. I'm a developer in Microsoft, the Microsoft Threat Intelligence Center.
 
+00:00:48.160 --> 00:00:52.580
+Been with Microsoft for quite a long time. Only relatively recently, like four years so ago,
 
-00:00:14.040 --> 00:00:15.160
-And I'm Ian Helen.
+00:00:52.580 --> 00:00:58.000
+got into Python coding with Jupyter Notebooks. So I work on Jupyter Notebooks for the Microsoft
 
+00:00:58.080 --> 00:01:05.200
+Sentinel project and own a modest open source package that we'll call MysticPy, which we'll
 
-00:00:15.160 --> 00:00:17.380
-Hey Ian, welcome to the show.
+00:01:05.200 --> 00:01:07.500
+cover a little bit later. Takes most of my time.
 
+00:01:07.500 --> 00:01:14.320
+Fantastic. The whole cybersecurity threat detection stuff, it's very interesting. There's a lot of
 
-00:00:17.380 --> 00:00:18.140
-It's great to have you here.
+00:01:14.320 --> 00:01:17.520
+innovation there, but it's also, it's a challenging area to be working.
 
+00:01:17.520 --> 00:01:20.020
+Yep. Yep. We're never sure of stuff to do.
 
-00:00:18.140 --> 00:00:19.420
-Thank you very much.
+00:01:20.020 --> 00:01:25.480
+Certainly. I'm sure you're not. Well, Brian, how about you kick us off here?
 
+00:01:25.640 --> 00:01:30.980
+Well, so I'm going to start off with a problem. So I, I had a problem and I have a cool solution for it.
 
-00:00:19.420 --> 00:00:23.220
-I've listened to the show a lot and I feel very privileged to appear on it.
+00:01:30.980 --> 00:01:39.140
+So my problem is on test and code, I've got titles and I want to end a show on it. It's MP3 file,
 
+00:01:39.140 --> 00:01:44.960
+but I want to create a show notes, automated show notes or not show notes, a transcript.
 
-00:00:23.220 --> 00:00:26.400
-It's our privilege to have you here.
+00:01:45.340 --> 00:01:50.500
+So one of the problems, there's a lot of problems in doing this, trying to automate it, but one of them
 
+00:01:50.500 --> 00:01:57.940
+is the title. I want to turn that into something that's a little bit, so something like, you know,
 
-00:00:26.400 --> 00:00:28.040
-Thank you so much for listening.
+00:01:57.940 --> 00:02:03.320
+it's got normal English and capitalization and all sorts of spaces and stuff. I want to turn that into
 
+00:02:03.320 --> 00:02:09.340
+things that URLs hate. Yeah. I want to turn that into a URL. And, and one of the problem,
 
-00:00:28.040 --> 00:00:29.840
-And I know you got some cool stuff to share.
+00:02:09.340 --> 00:02:13.980
+one of the things is getting rid of stop words. So there's a bunch of stuff like lower casing.
 
+00:02:13.980 --> 00:02:19.360
+I can do that easy, but getting rid of stop words was a little hard. So I ran across this,
 
-00:00:29.840 --> 00:00:32.120
-So we're, we're looking forward to hearing about that.
+00:02:19.360 --> 00:02:28.520
+this thing called gen sim parsing, pre processing thing. So pre processing. So gen sim is a larger sort
 
+00:02:28.520 --> 00:02:36.580
+of beast. It's a, it's a used for machine or machine learning and stuff to generate models. But I am,
 
-00:00:32.120 --> 00:00:37.280
-Also, I do want to say thank you to Fusion Auth for sponsoring the show.
+00:02:36.580 --> 00:02:41.740
+I'm just really using one little piece of it, the pre processing part. And it's, it's really pretty
 
+00:02:41.740 --> 00:02:47.680
+cool. I was looking, I actually found this article first. There was an article called removing stop
 
-00:00:37.280 --> 00:00:39.400
-I'll tell you more about them later.
+00:02:47.680 --> 00:02:55.780
+words from strings in Python. And it has, it has a discussion of NLTK and gen sim and spacey. I tried all
 
+00:02:55.780 --> 00:03:02.940
+of them out actually. And the one that really stuck best for me is a using, talked about using
 
-00:00:39.400 --> 00:00:42.840
-Before we get into the topics, Ian, tell people a bit about yourself.
+00:03:02.940 --> 00:03:09.120
+remove stop words is exactly what I wanted right from, from gen sim. So I went ahead and tried that
 
+00:03:09.120 --> 00:03:15.120
+and it worked really well, but I'm like, wait, I'm pulling this is in from the pre processing library.
 
-00:00:42.840 --> 00:00:43.480
-Sure.
+00:03:15.120 --> 00:03:22.160
+I wonder what's what else is in there. And there's all sorts of really cool stuff in here. there's a
 
+00:03:22.160 --> 00:03:27.220
+lower lowercase to Unicode. It turns it both into lowercase and in Unicode. That's pretty neat.
 
-00:00:43.480 --> 00:00:48.200
-I'm a developer in Microsoft, in Microsoft Threat Intelligence Center.
+00:03:27.220 --> 00:03:33.620
+Don't think I need it, but that's neat. but then there was one that was, pre, I thought
 
+00:03:33.620 --> 00:03:38.920
+maybe this is exactly what I want is, something called pre-process string. And it has a whole bunch
 
-00:00:48.200 --> 00:00:49.920
-Been with Microsoft for quite a long time.
+00:03:38.920 --> 00:03:45.160
+of filters built into it. Oh, nice. Like strip strip. Yeah. Strip white space, strip punctuation. I love it.
 
+00:03:45.320 --> 00:03:49.780
+Yeah. And take away multiple, after it strips punctuation, like you're going to have,
 
-00:00:49.920 --> 00:00:53.000
-Only relatively recently, like four years or so ago, got into
+00:03:49.780 --> 00:03:56.080
+if I go back, I had a slash in my title for one of the episodes. If it takes that out, I'm going to
 
+00:03:56.080 --> 00:04:01.780
+have a space before and a space after. So I want to remove those. So it'll strip multiple white space
 
-00:00:53.000 --> 00:00:55.320
-Python coding with Jupyter notebooks.
+00:04:01.780 --> 00:04:07.100
+strips out numerics. Cause I probably don't want numbers in there. and then remove stop words.
 
+00:04:07.100 --> 00:04:13.560
+The one thing I don't want that I'll have to like, customize how I'm calling this is a stem text.
 
-00:00:55.640 --> 00:01:00.720
-So I work on Jupyter notebooks for the Microsoft Sentinel project and own a
+00:04:13.560 --> 00:04:18.500
+So stem text, I didn't, I don't know what that did without playing with it, but what it does is it
 
+00:04:18.500 --> 00:04:23.800
+would take things like twisted and turning it, turn it into twist. That's, that's really not right.
 
-00:01:00.720 --> 00:01:05.960
-modest open source package that we'll call Mystic Pi, which we'll cover a little bit
+00:04:23.800 --> 00:04:26.920
+So you definitely don't want that. I don't want that. I don't mess it up, but I think I want
 
+00:04:26.920 --> 00:04:32.660
+everything else. So, this gen SIM, library has, you know, if you're doing machine learning,
 
-00:01:05.960 --> 00:01:06.320
-later.
+00:04:32.660 --> 00:04:39.800
+coming up with models, I think this is a great, tool to look into, but if it's actually,
 
+00:04:39.800 --> 00:04:45.740
+I'm going to use it just for, removing to create these titles for, for, you know, my podcast,
 
-00:01:06.320 --> 00:01:07.560
-Takes most of my time.
+00:04:45.740 --> 00:04:51.960
+but the, I think it, it feels a little weird. It feels like I'm using this really big hammer to do
 
+00:04:51.960 --> 00:04:57.580
+this little tiny problem. I guess I'm okay with it, but you know, do you have any other ideas
 
-00:01:07.560 --> 00:01:08.440
-Fantastic.
+00:04:57.580 --> 00:05:04.600
+where it could use or, well, I didn't know about this. So I wrote my own. Okay. And it's, it's,
 
+00:05:04.600 --> 00:05:08.960
+it's kind of janky. Like it's a little bit, a little bit recursive iterative. It's like,
 
-00:01:08.440 --> 00:01:11.920
-The whole cybersecurity threat detection stuff.
+00:05:08.960 --> 00:05:14.040
+we'll take away all the punctuation. Now turn all of your white spaces into single white spaces.
 
+00:05:14.040 --> 00:05:18.860
+Cause there might've been, you know, dot space. So now you've got two white spaces, but you've got to
 
-00:01:11.920 --> 00:01:13.680
-It's, it's very interesting.
+00:05:18.860 --> 00:05:22.800
+take away, you know, there's like a bunch of weird steps and then, then put it back. This looks
 
+00:05:22.800 --> 00:05:27.380
+cleaner. It is a dependency, but it does look cleaner. I like this. I think it's, I'm glad I
 
-00:01:13.680 --> 00:01:17.280
-There's a lot of innovation there, but it's also, it's a challenging area to be
+00:05:27.380 --> 00:05:32.200
+know about it. Ian, what do you think? Is it a huge thing? I mean, dependency, but, I always
 
+00:05:32.200 --> 00:05:37.660
+think of like ML like stuff, but this is like just the pre-processing, right? Well, I'm actually pulling
 
-00:01:17.280 --> 00:01:17.600
-working.
+00:05:37.660 --> 00:05:42.980
+in all of GenSim to get this. I don't know if I can pull in little bits, but, it's, it's not
 
+00:05:42.980 --> 00:05:48.760
+really part of my application that I'm shipping. It's just a tool that I'm using on my laptop. So I,
 
-00:01:17.600 --> 00:01:18.120
-Yep.
+00:05:49.080 --> 00:05:53.220
+I guess downloading it once doesn't really bother me too much, even if it's a big thing.
 
+00:05:53.220 --> 00:05:56.660
+But cool. Yeah. I was thinking, yeah, that's a good, that's a good point. If it's running
 
-00:01:18.120 --> 00:01:18.560
-Yep.
+00:05:56.660 --> 00:06:00.840
+local, it's like a dev dependency, who cares? Right. It's like worrying about how big pytest
 
+00:06:00.840 --> 00:06:05.440
+is. Like it doesn't really matter. And I'm not, well, I kind of get care about that. Cause
 
-00:01:18.560 --> 00:01:20.040
-We never short of stuff to do.
+00:06:05.440 --> 00:06:10.160
+CI is going to pull it in all the time for pytest, but. Yeah, but they got fast networks.
 
+00:06:10.160 --> 00:06:16.600
+It's not your bandwidth. It'll be all right. One of the things that struck me about this
 
-00:01:20.040 --> 00:01:20.720
-So that's.
+00:06:16.600 --> 00:06:21.780
+that made me think of your situation is like that lowercase to Unicode in so many
 
+00:06:21.780 --> 00:06:27.440
+times in the security space. It's about like, you're checking for this representation, but what
 
-00:01:20.720 --> 00:01:22.440
-I'm sure you're not.
+00:06:27.440 --> 00:06:31.300
+if there's another representation that means the same thing? Like you don't say go to this
 
+00:06:31.300 --> 00:06:35.860
+directory. You say go dot, dot. And then over there, you know, those, those kinds of non-canonical
 
-00:01:22.440 --> 00:01:25.520
-Well, Brian, how about you kick us off here?
+00:06:35.860 --> 00:06:39.540
+representations. I wonder if there's any use of this kind of stuff for you.
 
+00:06:39.540 --> 00:06:43.380
+Yeah. There's something I kind of touch on the pigment section later on, which like the
 
-00:01:25.560 --> 00:01:27.600
-Well, so I'm going to start off with a problem.
+00:06:43.380 --> 00:06:49.660
+attackers typically write scripted attacks and try to obfuscate code using a mix of kind of
 
+00:06:49.660 --> 00:06:53.860
+uppercase and putting random dots. I'm just thinking that'd be a nice, potentially a nice
 
-00:01:27.600 --> 00:01:31.000
-So I had a problem and I have a cool solution for it.
+00:06:53.860 --> 00:06:56.200
+way of kind of cleaning some of that, that stuff up.
 
+00:06:56.200 --> 00:07:01.020
+Yeah, for sure. There was a, there's been some interesting supply chain vulnerability stuff.
 
-00:01:31.000 --> 00:01:33.640
-So my problem is on test and code,
+00:07:01.020 --> 00:07:06.600
+Remember, remember the guy with the color and I think the faker stuff in JavaScript that
 
+00:07:06.600 --> 00:07:14.540
+sabotaged his, his libraries. There was another one that maybe well-intentioned. I don't know. It,
 
-00:01:33.640 --> 00:01:38.640
-I've got titles and I want to end a show on MP3 file,
+00:07:14.540 --> 00:07:19.020
+it was some open source library. I don't believe it was Python. I can't remember what it was.
 
+00:07:19.020 --> 00:07:22.640
+It could have been, but I'm pretty sure it was in JavaScript because that's where all,
 
-00:01:38.640 --> 00:01:42.120
-but I want to create a show notes,
+00:07:22.640 --> 00:07:28.440
+most of the bad stuff was, it seems. Anyway, they wrote their, they, they taught their dependency
 
+00:07:28.440 --> 00:07:36.120
+to erase everybody's hard drive who installed it, who was in Belarus and Russia, which, okay,
 
-00:01:42.120 --> 00:01:45.560
-automated show notes or not show notes, transcripts.
+00:07:36.120 --> 00:07:40.200
+maybe they're trying to contribute, but like it ended up doing a bunch of bad things, even to places
 
+00:07:40.200 --> 00:07:46.460
+that were like trying to help say people in the press and journalists do certain things and then like,
 
-00:01:45.560 --> 00:01:47.200
-So one of the problems,
+00:07:46.460 --> 00:07:51.760
+you know, connect with sources and in a race like that database as well. And what they did to make it so
 
+00:07:51.760 --> 00:07:58.180
+that nobody would notice in the GitHub commit before it went out to NPM was base 64 encode their
 
-00:01:47.200 --> 00:01:48.840
-there's a lot of problems in doing this,
+00:07:58.180 --> 00:08:03.280
+changes. So I basically put a base 64 encoded string and then like decode and then run that.
 
+00:08:03.280 --> 00:08:07.800
+And, you know, it's like that kind of stuff. I know this won't solve that problem, but yeah,
 
-00:01:48.840 --> 00:01:51.760
-trying to automate it, but one of them is the title.
+00:08:07.800 --> 00:08:10.500
+you know, that, that sort of category of like weird representations.
 
+00:08:10.500 --> 00:08:15.920
+Yeah. You need mystic pie for something like that. It's one of the things we, yeah, it's a common thing,
 
-00:01:51.760 --> 00:01:56.240
-I want to turn that into something that's a little bit,
+00:08:15.920 --> 00:08:19.500
+kind of basics before decoding before the obfuscating. But yeah.
 
+00:08:19.500 --> 00:08:24.620
+Yeah. Interesting. yeah, I thought of maybe using something like that with,
 
-00:01:56.240 --> 00:01:58.420
-so something like, you know,
+00:08:24.620 --> 00:08:28.140
+because one of the problems we have is like every, every script is kind of slightly different.
 
+00:08:28.140 --> 00:08:34.260
+Uh, if you could use something like that, essentially kind of apply like sentiment analysis to
 
-00:01:58.420 --> 00:02:00.640
-it's got normal English and capitalization
+00:08:34.260 --> 00:08:38.640
+script. I mean, this is a big problem. It's just not something I've particularly solved.
 
+00:08:38.640 --> 00:08:43.080
+but that might be a kind of useful, useful thing to just picking out certain things that indicates
 
-00:02:00.640 --> 00:02:02.360
-and all sorts of spaces and stuff.
+00:08:43.080 --> 00:08:46.380
+malicious, like format, you know, format drive.
 
+00:08:47.660 --> 00:08:52.080
+Exactly. Yeah. You could certainly represent like this one does hard drive stuff. Is this,
 
-00:02:02.360 --> 00:02:03.400
-I want to turn that into a--
+00:08:52.080 --> 00:08:55.640
+I thought it was parsing colors. Why is it doing things with the hard drive? This is odd,
 
+00:08:55.640 --> 00:09:00.020
+you know, like, or with the network, stuff like that. Cool. All right. Well, you know what you
 
-00:02:03.400 --> 00:02:04.560
-- Things that URLs hate.
+00:09:00.020 --> 00:09:04.140
+would really want to check out if you were trying to research these things, probably documentation.
 
+00:09:04.140 --> 00:09:09.700
+So I want to tell you all about dev docs, dev docs.io. This is pretty cool. Now, when you get there,
 
-00:02:04.560 --> 00:02:06.700
-- Yeah, I want to turn that into a URL.
+00:09:09.700 --> 00:09:15.800
+it's an interesting on my Firefox, it's just got like the mobile view, which is really odd. If you go
 
+00:09:15.800 --> 00:09:20.540
+there with a full browser, it's what it believes is the full browser. I guess it's like a slightly
 
-00:02:06.700 --> 00:02:11.700
-And one of the things is getting rid of stop words.
+00:09:20.540 --> 00:09:26.220
+different view. That's pretty similar, but not the same. So there's, if you open up a whole bunch of
 
+00:09:26.220 --> 00:09:32.640
+programming technologies, let's say not just Python or JavaScript or something, but there's also Vue JS.
 
-00:02:11.700 --> 00:02:14.420
-So there's a bunch of stuff like lowercasing.
+00:09:33.160 --> 00:09:37.700
+There's Vexoig, for example, like some of the foundation of flash and you can pick the particular
 
+00:09:37.700 --> 00:09:42.340
+versions and stuff. So you can go in and like enable these different things. So maybe I care about
 
-00:02:14.420 --> 00:02:15.580
-I can do that easy.
+00:09:42.340 --> 00:09:47.200
+view. I can go over here and enable that one. Let's, we definitely want some Python. Let me go find
 
+00:09:47.200 --> 00:09:52.420
+some Python and it gives you all the versions. I'll take that. And let's say I'm also working with
 
-00:02:15.580 --> 00:02:17.960
-But getting rid of stop words was a little hard.
+00:09:52.420 --> 00:09:57.160
+Postgres. So I'll enable that documentation. And then I might be working with engine X for the front
 
+00:09:57.160 --> 00:10:05.000
+and which is somewhere right here. So you can go enable that. And then it will be up near the top
 
-00:02:17.960 --> 00:02:22.060
-So I ran across this thing called GenSim
+00:10:05.000 --> 00:10:09.200
+somewhere here. You can see these are either the default ones or the ones that I checked on. So then
 
+00:10:09.200 --> 00:10:15.420
+you can open them up and say, I want to go and see the engine X guide about a debugging log. And then it
 
-00:02:22.060 --> 00:02:24.000
-parsing pre-processing.
+00:10:15.420 --> 00:10:22.460
+takes you to the documentation for that technology. So it's like a meta documentation repository for all
 
+00:10:22.460 --> 00:10:26.780
+of these things all at once, which is pretty cool. Right? So I can go up here and search. I want to
 
-00:02:24.000 --> 00:02:29.000
-So pre-processing, so GenSim is a larger sort of beast.
+00:10:26.780 --> 00:10:33.100
+know about like, let's go about like media tags or something. So you can see the stuff in HTML5. You
 
+00:10:33.100 --> 00:10:38.180
+can see the stuff in when you say media, it looks like median. So you can see that in the statistics
 
-00:02:29.000 --> 00:02:34.100
-It's used for machine learning and stuff to generate models.
+00:10:38.180 --> 00:10:44.480
+module for Python, some stuff for CSS, or you could come over and say, look, I just want to search for
 
+00:10:44.480 --> 00:10:50.060
+CSS. And then you get like using media queries and how to do that kind of stuff. So it's kind of a,
 
-00:02:34.100 --> 00:02:38.880
-But I'm just really using one little piece of it,
+00:10:50.400 --> 00:10:54.400
+what you do is you turn on the pieces that are relevant to you, and then you can search across
 
+00:10:54.400 --> 00:11:01.220
+those technologies. Cool, right? Wow. Yeah. And, and then if you're on the move, you can come over
 
-00:02:38.880 --> 00:02:43.200
-the pre-processing part, and it's really pretty cool.
+00:11:01.220 --> 00:11:09.120
+here and turn on offline, offline data, and it'll download all of that as an app so that then you're
 
+00:11:09.120 --> 00:11:13.560
+the coffee shopper and you're playing, you now have all the documentation for Python 310, Vue.js,
 
-00:02:43.200 --> 00:02:46.040
-I was looking, I actually found this article first.
+00:11:13.560 --> 00:11:19.720
+Verix.soing, Nginx, et cetera, et cetera, that you can use, which is pretty cool. And this is something
 
+00:11:19.720 --> 00:11:24.660
+that drives me crazy about Firefox. They had it and they took it away. And I don't understand why,
 
-00:02:46.040 --> 00:02:49.780
-there was an article called Removing Stopwords from Strings in Python.
+00:11:24.660 --> 00:11:29.700
+because I'm feeling as firebox is about what the web. So they took away the ability to do progressive
 
+00:11:29.700 --> 00:11:35.000
+web apps in Firefox, but all the Chromium browsers support it. So you can actually go and install this
 
-00:02:49.780 --> 00:02:55.060
-It has a discussion of NLTK and GenSim and spaCy.
+00:11:35.000 --> 00:11:41.460
+as a dedicated application on your system. So you, if you have no web, you just click that open. It's
 
+00:11:41.460 --> 00:11:47.540
+its own window. You can up, you know, alt tab, command tab between it. Super easy. And then turn on the
 
-00:02:55.060 --> 00:02:57.020
-I tried all of them out actually,
+00:11:47.540 --> 00:11:52.120
+offline mode. And you basically have an app that has offline documentation for all the programming
 
+00:11:52.120 --> 00:11:56.520
+technologies that you care about. So this is my new coffee shop buddy.
 
-00:02:57.020 --> 00:03:00.220
-and the one that really stuck best for me is
+00:11:56.520 --> 00:12:01.280
+Is the search go across the thing you've selected then? So if I search for like replace or something,
 
+00:12:01.280 --> 00:12:03.080
+it's the things I've selected.
 
-00:03:00.220 --> 00:03:07.660
-using removed stopwords is exactly what I wanted from GenSim.
+00:12:03.080 --> 00:12:08.200
+Yeah. So if you turn on like JavaScript and Python, it would look for that in both languages.
 
+00:12:08.360 --> 00:12:08.760
+Oh, okay.
 
-00:03:07.660 --> 00:03:10.300
-I went ahead and tried that and it worked really well,
+00:12:08.760 --> 00:12:12.240
+Yeah. So basically the ones you turn on, there's a ton of them, right? And you pick,
 
+00:12:12.240 --> 00:12:16.840
+you say, these are interesting to me and then search and stuff from what I can tell only applies
 
-00:03:10.300 --> 00:03:11.420
-but I'm like, "Wait,
+00:12:16.840 --> 00:12:21.360
+to the technologies you say you care about. Cause like if, if you don't use Java, you really don't
 
+00:12:21.360 --> 00:12:23.900
+want to see the documentation for Java search, right? That would be useless.
 
-00:03:11.420 --> 00:03:15.460
-I'm pulling this in from the pre-processing library.
+00:12:23.900 --> 00:12:28.940
+Yeah. One of the things I like about this is it also has versions. So, if you're using a,
 
+00:12:28.940 --> 00:12:33.040
+like an older version of Postgres, you can just enable that version.
 
-00:03:15.460 --> 00:03:18.060
-I wonder what else is in there.
+00:12:33.480 --> 00:12:38.120
+Right. Sometimes it doesn't matter very much, but other times it matters massively like bootstrap
 
+00:12:38.120 --> 00:12:42.320
+three and bootstrap five, they're like fully incompatible basically. Like they're totally
 
-00:03:18.060 --> 00:03:21.000
-There's all sorts of really cool stuff in here.
+00:12:42.320 --> 00:12:47.240
+different keywords and grid systems. And you don't want just the latest. If you've got an old app
 
+00:12:47.240 --> 00:12:51.740
+you're working on something like that. Python's more forgiving about that kind of stuff, right?
 
-00:03:21.000 --> 00:03:24.240
-There's lowercase to Unicode.
+00:12:51.740 --> 00:12:52.720
+It doesn't break as often.
 
+00:12:52.720 --> 00:12:59.620
+I was amused that the, the list though is, it has like three, nine, three, eight for Python
 
-00:03:24.240 --> 00:03:26.520
-It turns it both into lowercase and in Unicode.
+00:12:59.620 --> 00:13:03.440
+and it has three 10 at the bottom because one is obviously.
 
+00:13:03.440 --> 00:13:07.980
+Cause it's alphabetically sorted. How interesting. Ian, what do you think of this?
 
-00:03:26.520 --> 00:03:29.720
-That's pretty neat. Don't think I need it, but that's neat.
+00:13:07.980 --> 00:13:13.340
+That's very cool. I'm amazed. Is somebody at dev docs kind of manually maintaining all of the links
 
+00:13:13.340 --> 00:13:17.120
+to these, like the original source documentation?
 
-00:03:29.720 --> 00:03:32.420
-But then there was one that was,
+00:13:17.120 --> 00:13:21.320
+Yeah. Where are they getting it from? Right. I mean, cause there's, they're super disparate.
 
+00:13:21.320 --> 00:13:26.660
+It's like matplotlib and markdown and MariaDB. These are all, it's unlikely they're all stored
 
-00:03:32.420 --> 00:03:35.240
-I thought maybe this is exactly what I want.
+00:13:26.660 --> 00:13:29.940
+in the same basic system. Right. I don't know how they get them actually.
 
+00:13:29.940 --> 00:13:34.580
+Yeah. That's very cool. I mean, I know, I normally have solved the same problem by having like 130
 
-00:03:35.240 --> 00:03:37.760
-It's something called pre-processed string,
+00:13:34.580 --> 00:13:38.280
+tabs open to different bits of Python docs and pandas and.
 
+00:13:38.280 --> 00:13:42.600
+Exactly. Exactly. Yeah. I'm pretty sure they got pandas in here.
 
-00:03:37.760 --> 00:03:40.920
-and it has a whole bunch of filters built into it.
+00:13:42.600 --> 00:13:47.580
+They got numpy as its own thing that we saw matplotlib. There's pandas and there's even,
 
+00:13:47.580 --> 00:13:50.220
+you know, versions of pandas across there.
 
-00:03:40.920 --> 00:03:41.560
->> Oh, nice.
+00:13:50.220 --> 00:13:52.600
+Single tab solution. Brilliant.
 
+00:13:53.100 --> 00:13:57.480
+Yeah. It looks, looks pretty good to me. All right. You want to tell us about what you got
 
-00:03:41.560 --> 00:03:42.100
->> Like strip.
+00:13:57.480 --> 00:13:58.240
+for your first item?
 
+00:13:58.240 --> 00:14:06.000
+Okay. Sure. Yeah. so, as I mentioned earlier, I own a package called mystic pie.
 
-00:03:42.100 --> 00:03:45.160
->> Strip. Yeah, strip whitespace, strip punctuation. I love it.
+00:14:06.000 --> 00:14:10.960
+and first thing to sort out with it is the spelling because I suffer from this on a daily basis,
 
+00:14:10.960 --> 00:14:17.500
+mistyping it, even though I've owned it for like three or four years. So it's MSTIC standard for
 
-00:03:45.160 --> 00:03:47.260
-- Yeah, and take away multiple,
+00:14:17.500 --> 00:14:21.980
+Microsoft threat intelligence center. There's no why or anything like that in there. So it's a tool
 
+00:14:21.980 --> 00:14:29.100
+set for cybersecurity investigations and hunting in Python, mainly in Jupyter notebooks. So there are a
 
-00:03:47.260 --> 00:03:48.800
-after it strips punctuation,
+00:14:29.100 --> 00:14:35.880
+couple of questions to ask about that. So firstly, what is cyber security hunting and investigation and
 
+00:14:35.880 --> 00:14:41.980
+what it, why are Jupyter notebooks useful? So the first one, cyber sec investigation is really responding
 
-00:03:48.800 --> 00:03:51.300
-like you're gonna have, if I go back,
+00:14:41.980 --> 00:14:47.140
+to alerts or other kinds of threat intelligence and trawling through typically large amounts of
 
+00:14:47.140 --> 00:14:53.280
+security logs from cloud services, hosts, account services to determine whether this is a real threat
 
-00:03:51.300 --> 00:03:54.960
-I had a slash in my title for one of the episodes.
+00:14:53.280 --> 00:14:57.880
+or not. And there are two main kinds of... That's one of the huge problems, right? Is you've got all
 
+00:14:57.880 --> 00:15:02.360
+these different systems. How are you going to know if someone, if you don't have a tool like this,
 
-00:03:54.960 --> 00:03:55.860
-If it takes that out,
+00:15:02.360 --> 00:15:05.680
+how are you going to know that something, someone's in there rooting around, right?
 
+00:15:06.080 --> 00:15:11.420
+Yeah. Yeah. And there are a couple of things that usually trigger this kind of search. So one of them
 
-00:03:55.860 --> 00:03:58.040
-I'm gonna have a space before and a space after.
+00:15:11.420 --> 00:15:17.920
+is a, an alert may be coming from your seam and that's a, that stands for security, information,
 
+00:15:17.920 --> 00:15:24.320
+event management. So the, like a console, like, ArcSight is a traditional one or Microsoft Sentinel
 
-00:03:58.040 --> 00:04:00.040
-So I wanna remove those.
+00:15:24.320 --> 00:15:30.580
+is a cloud-based one. so you get an alert based on a rule and you need to go in a fairly managed process.
 
+00:15:30.580 --> 00:15:35.520
+Somebody needs to go and investigate. Is this a real threat or is this just noise? or there might be something
 
-00:04:00.040 --> 00:04:02.140
-So it'll strip multiple white space,
+00:15:35.520 --> 00:15:42.140
+like the solar winds, they never a year ago, the log four J, like something in the press or something
 
+00:15:42.140 --> 00:15:49.320
+from a threat Intel kind of alert says this kind of threat is around and that's a more ad hoc process kind of hunting.
 
-00:04:02.140 --> 00:04:03.160
-strips out numerics,
+00:15:49.320 --> 00:15:55.320
+Like, do we see this in our organization? so that's kind of what mystic pie is trying to, you know,
 
+00:15:55.320 --> 00:16:00.840
+try to address the needs of that. and the second question is why Jupyter notebooks? Why would you do any Jupyter
 
-00:04:03.160 --> 00:04:05.380
-'cause I probably don't want numbers in there,
+00:16:00.840 --> 00:16:08.680
+notebook rather than in your existing sock tools? I mean, I think there's a lot in common, this kind of
 
+00:16:08.680 --> 00:16:15.480
+activity is a lot in common with like big science data, sorry, big, big data science. I mean, something like
 
-00:04:05.380 --> 00:04:07.460
-and then remove stop words.
+00:16:15.480 --> 00:16:21.480
+astronomy where you're kind of, you know, hunting for an adversary activity is a little bit like trying to find an exoplanet
 
+00:16:21.480 --> 00:16:25.160
+in kind of gigabytes of data or a new quasar or something like that.
 
-00:04:07.460 --> 00:04:08.860
-The one thing I don't want
+00:16:25.160 --> 00:16:31.480
+Um, a hundred thousand stars or a hundred thousand lines of log file and you're hunting for some patterns and stuff.
 
+00:16:31.480 --> 00:16:35.000
+Right. And you've got a few photons you're trying to determine are these kind of different, you know,
 
-00:04:08.860 --> 00:04:12.180
-that I'll have to like customize how I'm calling this
+00:16:35.000 --> 00:16:39.560
+something like, like, an adversary activity is a little bit like that. It's like millions and millions of events
 
+00:16:39.560 --> 00:16:45.480
+and you're trying to find the bad stuff. so traditional sock tools are kind of, you know, can be really excellent.
 
-00:04:12.180 --> 00:04:13.980
-is a stem text.
+00:16:45.480 --> 00:16:50.440
+And I work with one that I think is, is really good, but, but they all have limitations.
 
+00:16:50.440 --> 00:16:56.760
+What's a, a sock tool, a sock tool, a sock security operations center. So, so something like, you
 
-00:04:13.980 --> 00:04:16.560
-So stem text, I don't know what that did
+00:16:56.760 --> 00:17:03.400
+know, a console that fires alerts and tells you that they have a bunch of analysts, engineers looking
 
+00:17:03.400 --> 00:17:08.040
+at this output of this and deciding, and that's the trigger for their investigations. They're like,
 
-00:04:16.560 --> 00:04:18.260
-without playing with it, but what it does
+00:17:08.040 --> 00:17:10.760
+is it like failed log in the SQL server?
 
+00:17:10.760 --> 00:17:15.160
+Yeah. Something like that. Or, you know, it could be more sophisticated thing. Like,
 
-00:04:18.260 --> 00:04:20.200
-is it will take things like twisted
+00:17:15.160 --> 00:17:20.040
+something's exit, you know, tried to access the kind of password data on this, or looks like it's trying
 
+00:17:20.040 --> 00:17:28.920
+to access the password data on this host or, or has made a weird kind of configuration change to, mailbox settings.
 
-00:04:20.200 --> 00:04:22.400
-and turn it into twist.
+00:17:28.920 --> 00:17:34.280
+So all those kinds of things can kind of trigger alerts and investigations. but you are limited
 
+00:17:34.280 --> 00:17:39.880
+in most kind of operation center environments. Notebooks allow you to kind of break out of some
 
-00:04:22.400 --> 00:04:23.840
-That's really not right.
+00:17:39.880 --> 00:17:45.720
+of the constraints of that. So firstly, you can get data from anywhere. you're not just limited by
 
+00:17:45.720 --> 00:17:50.760
+kind of what's in your logs. You could go to virus total or so you can bring data from anywhere.
 
-00:04:23.840 --> 00:04:24.680
-- So you definitely don't want that.
+00:17:50.760 --> 00:17:57.880
+you can use customized kind of analysis. so write your own or get, get things from PyPI. Lots
 
+00:17:57.880 --> 00:18:02.760
+of people have kind of written this stuff. you control the workflow. So, so you don't have to follow
 
-00:04:24.680 --> 00:04:25.620
-- I don't want that.
+00:18:02.760 --> 00:18:08.680
+what the tool says. You can reorder things, you can backtrack, redo things, and the workflow is repeatable.
 
+00:18:08.680 --> 00:18:14.040
+So if you get a similar kind of, you know, issue again, or similar kind of alert, you can
 
-00:04:25.620 --> 00:04:26.460
-- That'll mess it up.
+00:18:14.040 --> 00:18:19.960
+fish out an old notebook and rerun the same kind of analysis. And you end up with a nice kind of
 
+00:18:19.960 --> 00:18:25.080
+shareable document that, it describes your investigation a bit like the results of a
 
-00:04:26.460 --> 00:04:27.620
-- But I think I want everything else.
+00:18:25.080 --> 00:18:29.160
+scientific investigation. It's like, here are all the steps I took and these are the results.
 
+00:18:29.160 --> 00:18:33.880
+And this is what they, this is what we determined to be the bad, you know, the bad activity.
 
-00:04:27.620 --> 00:04:31.640
-So this Gensim library has, you know,
+00:18:33.880 --> 00:18:40.520
+Right. The other thing that seems useful here is Jupyter. Often the notebooks will save the last
 
+00:18:40.520 --> 00:18:45.720
+bit of computed information. And then you can go, you know, change a cell, ask the question again,
 
-00:04:31.640 --> 00:04:34.900
-if you're doing machine learning, coming up with models,
+00:18:45.720 --> 00:18:49.880
+change without rerunning the whole thing. And like that's parsing tons of logs or
 
+00:18:49.880 --> 00:18:53.960
+pulling them over SSH or whatever that not doing that again is nice.
 
-00:04:34.900 --> 00:04:37.980
-I think this is a great tool to look into,
+00:18:53.960 --> 00:18:57.960
+Yeah. And it's brilliant. If you don't like doing lots of queries in different browser tabs
 
+00:18:57.960 --> 00:19:01.080
+and your browser crashes, they've all gone. What do you do?
 
-00:04:37.980 --> 00:04:42.520
-but if it's actually, I'm gonna use it just for removing,
+00:19:01.080 --> 00:19:06.120
+It's all in a Jupyter notebook. I say, it's like second by second, after you do it,
 
+00:19:06.120 --> 00:19:09.320
+you can just go back and you can go back to things like you may have done months ago.
 
-00:04:42.520 --> 00:04:46.080
-to create these titles for my podcast.
+00:19:09.320 --> 00:19:11.080
+So, yeah, absolutely.
 
+00:19:11.080 --> 00:19:16.920
+Yeah. So, so when I started all of this, I kind of thought a lot of this stuff for cyber
 
-00:04:46.080 --> 00:04:49.520
-But it feels a little weird.
+00:19:16.920 --> 00:19:21.720
+investigations would be available on, and PyPI. I thought great Jupyter notebooks seem like brilliant.
 
+00:19:21.720 --> 00:19:25.640
+And there's going to be process tree viewer and there's going to be an event timeline and all this
 
-00:04:49.520 --> 00:04:51.560
-It feels like I'm using this really big hammer
+00:19:25.640 --> 00:19:32.200
+kind of stuff. and I found out there wasn't, at least I couldn't find it. so I decided to
 
+00:19:32.200 --> 00:19:37.160
+just like stop everything. Need to start writing this, this stuff. So it turns out that things like
 
-00:04:51.560 --> 00:04:53.600
-to do this little tiny problem.
+00:19:37.160 --> 00:19:42.200
+visualizations you need for detecting exoplanets are a bit different from ones you need to detect,
 
+00:19:42.200 --> 00:19:48.440
+uh, bad actors. So, so we started building this thing originally me, but there's now, Pete
 
-00:04:53.600 --> 00:04:58.140
-I guess I'm okay with it, but do you have any other ideas
+00:19:48.440 --> 00:19:55.240
+Brian and Ashwin Patil also kind of, working on it to my colleagues and a bunch of people in the
 
+00:19:55.240 --> 00:20:01.560
+community. It's got four main functional sections. It's like data querying, how you get data in,
 
-00:04:58.140 --> 00:04:59.360
-where it could use or?
+00:20:01.560 --> 00:20:07.400
+how you do templated queries as enrichment. So for example, if you have something like an IP address,
 
+00:20:07.400 --> 00:20:13.400
+you might have a bunch of questions about it as an analyst, like which geographical location is this IP
 
-00:04:59.360 --> 00:05:03.320
-- Well, I didn't know about this, so I wrote my own.
+00:20:13.400 --> 00:20:19.960
+address from does it, or any malware reports about it. third areas analysis are things like
 
+00:20:19.960 --> 00:20:25.400
+anomaly identification, like the thing you've talking about a spike in, in failed logon events,
 
-00:05:03.320 --> 00:05:04.160
-- Okay.
+00:20:25.400 --> 00:20:29.880
+unusual spike in failed logon events, that kind of thing. the final area is visualizations,
 
+00:20:29.880 --> 00:20:34.920
+and these are like more specialized. I've got kind of a couple of examples in the show notes.
 
-00:05:04.160 --> 00:05:07.280
-- And it's kind of janky, like it's a little bit
+00:20:34.920 --> 00:20:40.840
+this is like anomaly identification pattern. This is one of, one of the custom, we use Bokeh,
 
+00:20:40.840 --> 00:20:45.560
+uh, which I really, this is really nice kind of visualization package, to allow you to kind
 
-00:05:07.280 --> 00:05:09.280
-recursive, iterative, it's like,
+00:20:45.560 --> 00:20:51.160
+of view data in a way that analyst kind of expects you to s to see it a bit. So they're more of this
 
+00:20:51.160 --> 00:20:56.120
+kind of visualization than more traditional kind of graphs. I would much rather look at this than
 
-00:05:09.280 --> 00:05:11.480
-we'll take away all the punctuation now,
+00:20:56.120 --> 00:21:00.520
+log files or event logs or, or whatever, you know? Yeah. That's the whole thing about, you know, you,
 
+00:21:00.520 --> 00:21:04.920
+you, you need, you may have thousands of events and you need to get down to the few that are the
 
-00:05:11.480 --> 00:05:14.100
-Turn all of your white spaces into single white spaces.
+00:21:04.920 --> 00:21:10.840
+interesting, the interesting thing. so one of the areas that we've, we try to focus on
 
+00:21:10.840 --> 00:21:15.960
+currently, cause we wrote all this stuff and you have like hundreds of functions that you could use,
 
-00:05:14.100 --> 00:05:16.980
-Cause there might've been, you know, dot space.
+00:21:15.960 --> 00:21:21.400
+but it's kind of difficult to discover them. And they all, cause they evolved a little bit organically.
 
+00:21:21.400 --> 00:21:26.360
+Like how do you, they were working a little bit of a different way, different set of parameters.
 
-00:05:16.980 --> 00:05:19.460
-So now you've got two white spaces, but you've got to take away, you know,
+00:21:26.360 --> 00:21:31.800
+So the work we're currently doing is trying to make this all a bit more accessible. So all of the
 
+00:21:31.800 --> 00:21:36.760
+functions that relate to say an IP address, all the questions you want to ask about it are kind
 
-00:05:19.460 --> 00:05:22.040
-there's like a bunch of weird steps and then put it back.
+00:21:36.760 --> 00:21:41.640
+of dynamically attached to a class called IP address. So they're all like things like,
 
+00:21:41.640 --> 00:21:44.600
+Oh, interesting. Do, do, do. So you don't have to work just with a raw
 
-00:05:22.040 --> 00:05:23.300
-This looks cleaner.
+00:21:44.600 --> 00:21:49.800
+string or just some raw IP representation, but you can ask it questions like its location.
 
+00:21:49.800 --> 00:21:55.160
+Well, it's not quite that intelligent. It's even a bit less intelligent than Alexa, but, but it's,
 
-00:05:23.300 --> 00:05:25.300
-It is a dependency, but it does look cleaner.
+00:21:55.160 --> 00:22:00.440
+but it's more like, you know, there might be things like geolocation of an IP address,
 
+00:22:01.080 --> 00:22:07.400
+threat intel lookups, different queries that might be, have IP addresses like a, a parameter.
 
-00:05:25.300 --> 00:05:25.940
-I like this.
+00:22:07.400 --> 00:22:12.760
+Um, and previously you'd have to go and find all of these things and import them separately and run
 
+00:22:12.760 --> 00:22:17.800
+them. but now they're all kind of dynamically attached as methods to the fact that use IP address
 
-00:05:25.940 --> 00:05:27.740
-I think it's, I'm glad I know about it.
+00:22:17.800 --> 00:22:22.840
+as a parameter means that you just have one object to import, and then you can do all of these different
 
+00:22:22.840 --> 00:22:27.960
+operations, on this single item. there's, there's some things that don't work with that.
 
-00:05:27.740 --> 00:05:28.640
-Ian, what do you think?
+00:22:27.960 --> 00:22:33.640
+Some things like the visualizations, for example, they're not IP address or host or account specific.
 
+00:22:33.640 --> 00:22:39.960
+They work on big blocks of data. So the other area we're working on is try to anything. It takes a
 
-00:05:28.640 --> 00:05:29.940
-Is it a huge thing?
+00:22:39.960 --> 00:22:46.680
+bunch of data as an input. We're writing those as pandas excesses. so they appear as methods to a
 
+00:22:46.680 --> 00:22:53.000
+data frame. So you do kind of data frame dot MP plot dot timeline, right? And it would produce your
 
-00:05:29.940 --> 00:05:34.140
-I mean, dependency, but I always think of like ML like stuff, but this
+00:22:53.000 --> 00:22:57.640
+timeline as long as it's the right kind of data or, so yeah, that's one of the challenges of
 
+00:22:57.640 --> 00:23:02.200
+writing this kind of thing organically is you end up with a lot of stuff, but nobody knows it's there
 
-00:05:34.140 --> 00:05:35.840
-is like just the pre-processing, right?
+00:23:02.200 --> 00:23:07.640
+and everybody knows how to import it. So try to make it as accessible so that it just becomes a very
 
+00:23:07.640 --> 00:23:12.680
+intuitive thing. Oh, I have an IP address. What functions can I do? I can do this, you know,
 
-00:05:35.840 --> 00:05:36.860
-This is kind of neat.
+00:23:12.680 --> 00:23:14.680
+it's all like tab completable, that kind of thing.
 
+00:23:14.680 --> 00:23:21.400
+Yeah, I think it's really cool. You've taken this Python data stack view of cyber security and threat
 
-00:05:36.860 --> 00:05:39.320
-I'm actually pulling in all of GenSim to get this.
+00:23:21.400 --> 00:23:22.360
+detection. Yeah.
 
-
-00:05:39.320 --> 00:05:41.040
-I don't know if I can pull in a little bits.
-
-
-00:05:41.300 --> 00:05:45.740
-But it's not really part of my application that I'm shipping.
-
-
-00:05:45.740 --> 00:05:47.940
-It's just a tool that I'm using on my laptop.
-
-
-00:05:47.940 --> 00:05:52.180
-So I guess downloading it once doesn't really bother me too much,
-
-
-00:05:52.180 --> 00:05:53.460
-even if it's a big thing.
-
-
-00:05:53.460 --> 00:05:54.700
->> But cool. Yeah, I was thinking.
-
-
-00:05:54.700 --> 00:05:56.100
->> Yeah, that's a good point.
-
-
-00:05:56.100 --> 00:05:59.420
-If it's running local, it's like a dev dependency, who cares?
-
-
-00:05:59.420 --> 00:06:01.180
-It's like worrying about how big pytest is.
-
-
-00:06:01.180 --> 00:06:02.660
-Like it doesn't really matter.
-
-
-00:06:02.660 --> 00:06:05.220
->> And I'm not, well, I kind of care about that
-
-
-00:06:05.220 --> 00:06:07.980
-because CI is going to pull it in all the time for pytest.
-
-
-00:06:07.980 --> 00:06:10.260
->> Yeah, but they got fast networks.
-
-
-00:06:10.260 --> 00:06:11.100
-- Yeah.
-
-
-00:06:11.100 --> 00:06:11.920
-(laughing)
-
-
-00:06:11.920 --> 00:06:13.960
-- It's not your bandwidth, it'll be all right.
-
-
-00:06:13.960 --> 00:06:14.800
-- Yeah, anyway.
-
-
-00:06:14.800 --> 00:06:16.840
-- One of the things that struck me about this
-
-
-00:06:16.840 --> 00:06:19.260
-that made me think of your situation is
-
-
-00:06:19.260 --> 00:06:21.100
-like that lowercase to Unicode
-
-
-00:06:21.100 --> 00:06:24.140
-in so many times in the security space,
-
-
-00:06:24.140 --> 00:06:27.140
-it's about like, you're checking for this representation,
-
-
-00:06:27.140 --> 00:06:29.040
-but what if there's another representation
-
-
-00:06:29.040 --> 00:06:30.280
-that means the same thing?
-
-
-00:06:30.280 --> 00:06:31.620
-Like you don't say go to this directory,
-
-
-00:06:31.620 --> 00:06:33.180
-you say go dot dot and then over there,
-
-
-00:06:33.180 --> 00:06:37.000
-you know, those kinds of non-canonical representations.
-
-
-00:06:37.000 --> 00:06:39.660
-I wonder if there's any use of this kind of stuff for you.
-
-
-00:06:39.660 --> 00:06:42.860
-Yeah, there's something I kind of touch on the pigment section later on, which
-
-
-00:06:42.860 --> 00:06:47.740
-like the attackers typically write scripted attacks and try to obfuscate
-
-
-00:06:47.740 --> 00:06:52.060
-code using a mix of upper case and putting random dots, I'm just thinking
-
-
-00:06:52.060 --> 00:06:55.700
-that'd be a nice, potentially a nice way of kind of cleaning some of that, that
-
-
-00:06:55.700 --> 00:06:56.220
-stuff up.
-
-
-00:06:56.220 --> 00:06:57.300
-Yeah, for sure.
-
-
-00:06:57.300 --> 00:07:01.020
-There was a, there's been some interesting supply chain vulnerability stuff.
-
-
-00:07:01.020 --> 00:07:06.380
-Remember, remember the guy with the color and I think the faker stuff in JavaScript
-
-
-00:07:06.380 --> 00:07:09.740
-that sabotaged his libraries.
-
-
-00:07:09.740 --> 00:07:13.940
-There was another one that maybe well-intentioned,
-
-
-00:07:13.940 --> 00:07:17.060
-I don't know, it was some open source library,
-
-
-00:07:17.060 --> 00:07:19.300
-I don't believe it was Python, I can't remember what it was.
-
-
-00:07:19.300 --> 00:07:21.900
-It could have been, I'm pretty sure it was in JavaScript
-
-
-00:07:21.900 --> 00:07:23.900
-'cause that's where all, most of the bad stuff was,
-
-
-00:07:23.900 --> 00:07:27.020
-it seems, anyway, they wrote their,
-
-
-00:07:27.020 --> 00:07:32.020
-they taught their dependency to erase everybody's hard drive
-
-
-00:07:32.020 --> 00:07:35.200
-who installed it, who was in Belarus and Russia,
-
-
-00:07:35.200 --> 00:07:37.300
-which, okay, maybe they're trying to contribute,
-
-
-00:07:37.300 --> 00:07:39.560
-but it ended up doing a bunch of bad things,
-
-
-00:07:39.560 --> 00:07:41.760
-even to places that were trying to help,
-
-
-00:07:41.760 --> 00:07:44.680
-say, people in the press and journalists
-
-
-00:07:44.680 --> 00:07:47.700
-do certain things and connect with sources
-
-
-00:07:47.700 --> 00:07:49.600
-and interrace that database as well.
-
-
-00:07:49.600 --> 00:07:53.560
-And what they did to make it so that nobody would notice
-
-
-00:07:53.560 --> 00:07:56.600
-in the GitHub commit before it went out to NPM
-
-
-00:07:56.600 --> 00:07:59.120
-was base64 encode their changes.
-
-
-00:07:59.120 --> 00:08:01.600
-So they basically put a base64 encoded string
-
-
-00:08:01.600 --> 00:08:04.040
-and then decode and then run that.
-
-
-00:08:04.040 --> 00:08:05.120
-It's like that kind of stuff.
-
-
-00:08:05.120 --> 00:08:10.600
-I know this won't solve that problem, but that sort of category of like weird representations.
-
-
-00:08:10.600 --> 00:08:11.600
-Yeah.
-
-
-00:08:11.600 --> 00:08:12.600
-You need mystic pie for something like that.
-
-
-00:08:12.600 --> 00:08:18.000
-It's one of the things we, yeah, it's a common thing, kind of basics before decoding, before
-
-
-00:08:18.000 --> 00:08:19.000
-the obfuscating.
-
-
-00:08:19.000 --> 00:08:20.000
-Yeah.
-
-
-00:08:20.000 --> 00:08:21.000
-Yeah.
-
-
-00:08:21.000 --> 00:08:22.000
-Interesting.
-
-
-00:08:22.000 --> 00:08:23.000
-Yeah.
-
-
-00:08:23.000 --> 00:08:25.960
-I thought of maybe using something like that with, because one of the problems we have
-
-
-00:08:25.960 --> 00:08:29.000
-is like every script is kind of slightly different.
-
-
-00:08:29.000 --> 00:08:35.040
-If you could use something like that to essentially kind of apply like sentiment analysis to script
-
-
-00:08:35.040 --> 00:08:36.120
-I mean, this is a big problem.
-
-
-00:08:36.120 --> 00:08:37.920
-This is not something I've particularly solved.
-
-
-00:08:37.920 --> 00:08:42.080
-Um, but that might be a kind of useful, useful thing to just picking out certain
-
-
-00:08:42.080 --> 00:08:46.400
-things that indicates malicious, like format, you know, format drive.
-
-
-00:08:46.400 --> 00:08:48.440
-Exactly.
-
-
-00:08:48.440 --> 00:08:48.860
-Yeah.
-
-
-00:08:48.860 --> 00:08:51.660
-You could certainly represent like this one does hard drive stuff.
-
-
-00:08:51.660 --> 00:08:53.580
-Is this, I thought it was parsing colors.
-
-
-00:08:53.580 --> 00:08:55.120
-Why is it doing things with the hard drive?
-
-
-00:08:55.120 --> 00:08:57.740
-This is odd, you know, like, or with the network, stuff like that.
-
-
-00:08:57.740 --> 00:08:58.200
-Cool.
-
-
-00:08:58.200 --> 00:08:58.840
-All right.
-
-
-00:08:58.840 --> 00:09:02.480
-Well, you know what you would really want to check out if you were trying to
-
-
-00:09:02.480 --> 00:09:04.280
-research these things, probably documentation.
-
-
-00:09:04.520 --> 00:09:07.760
-So I want to tell you all about DevDocs, devdocs.io.
-
-
-00:09:07.760 --> 00:09:08.720
-This is pretty cool.
-
-
-00:09:08.720 --> 00:09:11.360
-Now, when you get there, it's an interesting,
-
-
-00:09:11.360 --> 00:09:14.240
-on my Firefox, it's just got like the mobile view,
-
-
-00:09:14.240 --> 00:09:15.440
-which is really odd.
-
-
-00:09:15.440 --> 00:09:17.640
-If you go there with a full browser,
-
-
-00:09:17.640 --> 00:09:19.820
-it's what it believes is a full browser, I guess.
-
-
-00:09:19.820 --> 00:09:21.000
-It's like a slightly different view
-
-
-00:09:21.000 --> 00:09:23.000
-that's pretty similar, but not the same.
-
-
-00:09:23.000 --> 00:09:25.940
-So there's, if you open up a whole bunch
-
-
-00:09:25.940 --> 00:09:28.240
-of programming technologies, let's say,
-
-
-00:09:28.240 --> 00:09:31.200
-not just Python or JavaScript or something,
-
-
-00:09:31.200 --> 00:09:33.060
-but there's also Vue.js.
-
-
-00:09:33.060 --> 00:09:35.100
-There's Vexoic, for example,
-
-
-00:09:35.100 --> 00:09:36.580
-like some of the foundation of Flash,
-
-
-00:09:36.580 --> 00:09:39.060
-and you can pick the particular versions and stuff.
-
-
-00:09:39.060 --> 00:09:41.340
-You can go and like enable these different things.
-
-
-00:09:41.340 --> 00:09:42.840
-So maybe I care about view,
-
-
-00:09:42.840 --> 00:09:44.860
-I can go over here and enable that one.
-
-
-00:09:44.860 --> 00:09:46.660
-Let's, we definitely want some Python.
-
-
-00:09:46.660 --> 00:09:48.140
-Let me go find some Python.
-
-
-00:09:48.140 --> 00:09:50.340
-It gives you all the versions, I'll pick that.
-
-
-00:09:50.340 --> 00:09:53.020
-And let's say I'm also working with Postgres,
-
-
-00:09:53.020 --> 00:09:54.700
-so I'll enable that documentation.
-
-
-00:09:54.700 --> 00:09:57.540
-And then I might be working with Nginx for the front end,
-
-
-00:09:57.540 --> 00:10:00.580
-which is somewhere right here.
-
-
-00:10:00.580 --> 00:10:02.060
-So you can go enable that.
-
-
-00:10:02.060 --> 00:10:05.800
-And then it will be up near the top somewhere here.
-
-
-00:10:05.800 --> 00:10:07.820
-You can see these are either the default ones
-
-
-00:10:07.820 --> 00:10:08.900
-or the ones that I checked on.
-
-
-00:10:08.900 --> 00:10:10.180
-So then you can open them up and say,
-
-
-00:10:10.180 --> 00:10:15.100
-I wanna go and see the Nginx guide about a debugging log.
-
-
-00:10:15.100 --> 00:10:17.380
-And then it takes you to the documentation
-
-
-00:10:17.380 --> 00:10:18.980
-for that technology.
-
-
-00:10:18.980 --> 00:10:22.100
-So it's like a meta documentation repository
-
-
-00:10:22.100 --> 00:10:23.780
-for all of these things all at once,
-
-
-00:10:23.780 --> 00:10:25.260
-which is pretty cool, right?
-
-
-00:10:25.260 --> 00:10:26.520
-So I can go up here and search.
-
-
-00:10:26.520 --> 00:10:28.420
-I wanna know about like,
-
-
-00:10:28.420 --> 00:10:30.620
-let's go about like media tags or something.
-
-
-00:10:30.620 --> 00:10:33.020
-So you can see the stuff in HTML5,
-
-
-00:10:33.020 --> 00:10:35.020
-you can see the stuff in,
-
-
-00:10:35.020 --> 00:10:36.700
-when you say media, it looks like median.
-
-
-00:10:36.700 --> 00:10:39.820
-So you can see that in the statistics module for Python,
-
-
-00:10:39.820 --> 00:10:42.260
-some stuff for CSS,
-
-
-00:10:42.260 --> 00:10:43.100
-or you could come over here and say,
-
-
-00:10:43.100 --> 00:10:45.620
-like, I just want to search for CSS.
-
-
-00:10:45.620 --> 00:10:47.700
-And then you get like using media queries
-
-
-00:10:47.700 --> 00:10:49.040
-and how to do that kind of stuff.
-
-
-00:10:49.040 --> 00:10:50.420
-So it's kind of a,
-
-
-00:10:50.420 --> 00:10:52.040
-what you do is you turn on the pieces
-
-
-00:10:52.040 --> 00:10:53.180
-that are relevant to you,
-
-
-00:10:53.180 --> 00:10:55.700
-and then you can search across those technologies.
-
-
-00:10:55.700 --> 00:10:56.540
-Cool, right?
-
-
-00:10:56.540 --> 00:10:57.820
-- Mm-mm, wow.
-
-
-00:10:57.820 --> 00:11:00.660
-- Yeah, and then if you're on the move,
-
-
-00:11:00.660 --> 00:11:04.860
-you can come over here and turn on offline data,
-
-
-00:11:04.860 --> 00:11:07.900
-and it'll download all of that as an app
-
-
-00:11:07.900 --> 00:11:09.820
-so that then you're at the coffee shop
-
-
-00:11:09.820 --> 00:11:11.780
-and you're playing, you now have all the documentation
-
-
-00:11:11.780 --> 00:11:15.180
-for Python 3.10, Vue.js, Verix, Zoid, Nginx,
-
-
-00:11:15.180 --> 00:11:17.300
-et cetera, et cetera, that you can use,
-
-
-00:11:17.300 --> 00:11:18.420
-which is pretty cool.
-
-
-00:11:18.420 --> 00:11:22.100
-And this is something that drives me crazy about Firefox.
-
-
-00:11:22.100 --> 00:11:23.380
-They had it and they took it away,
-
-
-00:11:23.380 --> 00:11:24.700
-and I don't understand why,
-
-
-00:11:24.700 --> 00:11:28.780
-So they took away the ability to do progressive web apps in Firefox, but
-
-
-00:11:28.780 --> 00:11:30.460
-all the Chromium browsers support it.
-
-
-00:11:30.460 --> 00:11:35.100
-So you can actually go and install this as a dedicated application on your system.
-
-
-00:11:35.100 --> 00:11:38.020
-So you, if you have no web, you just click that open.
-
-
-00:11:38.020 --> 00:11:38.940
-It's its own window.
-
-
-00:11:38.940 --> 00:11:42.820
-You can up, you know, alt tab, command tab between it's super easy.
-
-
-00:11:42.820 --> 00:11:44.980
-And then turn on the offline mode.
-
-
-00:11:44.980 --> 00:11:48.340
-And you basically have an app that has offline documentation for all the
-
-
-00:11:48.340 --> 00:11:50.020
-programming technologies that you care about.
-
-
-00:11:50.020 --> 00:11:51.940
-So, so that's, that's a great point.
-
-
-00:11:51.940 --> 00:11:53.940
-programming technologies that you care about.
-
-
-00:11:53.940 --> 00:11:54.780
-- So this is our way to--
-
-
-00:11:54.780 --> 00:11:56.740
-- So this is my new coffee shop buddy.
-
-
-00:11:56.740 --> 00:11:59.220
-- Is the search go across the thing you've selected then?
-
-
-00:11:59.220 --> 00:12:01.420
-So if I search for like replace or something,
-
-
-00:12:01.420 --> 00:12:03.700
-it's the things I've selected?
-
-
-00:12:03.700 --> 00:12:05.940
-- Yeah, so if you turn on like JavaScript and Python,
-
-
-00:12:05.940 --> 00:12:08.420
-it would look for that in both languages.
-
-
-00:12:08.420 --> 00:12:09.260
-- Oh, okay.
-
-
-00:12:09.260 --> 00:12:10.900
-- Yeah, so basically the ones you turn on,
-
-
-00:12:10.900 --> 00:12:11.900
-there's a ton of them, right?
-
-
-00:12:11.900 --> 00:12:13.860
-And you pick, you say, these are interesting to me,
-
-
-00:12:13.860 --> 00:12:16.060
-and then search and stuff, from what I can tell,
-
-
-00:12:16.060 --> 00:12:18.980
-only applies to the technologies you say you care about.
-
-
-00:12:18.980 --> 00:12:20.900
-'Cause like if you don't use Java,
-
-
-00:12:20.900 --> 00:12:22.340
-you really don't wanna see the documentation
-
-
-00:12:22.340 --> 00:12:23.300
-for Java search, right?
-
-
-00:12:23.300 --> 00:12:24.340
-That would be useless.
-
-
-00:12:24.340 --> 00:12:25.540
-- Yeah, one of the things I like about this
-
-
-00:12:25.540 --> 00:12:26.900
-is it also has versions.
-
-
-00:12:26.900 --> 00:12:30.820
-So if you're using an older version of Postgres,
-
-
-00:12:30.820 --> 00:12:33.380
-you can just enable that version.
-
-
-00:12:33.380 --> 00:12:34.220
-- Right.
-
-
-00:12:34.220 --> 00:12:35.700
-Sometimes it doesn't matter very much,
-
-
-00:12:35.700 --> 00:12:37.400
-but other times it matters massively.
-
-
-00:12:37.400 --> 00:12:39.820
-Like Bootstrap 3 and Bootstrap 5,
-
-
-00:12:39.820 --> 00:12:41.620
-they're fully incompatible, basically.
-
-
-00:12:41.620 --> 00:12:44.780
-Like they're totally different keywords and grid systems,
-
-
-00:12:44.780 --> 00:12:46.260
-and you don't want just the latest
-
-
-00:12:46.260 --> 00:12:47.860
-if you've got an old app you're working on,
-
-
-00:12:47.860 --> 00:12:48.740
-something like that.
-
-
-00:12:48.740 --> 00:12:51.660
-Python's more forgiving about that kind of stuff,
-
-
-00:12:51.660 --> 00:12:53.100
-but it doesn't break as often.
-
-
-00:12:53.100 --> 00:12:55.440
-- I was amused that the list though is,
-
-
-00:12:55.440 --> 00:13:00.060
-it has like three, nine, three, eight for Python,
-
-
-00:13:00.060 --> 00:13:01.540
-and it has three, 10 at the bottom
-
-
-00:13:01.540 --> 00:13:03.500
-because one is obviously--
-
-
-00:13:03.500 --> 00:13:05.860
-- 'Cause it's alphabetically sorted, how interesting.
-
-
-00:13:05.860 --> 00:13:07.060
-(laughing)
-
-
-00:13:07.060 --> 00:13:08.420
-Ian, what do you think of this?
-
-
-00:13:08.420 --> 00:13:10.020
-- That's very cool, I'm amazed.
-
-
-00:13:10.020 --> 00:13:12.780
-Is somebody at DevDocs kind of manually maintaining
-
-
-00:13:12.780 --> 00:13:14.080
-all of the links to these,
-
-
-00:13:14.080 --> 00:13:17.460
-like the original source documentation?
-
-
-00:13:17.460 --> 00:13:19.180
->> Yeah, where are they getting it from, right?
-
-
-00:13:19.180 --> 00:13:21.380
-Because they're super desperate.
-
-
-00:13:21.380 --> 00:13:24.620
-It's like Matplotlib and Markdown and MariaDB,
-
-
-00:13:24.620 --> 00:13:28.220
-it's unlikely they're all stored in the same basic system.
-
-
-00:13:28.220 --> 00:13:30.220
-I don't know how they get them actually.
-
-
-00:13:30.220 --> 00:13:32.900
->> Yeah, that's very cool. I normally have solved
-
-
-00:13:32.900 --> 00:13:35.180
-the same problem by having 130 tabs
-
-
-00:13:35.180 --> 00:13:38.580
-open to different bits of Python docs and pandas.
-
-
-00:13:38.580 --> 00:13:42.940
->> Exactly. Yeah, I'm pretty sure they got pandas in here.
-
-
-00:13:42.940 --> 00:13:44.860
-They got NumPy as its own thing.
-
-
-00:13:44.860 --> 00:13:46.260
-Then we saw Matplotlib,
-
-
-00:13:46.260 --> 00:13:50.220
-There's pandas and there's even versions of pandas across there.
-
-
-00:13:50.220 --> 00:13:52.140
-Single tab solution.
-
-
-00:13:52.140 --> 00:13:52.780
-Brilliant.
-
-
-00:13:52.780 --> 00:13:53.340
-Yeah.
-
-
-00:13:53.340 --> 00:13:55.300
-It looks, looks pretty good to me.
-
-
-00:13:55.300 --> 00:13:56.060
-All right.
-
-
-00:13:56.060 --> 00:13:58.300
-You want to tell us about what you got for your first item?
-
-
-00:13:58.300 --> 00:13:59.540
-Okay, sure.
-
-
-00:13:59.540 --> 00:13:59.740
-Yeah.
-
-
-00:13:59.740 --> 00:14:05.260
-Um, so, as I mentioned earlier, I own a package called mystic pie.
-
-
-00:14:05.260 --> 00:14:08.460
-Um, and first thing to sort out with it is the spelling.
-
-
-00:14:08.460 --> 00:14:12.900
-Cause I suffer from this on a daily basis, mistyping it, even though I've
-
-
-00:14:12.900 --> 00:14:14.500
-owned it for like three or four years.
-
-
-00:14:14.780 --> 00:14:19.020
-So it's MSTIC, Standard for Microsoft Threat Intelligence Center.
-
-
-00:14:19.020 --> 00:14:20.780
-There's no Y or anything like that in there.
-
-
-00:14:20.780 --> 00:14:26.060
-So it's a tool set for cybersecurity investigations and hunting in
-
-
-00:14:26.060 --> 00:14:28.380
-Python, mainly in Jupyter notebooks.
-
-
-00:14:28.380 --> 00:14:31.180
-So there are a couple of questions to ask about that.
-
-
-00:14:31.180 --> 00:14:35.900
-So firstly, what is cybersecurity hunting and investigation and
-
-
-00:14:35.900 --> 00:14:37.780
-why are Jupyter notebooks useful?
-
-
-00:14:37.780 --> 00:14:42.940
-So the first one, CyberSec investigation is really responding to alerts or
-
-
-00:14:42.940 --> 00:14:47.020
-other kinds of threat intelligence and trawling through typically large amounts
-
-
-00:14:47.020 --> 00:14:52.220
-of security logs from cloud services, hosts, account services to determine
-
-
-00:14:52.220 --> 00:14:53.700
-whether this is a real threat or not.
-
-
-00:14:53.700 --> 00:14:55.100
-And there were two main kind of.
-
-
-00:14:55.100 --> 00:14:56.680
->> That's one of the huge problems, right?
-
-
-00:14:56.680 --> 00:14:59.140
-Is you've got all these different systems.
-
-
-00:14:59.140 --> 00:15:02.540
-How are you going to know if someone, if you don't have a tool like this, how
-
-
-00:15:02.540 --> 00:15:05.440
-are you going to know that something, someone's in there rooting around?
-
-
-00:15:05.440 --> 00:15:05.740
-Right?
-
-
-00:15:05.740 --> 00:15:06.340
->> Yeah.
-
-
-00:15:06.340 --> 00:15:06.920
-Yeah.
-
-
-00:15:06.920 --> 00:15:10.900
-And there are a couple of things that usually trigger this kind of search.
-
-
-00:15:10.900 --> 00:15:17.980
-So one of them is an alert may be coming from your SIEM and that stands for security information
-
-
-00:15:17.980 --> 00:15:18.980
-event management.
-
-
-00:15:18.980 --> 00:15:24.800
-So it's like a console, like ArcSight is a traditional one or Microsoft Sentinel is a
-
-
-00:15:24.800 --> 00:15:25.800
-cloud-based one.
-
-
-00:15:25.800 --> 00:15:30.940
-So you get an alert based on a rule and you need to go in a fairly managed process.
-
-
-00:15:30.940 --> 00:15:34.780
-Somebody needs to go and investigate, is this a real threat or is this just noise?
-
-
-00:15:34.780 --> 00:15:38.720
-Or there might be something like the solar winds, they never were a year ago, the log
-
-
-00:15:38.720 --> 00:15:45.120
-4J, like something in the press or something from a threat intel kind of alert that says
-
-
-00:15:45.120 --> 00:15:46.760
-this kind of threat is around.
-
-
-00:15:46.760 --> 00:15:52.740
-And that's a more ad hoc process, kind of hunting, like, do we see this in our organization?
-
-
-00:15:52.740 --> 00:15:57.840
-So that's kind of what Mystic Pi is trying to address the needs of that.
-
-
-00:15:57.840 --> 00:16:00.060
-And the second question is why Jupyter Notebooks?
-
-
-00:16:00.060 --> 00:16:04.360
-Why would you do any Jupyter Notebook rather than in your existing SOC tools?
-
-
-00:16:04.360 --> 00:16:08.280
-I mean, I think there's a lot in common.
-
-
-00:16:08.280 --> 00:16:15.300
-This kind of activity is a lot in common with like big science data, sorry, big data science.
-
-
-00:16:15.300 --> 00:16:19.240
-Something like astronomy where you're kind of hunting for an adversary activity is a
-
-
-00:16:19.240 --> 00:16:24.360
-little bit like trying to find an exoplanet in kind of gigabytes of data or a new quasar
-
-
-00:16:24.360 --> 00:16:25.360
-or something like that.
-
-
-00:16:25.360 --> 00:16:26.360
-Yeah.
-
-
-00:16:26.360 --> 00:16:30.600
-A hundred thousand stars or a hundred thousand lines of log file and you're hunting for some
-
-
-00:16:30.600 --> 00:16:31.600
-patterns and stuff, right?
-
-
-00:16:31.600 --> 00:16:34.840
-And you've got a few photons you're trying to determine, all these kind of different,
-
-
-00:16:34.840 --> 00:16:37.920
-you know, something like adversary activity is a little bit like that.
-
-
-00:16:37.920 --> 00:16:42.340
-like millions and millions of events and you're trying to find the bad stuff.
-
-
-00:16:42.340 --> 00:16:45.480
-So traditional SOC tools are kind of, you know, can be really excellent.
-
-
-00:16:45.480 --> 00:16:49.880
-And I work with one that I think is really good, but they all have limitations.
-
-
-00:16:49.880 --> 00:16:52.160
-But a SOC tool.
-
-
-00:16:52.160 --> 00:16:53.160
-A SOC tool, yeah.
-
-
-00:16:53.160 --> 00:16:55.080
-So, SOC, Security Operations Center.
-
-
-00:16:55.080 --> 00:17:02.960
-So something like a console that fires alerts and tells you that you have a bunch of analysts,
-
-
-00:17:02.960 --> 00:17:06.920
-engineers looking at this output of this and deciding, and that's the trigger for their
-
-
-00:17:06.920 --> 00:17:11.720
-investigations. They're like, is it like failed login to SQL server? Yeah, something like
-
-
-00:17:11.720 --> 00:17:16.840
-that. Or, you know, it could be a more sophisticated thing like, something's exit, you know,
-
-
-00:17:16.840 --> 00:17:20.520
-trying to access the kind of password data on this. It looks like it's trying to access
-
-
-00:17:20.520 --> 00:17:27.480
-password data on this host or, or has made a weird kind of configuration change to a
-
-
-00:17:27.480 --> 00:17:32.720
-mailbox settings. So all those kinds of things can kind of trigger alerts and investigations.
-
-
-00:17:32.720 --> 00:17:38.520
-But you are limited in most kind of operation center environments.
-
-
-00:17:38.520 --> 00:17:41.520
-Notebooks allow you to kind of break out of some of the constraints of that.
-
-
-00:17:41.520 --> 00:17:44.920
-So firstly, you can get data from anywhere.
-
-
-00:17:44.920 --> 00:17:46.840
-You're not just limited by kind of what's in your logs.
-
-
-00:17:46.840 --> 00:17:50.960
-You could go to virus total, or so you can bring data from anywhere.
-
-
-00:17:50.960 --> 00:17:54.920
-You can use customized kind of analysis.
-
-
-00:17:54.920 --> 00:17:57.400
-So write your own or get things from PyPI.
-
-
-00:17:57.400 --> 00:18:00.040
-Lots of people have kind of written this stuff.
-
-
-00:18:00.040 --> 00:18:03.780
-You control the workflow, so you don't have to follow what the tool says.
-
-
-00:18:03.780 --> 00:18:07.580
-You can reorder things, you can backtrack, redo things.
-
-
-00:18:07.580 --> 00:18:08.580
-And the workflow is repeatable.
-
-
-00:18:08.580 --> 00:18:15.740
-So if you get a similar issue again, or similar kind of alert, you can fish out an old notebook
-
-
-00:18:15.740 --> 00:18:18.580
-and rerun the same kind of analysis.
-
-
-00:18:18.580 --> 00:18:23.900
-And you end up with a nice kind of shareable document that describes your investigation
-
-
-00:18:23.900 --> 00:18:26.420
-a bit like the results of a scientific investigation.
-
-
-00:18:26.420 --> 00:18:29.780
-It's like, "Here are all the steps I took, and these are the results, and this is what
-
-
-00:18:29.780 --> 00:18:33.540
-they, this is what we determined to be the bad, you know, the bad activity.
-
-
-00:18:33.540 --> 00:18:34.260
-Right.
-
-
-00:18:34.260 --> 00:18:37.460
-The other thing that seems useful here is Jupyter.
-
-
-00:18:37.460 --> 00:18:42.900
-Often the notebooks will save the last bit of computed information, and then you can
-
-
-00:18:42.900 --> 00:18:47.060
-go, you know, change a cell, ask the question again, without rerunning the whole
-
-
-00:18:47.060 --> 00:18:47.380
-thing.
-
-
-00:18:47.380 --> 00:18:52.300
-And like that's parsing tons of logs or pulling them over SSH or whatever that
-
-
-00:18:52.300 --> 00:18:54.060
-not doing that again is nice.
-
-
-00:18:54.060 --> 00:18:54.540
-Yeah.
-
-
-00:18:54.540 --> 00:18:57.660
-And it's brilliant if you don't like doing lots of queries in different browser
-
-
-00:18:57.660 --> 00:19:00.820
-tabs and your browser crashes, they've all gone.
-
-
-00:19:00.820 --> 00:19:01.820
-What do you do?
-
-
-00:19:01.820 --> 00:19:03.980
-It's all in a Jupyter notebook.
-
-
-00:19:03.980 --> 00:19:07.420
-I say, it's like second by second after you do it, you can just go back and you can go
-
-
-00:19:07.420 --> 00:19:09.740
-back to things like you may have done months ago.
-
-
-00:19:09.740 --> 00:19:10.740
-So.
-
-
-00:19:10.740 --> 00:19:11.740
-Yeah, absolutely.
-
-
-00:19:11.740 --> 00:19:12.740
-Yeah.
-
-
-00:19:12.740 --> 00:19:17.680
-So, so when I started all of this, I kind of thought a lot of this stuff for cyber investigations
-
-
-00:19:17.680 --> 00:19:19.180
-would be available on PyPI.
-
-
-00:19:19.180 --> 00:19:21.980
-I thought, great Jupyter notebook seemed like brilliant.
-
-
-00:19:21.980 --> 00:19:25.300
-And there's going to be process tree viewer and there's going to be an event timeline
-
-
-00:19:25.300 --> 00:19:26.300
-and all this kind of stuff.
-
-
-00:19:26.300 --> 00:19:31.100
-And I found out there wasn't, at least I couldn't find it.
-
-
-00:19:31.100 --> 00:19:35.980
-So I decided to stop, maybe we need to start writing this stuff.
-
-
-00:19:35.980 --> 00:19:40.460
-So it turns out that things like visualizations you need for detecting exoplanets are a bit
-
-
-00:19:40.460 --> 00:19:45.380
-different from ones you need to detect bad actors.
-
-
-00:19:45.380 --> 00:19:49.500
-So we started building this thing, originally me, but there's now Pete Bryan and Ashwin
-
-
-00:19:49.500 --> 00:19:56.400
-I'm also kind of working on it to my colleagues and a bunch of people in the community.
-
-
-00:19:56.400 --> 00:19:58.880
-It's got four main functional sections.
-
-
-00:19:58.880 --> 00:20:03.760
-It's like data querying, how you get data in, how you do templated queries.
-
-
-00:20:03.760 --> 00:20:04.760
-There's enrichment.
-
-
-00:20:04.760 --> 00:20:09.500
-So, for example, if you have something like an IP address, you might have a bunch of questions
-
-
-00:20:09.500 --> 00:20:14.520
-about it as an analyst, like which geographical location is this IP address from?
-
-
-00:20:14.520 --> 00:20:17.000
-Does it have any malware reports about it?
-
-
-00:20:17.000 --> 00:20:22.360
-Third area is analysis, so things like anomaly identification, like the thing you've been
-
-
-00:20:22.360 --> 00:20:27.400
-talking about, a spike in failed logon events, unusual spike in failed logon events, that
-
-
-00:20:27.400 --> 00:20:28.400
-kind of thing.
-
-
-00:20:28.400 --> 00:20:32.040
-The final area is visualizations, and these are more specialized.
-
-
-00:20:32.040 --> 00:20:34.560
-I've got a couple of examples in the show notes.
-
-
-00:20:34.560 --> 00:20:38.120
-This is like an anomaly identification pattern.
-
-
-00:20:38.120 --> 00:20:45.080
-This is one of the custom, we use Boca, which is a really nice visualization package to
-
-
-00:20:45.080 --> 00:20:50.600
-allow you to kind of view data in a way that analyst kind of expects you to see it.
-
-
-00:20:50.600 --> 00:20:54.400
-So the more this kind of visualization and more traditional kind of graphs.
-
-
-00:20:54.400 --> 00:20:59.040
-I would much rather look at this than log files or event logs or whatever, you know?
-
-
-00:20:59.040 --> 00:21:00.040
-Yeah.
-
-
-00:21:00.040 --> 00:21:02.920
-That's the whole thing about, you know, you may have thousands of events and you need
-
-
-00:21:02.920 --> 00:21:08.180
-to get down to the few that are the interesting, the interesting thing.
-
-
-00:21:08.180 --> 00:21:12.000
-So one of the areas that we've, we try to focus on currently, cause we wrote all this
-
-
-00:21:12.000 --> 00:21:16.640
-stuff and you have like hundreds of functions that you could use, but it's
-
-
-00:21:16.640 --> 00:21:18.300
-kind of difficult to discover them.
-
-
-00:21:18.300 --> 00:21:21.240
-And they all, cause they evolved a little bit organically.
-
-
-00:21:21.240 --> 00:21:25.380
-Like, how do you, they'll work in a little bit of a different way,
-
-
-00:21:25.380 --> 00:21:26.640
-different set of parameters.
-
-
-00:21:26.640 --> 00:21:29.260
-So the work we're currently doing is trying to make this
-
-
-00:21:29.260 --> 00:21:30.420
-all a bit more accessible.
-
-
-00:21:30.420 --> 00:21:35.020
-So all of the functions that relate to say an IP address, all the questions
-
-
-00:21:35.020 --> 00:21:39.780
-you want to ask about it, kind of dynamically attached to a class called IP
-
-
-00:21:39.780 --> 00:21:40.380
-address.
-
-
-00:21:40.380 --> 00:21:41.700
-So they're all like things like.
-
-
-00:21:41.700 --> 00:21:42.380
-Oh, interesting.
-
-
-00:21:42.380 --> 00:21:46.820
-Do, do you don't have to work just with a raw string or just some raw IP
-
-
-00:21:46.820 --> 00:21:49.900
-representation, but you can ask it questions like its location?
-
-
-00:21:49.900 --> 00:21:51.620
-Well, it's not quite that intelligent.
-
-
-00:21:51.620 --> 00:21:57.180
-So even a bit less intelligent than Alexa, but, but it's, but it's more like,
-
-
-00:21:57.180 --> 00:22:01.380
-you know, there might be things like geolocation of an IP address, threat
-
-
-00:22:01.380 --> 00:22:07.540
-intel lookups, different queries that might be have IP addresses like a parameter.
-
-
-00:22:07.840 --> 00:22:11.880
-And previously you'd have to go and find all of these things and import them
-
-
-00:22:11.880 --> 00:22:13.120
-separately and run them.
-
-
-00:22:13.120 --> 00:22:17.080
-But now they're all kind of dynamically attached as methods to the fact that
-
-
-00:22:17.080 --> 00:22:21.560
-use IP address as a parameter means that you just have one object to import, and
-
-
-00:22:21.560 --> 00:22:25.320
-then you can do all of these different operations on this single item.
-
-
-00:22:25.320 --> 00:22:27.880
-There's some things that don't work with that.
-
-
-00:22:27.880 --> 00:22:31.800
-Some things like the visualizations, for example, they're not IP address
-
-
-00:22:31.800 --> 00:22:33.680
-or host or account specific.
-
-
-00:22:33.680 --> 00:22:35.640
-They work on big blocks of data.
-
-
-00:22:35.960 --> 00:22:40.880
-So the other area we're working on is try to, anything that takes a bunch of data as
-
-
-00:22:40.880 --> 00:22:44.120
-an input, we're writing those as pandas accessors.
-
-
-00:22:44.120 --> 00:22:47.360
-So they appear as methods to a data frame.
-
-
-00:22:47.360 --> 00:22:53.040
-So you do kind of data frame dot MP plot dot timeline, and it would produce your
-
-
-00:22:53.040 --> 00:22:54.840
-timeline as long as it's the right kind of data.
-
-
-00:22:54.840 --> 00:22:59.640
-So yeah, that's one of the challenges of writing this kind of thing organically is
-
-
-00:22:59.640 --> 00:23:03.480
-you end up with a lot of stuff, but nobody knows it's there and nobody knows how to
-
-
-00:23:03.480 --> 00:23:08.680
-import it. So try to make it as accessible so that it just becomes a very intuitive thing.
-
-
-00:23:08.680 --> 00:23:13.160
-Oh, I have an IP address. What functions can I do? I could do this. You know, it's all
-
-
-00:23:13.160 --> 00:23:14.920
-tab completable, that kind of thing.
-
-
-00:23:14.920 --> 00:23:19.240
-Yeah, I think it's really cool. You've taken this Python data stack view of
-
-
-00:23:19.240 --> 00:23:22.040
-cybersecurity and threat detection.
-
-
-00:23:22.040 --> 00:23:22.520
-Yeah.
-
-
-00:23:22.520 --> 00:23:23.240
+00:23:22.360 --> 00:23:23.320
 Yeah. Brian, what do you think?
 
+00:23:23.320 --> 00:23:29.960
+Um, well, it's definitely a complicated area. and it trying to, one of the things I like about this
 
-00:23:23.240 --> 00:23:29.560
-Well, it's definitely a complicated area. And it trying to, one of the things I like
+00:23:29.960 --> 00:23:36.120
+story is just talking about the complexities in API design, and discoverability that's a,
 
+00:23:36.120 --> 00:23:39.320
+that applies to like lots of different fields, but yeah.
 
-00:23:29.560 --> 00:23:35.480
-about this story is just talking about the complexities in API design and discoverability
+00:23:39.320 --> 00:23:42.360
+Yeah. It's one of those things you should have thought about at the beginning, but,
 
+00:23:42.360 --> 00:23:47.960
+even at the end, you can tidying things up. yeah. So,
 
-00:23:35.480 --> 00:23:38.840
-that applies to lots of different fields.
+00:23:47.960 --> 00:23:49.320
+Famous last word.
 
+00:23:49.320 --> 00:23:55.400
+So yeah, we're definitely open for like other people collaborating, contributing stuff,
 
-00:23:38.840 --> 00:23:42.680
-Yeah, it's one of those things you should have thought about at the beginning, but even
+00:23:55.400 --> 00:23:56.760
+cause there's a lot of ground to cover.
 
+00:23:56.760 --> 00:24:04.360
+Um, yeah, for sure. It's on GitHub. I saw one final question before we move on. Is it just for Azure
 
-00:23:42.680 --> 00:23:46.480
-at the end you can tidy things up.
+00:24:04.360 --> 00:24:08.440
+or is, is this a thing that more broadly works across different systems?
 
+00:24:08.440 --> 00:24:11.480
+No, I think I should have mentioned that a little bit earlier on it. We originally built
 
-00:23:46.480 --> 00:23:50.600
-Famous last words.
+00:24:11.480 --> 00:24:16.120
+it for Microsoft Sentinel notebooks, but it supports like Splunk, Defender,
 
+00:24:16.120 --> 00:24:21.880
+working on an elastic provider. So really anything you can get into a pandas data frame,
 
-00:23:50.600 --> 00:23:55.240
-So yeah, we're definitely open for other people collaborating, contributing stuff, because
+00:24:21.880 --> 00:24:26.840
+you can use most of the functionality. So even if we don't, we don't have a provider ourselves,
 
+00:24:26.840 --> 00:24:32.920
+if you've got something like PySpark and you can get a data frame, then all of our functions take
 
-00:23:55.240 --> 00:23:57.320
-there's a lot of ground to cover.
+00:24:32.920 --> 00:24:37.560
+data frame. You know, we use pandas as our universal data interchange format.
 
+00:24:37.560 --> 00:24:44.440
+Yeah, indeed. Indeed. Kim Van Wick out in the audience likes it. It's way like a much nicer way
 
-00:23:57.320 --> 00:23:58.720
-Yeah, for sure.
+00:24:44.440 --> 00:24:49.240
+to glean info and logs and complex grip. I'm, I'm right there with you. All right. Now, before we
 
+00:24:49.240 --> 00:24:55.400
+move on, Brian, let me tell you about our sponsor for this episode. This episode of Python Bytes is
 
-00:23:58.720 --> 00:24:00.840
-It's on GitHub, I saw.
+00:24:55.400 --> 00:25:01.240
+brought to you by Fusion Auth. Fusion Auth is an authentication and authorization platform built by
 
+00:25:01.240 --> 00:25:07.240
+devs for devs. It solves the problem of building essential user security without adding risk or
 
-00:24:00.840 --> 00:24:02.720
-One final question before we move on.
+00:25:07.240 --> 00:25:12.680
+distracting from the primary application. Fusion Auth has all the features you need with great support and
 
+00:25:12.680 --> 00:25:18.200
+a price that won't break the bank. And you can either self-host it or get the fully managed solution
 
-00:24:02.720 --> 00:24:08.360
-Is it just for Azure or is this a thing that more broadly works across different systems?
+00:25:18.200 --> 00:25:23.800
+hosted in any AWS region. Do you have a side project that needs custom login and registration,
 
+00:25:23.800 --> 00:25:29.160
+multi-factor authentication, social logins, or user management? Download Fusion Auth community
 
-00:24:08.360 --> 00:24:10.840
->> No, I think I should have mentioned that a little bit earlier on.
+00:25:29.160 --> 00:25:35.240
+edition for free. The best part is you get unlimited users and there's no credit card or subscription
 
+00:25:35.240 --> 00:25:41.800
+required. Learn more and get started at pythonbytes.fm/fusionauth. The links in your show notes.
 
-00:24:10.840 --> 00:24:16.160
-We recently built it for Microsoft Sentinel notebooks, but it supports like Splunk, Defender,
+00:25:41.800 --> 00:25:45.800
+Thank you to Fusion Auth for supporting the show. All right. What do you got for your next one,
 
+00:25:45.800 --> 00:25:49.160
+Brian? Number, numbers, something every computer scientist should know?
 
-00:24:16.160 --> 00:24:19.280
-we're working on Elastic, Provider.
+00:25:49.160 --> 00:25:56.360
+Yes. Floating point. Arithmetic is complicated. And so when I started, started working in
 
+00:25:56.360 --> 00:26:01.480
+professionally, one of the things I was recommended reading was, an article called what every
 
-00:24:19.280 --> 00:24:24.200
-So really anything you can get into a Pandas data frame, you can use most of the functionality.
+00:26:01.480 --> 00:26:06.600
+computer scientist should know about floating point arithmetic. And don't worry, it's only like a
 
+00:26:06.600 --> 00:26:13.320
+really long paper with lots of math. so I am not telling you to read this, although it is an
 
-00:24:24.200 --> 00:24:27.600
-So even if we don't have a provider ourselves,
+00:26:13.320 --> 00:26:19.400
+interesting read. What I would like you to read is this article by David Amos called the right way to
 
+00:26:19.400 --> 00:26:24.840
+compare floats in Python, because there's a few things that we need to know about floats when we're
 
-00:24:27.600 --> 00:24:29.840
-if you've got something like PySpark
+00:26:24.840 --> 00:26:30.360
+using them and floating points is, and he covers all of this in the article without going through
 
+00:26:30.360 --> 00:26:37.240
+tons of scary math is the floating point numbers have to be represented in a way that can the computer
 
-00:24:29.840 --> 00:24:30.920
-and you can get a data frame,
+00:26:37.240 --> 00:26:43.960
+can store them and use them and manipulate them, even though some numbers are huge and won't fit
 
+00:26:43.960 --> 00:26:49.400
+normally. So we have to do things like accept that there's error and rounding. So there's a little bit
 
-00:24:30.920 --> 00:24:34.180
-then all of our functions take data frame.
+00:26:49.400 --> 00:26:54.600
+of a discussion there that he talks about. One of the things that surprises people sometimes when they
 
+00:26:54.600 --> 00:27:00.040
+first come come into Python, but it's not just Python, it's most, most languages is somewhere.
 
-00:24:34.180 --> 00:24:37.720
-We use pandas as our universal data interchange format.
+00:27:00.040 --> 00:27:06.600
+There's going to be something obvious that doesn't work like in, in Andy or David's example, 0.1
 
+00:27:06.600 --> 00:27:14.760
+plus 0.2 equals or comparison equals, 0.3. And that will show up as false because they don't.
 
-00:24:37.720 --> 00:24:39.800
-- Yeah, indeed, indeed.
+00:27:14.760 --> 00:27:21.800
+And this is weird. They obviously are crazy that that doesn't work, but, but it's not just equals.
 
+00:27:21.800 --> 00:27:27.160
+You can also do comparisons like, you know, less than or greater than. So it's not only is that,
 
-00:24:39.800 --> 00:24:42.200
-Kim Van Wick out in the audience likes it.
+00:27:27.160 --> 00:27:34.200
+are they not equal? They're not like 0.1 plus 0.2 is not even less than or equal to 0.3. It's weird.
 
+00:27:34.200 --> 00:27:42.760
+Um, so, so what do you do? You don't, the gist of it is don't compare things with a normal
 
-00:24:42.200 --> 00:24:45.680
-It's way like a much nicer way to glean info
+00:27:42.760 --> 00:27:49.080
+math comparisons if there's floating points involved. So what you want to do instead is, and there's,
 
+00:27:49.080 --> 00:27:54.280
+here's a little tiny bit of math, way less than the, than the example. the thesis,
 
-00:24:45.680 --> 00:24:47.120
-in logs and complex script.
+00:27:54.280 --> 00:27:59.240
+the dissertation. Yeah. so there's a whole bunch of stuff built into Python that you can,
 
+00:27:59.240 --> 00:28:05.480
+um, to, to, to work with comparisons. And one of the most common ones I'm trying to get there
 
-00:24:47.120 --> 00:24:48.680
-I'm right there with you.
+00:28:05.480 --> 00:28:11.320
+is, math is close. So there's a math library that's, it's that with an is close function
 
+00:28:11.320 --> 00:28:18.920
+that it's used to just say, Hey, I've got two values. Are these close, close enough? and,
 
-00:24:48.680 --> 00:24:50.600
-All right, now, before we move on, Brian,
+00:28:18.920 --> 00:28:25.000
+we, when, if you're using, if you have to compare floats, something like this is, is great. And be
 
+00:28:25.000 --> 00:28:29.960
+underneath the scene behind the scenes, what it does is it's, it's taking the two values and
 
-00:24:50.600 --> 00:24:54.040
-let me tell you about our sponsor for this episode.
+00:28:29.960 --> 00:28:36.840
+subtracting them and figuring out if the Delta is, or the absolute value of the Delta is below some
 
+00:28:36.840 --> 00:28:41.560
+tolerance, some reasonable tolerance, like close enough. And what that tolerance is,
 
-00:24:54.040 --> 00:24:57.320
-This episode of Python Bytes is brought to you by FusionAuth.
+00:28:41.560 --> 00:28:47.880
+is either a relative or absolute tolerance. And, you, most of the time you can kind of get away
 
+00:28:47.880 --> 00:28:52.200
+with not caring about that, but if you do care about it, you can control that you can pass in
 
-00:24:57.320 --> 00:25:00.680
-FusionAuth is an authentication and authorization platform
+00:28:52.200 --> 00:28:57.560
+what tolerance you expect things to be closer to. I use stuff like this all the time with,
 
+00:28:57.560 --> 00:29:02.760
+with test equipment, because I, I definitely want to know, control over the tolerance levels.
 
-00:25:00.680 --> 00:25:02.840
-built by devs for devs.
+00:29:02.760 --> 00:29:08.200
+So, yeah, for sure. So there's math is close, but then there's also, I'm not going to
 
+00:29:08.200 --> 00:29:13.240
+scroll all the way down here, but there's, there's, he also covers numpy. So numpy has got a
 
-00:25:02.840 --> 00:25:05.880
-It solves the problem of building essential user security
+00:29:13.240 --> 00:29:19.240
+couple of these that are really great. One of them is, is, is close also, but it works on arrays and
 
+00:29:19.240 --> 00:29:25.560
+it'll give you an array of, true and false values, but you can also use all close,
 
-00:25:05.880 --> 00:25:07.940
-without adding risk or distracting
+00:29:25.560 --> 00:29:30.840
+which just says you've got two arrays. And if all of the pairs are close enough,
 
+00:29:30.840 --> 00:29:37.000
+it'll match those up. also covered, which, we use during testing a lot is py test prox,
 
-00:25:07.940 --> 00:25:09.600
-from the primary application.
+00:29:37.000 --> 00:29:43.640
+which is a little bit of a different beast, but, but David covers that. So, basically this
 
+00:29:43.640 --> 00:29:49.880
+is a semi regular reminder to anybody using floating point math in Python that you should be careful
 
-00:25:09.600 --> 00:25:11.660
-FusionAuth has all the features you need
+00:29:49.880 --> 00:29:55.400
+with it or any other language. So. Yeah. It's not a Python thing. It's just a fit representing
 
+00:29:55.400 --> 00:29:59.960
+things that don't fit. Now there's some things sometimes where you have to be very exact.
 
-00:25:11.660 --> 00:25:14.520
-with great support and a price that won't break the bank.
+00:29:59.960 --> 00:30:05.560
+You need to be very precise. And in those cases, Python does have the decimal and fraction types.
 
+00:30:05.560 --> 00:30:10.440
+Um, and David covers these in the article, which are cool. They're cool things to know about,
 
-00:25:14.520 --> 00:25:16.440
-And you can either self-host it
+00:30:10.440 --> 00:30:17.160
+like definitely around, people using money or, or other, very high precision. But if you're
 
+00:30:17.160 --> 00:30:23.720
+also, so there's, those are covered. They do get some sort of a hit for those. But if you really care about,
 
-00:25:16.440 --> 00:25:18.360
-or get the fully managed solution
+00:30:23.720 --> 00:30:29.560
+like the precision and want to want to do things exactly right, then you probably should read that
 
+00:30:29.560 --> 00:30:34.120
+larger article because there's things that you have to do like, certain operations before
 
-00:25:18.360 --> 00:25:20.840
-hosted in any AWS region.
+00:30:34.120 --> 00:30:39.800
+other operations to try to keep the area error from accumulating too high. So there's, it gets messy.
 
+00:30:39.800 --> 00:30:40.280
+Interesting.
 
-00:25:20.840 --> 00:25:23.040
-Do you have a side project that needs custom login
+00:30:40.280 --> 00:30:45.720
+I think I'm fundamentally disturbed by the idea that zero isn't zero. So my approach to floating
 
+00:30:45.720 --> 00:30:53.560
+point numbers is normally convert them to ints. Yeah. I was thinking that, yeah, sometimes that is
 
-00:25:23.040 --> 00:25:25.440
-and registration, multi-factor authentication,
+00:30:53.560 --> 00:30:59.320
+the way to do it. Right. I was thinking this kind of stuff maybe applies a lot to the project that
 
+00:30:59.320 --> 00:31:05.400
+you're working on. If you're trying to come up with ratios that represent, you know, how risky something
 
-00:25:25.440 --> 00:25:27.600
-social logins, or user management,
+00:31:05.400 --> 00:31:10.760
+is and things like that. Yeah. Yeah. Yeah. I mean, certainly a lot of, yeah, I was being a bit
 
+00:31:10.760 --> 00:31:17.080
+flippant before. It's just as fun. It's like, I'm a very platonic at heart. I think so. Like zeroed
 
-00:25:27.600 --> 00:25:30.720
-download Fusion Auth Community Edition for free.
+00:31:17.080 --> 00:31:22.040
+one should be zero one, not nearly one of nearly zero. There should be a perfect square in a perfect
 
+00:31:22.040 --> 00:31:27.960
+circle. Like how can they not exist in our language? Is it really zero or negative zero?
 
-00:25:30.720 --> 00:25:33.280
-The best part is you get unlimited users
+00:31:27.960 --> 00:31:37.880
+Henry on the audience. Henry also points out that PI test approximate also works on numpy arrays as
 
+00:31:37.880 --> 00:31:38.680
+well. Nice.
 
-00:25:33.280 --> 00:25:36.240
-and there's no credit card or subscription required.
+00:31:38.680 --> 00:31:39.080
+Which is pretty cool.
 
+00:31:39.080 --> 00:31:39.640
+Cool.
 
-00:25:36.240 --> 00:25:40.680
-Learn more and get started at pythonbytes.fm/fusionauth.
+00:31:39.640 --> 00:31:39.640
+Cool.
 
+00:31:39.640 --> 00:31:45.080
+You can put that all together. All right. Let me tell you all about Piper. I think that's,
 
-00:25:40.680 --> 00:25:42.000
-The link's in your show notes.
+00:31:45.080 --> 00:31:49.800
+that might be the representation, the way you pronounce it. Everything needs its own description,
 
+00:31:49.800 --> 00:31:57.320
+its own like little phonetic bit. So this, this is a, a simple way to create scripts that run and do
 
-00:25:42.000 --> 00:25:44.440
-Thank you to Fusion Auth for supporting the show.
+00:31:57.320 --> 00:32:02.840
+stuff on your computer using Python. And what's cool about it is it has a real simple way to define
 
+00:32:02.840 --> 00:32:07.640
+the steps. Some of those steps can be optional, but then you can also piece together things like
 
-00:25:44.440 --> 00:25:46.600
-All right, what do you got for your next one, Brian?
+00:32:07.640 --> 00:32:13.240
+other programming. So you can combine commands, different scripts in different languages and
 
+00:32:13.240 --> 00:32:20.120
+applications all into one sequence of events that happens on your computer. So it's basically a task
 
-00:25:46.600 --> 00:25:49.320
-Numbers, something every computer scientist should know.
+00:32:20.120 --> 00:32:25.560
+runner where you define stuff in YAML. And probably the best way to see is to go check out the docs. And
 
+00:32:25.560 --> 00:32:30.120
+there's a whole bunch of docs. The docs are really nice here actually. So for example,
 
-00:25:49.320 --> 00:25:50.640
-- Yes, floating point.
+00:32:30.120 --> 00:32:35.720
+if you go to getting started and come down here and run your first pipeline, I really like the way
 
+00:32:35.720 --> 00:32:41.160
+the docs here look, how they look, but the way you define it, here's like a one, one step one is you
 
-00:25:50.640 --> 00:25:52.440
-Arithmetic is complicated.
+00:32:41.160 --> 00:32:47.080
+just say the steps and it's all YAML and give a step a name so you can refer to it. And then you have inputs
 
+00:32:47.080 --> 00:32:51.640
+and outputs and outputs and you do the little curly string interpolation types of things. Or you can
 
-00:25:52.440 --> 00:25:57.640
-When I started working professionally,
+00:32:51.640 --> 00:32:57.720
+have more complex ones like with different steps and you can even have little comments. There's a way to
 
+00:32:57.720 --> 00:33:03.720
+put a comment in your YAML file as well. So there's also conditional. Let's see if I can find a good
 
-00:25:57.640 --> 00:26:01.120
-one of the things that was recommended reading was an article called,
+00:33:03.720 --> 00:33:09.640
+conditional one down here. Here's on it goes and works with like, this one is just an echo
 
+00:33:09.640 --> 00:33:14.120
+statement and the ping command, but you know, whatever, whatever you want to do, you can basically
 
-00:26:01.120 --> 00:26:05.200
-"What Every Computer Scientist Should Know About Floating-Point Arithmetic."
+00:33:14.120 --> 00:33:21.080
+pass command line arguments to the YAML file or to the workflow, the pipeline, and it'll take those and
 
+00:33:21.080 --> 00:33:27.480
+feed them into the steps. So for example, when you call it, you can say like count equals one and IP
 
-00:26:05.200 --> 00:26:09.480
-Don't worry, it's only a really long paper with lots of math.
+00:33:27.480 --> 00:33:32.680
+equals that. And those will come the little string interpolated pieces that go in there. So you can
 
+00:33:32.680 --> 00:33:38.440
+just combine whatever, basically whatever commands are available to the shell, right? Be that Python or
 
-00:26:09.480 --> 00:26:12.300
-I am not telling you to read this,
+00:33:38.440 --> 00:33:42.760
+POSIX or windows or PowerShell or whatever you're looking to do. Pretty cool, huh?
 
+00:33:42.760 --> 00:33:49.080
+Hmm. That's pretty neat. I might need this for my, my job of, automating my show notes.
 
-00:26:12.300 --> 00:26:14.340
-although it is an interesting read.
+00:33:49.080 --> 00:33:50.520
+I might use some of this.
 
+00:33:50.520 --> 00:33:54.360
+Oh yeah, there you go. If you can find this, go do that. And so on, like, here's one
 
-00:26:14.340 --> 00:26:18.360
-What I would like you to read is this article by David Amos,
+00:33:55.160 --> 00:33:59.720
+that sort of uses the truthiness. So it says there's a bunch of different steps and the,
 
+00:33:59.720 --> 00:34:06.200
+you can use the run flag. So here it says run if there's a value for a on this one. And this one
 
-00:26:18.360 --> 00:26:20.860
-called "The Right Way to Compare Floats in Python."
+00:34:06.200 --> 00:34:10.440
+says run if there's a value for B. And then there's an example where it says, okay, we run it by itself.
 
+00:34:10.440 --> 00:34:15.480
+Those don't run. But if you pass a, then it runs that a step. If you pass B, it does the B step,
 
-00:26:20.860 --> 00:26:25.980
-because there's a few things that we need to know about floats when we're using them and floating
+00:34:15.480 --> 00:34:20.360
+or it can do both if you pass them both. And I like the simplicity of it. Like a lot of these tools,
 
+00:34:20.360 --> 00:34:22.840
+like this feel like they're pretty complicated.
 
-00:26:25.980 --> 00:26:31.740
-points is, and he covers all of this in the article without going through tons of scary math,
-
-
-00:26:31.740 --> 00:26:37.420
-is the floating point numbers have to be represented in a way that the computer can
-
-
-00:26:37.420 --> 00:26:44.060
-store them and use them and manipulate them even though some numbers are huge and won't fit
-
-
-00:26:44.060 --> 00:26:49.260
-normally. So we have to do things like accept that there's error and rounding. So there's a little
-
-
-00:26:49.260 --> 00:26:54.300
-bit of a discussion there that he talks about. One of the things that surprises people sometimes
-
-
-00:26:54.300 --> 00:26:59.980
-when they first come into Python, but it's not just Python, it's most languages, is somewhere
-
-
-00:26:59.980 --> 00:27:07.420
-there's going to be something obvious that doesn't work. Like in David's example, 0.1 plus 0.2
-
-
-00:27:07.420 --> 00:27:16.300
-equals or comparison equals 0.3 and that will show up as false because they don't. And this is weird,
-
-
-00:27:16.300 --> 00:27:17.940
-They obviously are equal.
-
-
-00:27:17.940 --> 00:27:20.340
->> So crazy that that doesn't work.
-
-
-00:27:20.340 --> 00:27:21.900
->> But it's not just equals.
-
-
-00:27:21.900 --> 00:27:25.900
-You can also do comparisons like less than or greater than.
-
-
-00:27:25.900 --> 00:27:28.380
-Not only are they not equal,
-
-
-00:27:28.380 --> 00:27:33.700
-they're not like 0.1 plus 0.2 is not even less than or equal to 0.3.
-
-
-00:27:33.700 --> 00:27:38.260
-It's weird. What do you do?
-
-
-00:27:38.260 --> 00:27:41.820
-The gist of it is don't compare things with
-
-
-00:27:41.820 --> 00:27:45.620
-normal math comparisons if there's floating points involved.
-
-
-00:27:45.620 --> 00:27:48.580
-So what you want to do instead is,
-
-
-00:27:48.580 --> 00:27:50.980
-and here's a little tiny bit of math,
-
-
-00:27:50.980 --> 00:27:53.820
-way less than the example.
-
-
-00:27:53.820 --> 00:27:55.180
-- The thesis, the dissertation.
-
-
-00:27:55.180 --> 00:27:56.220
-- Yeah.
-
-
-00:27:56.220 --> 00:27:58.540
-So there's a whole bunch of stuff built into Python
-
-
-00:27:58.540 --> 00:28:02.900
-that you can, to work with comparisons.
-
-
-00:28:02.900 --> 00:28:05.800
-And one of the most common ones I'm trying to get there
-
-
-00:28:05.800 --> 00:28:07.700
-is math is close.
-
-
-00:28:07.700 --> 00:28:09.860
-So there's a math library that's,
-
-
-00:28:09.860 --> 00:28:11.680
-that with an is close function,
-
-
-00:28:11.680 --> 00:28:13.700
-that it's used to just say,
-
-
-00:28:13.700 --> 00:28:16.900
-"Hey, I've got two values, are these close, close enough?"
-
-
-00:28:16.900 --> 00:28:22.660
-And if you're using, if you have to compare floats,
-
-
-00:28:22.660 --> 00:28:24.740
-something like this is great.
-
-
-00:28:24.740 --> 00:28:27.020
-And underneath the scene, behind the scenes,
-
-
-00:28:27.020 --> 00:28:29.880
-what it does is it's taking the two values
-
-
-00:28:29.880 --> 00:28:33.400
-and subtracting them and figuring out if the delta is,
-
-
-00:28:33.400 --> 00:28:37.580
-or the absolute value of the delta is below some tolerance,
-
-
-00:28:37.580 --> 00:28:39.860
-some reasonable tolerance, like close enough.
-
-
-00:28:39.860 --> 00:28:41.700
-And what that tolerance is,
-
-
-00:28:41.700 --> 00:28:44.540
-is either a relative or absolute tolerance.
-
-
-00:28:44.540 --> 00:28:48.000
-And most of the time you can kind of get away
-
-
-00:28:48.000 --> 00:28:49.040
-with not caring about that,
-
-
-00:28:49.040 --> 00:28:51.280
-but if you do care about it, you can control that.
-
-
-00:28:51.280 --> 00:28:53.740
-You can pass in what tolerance you expect
-
-
-00:28:53.740 --> 00:28:55.120
-things to be closer to.
-
-
-00:28:55.120 --> 00:28:58.640
-I use stuff like this all the time with test equipment
-
-
-00:28:58.640 --> 00:29:01.620
-because I definitely want to know control
-
-
-00:29:01.620 --> 00:29:03.240
-over the tolerance levels.
-
-
-00:29:03.240 --> 00:29:04.760
-So-- - Yeah, for sure.
-
-
-00:29:04.760 --> 00:29:07.600
-- So there's math is close, but then there's also,
-
-
-00:29:07.600 --> 00:29:09.600
-I'm not gonna scroll all the way down here,
-
-
-00:29:09.600 --> 00:29:12.540
-but he also covers NumPy.
-
-
-00:29:12.540 --> 00:29:15.020
-So NumPy has got a couple of these that are really great.
-
-
-00:29:15.020 --> 00:29:19.180
-One of them is close also, but it works on arrays
-
-
-00:29:19.180 --> 00:29:23.880
-and it'll give you an array of true and false values,
-
-
-00:29:23.880 --> 00:29:26.060
-but you can also use all close,
-
-
-00:29:26.060 --> 00:29:27.980
-which just says you've got two arrays
-
-
-00:29:27.980 --> 00:29:30.940
-and if all of the pairs are close enough,
-
-
-00:29:30.940 --> 00:29:32.460
-it'll match those up.
-
-
-00:29:32.460 --> 00:29:35.380
-Also covered, which we use during testing a lot
-
-
-00:29:35.380 --> 00:29:39.260
-is pytestProx, which is a little bit of a different beast,
-
-
-00:29:39.260 --> 00:29:42.240
-but David covers that.
-
-
-00:29:42.240 --> 00:29:46.040
-Basically, this is a semi-regular reminder to
-
-
-00:29:46.040 --> 00:29:49.000
-anybody using floating-point math in Python,
-
-
-00:29:49.000 --> 00:29:51.980
-that you should be careful with it or any other language.
-
-
-00:29:51.980 --> 00:29:53.780
->> Yeah, it's not a Python thing,
-
-
-00:29:53.780 --> 00:29:57.040
-it's just representing things that don't fit.
-
-
-00:29:57.040 --> 00:29:58.160
->> Now, there's some things,
-
-
-00:29:58.160 --> 00:30:00.120
-sometimes where you have to be very exact,
-
-
-00:30:00.120 --> 00:30:01.400
-you need to be very precise,
-
-
-00:30:01.400 --> 00:30:02.800
-and in those cases,
-
-
-00:30:02.800 --> 00:30:06.020
-Python does have the decimal and fraction types,
-
-
-00:30:06.020 --> 00:30:08.340
-and David covers these in the article,
-
-
-00:30:08.340 --> 00:30:10.540
-which are cool, they're cool things to know about,
-
-
-00:30:10.540 --> 00:30:16.540
-like definitely around people using money or other very high precision.
-
-
-00:30:16.540 --> 00:30:17.820
-But if you're also,
-
-
-00:30:17.820 --> 00:30:19.540
-so those are covered,
-
-
-00:30:19.540 --> 00:30:21.900
-they do get some hit for those.
-
-
-00:30:21.900 --> 00:30:28.060
-But if you really care about the precision and want to do things exactly right,
-
-
-00:30:28.060 --> 00:30:31.820
-then you probably should read that larger article because there's things that you have to
-
-
-00:30:31.820 --> 00:30:35.140
-do like certain operations before other operations to
-
-
-00:30:35.140 --> 00:30:38.420
-to try to keep the error from accumulating too high.
-
-
-00:30:38.420 --> 00:30:40.580
-So it gets messy.
-
-
-00:30:40.580 --> 00:30:42.380
-- I think I'm fundamentally disturbed
-
-
-00:30:42.380 --> 00:30:44.220
-by the idea that zero isn't zero.
-
-
-00:30:44.220 --> 00:30:46.500
-So my approach to floating point numbers
-
-
-00:30:46.500 --> 00:30:48.140
-is normally convert them to ints.
-
-
-00:30:48.140 --> 00:30:53.020
-- Yeah, I was thinking that,
-
-
-00:30:53.020 --> 00:30:55.140
-sometimes that is the way to do it, right?
-
-
-00:30:55.140 --> 00:30:58.020
-I was thinking this kind of stuff
-
-
-00:30:58.020 --> 00:31:00.440
-maybe applies a lot to the project that you're working on
-
-
-00:31:00.440 --> 00:31:02.940
-if you're trying to come up with ratios
-
-
-00:31:02.940 --> 00:31:07.180
-that represent how risky something is and things like that.
-
-
-00:31:07.180 --> 00:31:11.740
->> Yeah, yeah, I mean, certainly a lot of, yeah, I was being a bit flippant before we
-
-
-00:31:11.740 --> 00:31:12.740
-got into it.
-
-
-00:31:12.740 --> 00:31:17.620
-It's just as fun, it's like I'm very platonic at heart, I think, so like zeroed one should
-
-
-00:31:17.620 --> 00:31:20.180
-be zeroed one, not nearly one of nearly zero.
-
-
-00:31:20.180 --> 00:31:22.980
->> There should be a perfect square and a perfect circle.
-
-
-00:31:22.980 --> 00:31:25.860
-How can they not exist in our language?
-
-
-00:31:25.860 --> 00:31:29.540
->> Is it really zero or negative zero?
-
-
-00:31:29.540 --> 00:31:32.380
-(both laughing)
-
-
-00:31:32.380 --> 00:31:34.280
-Henry on the audience, hey Henry,
-
-
-00:31:34.280 --> 00:31:36.100
-also points out that pytest approximate
-
-
-00:31:36.100 --> 00:31:38.500
-also works on NumPy arrays as well.
-
-
-00:31:38.500 --> 00:31:39.340
-- Nice. - Which is pretty cool.
-
-
-00:31:39.340 --> 00:31:40.660
-- Mm-hmm, cool.
-
-
-00:31:40.660 --> 00:31:41.680
-- You can put that all together.
-
-
-00:31:41.680 --> 00:31:44.780
-All right, let me tell you all about Piper.
-
-
-00:31:44.780 --> 00:31:47.180
-I think that might be the representation,
-
-
-00:31:47.180 --> 00:31:48.300
-the way you pronounce it.
-
-
-00:31:48.300 --> 00:31:49.980
-Everything needs its own description,
-
-
-00:31:49.980 --> 00:31:51.700
-its own little phonetic bit.
-
-
-00:31:51.700 --> 00:31:56.580
-So this is a simple way to create scripts
-
-
-00:31:56.580 --> 00:31:59.500
-that run and do stuff on your computer using Python.
-
-
-00:31:59.500 --> 00:32:02.420
-And what's cool about it is it has a real simple way
-
-
-00:32:02.420 --> 00:32:03.860
-to define the steps.
-
-
-00:32:03.860 --> 00:32:05.300
-Some of those steps can be optional,
-
-
-00:32:05.300 --> 00:32:07.140
-but then you can also piece together things
-
-
-00:32:07.140 --> 00:32:08.720
-like other programming.
-
-
-00:32:08.720 --> 00:32:12.140
-So you can combine commands, different scripts
-
-
-00:32:12.140 --> 00:32:15.100
-in different languages and applications all into one
-
-
-00:32:15.100 --> 00:32:17.980
-sequence of events that happens on your computer.
-
-
-00:32:17.980 --> 00:32:20.540
-So it's basically a task runner
-
-
-00:32:20.540 --> 00:32:22.700
-where you define stuff in YAML.
-
-
-00:32:22.700 --> 00:32:25.580
-And probably the best way to see is to go check out the docs
-
-
-00:32:25.580 --> 00:32:27.620
-and there's a whole bunch of docs.
-
-
-00:32:27.620 --> 00:32:29.220
-The docs are really nice here actually.
-
-
-00:32:29.220 --> 00:32:31.940
-So for example, if you go to getting started
-
-
-00:32:31.940 --> 00:32:34.980
-and come down here and run your first pipeline,
-
-
-00:32:34.980 --> 00:32:37.400
-I really like the way the docs here look, how they look.
-
-
-00:32:37.400 --> 00:32:40.940
-But the way you define it, here's like a one step one
-
-
-00:32:40.940 --> 00:32:43.660
-is you just say the steps and it's all YAML
-
-
-00:32:43.660 --> 00:32:46.240
-and give a step a name so you can refer to it.
-
-
-00:32:46.240 --> 00:32:47.780
-And then you have inputs and outputs
-
-
-00:32:47.780 --> 00:32:49.740
-and you can do the little curly string
-
-
-00:32:49.740 --> 00:32:51.400
-interpolation types of things.
-
-
-00:32:51.400 --> 00:32:56.060
-Or you can have more complex ones like with different steps
-
-
-00:32:56.060 --> 00:32:57.380
-and you can even have little comments.
-
-
-00:32:57.380 --> 00:33:01.100
-There's a way to put a comma in your YAML file as well.
-
-
-00:33:01.100 --> 00:33:02.820
-So there's also conditional.
-
-
-00:33:02.820 --> 00:33:05.180
-Let's see if I can find a good conditional one down here.
-
-
-00:33:05.180 --> 00:33:07.620
-Here's the one that goes and works with like,
-
-
-00:33:07.620 --> 00:33:11.200
-this one is just an echo statement and the ping command,
-
-
-00:33:11.200 --> 00:33:13.200
-but whatever you wanna do,
-
-
-00:33:13.200 --> 00:33:16.060
-you can basically pass command line arguments
-
-
-00:33:16.060 --> 00:33:20.380
-to the YAML file or to the workflow, the pipeline,
-
-
-00:33:20.380 --> 00:33:22.560
-and it'll take those and feed them into the steps.
-
-
-00:33:22.560 --> 00:33:24.600
-So for example, when you call it,
-
-
-00:33:24.600 --> 00:33:28.280
-you can say like count equals one and IP equals that.
-
-
-00:33:28.280 --> 00:33:31.140
-And those will come the little string interpolated pieces
-
-
-00:33:31.140 --> 00:33:32.420
-that go in there.
-
-
-00:33:32.420 --> 00:33:34.200
-So you can just combine whatever,
-
-
-00:33:34.200 --> 00:33:36.880
-basically whatever commands are available to the shell,
-
-
-00:33:36.880 --> 00:33:40.760
-right, be that Python or POSIX or Windows or PowerShell
-
-
-00:33:40.760 --> 00:33:42.400
-or whatever you're looking to do.
-
-
-00:33:42.400 --> 00:33:43.760
-Pretty cool, huh?
-
-
-00:33:43.760 --> 00:33:44.640
-- That's pretty neat.
-
-
-00:33:44.640 --> 00:33:49.440
-I might need this for my job of automating my show notes.
-
-
-00:33:49.440 --> 00:33:50.800
-Might use some of this.
-
-
-00:33:50.800 --> 00:33:52.000
-- Oh yeah, there you go.
-
-
-00:33:52.000 --> 00:33:53.840
-If you can find this, go do that and so on.
-
-
-00:33:53.840 --> 00:33:57.600
-Like here's one that sort of uses the truthiness.
-
-
-00:33:57.600 --> 00:33:59.400
-So it says there's a bunch of different steps
-
-
-00:33:59.400 --> 00:34:01.960
-and you can use the run flag.
-
-
-00:34:01.960 --> 00:34:05.880
-So here it says run if there's a value for A on this one.
-
-
-00:34:05.880 --> 00:34:07.720
-And this one says run if there's a value for B.
-
-
-00:34:07.720 --> 00:34:09.520
-And then there's an example where it says,
-
-
-00:34:09.520 --> 00:34:11.280
-okay, we run it by itself, those don't run.
-
-
-00:34:11.280 --> 00:34:13.920
-But if you pass A, then it runs that A step.
-
-
-00:34:13.920 --> 00:34:15.640
-If you pass B, it does the B step,
-
-
-00:34:15.640 --> 00:34:17.360
-or it can do both if you pass them both.
-
-
-00:34:17.360 --> 00:34:19.220
-And I like the simplicity of it.
-
-
-00:34:19.220 --> 00:34:20.880
-Like a lot of these tools like this
-
-
-00:34:20.880 --> 00:34:23.040
-feel like they're pretty complicated.
-
-
-00:34:23.040 --> 00:34:27.080
+00:34:22.840 --> 00:34:26.840
 You know, you're sort of like your example with the Genshin, Brian, where you're like,
 
+00:34:26.840 --> 00:34:31.800
+is this thing too heavy weight for what I'm trying to ask it to do? You know? And this seems like a
 
-00:34:27.080 --> 00:34:30.960
-is this thing too heavyweight for what I'm trying to ask it to do, you know?
+00:34:31.800 --> 00:34:34.840
+real simple thing. And I don't have to learn about make or any of those kinds of things.
 
+00:34:34.840 --> 00:34:40.840
+Yeah. GitHub actions or, yeah. Yeah. Yeah. It's got a bit of a GitHub actions feel to it.
 
-00:34:30.960 --> 00:34:34.240
-And this seems like a real simple thing and I don't have to learn about make or any of
+00:34:40.840 --> 00:34:45.240
+That's, but it seems like a nicer kind of declarative. That's really cool.
 
+00:34:45.240 --> 00:34:49.720
+Indeed. Yeah. If you were not, not into programming or you didn't want your steps to be programming,
 
-00:34:34.240 --> 00:34:35.240
-those kinds of things.
+00:34:49.720 --> 00:34:55.320
+but of course what happens at each step, you could call a Python app or script. That's going to do
 
+00:34:55.320 --> 00:34:59.000
+something complicated, right? If it needs to, can you, can you, the orchestration of that,
 
-00:34:35.240 --> 00:34:36.240
->> Yeah.
+00:34:59.000 --> 00:35:03.160
+you don't have to make complicated. Is it just a command line too? Or can you invoke it from Python?
 
+00:35:03.160 --> 00:35:09.480
+Might be a bit interesting. I'm sure there's, there's a way to import it and make it do, do a thing. You
 
-00:34:36.240 --> 00:34:37.240
-GitHub actions or.
+00:35:09.480 --> 00:35:14.600
+know, it's probably just a Python package with an entry point in this package. So I would think so.
 
+00:35:14.600 --> 00:35:18.520
+Yeah. Cause it would be nice to be able to do that rather than just using sub process to invoke a lot
 
-00:34:37.240 --> 00:34:38.240
->> Yeah.
+00:35:18.520 --> 00:35:23.880
+of things. Like if you're in. Oh, interesting. I hadn't really thought about it as a replacement for
 
+00:35:23.880 --> 00:35:28.680
+sub process, but yeah, because a lot of times when you're trying to orchestrate stuff, like it talks
 
-00:34:38.240 --> 00:34:39.240
->> Yeah.
+00:35:28.680 --> 00:35:34.360
+about here being part of the shell or being another app or another language, you would just use sub process
 
+00:35:34.360 --> 00:35:40.200
+on it. Right. Yeah. Cool. Well, there it is. Piper, Piper.io and people can check that out. It looks,
 
-00:34:39.240 --> 00:34:41.160
->> Yeah, it's got a bit of a GitHub actions feel to it.
+00:35:40.200 --> 00:35:44.520
+looks pretty interesting. Nice. All right. Ian, you want to take us out with your final item here?
 
+00:35:44.520 --> 00:35:49.640
+Ah, pigments. Okay. So this is a package. I mean, if you were a developer, there's a very good chance
 
-00:34:41.160 --> 00:34:44.120
->> It's, but it seems like a, yeah, nicer kind of declarative.
+00:35:49.640 --> 00:35:54.440
+that you have been using this for years without, like me, without knowing about it. You might have
 
+00:35:54.440 --> 00:35:58.840
+seen it being installed as like a dependency. It's like, what is that thing? That was my thought,
 
-00:34:44.120 --> 00:34:45.120
-That's pretty cool.
+00:35:58.840 --> 00:36:03.240
+Ian. I'm like, I know I see this all the time in my dependencies and I just never really bothered to
 
+00:36:03.240 --> 00:36:09.640
+look into what it does. Yeah. So I hadn't until recently. So if you use, if you use Jupyter Notebook
 
-00:34:45.120 --> 00:34:46.120
->> Indeed.
+00:36:09.640 --> 00:36:16.520
+markdown, you know, you can look like three backticks and, and then a block of code. And you can actually
 
+00:36:16.520 --> 00:36:23.240
+put like Python or bash or something as a, and it will intelligently highlight it. So the thing that's
 
-00:34:46.120 --> 00:34:49.960
-Yeah, if you were not, not into programming or you didn't want your steps to be programming,
+00:36:23.240 --> 00:36:28.280
+doing that intelligent highlighting is pigments, GitHub markdown, same kind of thing. Although I'm not
 
+00:36:28.280 --> 00:36:34.520
+sure whether GitHub uses pigments. And if you do developer docs, like reader docs and Sphinx,
 
-00:34:49.960 --> 00:34:55.080
-But of course what happens at each step, you could call a Python app or script that's going
+00:36:34.520 --> 00:36:41.000
+that also uses pigments to kind of color code your, your code samples. And I know there's a lot of,
 
+00:36:41.000 --> 00:36:45.560
+uh, you know, writing kind of blog posts and stuff like that. You, there are some,
 
-00:34:55.080 --> 00:34:56.520
-to do something complicated, right?
+00:36:45.560 --> 00:36:50.360
+quite a few services out there where you can take a chunk of code and it will, intelligently
 
+00:36:50.360 --> 00:36:56.760
+highlight it and give you a, a JPEG or a PNG back. And that's kind of nice, but then you can't copy
 
-00:34:56.520 --> 00:34:57.520
-If it needs to.
+00:36:56.760 --> 00:37:00.600
+and paste the code from those samples. So I don't like that really. I think if you're going to put
 
+00:37:00.600 --> 00:37:05.480
+code in a article, you, you're probably intended for people to be able to copy and paste it.
 
-00:34:57.520 --> 00:35:00.200
-But the orchestration of that, you don't have to make complicated.
+00:37:05.480 --> 00:37:08.040
+Yeah. That's the most likely thing you are to copy and paste.
 
+00:37:08.040 --> 00:37:08.360
+Yeah.
 
-00:35:00.200 --> 00:35:03.920
->> Is it just a command line tool or can you invoke it from Python?
+00:37:08.360 --> 00:37:10.440
+Yeah. Right. Cause you want that code over here.
 
+00:37:10.440 --> 00:37:13.960
+Yeah. You don't want an image of your, I mean, cause you could use OCR to like reinterpret it,
 
-00:35:03.920 --> 00:35:04.920
-Might be a-
+00:37:13.960 --> 00:37:19.560
+but it's all, yeah. And then maybe, maybe Brian's gen sim to like, tidy it up.
 
+00:37:19.560 --> 00:37:27.000
+Um, but, so with pigments, you can use it as a standalone package and it can do this kind of
 
-00:35:04.920 --> 00:35:05.920
->> Interesting.
+00:37:27.000 --> 00:37:33.320
+rendering, and it can render to like HTML with like CSS style sheets for all of the coding. It also
 
+00:37:33.320 --> 00:37:40.200
+rendered to like NC terminal, latex, a few other, other kinds of things. So if you're using,
 
-00:35:05.920 --> 00:35:09.440
-I'm sure there's a way to import it and make it do a thing.
+00:37:40.200 --> 00:37:45.480
+um, you know, if you want to get a nicely formatted piece of code in, in a document or you're doing
 
+00:37:45.480 --> 00:37:50.120
+developer docs, it's certainly kind of useful. I mean, I came across it. or should I just say
 
-00:35:09.440 --> 00:35:13.600
-You know, it's probably just a Python package with an entry point in this package.
+00:37:50.120 --> 00:37:55.880
+one thing that also supports, maybe I can just switch supports lots and lots of languages. So it's,
 
+00:37:55.880 --> 00:38:02.200
+um, very simple to use. It has a highlight function. and then you import Alexa, which is like the
 
-00:35:13.600 --> 00:35:14.600
-So I would think so.
+00:38:02.200 --> 00:38:08.040
+thing that understands the tokens in a language and the, a formatter for the output type you want.
 
+00:38:08.040 --> 00:38:12.520
+And I think there's hundreds of these things. So, and, and, and there are a lot of languages in there.
 
-00:35:14.600 --> 00:35:17.800
->> Yeah, because it would be nice to be able to do that rather than just using subprocess
+00:38:12.520 --> 00:38:13.080
+No kidding.
 
+00:38:13.080 --> 00:38:17.480
+I'm more than half of these I've never heard of. And it also supports as well as things like,
 
-00:35:17.800 --> 00:35:19.200
-to invoke a lot of things.
+00:38:17.480 --> 00:38:22.760
+you know, you'd expect Python, it supports Python tracebacks. So it has separate Lexer for color
 
+00:38:22.760 --> 00:38:28.760
+coding tracebacks. all the usual languages you'd expect, but also some things like data formats,
 
-00:35:19.200 --> 00:35:20.200
-if you're in.
+00:38:28.760 --> 00:38:36.760
+like, Toml, Jason, XML. okay. Interesting. Like a lot of the files that we might run across.
 
+00:38:36.760 --> 00:38:37.160
+Yeah.
 
-00:35:20.200 --> 00:35:21.200
-Oh, interesting.
+00:38:37.160 --> 00:38:37.560
+Yeah.
 
+00:38:37.560 --> 00:38:44.040
+Yeah. and so it's very, very easy to use. And the reason I came across it is because I,
 
-00:35:21.200 --> 00:35:24.680
-I hadn't really thought about it as a replacement for subprocess.
+00:38:44.040 --> 00:38:51.240
+it recently, so a lot of attacker code tends to be a deliberately obfuscated. So it's kind of base
 
+00:38:51.240 --> 00:38:57.240
+64 encoded, but then even once you decode it, it's kind of munged in a way to make it as unreadable as
 
-00:35:24.680 --> 00:35:28.700
-But yeah, because a lot of times when you're trying to orchestrate stuff, like it talks
+00:38:57.240 --> 00:39:03.240
+possible. So one of the things that we try to do is, is pull that code back, like decode it, trying to re
 
+00:39:03.240 --> 00:39:09.640
+like clean it, deobfuscate it. but if you have, if you can present it in a, as close to the way a
 
-00:35:28.700 --> 00:35:33.440
-about here being part of the shell or being another app or another language, you would
+00:39:09.640 --> 00:39:14.040
+developer would write it as possible, it makes it much quicker for an analyst to determine what,
 
+00:39:14.040 --> 00:39:21.160
+what is this doing? so we've used it now in, in mystic pie to kind of, color display things like,
 
-00:35:33.440 --> 00:35:35.400
-just use subprocess on it, right?
+00:39:21.160 --> 00:39:26.760
+well, it's just power shell script or, bash or something like that. So that's how I came across it.
 
+00:39:26.760 --> 00:39:32.360
+Actually, rather than just seeing it go past as part of a pip install, actually have to invoke it
 
-00:35:35.400 --> 00:35:36.400
-Yeah, cool.
+00:39:32.360 --> 00:39:38.280
+directly. So, so I kind of big shout out to the, the developers and maintainers of pigments.
 
+00:39:38.280 --> 00:39:43.080
+It's one of those package that probably millions of people benefit from, but like very few people
 
-00:35:36.400 --> 00:35:39.200
-Well, there it is, Piper, piper.io.
+00:39:43.080 --> 00:39:48.760
+kind of know about it or, you know, you can, and it's just super easy to use. They seem to be adding
 
+00:39:48.760 --> 00:39:54.760
+kind of flexors all the time. So, great. Yeah, this is amazing. I didn't realize that it did all
 
-00:35:39.200 --> 00:35:40.200
-And people can check that out.
+00:39:54.760 --> 00:40:00.120
+of this. This is a way more advanced than I thought. Brian, did you know? No, I just thought it was
 
+00:40:00.120 --> 00:40:04.120
+something that magically syntax did syntax highlighting. So I didn't have to care about it.
 
-00:35:40.200 --> 00:35:41.200
-It looks pretty interesting.
+00:40:04.120 --> 00:40:13.400
+Yeah, exactly. I got a little example in the, in the show notes as well. I posted it has a dark theme.
 
+00:40:13.400 --> 00:40:18.600
+Yeah. Yeah. yeah. And you, you probably want to include this no background equals true
 
-00:35:41.200 --> 00:35:42.200
+00:40:18.600 --> 00:40:23.800
+if using a Jupyte Notebooks. Cause if, if you select a theme, it just flips the whole notebooks kind of
+
+00:40:23.800 --> 00:40:29.960
+CSS theme. So that tells it just not to mess with what, what's in the background. Okay. yeah,
+
+00:40:29.960 --> 00:40:34.600
+that looks great. Yeah. Thanks. Thanks for pointing out how useful that can be. That's, that's cool.
+
+00:40:34.600 --> 00:40:39.080
+Like I said, I've seen it go by all the time. I just never really paid that much attention to it.
+
+00:40:39.080 --> 00:40:42.920
+It's probably a pretty minority use, but like if you need it, it's great.
+
+00:40:42.920 --> 00:40:46.840
+Yeah. It's incredibly powerful. Fantastic. Well, that's all of our main items. Brian,
+
+00:40:46.840 --> 00:40:51.880
+you got any extras? just one extra, actually. One of the things when I was doing that, the
+
+00:40:51.880 --> 00:40:57.240
+first topic with GenSim, the, one of the dependent, it doesn't have very many dependencies,
+
+00:40:57.240 --> 00:41:03.560
+but one of the dependencies is this, this library called smart open. And I'm like, what? I,
+
+00:41:03.560 --> 00:41:09.480
+I open things and I want to be smart about it. So I wanted to check this out and it's pretty neat.
+
+00:41:09.480 --> 00:41:15.400
+I don't know if we've covered this before, but it's a, it basically mimics the interface of open
+
+00:41:15.400 --> 00:41:22.200
+normal Python open, but you can pass it really anything in. And it does, like,
+
+00:41:22.200 --> 00:41:29.160
+transparent on the fly reading of things, efficient streaming of large files from like S3 or Azure
+
+00:41:29.160 --> 00:41:31.400
+or, or over the web.
+
+00:41:31.400 --> 00:41:35.880
+Even straight just HTTP. Yeah. If you just have a link to a large file on a web server.
+
+00:41:35.880 --> 00:41:41.880
+Yeah. And, and then just the code for it is just like super nice. You know, you, you import open
+
+00:41:41.880 --> 00:41:49.880
+from smart open and you got like four line in open this thing and, just, you can work from each
+
+00:41:49.880 --> 00:41:51.400
+line there. It's pretty cool.
+
+00:41:51.400 --> 00:41:56.840
+I love it. That's a, that's a great one. Very nice. Ian, you got any extras you want to
+
+00:41:56.840 --> 00:41:59.960
+shout out while we're here? I don't, I'm afraid.
+
+00:41:59.960 --> 00:42:07.720
+I have, I have, I have two real quick ones, to just quickly talk about. Last time,
+
+00:42:07.720 --> 00:42:14.360
+Emily Morehouse spoke about using auto squash, which was really cool. So Adam,
+
+00:42:14.360 --> 00:42:20.920
+let me get the attribution correct here. Adam Park Parkin sent in a follow-up to say,
+
+00:42:20.920 --> 00:42:25.000
+hey, you should check out this article over here called fixing commits with
+
+00:42:25.000 --> 00:42:29.960
+git commit --fix up and git rebase --auto squash.
+
+00:42:29.960 --> 00:42:34.760
+Woo. The long and the short of it is talks about doing a lot of things that Emily said was pretty
+
+00:42:34.760 --> 00:42:42.440
+cool, but in the end setting up your.git config to auto squash equals true, and then adding an alias.
+
+00:42:42.440 --> 00:42:47.640
+So you can just type git space fix up. And when you type that, it actually does get log and shows
+
+00:42:47.640 --> 00:42:54.280
+the last 50 items and then allows you to go back and work with those. And basically it's just a real
+
+00:42:54.280 --> 00:43:00.120
+quick way to get back into the scenario where you mark different elements for fix up. So people can
+
+00:43:00.120 --> 00:43:05.480
+check that out if they were following Emily's advice, but they want it to be like one line. They
+
+00:43:05.480 --> 00:43:11.720
+don't have to remember. There you go. That's cool. And then Python 310.3 is out as of about a week
+
+00:43:11.720 --> 00:43:17.720
+ago, I suppose. So there are many changes amongst here. You know, I would love, there's like so many
+
+00:43:17.720 --> 00:43:22.120
+great changes here. I don't know how many do you think that is probably a hundred, maybe a little
+
+00:43:22.120 --> 00:43:28.120
+bit less. It would be great if there was like a, these are critically important at the front. Like
+
+00:43:28.120 --> 00:43:32.760
+there's a security problem that was fixed, or there's a thing we've taken out is no longer here.
+
+00:43:33.720 --> 00:43:37.720
+They're kind of all the same priority. But nonetheless, there's a bunch of changes that
+
+00:43:37.720 --> 00:43:41.720
+people can check out and upgrade to the newer version of Python 310.
+
+00:43:41.720 --> 00:43:47.400
+different people care about different stuff though. I know. I don't want to impose my importance on
+
+00:43:47.400 --> 00:43:52.600
+other people's importance. Yeah. So it's funny when I first came across, first came across Python,
+
+00:43:52.600 --> 00:43:57.240
+you were kind of like, why is it so slow between the major versions coming out? But then suddenly
+
+00:43:57.240 --> 00:44:00.600
+it's like a Python developer. It's like, why are the versions coming out so quickly?
+
+00:44:00.600 --> 00:44:08.600
+Yeah. It's definitely true. There's a ton of change. This is just, you know, some minor version
+
+00:44:08.600 --> 00:44:11.480
+change that has these, all these changes in here, which is pretty cool.
+
+00:44:11.480 --> 00:44:16.040
+Well, we also used to be on an 18 month cycle and now we're on a yearly cycle. So just yeah.
+
+00:44:16.040 --> 00:44:23.080
+Yeah. Lucas Schlinger's fault that we are 50% faster now. Thanks Lucas. All right. How about a joke to
+
+00:44:23.080 --> 00:44:24.760
+close out the show? That'd be great.
+
+00:44:24.760 --> 00:44:32.280
+Yeah. So here's a good tweet and it's this sort of perplexed, I think in a good way,
+
+00:44:32.280 --> 00:44:38.440
+character wearing all these, are these prizes? I don't know. Anyway, Python developers, when someone
+
+00:44:38.440 --> 00:44:44.120
+asks what their secret is, and this person just says, I just keep writing pseudocode and it just keeps
+
+00:44:44.120 --> 00:44:50.200
+working. It's a little bit like that joke where they have some code, pseudocode in a text file.
+
+00:44:50.200 --> 00:44:55.720
+They're like, just rename it to .py and try to run and see what happens. Anyway, that's the joke.
+
+00:44:55.720 --> 00:44:56.040
 Nice.
 
+00:44:56.040 --> 00:44:59.480
+Thank you, Brian, as always. And Ian, thanks for being part of the show.
 
-00:35:42.200 --> 00:35:44.760
-All right, Ian, you want to take us out with your final item here?
+00:44:59.480 --> 00:45:00.520
+Thank you. Great to have you here.
 
+00:45:00.520 --> 00:45:02.680
+Thank you very much both. It's been a real pleasure.
 
-00:35:44.760 --> 00:35:45.760
-Ah, pigments.
-
-
-00:35:45.760 --> 00:35:46.760
-Okay.
-
-
-00:35:46.760 --> 00:35:47.760
-So this is a package.
-
-
-00:35:47.760 --> 00:35:51.280
-I mean, if you're a developer, there's a very good chance that you have been using this
-
-
-00:35:51.280 --> 00:35:54.280
-for years without knowing, like me, without knowing about it.
-
-
-00:35:54.280 --> 00:35:56.600
-You might have seen it being installed as like a dependency.
-
-
-00:35:56.600 --> 00:35:57.880
-It's like, what is that thing?
-
-
-00:35:57.880 --> 00:35:59.120
->> That was my thought, Ian.
-
-
-00:35:59.120 --> 00:36:01.880
-I'm like, I know I see this all the time in my dependencies.
-
-
-00:36:01.880 --> 00:36:04.400
-And I just never really bothered to look into what it does.
-
-
-00:36:04.400 --> 00:36:05.400
->> Yeah.
-
-
-00:36:05.400 --> 00:36:06.640
-So I hadn't until recently.
-
-
-00:36:06.640 --> 00:36:13.560
-So if you use Jupyter Notebook markdown, you know, you can do like three backticks and
-
-
-00:36:13.560 --> 00:36:15.920
-then a block of code.
-
-
-00:36:15.920 --> 00:36:22.200
-And you can actually put like Python or Bash or something and it will intelligently highlight
-
-
-00:36:22.200 --> 00:36:23.200
-it.
-
-
-00:36:23.200 --> 00:36:27.560
-So the thing that's doing that intelligent highlighting is pigments, GitHub markdown,
-
-
-00:36:27.560 --> 00:36:28.560
-same kind of thing.
-
-
-00:36:28.560 --> 00:36:30.840
-Although I'm not sure whether GitHub uses pigments.
-
-
-00:36:30.840 --> 00:36:36.040
-And if you do developer docs like reader docs and Sphinx, that also uses pigments to kind
-
-
-00:36:36.040 --> 00:36:40.040
-of color code your code samples.
-
-
-00:36:40.040 --> 00:36:42.440
-And I know there's a lot of...
-
-
-00:36:42.440 --> 00:36:44.960
-kind of blog posts and stuff like that.
-
-
-00:36:44.960 --> 00:36:48.920
-There are some quite a few services out there where you can take a chunk of code and it
-
-
-00:36:48.920 --> 00:36:53.680
-will intelligently highlight it and give you a JPEG or a PNG back.
-
-
-00:36:53.680 --> 00:36:58.840
-And that's kind of nice, but then you can't copy and paste the code from those samples.
-
-
-00:36:58.840 --> 00:36:59.840
-So I don't like that really.
-
-
-00:36:59.840 --> 00:37:03.640
-I think if you're going to put code in an article, you're probably intended for people
-
-
-00:37:03.640 --> 00:37:05.400
-to be able to copy and paste it.
-
-
-00:37:05.400 --> 00:37:06.400
-Yeah.
-
-
-00:37:06.400 --> 00:37:08.240
-That's the most likely thing you are to copy and paste.
-
-
-00:37:08.240 --> 00:37:09.240
-Yeah.
-
-
-00:37:09.240 --> 00:37:10.240
-Right.
-
-
-00:37:10.240 --> 00:37:11.240
-Because you want that code over here.
-
-
-00:37:11.240 --> 00:37:14.920
-You could use OCR to like reinterpret it, but it's all...
-
-
-00:37:14.920 --> 00:37:22.880
-And then maybe Brian's GenSim to like tidy it up.
-
-
-00:37:22.880 --> 00:37:28.360
-So with Pigments, you can use it as a standalone package and it can do this kind of rendering.
-
-
-00:37:28.360 --> 00:37:32.920
-And it can render to like HTML with like CSS style sheets for all of the coding.
-
-
-00:37:32.920 --> 00:37:39.060
-It also rendered to like ANSI terminal, latex, a few other kind of things.
-
-
-00:37:39.060 --> 00:37:45.160
-So if you're using, if you want a kind of nicely formatted piece of code in a document
-
-
-00:37:45.160 --> 00:37:47.880
-or you're doing developer docs, it's certainly kind of useful.
-
-
-00:37:47.880 --> 00:37:51.120
-I came across it, or should I just say one thing?
-
-
-00:37:51.120 --> 00:37:55.720
-It also supports, maybe I can just switch, supports lots and lots of languages.
-
-
-00:37:55.720 --> 00:37:57.600
-So it's very simple to use.
-
-
-00:37:57.600 --> 00:38:02.620
-It has a highlight function, and then you import Alexa, which is like the thing that
-
-
-00:38:02.620 --> 00:38:08.400
-understands the tokens in a language, and a formatter for the output type you want.
-
-
-00:38:08.400 --> 00:38:10.160
-I think there's hundreds of these things.
-
-
-00:38:10.160 --> 00:38:13.560
->> There are a lot of languages in there. No kidding.
-
-
-00:38:13.560 --> 00:38:15.440
->> More than half of these I've never heard of.
-
-
-00:38:15.440 --> 00:38:19.240
-It also supports as well as things like you'd expect Python.
-
-
-00:38:19.240 --> 00:38:21.040
-It supports Python tracebacks.
-
-
-00:38:21.040 --> 00:38:24.600
-It has separate Lexa for color-coding tracebacks.
-
-
-00:38:24.600 --> 00:38:26.760
-All the usual languages you'd expect,
-
-
-00:38:26.760 --> 00:38:33.080
-but also some things like data formats like TML, JSON, XML.
-
-
-00:38:33.080 --> 00:38:36.760
->> Okay. Interesting. A lot of the files that we might run across,
-
-
-00:38:36.760 --> 00:38:38.760
-You can syntax highlight them.
-
-
-00:38:38.760 --> 00:38:39.760
-Yeah.
-
-
-00:38:39.760 --> 00:38:41.960
-And so it's very easy to use.
-
-
-00:38:41.960 --> 00:38:48.020
-And the reason I came across it is because I, it recently, so a lot of attacker code
-
-
-00:38:48.020 --> 00:38:50.120
-tends to be a deliberately obfuscated.
-
-
-00:38:50.120 --> 00:38:55.320
-So it's kind of a base 64 encoded, but then even once you decode it, it's kind of munged
-
-
-00:38:55.320 --> 00:38:58.240
-in a way to make it as unreadable as possible.
-
-
-00:38:58.240 --> 00:39:02.960
-So one of the things that we try to do is, is pull that code back, like decode it, trying
-
-
-00:39:02.960 --> 00:39:05.960
-to re like clean it, deobfuscate it.
-
-
-00:39:05.960 --> 00:39:11.320
-But if you can present it as close to the way a developer would write it as possible,
-
-
-00:39:11.320 --> 00:39:15.840
-it makes it much quicker for an analyst to determine what is this doing.
-
-
-00:39:15.840 --> 00:39:22.680
-So we use it now in MysticPy to kind of color display things like malicious PowerShell script
-
-
-00:39:22.680 --> 00:39:25.560
-or Bash or something like that.
-
-
-00:39:25.560 --> 00:39:26.880
-So that's how I came across it.
-
-
-00:39:26.880 --> 00:39:31.720
-Actually, rather than just seeing it go past as part of a pip install, actually, I have
-
-
-00:39:31.720 --> 00:39:34.040
-to invoke it directly.
-
-
-00:39:34.040 --> 00:39:38.360
-I got a big shout out to the developers maintainers of pigments.
-
-
-00:39:38.360 --> 00:39:41.920
-It's one of those package that probably millions of people benefit from,
-
-
-00:39:41.920 --> 00:39:45.400
-but like very few people kind of know about it or you know, you can,
-
-
-00:39:45.400 --> 00:39:48.160
-and it's just super easy to use.
-
-
-00:39:48.160 --> 00:39:50.160
-They seem to be adding kind of Lexus all the time.
-
-
-00:39:50.160 --> 00:39:51.840
-So, great.
-
-
-00:39:51.840 --> 00:39:52.840
-Yeah, this is amazing.
-
-
-00:39:52.840 --> 00:39:55.280
-I didn't realize that it did all of this.
-
-
-00:39:55.280 --> 00:39:57.640
-This is way more advanced than I thought.
-
-
-00:39:57.640 --> 00:39:58.600
-Brian, did you know?
-
-
-00:39:58.600 --> 00:40:03.040
-No, I just thought it was something that magically syntax did syntax highlighting.
-
-
-00:40:03.040 --> 00:40:05.040
-I didn't have to care about it.
-
-
-00:40:05.040 --> 00:40:07.040
-Yeah, exactly.
-
-
-00:40:07.040 --> 00:40:11.040
-I got a little example in the show notes as well.
-
-
-00:40:11.040 --> 00:40:12.040
-I pasted it.
-
-
-00:40:12.040 --> 00:40:13.040
-It has a dark theme?
-
-
-00:40:13.040 --> 00:40:15.040
-Yeah, yeah.
-
-
-00:40:15.040 --> 00:40:17.040
-Yeah, and you probably want to include this
-
-
-00:40:17.040 --> 00:40:20.040
-"no background equals true" if you're using Jupyter Notebooks,
-
-
-00:40:20.040 --> 00:40:25.040
-because if you select a theme, it just flips the whole notebook's kind of CSS theme.
-
-
-00:40:25.040 --> 00:40:28.040
-So that tells it just not to mess with what's in the background.
-
-
-00:40:28.040 --> 00:40:29.040
-Okay.
-
-
-00:40:29.040 --> 00:40:31.040
-Yeah, that looks great.
-
-
-00:40:31.040 --> 00:40:33.980
->> Thanks for pointing out how useful that can be.
-
-
-00:40:33.980 --> 00:40:35.460
-That's cool. Like I said,
-
-
-00:40:35.460 --> 00:40:36.580
-I've seen it go by all the time.
-
-
-00:40:36.580 --> 00:40:39.180
-I just never really paid that much attention to it.
-
-
-00:40:39.180 --> 00:40:40.660
->> It's probably a pretty minority use,
-
-
-00:40:40.660 --> 00:40:42.860
-but if you need it, it's great.
-
-
-00:40:42.860 --> 00:40:45.180
->> Yeah, it's incredibly powerful. Fantastic.
-
-
-00:40:45.180 --> 00:40:46.620
-Well, that's all of our main items.
-
-
-00:40:46.620 --> 00:40:47.680
-Brian, you got any extras?
-
-
-00:40:47.680 --> 00:40:48.940
->> Just one extra actually.
-
-
-00:40:48.940 --> 00:40:51.500
-One of the things when I was doing that,
-
-
-00:40:51.500 --> 00:40:54.820
-the first topic with GenSim,
-
-
-00:40:54.820 --> 00:40:57.420
-it doesn't have very many dependencies,
-
-
-00:40:57.420 --> 00:40:59.100
-but one of the dependencies is
-
-
-00:40:59.100 --> 00:41:02.780
-this library called SmartOpen.
-
-
-00:41:02.780 --> 00:41:06.340
-I open things and I want to be smart about it,
-
-
-00:41:06.340 --> 00:41:08.380
-so I wanted to check this out.
-
-
-00:41:08.380 --> 00:41:11.100
-It's pretty neat. I don't know if we've covered this before,
-
-
-00:41:11.100 --> 00:41:15.620
-but it basically mimics the interface of open,
-
-
-00:41:15.620 --> 00:41:19.260
-normal Python open, but you can pass it really anything.
-
-
-00:41:19.260 --> 00:41:25.220
-It does transparent on-the-fly reading of things,
-
-
-00:41:25.220 --> 00:41:28.860
-efficient streaming of large files from S3 or
-
-
-00:41:28.860 --> 00:41:31.660
-Azure or over the web.
-
-
-00:41:31.660 --> 00:41:33.100
->> Even straight just HTTP.
-
-
-00:41:33.100 --> 00:41:33.420
->> Yeah.
-
-
-00:41:33.420 --> 00:41:35.980
->> If you just have a link to a large file on a web server.
-
-
-00:41:35.980 --> 00:41:40.660
->> Yeah. Then just the code for it is just super nice.
-
-
-00:41:40.660 --> 00:41:44.100
-You import open from SmartOpen and you got like for
-
-
-00:41:44.100 --> 00:41:46.820
-a line in open this thing
-
-
-00:41:46.820 --> 00:41:51.700
-and you can work from each line there. It's pretty cool.
-
-
-00:41:51.700 --> 00:41:55.260
->> I love it. That's a great one. Very nice.
-
-
-00:41:55.260 --> 00:41:58.100
-- All right, Ian, you got any extras you wanna shout out
-
-
-00:41:58.100 --> 00:41:59.020
-while we're here?
-
-
-00:41:59.020 --> 00:42:00.500
-- I don't, I'm afraid.
-
-
-00:42:00.500 --> 00:42:02.180
-I have some. - No, that's fine.
-
-
-00:42:02.180 --> 00:42:07.180
-I have two real quick ones to just quickly talk about.
-
-
-00:42:07.180 --> 00:42:11.860
-Last time, Emily Morehouse spoke about using AutoSquash,
-
-
-00:42:11.860 --> 00:42:13.380
-which was really cool.
-
-
-00:42:13.380 --> 00:42:17.860
-So Adam, let me get the attribution correct here.
-
-
-00:42:17.860 --> 00:42:21.020
-Adam Parkin sent in a follow-up to say,
-
-
-00:42:21.020 --> 00:42:23.420
-hey, you should check out this article over here
-
-
-00:42:23.420 --> 00:42:27.100
-called fixing commits with git commit --fix up
-
-
-00:42:27.100 --> 00:42:30.420
-and git rebase --auto squash.
-
-
-00:42:30.420 --> 00:42:32.020
-Woo, the long and the short of it is,
-
-
-00:42:32.020 --> 00:42:33.360
-talks about doing a lot of things
-
-
-00:42:33.360 --> 00:42:35.140
-that Emily said was pretty cool.
-
-
-00:42:35.140 --> 00:42:36.500
-But in the end,
-
-
-00:42:36.500 --> 00:42:41.300
-setting up your .git config to auto squash equals true
-
-
-00:42:41.300 --> 00:42:42.540
-and then adding an alias
-
-
-00:42:42.540 --> 00:42:45.220
-so you can just type git space fix up.
-
-
-00:42:45.220 --> 00:42:46.060
-And when you type that,
-
-
-00:42:46.060 --> 00:42:49.660
-it actually does git log and shows the last 50 items
-
-
-00:42:49.660 --> 00:42:53.020
-and then allows you to go back and work with those.
-
-
-00:42:53.020 --> 00:42:56.640
-And basically it's just a real quick way to get back into the scenario where you
-
-
-00:42:56.640 --> 00:42:58.720
-mark different elements for fix up.
-
-
-00:42:58.720 --> 00:43:04.120
-So people can check that out if they were following Emily's advice, but
-
-
-00:43:04.120 --> 00:43:05.520
-they want it to be like one line.
-
-
-00:43:05.520 --> 00:43:06.280
-They don't have to remember.
-
-
-00:43:06.280 --> 00:43:06.860
-There you go.
-
-
-00:43:06.860 --> 00:43:07.360
-That's cool.
-
-
-00:43:07.360 --> 00:43:12.680
-And then Python 3.10.3 is out as of about a week ago, I suppose.
-
-
-00:43:12.680 --> 00:43:15.760
-So there are many changes amongst here.
-
-
-00:43:15.760 --> 00:43:18.400
-You know, I would love, there's like so many great changes here.
-
-
-00:43:18.400 --> 00:43:19.040
-You can see, I don't know.
-
-
-00:43:19.040 --> 00:43:20.320
-How many do you think that is?
-
-
-00:43:20.320 --> 00:43:22.760
-Probably a hundred, maybe a little bit less.
-
-
-00:43:22.760 --> 00:43:24.580
-it would be great if there was like a,
-
-
-00:43:24.580 --> 00:43:27.020
-"These are critically important."
-
-
-00:43:27.020 --> 00:43:30.420
-At the front, there's a security problem that was fixed,
-
-
-00:43:30.420 --> 00:43:33.380
-or there's a thing we've taken out is no longer here.
-
-
-00:43:33.380 --> 00:43:35.680
-They're all the same priority.
-
-
-00:43:35.680 --> 00:43:38.540
-But nonetheless, there's a bunch of changes that people can
-
-
-00:43:38.540 --> 00:43:42.100
-check out and upgrade to the newer version of Python 3.10.
-
-
-00:43:42.100 --> 00:43:45.140
->> Different people care about different stuff though.
-
-
-00:43:45.140 --> 00:43:46.620
->> I know. I don't want to impose
-
-
-00:43:46.620 --> 00:43:48.740
-my importance on other people's importance.
-
-
-00:43:48.740 --> 00:43:49.260
->> Yeah.
-
-
-00:43:49.260 --> 00:43:49.860
->> So it's funny.
-
-
-00:43:49.860 --> 00:43:50.300
->> All right.
-
-
-00:43:50.300 --> 00:43:52.780
-When I first came across Python,
-
-
-00:43:52.780 --> 00:43:56.500
-you'd be like, "Why is it so slow between the major versions coming out?"
-
-
-00:43:56.500 --> 00:43:58.500
-Then suddenly, as a Python developer,
-
-
-00:43:58.500 --> 00:44:00.820
-it's like, "Why are the versions coming out so quickly?"
-
-
-00:44:00.820 --> 00:44:01.780
-I can't get it.
-
-
-00:44:01.780 --> 00:44:05.420
->> Yeah. It's definitely true.
-
-
-00:44:05.420 --> 00:44:09.100
-There's a ton of change. This is just some minor version change
-
-
-00:44:09.100 --> 00:44:11.620
-that has all these changes in here, which is pretty cool.
-
-
-00:44:11.620 --> 00:44:12.820
->> Well, we also used to be on
-
-
-00:44:12.820 --> 00:44:15.580
-an 18-month cycle and now we're on a yearly cycle.
-
-
-00:44:15.580 --> 00:44:16.940
->> Yeah.
-
-
-00:44:16.940 --> 00:44:20.780
-It's Lucas Schlinga's fault that we are 50% faster now.
-
-
-00:44:20.780 --> 00:44:21.620
-Thanks Lucas.
-
-
-00:44:21.620 --> 00:44:24.220
-All right, how about a joke to close out the show?
-
-
-00:44:24.220 --> 00:44:25.100
-- That'd be great.
-
-
-00:44:25.100 --> 00:44:28.040
-- Yeah, so here's a good tweet
-
-
-00:44:28.040 --> 00:44:31.180
-and it's this sort of perplexed,
-
-
-00:44:31.180 --> 00:44:33.220
-I think in a good way, character,
-
-
-00:44:33.220 --> 00:44:35.700
-wearing all these, are these prizes?
-
-
-00:44:35.700 --> 00:44:37.940
-I don't know, anyway, Python developers,
-
-
-00:44:37.940 --> 00:44:40.380
-when someone asks what their secret is,
-
-
-00:44:40.380 --> 00:44:41.660
-and this person just says,
-
-
-00:44:41.660 --> 00:44:45.740
-"I just keep writing pseudocode and it just keeps working."
-
-
-00:44:45.740 --> 00:44:49.020
-It's a little bit like that joke where they have some code,
-
-
-00:44:49.020 --> 00:44:50.300
-pseudocode in a text file.
-
-
-00:44:50.300 --> 00:44:52.420
-They're like, just rename it to .py and try to run it.
-
-
-00:44:52.420 --> 00:44:53.260
-See what happens.
-
-
-00:44:53.260 --> 00:44:56.100
-Anyway, that's the joke.
-
-
-00:44:56.100 --> 00:44:56.940
-- Nice.
-
-
-00:44:56.940 --> 00:44:57.940
-- Thank you, Brian, as always.
-
-
-00:44:57.940 --> 00:44:59.700
-And Ian, thanks for being part of the show.
-
-
-00:44:59.700 --> 00:45:00.540
-- Thank you. - Thank you.
-
-
-00:45:00.540 --> 00:45:01.360
-- Great to have you here.
-
-
-00:45:01.360 --> 00:45:02.200
-- Thank you very much both.
-
-
-00:45:02.200 --> 00:45:03.140
-Been a real pleasure.
-
-
-00:45:03.140 --> 00:45:04.220
-- Yeah, it sure has.
+00:45:02.680 --> 00:45:04.440
+Yeah, it sure has. See y'all.
 

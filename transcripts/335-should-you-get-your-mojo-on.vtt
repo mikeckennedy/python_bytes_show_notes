@@ -1,2353 +1,1568 @@
 WEBVTT
 
-00:00:00.000 --> 00:00:04.880
+00:00:00.001 --> 00:00:04.480
 Hello and welcome to Python Bytes where we deliver Python news and headlines directly to your earbuds.
 
+00:00:04.480 --> 00:00:11.580
+This is episode 335. Is that right? Yeah. Recorded May 9, 2023 and I'm Brian Okken.
 
-00:00:04.880 --> 00:00:11.680
-This is episode 335. Is that right? Yeah. Recorded May 9, 2023. And I'm Brian Okken.
-
-
-00:00:11.680 --> 00:00:12.880
+00:00:11.580 --> 00:00:12.560
 I'm Michael Kennedy.
 
+00:00:12.560 --> 00:00:17.420
+And we've got a sponsor, Influx TV. Thanks, Influx. We'll hear more about them later.
 
-00:00:12.880 --> 00:00:17.520
-And we've got a sponsor, InfluxDB. Thanks, Influx. We'll hear more about them later.
+00:00:17.420 --> 00:00:22.940
+If you'd like to connect with us and talk to us in sort of real time or async,
 
+00:00:22.940 --> 00:00:26.660
+we've got all of us are on Mastodon. All of us, all two of us.
 
-00:00:17.520 --> 00:00:24.240
-If you'd like to connect with us and talk to us in sort of real time or async, we've got,
+00:00:26.660 --> 00:00:33.900
+But at M. Kennedy, at Fostadon, at Brian Okken, and at Python Bytes, we're all on Fostadon.
 
+00:00:33.900 --> 00:00:40.900
+So you raise a philosophical issue. The United States, the laws may have gone too far to be business friendly in some ways.
 
-00:00:24.240 --> 00:00:26.880
-All of us are on Mastodon, all of us, all two of us.
+00:00:40.900 --> 00:00:44.860
+And businesses have the same rights as a person. Does a podcast? I don't know.
 
+00:00:44.860 --> 00:00:48.680
+You said all three of us are on. Oh, yeah.
 
-00:00:26.880 --> 00:00:31.080
-But at M. Kennedy, at Fosstodon, at Brian Okken,
+00:00:48.680 --> 00:00:54.600
+Does the podcast have pronouns? What rights does our podcast have? I'm very curious now.
 
+00:00:54.600 --> 00:00:56.020
+But maybe we've got to think about that later.
 
-00:00:31.080 --> 00:00:34.280
-and at Python Bytes, we're all on Fosstodon.
+00:00:56.360 --> 00:00:59.100
+My podcast identifies as a podcast.
 
+00:00:59.100 --> 00:01:01.180
+It identifies as MP3.
 
-00:00:34.280 --> 00:00:36.520
-- So you raise a philosophical issue.
+00:01:01.180 --> 00:01:07.140
+Well, so let's kick off the wonderful show with a cool topic.
 
+00:01:07.140 --> 00:01:09.900
+Yes. Talking about trust.
 
-00:00:36.520 --> 00:00:39.280
-The United States, the laws may be gone too far
+00:01:09.900 --> 00:01:26.440
+So Brian, one of the ways in which you automatically publish or even within your system publish things to PyPI is you take your one and only permanent API key and you put it in that in whatever location that is.
 
+00:01:26.640 --> 00:01:31.300
+So some people will go and publish from GitHub through GitHub actions.
 
-00:00:39.280 --> 00:00:41.040
-to be business friendly in some ways,
+00:01:31.300 --> 00:01:33.700
+And in the action, it says, here's where your username goes.
 
+00:01:33.700 --> 00:01:35.460
+Here's where your API key goes.
 
-00:00:41.040 --> 00:00:43.560
-and businesses have the same rights as a person.
+00:01:35.620 --> 00:01:45.180
+And it may be a little known fact that people, I'm not sure if you're aware of this, but if you're on the command line and you do get actions like get pull and it says, oh, enter your username.
 
+00:01:45.180 --> 00:01:46.220
+Boom. Enter your username.
 
-00:00:43.560 --> 00:00:44.400
-Does a podcast?
+00:01:46.220 --> 00:01:47.320
+Enter your password.
 
+00:01:47.480 --> 00:01:53.260
+You can enter that API key and that will allow you to do like full CLI access, presumably, depending on.
 
-00:00:44.400 --> 00:00:45.720
-I don't know.
+00:01:53.260 --> 00:01:55.000
+Actually, that's the GitHub one.
 
+00:01:55.000 --> 00:01:56.040
+So I'm crisscrossing these.
 
-00:00:45.720 --> 00:00:48.320
-You said all three of us are on.
+00:01:56.140 --> 00:02:06.380
+But nonetheless, putting your PyPI API key into GitHub actions and other CI, CD places and scripts, not ideal.
 
+00:02:06.380 --> 00:02:06.780
+Right.
 
-00:00:48.320 --> 00:00:49.920
-- Oh yeah.
-
-
-00:00:49.920 --> 00:00:51.800
-- Does the podcast have pronouns?
-
-
-00:00:51.800 --> 00:00:53.520
-What rights does our podcast have?
-
-
-00:00:53.520 --> 00:00:56.080
-I'm very curious now, but maybe we got to think about that later.
-
-
-00:00:56.080 --> 00:00:59.240
-Uh, my podcast identifies as a podcast.
-
-
-00:00:59.240 --> 00:01:01.320
-Identifies as MP3.
-
-
-00:01:01.320 --> 00:01:05.200
-Well, so let's kick off the wonderful show.
-
-
-00:01:05.200 --> 00:01:07.240
-Um, with a cool topic.
-
-
-00:01:07.240 --> 00:01:08.120
-Yes.
-
-
-00:01:08.120 --> 00:01:10.020
-Talking about trust.
-
-
-00:01:10.020 --> 00:01:15.760
-So Brian, one of the ways in which you automatically publish or even within your
-
-
-00:01:15.760 --> 00:01:22.800
-system, publish things to high PI is you take your one and only permanent API key
-
-
-00:01:22.920 --> 00:01:26.480
-and you put it in whatever location that is.
-
-
-00:01:26.480 --> 00:01:29.800
-So some people will go and publish from GitHub
-
-
-00:01:29.800 --> 00:01:32.080
-through GitHub Actions, and in the action,
-
-
-00:01:32.080 --> 00:01:33.880
-it says, here's where your username goes,
-
-
-00:01:33.880 --> 00:01:35.780
-here's where your API key goes.
-
-
-00:01:35.780 --> 00:01:37.740
-And it may be a little known fact that people,
-
-
-00:01:37.740 --> 00:01:38.920
-I'm not sure if you're aware of this,
-
-
-00:01:38.920 --> 00:01:41.360
-but if you're on the command line
-
-
-00:01:41.360 --> 00:01:43.440
-and you do get actions like get pull,
-
-
-00:01:43.440 --> 00:01:45.360
-and it says, oh, enter your username,
-
-
-00:01:45.360 --> 00:01:47.460
-boom, enter your username, enter your password,
-
-
-00:01:47.460 --> 00:01:49.320
-you can enter that API key,
-
-
-00:01:49.320 --> 00:01:52.840
-and that will allow you to do full CLI access, presumably.
-
-
-00:01:52.840 --> 00:01:55.000
-depending on, actually that's the get it one.
-
-
-00:01:55.000 --> 00:01:57.440
-So I'm crisscrossing these, but nonetheless,
-
-
-00:01:57.440 --> 00:02:02.440
-putting your PyPI API key into GitHub actions
-
-
-00:02:02.440 --> 00:02:07.040
-and other CI/CD places and scripts, not ideal, right?
-
-
-00:02:07.040 --> 00:02:07.880
-- Yeah.
-
-
-00:02:07.880 --> 00:02:11.440
-- So last month, a couple of weeks ago, Dustin Ingram,
-
-
-00:02:11.440 --> 00:02:15.240
-one of the folks at PyPI said,
-
-
-00:02:15.240 --> 00:02:17.720
-we're introducing trusted publishers.
-
-
-00:02:17.720 --> 00:02:20.360
-So starting today, PyPI package maintainers
-
-
-00:02:20.360 --> 00:02:23.280
-can adopt a new, more secure publishing method
-
-
-00:02:23.280 --> 00:02:27.160
-that does not require long-lived passwords or API tokens
-
-
-00:02:27.160 --> 00:02:29.040
-to be shared with external systems,
-
-
-00:02:29.040 --> 00:02:31.520
-such as GitHub Actions and others.
-
-
-00:02:31.520 --> 00:02:32.480
-- Okay. - Okay.
-
-
-00:02:32.480 --> 00:02:35.320
-So what you can do instead is you can create
-
-
-00:02:35.320 --> 00:02:38.480
-like an OpenID OAuth type of connection
-
-
-00:02:38.480 --> 00:02:42.160
-between IPI for your account and GitHub, yeah?
-
-
-00:02:42.160 --> 00:02:45.800
-And when you do that, then when that action runs,
-
-
-00:02:45.800 --> 00:02:47.880
-instead of saying, what is the API key?
-
-
-00:02:47.880 --> 00:02:52.920
-It says, let me through open ID connect, exchange, say,
-
-
-00:02:52.920 --> 00:02:54.680
-we trust each other for this user.
-
-
-00:02:54.680 --> 00:03:00.240
-Give me a 30 second valid token that I can use, or I'm making up 30 seconds,
-
-
-00:03:00.240 --> 00:03:05.360
-but give me a token that I can use a short lived token that just for this
-
-
-00:03:05.360 --> 00:03:08.920
-publish or just for this interaction is authenticated and then we'll
-
-
-00:03:08.920 --> 00:03:10.640
-immediately expire that.
-
-
-00:03:10.640 --> 00:03:11.240
+00:02:06.780 --> 00:02:07.220
 Yeah.
 
+00:02:07.220 --> 00:02:17.540
+So last month, a couple of weeks ago, Dustin Ingram, one of the folks at PyPI said, we're introducing trusted publishers.
 
-00:03:11.240 --> 00:03:11.640
+00:02:17.540 --> 00:02:31.220
+So starting today, PyPI package maintainers can adopt a new, more secure publishing method that does not require long lived passwords or API tokens to be shared with external systems, such as GitHub actions and others.
+
+00:02:31.220 --> 00:02:32.380
+Okay.
+
+00:02:32.380 --> 00:02:41.460
+So what you can do instead is you can create like an open ID OAuth type of connection between PyPI for your account and GitHub.
+
+00:02:41.460 --> 00:02:41.900
+Yeah.
+
+00:02:41.900 --> 00:02:47.860
+And when you do that, then when that, that action runs, instead of saying, what is the API key?
+
+00:02:47.860 --> 00:02:54.560
+It says, let me through open ID connect exchange, say, we trust each other for this user.
+
+00:02:54.560 --> 00:03:08.500
+Give me a 30 second valid token that I can use, or I'm making up 30 seconds, but give me a token that I can use a short lived token that just for this publish or just for this interaction is authenticated.
+
+00:03:08.500 --> 00:03:09.800
+And then we'll immediately expire.
+
+00:03:09.800 --> 00:03:11.060
+Oh, yeah.
+
+00:03:11.320 --> 00:03:11.520
 Cool.
 
-
-00:03:11.640 --> 00:03:12.000
+00:03:11.520 --> 00:03:11.980
 Yeah.
 
-
-00:03:12.000 --> 00:03:12.520
+00:03:11.980 --> 00:03:12.500
 That's pretty cool.
 
+00:03:12.500 --> 00:03:12.760
+Right?
 
-00:03:12.520 --> 00:03:12.800
-Right.
-
-
-00:03:12.800 --> 00:03:14.160
+00:03:12.760 --> 00:03:14.140
 Um, yeah.
 
-
-00:03:14.160 --> 00:03:16.840
+00:03:14.140 --> 00:03:16.840
 So basically you just connect those and you're good to go.
 
+00:03:16.840 --> 00:03:23.620
+The, these API tokens, because they're regenerated and short lived never need to be, or should be stored.
 
-00:03:17.000 --> 00:03:21.000
-these API tokens, because they're regenerated and short-lived,
+00:03:23.620 --> 00:03:24.700
+They are not shared.
 
+00:03:24.700 --> 00:03:27.920
+They rotate automatically because they are invalid.
 
-00:03:21.000 --> 00:03:23.640
-never need to be or should be stored.
-
-
-00:03:23.640 --> 00:03:24.820
-They're not shared.
-
-
-00:03:24.820 --> 00:03:28.000
-They rotate automatically because they're invalid.
-
-
-00:03:28.000 --> 00:03:29.880
+00:03:27.920 --> 00:03:29.320
 They invalidate themselves.
 
+00:03:29.320 --> 00:03:40.720
+And, this is not quite as obvious, but if somebody says this user logged in and published this version of a package to PyPI and there's one API key, well, I don't know.
 
-00:03:29.880 --> 00:03:32.460
-This is not quite as obvious,
-
-
-00:03:32.460 --> 00:03:34.220
-but if somebody says,
-
-
-00:03:34.220 --> 00:03:38.500
-"This user logged in and published this version of a package to PyPI,
-
-
-00:03:38.500 --> 00:03:41.040
-and there's one API key," well, I don't know.
-
-
-00:03:41.040 --> 00:03:42.600
+00:03:41.180 --> 00:03:42.420
 Was that really the user?
 
+00:03:42.420 --> 00:03:43.240
+Where were they?
 
-00:03:42.600 --> 00:03:45.900
-Where were they? Were they on vacation when they were at that IP address?
+00:03:43.240 --> 00:03:47.280
+Were they on vacation when they were that IP address or is that a hacker?
 
+00:03:47.280 --> 00:03:48.440
+Was that a CI system?
 
-00:03:45.900 --> 00:03:48.500
-or is that a hacker, was that a CI system?
+00:03:48.440 --> 00:03:49.060
+We don't know.
 
+00:03:49.360 --> 00:03:53.960
+But because this actually understands what system is requesting the token.
 
-00:03:48.500 --> 00:03:51.420
-We don't know, but because this actually understands
+00:03:53.960 --> 00:04:01.080
+They say that it provides a verifiable link between a published package and its source, which I think is pretty cool.
 
+00:04:01.080 --> 00:04:01.700
+Think?
 
-00:03:51.420 --> 00:03:54.380
-what system is requesting the token,
+00:04:01.700 --> 00:04:04.500
+Although what if somebody hacks into my GitHub actions?
 
-
-00:03:54.380 --> 00:03:56.900
-they say that it provides a verifiable link
-
-
-00:03:56.900 --> 00:04:00.100
-between a published package and its source,
-
-
-00:04:00.100 --> 00:04:01.260
-which I think is pretty cool.
-
-
-00:04:01.260 --> 00:04:02.100
-- Think?
-
-
-00:04:02.100 --> 00:04:05.040
-Although what if somebody hacks into my GitHub Actions?
-
-
-00:04:05.040 --> 00:04:07.820
-- Yeah, well, it only goes one level out
-
-
-00:04:07.820 --> 00:04:10.300
-in the ring of trust, right?
-
-
-00:04:10.300 --> 00:04:12.340
-So yeah, I mean, that is possible for sure.
-
-
-00:04:12.340 --> 00:04:15.220
-Speaking of what if somebody hacks into my GitHub Actions,
-
-
-00:04:15.220 --> 00:04:18.500
-You can see in the doc that the blog post that they publish,
-
-
-00:04:18.500 --> 00:04:21.500
-it shows this is the part that you add permissions,
-
-
-00:04:21.500 --> 00:04:24.480
-ID token is right and that's it,
-
-
-00:04:24.480 --> 00:04:28.340
-versus here is your username and password.
-
-
-00:04:28.340 --> 00:04:32.620
-That's cool. It says additional security hardening is available.
-
-
-00:04:32.620 --> 00:04:35.000
-You can further increase the security of
-
-
-00:04:35.000 --> 00:04:38.220
-your release workflow by configuring trusted publishers
-
-
-00:04:38.220 --> 00:04:42.020
-only to release from a specific GitHub Action environment.
-
-
-00:04:42.020 --> 00:04:45.160
-I don't do anything to that degree with GitHub Actions,
-
-
-00:04:45.160 --> 00:04:48.640
-But basically with GitHub Action Environments,
-
-
-00:04:48.640 --> 00:04:53.280
-you can set rules and workflows around that environment,
-
-
-00:04:53.280 --> 00:04:57.200
-such as requiring manual approval for each run
-
-
-00:04:57.200 --> 00:04:59.520
-by a set of trusted people
-
-
-00:04:59.520 --> 00:05:01.800
-who are repository maintainers, right?
-
-
-00:05:01.800 --> 00:05:03.560
-So even if it gets hacked,
-
-
-00:05:03.560 --> 00:05:05.760
-it's not enough that the organization,
-
-
-00:05:05.760 --> 00:05:08.360
-the GitHub organization has a workflow that will push it,
-
-
-00:05:08.360 --> 00:05:11.400
-you might want to set it up so that it says,
-
-
-00:05:11.400 --> 00:05:15.640
-In order to push pytest check out of this environment
-
-
-00:05:15.640 --> 00:05:18.120
-automatically when we're going to production, right,
-
-
-00:05:18.120 --> 00:05:21.160
-shipping a build, you've gotta go push a button
-
-
-00:05:21.160 --> 00:05:22.880
-as Brian Auchin on GitHub.
-
-
-00:05:22.880 --> 00:05:24.160
-- Okay, interesting.
-
-
-00:05:24.160 --> 00:05:28.240
-- Okay, that is optional but strongly recommended.
-
-
-00:05:28.240 --> 00:05:30.520
-And finally, right now from my understanding,
-
-
-00:05:30.520 --> 00:05:32.360
-this just works with GitHub Actions.
-
-
-00:05:32.360 --> 00:05:35.640
-However, this infrastructure to make this possible
-
-
-00:05:35.640 --> 00:05:37.760
-is now in place so it can be integrated
-
-
-00:05:37.760 --> 00:05:38.920
-with many more things.
-
-
-00:05:38.920 --> 00:05:41.640
-So introducing trusted publishers.
-
-
-00:05:41.640 --> 00:05:44.280
-If you maintain important packages,
-
-
-00:05:44.280 --> 00:05:45.440
-this might be worth looking at.
-
-
-00:05:45.440 --> 00:05:46.840
-- That's pretty cool, thanks.
-
-
-00:05:46.840 --> 00:05:49.080
-- Indeed, yeah, over to you.
-
-
-00:05:49.080 --> 00:05:54.080
-- Well, this topic is on fire.
-
-
-00:05:54.080 --> 00:05:55.360
-- It is on fire.
-
-
-00:05:55.360 --> 00:06:00.360
-- So Modular released a video and a statement.
-
-
-00:06:00.360 --> 00:06:03.320
-I think it was on the second of the month.
-
-
-00:06:03.320 --> 00:06:04.360
-So it's been almost a week,
-
-
-00:06:04.360 --> 00:06:08.780
-but time moves fast in the software world.
-
-
-00:06:08.780 --> 00:06:11.480
-So Mojo, Modular announced Mojo.
-
-
-00:06:11.480 --> 00:06:15.640
-Mojo is a new programming language for all AI developers.
-
-
-00:06:15.640 --> 00:06:18.040
-And although I'm not an AI developer,
-
-
-00:06:18.040 --> 00:06:22.800
-we are all AI developers now, I think.
-
-
-00:06:22.800 --> 00:06:25.200
-- Either you're in the machine or you are
-
-
-00:06:25.200 --> 00:06:26.880
-controlling the machine. - Or you're part of it.
-
-
-00:06:26.880 --> 00:06:28.880
-- Take your pick, yes, exactly.
-
-
-00:06:28.880 --> 00:06:30.360
-- So anyway, so what is Mojo?
-
-
-00:06:30.360 --> 00:06:33.980
-So, and also I wanna thank everybody that suggested this.
-
-
-00:06:33.980 --> 00:06:36.360
-We got like a whole bunch of people that suggested this,
-
-
-00:06:36.360 --> 00:06:37.640
-said, "Have you seen this?"
-
-
-00:06:37.640 --> 00:06:40.940
-Don't feel bad if you see a new topic and you think,
-
-
-00:06:40.940 --> 00:06:43.300
-"Yeah, somebody's probably already told you guys.
-
-
-00:06:43.300 --> 00:06:45.160
-Tell us anyway, we like it."
-
-
-00:06:45.160 --> 00:06:49.080
-Anyway, Mojo, a new programming language, what is it?
-
-
-00:06:49.080 --> 00:06:53.460
-It is like Python-ish, it looks like Python.
-
-
-00:06:53.460 --> 00:06:55.440
-It actually, supposedly,
-
-
-00:06:55.440 --> 00:06:58.960
-that one of the goals is it's going to be a super set of fun.
-
-
-00:06:58.960 --> 00:07:03.980
-It's not there yet, but they want to do like Python,
-
-
-00:07:03.980 --> 00:07:06.480
-but extra stuff that's C++-ish,
-
-
-00:07:06.480 --> 00:07:11.420
-like structs and strict types and everything.
-
-
-00:07:11.420 --> 00:07:14.860
-- Is this like your programming world has crashed together
-
-
-00:07:14.860 --> 00:07:16.780
-and is now trying to become one?
-
-
-00:07:16.780 --> 00:07:18.300
-- I hope so.
-
-
-00:07:18.300 --> 00:07:21.380
-- The tectonic plates of Brian Okken's
-
-
-00:07:21.380 --> 00:07:22.780
-programming experience.
-
-
-00:07:22.780 --> 00:07:24.300
-- I'm pretty excited about it actually.
-
-
-00:07:24.300 --> 00:07:26.920
-Not for AI stuff, but for hardware things.
-
-
-00:07:26.920 --> 00:07:29.180
-I think that this would be kind of fun.
-
-
-00:07:29.180 --> 00:07:31.060
-So what's the big deal?
-
-
-00:07:31.060 --> 00:07:35.580
-It's compiled and fast.
-
-
-00:07:35.580 --> 00:07:39.100
-in the order of like thousands of times faster
-
-
-00:07:39.100 --> 00:07:40.640
-in some cases, supposedly.
-
-
-00:07:40.640 --> 00:07:43.500
-So, but, so what, one of the things,
-
-
-00:07:43.500 --> 00:07:46.420
-we're gonna link to the Mojo webpage
-
-
-00:07:46.420 --> 00:07:47.780
-where how you can get started.
-
-
-00:07:47.780 --> 00:07:51.240
-It's hard to get started right now, but we'll get to that.
-
-
-00:07:51.240 --> 00:07:53.500
-So there's also a fast AI,
-
-
-00:07:53.500 --> 00:07:57.500
-like announcement blog post,
-
-
-00:07:57.500 --> 00:08:00.340
-but also a video with Jeremy Howard.
-
-
-00:08:00.340 --> 00:08:02.180
-It's a really fascinating read.
-
-
-00:08:02.180 --> 00:08:05.220
-And why is this kind of, where's this coming from?
-
-
-00:08:05.220 --> 00:08:08.620
-if you're not familiar with modular, which I wasn't really.
-
-
-00:08:08.620 --> 00:08:13.260
-These are the same people that brought us LLVM.
-
-
-00:08:13.260 --> 00:08:15.420
->> Yeah, Chris Lattner and crew.
-
-
-00:08:15.420 --> 00:08:20.100
->> Yeah. There's a lot of excitement around it.
-
-
-00:08:20.100 --> 00:08:23.020
-It's not an LLVM.
-
-
-00:08:23.020 --> 00:08:24.580
-I had to look this up.
-
-
-00:08:24.580 --> 00:08:29.660
-LLVMs are what low-level virtual machine is what it started out with,
-
-
-00:08:29.660 --> 00:08:34.180
-but we know it as almost all languages are built on top of it right now.
-
-
-00:08:34.180 --> 00:08:39.120
-So Mojo is not that, it's multi-level intermediate representation.
-
-
-00:08:39.120 --> 00:08:42.320
-It's a MLIR instead.
-
-
-00:08:42.320 --> 00:08:44.440
-So do I care?
-
-
-00:08:44.440 --> 00:08:45.440
-Probably not.
-
-
-00:08:45.440 --> 00:08:48.080
-But it's a, so anyway, there's a announcement.
-
-
-00:08:48.080 --> 00:08:53.000
->> It probably does mean it has a lot of targets that it can compile for, right?
-
-
-00:08:53.000 --> 00:08:54.760
-Giving you that intermediate flexibility.
-
-
-00:08:54.760 --> 00:08:55.760
->> Yeah.
-
-
-00:08:55.760 --> 00:09:00.520
-And it's, and it doesn't have some of the, there are some limitations with the LLVM that
-
-
-00:09:00.520 --> 00:09:03.440
-it doesn't have, because it's a little different.
-
-
-00:09:03.440 --> 00:09:06.060
-So I don't completely know it, but there's a,
-
-
-00:09:06.060 --> 00:09:08.160
-it's kind of a fun video.
-
-
-00:09:08.160 --> 00:09:10.520
-I've been playing with it just a little bit.
-
-
-00:09:10.520 --> 00:09:14.460
-So if you, right now, what's the stage of it?
-
-
-00:09:14.460 --> 00:09:16.560
-You can't get it for your local machine.
-
-
-00:09:16.560 --> 00:09:19.320
-So you, you have to sign, you have to like,
-
-
-00:09:19.320 --> 00:09:22.440
-if you want to go to the normal page, you say, get started.
-
-
-00:09:22.440 --> 00:09:25.560
-And it has you sign up on a list, a waiting list.
-
-
-00:09:25.560 --> 00:09:27.440
-And luckily I got in.
-
-
-00:09:27.440 --> 00:09:28.560
-Yay.
-
-
-00:09:28.560 --> 00:09:32.160
-So I got to play with it and the, a little bit.
-
-
-00:09:32.160 --> 00:09:34.840
-So when you drop into it and play with it,
-
-
-00:09:34.840 --> 00:09:37.460
-you get a Jupyter Notebook thing.
-
-
-00:09:37.460 --> 00:09:39.860
-And the Jupyter Notebooks are already filled out
-
-
-00:09:39.860 --> 00:09:43.200
-with like a hello world and or hello mojo,
-
-
-00:09:43.200 --> 00:09:44.880
-and you get to walk through it
-
-
-00:09:44.880 --> 00:09:48.360
-and you get to see some of the different stuff.
-
-
-00:09:48.360 --> 00:09:51.040
-So it's got definitions or defs,
-
-
-00:09:51.040 --> 00:09:52.960
-but you have these let statements.
-
-
-00:09:52.960 --> 00:09:55.440
-So you can, that's different.
-
-
-00:09:55.440 --> 00:10:00.260
-We don't have to do lets and vars in declarations in Python.
-
-
-00:10:00.260 --> 00:10:02.440
-So you can do normal Python.
-
-
-00:10:02.440 --> 00:10:04.840
-Kind of the neat thing about having it be
-
-
-00:10:04.840 --> 00:10:07.520
-kind of like Python is you're kind of used to it already.
-
-
-00:10:07.520 --> 00:10:08.800
-You don't have to learn something new.
-
-
-00:10:08.800 --> 00:10:11.360
-But also it's compatible with external libraries.
-
-
-00:10:11.360 --> 00:10:13.920
-So you can hook in things that are already built
-
-
-00:10:13.920 --> 00:10:16.280
-in pure Python that can be hooked in too.
-
-
-00:10:16.280 --> 00:10:18.320
-That's the part where I'm curious about.
-
-
-00:10:18.320 --> 00:10:20.720
-Can I just forget about all this other
-
-
-00:10:20.720 --> 00:10:22.840
-machine language, low level stuff,
-
-
-00:10:22.840 --> 00:10:25.540
-and can I just use this to compile my Python?
-
-
-00:10:25.540 --> 00:10:27.200
-Don't know that yet.
-
-
-00:10:27.200 --> 00:10:28.720
-- Yeah, I don't know what the integration
-
-
-00:10:28.720 --> 00:10:31.960
-with other libraries, it was like the example had
-
-
-00:10:31.960 --> 00:10:34.880
-clearly indicated like NumPy integration.
-
-
-00:10:34.880 --> 00:10:35.720
-- Yeah.
-
-
-00:10:35.720 --> 00:10:38.800
-- But can I use Flask with it, for example, right?
-
-
-00:10:38.800 --> 00:10:39.760
-I don't know.
-
-
-00:10:39.760 --> 00:10:41.360
-- Yeah, don't know.
-
-
-00:10:41.360 --> 00:10:43.080
-- Yeah, I don't know either.
-
-
-00:10:43.080 --> 00:10:44.000
-This is very exciting.
-
-
-00:10:44.000 --> 00:10:48.080
-I did wanna point out that we are correcting
-
-
-00:10:48.080 --> 00:10:50.840
-a mistake that we made at PyCon, Brian.
-
-
-00:10:50.840 --> 00:10:52.380
-No, not just last week.
-
-
-00:10:52.380 --> 00:10:54.960
-Somebody out in the comment in the livestream last time
-
-
-00:10:54.960 --> 00:10:56.600
-and in the YouTube video said,
-
-
-00:10:56.600 --> 00:10:57.480
-"I'm telling y'all folks,
-
-
-00:10:57.480 --> 00:10:58.980
-I'm really not believe what I'm hearing.
-
-
-00:10:58.980 --> 00:11:00.840
-How can they not be talking about Mojo?
-
-
-00:11:00.840 --> 00:11:06.000
-Oh, so, yeah, but well, so what do you think?
-
-
-00:11:06.000 --> 00:11:07.020
-Well, okay.
-
-
-00:11:07.020 --> 00:11:08.680
-So one, it sounds very exciting.
-
-
-00:11:08.680 --> 00:11:13.560
-Two things rubbed me the wrong way quite a bit from the start that it's behind a,
-
-
-00:11:13.560 --> 00:11:18.520
-an sort of mailing list paywall, not paywall, but like gated wall.
-
-
-00:11:18.520 --> 00:11:18.880
+00:04:04.840 --> 00:04:05.200
 Yeah.
 
+00:04:05.200 --> 00:04:09.680
+Well, it only goes one level out in the ring of trust.
 
-00:11:18.880 --> 00:11:19.400
+00:04:09.680 --> 00:04:09.880
 Right.
 
+00:04:09.880 --> 00:04:10.060
+Okay.
 
-00:11:19.400 --> 00:11:23.240
+00:04:10.060 --> 00:04:11.820
+So yeah, that, I mean, that is possible for sure.
+
+00:04:11.820 --> 00:04:18.300
+Uh, speaking of what, if somebody, hacks into my GitHub actions, you can see in the doc that the blog posts that they publish.
+
+00:04:18.300 --> 00:04:22.360
+It shows this is the part that you add permissions ID, right?
+
+00:04:22.360 --> 00:04:23.840
+ID token is right.
+
+00:04:23.840 --> 00:04:27.900
+And that's it versus here is your, username and password.
+
+00:04:27.900 --> 00:04:28.400
+Right.
+
+00:04:28.400 --> 00:04:29.160
+So that's cool.
+
+00:04:29.160 --> 00:04:32.320
+It says additional security hardening is available.
+
+00:04:32.320 --> 00:04:41.780
+You can further increase the security of your release workflow by configuring trusted publishers only to release from a specific GitHub action environment.
+
+00:04:41.780 --> 00:04:56.920
+I don't do anything with that, to that degree with the GitHub actions, but basically with GitHub action environments, you can, set rules and workflows around that environment, such as requiring manual approval for each run.
+
+00:04:56.920 --> 00:05:01.180
+By a set of trusted people who are repository maintainers.
+
+00:05:01.180 --> 00:05:01.360
+Right.
+
+00:05:01.360 --> 00:05:08.140
+So even if it gets hacked, you know, it's not enough that the organization, the GitHub organization has a workflow that will push it.
+
+00:05:08.140 --> 00:05:18.060
+You might be able to, you might want to set it up so that it says in order to push, high test check out of this environment automatically, when we're going to production, right?
+
+00:05:18.060 --> 00:05:22.580
+Shipping a build, it's got a, you've got to go push a button as Brian Okken on GitHub.
+
+00:05:22.580 --> 00:05:23.160
+Okay.
+
+00:05:23.160 --> 00:05:23.860
+Interesting.
+
+00:05:23.860 --> 00:05:24.300
+Okay.
+
+00:05:24.540 --> 00:05:28.200
+That is, optional, but strongly recommended.
+
+00:05:28.200 --> 00:05:32.160
+And finally, right now, from my understanding, it says just works with GitHub actions.
+
+00:05:32.160 --> 00:05:36.960
+However, it, this infrastructure to make this possible is now in place.
+
+00:05:36.960 --> 00:05:38.640
+So it can be integrated with many more things.
+
+00:05:38.640 --> 00:05:41.300
+So introducing trusted publishers.
+
+00:05:41.300 --> 00:05:45.180
+If you maintain important packages, this might be worth looking at.
+
+00:05:45.180 --> 00:05:46.060
+That's pretty cool.
+
+00:05:46.060 --> 00:05:46.500
+Thanks.
+
+00:05:46.500 --> 00:05:47.300
+Indeed.
+
+00:05:47.300 --> 00:05:47.700
+Yeah.
+
+00:05:47.700 --> 00:05:48.360
+Over to you.
+
+00:05:49.020 --> 00:05:53.840
+Well, this, this, this topic is on fire.
+
+00:05:53.840 --> 00:05:55.140
+Um, it is on fire.
+
+00:05:55.140 --> 00:06:00.900
+So, modular released a, a state, you know, a video and a statement.
+
+00:06:00.900 --> 00:06:02.780
+I think it was on the second of the month.
+
+00:06:02.780 --> 00:06:08.360
+Uh, so it's been almost a week, but you know, time moves fast in the software world.
+
+00:06:08.600 --> 00:06:11.360
+So, Mojo modular announced Mojo.
+
+00:06:11.360 --> 00:06:15.300
+Mojo is a new programming language for all AI developers.
+
+00:06:15.300 --> 00:06:20.320
+And although I'm not an AI developer, we are all AI developers.
+
+00:06:20.320 --> 00:06:26.800
+I think, either you're in the machine or you are, controlling it.
+
+00:06:26.800 --> 00:06:27.340
+Take your pick.
+
+00:06:27.340 --> 00:06:28.040
+Yes, exactly.
+
+00:06:28.040 --> 00:06:30.280
+Um, so anyway, so what is Mojo?
+
+00:06:30.280 --> 00:06:33.900
+So there, and also I want to thank everybody that suggested this.
+
+00:06:33.900 --> 00:06:36.520
+We got like a whole bunch of people suggested this set.
+
+00:06:36.520 --> 00:06:37.360
+Have you seen this?
+
+00:06:37.360 --> 00:06:41.600
+And don't feel bad if you, if you see a new, new topic and you think, yeah, somebody's
+
+00:06:41.600 --> 00:06:44.720
+probably already told, told you guys tell us anyway, we like it.
+
+00:06:44.720 --> 00:06:47.980
+And anyway, so Mojo, a new programming language.
+
+00:06:47.980 --> 00:06:48.900
+Well, what is it?
+
+00:06:48.900 --> 00:06:52.120
+So it is kind of like Python ish.
+
+00:06:52.120 --> 00:06:53.020
+It looks like Python.
+
+00:06:53.020 --> 00:06:58.660
+So it actually, supposedly one of the goals is it's going to be a super set of things.
+
+00:06:58.660 --> 00:07:04.640
+So it's not there yet, but it has, it's, they want to do, kind of like Python, but extra
+
+00:07:04.640 --> 00:07:11.200
+stuff that's C++ ish, like structs and, and, and, and strict types and everything.
+
+00:07:11.200 --> 00:07:14.700
+Is this like your programming world has crashed together?
+
+00:07:14.700 --> 00:07:16.480
+And it's now trying to become one.
+
+00:07:16.480 --> 00:07:17.880
+I hope so.
+
+00:07:17.880 --> 00:07:22.660
+The tectonic plates of Brian Okken's programming experience.
+
+00:07:22.660 --> 00:07:23.740
+I'm pretty excited about it.
+
+00:07:23.740 --> 00:07:26.840
+Actually not, not for AI stuff, but for hardware things.
+
+00:07:26.840 --> 00:07:28.960
+I think that this, this would be kind of fun.
+
+00:07:28.960 --> 00:07:30.960
+So, well, so what's the big deal?
+
+00:07:31.060 --> 00:07:38.600
+It's, compiled and fast, in, in the order of like thousands of times faster,
+
+00:07:38.600 --> 00:07:40.320
+uh, in some cases, supposedly.
+
+00:07:40.320 --> 00:07:46.540
+So, but so what, one of the things we're going to link to the Mojo, webpage where,
+
+00:07:46.540 --> 00:07:47.420
+how you can get started.
+
+00:07:47.620 --> 00:07:50.640
+It's hard to get started right now, but we'll get to that.
+
+00:07:50.640 --> 00:07:57.840
+Um, so there's a, there's also a fast AI, like announcement blog post, but also
+
+00:07:57.840 --> 00:07:59.520
+a video with Jeremy Howard.
+
+00:07:59.520 --> 00:08:02.060
+Um, it's a really fascinating read.
+
+00:08:02.060 --> 00:08:05.140
+And why is this kind of, where's this coming from?
+
+00:08:05.140 --> 00:08:09.740
+Are you, if you're not familiar with modular, which I wasn't really, these are the same
+
+00:08:09.740 --> 00:08:12.280
+people that kind of brought us LLVM.
+
+00:08:12.280 --> 00:08:15.240
+Um, so yeah, Chris Lattner and crew.
+
+00:08:15.240 --> 00:08:15.860
+Yeah.
+
+00:08:15.860 --> 00:08:19.240
+So there's, there's, there's a lot of excitement around it.
+
+00:08:19.240 --> 00:08:22.520
+Um, and, it's not an LLVM.
+
+00:08:22.520 --> 00:08:23.280
+It is.
+
+00:08:23.280 --> 00:08:24.480
+So I had to look this up.
+
+00:08:24.480 --> 00:08:30.940
+LLVMs are what low level virtual machine is what it started out with, but we kind of know
+
+00:08:30.940 --> 00:08:33.880
+it is almost all languages are built on top of it right now.
+
+00:08:33.880 --> 00:08:38.480
+So Mojo is not that it's multi-level intermediate representation.
+
+00:08:38.480 --> 00:08:41.760
+It's a M I L M L I R instead.
+
+00:08:41.760 --> 00:08:43.940
+So, do I care?
+
+00:08:43.940 --> 00:08:48.500
+Probably not, but, it's a, so anyway, there's a announcement.
+
+00:08:48.500 --> 00:08:52.740
+It probably doesn't mean it has a lot of targets that it can compile for, right?
+
+00:08:52.740 --> 00:08:54.280
+Giving you that intermediate flexibility.
+
+00:08:54.280 --> 00:08:54.920
+Yeah.
+
+00:08:54.920 --> 00:09:00.460
+Um, and it's in, it doesn't have some of the, there are some limitations with the LLVM that
+
+00:09:00.460 --> 00:09:02.560
+it doesn't have because it's a little different.
+
+00:09:02.560 --> 00:09:07.360
+Um, so I don't completely know it, but there's, it's kind of a fun video.
+
+00:09:07.360 --> 00:09:10.280
+Um, I've been playing with it just a little bit.
+
+00:09:10.280 --> 00:09:14.360
+So if you, right now, what's the stage of it?
+
+00:09:14.360 --> 00:09:16.260
+You can't get it for your local machine.
+
+00:09:16.260 --> 00:09:21.000
+So you, you have to site, you have to like, if you want to go to the normal page,
+
+00:09:21.000 --> 00:09:22.200
+you say, get started.
+
+00:09:22.200 --> 00:09:25.220
+And it has you sign up on a list waiting list.
+
+00:09:25.300 --> 00:09:27.220
+And luckily I got in.
+
+00:09:27.220 --> 00:09:27.640
+Yay.
+
+00:09:27.640 --> 00:09:32.060
+Um, so I got to play with it and, the, a little bit.
+
+00:09:32.060 --> 00:09:36.580
+So when you, when you drop into it and play with it, you get a Jupyter notebook thing.
+
+00:09:36.580 --> 00:09:42.820
+Um, and the Jupyter notebooks are already filled out with like a hello world and, or hello mojo.
+
+00:09:42.820 --> 00:09:48.280
+And you get to walk through it and you get to see some of the different stuff.
+
+00:09:48.280 --> 00:09:52.820
+So it's got definitions or defs, but you have these let statements.
+
+00:09:52.820 --> 00:09:54.680
+So you can, that's different.
+
+00:09:54.900 --> 00:09:59.860
+Um, we don't have to do let's and, and vars in, declarations in Python.
+
+00:09:59.860 --> 00:10:02.100
+So it's, you can do normal Python.
+
+00:10:02.100 --> 00:10:07.260
+Kind of the neat thing about having it be kind of like Python is you're kind of used to it already.
+
+00:10:07.260 --> 00:10:11.260
+You don't have to learn something new, but also it's compatible with external libraries.
+
+00:10:11.260 --> 00:10:15.840
+So you can, hook in things that are already built in pure Python that can be hooked into.
+
+00:10:15.840 --> 00:10:18.040
+That's the part where I'm curious about.
+
+00:10:18.040 --> 00:10:22.760
+Can I just forget about all this other machine language, low level stuff.
+
+00:10:22.760 --> 00:10:25.180
+And can I just use this to compile my Python?
+
+00:10:25.180 --> 00:10:26.280
+Don't know that yet.
+
+00:10:26.280 --> 00:10:30.160
+Um, yeah, I don't know what the integration with other libraries is.
+
+00:10:30.160 --> 00:10:34.620
+Like the example had, clearly indicated like NumPy integration.
+
+00:10:34.620 --> 00:10:35.060
+Yeah.
+
+00:10:35.060 --> 00:10:37.520
+But can I use Flask with it?
+
+00:10:37.520 --> 00:10:38.700
+For example, right?
+
+00:10:38.700 --> 00:10:39.600
+I don't know.
+
+00:10:39.600 --> 00:10:40.040
+Yeah.
+
+00:10:40.040 --> 00:10:40.700
+Don't know.
+
+00:10:40.700 --> 00:10:41.480
+Yeah.
+
+00:10:41.480 --> 00:10:42.120
+I don't know either.
+
+00:10:42.120 --> 00:10:43.900
+Um, this is very exciting.
+
+00:10:43.900 --> 00:10:44.380
+I did.
+
+00:10:44.380 --> 00:10:50.280
+I did want to point out that we are correcting a mistake that we made at PyCon, Brian.
+
+00:10:50.280 --> 00:10:52.120
+Uh, no, no, just last week.
+
+00:10:52.300 --> 00:10:56.380
+Somebody out in the comment in the live stream last time and Aaron, the YouTube video and
+
+00:10:56.380 --> 00:10:58.920
+said, I'm telling y'all folks, I'm really not believe what I'm hearing.
+
+00:10:58.920 --> 00:11:00.820
+How can they not be talking about Mojo?
+
+00:11:00.820 --> 00:11:04.040
+Oh, so, yeah.
+
+00:11:04.040 --> 00:11:06.060
+But what's the, what do you think?
+
+00:11:06.060 --> 00:11:07.040
+Well, okay.
+
+00:11:07.040 --> 00:11:08.600
+So one, it sounds very exciting.
+
+00:11:08.600 --> 00:11:14.620
+Two things rubbed me the wrong way quite a bit from the start that it's behind a, an sort
+
+00:11:14.620 --> 00:11:18.480
+of mailing list paywall, not paywall, but like gated wall.
+
+00:11:18.480 --> 00:11:18.860
+Yeah.
+
+00:11:18.860 --> 00:11:19.400
+Right.
+
+00:11:19.400 --> 00:11:23.160
 That, that just seems, it seems off to the wrong start.
 
-
-00:11:23.240 --> 00:11:23.560
+00:11:23.160 --> 00:11:23.540
 Right.
 
+00:11:23.580 --> 00:11:27.320
+If you want to get a lot of, attraction, I think, you know, put it out there.
 
-00:11:23.560 --> 00:11:27.280
-If you want to get a lot of attraction, I think, you know, put it out there.
+00:11:27.320 --> 00:11:34.200
+Maybe, maybe you've got to sign up in order to, run the compilers on, on a Jupyter notebook
 
+00:11:34.200 --> 00:11:38.580
+in the cloud because they're not totally tested and stable or something along those lines.
 
-00:11:27.280 --> 00:11:34.720
-Maybe you've got to sign up in order to run the compilers on a Jupyter Notebook in the cloud
+00:11:38.580 --> 00:11:39.740
+That would be totally fair.
 
+00:11:39.740 --> 00:11:43.060
+But like, it doesn't tell you if it's open source or not.
 
-00:11:34.720 --> 00:11:38.640
-because they're not totally tested and stable or something along those lines.
-
-
-00:11:38.640 --> 00:11:42.960
-That would be totally fair, but it doesn't tell you if it's open source or not.
-
-
-00:11:42.960 --> 00:11:45.040
+00:11:43.060 --> 00:11:44.920
 It doesn't share a GitHub repository.
 
+00:11:44.920 --> 00:11:50.180
+It doesn't share a way in which, it expresses what this is going to be.
 
-00:11:45.040 --> 00:11:50.080
-It doesn't share a way in which it expresses what this is going to be.
+00:11:50.180 --> 00:11:52.020
+Is this a thousand dollar a month subscription?
 
-
-00:11:50.080 --> 00:11:52.320
-Is this a $1,000 a month subscription?
-
-
-00:11:52.320 --> 00:11:53.760
+00:11:52.020 --> 00:11:53.480
 Is this open source?
 
-
-00:11:53.760 --> 00:11:54.400
+00:11:53.480 --> 00:11:54.580
 Is it both?
 
+00:11:54.580 --> 00:11:55.140
+Right.
 
-00:11:55.120 --> 00:11:57.240
+00:11:55.140 --> 00:11:57.260
 Is it like, oh gosh, what was it called?
 
+00:11:57.260 --> 00:11:57.840
+Codon.
 
-00:11:57.240 --> 00:12:00.000
-Codon, I believe some people were like so excited about Codon.
+00:11:57.840 --> 00:12:00.040
+I believe some people were like so excited about Codon.
 
+00:12:00.040 --> 00:12:04.000
+It's like, it's, it's under the model of if it's, if you've got to ask what the price
 
-00:12:00.000 --> 00:12:04.120
-It's like it's under the model of if you've got to ask what the price is,
+00:12:04.000 --> 00:12:05.620
+is, it's, it's too expensive for you.
 
+00:12:05.620 --> 00:12:06.200
+Oh yeah.
 
-00:12:04.120 --> 00:12:05.600
-it's too expensive for you.
+00:12:06.480 --> 00:12:10.460
+Which like, okay, I'm not going to get super excited about investing in that, even
 
+00:12:10.460 --> 00:12:11.800
+if it is neat and powerful.
 
-00:12:05.600 --> 00:12:06.280
->> Oh, yeah.
+00:12:11.800 --> 00:12:15.340
+So that, that said, everyone seems to be super excited about it.
 
+00:12:15.340 --> 00:12:19.940
+I love the way the language looks for like a more compiled way.
 
-00:12:06.280 --> 00:12:10.240
->> Which, okay, I'm not going to get super excited about investing in that,
+00:12:19.940 --> 00:12:22.220
+I think there's a lot of possible Python integrations.
 
-
-00:12:10.240 --> 00:12:11.960
-even if it is neat and powerful.
-
-
-00:12:11.960 --> 00:12:15.320
-So that said, everyone seems to be super excited about it.
-
-
-00:12:15.320 --> 00:12:19.880
-I love the way the language looks for a more compiled way.
-
-
-00:12:19.880 --> 00:12:22.280
-I think there's a lot of possible Python integrations,
-
-
-00:12:22.280 --> 00:12:23.000
-like we already talked about.
-
-
-00:12:23.000 --> 00:12:24.000
-Hey, could I run Flask?
-
+00:12:22.220 --> 00:12:24.000
+Like we already talked about, Hey, could I run Flask?
 
 00:12:24.000 --> 00:12:28.280
 Is it so close that we could just make our stuff go faster when we need it?
 
+00:12:28.280 --> 00:12:33.500
+If we're willing to say, decorate our, our variable declarations with a let or a var, right?
 
-00:12:28.280 --> 00:12:33.200
-If we're willing to say, decorate our variable declarations with a let or a var.
+00:12:33.800 --> 00:12:36.980
+I might be willing to do that if my code could run a thousand times faster.
 
-
-00:12:33.200 --> 00:12:33.800
->> Yeah.
-
-
-00:12:33.800 --> 00:12:37.160
->> I might be willing to do that if my code could run a thousand times faster.
-
-
-00:12:37.160 --> 00:12:38.000
->> Yeah.
-
-
-00:12:38.000 --> 00:12:45.000
->> I don't know. It's not clear to me how much community there is versus product,
-
-
-00:12:45.000 --> 00:12:48.200
-which I'm not saying you shouldn't have one or the other.
-
-
-00:12:48.200 --> 00:12:49.440
-They're both fair,
-
-
-00:12:49.440 --> 00:12:53.520
-but it doesn't say and it's behind a sign up wall,
-
-
-00:12:53.520 --> 00:12:55.440
-which makes me wonder, right?
-
-
-00:12:55.440 --> 00:12:57.480
-It just makes me feel less excited about it,
-
-
-00:12:57.480 --> 00:12:59.520
-which is why I didn't cover it last week.
-
-
-00:12:59.520 --> 00:13:02.200
-I'm like, "Eh, maybe, I don't know, we'll see."
-
-
-00:13:02.200 --> 00:13:04.180
->> Okay. Also, the rough edges,
-
-
-00:13:04.180 --> 00:13:07.480
-there's a rough edges section of like roadmap and rough edges.
-
-
-00:13:07.480 --> 00:13:11.960
-Some of them are really big missing things like tuples.
-
-
-00:13:11.960 --> 00:13:12.760
->> Yeah.
-
-
-00:13:12.760 --> 00:13:14.560
->> Like tuples not supported,
-
-
-00:13:14.560 --> 00:13:16.280
-classes not supported.
-
-
-00:13:16.280 --> 00:13:21.400
-Well, that's a lot of Python that you can't use without classes.
-
-
-00:13:21.400 --> 00:13:24.440
-- Yeah, well, and maybe this is just early
-
-
-00:13:24.440 --> 00:13:25.280
-and they're just showing it.
-
-
-00:13:25.280 --> 00:13:28.740
-And if it's coming, that is totally good.
-
-
-00:13:28.740 --> 00:13:31.420
-So I just, I don't know, when I first saw it though,
-
-
-00:13:31.420 --> 00:13:33.920
-like here, like sign up for our mailing list
-
-
-00:13:33.920 --> 00:13:35.180
-so that you can maybe look at it.
-
-
-00:13:35.180 --> 00:13:36.940
-It's like, what is this thing here?
-
-
-00:13:36.940 --> 00:13:39.540
-And it doesn't express, there's no GitHub repo linked.
-
-
-00:13:39.540 --> 00:13:40.860
-Like, I don't know.
-
-
-00:13:40.860 --> 00:13:43.580
-So I have a lot of hope for it, but I'm just not,
-
-
-00:13:43.580 --> 00:13:47.100
-I'm gonna just withhold my assessment of like the impact
-
-
-00:13:47.100 --> 00:13:50.380
-I think it will make yet because of that, right?
-
-
-00:13:50.380 --> 00:13:52.940
-I whistled, it could have quite an impact
-
-
-00:13:52.940 --> 00:13:56.780
-if we get everybody able to play with it.
-
-
-00:13:56.780 --> 00:14:00.300
-And it's just gonna be, I mean,
-
-
-00:14:00.300 --> 00:14:02.020
-there's a lot of people talking about it this week,
-
-
-00:14:02.020 --> 00:14:05.660
-but it seems like there's a new trend every week.
-
-
-00:14:05.660 --> 00:14:07.220
-So, anyway.
-
-
-00:14:07.220 --> 00:14:08.140
-- Yeah, I'm a little suspect.
-
-
-00:14:08.140 --> 00:14:09.260
-Is it written in Rust?
-
-
-00:14:09.260 --> 00:14:10.100
-I'm not sure it is.
-
-
-00:14:10.100 --> 00:14:10.920
-Just kidding.
-
-
-00:14:10.920 --> 00:14:11.760
-(laughing)
-
-
-00:14:11.760 --> 00:14:12.600
-'Cause that's where I--
-
-
-00:14:12.600 --> 00:14:14.100
-- How can it be cool if it's not written in Rust?
-
-
-00:14:14.100 --> 00:14:15.900
-- I know, that's exactly my point.
-
-
-00:14:15.900 --> 00:14:17.500
-That seems where all the action is right now,
-
-
-00:14:17.500 --> 00:14:18.860
-which is cool.
-
-
-00:14:18.860 --> 00:14:21.660
-But it's also worth pointing out for people
-
-
-00:14:21.660 --> 00:14:24.780
-who are not putting it together that Chris Lautner is also
-
-
-00:14:24.780 --> 00:14:26.900
-the person behind the Swift programming
-
-
-00:14:26.900 --> 00:14:29.420
-language, which is a pretty interesting language that's
-
-
-00:14:29.420 --> 00:14:31.320
-also borrowed a lot from Python.
-
-
-00:14:31.320 --> 00:14:32.820
-So it is exciting.
-
-
-00:14:32.820 --> 00:14:37.460
-The other thing that is it's sold as a make AI work fast,
-
-
-00:14:37.460 --> 00:14:38.500
-but like Python.
-
-
-00:14:38.500 --> 00:14:39.520
-That's awesome.
-
-
-00:14:39.520 --> 00:14:41.020
-And it's a cool focus.
-
-
-00:14:41.020 --> 00:14:45.580
-But it doesn't speak to a goal of like, hey,
-
-
-00:14:45.580 --> 00:14:47.260
-we could bring more and more Python
-
-
-00:14:47.260 --> 00:14:49.420
-until it's like a 90% case that's awesome
-
-
-00:14:49.420 --> 00:14:50.880
-that we could do many things with
-
-
-00:14:50.880 --> 00:14:54.700
-if it's really focused on running Python code on GPUs
-
-
-00:14:54.700 --> 00:14:58.040
-and just really, really focused in on the AI stuff.
-
-
-00:14:58.040 --> 00:15:00.860
-So that's the other comment that I wanted to make
-
-
-00:15:00.860 --> 00:15:02.140
-about like, where's this going?
-
-
-00:15:02.140 --> 00:15:04.500
-So we'll see, but yeah, a lot of people are excited.
-
-
-00:15:04.500 --> 00:15:06.300
-I mean, I would say, honestly,
-
-
-00:15:06.300 --> 00:15:09.420
-we have not received more listener recommendations
-
-
-00:15:09.420 --> 00:15:12.000
-that we cover something than this.
-
-
-00:15:12.000 --> 00:15:13.540
-I mean, maybe the only other thing was
-
-
-00:15:13.540 --> 00:15:18.000
-Guido retiring from BDL was the only other thing
-
-
-00:15:18.000 --> 00:15:23.000
-that we got that much massed on Twitter email about.
-
-
-00:15:23.000 --> 00:15:25.540
-So thank you all for sending that in.
-
-
-00:15:25.540 --> 00:15:26.380
-These are my thoughts.
-
-
-00:15:26.380 --> 00:15:27.980
-I would love to see it succeed,
-
-
-00:15:27.980 --> 00:15:30.460
-but I just don't know quite where it's going
-
-
-00:15:30.460 --> 00:15:31.580
-or what it's gonna be yet.
-
-
-00:15:31.580 --> 00:15:34.300
-- Yeah, I guess my optimism comes from
-
-
-00:15:34.300 --> 00:15:35.140
-where it's coming from.
-
-
-00:15:35.140 --> 00:15:37.900
-The people involved have a history of doing things
-
-
-00:15:37.900 --> 00:15:39.900
-that are helpful to the community.
-
-
-00:15:39.900 --> 00:15:43.380
-- Yeah, it absolutely has big hitters behind it.
-
-
-00:15:43.380 --> 00:15:46.740
-So it's got a way better chance than just somebody publishing something cool.
-
-
-00:15:46.740 --> 00:15:47.740
-Okay.
-
-
-00:15:47.740 --> 00:15:48.740
+00:12:36.980 --> 00:12:37.480
 Yeah.
 
+00:12:37.480 --> 00:12:39.340
+There's some, I don't know.
 
-00:15:48.740 --> 00:15:49.740
+00:12:39.340 --> 00:12:45.340
+It's like, it's not clear to me how much sort of community there is versus product, which
+
+00:12:45.340 --> 00:12:48.080
+I don't, I'm not saying you shouldn't have one or the other.
+
+00:12:48.080 --> 00:12:50.880
+They're both fair, but it doesn't say in that.
+
+00:12:50.880 --> 00:12:55.440
+And it's behind a, like a sign of wall, which makes me wonder, right?
+
+00:12:55.440 --> 00:12:59.380
+It just makes me feel less excited about it, which is why I didn't cover it last week.
+
+00:12:59.380 --> 00:13:01.620
+I'm like, eh, maybe, I don't know.
+
+00:13:01.620 --> 00:13:01.980
+We'll see.
+
+00:13:01.980 --> 00:13:02.420
+Okay.
+
+00:13:02.420 --> 00:13:07.200
+Also the rough edges, there's a rough edges section of like roadmap and rough edges.
+
+00:13:07.200 --> 00:13:11.440
+And some of them are really big missing things like tuples.
+
+00:13:11.440 --> 00:13:12.560
+Yeah.
+
+00:13:12.560 --> 00:13:14.320
+Like tuples not supported.
+
+00:13:14.320 --> 00:13:16.100
+Class is not supported.
+
+00:13:16.100 --> 00:13:17.860
+Well, yeah.
+
+00:13:17.860 --> 00:13:21.020
+Uh, that's a lot of Python that you can't use without classes.
+
+00:13:21.020 --> 00:13:21.980
+So, yeah.
+
+00:13:21.980 --> 00:13:25.240
+Well, and maybe this is just early and they're just showing it.
+
+00:13:25.240 --> 00:13:28.520
+And if it's coming, that is totally good.
+
+00:13:28.520 --> 00:13:35.160
+So I just, I don't know when I first saw it though, the, like here, like sign up for our mailing list so that you can maybe look at it.
+
+00:13:35.160 --> 00:13:36.880
+It's like, what is this thing here?
+
+00:13:36.880 --> 00:13:39.420
+And it doesn't express, there's no GitHub repo linked.
+
+00:13:39.620 --> 00:13:40.620
+I don't know.
+
+00:13:40.620 --> 00:13:49.580
+So I have a lot of hope for it, but I'm just not, I'm going to just withhold my assessment of like the impact I think it will make yet because of that.
+
+00:13:49.580 --> 00:13:49.860
+Right.
+
+00:13:49.860 --> 00:13:50.840
+I whistled.
+
+00:13:51.000 --> 00:14:05.480
+It could have quite an impact if, if, if we get everybody able to play with it and it's, it's, it's just going to be, I mean, it was, there's a lot of people talking about it this week, but, it seems like there's a new trend every week.
+
+00:14:05.480 --> 00:14:06.760
+So anyway.
+
+00:14:06.760 --> 00:14:07.320
+Yeah.
+
+00:14:07.320 --> 00:14:07.980
+I'm a little suspect.
+
+00:14:07.980 --> 00:14:08.900
+Is it written in rust?
+
+00:14:08.900 --> 00:14:09.820
+I'm not sure it is.
+
+00:14:09.820 --> 00:14:10.360
+Just kidding.
+
+00:14:10.360 --> 00:14:13.920
+Um, cause that's where, how can it be cool if it's not written in rust?
+
+00:14:13.920 --> 00:14:15.860
+I know that's, that's exactly my point.
+
+00:14:15.860 --> 00:14:18.760
+That seems where all the action is right now, which is, is cool.
+
+00:14:18.860 --> 00:14:30.860
+But, it's also worth pointing out for people who are not putting it together that Chris Lautner is also the person behind the Swift programming language, which is a pretty interesting language that's also borrowed a lot from Python.
+
+00:14:30.860 --> 00:14:32.320
+So it is exciting.
+
+00:14:32.320 --> 00:14:38.160
+The other thing that is, it's sold as a make AI work fast, but like Python.
+
+00:14:38.160 --> 00:14:39.080
+That's awesome.
+
+00:14:39.080 --> 00:14:48.760
+And it's a, it's a cool focus, but it, it doesn't speak to, a goal of like, Hey, we could bring more and more Python until it's like a 90% case.
+
+00:14:48.760 --> 00:14:49.340
+That's awesome.
+
+00:14:49.340 --> 00:14:49.360
+That's awesome.
+
+00:14:49.360 --> 00:14:57.980
+That we could do many things with if it's really focused on, you know, running Python code on, on GPUs and just like really, really focused in on the AI stuff.
+
+00:14:57.980 --> 00:15:01.980
+So, that's the other comment that I wanted to make about like, where's this going?
+
+00:15:01.980 --> 00:15:02.760
+So we'll see.
+
+00:15:02.760 --> 00:15:04.320
+But yeah, a lot of people are excited.
+
+00:15:04.320 --> 00:15:11.240
+I mean, I would say, honestly, we have not received more listener recommendations that we cover something than this.
+
+00:15:11.320 --> 00:15:11.700
+Yeah.
+
+00:15:11.940 --> 00:15:23.320
+I mean, maybe the only other thing was Guido retiring from, from, BDL was the only other thing that we got like that much, that much massed on Twitter email about.
+
+00:15:23.320 --> 00:15:24.660
+So thank you all for sending that in.
+
+00:15:24.660 --> 00:15:26.140
+Um, these are my thoughts.
+
+00:15:26.140 --> 00:15:27.360
+I would love to see it succeed.
+
+00:15:27.360 --> 00:15:31.320
+Um, but I just don't know quite, where it's going or what it's going to be yet.
+
+00:15:31.320 --> 00:15:31.720
+Yeah.
+
+00:15:31.720 --> 00:15:35.040
+I guess my optimism comes from the, where it's coming from.
+
+00:15:35.040 --> 00:15:39.240
+The people involved have a history of doing things that are helpful to the community.
+
+00:15:39.240 --> 00:15:43.340
+So yeah, it absolutely has, you know, big hitters behind it.
+
+00:15:43.340 --> 00:15:46.540
+So it's got a way better chance than just somebody publishing something cool.
+
+00:15:46.540 --> 00:15:47.040
+Okay.
+
+00:15:47.040 --> 00:15:47.640
+Yeah.
+
+00:15:47.640 --> 00:15:48.220
 All right.
 
+00:15:48.220 --> 00:15:48.600
+Yeah.
 
-00:15:49.740 --> 00:15:50.740
-Yeah, we'll see.
+00:15:48.600 --> 00:15:48.920
+We'll see.
 
+00:15:48.920 --> 00:15:51.320
+I mean, certainly worth, keeping track of it.
 
-00:15:50.740 --> 00:15:52.060
-I mean, certainly worth keeping track of it.
+00:15:51.320 --> 00:15:54.920
+Um, so next up, I would like to talk about our sponsor.
 
+00:15:54.920 --> 00:15:56.940
+No, right on influx DB.
 
-00:15:52.060 --> 00:15:55.020
-So next up, I would like to talk about our sponsor.
+00:15:56.940 --> 00:16:03.080
+So this episode of Python bytes is brought to you by influx data, the makers of influx DB.
 
+00:16:03.200 --> 00:16:09.300
+Influx DB is a database purpose built for handling time series data at a massive scale for real,
 
-00:15:55.020 --> 00:15:56.620
-Now, right on.
-
-
-00:15:56.620 --> 00:15:57.620
-InfluxDB.
-
-
-00:15:57.620 --> 00:16:03.660
-So this episode of Python Bytes is brought to you by InfluxData, the makers of InfluxDB.
-
-
-00:16:03.660 --> 00:16:09.500
-InfluxDB is a database purpose built for handling time series data at a massive scale for real
-
-
-00:16:09.500 --> 00:16:11.460
+00:16:09.300 --> 00:16:10.680
 real time analytics.
 
+00:16:10.680 --> 00:16:16.220
+Developers can ingest store and analyze all types of time series data, metrics, events,
 
-00:16:11.460 --> 00:16:16.740
-can ingest, store, and analyze all types of time series data, metrics, events, traces
+00:16:16.220 --> 00:16:18.420
+traces in a single platform.
 
-
-00:16:16.740 --> 00:16:18.860
-in a single platform.
-
-
-00:16:18.860 --> 00:16:21.500
+00:16:18.420 --> 00:16:21.060
 So dear listener, let me ask you a question.
 
+00:16:21.060 --> 00:16:27.060
+How would boundless cardinality and lightning fast SQL clear queries impact the way you develop
 
-00:16:21.500 --> 00:16:27.020
-How would boundless cardinality and lightning fast SQL queries impact the way you develop
+00:16:27.060 --> 00:16:28.200
+real time applications?
 
+00:16:28.620 --> 00:16:35.440
+Influx DB processes, large time series data sets, data sets and provides low latency SQL
 
-00:16:27.020 --> 00:16:28.700
-real-time applications?
+00:16:35.440 --> 00:16:40.000
+queries, making it a go-to choice for developers building real time applications and seeking
 
+00:16:40.000 --> 00:16:42.580
+crucial insights for developer efficiency.
 
-00:16:28.700 --> 00:16:36.020
-InfluxDB processes large time series data sets and provides low latency SQL queries,
+00:16:42.580 --> 00:16:49.060
+Influx DB helps you create IOT analytics and cloud applications using timestamped data rapidly
 
+00:16:49.060 --> 00:16:49.880
+and at scale.
 
-00:16:36.020 --> 00:16:40.600
-making it a go-to choice for developers building real-time applications and seeking crucial
+00:16:49.880 --> 00:16:55.440
+It's designed to ingest billions of data points in real time with unlimited cardinality.
 
+00:16:55.860 --> 00:17:01.660
+Influx DB streamlines building once and deploying across various products and environments from
 
-00:16:40.600 --> 00:16:46.160
-insights. For developer efficiency, InfluxDB helps you create IoT, analytics, and cloud
+00:17:01.660 --> 00:17:04.020
+the edge on premise into the cloud.
 
+00:17:04.020 --> 00:17:07.760
+Try it for free at pythonbytes.fm/influx DB.
 
-00:16:46.160 --> 00:16:51.960
-applications using timestamped data rapidly and at scale. It's designed to ingest billions
+00:17:07.760 --> 00:17:10.380
+That link is also, of course, in our show notes.
 
+00:17:10.380 --> 00:17:12.300
+Thanks for sponsoring the show.
 
-00:16:51.960 --> 00:16:57.880
-of data points in real time with unlimited cardinality. InfluxDB streamlines building
+00:17:12.300 --> 00:17:12.700
+Yep.
 
+00:17:12.700 --> 00:17:13.820
+Thank you, Influx DB.
 
-00:16:57.880 --> 00:17:03.360
-once and deploying across various products and environments, from the edge, on-premise,
+00:17:13.820 --> 00:17:17.160
+Now let's talk about some Django.
 
+00:17:17.160 --> 00:17:18.180
+Okay.
 
-00:17:03.360 --> 00:17:09.920
-and to the cloud. Try it for free at pythonbytes.fm/influxdb. That link is also, of course, in our show
+00:17:18.180 --> 00:17:19.120
+All right.
 
+00:17:19.120 --> 00:17:25.640
+So in Django, I want to introduce something called Django prose.
 
-00:17:09.920 --> 00:17:12.560
-- Show notes, thanks for sponsoring the show.
+00:17:25.640 --> 00:17:32.280
+Doesn't it just make you want to write, just sit down and put on your best Ernest Hemingway
 
+00:17:32.280 --> 00:17:33.780
+impression and just start writing?
 
-00:17:12.560 --> 00:17:14.800
-- Yep, thank you, Influx TV.
-
-
-00:17:14.800 --> 00:17:17.960
-Now, let's talk about some Django.
-
-
-00:17:17.960 --> 00:17:18.800
-- Okay.
-
-
-00:17:18.800 --> 00:17:21.240
-- All right, so in Django,
-
-
-00:17:21.240 --> 00:17:25.860
-I wanna introduce something called Django Prose.
-
-
-00:17:25.860 --> 00:17:27.580
-Doesn't it just make you wanna write,
-
-
-00:17:27.580 --> 00:17:31.520
-just sit down and put on your best
-
-
-00:17:31.520 --> 00:17:34.580
-Ernest Hemingway impression and just start writing?
-
-
-00:17:34.580 --> 00:17:35.600
+00:17:33.780 --> 00:17:35.100
 I don't know, maybe.
 
+00:17:35.100 --> 00:17:42.780
+But this thing is a rich text editor that you plug in to, I believe, into the admin section,
 
-00:17:35.600 --> 00:17:39.120
-But this thing is a rich text editor
+00:17:42.780 --> 00:17:44.560
+the admin backend for Django.
 
+00:17:44.560 --> 00:17:45.080
+Yeah?
 
-00:17:39.120 --> 00:17:42.880
-that you plug in to, I believe, into the admin section,
+00:17:45.080 --> 00:17:45.600
+Okay.
 
+00:17:45.600 --> 00:17:48.780
+So wonderful rich text editing for your Django project.
 
-00:17:42.880 --> 00:17:45.440
-the admin backend for Django, yeah?
+00:17:48.780 --> 00:17:49.280
+Right?
 
+00:17:49.280 --> 00:17:51.560
+So what you do is you install it.
 
-00:17:45.440 --> 00:17:46.280
-- Okay.
+00:17:51.560 --> 00:17:53.340
+You add it as one of your apps.
 
+00:17:53.340 --> 00:17:58.300
+And then you have to run some migrations because it needs some database backend stuff to keep
 
-00:17:46.280 --> 00:17:47.760
-- So, wonderful, rich text editing
+00:17:58.300 --> 00:18:00.000
+track of what it's working on.
 
+00:18:00.000 --> 00:18:03.000
+And then finally you set up a URL for it and then you're good to go.
 
-00:17:47.760 --> 00:17:49.520
-for your Django project, right?
-
-
-00:17:49.520 --> 00:17:51.840
-So what you do is you install it,
-
-
-00:17:51.840 --> 00:17:53.820
-you add it as one of your apps,
-
-
-00:17:53.820 --> 00:17:55.600
-and then you have to run some migrations
-
-
-00:17:55.600 --> 00:17:58.020
-'cause it needs some database backend stuff
-
-
-00:17:58.020 --> 00:18:00.280
-to keep track of what it's working on.
-
-
-00:18:00.280 --> 00:18:02.240
-And then finally, you set up a URL for it,
-
-
-00:18:02.240 --> 00:18:03.200
-and then you're good to go.
-
-
-00:18:03.200 --> 00:18:05.800
+00:18:03.000 --> 00:18:05.740
 And there's different ways in which you can work with it.
 
+00:18:05.820 --> 00:18:10.520
+It can control basically the entire page because it's more or less HTML.
 
-00:18:05.800 --> 00:18:08.840
-It can control basically the entire page
-
-
-00:18:08.840 --> 00:18:10.980
-because it's more or less HTML.
-
-
-00:18:10.980 --> 00:18:14.620
+00:18:10.520 --> 00:18:14.300
 And so you can just say, show me the document.content.
 
+00:18:14.300 --> 00:18:20.760
+Now, when you render that in your Django templates, this is HTML and Django templates, like many of
 
-00:18:14.620 --> 00:18:17.100
-Now, when you render that in your Django templates,
+00:18:20.760 --> 00:18:26.100
+the templating languages are smart and say, yeah, no, if we just let people type in here,
 
+00:18:26.100 --> 00:18:30.640
+they're going to type angle bracket, JavaScript, hackswords.com, dot, dot, dot, dot, dot, right?
 
-00:18:17.100 --> 00:18:20.100
-this is HTML and Django templates,
+00:18:31.840 --> 00:18:36.580
+So they're going to HTML and code that, which will show it up as like view source.
 
+00:18:36.580 --> 00:18:36.820
+Right?
 
-00:18:20.100 --> 00:18:22.820
-like many of the templating languages are smart
+00:18:36.820 --> 00:18:41.140
+So you've got to do a pipe safe to say, nope, don't encode it.
 
+00:18:41.140 --> 00:18:46.400
+Just drop the HTML straight in there, which in which case this should not be used by untrusted
 
-00:18:22.820 --> 00:18:26.180
-and say, yeah, no, if we just let people type in here,
+00:18:46.400 --> 00:18:47.020
+individuals.
 
+00:18:47.020 --> 00:18:47.700
+Right?
 
-00:18:26.180 --> 00:18:28.060
-they're gonna type angle bracket JavaScript,
+00:18:47.700 --> 00:18:56.080
+You can also have ORM models and the ORM model itself can have a rich text field type, which
 
+00:18:56.080 --> 00:18:56.900
+is kind of interesting.
 
-00:18:28.060 --> 00:18:30.880
-hackswars.com, dot, dot, dot, dot, right?
+00:18:56.900 --> 00:18:57.360
+Right?
 
+00:18:57.360 --> 00:18:57.920
+Yeah.
 
-00:18:30.880 --> 00:18:34.900
-So they're going to HTML encode that,
-
-
-00:18:34.900 --> 00:18:36.860
-which will show it up as like view source, right?
-
-
-00:18:36.860 --> 00:18:41.260
-So you got to do a pipe safe to say, nope, don't encode it.
-
-
-00:18:41.260 --> 00:18:43.260
-Just drop the HTML straight in there,
-
-
-00:18:43.260 --> 00:18:45.720
-which in which case this should not be used
-
-
-00:18:45.720 --> 00:18:48.400
-by untrusted individuals, right?
-
-
-00:18:48.400 --> 00:18:53.400
-You can also have ORM models and the ORM model itself
-
-
-00:18:53.400 --> 00:18:55.920
-can have a rich text field type,
-
-
-00:18:55.920 --> 00:18:58.160
-which is kind of interesting, right?
-
-
-00:18:58.160 --> 00:19:01.560
+00:18:57.920 --> 00:19:01.500
 And then you can show that as part of your template.
 
+00:19:01.500 --> 00:19:05.620
+And again, you've got to pipe safe that because if not, it won't work.
 
-00:19:01.560 --> 00:19:03.260
-And again, you've got a pipe safe that
+00:19:05.620 --> 00:19:13.040
+And then you can even have a separate table with a foreign key relationship to the content
 
-
-00:19:03.260 --> 00:19:06.520
-because if not, it won't work.
-
-
-00:19:06.520 --> 00:19:10.200
-And then you can even have a separate table
-
-
-00:19:10.200 --> 00:19:13.440
-with a foreign key relationship to the content
-
-
-00:19:13.440 --> 00:19:15.120
+00:19:13.040 --> 00:19:15.080
 for like large documents.
 
+00:19:15.080 --> 00:19:20.300
+So there's a lot of stuff with not just dropping an editor into the admin section, but actually
 
-00:19:15.120 --> 00:19:17.840
-So there's a lot of stuff with not just dropping an editor
+00:19:20.300 --> 00:19:24.640
+integrating that into the Django ORM and models, which is where I think it gets, you know, worth
 
+00:19:24.640 --> 00:19:29.000
+paying attention to over some of the other just JavaScript front ends for HTML editing.
 
-00:19:17.840 --> 00:19:19.800
-into the admin section,
+00:19:29.000 --> 00:19:29.600
+Nice.
 
+00:19:29.600 --> 00:19:30.080
+Yeah.
 
-00:19:19.800 --> 00:19:22.740
-but actually integrating that into the Django ORM and models
+00:19:30.080 --> 00:19:30.480
+Yeah.
 
+00:19:30.480 --> 00:19:41.420
+It even has a form support for rendering out editable forms and attachments, all those sorts
 
-00:19:22.740 --> 00:19:25.520
-which is where I think it gets worth paying attention to
+00:19:41.420 --> 00:19:41.760
+of things.
 
+00:19:41.760 --> 00:19:48.560
+It also only allows a subset of tags and attributes, and it uses the bleach library, which I don't
 
-00:19:25.520 --> 00:19:27.880
-over some of the other just JavaScript front ends
+00:19:48.560 --> 00:19:52.940
+know how familiar people are with bleach, but bleach is kind of interested.
 
+00:19:52.940 --> 00:19:54.680
+Apparently it's deprecated.
 
-00:19:27.880 --> 00:19:29.280
-for HTML editing.
+00:19:54.680 --> 00:19:56.680
+Although you're just using it for whitelisting.
 
-
-00:19:29.280 --> 00:19:30.120
-- Nice.
-
-
-00:19:30.120 --> 00:19:31.040
-- Yeah, yeah.
-
-
-00:19:31.040 --> 00:19:34.520
-It even has a form support
-
-
-00:19:34.520 --> 00:19:39.520
-for rendering out editable forms and attachments,
-
-
-00:19:39.520 --> 00:19:41.840
-all those sorts of things.
-
-
-00:19:41.840 --> 00:19:46.280
-It also only allows a subset of tags and attributes,
-
-
-00:19:46.280 --> 00:19:48.120
-and it uses the Bleach library,
-
-
-00:19:48.120 --> 00:19:50.880
-which I don't know how many people are with Bleach,
-
-
-00:19:50.880 --> 00:19:53.440
-but Bleach is kind of interested.
-
-
-00:19:53.440 --> 00:19:54.760
-Apparently it's deprecated,
-
-
-00:19:54.760 --> 00:19:56.720
-although you're just using it for whitelisting.
-
-
-00:19:56.720 --> 00:20:00.080
+00:19:56.680 --> 00:20:00.040
 I don't know really why it would make a change, right?
 
+00:20:00.040 --> 00:20:04.000
+Like these are the 20 tags and whatnot that are allowed and they're still going to be allowed.
 
-00:20:00.080 --> 00:20:03.120
-Like these are the 20 tags and whatnot that are allowed,
+00:20:04.000 --> 00:20:09.140
+But anyway, if you want to see, there's both a picture that's larger than I was hoping for.
 
+00:20:09.140 --> 00:20:12.560
+There's a picture of basically what it looks like.
 
-00:20:03.120 --> 00:20:04.080
-and they're still gonna be allowed,
+00:20:12.560 --> 00:20:17.800
+And you can imagine it's like a rich text editor or online blog thing, and it has an editing section
 
-
-00:20:04.080 --> 00:20:07.880
-But anyway, if you wanna see, there's both a picture,
-
-
-00:20:07.880 --> 00:20:09.360
-that's larger than I was hoping for,
-
-
-00:20:09.360 --> 00:20:12.600
-there's a picture of basically what it looks like.
-
-
-00:20:12.600 --> 00:20:15.480
-And you can imagine it's like a rich text editor
-
-
-00:20:15.480 --> 00:20:17.880
-or online blog thing, and it has an editing section
-
-
-00:20:17.880 --> 00:20:20.960
+00:20:17.800 --> 00:20:20.800
 and a preview section, as well as a video tutorial.
 
+00:20:20.800 --> 00:20:27.700
+So if you're doing Django and you want rich text editing that renders, that basically edits raw HTML
 
-00:20:20.960 --> 00:20:24.240
-So if you're doing Django and you want rich text editing
+00:20:27.700 --> 00:20:33.720
+in a nice way, WYSIWYG, as they said back in the day, you can go and check this out and check out Django
 
+00:20:33.720 --> 00:20:33.980
+pros.
 
-00:20:24.240 --> 00:20:28.840
-that renders, that basically edits raw HTML in a nice way,
+00:20:33.980 --> 00:20:34.680
+Nice.
 
+00:20:34.680 --> 00:20:41.480
+Hey, so have you ever heard the, you know, if you had a writing group in a penitentiary, it would be pros and cons.
 
-00:20:28.840 --> 00:20:31.400
-WYSIWYG, as they said back in the day,
+00:20:41.480 --> 00:20:46.060
+Pros from cons.
 
+00:20:46.060 --> 00:20:48.240
+I love it.
 
-00:20:31.400 --> 00:20:34.320
-you can go and check this out and check out Django pros.
+00:20:48.240 --> 00:20:48.580
+That's good.
 
+00:20:48.580 --> 00:20:48.900
+Yeah.
 
-00:20:34.320 --> 00:20:35.160
-- Nice.
+00:20:48.900 --> 00:20:50.180
+We're, we're jumping ahead.
 
+00:20:50.180 --> 00:20:51.280
+The joke comes at the end.
 
-00:20:35.160 --> 00:20:36.600
-Hey, so have you ever heard the,
+00:20:51.280 --> 00:20:51.840
+Okay.
 
+00:20:51.840 --> 00:20:52.200
+Okay.
 
-00:20:36.600 --> 00:20:40.360
-if you had a writing group in a penitentiary,
+00:20:52.200 --> 00:20:52.520
+Sorry.
 
+00:20:52.520 --> 00:20:54.060
+Don't get ahead.
 
-00:20:40.360 --> 00:20:41.800
-it would be pros and cons.
+00:20:54.060 --> 00:20:54.540
+Okay.
 
+00:20:54.540 --> 00:20:59.420
+So I want to talk with, speaking of rich, I want to talk about pileizer.
 
-00:20:41.800 --> 00:20:44.040
-(laughing)
+00:20:59.420 --> 00:21:01.420
+Actually not rich.
 
+00:21:01.420 --> 00:21:02.220
+Rust.
 
-00:20:44.040 --> 00:20:46.300
-- Pros from cons.
+00:21:02.220 --> 00:21:04.240
+So pileizer.
 
+00:21:04.240 --> 00:21:06.260
+So this was a suggested by Owen.
 
-00:20:46.300 --> 00:20:47.960
-(laughing)
-
-
-00:20:47.960 --> 00:20:48.800
-I love it, that's good.
-
-
-00:20:48.800 --> 00:20:52.000
-Yeah, we're jumping ahead, the joke comes at the end.
-
-
-00:20:52.000 --> 00:20:52.840
-- Okay, sorry.
-
-
-00:20:52.840 --> 00:20:54.520
-- Don't get ahead.
-
-
-00:20:54.520 --> 00:20:58.040
-- Okay, so I wanna talk with, speaking of rich,
-
-
-00:20:58.040 --> 00:21:00.480
-I want to talk about PyLizer.
-
-
-00:21:00.480 --> 00:21:03.240
-Actually, not Rich, Rust.
-
-
-00:21:03.240 --> 00:21:04.400
-So PyLizer.
-
-
-00:21:04.400 --> 00:21:06.400
-So this was suggested by Owen.
-
-
-00:21:06.400 --> 00:21:07.600
+00:21:06.260 --> 00:21:06.880
 Thanks, Owen.
 
+00:21:07.600 --> 00:21:12.500
+And this is a project that is, it reminded me of rough a little bit.
 
-00:21:07.600 --> 00:21:10.840
-And this is a project that is,
+00:21:12.500 --> 00:21:21.080
+So it is pileizer is a static code on the analyzer in a language server for Python written
 
+00:21:21.080 --> 00:21:21.540
+in rust.
 
-00:21:10.840 --> 00:21:12.600
-it reminded me of Ruff a little bit.
-
-
-00:21:12.600 --> 00:21:17.600
-So it is, PyLizer is a static code on the analyzer
-
-
-00:21:17.600 --> 00:21:21.840
-in a language server for Python written in Rust.
-
-
-00:21:21.840 --> 00:21:23.180
+00:21:21.540 --> 00:21:22.400
 Just cool.
 
+00:21:22.400 --> 00:21:24.180
+Some of the details on it.
 
-00:21:23.180 --> 00:21:25.360
-Some of the details on it, I'm a little,
+00:21:24.180 --> 00:21:30.360
+I'm a little, I don't quite understand, but anyway, it's a rust thing that can analyze your
 
+00:21:30.360 --> 00:21:30.600
+code.
 
-00:21:25.360 --> 00:21:26.880
-I don't quite understand,
-
-
-00:21:26.880 --> 00:21:30.680
-but anyway, it's a Rust thing that can analyze your code.
-
-
-00:21:30.680 --> 00:21:31.680
+00:21:30.600 --> 00:21:31.600
 So what is the big deal?
 
+00:21:31.600 --> 00:21:35.420
+Why don't we have, what is, speaking of rough, what's the difference?
 
-00:21:31.680 --> 00:21:34.760
-Why don't we have, what is, speaking of Ruff,
+00:21:35.420 --> 00:21:42.560
+Well, so rough is like pilot rough is a static code analysis, but rough is just your linter.
 
-
-00:21:34.760 --> 00:21:35.760
-what's the difference?
-
-
-00:21:35.760 --> 00:21:38.680
-Well, so Ruff is like PyLint,
-
-
-00:21:38.680 --> 00:21:40.760
-Ruff is a static code analysis,
-
-
-00:21:40.760 --> 00:21:43.000
-but Ruff is just your linter.
-
-
-00:21:43.000 --> 00:21:45.340
+00:21:42.560 --> 00:21:45.240
 It doesn't do type checking in language server.
 
+00:21:45.240 --> 00:21:47.140
+So pileizer has a little bit more.
 
-00:21:45.340 --> 00:21:47.200
-So PyLint has a little bit more,
+00:21:47.140 --> 00:21:48.760
+It's a little, does more, a little more linting.
 
+00:21:48.760 --> 00:21:51.660
+It can do things like checking for out of bounds errors and things.
 
-00:21:47.200 --> 00:21:49.040
-it's a little, does more, a little more linting.
+00:21:51.760 --> 00:21:53.900
+So it isn't a replacement for rough.
 
+00:21:53.900 --> 00:21:55.780
+You would run both of them if you want.
 
-00:21:49.040 --> 00:21:50.320
-It can do things like checking
+00:21:55.780 --> 00:21:57.780
+And they're so fast that why not?
 
+00:21:57.780 --> 00:22:01.720
+So, and that's one of the things because it's written in rust, it's quick.
 
-00:21:50.320 --> 00:21:51.960
-for out of bounds errors and things.
+00:22:01.720 --> 00:22:04.980
+It's very fast, but that's not the only thing.
 
+00:22:04.980 --> 00:22:08.420
+Cause you always want, you also want like good error messages.
 
-00:21:51.960 --> 00:21:53.960
-So it isn't a replacement for Ruff,
+00:22:08.420 --> 00:22:12.240
+So that's one of the selling points apparently is a detailed analysis.
 
-
-00:21:53.960 --> 00:21:56.120
-you would run both of them if you want to.
-
-
-00:21:56.120 --> 00:21:57.880
-and they're so fast that why not?
-
-
-00:21:57.880 --> 00:21:59.900
-So, and that's one of the things
-
-
-00:21:59.900 --> 00:22:02.940
-because it's written in Rust, it's quick, it's very fast,
-
-
-00:22:02.940 --> 00:22:05.040
-but that's not the only thing
-
-
-00:22:05.040 --> 00:22:08.640
-'cause you also want like good error messages.
-
-
-00:22:08.640 --> 00:22:10.880
-So that's one of the selling points apparently
-
-
-00:22:10.880 --> 00:22:13.040
-is a detailed analysis.
-
-
-00:22:13.040 --> 00:22:16.160
+00:22:12.700 --> 00:22:15.960
 It can check a whole bunch of stuff, but it also is readable.
 
+00:22:15.960 --> 00:22:19.520
+So it'll, it'll do, you know, tell you what's wrong.
 
-00:22:16.160 --> 00:22:19.640
-So it'll tell you what's wrong
+00:22:19.520 --> 00:22:25.640
+And, and it's supposedly, it does things like underlining where, where the problem is and
 
+00:22:25.640 --> 00:22:26.700
+what you should do instead.
 
-00:22:19.640 --> 00:22:23.840
-and it's supposedly, it does things like underlining
+00:22:26.700 --> 00:22:27.800
+Maybe.
 
+00:22:27.800 --> 00:22:30.020
+So this kind of looks like fun actually.
 
-00:22:23.840 --> 00:22:27.640
-where the problem is and what you should do instead.
+00:22:30.020 --> 00:22:32.560
+So yeah, that is a really nice error message.
 
+00:22:32.560 --> 00:22:35.780
+It has like a tree structure under the line, under the error thing.
 
-00:22:27.640 --> 00:22:30.600
-Maybe, so this kind of looks like fun actually.
+00:22:35.780 --> 00:22:38.240
+It says expected stir, but found int.
 
+00:22:38.240 --> 00:22:38.920
+Yeah.
 
-00:22:30.600 --> 00:22:32.680
-- Yeah, that is a really nice error message.
+00:22:38.920 --> 00:22:42.680
+Kind of reminds me of some of the new stuff in Python to, to help you.
 
+00:22:42.680 --> 00:22:45.480
+with exactly the three 11 error message improvements.
 
-00:22:32.680 --> 00:22:35.840
-It has like a tree structure under the error thing.
+00:22:45.480 --> 00:22:46.300
+Yeah.
 
+00:22:46.300 --> 00:22:51.880
+Um, and especially if it's going to do this sort of stuff, language server, I'd like it integrated
 
-00:22:35.840 --> 00:22:38.760
-It says, "Expected strf, but found int."
+00:22:51.880 --> 00:22:53.720
+with a, editor, right?
 
+00:22:53.720 --> 00:22:58.980
+So this, this does have a VS Code extension that you can integrate that and use that instead
 
-00:22:38.760 --> 00:22:41.000
-- Yeah, kind of reminds me of some of the new stuff
+00:22:58.980 --> 00:23:02.020
+of the built in, whatever VS Code uses.
 
+00:23:02.020 --> 00:23:02.360
+I can't.
 
-00:22:41.000 --> 00:22:43.240
-in Python to help you with problems.
+00:23:02.360 --> 00:23:02.800
+High Lance.
 
+00:23:02.800 --> 00:23:03.820
+High Lance.
 
-00:22:43.240 --> 00:22:46.020
-- Exactly, the 3.11 error message improvements.
+00:23:03.820 --> 00:23:05.220
+High Lance is pretty good though.
 
+00:23:05.220 --> 00:23:07.560
+So anyway, I'm not sure.
 
-00:22:46.020 --> 00:22:50.280
-- Yeah, and especially if it's gonna do this sort of stuff,
+00:23:07.560 --> 00:23:08.500
+Uh, so how it works.
 
+00:23:08.500 --> 00:23:12.180
+So here's the stuff that I don't quite get part is,
 
-00:22:50.280 --> 00:22:53.520
-language server, I'd like it integrated with a editor,
+00:23:12.420 --> 00:23:16.500
+it uses a type checker from the ERG programming language.
 
+00:23:16.500 --> 00:23:17.080
+Erg.
 
-00:22:53.520 --> 00:23:00.240
-So this does have a VS Code extension that you can integrate that and use that instead of the built-in,
+00:23:17.080 --> 00:23:17.960
+Erg.
 
+00:23:17.960 --> 00:23:18.720
+Erg.
 
-00:23:00.240 --> 00:23:02.240
-whatever VS Code uses.
+00:23:18.720 --> 00:23:19.440
+Must be a pirate.
 
+00:23:19.440 --> 00:23:20.440
+I've never heard of Erg.
 
-00:23:02.240 --> 00:23:04.240
--Pylance. -Pylance.
+00:23:20.440 --> 00:23:21.280
+Interesting.
 
+00:23:21.280 --> 00:23:23.140
+Um, I haven't heard of it either.
 
-00:23:04.240 --> 00:23:06.240
-Pylance is pretty good though.
+00:23:23.140 --> 00:23:24.420
+So I'm not quite sure.
 
-
-00:23:06.240 --> 00:23:08.240
-I'm not sure how it works.
-
-
-00:23:08.240 --> 00:23:11.240
-So here's the stuff that I don't quite get.
-
-
-00:23:11.240 --> 00:23:16.640
-Part is it uses a type checker from the ERG programming language.
-
-
-00:23:16.640 --> 00:23:18.640
--Erg? -Erg.
-
-
-00:23:18.640 --> 00:23:21.640
--I've never heard of Erg. -Interesting.
-
-
-00:23:21.640 --> 00:23:24.520
-I haven't heard of it either, so I'm not quite sure.
-
-
-00:23:24.520 --> 00:23:27.280
+00:23:24.420 --> 00:23:27.020
 Maybe it's faster that way, but it does that.
 
+00:23:27.020 --> 00:23:32.460
+I don't know if there's limitations, but there's, it's a, project in the rather early stages.
 
-00:23:27.280 --> 00:23:28.880
-I don't know if there's limitations.
+00:23:32.460 --> 00:23:36.340
+I think it's got a lot of stuff going on for it, but I don't, I think it's neat that they
 
+00:23:36.340 --> 00:23:39.280
+listed a to-do list and the things they haven't done yet.
 
-00:23:28.880 --> 00:23:32.960
-But it's a project in the rather early stages, I think.
+00:23:39.280 --> 00:23:42.920
+So it doesn't check for finals and other things, but it does quite a bit.
 
+00:23:42.920 --> 00:23:43.820
+I'm still pretty good.
 
-00:23:32.960 --> 00:23:34.760
-It's got a lot of stuff going on for it.
+00:23:43.820 --> 00:23:45.320
+So new tool.
 
+00:23:45.320 --> 00:23:45.740
+Neat.
 
-00:23:34.760 --> 00:23:37.920
-But I think it's neat that they listed a to-do list
+00:23:45.740 --> 00:23:47.520
+Uh, all right.
 
+00:23:47.520 --> 00:23:48.880
+Are you ready for a joke or you got an extra?
 
-00:23:37.920 --> 00:23:39.380
-and the things they haven't done yet.
+00:23:49.240 --> 00:23:52.140
+I know extras today, but I'm ready for a joke.
 
+00:23:52.140 --> 00:23:52.580
+Awesome.
 
-00:23:39.380 --> 00:23:42.160
-So it doesn't check for finals and other things,
+00:23:52.580 --> 00:23:53.000
+Me too.
 
+00:23:53.000 --> 00:23:57.700
+This one comes to us from Arthur Rio and says, this joke might be right up your alley.
 
-00:23:42.160 --> 00:23:43.200
-but does quite a bit.
+00:23:57.700 --> 00:23:58.120
+Okay.
 
+00:23:58.120 --> 00:24:00.880
+So what this is, is it says escape room.
 
-00:23:43.200 --> 00:23:44.160
-- That's still pretty good.
+00:24:00.880 --> 00:24:02.580
+So it's, it's an escape room.
 
+00:24:02.580 --> 00:24:06.580
+Like, you know, the, like the kind of thing where you, you go and you got to find the clues
 
-00:23:44.160 --> 00:23:45.940
-- So new tool, neat.
+00:24:06.580 --> 00:24:07.140
+to get out.
 
+00:24:07.140 --> 00:24:09.340
+And if you don't find the clues, you're going to be stuck in there.
 
-00:23:45.940 --> 00:23:49.240
-- All right, are you ready for a joke or you got an extra?
+00:24:09.420 --> 00:24:17.120
+So this, this person with a big smiling anticipation is walking into the escape room, finds a skeleton
 
+00:24:17.120 --> 00:24:21.640
+sitting at a laptop, like a, a person who died is gone.
 
-00:23:49.240 --> 00:23:52.360
-- I, no extras today, but I'm ready for a joke.
+00:24:21.640 --> 00:24:21.920
+Right.
 
+00:24:21.920 --> 00:24:23.760
+And starts to get really worried.
 
-00:23:52.360 --> 00:23:53.340
-- Awesome, me too.
+00:24:23.760 --> 00:24:25.800
+Like maybe this escape room is too serious for me.
 
+00:24:25.800 --> 00:24:31.180
+Looks over the shoulder and realizes what they are doing is they're in Vim trying to get out
 
-00:23:53.340 --> 00:23:55.880
-This one comes to us from Arthur Rio
+00:24:31.180 --> 00:24:31.620
+of it.
 
-
-00:23:55.880 --> 00:23:58.000
-and says, "This joke might be right up your alley."
-
-
-00:23:58.000 --> 00:24:01.160
-Okay, so what this is, is it says escape room.
-
-
-00:24:01.160 --> 00:24:03.080
-So it's an escape room, like you know,
-
-
-00:24:03.080 --> 00:24:05.500
-the kind of thing where you go
-
-
-00:24:05.500 --> 00:24:07.240
-and you gotta find the clues to get out
-
-
-00:24:07.240 --> 00:24:08.400
-and if you don't find the clues,
-
-
-00:24:08.400 --> 00:24:09.840
-you're gonna be stuck in there.
-
-
-00:24:09.840 --> 00:24:14.440
-So this person with a big smiling anticipation
-
-
-00:24:14.440 --> 00:24:16.200
-is walking into the escape room,
-
-
-00:24:16.200 --> 00:24:18.840
-finds a skeleton sitting at a laptop,
-
-
-00:24:18.840 --> 00:24:22.640
-a person who died is gone, right?
-
-
-00:24:22.640 --> 00:24:26.160
-And starts to get really worried, like, "Maybe this escape room is too serious for me."
-
-
-00:24:26.160 --> 00:24:30.840
-Looks over the shoulder and realizes what they are doing is they're in Vim trying to
-
-
-00:24:30.840 --> 00:24:31.840
-get out of it.
-
-
-00:24:31.840 --> 00:24:32.840
->>AJ: That's so meta.
-
-
-00:24:32.840 --> 00:24:33.840
->>Corey: I know.
-
-
-00:24:33.840 --> 00:24:34.840
+00:24:31.620 --> 00:24:33.700
 It's so meta.
 
+00:24:33.700 --> 00:24:34.960
+I know.
 
-00:24:34.840 --> 00:24:35.840
+00:24:34.960 --> 00:24:35.860
+It's so meta.
+
+00:24:35.860 --> 00:24:36.540
+Yeah.
+
+00:24:36.540 --> 00:24:36.940
 Go ahead.
 
-
-00:24:35.840 --> 00:24:36.840
->>AJ: Yeah.
-
-
-00:24:36.840 --> 00:24:37.840
+00:24:36.940 --> 00:24:37.980
 You just have to hit escape.
 
+00:24:37.980 --> 00:24:38.680
+I know.
 
-00:24:37.840 --> 00:24:38.840
->>Corey: I know.
+00:24:38.780 --> 00:24:41.940
+And well, and look, look at the person who says there's always a way.
 
+00:24:41.940 --> 00:24:47.040
+I'd completely beaten, smashed MacBook.
 
-00:24:38.840 --> 00:24:44.000
-And look at the person who says there's always a way.
+00:24:47.040 --> 00:24:48.580
+How did that happen?
 
+00:24:48.580 --> 00:24:49.840
+I don't know.
 
-00:24:44.000 --> 00:24:47.000
-A completely beaten, smashed MacBook.
+00:24:49.840 --> 00:24:51.000
+But there's always a way.
 
+00:24:51.000 --> 00:24:51.620
+Or something.
 
-00:24:47.000 --> 00:24:49.000
->> How did that happen?
+00:24:51.620 --> 00:24:54.080
+It does look like he got run over and then they opened it.
 
+00:24:54.080 --> 00:24:54.700
+Yeah.
 
-00:24:49.000 --> 00:24:49.920
->> I don't know.
+00:24:54.700 --> 00:24:54.740
+Yeah.
 
+00:24:54.740 --> 00:24:56.360
+It's, well, it's not ideal.
 
-00:24:49.920 --> 00:24:51.120
->> Somebody run over it?
+00:24:56.360 --> 00:24:58.300
+But the escape room, I thought you'd appreciate that one.
 
+00:24:58.300 --> 00:24:58.640
+Yeah.
 
-00:24:51.120 --> 00:24:54.400
->> It does look like it got run over and then they opened it.
+00:24:58.640 --> 00:25:00.340
+Why is that such a big thing?
 
+00:25:00.340 --> 00:25:01.120
+Like, I don't know.
 
-00:24:54.400 --> 00:24:56.440
-Yeah, it's not ideal,
+00:25:01.120 --> 00:25:05.280
+It's one of the frustrating old joke of like, people are always going to make fun of it.
 
+00:25:05.280 --> 00:25:05.500
+I know.
 
-00:24:56.440 --> 00:24:58.360
-but the escape room, I thought you'd appreciate that one.
+00:25:05.500 --> 00:25:06.780
+You could do the same for Emacs.
 
+00:25:06.780 --> 00:25:07.900
+Yeah.
 
-00:24:58.360 --> 00:24:58.800
->> Yeah.
+00:25:08.020 --> 00:25:08.720
+How do you quit Emacs?
 
+00:25:08.720 --> 00:25:09.520
+I don't even know.
 
-00:24:58.800 --> 00:25:00.400
->> Why is that such a big thing?
+00:25:09.520 --> 00:25:09.820
+Yeah.
 
+00:25:09.820 --> 00:25:10.620
+It's like a chord.
 
-00:25:00.400 --> 00:25:03.520
-I don't know. It's a frustrating old joke
-
-
-00:25:03.520 --> 00:25:05.280
-of people are always going to make fun of it.
-
-
-00:25:05.280 --> 00:25:07.280
->> I know. You could do the same for Emacs.
-
-
-00:25:07.280 --> 00:25:09.600
->> Yeah. How do you quit Emacs? I don't even know.
-
-
-00:25:09.600 --> 00:25:10.720
->> Yeah. It's like a cord.
-
-
-00:25:10.720 --> 00:25:12.360
+00:25:10.620 --> 00:25:11.820
 I forgot what it was.
 
+00:25:11.820 --> 00:25:12.380
+Like, you know.
 
-00:25:12.360 --> 00:25:14.400
->> You have to play guitars for it?
+00:25:12.380 --> 00:25:14.300
+You have to play guitars for it?
 
+00:25:14.300 --> 00:25:15.040
+Yeah, you do.
 
-00:25:14.400 --> 00:25:15.120
->> Yeah, you do.
-
-
-00:25:15.120 --> 00:25:17.640
+00:25:15.040 --> 00:25:17.620
 It's why it takes so long.
 
+00:25:17.620 --> 00:25:20.000
+First you learn guitar, then you can save or exit.
 
-00:25:17.640 --> 00:25:20.080
-First you learn guitar, then you can say you're exit.
+00:25:20.000 --> 00:25:23.580
+Anyway.
 
+00:25:23.580 --> 00:25:24.120
+So.
 
-00:25:20.080 --> 00:25:25.640
->> Anyway. Awesome.
+00:25:24.120 --> 00:25:25.560
+Awesome.
 
-
-00:25:25.640 --> 00:25:27.840
+00:25:25.560 --> 00:25:27.400
 Well, I guess that's an episode.
 
+00:25:27.400 --> 00:25:31.680
+That would be episode 335 in the bag.
 
-00:25:27.840 --> 00:25:31.880
->> That would be Episode 335 in the bag.
+00:25:31.680 --> 00:25:32.340
+Yeah.
 
+00:25:32.800 --> 00:25:34.040
+Thanks, everybody, for listening.
 
-00:25:31.880 --> 00:25:35.320
->> Yeah. Thanks everybody for listening. Thanks, Michael.
+00:25:34.040 --> 00:25:35.100
+Thanks, Michael.
 
+00:25:35.100 --> 00:25:35.780
+You bet.
 
-00:25:35.320 --> 00:25:37.000
->> You bet. Fun as always. See you.
+00:25:35.780 --> 00:25:36.580
+Fun as always.
 

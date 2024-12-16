@@ -1,4448 +1,2933 @@
+WEBVTT
 
-00:00:00.000 --> 00:00:04.720
-Hello and welcome to Python Bytes where we deliver Python news and headlines directly to your earbuds.
+00:00:00.001 --> 00:00:04.660
+Hello and welcome to Python Bytes, where we deliver Python news and headlines directly to your earbuds.
 
+00:00:04.660 --> 00:00:09.620
+This is episode 262, recorded December 8th, 2021.
 
-00:00:04.720 --> 00:00:12.480
-This is episode 262 recorded December 8th, 2021. Oh my gosh, it's almost winter. I'm Michael Kennedy.
+00:00:09.620 --> 00:00:11.220
+Oh my gosh, it's almost winter.
 
+00:00:11.220 --> 00:00:12.320
+I'm Michael Kennedy.
 
-00:00:12.480 --> 00:00:13.760
+00:00:12.320 --> 00:00:13.540
 And I'm Brian Okken.
 
-
-00:00:13.760 --> 00:00:14.640
+00:00:13.540 --> 00:00:14.700
 And I'm Leah Cole.
 
-
-00:00:14.640 --> 00:00:15.700
+00:00:14.700 --> 00:00:15.660
 Yay.
 
-
-00:00:15.700 --> 00:00:19.360
+00:00:15.660 --> 00:00:19.060
 Yay. So great to have you here. Thanks for being here on the show.
 
+00:00:19.060 --> 00:00:20.600
+Yeah, happy to be here.
 
-00:00:19.360 --> 00:00:20.880
-Yeah. Happy to be here.
-
-
-00:00:20.880 --> 00:00:26.880
+00:00:20.600 --> 00:00:26.820
 You and I got a chance to discuss Airflow over on Talk Python a couple months ago, something like that.
 
-
-00:00:26.880 --> 00:00:27.680
+00:00:26.820 --> 00:00:27.260
 Yeah.
 
+00:00:27.260 --> 00:00:34.360
+Yeah, but now we'll probably do a little more Airflow over here for people who aren't familiar with that, but also just whatever you're interested in.
 
-00:00:27.680 --> 00:00:30.920
-- Yeah, but now we'll probably do a little more Airflow
+00:00:34.360 --> 00:00:39.260
+So great to have you here. Why don't you tell people a quick bit about yourself before we jump into the topics?
 
+00:00:39.260 --> 00:00:45.560
+Sure. So I'm Leah and I am a developer relations engineer in Google Cloud.
 
-00:00:30.920 --> 00:00:32.440
-over here for people who are unfamiliar with that,
+00:00:45.560 --> 00:00:56.780
+And specifically, I work on Cloud Composer, which is our hosted managed product of the popular Apache Airflow project, which we'll talk about a little bit later.
 
+00:00:56.780 --> 00:01:07.480
+And in addition to writing samples and content for that, I also work with a group of fellow engineers and we maintain all Python samples for Google Cloud.
 
-00:00:32.440 --> 00:00:34.340
-but also just whatever you're interested in.
+00:01:07.880 --> 00:01:13.980
+And make sure that they stay tested up to date and are healthy and are getting reviewed for new samples.
 
+00:01:13.980 --> 00:01:17.980
+And that's a lot of fun. That kind of fell into my lap and has been a good time.
 
-00:00:34.340 --> 00:00:36.060
-So great to have you here.
+00:01:17.980 --> 00:01:18.080
+Yeah, that's fantastic.
 
+00:01:18.080 --> 00:01:18.680
+Yeah.
 
-00:00:36.060 --> 00:00:38.180
-Why don't you tell people a quick bit about yourself
+00:01:18.680 --> 00:01:25.000
+I remember Python being one of the original two supported languages on Google Cloud, right? It had sort of a special place.
 
+00:01:25.000 --> 00:01:27.460
+Yeah. Now it's one of seven, I think.
 
-00:00:38.180 --> 00:00:39.480
-before we jump into the topics?
+00:01:28.200 --> 00:01:40.400
+Yeah. Cool. Well, that sounds like such a fun job. I've always imagined dev relations type of jobs to be super fun. Maybe slightly less fun in COVID because the travel and the conferences and, you know, all those kinds of things are part of it.
 
+00:01:40.400 --> 00:01:41.640
+But still a fun job, right?
 
-00:00:39.480 --> 00:00:40.960
-- Sure, so I'm Leah,
+00:01:41.640 --> 00:01:47.420
+Still a good time. Every day is a little bit different. You kind of never know what's going to happen. And that's part of what I like about it.
 
+00:01:47.420 --> 00:01:52.940
+Yeah. Awesome. Cool. Brian, I don't even know what you're going to cover. So I don't know what's going to happen. Why don't you let us know?
 
-00:00:40.960 --> 00:00:45.680
-and I am a developer relations engineer in Google Cloud.
+00:01:53.300 --> 00:01:54.340
+You don't know what I'm going to cover?
 
+00:01:54.340 --> 00:01:56.520
+Well, I'm not looking at my docs yet.
 
-00:00:45.680 --> 00:00:49.660
-And specifically, I work on Cloud Composer,
+00:01:56.520 --> 00:02:05.360
+Oh, okay. Sorry. Fighting it cold. I am super excited. pytest 7, release candidate one, is out.
 
+00:02:05.360 --> 00:02:07.980
+Oh, that's excellent. That's big news.
 
-00:00:49.660 --> 00:00:52.520
-which is our hosted managed product
+00:02:07.980 --> 00:02:18.780
+It is. The last release for pytest was, or six, they've done other dot releases, but the 6.2 or 6.0 came out. 6.2, I don't know. I lost track.
 
+00:02:18.780 --> 00:02:21.860
+We use 6.2.4 for our GCP samples.
 
-00:00:52.520 --> 00:00:55.320
-of the popular Apache Airflow project,
+00:02:21.860 --> 00:02:23.140
+Oh, you do?
 
+00:02:23.140 --> 00:02:23.760
+We do.
 
-00:00:55.320 --> 00:00:57.400
-which we'll talk about a little bit later.
+00:02:23.760 --> 00:02:47.500
+Well, I think it was, I wrote this down. The 6.2.0 was released on December 2020. So it's been, we're ready for a new one. So 7.0 is out, the release candidate at least. And so because it's a release candidate, to install it, you have to do pip install pytest double equal 7.0.0 RC1. We've got that in the show notes.
 
+00:02:47.700 --> 00:02:59.440
+It's also on the release announcement page for pytest. But I wanted to go through some of the cool features that I'm really excited about. There's a lot of great things in there.
 
-00:00:57.400 --> 00:01:00.400
-And in addition to writing samples and content for that,
+00:03:01.320 --> 00:03:16.040
+But there's some little improvements with the aprox thing. So one of the things that pytest has is an aprox. So you can say floating point numbers, if you're comparing them, you should never do equal. But you can do equal aprox with pytest. And it's really pretty cool.
 
+00:03:16.380 --> 00:03:24.240
+I didn't know that because any science you're doing is so, like double equals is the kiss of death for floating point math comparison.
 
-00:01:00.400 --> 00:01:03.520
-I also work with a group of fellow engineers
+00:03:24.240 --> 00:03:35.940
+Yeah. Well, the pytest of Prox does now the docs reference the NumPy comparisons, which is nice because NumPy has some really cool features around that.
 
+00:03:35.940 --> 00:03:47.400
+But pytest out of the box does. And now also with mappings and dicts and other sets, it handles decimal types, which is nice.
 
-00:01:03.520 --> 00:01:07.920
-and we maintain all Python samples for Google Cloud
+00:03:47.400 --> 00:03:53.600
+Decimal types, of course, are very useful when working with money and other things that need to be exact decimals.
 
+00:03:53.860 --> 00:04:06.540
+One of the things that's really cool is the sequences are compared better. So if you have like a list of numbers and you compare against an approximate list of another numbers, I didn't know you could do this.
 
-00:01:07.920 --> 00:01:10.920
-and make sure that they stay tested, up to date,
+00:04:06.540 --> 00:04:12.580
+It will tell you which index was wrong and by how much.
 
+00:04:12.580 --> 00:04:17.520
+And actually not by how much, but what the expected was. And that's pretty neat.
 
-00:01:10.920 --> 00:01:14.200
-and are healthy and are getting reviewed for new samples.
+00:04:17.520 --> 00:04:23.580
+So those are the little minor features. Most of these are kind of minor, but major for somebody, right?
 
+00:04:23.740 --> 00:04:31.660
+So one of the things I like is that some people have mentioned fixtures or sometimes when people use a lot of fixtures, they don't know where the fixtures are.
 
-00:01:14.200 --> 00:01:15.160
-And that's a lot of fun.
+00:04:31.660 --> 00:04:40.500
+Well, there's a couple of flags, fixtures per test and --fixtures. Both those flags are helpful to find out what fixtures you have available.
 
+00:04:40.500 --> 00:04:46.780
+And now by default, they print the location of the path with the fixture name.
 
-00:01:15.160 --> 00:01:17.920
-That kind of fell into my lap and has been a good time.
+00:04:47.220 --> 00:04:52.040
+And you can also do a verbose option that prints out the full doc string, which is pretty handy.
 
+00:04:52.040 --> 00:04:57.700
+A couple of things that I'm really excited about are a Python path that's been added.
 
-00:01:17.920 --> 00:01:18.760
-- That's fantastic.
+00:04:57.700 --> 00:05:01.180
+And that was a feature I added to the project, which is fun.
 
+00:05:01.180 --> 00:05:04.980
+Nice. It's cool to see the contributions you're making coming back out.
 
-00:01:18.760 --> 00:01:21.200
-I remember Python being one of the original
+00:05:04.980 --> 00:05:10.560
+Yeah, it's cool. And then there's a bunch of other features that I contributed to by just saying,
 
+00:05:10.700 --> 00:05:14.120
+this is a little weird. Can we fix this? And somebody else volunteered to fix it.
 
-00:01:21.200 --> 00:01:23.800
-two supported languages on Google Cloud, right?
-
-
-00:01:23.800 --> 00:01:25.200
-It had sort of a special place.
-
-
-00:01:25.200 --> 00:01:28.260
-- Yeah, now it's one of seven, I think.
-
-
-00:01:28.260 --> 00:01:29.100
-- Yeah, cool.
-
-
-00:01:29.100 --> 00:01:30.320
-Well, that sounds like such a fun job.
-
-
-00:01:30.320 --> 00:01:33.200
-I've always imagined dev relations type of jobs
-
-
-00:01:33.200 --> 00:01:36.000
-to be super fun, maybe slightly less fun in COVID
-
-
-00:01:36.000 --> 00:01:37.880
-'cause the travel and the conferences
-
-
-00:01:37.880 --> 00:01:40.440
-and all those kinds of things are a part of it,
-
-
-00:01:40.440 --> 00:01:41.840
-but still a fun job, right?
-
-
-00:01:41.840 --> 00:01:42.840
-- Still a good time.
-
-
-00:01:42.840 --> 00:01:44.120
-Every day is a little bit different.
-
-
-00:01:44.120 --> 00:01:45.760
-You kind of never know what's gonna happen
-
-
-00:01:45.760 --> 00:01:47.760
-and that's part of what I like about it.
-
-
-00:01:47.760 --> 00:01:48.800
-- Yeah, awesome.
-
-
-00:01:48.800 --> 00:01:49.800
-Oh, cool.
-
-
-00:01:49.800 --> 00:01:51.120
-Brian, I don't even know what you're gonna cover,
-
-
-00:01:51.120 --> 00:01:52.040
-so I don't know what's gonna happen.
-
-
-00:01:52.040 --> 00:01:53.360
-Why don't you let us know?
-
-
-00:01:53.360 --> 00:01:55.000
-- You don't know what I'm gonna cover?
-
-
-00:01:55.000 --> 00:01:56.640
-- I, well, I'm not looking at my docs yet.
-
-
-00:01:56.640 --> 00:01:57.480
-- Oh, okay.
-
-
-00:01:57.480 --> 00:01:59.240
-(laughing)
-
-
-00:01:59.240 --> 00:02:01.200
-Sorry, fighting a cold.
-
-
-00:02:01.200 --> 00:02:02.440
-I am super excited,
-
-
-00:02:02.440 --> 00:02:05.720
-pytest 7, release candidate one, is out.
-
-
-00:02:05.720 --> 00:02:06.880
-So--
-
-
-00:02:06.880 --> 00:02:07.720
-- Oh, that's excellent.
-
-
-00:02:07.720 --> 00:02:08.540
-That's big news.
-
-
-00:02:08.540 --> 00:02:09.380
-- It is.
-
-
-00:02:09.380 --> 00:02:12.360
-The last release for pytest was, or six,
-
-
-00:02:12.360 --> 00:02:14.240
-they've done other dot releases,
-
-
-00:02:14.240 --> 00:02:17.080
-but the six two, or six zero came out,
-
-
-00:02:17.080 --> 00:02:19.400
-or six two, I don't know, I lost track.
-
-
-00:02:19.400 --> 00:02:22.680
-- We use six two four for our GCP samples, so.
-
-
-00:02:22.680 --> 00:02:23.520
-- Oh, you do?
-
-
-00:02:23.520 --> 00:02:24.360
-- We do.
-
-
-00:02:24.360 --> 00:02:27.440
-- So the, this, I think it was, I wrote this down.
-
-
-00:02:27.440 --> 00:02:30.520
-The 6.2.0 was released on December, 2020.
-
-
-00:02:30.520 --> 00:02:33.280
-So it's been, we're ready for a new one.
-
-
-00:02:33.280 --> 00:02:36.680
-So 7.0 is out, the release candidate at least.
-
-
-00:02:36.680 --> 00:02:40.040
-And so, because it's a release candidate to install it,
-
-
-00:02:40.040 --> 00:02:43.080
-you have to do a pip install pytest,
-
-
-00:02:43.080 --> 00:02:46.400
-double equal 7.0.0 rc1.
-
-
-00:02:46.400 --> 00:02:48.040
-We've got that in the show notes.
-
-
-00:02:48.040 --> 00:02:53.040
-It's also on the release announcement page for pytest.
-
-
-00:02:53.200 --> 00:02:56.720
-but I wanted to go through some of the cool features
-
-
-00:02:56.720 --> 00:02:57.760
-that I'm really excited about.
-
-
-00:02:57.760 --> 00:02:59.720
-There's a lot of great things in there.
-
-
-00:02:59.720 --> 00:03:05.500
-There's some little improvements with the approx thing.
-
-
-00:03:05.500 --> 00:03:08.080
-So one of the things that pytest has is an approx.
-
-
-00:03:08.080 --> 00:03:09.880
-So you can say floating point numbers,
-
-
-00:03:09.880 --> 00:03:12.580
-if you're comparing them, you should never do equal,
-
-
-00:03:12.580 --> 00:03:14.840
-but you can do equal approx with pytest
-
-
-00:03:14.840 --> 00:03:16.440
-and it's really pretty cool.
-
-
-00:03:16.440 --> 00:03:17.400
-- That's cool, I didn't know that
-
-
-00:03:17.400 --> 00:03:20.560
-because any science you're doing is so,
-
-
-00:03:20.560 --> 00:03:22.560
-like double equals is the kiss of death
-
-
-00:03:22.560 --> 00:03:24.640
-for floating point math comparison.
-
-
-00:03:24.640 --> 00:03:27.960
-- Yeah, well, the pytest of Procs
-
-
-00:03:27.960 --> 00:03:32.960
-does now the docs reference the NumPy comparisons,
-
-
-00:03:32.960 --> 00:03:34.360
-which is nice because NumPy
-
-
-00:03:34.360 --> 00:03:36.600
-has some really cool features around that.
-
-
-00:03:36.600 --> 00:03:38.560
-But pytest out of the box does.
-
-
-00:03:38.560 --> 00:03:43.560
-And now also with mappings and dicts and other sets,
-
-
-00:03:43.560 --> 00:03:47.880
-it handles decimal types, which is nice.
-
-
-00:03:47.880 --> 00:03:49.720
-Decimal types, of course, are very useful
-
-
-00:03:49.720 --> 00:03:52.360
-when working with money and other things
-
-
-00:03:52.360 --> 00:03:54.500
-that need to be exact decimals.
-
-
-00:03:54.500 --> 00:03:56.120
-One of the things that's really cool
-
-
-00:03:56.120 --> 00:03:59.420
-is the sequences are compared better.
-
-
-00:03:59.420 --> 00:04:01.960
-So if you have like a list of numbers
-
-
-00:04:01.960 --> 00:04:04.720
-and you compare against an approximate list
-
-
-00:04:04.720 --> 00:04:07.480
-of another numbers, I didn't know you could do this,
-
-
-00:04:07.480 --> 00:04:11.600
-it will tell you which index was wrong
-
-
-00:04:11.600 --> 00:04:13.200
-and by how much. - Oh, nice.
-
-
-00:04:13.200 --> 00:04:14.640
-- And actually not by how much,
-
-
-00:04:14.640 --> 00:04:17.880
-but what the expected was, and that's pretty neat.
-
-
-00:04:17.880 --> 00:04:20.080
-So those are the little minor features.
-
-
-00:04:20.080 --> 00:04:21.860
-Most of these are kind of minor,
-
-
-00:04:21.860 --> 00:04:24.520
-but it made your first somebody, right?
-
-
-00:04:24.520 --> 00:04:26.820
-So one of the things I like is
-
-
-00:04:26.820 --> 00:04:28.620
-some people have mentioned fixtures
-
-
-00:04:28.620 --> 00:04:30.560
-or sometimes when people use a lot of fixtures,
-
-
-00:04:30.560 --> 00:04:32.000
-they don't know where the fixtures are.
-
-
-00:04:32.000 --> 00:04:33.160
-Well, there's a couple of flags,
-
-
-00:04:33.160 --> 00:04:35.940
-fixtures per test and --fixtures.
-
-
-00:04:35.940 --> 00:04:38.680
-There's, both those flags are helpful to find out
-
-
-00:04:38.680 --> 00:04:40.960
-what fixtures you have available.
-
-
-00:04:40.960 --> 00:04:44.880
-And now by default, they print the location of the path
-
-
-00:04:44.880 --> 00:04:47.180
-in with the fixture name.
-
-
-00:04:47.180 --> 00:04:48.880
-And you can also do a verbose option
-
-
-00:04:48.880 --> 00:04:50.480
-that prints out the full doc string,
-
-
-00:04:50.480 --> 00:04:52.960
-which is pretty handy.
-
-
-00:04:52.960 --> 00:04:55.520
-The couple of things that I'm really excited about
-
-
-00:04:55.520 --> 00:04:58.120
-are Python path that's been added.
-
-
-00:04:58.120 --> 00:05:00.600
-And that was a feature I added to the project,
-
-
-00:05:00.600 --> 00:05:01.920
-which is fun.
-
-
-00:05:01.920 --> 00:05:02.760
-- Nice.
-
-
-00:05:02.760 --> 00:05:04.260
-It's cool to see the contributions you're making
-
-
-00:05:04.260 --> 00:05:05.280
-coming back out.
-
-
-00:05:05.280 --> 00:05:06.120
-- Yeah, it's cool.
-
-
-00:05:06.120 --> 00:05:08.280
-And then there's a bunch of other features
-
-
-00:05:08.280 --> 00:05:10.640
-that I contributed to by just saying,
-
-
-00:05:10.640 --> 00:05:11.720
-"This is a little weird.
-
-
-00:05:11.720 --> 00:05:12.560
-"Can we fix this?"
-
-
-00:05:12.560 --> 00:05:14.160
-And somebody else volunteered to fix it.
-
-
-00:05:14.160 --> 00:05:15.680
+00:05:14.120 --> 00:05:15.320
 So it's nice.
 
+00:05:15.320 --> 00:05:16.980
+That's the best kind of contribution.
 
-00:05:15.680 --> 00:05:17.360
-- That's the best kind of contribution.
+00:05:16.980 --> 00:05:18.780
+Yeah.
 
+00:05:19.580 --> 00:05:26.100
+One of the improvements in the docs, which is kind of fun, is there's an auto-generated list of...
 
-00:05:17.360 --> 00:05:18.520
-(laughing)
+00:05:26.100 --> 00:05:27.880
+So I've got the changelog going on here.
 
+00:05:27.880 --> 00:05:30.460
+And I got to come back to this.
 
-00:05:18.520 --> 00:05:19.720
-- Yeah.
+00:05:30.460 --> 00:05:32.660
+There's an auto-generated list of plugins.
 
+00:05:32.660 --> 00:05:35.020
+And there's 963 right now.
 
-00:05:19.720 --> 00:05:21.780
-One of the improvements in the docs,
-
-
-00:05:21.780 --> 00:05:26.260
-which is kind of fun, is there's an auto-generated list of,
-
-
-00:05:26.260 --> 00:05:28.900
-so I've got the changelog going on here.
-
-
-00:05:28.900 --> 00:05:30.900
-And I gotta come back to this.
-
-
-00:05:30.900 --> 00:05:32.900
-There's an auto-generated list of plugins
-
-
-00:05:32.900 --> 00:05:35.220
-and there's 963 right now.
-
-
-00:05:35.220 --> 00:05:36.060
+00:05:35.020 --> 00:05:35.820
 We'll refresh it.
 
+00:05:35.820 --> 00:05:37.160
+No, still 963.
 
-00:05:36.060 --> 00:05:37.580
-Nope, still 963.
-
-
-00:05:37.580 --> 00:05:38.420
+00:05:37.160 --> 00:05:38.140
 But that's a lot.
 
+00:05:38.140 --> 00:05:45.400
+When I first started writing the beta or the second edition of the Pi test book,
 
-00:05:38.420 --> 00:05:42.660
-When I first started writing the beta
+00:05:45.620 --> 00:05:48.880
+I noticed this and I wrote it down, but the number keeps changing.
 
-
-00:05:42.660 --> 00:05:45.700
-or the second edition of the pytest book,
-
-
-00:05:45.700 --> 00:05:47.860
-I noticed this and I wrote it down,
-
-
-00:05:47.860 --> 00:05:49.020
-but the number keeps changing.
-
-
-00:05:49.020 --> 00:05:50.060
+00:05:48.880 --> 00:05:49.980
 So I took out the number.
 
-
-00:05:50.060 --> 00:05:52.000
+00:05:49.980 --> 00:05:51.160
 I'm like, it's a lot.
 
-
-00:05:52.000 --> 00:05:54.180
+00:05:51.160 --> 00:05:53.200
 There's a lot of cool plugins.
 
+00:05:53.200 --> 00:05:57.020
+One of the things that if you'll notice when you go to the changelog,
 
-00:05:54.180 --> 00:05:55.980
-One of the things that if you'll notice
-
-
-00:05:55.980 --> 00:05:57.420
-when you go to the change log,
-
-
-00:05:57.420 --> 00:06:01.280
+00:05:57.020 --> 00:06:00.940
 it starts with breaking changes and then deprecations.
 
+00:06:00.940 --> 00:06:04.460
+And I think this is around because people, when they upgrade,
 
-00:06:01.280 --> 00:06:03.280
-And I know, I think this is around
+00:06:04.460 --> 00:06:06.200
+they want to know if it's going to break their code or not.
 
+00:06:06.200 --> 00:06:09.240
+I have tested a bunch of stuff and upgraded from 6 to 7.
 
-00:06:03.280 --> 00:06:04.580
-because people, when they upgrade,
+00:06:09.240 --> 00:06:11.580
+And I haven't noticed a lot.
 
+00:06:11.780 --> 00:06:15.600
+There was like a 6.1 to 6.2.
 
-00:06:04.580 --> 00:06:06.580
-they wanna know if it's gonna break their code or not.
+00:06:15.600 --> 00:06:17.120
+I can't remember what the...
 
+00:06:17.120 --> 00:06:22.200
+There was one break a while ago in the 6x that messed some plugin authors.
 
-00:06:06.580 --> 00:06:09.700
-I have tested a bunch of stuff and upgraded from six to seven
+00:06:22.200 --> 00:06:23.760
+But I haven't noticed any problems.
 
-
-00:06:09.700 --> 00:06:11.680
-and I haven't noticed a lot.
-
-
-00:06:11.680 --> 00:06:15.700
-There was like a six one to six two.
-
-
-00:06:15.700 --> 00:06:17.180
-I can't remember what the,
-
-
-00:06:17.180 --> 00:06:20.020
-There was one break a while ago in the 6X
-
-
-00:06:20.020 --> 00:06:22.700
-that messed some plugin authors,
-
-
-00:06:22.700 --> 00:06:23.900
-but I haven't noticed any problems.
-
-
-00:06:23.900 --> 00:06:25.380
+00:06:23.760 --> 00:06:25.000
 So please try these out.
 
+00:06:25.000 --> 00:06:29.360
+I wish they would do the features first and then not the breaking changes.
 
-00:06:25.380 --> 00:06:27.220
-I wish they would do the features first
+00:06:29.360 --> 00:06:29.820
+Because that's...
 
+00:06:29.820 --> 00:06:33.240
+I suspect it's the people working deep in the guts,
 
-00:06:27.220 --> 00:06:29.500
-and then not the breaking changes,
+00:06:33.240 --> 00:06:36.040
+like the plugin authors that hit these deprecations
 
+00:06:36.040 --> 00:06:39.460
+and not just people doing assert this equals that type of work.
 
-00:06:29.500 --> 00:06:31.580
-'cause that's-- - I suspect it's the
+00:06:39.800 --> 00:06:39.960
+Yep.
 
+00:06:39.960 --> 00:06:40.460
+Right.
 
-00:06:31.580 --> 00:06:33.340
-people working deep in the guts,
-
-
-00:06:33.340 --> 00:06:36.220
-like the plugin authors, that hit these deprecations
-
-
-00:06:36.220 --> 00:06:38.860
-and not just people doing assert this equals that
-
-
-00:06:38.860 --> 00:06:41.180
-type of work. - Yeah, yep, right.
-
-
-00:06:41.180 --> 00:06:43.020
+00:06:40.460 --> 00:06:42.680
 One of the things that I didn't list,
 
-
-00:06:43.020 --> 00:06:45.120
+00:06:42.680 --> 00:06:45.020
 but I think a lot of people are excited about,
 
+00:06:45.020 --> 00:06:48.200
+there's more the objects within pytest that people are using.
 
-00:06:45.120 --> 00:06:47.400
-There's more, the objects within pytest
+00:06:48.200 --> 00:06:53.600
+More of them are type hinted now so that you can do type hints with objects.
 
+00:06:53.600 --> 00:06:54.620
+Oh, that's nice.
 
-00:06:47.400 --> 00:06:51.280
-that people are using, more of them are type hinted now
+00:06:54.620 --> 00:06:55.080
+Yeah.
 
+00:06:55.080 --> 00:06:55.800
+That's really nice.
 
-00:06:51.280 --> 00:06:54.000
-so that you can do type hints with objects.
+00:06:55.800 --> 00:06:57.160
+So fun.
 
+00:06:57.160 --> 00:06:59.100
+Leah, do you use pytest?
 
-00:06:54.000 --> 00:06:54.840
-- Oh, that's nice.
-
-
-00:06:54.840 --> 00:06:56.520
-- Yeah. - Yeah, that's really nice.
-
-
-00:06:56.520 --> 00:06:57.560
-- So, fun.
-
-
-00:06:57.560 --> 00:06:59.420
-- Leah, do you use pytest?
-
-
-00:06:59.420 --> 00:07:00.680
+00:06:59.100 --> 00:07:00.340
 Some of these changes exciting?
 
+00:07:00.340 --> 00:07:01.240
+We do.
 
-00:07:00.680 --> 00:07:04.140
-- We do, we use pytest on our Python samples.
+00:07:01.240 --> 00:07:03.860
+We use pytest on our Python samples.
 
+00:07:03.860 --> 00:07:07.680
+And so I actually, the one that was most exciting to me was the fixtures.
 
-00:07:04.140 --> 00:07:06.880
-And so I, actually the one that was most exciting to me
+00:07:07.680 --> 00:07:12.800
+Figuring out where fixtures are is definitely something that comes into play for me,
 
+00:07:12.800 --> 00:07:16.380
+especially when we're maintaining something that was written a while ago
 
-00:07:06.880 --> 00:07:09.320
-was the fixtures, figuring out where fixtures are
+00:07:16.380 --> 00:07:19.280
+by someone who might not be working on that code anymore.
 
+00:07:19.280 --> 00:07:20.260
+Yeah.
 
-00:07:09.320 --> 00:07:13.720
-is definitely something that comes into play for me,
+00:07:20.260 --> 00:07:20.880
+Yeah.
 
+00:07:20.880 --> 00:07:21.520
+Nice.
 
-00:07:13.720 --> 00:07:15.360
-especially when we're maintaining something
+00:07:21.520 --> 00:07:21.940
+Yeah.
 
+00:07:21.940 --> 00:07:22.540
+This is great.
 
-00:07:15.360 --> 00:07:17.000
-that was written a while ago by someone
+00:07:22.540 --> 00:07:24.840
+I love the pip installable RC1.
 
+00:07:24.840 --> 00:07:25.300
+That's great.
 
-00:07:17.000 --> 00:07:20.000
-who might not be working on that code anymore.
-
-
-00:07:20.000 --> 00:07:21.240
-- Yeah. - Yeah.
-
-
-00:07:21.240 --> 00:07:22.080
-- Nice. - Yeah.
-
-
-00:07:22.080 --> 00:07:22.920
-- That's cool. - This is great.
-
-
-00:07:22.920 --> 00:07:25.840
-I love the pip installable RC1, that's great.
-
-
-00:07:25.840 --> 00:07:28.280
+00:07:25.300 --> 00:07:28.240
 And before we move on, let's take a step back.
 
-
-00:07:28.280 --> 00:07:29.560
+00:07:28.240 --> 00:07:29.480
 Roman Wright, author of Beanie.
 
+00:07:29.480 --> 00:07:29.960
+Hey, Roman.
 
-00:07:29.560 --> 00:07:30.800
-Hey, Roman, out there in the audience says,
+00:07:29.960 --> 00:07:30.860
+Out there in the audience says,
 
+00:07:30.920 --> 00:07:32.400
+Hey, I'm a big fan of Google Cloud.
 
-00:07:30.800 --> 00:07:32.760
-"Hey, I'm a big fan of Google Cloud."
+00:07:32.400 --> 00:07:33.340
+Oh, thank you.
 
+00:07:33.340 --> 00:07:34.220
+For sure.
 
-00:07:32.760 --> 00:07:34.640
-- Oh, thank you. - For sure.
+00:07:34.220 --> 00:07:37.500
+Well, I've got some fun stuff to talk about next year.
 
-
-00:07:34.640 --> 00:07:37.800
-Well, I've got some fun stuff to talk about next here.
-
-
-00:07:37.800 --> 00:07:40.600
+00:07:37.500 --> 00:07:40.160
 I want to talk about this thing that David Smith,
 
+00:07:40.160 --> 00:07:45.560
+former guest co-host here on Python Bytes, sent over and said,
 
-00:07:40.600 --> 00:07:45.600
-former guest co-host here on Python Bytes sent over and said,
+00:07:45.560 --> 00:07:46.240
+this looks cool.
 
+00:07:46.240 --> 00:07:51.980
+Sam Lowe and Philip Guell released this thing called Pandas Tutor.
 
-00:07:45.600 --> 00:07:46.440
-"This looks cool."
+00:07:51.980 --> 00:07:52.860
+This is cool.
 
+00:07:52.860 --> 00:07:53.460
+Yeah.
 
-00:07:46.440 --> 00:07:50.520
-Sam Lowe and Philip Guell released this thing
+00:07:53.460 --> 00:07:57.800
+Previously, Philip had built Python Tutor at pythontutor.com.
 
-
-00:07:50.520 --> 00:07:52.400
-called Pandas Tutor.
-
-
-00:07:52.400 --> 00:07:53.240
-- This is cool.
-
-
-00:07:53.240 --> 00:07:56.600
-- Yeah, previously, Philip had built Python Tutor
-
-
-00:07:56.600 --> 00:07:58.140
-at pythontutor.com.
-
-
-00:07:58.140 --> 00:08:00.680
+00:07:57.800 --> 00:08:00.300
 Now there's pandastutor.com.
 
+00:08:00.500 --> 00:08:05.600
+And it's all about just helping you understand what the code does.
 
-00:08:00.680 --> 00:08:04.200
-And it's all about just helping you understand
-
-
-00:08:04.200 --> 00:08:05.940
-what the code does.
-
-
-00:08:05.940 --> 00:08:09.460
+00:08:05.600 --> 00:08:08.980
 So it basically says, look, there's this code here.
 
+00:08:08.980 --> 00:08:13.060
+Like imagine you've got a list of dogs that have a breed, a type, a longevity,
 
-00:08:09.460 --> 00:08:11.260
-Like imagine you've got a list of dogs
+00:08:13.060 --> 00:08:15.900
+a type is like a herding dog or a toy dog.
 
+00:08:15.900 --> 00:08:16.900
+It goes in a purse.
 
-00:08:11.260 --> 00:08:13.260
-that have a breed, a type, a longevity,
-
-
-00:08:13.260 --> 00:08:16.060
-a type is like a herding dog or a toy dog,
-
-
-00:08:16.060 --> 00:08:17.460
-it goes in a purse.
-
-
-00:08:17.460 --> 00:08:19.620
+00:08:16.900 --> 00:08:19.320
 Longevity, size, weight, and so on.
 
-
-00:08:19.620 --> 00:08:21.020
+00:08:19.320 --> 00:08:20.740
 And you've got that as a data frame.
 
+00:08:20.740 --> 00:08:27.680
+If you wrote dogs with a size equal, equal medium, then sort values on type and then group by,
 
-00:08:21.020 --> 00:08:25.780
-If you wrote dogs with a size equal equal medium,
+00:08:27.680 --> 00:08:29.040
+by type and then show the median.
 
+00:08:29.040 --> 00:08:30.860
+Well, what is that actually doing?
 
-00:08:25.780 --> 00:08:28.220
-then sort values on type, then group by by type,
+00:08:30.860 --> 00:08:32.220
+Like, how do I understand that?
 
+00:08:32.220 --> 00:08:32.480
+Right.
 
-00:08:28.220 --> 00:08:29.500
-and then show the median,
+00:08:32.520 --> 00:08:36.620
+As somebody learning Pandas, imagine I don't really have a database background.
 
+00:08:36.620 --> 00:08:40.720
+And so I'm not sort of trying to map that over to like, okay, there's the where clause, there's
 
-00:08:29.500 --> 00:08:30.900
-well, what is that actually doing?
+00:08:40.720 --> 00:08:41.520
+the order by clause.
 
+00:08:41.520 --> 00:08:42.820
+And, you know, like that kind of business.
 
-00:08:30.900 --> 00:08:32.560
-Like, how do I understand that, right?
+00:08:42.820 --> 00:08:43.060
+Right.
 
+00:08:43.360 --> 00:08:48.920
+So what is happening when I write that code, either because I'm coming across it for the
 
-00:08:32.560 --> 00:08:34.660
-As somebody learning pandas,
+00:08:48.920 --> 00:08:53.720
+first time or, which happens to me a lot, I wrote it two years ago and understood it perfectly
 
+00:08:53.720 --> 00:08:54.020
+then.
 
-00:08:34.660 --> 00:08:36.820
-imagine I don't really have a database background,
+00:08:54.020 --> 00:08:55.160
+I have no idea what it does now.
 
+00:08:55.160 --> 00:08:56.480
+You want to know what it does?
 
-00:08:36.820 --> 00:08:39.180
-and so I'm not sort of trying to map that over
+00:08:56.480 --> 00:08:57.080
+Yeah.
 
+00:08:57.080 --> 00:08:58.180
+That happens way too often.
 
-00:08:39.180 --> 00:08:40.580
-to like, okay, there's the where clause,
+00:08:58.180 --> 00:08:58.460
+Right.
 
+00:08:58.460 --> 00:09:05.820
+So what you do is you can go and run this code over in Pandas Tutor and you say visualize
 
-00:08:40.580 --> 00:08:41.620
-there's the order by clause,
+00:09:05.820 --> 00:09:08.040
+and says running a code, please wait.
 
+00:09:08.040 --> 00:09:10.920
+And so what they do is they put a CSV bit of text in here.
 
-00:08:41.620 --> 00:08:43.420
-and you know, like that kind of business, right?
+00:09:10.980 --> 00:09:14.580
+Like a triple string and then use Pandas read and then just do that one line.
 
-
-00:08:43.420 --> 00:08:46.660
-So what is happening when I write that code,
-
-
-00:08:46.660 --> 00:08:49.620
-either because I'm coming across it for the first time,
-
-
-00:08:49.620 --> 00:08:51.820
-or, which happens to me a lot,
-
-
-00:08:51.820 --> 00:08:54.140
-I wrote it two years ago and understood it perfectly then.
-
-
-00:08:54.140 --> 00:08:55.660
-I have no idea what it does now, right?
-
-
-00:08:55.660 --> 00:08:56.940
-You wanna know what it does. - Oh, same.
-
-
-00:08:56.940 --> 00:08:59.300
-- Yeah, that happens way too often, right?
-
-
-00:08:59.300 --> 00:09:02.740
-So what you do is you can go and run this code
-
-
-00:09:02.740 --> 00:09:06.220
-over in Pandas Tutor, and you say visualize,
-
-
-00:09:06.220 --> 00:09:08.220
-and it says running a code, please wait.
-
-
-00:09:08.220 --> 00:09:10.980
-And so what they do is they put a CSV bit of text in here,
-
-
-00:09:10.980 --> 00:09:12.180
-it's like a triple string,
-
-
-00:09:12.180 --> 00:09:14.660
-and then use pandas read and then just do that one line.
-
-
-00:09:14.660 --> 00:09:16.660
+00:09:14.580 --> 00:09:16.320
 So that's a nice way to kind of get data in there.
 
-
-00:09:16.660 --> 00:09:19.060
+00:09:16.320 --> 00:09:18.940
 And the way to think about this is steps.
 
+00:09:18.940 --> 00:09:21.880
+It shows you what is the first step and what is the second step and so on.
 
-00:09:19.060 --> 00:09:20.340
-It shows you what is the first step
+00:09:21.880 --> 00:09:26.320
+So when you go there, you'll see that it has the code that we were talking about.
 
+00:09:26.320 --> 00:09:32.220
+But then right now the effective where clause, the filter is regular font and the rest is gray.
 
-00:09:20.340 --> 00:09:21.980
-and what is the second step and so on.
-
-
-00:09:21.980 --> 00:09:23.460
-So when you go there,
-
-
-00:09:23.460 --> 00:09:26.400
-you'll see that it has the code that we were talking about,
-
-
-00:09:26.400 --> 00:09:28.900
-but then right now the effective where clause,
-
-
-00:09:28.900 --> 00:09:32.260
-the filter is regular font and the rest is gray.
-
-
-00:09:32.260 --> 00:09:33.860
+00:09:32.220 --> 00:09:33.560
 It's like fade into the background.
 
+00:09:33.560 --> 00:09:39.460
+And so you can actually see what the starting data frame was and the ending data frame and
 
-00:09:33.860 --> 00:09:37.760
-And so you can actually see what the starting data frame was
+00:09:39.460 --> 00:09:40.320
+then how it got in there.
 
+00:09:40.340 --> 00:09:44.080
+And you can use the mouse over like, so what they're saying is the type is medium.
 
-00:09:37.760 --> 00:09:40.320
-and the ending data frame, and then how it got in there.
+00:09:44.080 --> 00:09:47.680
+So if you hover over like a large or a small dog, there's just no arrow.
 
+00:09:47.680 --> 00:09:52.720
+But if you hover over medium, it shows you where in the result that that thing landed.
 
-00:09:40.320 --> 00:09:42.540
-And you can use the mouse over like,
-
-
-00:09:42.540 --> 00:09:44.160
-so what they're saying is the type is medium.
-
-
-00:09:44.160 --> 00:09:46.760
-So if you hover over like a large or a small dog,
-
-
-00:09:46.760 --> 00:09:47.760
-there's just no arrow.
-
-
-00:09:47.760 --> 00:09:48.920
-But if you hover over medium,
-
-
-00:09:48.920 --> 00:09:52.920
-it shows you where in the result that that thing landed.
-
-
-00:09:52.920 --> 00:09:53.760
+00:09:52.720 --> 00:09:53.480
 Isn't that cool?
 
+00:09:53.480 --> 00:09:54.440
+That's wild.
 
-00:09:53.760 --> 00:09:55.080
-- That's wild.
+00:09:54.440 --> 00:09:55.600
+Isn't that wild?
 
+00:09:55.600 --> 00:10:00.280
+And so then you can see size has all the values on the left and then the size is grouped on
 
-00:09:55.080 --> 00:09:55.920
-- Isn't that wild?
+00:10:00.280 --> 00:10:03.340
+the right and it shows medium, medium, medium, medium, because that's all that's in there.
 
+00:10:03.340 --> 00:10:06.460
+Now, when I first looked at this, I'm like, there's a bunch of stuff on the screen.
 
-00:09:55.920 --> 00:09:58.960
-And so then you can see size has all the values on the left
+00:10:06.460 --> 00:10:07.120
+What's going on?
 
+00:10:07.620 --> 00:10:11.380
+I noticed the arrows, but then what it took me a minute to realize is there's multiple
 
-00:09:58.960 --> 00:10:00.640
-and then the size is grouped on the right
+00:10:11.380 --> 00:10:11.920
+steps.
 
+00:10:11.920 --> 00:10:16.200
+So the next thing, if you scroll down, shows the same code at the top, but now the sort
 
-00:10:00.640 --> 00:10:02.120
-and it shows medium, medium, medium, medium,
+00:10:16.200 --> 00:10:18.780
+values type is highlighted, right?
 
+00:10:18.780 --> 00:10:21.540
+That's the next part of what looks like one expression in pandas.
 
-00:10:02.120 --> 00:10:03.640
-because that's all that's in there.
+00:10:21.540 --> 00:10:24.780
+And so now it highlights the column that it's sorting on.
 
+00:10:24.780 --> 00:10:29.620
+And you can actually see the arrows pointing to how they were reordered in the result because
 
-00:10:03.640 --> 00:10:05.280
-Now, when I first looked at this, I'm like,
+00:10:29.620 --> 00:10:30.720
+you're sorting by type.
 
+00:10:30.720 --> 00:10:34.080
+So it's non-sporting, non-sporting, non-sporting, non-sporting, and then sporting, sporting, and
 
-00:10:05.280 --> 00:10:07.480
-there's a bunch of stuff on the screen, what's going on?
+00:10:34.080 --> 00:10:35.580
+working, working, and so on.
 
-
-00:10:07.480 --> 00:10:12.120
-I noticed the arrows, but then what it took me a minute to realize is there's multiple steps.
-
-
-00:10:12.120 --> 00:10:15.520
-So the next thing if you scroll down, shows the same code at the top,
-
-
-00:10:15.520 --> 00:10:18.580
-but now the sort values type is highlighted.
-
-
-00:10:18.580 --> 00:10:21.780
-That's the next part of what looks like one expression in Pandas.
-
-
-00:10:21.780 --> 00:10:24.920
-And so now it highlights the column that it's sorting on,
-
-
-00:10:24.920 --> 00:10:29.320
-and you can actually see the arrows pointing to how they were reordered in the result,
-
-
-00:10:29.320 --> 00:10:33.120
-because you're sorting by type, so it's non-sporting, non-sporting, non-sporting, non-sporting,
-
-
-00:10:33.120 --> 00:10:35.720
-and then sporting, sporting, and working, working, and so on.
-
-
-00:10:35.720 --> 00:10:37.080
+00:10:35.580 --> 00:10:36.960
 So that was step two.
 
+00:10:36.960 --> 00:10:39.440
+And we have a group by, this one's interesting.
 
-00:10:37.080 --> 00:10:39.680
-And we have a group by this one's interesting.
+00:10:39.440 --> 00:10:41.060
+It doesn't have arrows as colors.
 
+00:10:41.320 --> 00:10:46.200
+So the group by type, again, non-sporting, sporting, and so on, you end up with these
 
-00:10:39.680 --> 00:10:41.480
-It said have arrows as colors.
+00:10:46.200 --> 00:10:46.560
+groups.
 
+00:10:46.560 --> 00:10:52.240
+Like here's a blue, a blue box of all the non-sporting dogs, the bulldog, the poodle, the French bulldog
 
-00:10:41.480 --> 00:10:45.360
-So the group by type again, non-sporting, sporting, so on.
+00:10:52.240 --> 00:10:52.980
+is so cute.
 
+00:10:52.980 --> 00:10:56.140
+Then you've got the golden retriever and the Labrador and the boxer, right?
 
-00:10:45.360 --> 00:10:48.000
-You end up with these groups, like here's a blue,
-
-
-00:10:48.000 --> 00:10:49.880
-a blue box of all the non-sporting dogs,
-
-
-00:10:49.880 --> 00:10:53.880
-the bulldog, the poodle, the French bulldog is so cute.
-
-
-00:10:53.880 --> 00:10:55.040
-Then you've got the golden retriever
-
-
-00:10:55.040 --> 00:10:56.120
-and the Labrador and the boxer, right?
-
-
-00:10:56.120 --> 00:10:58.400
+00:10:56.140 --> 00:10:58.080
 So these are grouped into the colors.
 
+00:10:58.080 --> 00:11:03.580
+And then finally you do the median and it shows how those groups reduce down to statistics.
 
-00:10:58.400 --> 00:10:59.880
-And then finally you do the median
+00:11:03.660 --> 00:11:08.100
+The longevity of a non-sporting dog is less than a sporting dog, apparently, but they're
 
+00:11:08.100 --> 00:11:08.580
+also lighter.
 
-00:10:59.880 --> 00:11:03.720
-and it shows how those groups reduce down to statistics,
-
-
-00:11:03.720 --> 00:11:07.400
-Like the longevity of a non-sporting dog is less than a sporting dog, apparently,
-
-
-00:11:07.400 --> 00:11:08.600
-but they're also lighter.
-
-
-00:11:08.600 --> 00:11:10.360
+00:11:08.580 --> 00:11:10.360
 So anyway, what do you all think?
 
-
-00:11:10.360 --> 00:11:11.560
+00:11:10.360 --> 00:11:11.540
 Oh my gosh.
 
-
-00:11:11.560 --> 00:11:12.480
+00:11:11.540 --> 00:11:12.500
 I love this.
 
-
-00:11:12.480 --> 00:11:13.600
+00:11:12.500 --> 00:11:13.580
 This is nice, right?
 
-
-00:11:13.600 --> 00:11:17.320
+00:11:13.580 --> 00:11:17.360
 I'm a very visual learner, so I really appreciate this.
 
+00:11:17.360 --> 00:11:22.000
+And especially if you're working with data that you kind of aren't sure what it does and
 
-00:11:17.320 --> 00:11:21.360
-And especially if you're working with data that you kind of aren't sure what it
+00:11:22.000 --> 00:11:24.540
+or the code, like that's pretty incredible.
 
-
-00:11:21.360 --> 00:11:24.600
-does and or the code, like that's pretty incredible.
-
-
-00:11:24.600 --> 00:11:25.680
+00:11:24.540 --> 00:11:25.720
 I'm filing this away.
 
+00:11:25.720 --> 00:11:28.880
+It's going to go in my team's group chat pretty much as soon as we're done recording.
 
-00:11:25.680 --> 00:11:28.400
-It's going to go to my team's group chat pretty much as soon as we're done
+00:11:28.880 --> 00:11:30.660
+In fact, yeah, it's awesome.
 
-
-00:11:28.400 --> 00:11:28.920
-recording.
-
-
-00:11:28.920 --> 00:11:30.720
-In fact, yeah, that's awesome.
-
-
-00:11:30.720 --> 00:11:32.200
+00:11:30.660 --> 00:11:32.240
 I think it's really good.
 
+00:11:32.240 --> 00:11:35.800
+You know, there's so many people who are presented a notebook or presented some kind
 
-00:11:32.200 --> 00:11:34.760
-There's so many people who are presented a notebook
+00:11:35.800 --> 00:11:39.800
+of result and they're like, I need to understand what that means so I can keep following.
 
+00:11:39.800 --> 00:11:42.720
+And I think, you know, throw it into here or something like this would be really helpful.
 
-00:11:34.760 --> 00:11:36.480
-or presented some kind of result,
+00:11:42.720 --> 00:11:47.020
+Well, and a lot of people that have spent a lot of time with databases might, it might
 
+00:11:47.020 --> 00:11:48.960
+be obvious what these things do.
 
-00:11:36.480 --> 00:11:38.360
-and they're like, I need to understand what that means
+00:11:48.960 --> 00:11:54.420
+But for people that don't spend a lot of time with SQL, it's not obvious.
 
-
-00:11:38.360 --> 00:11:39.880
-so I can keep following it.
-
-
-00:11:39.880 --> 00:11:41.240
-And I think, throw it into here,
-
-
-00:11:41.240 --> 00:11:43.080
-something like this would be really helpful.
-
-
-00:11:43.080 --> 00:11:45.200
-- Well, and a lot of people that have spent a lot of time
-
-
-00:11:45.200 --> 00:11:49.320
-with databases, it might be obvious what these things do.
-
-
-00:11:49.320 --> 00:11:53.200
-But for people that don't spend a lot of time with SQL,
-
-
-00:11:53.200 --> 00:11:54.560
-it's not obvious.
-
-
-00:11:54.560 --> 00:11:57.120
+00:11:54.420 --> 00:11:56.860
 And so this is really nice.
 
+00:11:56.860 --> 00:11:57.960
+Yeah, definitely.
 
-00:11:57.120 --> 00:11:58.040
-- Yeah, definitely.
+00:11:57.960 --> 00:12:02.080
+Or if you're like trying to take some example that you have with their example data
 
+00:12:02.080 --> 00:12:07.440
+and trying to translate it to your own data, that's something that customers do all the
 
-00:11:58.040 --> 00:12:00.080
-Or if you're like trying to take some example
+00:12:07.440 --> 00:12:07.960
+time for us.
 
-
-00:12:00.080 --> 00:12:02.200
-that you have with their example data
-
-
-00:12:02.200 --> 00:12:04.720
-and trying to translate it to your own data.
-
-
-00:12:04.720 --> 00:12:08.000
-That's something that customers do all the time for us.
-
-
-00:12:08.000 --> 00:12:10.120
+00:12:07.960 --> 00:12:09.320
 It's something I do a lot too.
 
-
-00:12:10.120 --> 00:12:12.680
+00:12:09.820 --> 00:12:12.500
 Just seeing how it behaves with your stuff.
 
+00:12:12.500 --> 00:12:13.340
+Oh, man.
 
-00:12:12.680 --> 00:12:13.760
-Oh man.
+00:12:13.340 --> 00:12:15.300
+You didn't write it, but you want to use it.
 
-
-00:12:13.760 --> 00:12:15.440
-- You didn't write it, but you wanna use it.
-
-
-00:12:15.440 --> 00:12:16.400
+00:12:15.300 --> 00:12:16.340
 So how much applies.
 
+00:12:16.340 --> 00:12:16.580
+Yeah.
 
-00:12:16.400 --> 00:12:17.640
-- Exactly.
+00:12:16.580 --> 00:12:16.900
+Exactly.
 
+00:12:16.900 --> 00:12:17.300
+Yeah.
 
-00:12:17.640 --> 00:12:20.000
-- Yeah, so this is quite cool.
+00:12:17.300 --> 00:12:17.780
+Yeah.
 
+00:12:17.780 --> 00:12:19.180
+So this is quite cool.
 
-00:12:20.000 --> 00:12:21.440
+00:12:19.180 --> 00:12:21.220
 Dean out in the live stream.
 
+00:12:21.220 --> 00:12:21.860
+Hey, Dean.
 
-00:12:21.440 --> 00:12:25.220
-Hey Dean, says Panda's tutor looks awesome.
+00:12:21.860 --> 00:12:25.080
+Says Pandas Tutor looks awesome.
 
-
-00:12:25.220 --> 00:12:27.880
+00:12:25.080 --> 00:12:27.820
 And Robert Robertson also loving it.
 
-
-00:12:27.880 --> 00:12:28.720
+00:12:27.820 --> 00:12:28.240
 It's nice.
 
-
-00:12:28.720 --> 00:12:29.560
+00:12:28.240 --> 00:12:29.240
 So very cool.
 
+00:12:29.240 --> 00:12:29.880
+Indeed.
 
-00:12:29.560 --> 00:12:31.560
-Indeed. All right. Over to you, Leah.
+00:12:29.880 --> 00:12:30.260
+All right.
 
+00:12:30.260 --> 00:12:31.420
+Over to you, Leah.
 
-00:12:31.560 --> 00:12:35.160
-All right. So yeah, my first thing today is Apache Airflow.
+00:12:31.420 --> 00:12:32.040
+All right.
 
+00:12:32.220 --> 00:12:34.980
+So yeah, my first thing today is Apache Airflow.
 
-00:12:35.160 --> 00:12:39.660
+00:12:34.980 --> 00:12:39.240
 So Airflow is a project that is part of the Apache Software Foundation.
 
+00:12:39.240 --> 00:12:45.520
+It's a workflow orchestration tool that originated at Airbnb, I want to say in like 2014.
 
-00:12:39.660 --> 00:12:43.660
-It's a workflow orchestration tool that originated at Airbnb,
+00:12:45.520 --> 00:12:50.500
+And then pretty shortly after became part of the ASF.
 
+00:12:50.500 --> 00:12:55.860
+And it became a top level Apache project in, I want to say early 2019.
 
-00:12:43.660 --> 00:12:46.160
-I want to say in like 2014,
-
-
-00:12:46.160 --> 00:12:50.560
-and then pretty shortly after became part of the ASF
-
-
-00:12:50.560 --> 00:12:53.960
-and it became a top level Apache project
-
-
-00:12:53.960 --> 00:12:56.060
-in, I want to say early 2019.
-
-
-00:12:56.060 --> 00:12:58.960
+00:12:55.860 --> 00:12:58.460
 It's been a little while now, which is very exciting.
 
+00:12:58.460 --> 00:13:05.060
+So you can use it to author these workflows as directed acyclic graphs or DAGs of tasks,
 
-00:12:58.960 --> 00:13:01.720
-So you can use it to author these workflows
-
-
-00:13:01.720 --> 00:13:05.600
-as directed acyclic graphs or DAGs of tasks,
-
-
-00:13:05.600 --> 00:13:06.800
+00:13:05.060 --> 00:13:06.680
 which is pretty cool.
 
+00:13:06.680 --> 00:13:12.300
+And it's most commonly used with workflows that are like pretty static, not super frequently
 
-00:13:06.800 --> 00:13:09.240
-And it's most commonly used with workflows
+00:13:12.300 --> 00:13:18.440
+changing or slowly changing just so that you can see how the workflow goes over time and
 
+00:13:18.440 --> 00:13:22.160
+not allows you for some clarity and continuity in your workflows.
 
-00:13:09.240 --> 00:13:11.280
-that are like pretty static,
+00:13:22.160 --> 00:13:28.980
+I've always sort of wondered what the role of these workflow type systems were until I realized,
 
+00:13:28.980 --> 00:13:32.340
+you know, if you're going to build a full end to end type of workflow without a framework,
 
-00:13:11.280 --> 00:13:14.500
-not super frequently changing or slowly changing,
+00:13:32.340 --> 00:13:34.100
+there's a lot of coordination.
 
-
-00:13:14.500 --> 00:13:17.920
-just so that you can see how the workflow goes over time
-
-
-00:13:17.920 --> 00:13:20.520
-and not allows you for some clarity
-
-
-00:13:20.520 --> 00:13:22.760
-and continuity in your workflows.
-
-
-00:13:22.760 --> 00:13:24.080
-- I've always sort of wondered
-
-
-00:13:24.080 --> 00:13:27.800
-what the role of these workflow type systems were
-
-
-00:13:27.800 --> 00:13:30.960
-And until I realized, you know, if you're going to build a full end to end
-
-
-00:13:30.960 --> 00:13:34.240
-type of workflow without a framework, there's a lot of coordination.
-
-
-00:13:34.240 --> 00:13:35.160
+00:13:34.100 --> 00:13:35.080
 And what if this fails?
 
-
-00:13:35.160 --> 00:13:36.280
+00:13:35.080 --> 00:13:36.160
 Where do you restart?
 
-
-00:13:36.280 --> 00:13:36.760
+00:13:36.160 --> 00:13:36.740
 What do you do?
 
+00:13:36.740 --> 00:13:41.940
+And then the analogy for me is kind of like Flask or some web, like all I got to do is
 
-00:13:36.760 --> 00:13:41.680
-And then the analogy for me is kind of like flask or some web, like all I got
+00:13:41.940 --> 00:13:45.600
+write this little thing and everything else will come together to make sure these four
 
+00:13:45.600 --> 00:13:47.180
+lines of my Python code run.
 
-00:13:41.680 --> 00:13:44.460
-to do is write this little thing and everything else will come together to
+00:13:47.180 --> 00:13:48.000
+They run reliably.
 
+00:13:48.000 --> 00:13:49.600
+If they fail, it gets dealt with.
 
-00:13:44.460 --> 00:13:48.140
-make sure these four lines of my Python code run, they run reliably.
+00:13:49.600 --> 00:13:50.140
+Right.
 
+00:13:50.140 --> 00:13:54.200
+It allows people to not have to understand the whole system and just go, I need you to load
 
-00:13:48.140 --> 00:13:50.200
-If they fail, it gets dealt with, right.
+00:13:54.200 --> 00:13:56.200
+up this file and put it into that database.
 
-
-00:13:50.200 --> 00:13:53.800
-It allows people to not have to understand the whole system and just go, I need you
-
-
-00:13:53.800 --> 00:13:56.320
-to load up this file and put it into that database.
-
-
-00:13:56.320 --> 00:13:57.380
+00:13:56.200 --> 00:13:57.360
 Can you write that code?
 
+00:13:57.360 --> 00:14:00.120
+And that's all you got to know to be part of some complex thing.
 
-00:13:57.380 --> 00:14:00.300
-And that's all you got to know to be part of some complex thing, right?
+00:14:00.120 --> 00:14:00.300
+Right.
 
+00:14:00.300 --> 00:14:00.660
+Yeah.
 
-00:14:00.300 --> 00:14:06.460
-Yeah, it's, I mean, it's not the most glamorous thing, but it is extremely useful.
+00:14:00.660 --> 00:14:00.660
+Yeah.
 
+00:14:00.660 --> 00:14:06.260
+It's I mean, it's not the most glamorous thing, but it is extremely useful.
 
-00:14:06.460 --> 00:14:15.100
-I mean, I did a summer internship when I was doing my bachelor's, where I wrote a cron job that ingested some data every night.
+00:14:06.260 --> 00:14:13.060
+I mean, I did a summer internship when I was doing my bachelor's where I wrote a cron job
 
+00:14:13.060 --> 00:14:15.060
+that ingested some data every night.
 
-00:14:15.100 --> 00:14:22.260
-And the only way I knew if it failed was if I looked in the target folder where it's supposed to end up and if the data wasn't there.
+00:14:15.060 --> 00:14:19.620
+And the only way I knew if it failed was if I looked in the target folder where it was
 
+00:14:19.620 --> 00:14:20.320
+supposed to end up.
 
-00:14:22.260 --> 00:14:24.260
-No files, whoops.
+00:14:20.320 --> 00:14:22.320
+And if the data wasn't there.
 
+00:14:22.320 --> 00:14:23.880
+No files.
 
-00:14:24.260 --> 00:14:27.360
-That sucked. I'm sure a lot of people have dealt with that.
+00:14:23.880 --> 00:14:24.160
+Whoops.
 
+00:14:24.160 --> 00:14:25.140
+That sucked.
 
-00:14:27.360 --> 00:14:30.660
-And this is actually a really common Airflow workflow,
+00:14:25.280 --> 00:14:27.380
+I'm sure a lot of people have dealt with that.
 
+00:14:27.380 --> 00:14:33.200
+And this is actually like a really common Airflow workflow, which is the extract, transform
 
-00:14:30.660 --> 00:14:35.060
-which is the extract, transform, and load, the ETL workflow,
+00:14:33.200 --> 00:14:38.000
+and load the ETL workflow, which is where you have data somewhere that you want to get.
 
+00:14:38.000 --> 00:14:40.560
+You want to do something to it or maybe not.
 
-00:14:35.060 --> 00:14:38.000
-which is where you have data somewhere that you want to get,
+00:14:40.560 --> 00:14:42.000
+Maybe you just want to extract and load it.
 
+00:14:42.000 --> 00:14:48.020
+And you want to put that result somewhere else, either locally or in the cloud for all of that.
 
-00:14:38.000 --> 00:14:40.540
-you want to do something to it, or maybe not,
-
-
-00:14:40.540 --> 00:14:42.140
-maybe you just want to extract and load it,
-
-
-00:14:42.140 --> 00:14:44.640
-and you want to put that result somewhere else,
-
-
-00:14:44.640 --> 00:14:48.180
-either locally or in the cloud for all of that.
-
-
-00:14:48.180 --> 00:14:50.220
+00:14:48.020 --> 00:14:50.260
 And Airflow lets you do all of that.
 
-
-00:14:50.220 --> 00:14:52.980
+00:14:50.260 --> 00:14:52.800
 And you can see the history of these jobs.
 
-
-00:14:52.980 --> 00:14:55.940
+00:14:53.180 --> 00:14:55.840
 There's a UI where you can see, did it fail?
 
+00:14:55.840 --> 00:14:57.520
+It has a helpful error message.
 
-00:14:55.940 --> 00:14:58.220
-It has a full error message if it failed.
+00:14:57.520 --> 00:15:00.580
+If it failed, it's not just, oh, gosh, the data is not there.
 
-
-00:14:58.220 --> 00:15:00.620
-It's not just, oh gosh, the data is not there.
-
-
-00:15:00.620 --> 00:15:01.380
+00:15:00.580 --> 00:15:01.260
 What do I do?
 
+00:15:01.260 --> 00:15:01.580
+Yeah.
 
-00:15:01.380 --> 00:15:03.500
->> Yeah. You got a really cool UI where it shows
+00:15:01.580 --> 00:15:06.060
+You've got a really cool UI where it shows all the parts of the workflow running and whether
 
+00:15:06.060 --> 00:15:07.940
+or not they finished successfully and stuff, right?
 
-00:15:03.500 --> 00:15:05.700
-all the parts of the workflow running and
+00:15:07.940 --> 00:15:08.380
+Yeah.
 
+00:15:08.380 --> 00:15:10.700
+And it got a makeover fairly recently.
 
-00:15:05.700 --> 00:15:08.020
-whether or not they finished successfully and stuff, right?
+00:15:10.700 --> 00:15:12.460
+So it's had a lot of improvements.
 
+00:15:12.460 --> 00:15:14.360
+Yeah, that's super cool.
 
-00:15:08.020 --> 00:15:10.860
->> Yeah. It got a makeover fairly recently.
+00:15:14.360 --> 00:15:17.980
+Another thing maybe you could talk about really quick is the connectors.
 
-
-00:15:10.860 --> 00:15:13.180
-So it's a lot of improvements.
-
-
-00:15:13.180 --> 00:15:15.380
->> Yeah, that's super cool. Another thing maybe you
-
-
-00:15:15.380 --> 00:15:18.220
-could talk about really quick is the connectors.
-
-
-00:15:18.220 --> 00:15:20.100
+00:15:17.980 --> 00:15:20.000
 I don't remember exactly the right terminology.
 
-
-00:15:20.100 --> 00:15:21.940
+00:15:20.000 --> 00:15:21.740
 There's a name for them.
 
+00:15:22.180 --> 00:15:23.220
+Tell us, tell people about that.
 
-00:15:21.940 --> 00:15:24.260
-tell us, tell people about that. That's also good to know.
+00:15:23.220 --> 00:15:24.180
+That's also good to know.
 
+00:15:24.180 --> 00:15:28.360
+So these connectors that you're thinking of, I mean, we can use the word connector to describe
 
-00:15:24.260 --> 00:15:26.260
-So these connectors that you're thinking of,
+00:15:28.360 --> 00:15:28.880
+what it does.
 
+00:15:28.880 --> 00:15:31.600
+There are these things called operators in Airflow.
 
-00:15:26.260 --> 00:15:28.900
-I mean, we can use the word connector to describe what it does.
+00:15:31.600 --> 00:15:34.640
+And an operator executes a single task.
 
+00:15:34.640 --> 00:15:39.420
+And so that might be executing a bash script or executing a Python script.
 
-00:15:28.900 --> 00:15:31.740
-So there are these things called operators in Airflow,
+00:15:39.420 --> 00:15:45.140
+But we also have these connectors that are grouped by providers, which might be your cloud provider
 
+00:15:45.140 --> 00:15:49.900
+or other software providers that allow you to execute code there.
 
-00:15:31.740 --> 00:15:34.740
-and an operator executes a single task.
-
-
-00:15:34.740 --> 00:15:37.240
-And so that might be executing a Bash script
-
-
-00:15:37.240 --> 00:15:39.580
-or executing a Python script.
-
-
-00:15:39.580 --> 00:15:43.700
-But we also have these connectors that are grouped by providers,
-
-
-00:15:43.700 --> 00:15:46.900
-which might be your cloud provider or other software
-
-
-00:15:46.900 --> 00:15:49.980
-providers that allow you to execute code there.
-
-
-00:15:49.980 --> 00:15:53.820
+00:15:49.900 --> 00:15:53.420
 So for example, we have a ton of GCP operators.
 
+00:15:53.420 --> 00:16:00.540
+One example might allow you to create a data prop cluster or then run a job on that data prop
 
-00:15:53.820 --> 00:15:58.380
-One example might allow you to create a Dataproc cluster
+00:16:00.540 --> 00:16:02.900
+cluster and maybe tear it down when you're done.
 
+00:16:02.900 --> 00:16:10.020
+And there are providers that have operators for all the major clouds and more.
 
-00:15:58.380 --> 00:16:01.020
-or then like run a job on that Dataproc cluster
+00:16:10.020 --> 00:16:10.700
+You can do it.
 
+00:16:10.700 --> 00:16:13.060
+There's one that sends a Slack message when it's done.
 
-00:16:01.020 --> 00:16:03.180
-and maybe tear it down when you're done.
+00:16:13.060 --> 00:16:16.920
+So if you can dream it, it might be there.
 
+00:16:16.920 --> 00:16:18.880
+And if not, you can make it there.
 
-00:16:03.180 --> 00:16:06.900
-And there are providers that have operators
+00:16:18.880 --> 00:16:19.780
+That's awesome.
 
+00:16:19.780 --> 00:16:21.100
+What's GCP?
 
-00:16:06.900 --> 00:16:10.100
-for all the major clouds and more.
+00:16:21.620 --> 00:16:24.560
+GCP is Google Cloud Platform or Google Cloud.
 
+00:16:24.560 --> 00:16:26.420
+GCP might be a dated acronym.
 
-00:16:10.100 --> 00:16:13.380
-You can do, there's one that like sends a Slack message when it's done.
+00:16:26.420 --> 00:16:27.020
+Sorry.
 
-
-00:16:13.380 --> 00:16:15.780
-So it's, if you can dream it,
-
-
-00:16:15.780 --> 00:16:19.140
-it might be there and if not, you can make it there.
-
-
-00:16:19.140 --> 00:16:21.460
-That's awesome. What's GCP?
-
-
-00:16:21.460 --> 00:16:23.620
-GCP is Google Cloud Platform.
-
-
-00:16:23.620 --> 00:16:24.820
-Or Google Cloud.
-
-
-00:16:24.820 --> 00:16:27.620
-GCP might be a dated acronym. Sorry.
-
-
-00:16:27.620 --> 00:16:28.900
+00:16:27.020 --> 00:16:28.700
 Don't know.
 
-
-00:16:28.900 --> 00:16:29.620
+00:16:28.700 --> 00:16:29.380
 Yeah.
 
+00:16:29.380 --> 00:16:30.620
+Yeah.
 
-00:16:29.620 --> 00:16:32.660
-Yeah. So one of the advantages I think of that,
+00:16:30.620 --> 00:16:33.940
+So one of the advantages, I think, of that that's really cool is you don't necessarily
 
+00:16:33.940 --> 00:16:35.320
+have to know all those APIs.
 
-00:16:32.660 --> 00:16:35.420
-that's really cool is you don't necessarily have to know all those APIs.
+00:16:35.320 --> 00:16:41.180
+Like if I was going to connect Slack to GCP to like Azure Blob Storage to like some hosted
 
+00:16:41.180 --> 00:16:43.340
+database, I don't have to learn all those things.
 
-00:16:35.420 --> 00:16:38.420
-Like if I was going to connect Slack to GCP,
-
-
-00:16:38.420 --> 00:16:40.020
-to like Azure Blob Storage,
-
-
-00:16:40.020 --> 00:16:41.820
-to like some hosted database,
-
-
-00:16:41.820 --> 00:16:43.380
-I don't have to learn all those things.
-
-
-00:16:43.380 --> 00:16:44.780
+00:16:43.340 --> 00:16:44.640
 I can just sort of click it together.
 
-
-00:16:44.780 --> 00:16:46.300
-Yeah. You just have to,
-
-
-00:16:46.300 --> 00:16:48.740
-there's a small amount of setup you have to do
-
-
-00:16:48.740 --> 00:16:53.380
-for auth, which is understandable. You can't just like publicly go to your Azure blob thing
-
-
-00:16:53.380 --> 00:16:58.780
-to grab your data. But once you set up that connection, then your operators can talk to
-
-
-00:16:58.780 --> 00:17:03.780
-those things. And if you use so you can run or host Airflow yourself. And there are a
-
-
-00:17:03.780 --> 00:17:11.140
-few different ways to do that. And then Amazon and Google both have managed hosted providers.
-
-
-00:17:11.140 --> 00:17:15.500
-And there's a company Astronomer that also does manage hosted ones. And so if you're
-
-
-00:17:15.500 --> 00:17:21.500
-in an Amazon or a Google, the advantage there is that the connections with those operators
-
-
-00:17:21.500 --> 00:17:25.980
-might be a little bit simpler from the auth and networking perspective. But other than that,
-
-
-00:17:25.980 --> 00:17:32.460
-if you're running in Cloud Composer, which is Google's Airflow, you can still be using the
-
-
-00:17:32.460 --> 00:17:38.460
-Amazon or the Microsoft operators to pull data from over there. That's really common. And you
-
-
-00:17:38.460 --> 00:17:42.540
-see it all the time and bring it, do some stuff in Google Cloud and either put it back in the
-
-
-00:17:42.540 --> 00:17:44.820
-in the other cloud or leave it in Google Cloud.
-
-
-00:17:44.820 --> 00:17:47.860
-That's totally normal and people are doing that all the time.
-
-
-00:17:47.860 --> 00:17:48.980
-- Right on. - Yeah.
-
-
-00:17:48.980 --> 00:17:49.860
-- Cool, cool.
-
-
-00:17:49.860 --> 00:17:52.700
-I think this is neat and people for whom that would
-
-
-00:17:52.700 --> 00:17:54.500
-make sense, you're like trying to do these
-
-
-00:17:54.500 --> 00:17:56.100
-sort of running in the background,
-
-
-00:17:56.100 --> 00:17:57.060
-- Yeah. - schedule jobs,
-
-
-00:17:57.060 --> 00:17:58.140
-or there's triggers as well.
-
-
-00:17:58.140 --> 00:18:00.420
-Like a file has been uploaded or landed here.
-
-
-00:18:00.420 --> 00:18:02.180
-- Yeah, let's talk about that.
-
-
-00:18:02.180 --> 00:18:04.780
-So that's actually, I had written down this one example,
-
-
-00:18:04.780 --> 00:18:07.580
-but I'll adapt it slightly since you mentioned triggers.
-
-
-00:18:07.580 --> 00:18:09.840
-So that's another common type of operator,
-
-
-00:18:09.840 --> 00:18:12.420
-these sensors where you wait for a certain condition
-
-
-00:18:12.420 --> 00:18:15.700
-to be true, and they're used in data analytics workflows
-
-
-00:18:15.700 --> 00:18:16.540
-all the time.
-
-
-00:18:16.540 --> 00:18:19.540
-So one example workflow might be waiting
-
-
-00:18:19.540 --> 00:18:23.620
-for a particular file to appear in a cloud storage or an S3
-
-
-00:18:23.620 --> 00:18:24.860
-bucket.
-
-
-00:18:24.860 --> 00:18:26.580
-So you'd use one of those sensors
-
-
-00:18:26.580 --> 00:18:28.140
-to wait for that to happen.
-
-
-00:18:28.140 --> 00:18:30.460
-And then you want to do something to that data.
-
-
-00:18:30.460 --> 00:18:34.420
-So let's say you then create a data prod cluster that
-
-
-00:18:34.420 --> 00:18:38.460
-is going to run a PySpark job on that cluster.
-
-
-00:18:38.460 --> 00:18:41.660
-And then you can store the results in BigQuery at the end
-
-
-00:18:41.660 --> 00:18:44.540
-and then delete the cluster and like send a Slack message
-
-
-00:18:44.540 --> 00:18:46.300
-when the job is done.
-
-
-00:18:46.300 --> 00:18:50.820
-That's a very common ETL thing, including that sensor.
-
-
-00:18:50.820 --> 00:18:52.300
-- Yeah, that sounds pretty nice.
-
-
-00:18:52.300 --> 00:18:54.740
-Definitely seems interesting and quite useful.
-
-
-00:18:54.740 --> 00:18:55.740
-- Yeah, it's a lot of fun.
-
-
-00:18:55.740 --> 00:18:58.180
-- Brian, thoughts before we move on?
-
-
-00:18:58.180 --> 00:18:59.340
-- I have a question.
-
-
-00:18:59.340 --> 00:19:02.300
-If you wanted to get started with something like this,
-
-
-00:19:02.300 --> 00:19:03.740
-I was trying to look for tutorials
-
-
-00:19:03.740 --> 00:19:05.980
-and getting started and stuff like that.
-
-
-00:19:05.980 --> 00:19:08.620
-Is it, does it make sense or is it too confusing
-
-
-00:19:08.620 --> 00:19:10.880
-if somebody, you said you could run it on your own machine.
-
-
-00:19:10.880 --> 00:19:13.720
-Does that make sense to try it that way
-
-
-00:19:13.720 --> 00:19:16.380
-or should you try it with a, okay.
-
-
-00:19:16.380 --> 00:19:19.600
-- You totally can do it on your own machine
-
-
-00:19:19.600 --> 00:19:22.240
-and there's this really wonderful environment
-
-
-00:19:22.240 --> 00:19:25.240
-that can be found in the Airflow repository
-
-
-00:19:25.240 --> 00:19:29.280
-that's called Breeze and it's a Dockerized version of it.
-
-
-00:19:29.280 --> 00:19:31.080
-It shouldn't be run in production
-
-
-00:19:31.080 --> 00:19:33.320
-but if you're looking to try it out
-
-
-00:19:33.320 --> 00:19:35.600
-or if you're looking to contribute to Airflow,
-
-
-00:19:35.600 --> 00:19:37.580
-we highly recommend that everyone check out
-
-
-00:19:37.580 --> 00:19:39.320
-the Breeze environment.
-
-
-00:19:39.320 --> 00:19:41.920
-- Right now I have the community page pulled up
-
-
-00:19:41.920 --> 00:19:44.480
-where you can join the dev list in the Slack
-
-
-00:19:44.480 --> 00:19:45.500
-if you have questions,
-
-
-00:19:45.500 --> 00:19:47.560
-but if you were to go to the GitHub repo,
-
-
-00:19:47.560 --> 00:19:50.520
-you would see Breeze right on that first page.
-
-
-00:19:50.520 --> 00:19:51.680
-- Okay, cool, thanks.
-
-
-00:19:51.680 --> 00:19:53.360
-- Yeah, great question, thank you.
-
-
-00:19:53.360 --> 00:19:54.560
-- Yeah, very good one.
-
-
-00:19:54.560 --> 00:19:55.520
-All right, Brian.
-
-
-00:19:55.520 --> 00:19:57.280
-Are you gonna give us a tutorial on Airflow
-
-
-00:19:57.280 --> 00:19:58.280
-or what we got going next?
-
-
-00:19:58.280 --> 00:20:00.600
-- Yeah, so I was looking through the tutorials in Airflow
-
-
-00:20:00.600 --> 00:20:03.000
-and I noticed that right away
-
-
-00:20:03.000 --> 00:20:05.680
-one of the examples used ddent.
-
-
-00:20:05.680 --> 00:20:07.200
-So that was a nice--
-
-
-00:20:07.200 --> 00:20:08.520
-- How about that for a connection?
-
-
-00:20:08.520 --> 00:20:09.520
-- Nice connection.
-
-
-00:20:09.520 --> 00:20:11.480
-- Totally well planned, very cool.
-
-
-00:20:11.480 --> 00:20:15.920
-- D-dent was suggested, it's a text wrap tool,
-
-
-00:20:15.920 --> 00:20:18.460
-it's suggested by Michael Rogers-Fallet.
-
-
-00:20:18.460 --> 00:20:22.280
-It's a small utility, but it's super useful.
-
-
-00:20:22.280 --> 00:20:24.160
-And I kind of forget that it's, I mean,
-
-
-00:20:24.160 --> 00:20:26.120
-I use it all the time, but I forget to mention it
-
-
-00:20:26.120 --> 00:20:29.760
-to people, but it comes up a lot.
-
-
-00:20:29.760 --> 00:20:34.120
-And the idea around D-dent is you've got something,
-
-
-00:20:34.120 --> 00:20:37.000
-oh, I think I lost my D-dent thing.
-
-
-00:20:37.000 --> 00:20:40.460
-Let's see if I can find it. There it is.
-
-
-00:20:40.460 --> 00:20:42.460
-The idea is you've got a multi-line string,
-
-
-00:20:42.460 --> 00:20:44.200
-like here we've got "Hello World."
-
-
-00:20:44.200 --> 00:20:46.660
-And some multiple lines, and there's different spacing.
-
-
-00:20:46.660 --> 00:20:50.160
-But as you notice, I want to define it within a test,
-
-
-00:20:50.160 --> 00:20:53.700
-within a test function or within some other function.
-
-
-00:20:53.700 --> 00:20:58.160
-And so there's this extra, like, space at the beginning.
-
-
-00:20:58.160 --> 00:20:59.800
-That's in the string.
-
-
-00:20:59.800 --> 00:21:02.300
-It's in the multi-line string, and we don't want that.
-
-
-00:21:02.300 --> 00:21:09.800
-We don't, we want it to be just, just no, like nothing at the beginning or the same amount chopped off.
-
-
-00:21:09.800 --> 00:21:16.000
-So one of the options that people have used before is to just define a very multi-line string out of the function.
-
-
-00:21:16.000 --> 00:21:23.400
-You just do it out of the function, then it's against, then it's just against the left side of your editor or whatever on column zero,
-
-
-00:21:23.400 --> 00:21:24.800
-and you don't have to worry about it.
-
-
-00:21:24.800 --> 00:21:31.700
-But it does bother some people that you've got this, this variable defined outside of your function when you're just using it within one function.
-
-
-00:21:31.700 --> 00:21:33.640
-So dedent is the answer.
-
-
-00:21:33.640 --> 00:21:36.760
-So what dedent does is it just takes a multi-line string
-
-
-00:21:36.760 --> 00:21:39.440
-and strips off all the common white space at the beginning.
-
-
-00:21:39.440 --> 00:21:40.560
-That's it.
-
-
-00:21:40.560 --> 00:21:43.360
-But it's super useful.
-
-
-00:21:43.360 --> 00:21:45.520
-They've got a little example that we're showing here,
-
-
-00:21:45.520 --> 00:21:49.120
-but I think this is not a great example.
-
-
-00:21:49.120 --> 00:21:50.720
-So I wrote a new example.
-
-
-00:21:50.720 --> 00:21:51.840
-Oops, fell asleep.
-
-
-00:21:51.840 --> 00:21:55.780
-And so the idea really is I've got a function
-
-
-00:21:55.780 --> 00:21:59.280
-that either print stuff or has some output,
-
-
-00:21:59.280 --> 00:22:01.520
-and I wanna be able to compare that string,
-
-
-00:22:01.520 --> 00:22:04.520
-and I want my comparison to be in the function.
-
-
-00:22:04.520 --> 00:22:09.060
-So I use ddent to just write it right in my function
-
-
-00:22:09.060 --> 00:22:10.640
-and then I don't have the spaces.
-
-
-00:22:10.640 --> 00:22:11.840
-And then, yeah, anyway.
-
-
-00:22:11.840 --> 00:22:14.260
-So this is a pytest example
-
-
-00:22:14.260 --> 00:22:16.580
-of how you could test a output string.
-
-
-00:22:16.580 --> 00:22:17.600
-So anyway.
-
-
-00:22:17.600 --> 00:22:20.000
-- This really sounds like a classic example
-
-
-00:22:20.000 --> 00:22:22.260
-of there's a problem, like the open source,
-
-
-00:22:22.260 --> 00:22:23.400
-this really bothered me.
-
-
-00:22:23.400 --> 00:22:25.040
-And so I wrote something to fix it.
-
-
-00:22:25.040 --> 00:22:26.420
-And it's wonderful.
-
-
-00:22:26.420 --> 00:22:30.480
-Like the time honored open source reason to make something.
-
-
-00:22:30.480 --> 00:22:34.560
-But I also want to remind people that D-Dent is not the only thing in TextWrap.
-
-
-00:22:34.560 --> 00:22:36.720
-And TextWrap has a whole bunch of other cool tools.
-
-
-00:22:36.720 --> 00:22:42.200
-So it's not huge, it's just a five-minute read to peruse what's in TextWrap
-
-
-00:22:42.200 --> 00:22:46.120
-so that next time you need to manipulate some text, it's useful.
-
-
-00:22:46.120 --> 00:22:48.120
-Nice. Maybe wrapping.
-
-
-00:22:48.120 --> 00:22:49.400
-Yeah, like wrapping.
-
-
-00:22:49.400 --> 00:22:53.360
-It does things like if you've got a huge string and you want to be able to...
-
-
-00:22:53.360 --> 00:22:55.520
-Like one of the things is to shorten it.
-
-
-00:22:55.520 --> 00:22:57.560
-So if you've got a huge string,
-
-
-00:22:57.560 --> 00:23:00.040
-but you really only have like eight characters to show something.
-
-
-00:23:00.040 --> 00:23:01.440
-- Like ellipsize it.
-
-
-00:23:01.440 --> 00:23:03.040
-- Yeah, it does that for you.
-
-
-00:23:03.040 --> 00:23:05.400
-So that's there too.
-
-
-00:23:05.400 --> 00:23:06.680
-- That's good 'cause I've written that code.
-
-
-00:23:06.680 --> 00:23:07.520
-It wasn't fun.
-
-
-00:23:07.520 --> 00:23:08.340
-(laughing)
-
-
-00:23:08.340 --> 00:23:09.180
-It didn't feel useful either.
-
-
-00:23:09.180 --> 00:23:10.200
-I'm like, okay, great, it works.
-
-
-00:23:10.200 --> 00:23:11.880
-But here we go.
-
-
-00:23:11.880 --> 00:23:14.240
-Some audience feedback, Anthony out there.
-
-
-00:23:14.240 --> 00:23:16.000
-Hey, Anthony says, "It's really useful.
-
-
-00:23:16.000 --> 00:23:18.120
-"Used it many times."
-
-
-00:23:18.120 --> 00:23:19.120
-- Nice. - Quite cool.
-
-
-00:23:19.120 --> 00:23:23.320
-All right, this next one comes to us from Dan Bader.
-
-
-00:23:23.320 --> 00:23:26.160
-You might know him from RealPython and other things.
-
-
-00:23:26.160 --> 00:23:27.720
-He and I were chatting and he said,
-
-
-00:23:27.720 --> 00:23:30.880
-"Hey, have you heard about pip audit from Trail of Bits?"
-
-
-00:23:30.880 --> 00:23:32.800
-And I was sure that I had,
-
-
-00:23:32.800 --> 00:23:34.240
-and I thought we had talked about it,
-
-
-00:23:34.240 --> 00:23:36.640
-but then I realized, "No, I don't believe we have."
-
-
-00:23:36.640 --> 00:23:38.720
-So I must've just heard about it somewhere else,
-
-
-00:23:38.720 --> 00:23:39.920
-and we haven't covered it before.
-
-
-00:23:39.920 --> 00:23:44.280
-So the idea is we've heard about a lot of issues
-
-
-00:23:44.280 --> 00:23:46.640
-with supply chain vulnerabilities,
-
-
-00:23:46.640 --> 00:23:47.720
-things getting into PIP,
-
-
-00:23:47.720 --> 00:23:50.860
-but also RubyGems and NPM and so on.
-
-
-00:23:50.860 --> 00:23:52.680
-Sometimes that's somebody trying to be evil
-
-
-00:23:52.680 --> 00:23:54.940
-and putting in some typo squatting thing,
-
-
-00:23:54.940 --> 00:23:57.120
-or worse than that would be
-
-
-00:23:57.120 --> 00:24:00.960
-if the GitHub account of a maintainer got hacked
-
-
-00:24:00.960 --> 00:24:03.040
-and somebody published a package
-
-
-00:24:03.040 --> 00:24:06.000
-with like to the real package, right?
-
-
-00:24:06.000 --> 00:24:08.560
-So however things might get into your dependencies,
-
-
-00:24:08.560 --> 00:24:10.520
-if something is going on bad there,
-
-
-00:24:10.520 --> 00:24:12.360
-it's better to know than to not know.
-
-
-00:24:12.360 --> 00:24:14.160
-So this pip audit is all about that.
-
-
-00:24:14.160 --> 00:24:17.220
-It audits Python environments as in virtual environments
-
-
-00:24:17.220 --> 00:24:20.080
-and dependency trees for known vulnerabilities.
-
-
-00:24:20.080 --> 00:24:22.840
-So that's one of the things that's interesting
-
-
-00:24:22.840 --> 00:24:25.260
-is when you pip install things,
-
-
-00:24:25.260 --> 00:24:27.300
-you might be very good about saying,
-
-
-00:24:27.300 --> 00:24:30.340
-"Oh, I pip installed Flask and I pip installed Pandas.
-
-
-00:24:30.340 --> 00:24:32.300
-So those are going into my requirements file
-
-
-00:24:32.300 --> 00:24:33.860
-or my pyproject.toml,
-
-
-00:24:33.860 --> 00:24:36.620
-but did you remember to pin their versions?"
-
-
-00:24:36.620 --> 00:24:38.220
-So that things like GitHub will say,
-
-
-00:24:38.220 --> 00:24:39.580
-"Your version is wrong."
-
-
-00:24:39.580 --> 00:24:40.860
-'Cause if it just sees Flask
-
-
-00:24:40.860 --> 00:24:42.820
-and the recent version doesn't have a problem,
-
-
-00:24:42.820 --> 00:24:43.660
-it's not gonna tell you,
-
-
-00:24:43.660 --> 00:24:45.380
-"But the one you have installed may."
-
-
-00:24:45.380 --> 00:24:49.140
-Also the transitive closure of the dependencies.
-
-
-00:24:49.140 --> 00:24:51.300
-So Flask depends on it's dangerous,
-
-
-00:24:51.300 --> 00:24:53.140
-which depends on, I don't know.
-
-
-00:24:53.140 --> 00:24:54.780
-But if there's something down that chain
-
-
-00:24:54.780 --> 00:24:57.140
-that has a problem, you may have not put that
-
-
-00:24:57.140 --> 00:24:59.800
-in your requirements file and you may not be tracking it.
-
-
-00:24:59.800 --> 00:25:02.500
-Like I might be paying careful attention to Flask,
-
-
-00:25:02.500 --> 00:25:04.660
-I might not care anything about it's dangerous,
-
-
-00:25:04.660 --> 00:25:06.320
-but that's where the problem is, right?
-
-
-00:25:06.320 --> 00:25:07.160
-- Yeah.
-
-
-00:25:07.160 --> 00:25:08.420
-- So this tool from Trail of Bits,
-
-
-00:25:08.420 --> 00:25:11.420
-which is a security company, basically solves that problem.
-
-
-00:25:11.420 --> 00:25:15.380
-And it lets you just type pip-audit.
-
-
-00:25:15.380 --> 00:25:19.720
-And for me, it's a -r requirements.txt or whatever.
-
-
-00:25:19.720 --> 00:25:22.460
-And from what I can tell, what it does is it will go
-
-
-00:25:22.460 --> 00:25:24.740
-create its own virtual environment
-
-
-00:25:24.740 --> 00:25:28.100
-where it one by one installs each package,
-
-
-00:25:28.100 --> 00:25:31.260
-looks at the things that come out of that process
-
-
-00:25:31.260 --> 00:25:32.900
-and then scans those.
-
-
-00:25:32.900 --> 00:25:33.980
-So it's not just looking at,
-
-
-00:25:33.980 --> 00:25:36.460
-oh, you say you have Flask and that's 201,
-
-
-00:25:36.460 --> 00:25:38.700
-great, you're good to go.
-
-
-00:25:38.700 --> 00:25:39.820
-It actually installs it
-
-
-00:25:39.820 --> 00:25:42.820
-because who knows what the setup.py process is doing
-
-
-00:25:42.820 --> 00:25:43.860
-and all those kinds of things.
-
-
-00:25:43.860 --> 00:25:46.620
-And then it scans that and it gives you a report.
-
-
-00:25:46.620 --> 00:25:49.340
-So for like Talk Python Training site,
-
-
-00:25:49.340 --> 00:25:52.340
-we have, I don't know, 30 dependencies or something.
-
-
-00:25:52.340 --> 00:25:54.780
-and it sat there and it took, I don't know,
-
-
-00:25:54.780 --> 00:25:55.980
-probably took two minutes to go through
-
-
-00:25:55.980 --> 00:25:57.960
-and it said, "Everything's good to go."
-
-
-00:25:57.960 --> 00:26:00.180
-So that was good to hear, but it's pretty neat.
-
-
-00:26:00.180 --> 00:26:01.500
-Really easy to use.
-
-
-00:26:01.500 --> 00:26:04.180
-It's like an external tool, like Black or something.
-
-
-00:26:04.180 --> 00:26:06.700
-So it's a very good candidate for PIPX,
-
-
-00:26:06.700 --> 00:26:08.120
-and then it's just globally available
-
-
-00:26:08.120 --> 00:26:09.940
-to point at any environment.
-
-
-00:26:09.940 --> 00:26:10.780
-What do you all think?
-
-
-00:26:10.780 --> 00:26:12.060
-- Oh, this is so cool.
-
-
-00:26:12.060 --> 00:26:13.880
-I heard about it 'cause one of my colleagues,
-
-
-00:26:13.880 --> 00:26:16.220
-Dustin Ingram, I think has been involved with it,
-
-
-00:26:16.220 --> 00:26:18.380
-or either it's his Twitter that I found out about it from,
-
-
-00:26:18.380 --> 00:26:21.380
-but he also has a really good talk from PyCon
-
-
-00:26:21.380 --> 00:26:25.380
-this past year about the supply chain vulnerabilities
-
-
-00:26:25.380 --> 00:26:28.780
-that's worth checking out if you're wanting to get an idea
-
-
-00:26:28.780 --> 00:26:31.220
-of why this is important.
-
-
-00:26:31.220 --> 00:26:33.740
-- Yeah, yeah, we've highlighted a few examples
-
-
-00:26:33.740 --> 00:26:37.100
-over the years, but it's definitely something
-
-
-00:26:37.100 --> 00:26:37.940
-you wanna pay attention to.
-
-
-00:26:37.940 --> 00:26:39.540
-And that's cool that Dustin was talking about it.
-
-
-00:26:39.540 --> 00:26:41.700
-He works, I think he's still working with the PyPA
-
-
-00:26:41.700 --> 00:26:46.700
-and works on the pypi.org and all those kinds of things.
-
-
-00:26:46.700 --> 00:26:49.160
-So very cool warehouse.
-
-
-00:26:49.160 --> 00:26:50.580
-Brian, what do you think?
-
-
-00:26:50.580 --> 00:26:52.900
-- I think this is cool, I'm gonna start using it right away.
-
-
-00:26:52.900 --> 00:26:53.740
-This is nice.
-
-
-00:26:53.740 --> 00:26:55.540
-- Yeah, I already used it once as well
-
-
-00:26:55.540 --> 00:26:56.580
-and everything seems good.
-
-
-00:26:56.580 --> 00:26:58.560
-So here, look, I even called a flask as an example.
-
-
-00:26:58.560 --> 00:27:00.300
-Say here on this particular version,
-
-
-00:27:00.300 --> 00:27:05.300
-there was this security vulnerability from 2019
-
-
-00:27:05.300 --> 00:27:07.820
-and same with, I guess, Jinja and all those were good.
-
-
-00:27:07.820 --> 00:27:09.740
-But yeah, it gives you a nice description
-
-
-00:27:09.740 --> 00:27:12.620
-of what went wrong and like in this case,
-
-
-00:27:12.620 --> 00:27:15.700
-it's a denial of service attack and whatnot.
-
-
-00:27:15.700 --> 00:27:18.420
-- So I definitely recommend people pin versions,
-
-
-00:27:18.420 --> 00:27:20.460
-definitely in your requirements.
-
-
-00:27:20.460 --> 00:27:24.500
-But what do you all think of including hashes?
-
-
-00:27:24.500 --> 00:27:26.900
-- I think that's something Dustin talked about in his talk.
-
-
-00:27:26.900 --> 00:27:28.100
-And at the time I was like,
-
-
-00:27:28.100 --> 00:27:30.260
-oh, that sounds like a good idea.
-
-
-00:27:30.260 --> 00:27:32.620
-And it's not something I've started doing yet.
-
-
-00:27:32.620 --> 00:27:33.460
-- Yeah.
-
-
-00:27:33.460 --> 00:27:35.020
-- Exactly, that's exactly what I think.
-
-
-00:27:35.020 --> 00:27:37.260
-It sounds like a good idea and I'm not doing it yet.
-
-
-00:27:37.260 --> 00:27:38.420
-So anyway.
-
-
-00:27:38.420 --> 00:27:41.140
-- But that sounds like it's a me problem.
-
-
-00:27:41.140 --> 00:27:43.140
-More than anything else.
-
-
-00:27:43.140 --> 00:27:45.060
-- I also, it seems like a good idea.
-
-
-00:27:45.060 --> 00:27:47.860
-You know, I might be missing a step.
-
-
-00:27:47.860 --> 00:27:52.740
-It feels like the, the challenge you're going to run into there, where what you're preventing
-
-
-00:27:52.740 --> 00:27:58.980
-against as a man in the middle attack, somebody can intercept what's happening with IPI.org
-
-
-00:27:58.980 --> 00:28:03.560
-and sneak in some kind of broken hacked version.
-
-
-00:28:03.560 --> 00:28:04.560
-I don't know.
-
-
-00:28:04.560 --> 00:28:08.900
-I don't necessarily trust what goes into pipe.org, but I trust pipe.org.
-
-
-00:28:08.900 --> 00:28:12.600
-So I'm not super, it's not my biggest worry.
-
-
-00:28:12.600 --> 00:28:16.740
-There's like 10 other worries that make me have a hard time sleeping at night about running
-
-
-00:28:16.740 --> 00:28:19.300
-stuff on the internet that precedes that.
-
-
-00:28:19.300 --> 00:28:22.140
-So I haven't worried about it, but maybe I should.
-
-
-00:28:22.140 --> 00:28:24.500
-- It's in the queue of things to worry about.
-
-
-00:28:24.500 --> 00:28:26.060
-- Well, for instance, with this audit,
-
-
-00:28:26.060 --> 00:28:29.720
-you can pin your stuff and then have it be,
-
-
-00:28:29.720 --> 00:28:33.260
-check it every once in a while,
-
-
-00:28:33.260 --> 00:28:35.060
-install everything and check things.
-
-
-00:28:35.060 --> 00:28:37.500
-- I don't see why it couldn't be a CI step.
-
-
-00:28:37.500 --> 00:28:39.940
-- I was actually just gonna say that pip audit,
-
-
-00:28:39.940 --> 00:28:42.700
-I need to bring it to my samples maintaining group
-
-
-00:28:42.700 --> 00:28:44.900
-to talk about who wants to implement it
-
-
-00:28:44.900 --> 00:28:46.900
-and how soon we're gonna do it.
-
-
-00:28:46.900 --> 00:28:49.140
-- And whose pager rings when it finds a problem.
-
-
-00:28:49.140 --> 00:28:49.980
-- Yes.
-
-
-00:28:49.980 --> 00:28:51.440
-- Yeah, I'm listening to that,
-
-
-00:28:51.440 --> 00:28:52.620
-pagers from back in the day.
-
-
-00:28:52.620 --> 00:28:55.220
-All right, well, that's all I got for that one.
-
-
-00:28:55.220 --> 00:28:58.020
-We're off to Leah.
-
-
-00:28:58.020 --> 00:28:59.900
-- I'm so glad you mentioned pitting requirements
-
-
-00:28:59.900 --> 00:29:01.020
-because that is actually,
-
-
-00:29:01.020 --> 00:29:04.660
-that's a great segue for managing samples for GCP.
-
-
-00:29:04.660 --> 00:29:07.220
-So what I have open right now for Google Cloud
-
-
-00:29:07.220 --> 00:29:09.420
-is an example documentation page.
-
-
-00:29:09.420 --> 00:29:12.420
-I picked Cloud Composer because it's what I work on.
-
-
-00:29:12.420 --> 00:29:14.540
-And I wanna give an example
-
-
-00:29:14.540 --> 00:29:17.140
-of where this code lives that I'm talking about
-
-
-00:29:17.140 --> 00:29:19.840
-that I work with this group to maintain.
-
-
-00:29:19.840 --> 00:29:22.160
-So this is a page that's about using
-
-
-00:29:22.160 --> 00:29:24.760
-a particular Airflow operator.
-
-
-00:29:24.760 --> 00:29:27.120
-And if you were to scroll on it,
-
-
-00:29:27.120 --> 00:29:28.920
-you will see these code samples
-
-
-00:29:28.920 --> 00:29:31.360
-and they are all stored in GitHub
-
-
-00:29:31.360 --> 00:29:34.200
-and then embedded in our docs.
-
-
-00:29:34.200 --> 00:29:36.680
-So you can click view on GitHub on any one of them
-
-
-00:29:36.680 --> 00:29:39.400
-and it will take you to the linked repository.
-
-
-00:29:39.400 --> 00:29:40.600
-You can look at the history,
-
-
-00:29:40.600 --> 00:29:43.160
-look at everything in context.
-
-
-00:29:43.160 --> 00:29:47.840
-So we have thousands of samples for all of the Google Cloud
-
-
-00:29:47.840 --> 00:29:50.060
-products, just for Python.
-
-
-00:29:50.060 --> 00:29:52.040
-But we have them in other languages, too.
-
-
-00:29:52.040 --> 00:29:54.880
-And they're located across hundreds of repos.
-
-
-00:29:54.880 --> 00:29:57.160
-This happens to be one repo that has
-
-
-00:29:57.160 --> 00:29:59.420
-samples for multiple products.
-
-
-00:29:59.420 --> 00:30:03.280
-But we have other repos where things are stored, too.
-
-
-00:30:03.280 --> 00:30:06.240
-So to ensure that there's consistency
-
-
-00:30:06.240 --> 00:30:09.920
-and that my group of engineers, my colleagues, and I actually
-
-
-00:30:09.920 --> 00:30:17.000
-have time to do our work and function as humans outside of work too, we use a lot of automation.
-
-
-00:30:17.000 --> 00:30:21.040
-So we use a lot of bots to do things like keep our dependencies up to date, check for
-
-
-00:30:21.040 --> 00:30:29.040
-license headers, auto assign PRs for reviewing, syncing repositories with centralized configurations,
-
-
-00:30:29.040 --> 00:30:33.880
-and even more, which is pretty great. And this is actually where the pinning requirements
-
-
-00:30:33.880 --> 00:30:39.120
-comes in. We very strongly believe in pinning requirements because it makes the samples
-
-
-00:30:39.120 --> 00:30:41.520
-easier to maintain and test against.
-
-
-00:30:41.520 --> 00:30:44.080
-And it's easier to go back to the product and say,
-
-
-00:30:44.080 --> 00:30:47.800
-"Hey, you just pushed a release candidate for your product
-
-
-00:30:47.800 --> 00:30:49.800
-and it broke your samples."
-
-
-00:30:49.800 --> 00:30:52.560
-It wasn't supposed to. What gives?
-
-
-00:30:52.560 --> 00:30:57.280
-Rather than finding out mysteriously when getting a customer issue.
-
-
-00:30:57.280 --> 00:30:59.840
-So then to keep it up to date, we use
-
-
-00:30:59.840 --> 00:31:04.680
-a bot and these are some pull requests recently opened by the bot of some
-
-
-00:31:04.680 --> 00:31:08.160
-dependencies. They get double checked to make sure everything looks good
-
-
-00:31:08.160 --> 00:31:10.160
-by human and merged.
-
-
-00:31:10.160 --> 00:31:12.880
-It's pretty great. And then we actually have a team
-
-
-00:31:12.880 --> 00:31:14.880
-of engineers in DevRel
-
-
-00:31:14.880 --> 00:31:17.880
-that works on making GitHub bots
-
-
-00:31:17.880 --> 00:31:20.380
-that we use, and that is totally open source.
-
-
-00:31:20.380 --> 00:31:22.380
-You can see some of the ones that we use.
-
-
-00:31:22.380 --> 00:31:24.800
-We have our license header one.
-
-
-00:31:24.800 --> 00:31:26.800
-The sync repo settings
-
-
-00:31:26.800 --> 00:31:28.800
-allows us to have a single source of truth
-
-
-00:31:28.800 --> 00:31:31.960
-for our configuration for all of our Python repos.
-
-
-00:31:31.960 --> 00:31:35.920
-And then it makes sure it gets synced across all of them.
-
-
-00:31:35.920 --> 00:31:40.960
-It's pretty great. I really don't know how I would function without all of my bot friends.
-
-
-00:31:40.960 --> 00:31:46.400
-This is super cool. I can just imagine how much work it is to keep all of those different things
-
-
-00:31:46.400 --> 00:31:52.480
-in sync. And I have worked recently on projects where I'm like, okay, I got to integrate this
-
-
-00:31:52.480 --> 00:31:57.680
-library, I'm going to go to the documentation, and I try to use the one or two functions that
-
-
-00:31:57.680 --> 00:32:01.760
-the whole thing does. And it's like, nope, that parameter doesn't exist, or you're missing some
-
-
-00:32:01.760 --> 00:32:05.120
-you're like, come on, at least just keep the signature, right?
-
-
-00:32:05.120 --> 00:32:09.320
-You know, it's, and of course it's something like star org, star star KW orgs.
-
-
-00:32:09.320 --> 00:32:12.840
-It's not like, oh, I can just look in my ID and see, oh yeah, it says it takes like,
-
-
-00:32:12.840 --> 00:32:15.120
-use security, use SSL, yes or no.
-
-
-00:32:15.120 --> 00:32:18.560
-Like, no, it's unknown without the documentation, basically.
-
-
-00:32:18.560 --> 00:32:19.080
+00:16:44.640 --> 00:16:45.080
 Yeah.
 
+00:16:45.080 --> 00:16:46.160
+You just have to.
 
-00:32:19.080 --> 00:32:20.080
-This is awesome.
+00:16:46.160 --> 00:16:50.360
+There's a small amount of setup you have to do for auth, which is understandable.
 
+00:16:50.600 --> 00:16:54.200
+You can't just like publicly go to your Azure Blob thing to grab your data.
 
-00:32:20.080 --> 00:32:20.680
+00:16:54.200 --> 00:16:59.420
+But once you set up that connection, then your operators can talk to those things.
+
+00:16:59.420 --> 00:17:02.900
+And if you use so you can run or host Airflow yourself.
+
+00:17:02.900 --> 00:17:05.720
+And there are a few different ways to do that.
+
+00:17:05.720 --> 00:17:10.840
+And then Amazon and Google both have managed hosted providers.
+
+00:17:10.840 --> 00:17:14.740
+And there's a company, Astronomer, that also does manage hosted ones.
+
+00:17:14.740 --> 00:17:19.920
+And so if you're in an Amazon or a Google, the advantage there is that the connections
+
+00:17:19.920 --> 00:17:24.400
+with those operators might be a little bit simpler from the auth and networking perspective.
+
+00:17:24.400 --> 00:17:29.700
+But other than that, you're you can still like if you're running in Cloud Composer, which
+
+00:17:29.700 --> 00:17:34.740
+is Google's Airflow, you can still be using the Amazon or the Microsoft operators to pull
+
+00:17:34.740 --> 00:17:35.820
+data from over there.
+
+00:17:35.820 --> 00:17:37.200
+That's really common.
+
+00:17:37.960 --> 00:17:42.140
+And you see it all the time and bring it do some stuff in Google Cloud and either put
+
+00:17:42.140 --> 00:17:44.640
+it back in the other cloud or leave it in Google Cloud.
+
+00:17:44.640 --> 00:17:46.060
+That's totally normal.
+
+00:17:46.060 --> 00:17:47.520
+And people are doing that all the time.
+
+00:17:47.520 --> 00:17:48.160
+Right on.
+
+00:17:48.160 --> 00:17:48.520
+Yeah.
+
+00:17:48.520 --> 00:17:49.140
+Cool.
+
+00:17:49.140 --> 00:17:49.360
+Cool.
+
+00:17:49.360 --> 00:17:50.800
+I think this is neat.
+
+00:17:50.800 --> 00:17:53.340
+And people for whom that would make sense.
+
+00:17:53.340 --> 00:17:57.020
+You're like trying to do these sort of running in the background schedule jobs.
+
+00:17:57.020 --> 00:17:58.100
+Or there's triggers as well.
+
+00:17:58.100 --> 00:18:00.380
+Like a file has been uploaded or landed here.
+
+00:18:00.380 --> 00:18:00.740
+Yeah.
+
+00:18:01.120 --> 00:18:02.120
+Let's talk about that.
+
+00:18:02.120 --> 00:18:05.980
+So that's actually I had written down this one example, but I'll adapt it slightly since
+
+00:18:05.980 --> 00:18:07.040
+you mentioned triggers.
+
+00:18:07.040 --> 00:18:09.760
+So that's another common type of operator.
+
+00:18:09.760 --> 00:18:12.980
+These sensors where you wait for a certain condition to be true.
+
+00:18:12.980 --> 00:18:16.440
+And they're used in data analytics workflows all the time.
+
+00:18:16.440 --> 00:18:22.320
+So like one example workflow might be waiting for a particular file to appear in a cloud
+
+00:18:22.320 --> 00:18:23.940
+storage or an S3 bucket.
+
+00:18:23.940 --> 00:18:27.640
+So you'd use one of those sensors to wait for that to happen.
+
+00:18:27.640 --> 00:18:30.220
+And then you want to do something to that data.
+
+00:18:30.220 --> 00:18:38.260
+So let's say you then create a data prop cluster that is going to run a PySpark job on that cluster.
+
+00:18:38.260 --> 00:18:43.400
+And then you can store the results in BigQuery at the end and then delete the cluster and like
+
+00:18:43.400 --> 00:18:45.620
+send a Slack message when the job is done.
+
+00:18:46.040 --> 00:18:50.140
+That's a very common ETL thing, including that sensor.
+
+00:18:50.140 --> 00:18:51.940
+Yeah, that sounds pretty nice.
+
+00:18:51.940 --> 00:18:54.620
+Definitely seems interesting and quite useful.
+
+00:18:54.620 --> 00:18:54.920
+Yeah.
+
+00:18:54.920 --> 00:18:57.480
+Brian, thoughts before we move on?
+
+00:18:57.480 --> 00:18:58.880
+I have a question.
+
+00:18:58.880 --> 00:19:03.560
+If you wanted to get started with something like this, I was trying to look for tutorials
+
+00:19:03.560 --> 00:19:05.520
+and getting started and stuff like that.
+
+00:19:05.520 --> 00:19:10.240
+Does it make sense or is it too confusing if somebody, you said you could run it on your
+
+00:19:10.240 --> 00:19:10.720
+own machine.
+
+00:19:10.720 --> 00:19:15.600
+Does that make sense to try it that way or should you try it with a?
+
+00:19:15.640 --> 00:19:16.160
+Okay.
+
+00:19:16.960 --> 00:19:19.480
+You totally can do it on your own machine.
+
+00:19:19.480 --> 00:19:25.400
+And there's this really wonderful environment that can be found in the Airflow repository that's
+
+00:19:25.400 --> 00:19:26.420
+called Breeze.
+
+00:19:26.540 --> 00:19:29.300
+And it's a Dockerized version of it.
+
+00:19:29.300 --> 00:19:30.800
+It shouldn't be run in production.
+
+00:19:30.800 --> 00:19:36.020
+But if you're looking to try it out or if you're looking to contribute to Airflow, we highly
+
+00:19:36.020 --> 00:19:38.600
+recommend that everyone check out the Breeze environment.
+
+00:19:38.600 --> 00:19:44.040
+Right now, I have the community page pulled up where you can join the dev list in the Slack
+
+00:19:44.040 --> 00:19:45.260
+if you have questions.
+
+00:19:45.260 --> 00:19:49.980
+But if you were to go to the GitHub repo, you would see Breeze right on that first page.
+
+00:19:50.420 --> 00:19:50.980
+Okay, cool.
+
+00:19:50.980 --> 00:19:51.440
+Thanks.
+
+00:19:51.440 --> 00:19:51.820
+Yeah.
+
+00:19:51.820 --> 00:19:52.440
+Great question.
+
+00:19:52.440 --> 00:19:53.040
 Thank you.
 
+00:19:53.040 --> 00:19:53.480
+Yeah.
 
-00:32:20.680 --> 00:32:21.640
-I think so too.
+00:19:53.480 --> 00:19:54.220
+Very good one.
 
+00:19:54.220 --> 00:19:54.960
+All right, Brian.
 
-00:32:21.640 --> 00:32:22.840
+00:19:54.960 --> 00:19:58.200
+Are you going to give us a tutorial on Airflow or what we got going next?
+
+00:19:58.200 --> 00:19:58.420
+Yeah.
+
+00:19:58.420 --> 00:20:03.680
+So I was looking through the tutorials on Airflow and I noticed that right away one of the examples
+
+00:20:03.680 --> 00:20:04.760
+used D-Dent.
+
+00:20:05.940 --> 00:20:08.280
+How about that for a connection?
+
+00:20:08.280 --> 00:20:09.300
+Nice connection.
+
+00:20:09.300 --> 00:20:10.500
+Totally well planned.
+
+00:20:10.500 --> 00:20:11.200
+Very cool.
+
+00:20:11.200 --> 00:20:14.480
+D-Dent was suggested.
+
+00:20:14.480 --> 00:20:15.840
+It's a text wrap tool.
+
+00:20:15.840 --> 00:20:18.140
+It's suggested by Michael Rogers-Villet.
+
+00:20:18.140 --> 00:20:21.960
+It's a small utility, but it's super useful.
+
+00:20:21.960 --> 00:20:26.040
+And I kind of forget that it's, I mean, I use it all the time, but I forget to mention it
+
+00:20:26.040 --> 00:20:26.460
+to people.
+
+00:20:26.460 --> 00:20:29.280
+But it comes up a lot.
+
+00:20:29.280 --> 00:20:33.780
+And the idea around D-Dent is you've got something.
+
+00:20:33.780 --> 00:20:36.780
+Oh, I think I lost my D-Dent thing.
+
+00:20:36.780 --> 00:20:39.360
+See if I can find it.
+
+00:20:39.360 --> 00:20:39.760
+There it is.
+
+00:20:39.760 --> 00:20:42.480
+The idea is you've got a multi-line string.
+
+00:20:42.480 --> 00:20:46.340
+Like here we've got Hello World and some multiple lines and there's different spacing.
+
+00:20:46.340 --> 00:20:52.280
+But I'm, as you notice, I want to define it within a test, within a test function or within
+
+00:20:52.280 --> 00:20:53.380
+some other function.
+
+00:20:53.380 --> 00:20:57.760
+And that's, so there's this extra like space at the beginning.
+
+00:20:58.140 --> 00:20:59.840
+That's, that's in the string.
+
+00:20:59.840 --> 00:21:01.320
+It's in the multi-line string.
+
+00:21:01.320 --> 00:21:02.340
+And we don't want that.
+
+00:21:02.340 --> 00:21:09.100
+We don't, we want it to be just, just no, like nothing at the beginning or the same amount
+
+00:21:09.100 --> 00:21:09.720
+chopped off.
+
+00:21:09.720 --> 00:21:14.880
+So one of the options that people have used before is to just define a very multi-line string
+
+00:21:14.880 --> 00:21:15.880
+out of the function.
+
+00:21:15.880 --> 00:21:17.280
+You just do it out of the function.
+
+00:21:17.280 --> 00:21:22.780
+Then it's against, then it's just against the left side of your editor or whatever on column
+
+00:21:22.780 --> 00:21:23.140
+zero.
+
+00:21:23.140 --> 00:21:27.420
+And you don't have to worry about it, but it does bother some people that you've got this,
+
+00:21:27.420 --> 00:21:31.580
+this variable defined outside of your function when you're just using it within one function.
+
+00:21:31.580 --> 00:21:33.520
+So ddent is the answer.
+
+00:21:33.520 --> 00:21:38.540
+So what ddent does is it just takes a multi-line string and strips off all the common white space
+
+00:21:38.540 --> 00:21:39.060
+at the beginning.
+
+00:21:39.060 --> 00:21:39.820
+That's it.
+
+00:21:39.820 --> 00:21:42.560
+But it's a, it's super useful.
+
+00:21:42.560 --> 00:21:48.980
+They've got a little example that we're showing here, but I, I think this is a, not a great example.
+
+00:21:48.980 --> 00:21:50.300
+So I wrote a new example.
+
+00:21:50.300 --> 00:21:51.580
+Oops, fell asleep.
+
+00:21:52.280 --> 00:21:57.620
+Um, and so that the idea really is I've got a function that either, you know, print stuff
+
+00:21:57.620 --> 00:22:02.500
+or has some output and I want to be able to compare that string and I want my comparison
+
+00:22:02.500 --> 00:22:03.560
+to be in the function.
+
+00:22:04.020 --> 00:22:09.880
+Um, so, so I use ddent to just write it right in my function and then I don't have
+
+00:22:09.880 --> 00:22:10.360
+the spaces.
+
+00:22:10.360 --> 00:22:15.760
+And then, yeah, anyway, so this is a, a high test example of how you could test a output
+
+00:22:15.760 --> 00:22:16.480
+string.
+
+00:22:16.640 --> 00:22:21.560
+So anyway, this really sounds like a classic example of there's a problem, like the open
+
+00:22:21.560 --> 00:22:23.300
+source, this really bothered me.
+
+00:22:23.300 --> 00:22:26.040
+And so I wrote something to fix it and it's, it's wonderful.
+
+00:22:26.040 --> 00:22:30.040
+Like the time honored open source reason to make something.
+
+00:22:30.040 --> 00:22:35.020
+But, I also want to remind people that ddent is not the only thing in text wrap and text
+
+00:22:35.020 --> 00:22:36.640
+wrap has a whole bunch of other cool tools.
+
+00:22:36.640 --> 00:22:38.900
+So it's, it's not huge.
+
+00:22:38.900 --> 00:22:43.240
+It's just, but a five minute read to peruse what's in text wrap so that next time you need
+
+00:22:43.240 --> 00:22:45.540
+to manipulate some text, it's useful.
+
+00:22:45.920 --> 00:22:46.380
+Nice.
+
+00:22:46.380 --> 00:22:46.580
+Yeah.
+
+00:22:46.580 --> 00:22:47.260
+Maybe wrapping.
+
+00:22:47.260 --> 00:22:48.380
+Yeah.
+
+00:22:48.380 --> 00:22:49.020
+Like wrapping.
+
+00:22:49.020 --> 00:22:53.060
+Well, it does things like, like if you've got a huge string and you want to be able to
+
+00:22:53.060 --> 00:22:55.520
+like, one of the things is to, shorten it.
+
+00:22:55.520 --> 00:22:59.400
+So if you, if you've got a huge string, but you really only have like eight characters to
+
+00:22:59.400 --> 00:23:01.320
+show something like ellipsize it.
+
+00:23:01.320 --> 00:23:01.720
+Yeah.
+
+00:23:01.720 --> 00:23:03.020
+It does that for you.
+
+00:23:03.020 --> 00:23:04.260
+So that's nice.
+
+00:23:04.260 --> 00:23:05.020
+That's there too.
+
+00:23:05.020 --> 00:23:05.800
+That's good.
+
+00:23:05.800 --> 00:23:06.640
+Cause I've written that code.
+
+00:23:06.640 --> 00:23:07.220
+It wasn't fun.
+
+00:23:07.220 --> 00:23:09.180
+It didn't feel useful either.
+
+00:23:09.180 --> 00:23:09.820
+I'm like, okay, great.
+
+00:23:09.820 --> 00:23:10.140
+It works.
+
+00:23:10.140 --> 00:23:11.120
+But here we go.
+
+00:23:11.120 --> 00:23:14.220
+Uh, some audience feedback, Anthony out there.
+
+00:23:14.220 --> 00:23:15.840
+Hey, Anthony says it's really useful.
+
+00:23:15.840 --> 00:23:17.940
+I've still used it many times.
+
+00:23:17.940 --> 00:23:18.360
+Nice.
+
+00:23:18.360 --> 00:23:18.620
+Cool.
+
+00:23:18.620 --> 00:23:19.440
+Mm hmm.
+
+00:23:19.440 --> 00:23:20.340
+All right.
+
+00:23:20.340 --> 00:23:23.000
+This next one comes to us from Dan Bader.
+
+00:23:23.000 --> 00:23:25.800
+You might know him from a real Python and other things.
+
+00:23:25.800 --> 00:23:30.660
+He and I were chatting and he said, Hey, have you heard about pip audit from trailer bits?
+
+00:23:30.760 --> 00:23:35.720
+And I was sure that I had, and I thought we had talked about it, but then I realized, no,
+
+00:23:35.720 --> 00:23:36.400
+I don't believe we have.
+
+00:23:36.400 --> 00:23:38.680
+So I must've just heard about it somewhere else.
+
+00:23:38.680 --> 00:23:39.840
+And then we haven't covered it before.
+
+00:23:39.840 --> 00:23:46.820
+So the idea is we've heard about a lot of issues with supply chain vulnerabilities, things
+
+00:23:46.820 --> 00:23:50.360
+getting into pip, but also Ruby gems and NPM and so on.
+
+00:23:50.760 --> 00:23:55.280
+Sometimes that's somebody trying to be evil and putting in some typo squatting thing, or,
+
+00:23:55.280 --> 00:24:01.480
+you know, worse than that would be if the GitHub account of a maintainer got hacked and somebody
+
+00:24:01.480 --> 00:24:05.460
+published a package with like to the real package.
+
+00:24:05.460 --> 00:24:05.680
+Right.
+
+00:24:05.780 --> 00:24:10.900
+So however things might get into your dependencies, if something is going on bad there, it's better
+
+00:24:10.900 --> 00:24:12.060
+to know than to not know.
+
+00:24:12.060 --> 00:24:14.120
+So this pip audit is all about that.
+
+00:24:14.120 --> 00:24:19.000
+It audits Python environments as in virtual environments and dependency trees for known
+
+00:24:19.000 --> 00:24:19.520
+vulnerabilities.
+
+00:24:19.520 --> 00:24:25.720
+So that's one of the things that's interesting is when you pip install things, you might be
+
+00:24:25.720 --> 00:24:30.280
+very good about saying, Oh, I pip installed flask and I pip installed pandas.
+
+00:24:30.280 --> 00:24:33.560
+So those are going into my requirements file or my pyproject.toml.
+
+00:24:33.680 --> 00:24:39.040
+But did you remember to pin their versions so that things like GitHub will say your version
+
+00:24:39.040 --> 00:24:39.520
+is wrong?
+
+00:24:39.520 --> 00:24:43.240
+Because if it just sees flask and the recent version doesn't have a problem, it's not going
+
+00:24:43.240 --> 00:24:43.640
+to tell you.
+
+00:24:43.640 --> 00:24:48.560
+But the one you have installed may also the transitive closure of the dependencies.
+
+00:24:48.560 --> 00:24:52.900
+So flask depends on it's dangerous, which depends on, I don't know.
+
+00:24:52.900 --> 00:24:57.240
+But if there's something down that chain that has a problem, you may have not put that in
+
+00:24:57.240 --> 00:24:59.780
+your requirements file and you may not be tracking it.
+
+00:24:59.780 --> 00:25:02.360
+Like I might be paying careful attention to flask.
+
+00:25:02.360 --> 00:25:06.000
+I might not care anything about it's dangerous, but that's where the problem is, right?
+
+00:25:06.000 --> 00:25:06.500
+Yeah.
+
+00:25:06.500 --> 00:25:11.340
+So this tool from Trail of Bits, which is a security company, basically solves that problem.
+
+00:25:11.340 --> 00:25:14.920
+And it lets you just type pip-audit.
+
+00:25:14.920 --> 00:25:19.220
+And for me, it's a dash r requirements.txt or whatever.
+
+00:25:19.520 --> 00:25:24.340
+And from what I can tell, what it does is it will go create its own virtual environment
+
+00:25:24.340 --> 00:25:31.040
+where it one by one installs each package, looks at the things that come out of that process
+
+00:25:31.040 --> 00:25:32.460
+and then scans those.
+
+00:25:32.460 --> 00:25:35.740
+So it's not just looking at, oh, you say you have flask and that's 201.
+
+00:25:35.740 --> 00:25:36.700
+Great.
+
+00:25:36.700 --> 00:25:38.180
+You're good to go.
+
+00:25:38.480 --> 00:25:43.100
+It actually installs it because who knows what the setup.py process is doing and all
+
+00:25:43.100 --> 00:25:43.800
+those kinds of things.
+
+00:25:43.800 --> 00:25:46.360
+And then it scans that and it gives you a report.
+
+00:25:46.360 --> 00:25:51.940
+So for like Talk Python training the site, we have, I don't know, 30 dependencies or something.
+
+00:25:51.940 --> 00:25:56.020
+And it sat there and it took, I don't know, it probably took two minutes to go through and
+
+00:25:56.020 --> 00:25:57.440
+it said, everything's good to go.
+
+00:25:57.760 --> 00:26:01.120
+So that was good to hear, but it's pretty neat, really easy to use.
+
+00:26:01.120 --> 00:26:04.080
+It's like an external tool, like black or something.
+
+00:26:04.080 --> 00:26:06.400
+So it's very, a good candidate for PIPX.
+
+00:26:06.400 --> 00:26:09.560
+And then it's just globally available to point at any environment.
+
+00:26:09.560 --> 00:26:10.340
+What do you all think?
+
+00:26:10.340 --> 00:26:11.860
+Oh, this is so cool.
+
+00:26:11.860 --> 00:26:16.060
+I heard about it because one of my colleagues, Dustin Ingram, I think has been involved with
+
+00:26:16.060 --> 00:26:19.760
+it or either it's his Twitter that I found out about it from, but he also has a really
+
+00:26:19.760 --> 00:26:24.340
+good talk from PyCon this past year about the supply chain vulnerabilities.
+
+00:26:25.120 --> 00:26:30.320
+That's worth checking out if you're wanting to get an idea of why this is important.
+
+00:26:30.320 --> 00:26:31.380
+Yeah.
+
+00:26:31.380 --> 00:26:31.960
+Yeah.
+
+00:26:31.960 --> 00:26:37.340
+We've highlighted a few examples over the years, but it's definitely something you want to pay
+
+00:26:37.340 --> 00:26:37.840
+attention to.
+
+00:26:37.840 --> 00:26:39.500
+And that's cool that Dustin was talking about it.
+
+00:26:39.500 --> 00:26:46.760
+He works, I think he's still working with the PyPA and works on, you know, the PyPI.org
+
+00:26:46.760 --> 00:26:47.600
+and all those kinds of things.
+
+00:26:47.600 --> 00:26:48.660
+So very cool warehouse.
+
+00:26:48.660 --> 00:26:50.140
+Brian, what do you think?
+
+00:26:50.140 --> 00:26:51.400
+I think this is cool.
+
+00:26:51.400 --> 00:26:52.520
+I'm going to start using it right away.
+
+00:26:52.520 --> 00:26:53.260
+This is nice.
+
+00:26:53.260 --> 00:26:53.620
+Yeah.
+
+00:26:53.620 --> 00:26:56.500
+I already used it once as well and everything seems good.
+
+00:26:56.500 --> 00:26:58.440
+So here, look, I even called a flask as an example.
+
+00:26:58.440 --> 00:27:05.800
+Say here on this particular version, there was this security vulnerability from 2019 and
+
+00:27:05.800 --> 00:27:07.720
+same with, I guess, Jinja and all those were good.
+
+00:27:07.720 --> 00:27:10.600
+But yeah, it just, it gives you a nice description of what went wrong.
+
+00:27:10.600 --> 00:27:14.960
+And like in this case, it's a denial of service attack and whatnot.
+
+00:27:15.200 --> 00:27:20.180
+So I definitely recommend people pin versions definitely in your requirements.
+
+00:27:20.180 --> 00:27:23.960
+But what do you all think of including hashes?
+
+00:27:23.960 --> 00:27:26.820
+I think that's something Dustin talked about in his talk.
+
+00:27:26.820 --> 00:27:29.720
+And at the time I was like, oh, that sounds like a good idea.
+
+00:27:29.720 --> 00:27:32.260
+And it's not something I've started doing yet.
+
+00:27:32.260 --> 00:27:33.600
+Yeah, exactly.
+
+00:27:33.600 --> 00:27:34.900
+That's exactly what I think.
+
+00:27:34.900 --> 00:27:37.160
+It sounds like a good idea and I'm not doing it yet.
+
+00:27:37.160 --> 00:27:38.340
+So anyway.
+
+00:27:38.380 --> 00:27:42.420
+But that sounds like it's a me problem more than anything else.
+
+00:27:42.420 --> 00:27:44.720
+Also, it seems like a good idea.
+
+00:27:44.720 --> 00:27:47.580
+You know, I might be missing a step.
+
+00:27:47.580 --> 00:27:53.120
+It feels like the challenge you're going to run into there, what you're preventing against
+
+00:27:53.120 --> 00:27:54.740
+is a man in the middle attack.
+
+00:27:54.740 --> 00:28:01.680
+Somebody can intercept what's happening with PyPI.org and sneak in some kind of broken,
+
+00:28:01.680 --> 00:28:03.000
+hacked version.
+
+00:28:03.560 --> 00:28:03.960
+I don't know.
+
+00:28:03.960 --> 00:28:08.740
+I don't necessarily trust what goes into PyPI.org, but I trust PyPI.org.
+
+00:28:08.740 --> 00:28:12.400
+So I'm not super, it's not my biggest worry.
+
+00:28:12.400 --> 00:28:16.780
+There's like 10 other worries that make me have a hard time sleeping at night about running
+
+00:28:16.780 --> 00:28:18.880
+stuff on the internet that precedes that.
+
+00:28:18.880 --> 00:28:20.740
+So I haven't worried about it, but maybe I should.
+
+00:28:20.740 --> 00:28:23.880
+It's in the queue of things to worry about.
+
+00:28:23.880 --> 00:28:31.720
+Well, for instance, with this audit, you can pin your stuff and then have it be, check it
+
+00:28:31.720 --> 00:28:34.820
+every once in a while and install everything and check things.
+
+00:28:34.820 --> 00:28:37.120
+I don't see why it couldn't be a CI step.
+
+00:28:37.120 --> 00:28:42.160
+I was actually just going to say that PipAudit, I need to bring it to my samples maintaining
+
+00:28:42.160 --> 00:28:46.300
+group to talk about who wants to implement it and how soon we're going to do it.
+
+00:28:46.300 --> 00:28:48.980
+And whose pager rings when it finds a problem.
+
+00:28:48.980 --> 00:28:49.360
+Yes.
+
+00:28:49.360 --> 00:28:50.800
+Yeah.
+
+00:28:50.800 --> 00:28:51.120
+Nice.
+
+00:28:51.120 --> 00:28:52.540
+Look at that, pagers from back in the day.
+
+00:28:52.540 --> 00:28:52.820
+All right.
+
+00:28:52.820 --> 00:28:54.960
+Well, that's all I got for that one.
+
+00:28:54.960 --> 00:28:57.760
+We're off to Leah.
+
+00:28:57.760 --> 00:29:01.660
+I'm so glad you mentioned pitting requirements because that is actually, that's a great segue
+
+00:29:01.660 --> 00:29:04.060
+for managing samples for GCP.
+
+00:29:04.060 --> 00:29:09.340
+So what I have open right now for Google Cloud is an example documentation page.
+
+00:29:09.340 --> 00:29:12.020
+I picked Cloud Composer because it's what I work on.
+
+00:29:12.020 --> 00:29:17.860
+And I want to give an example of where this code lives that I'm talking about that I work
+
+00:29:17.860 --> 00:29:18.940
+with this group to maintain.
+
+00:29:19.680 --> 00:29:24.100
+So this is a page that's about using a particular Airflow operator.
+
+00:29:24.100 --> 00:29:30.680
+And if you were to scroll on it, you will see these code samples and they are all stored
+
+00:29:30.680 --> 00:29:33.480
+in GitHub and then embedded in our docs.
+
+00:29:33.480 --> 00:29:38.700
+So you can click view on GitHub on any one of them and it will take you to the linked repository.
+
+00:29:38.700 --> 00:29:42.560
+You can look at the history, look at everything in context.
+
+00:29:42.560 --> 00:29:50.180
+So we have thousands of samples for all of the Google Cloud products just for Python, but
+
+00:29:50.180 --> 00:29:51.600
+we have them in other languages too.
+
+00:29:51.600 --> 00:29:54.780
+And they're located across hundreds of repos.
+
+00:29:54.780 --> 00:30:00.900
+This happens to be one repo that has samples for multiple products, but we have other repos
+
+00:30:00.900 --> 00:30:02.260
+where things are stored too.
+
+00:30:02.980 --> 00:30:09.480
+So to ensure that there's consistency and that my group of engineers, my colleagues and I
+
+00:30:09.480 --> 00:30:15.180
+actually have time to do our work and function as humans outside of work too, we use a lot
+
+00:30:15.180 --> 00:30:15.860
+of automation.
+
+00:30:15.860 --> 00:30:21.540
+So we use a lot of bots to do things like keep our dependencies up to date, check for license
+
+00:30:21.540 --> 00:30:27.960
+headers, auto-assign PRs for reviewing, syncing repositories with centralized configurations,
+
+00:30:27.960 --> 00:30:31.560
+and even more, which is pretty great.
+
+00:30:31.560 --> 00:30:34.440
+And this is actually where the pinning requirements comes in.
+
+00:30:34.440 --> 00:30:40.020
+We very strongly believe in pinning requirements because it makes the samples easier to maintain
+
+00:30:40.020 --> 00:30:41.220
+and test against.
+
+00:30:41.220 --> 00:30:46.760
+And it's easier to go back to the product and say, hey, you just pushed a release candidate
+
+00:30:46.760 --> 00:30:49.400
+for your product and it broke your samples.
+
+00:30:49.400 --> 00:30:51.300
+It wasn't supposed to.
+
+00:30:51.300 --> 00:30:52.220
+What gives?
+
+00:30:52.220 --> 00:30:56.980
+Rather than finding out mysteriously when getting a customer issue.
+
+00:30:57.680 --> 00:31:00.380
+So then to keep it up to date, we use a bot.
+
+00:31:00.380 --> 00:31:05.360
+And these are some pull requests recently opened by the bot of some dependencies.
+
+00:31:05.360 --> 00:31:09.540
+They get double-checked to make sure everything looks good by human and merged.
+
+00:31:09.540 --> 00:31:10.840
+It's pretty great.
+
+00:31:10.840 --> 00:31:18.040
+And then we actually have a team of engineers in DevRel that works on making GitHub bots that
+
+00:31:18.040 --> 00:31:18.480
+we use.
+
+00:31:18.480 --> 00:31:20.300
+And that is totally open source.
+
+00:31:20.300 --> 00:31:22.400
+So you can see some of the ones that we use.
+
+00:31:22.400 --> 00:31:24.520
+Like we have our license header one.
+
+00:31:24.520 --> 00:31:30.380
+The sync repo settings allows us to have a single source of truth for our configuration for all
+
+00:31:30.380 --> 00:31:31.740
+of our Python repos.
+
+00:31:31.900 --> 00:31:35.640
+And then it makes sure it gets synced across all of them.
+
+00:31:35.640 --> 00:31:36.780
+It's pretty great.
+
+00:31:36.780 --> 00:31:40.500
+I really don't know how I would function without all of my bot friends.
+
+00:31:40.500 --> 00:31:42.020
+This is super cool.
+
+00:31:42.020 --> 00:31:47.020
+I can just imagine how much work it is to keep all of those different things in sync.
+
+00:31:47.020 --> 00:31:52.920
+And I have worked recently on projects where I'm like, okay, I got to integrate this library.
+
+00:31:52.920 --> 00:31:53.840
+I'm going to go to the documentation.
+
+00:31:53.840 --> 00:31:58.640
+And I try to use the one or two functions that the whole thing does.
+
+00:31:58.640 --> 00:32:00.980
+And it's like, nope, that parameter doesn't exist.
+
+00:32:00.980 --> 00:32:02.080
+Or you're missing some parameter.
+
+00:32:02.080 --> 00:32:05.060
+You're like, come on, at least just keep the signature, right?
+
+00:32:05.060 --> 00:32:05.500
+You know?
+
+00:32:05.500 --> 00:32:09.300
+And of course, it's something like star args, star star kwrs.
+
+00:32:09.300 --> 00:32:11.720
+It's not like, oh, I can just look in my ID and see, oh, yeah.
+
+00:32:11.780 --> 00:32:15.100
+It says it takes like, use security, use SSL, yes or no?
+
+00:32:15.100 --> 00:32:18.280
+Like, no, it's unknown without the documentation, basically.
+
+00:32:18.280 --> 00:32:18.780
+Yeah.
+
+00:32:18.780 --> 00:32:19.700
+This is awesome.
+
+00:32:19.700 --> 00:32:20.720
+Thank you.
+
+00:32:20.720 --> 00:32:21.580
+I think so, too.
+
+00:32:21.580 --> 00:32:22.840
 I'm very grateful to it.
-
 
 00:32:22.840 --> 00:32:26.360
 And yeah, for our dependency bot, we do use an external one.
 
+00:32:26.360 --> 00:32:28.640
+I think GitHub is the one that does Dependabot.
 
-00:32:26.360 --> 00:32:28.760
-I know, I think GitHub is the one that does depend a bot.
+00:32:28.640 --> 00:32:31.720
+We, in particular, use Whitesource Renovate bot.
 
+00:32:31.720 --> 00:32:33.640
+It's what we were using when I started.
 
-00:32:28.760 --> 00:32:31.840
-We in particular use White Source Renovate Bot.
+00:32:33.640 --> 00:32:35.480
+And that works very well, too.
 
+00:32:35.480 --> 00:32:38.220
+And they're very nice and responsive to issues.
 
-00:32:31.840 --> 00:32:33.920
-It's what we were using when I started
+00:32:38.220 --> 00:32:38.980
+Oh, that's fantastic.
 
+00:32:38.980 --> 00:32:39.780
+Yeah.
 
-00:32:33.920 --> 00:32:35.520
-and that works very well too
+00:32:39.780 --> 00:32:41.560
+Dependabot was fairly new.
 
+00:32:41.680 --> 00:32:43.840
+And then it was bought quite recently by GitHub.
 
-00:32:35.520 --> 00:32:38.280
-and they're very nice and responsive to issues.
+00:32:43.840 --> 00:32:47.320
+So I can imagine you were all doing something before then, yeah?
 
+00:32:47.320 --> 00:32:47.780
+Probably.
 
-00:32:38.280 --> 00:32:39.560
-- Oh, that's fantastic.
+00:32:47.780 --> 00:32:50.040
+But I know I have friends who use that, too.
 
+00:32:50.040 --> 00:32:50.620
+And they're great.
 
-00:32:39.560 --> 00:32:41.600
-Yeah, Dependabot was fairly new
+00:32:50.620 --> 00:32:54.840
+Using a dependency bot, I would say, if you need a starter bot for any of them,
 
-
-00:32:41.600 --> 00:32:43.960
-and then it was bought quite recently by GitHub
-
-
-00:32:43.960 --> 00:32:47.400
-so I can imagine you were all doing something before then.
-
-
-00:32:47.400 --> 00:32:50.080
-- Probably, but I know I have friends who use that too
-
-
-00:32:50.080 --> 00:32:50.920
-and they're great.
-
-
-00:32:50.920 --> 00:32:52.760
-Using a dependency bot, I would say,
-
-
-00:32:52.760 --> 00:32:55.120
-if you need a starter bot for any of them,
-
-
-00:32:55.120 --> 00:32:58.200
+00:32:54.840 --> 00:32:57.840
 the dependency bot is a great place to start.
 
+00:32:57.840 --> 00:32:59.040
+Yeah, that's fantastic.
 
-00:32:58.200 --> 00:32:59.200
-- Yeah, that's fantastic.
+00:32:59.040 --> 00:33:04.860
+I recently switched to pip-tools and PipCompile to generate my requirements with pinned versions and stuff.
 
+00:33:04.860 --> 00:33:05.240
+Nice.
 
-00:32:59.200 --> 00:33:01.920
-I recently switched to pip-tools and PipCompile
+00:33:05.240 --> 00:33:10.980
+But before that, I was all about Dependabot telling me if something new was up out and seeking that.
 
+00:33:11.580 --> 00:33:11.720
+pip-tools rocks.
 
-00:33:01.920 --> 00:33:04.960
-to generate my requirements with pinned versions and stuff.
+00:33:11.720 --> 00:33:12.300
+Yeah.
 
+00:33:12.300 --> 00:33:13.520
+pip-tools rocks.
 
-00:33:04.960 --> 00:33:05.800
-- Nice.
+00:33:13.520 --> 00:33:14.500
+I love pip-tools.
 
+00:33:14.500 --> 00:33:15.600
+Yeah, it definitely does.
 
-00:33:05.800 --> 00:33:07.820
-- But before that, I was all about the pinned bot
-
-
-00:33:07.820 --> 00:33:11.320
-telling me if something new was out and seeking that.
-
-
-00:33:11.320 --> 00:33:12.160
-- Nice.
-
-
-00:33:12.160 --> 00:33:13.000
-- Yeah.
-
-
-00:33:13.000 --> 00:33:14.680
-- pip-tools rocks, I love pip-tools.
-
-
-00:33:14.680 --> 00:33:15.980
-- Yeah, it definitely does.
-
-
-00:33:15.980 --> 00:33:17.320
+00:33:15.600 --> 00:33:17.300
 Brian, there's a lot of cool automation here.
 
-
-00:33:17.320 --> 00:33:18.200
+00:33:17.300 --> 00:33:17.700
 What do you think?
 
+00:33:18.360 --> 00:33:20.240
+I'm excited about looking through all these.
 
-00:33:18.200 --> 00:33:20.280
-- I'm excited about looking through all these.
+00:33:20.240 --> 00:33:28.360
+I love looking at bots because the whole idea about a bot is like the Unix philosophy of do one thing and do it well.
 
+00:33:28.360 --> 00:33:28.940
+Yes.
 
-00:33:20.280 --> 00:33:24.480
-I love looking at bots, 'cause the whole idea about a bot
+00:33:28.940 --> 00:33:29.480
+Yeah.
 
+00:33:29.480 --> 00:33:30.320
+I love that.
 
-00:33:24.480 --> 00:33:26.680
-is to do, is like the Unix philosophy
+00:33:30.320 --> 00:33:32.560
+Have something else do it and not you do it.
 
+00:33:32.560 --> 00:33:32.940
+Oh, yeah.
 
-00:33:26.680 --> 00:33:28.720
-of do one thing and do it well.
+00:33:33.500 --> 00:33:41.680
+All of our bots are based on like, oh, gosh, we're doing this one thing over and over and we're not doing it well because we're doing it manually.
 
+00:33:42.040 --> 00:33:47.560
+So how can we like use automation to make sure we're doing it consistently and to save a lot of time?
 
-00:33:28.720 --> 00:33:30.640
-- Yes. - And I love that.
+00:33:47.560 --> 00:33:51.580
+Like one of the things you've got in here that's shown right now is label sync.
 
+00:33:51.680 --> 00:33:59.500
+So one of the nice things about one of the interesting things about different groups workflows is to have different labels that mean different things.
 
-00:33:30.640 --> 00:33:32.640
-- And have something else do it and not you do it.
+00:33:59.500 --> 00:34:03.060
+But when you open a new repo, it doesn't have all those labels.
 
-
-00:33:32.640 --> 00:33:35.960
-- Oh yeah, all of our bots are based on like,
-
-
-00:33:35.960 --> 00:33:38.680
-oh gosh, we're doing this one thing over and over
-
-
-00:33:38.680 --> 00:33:42.200
-and we're not doing it well because we're doing it manually.
-
-
-00:33:42.200 --> 00:33:44.480
-So how can we like use automation
-
-
-00:33:44.480 --> 00:33:46.120
-to make sure we're doing it consistently
-
-
-00:33:46.120 --> 00:33:48.000
-and just save a lot of time.
-
-
-00:33:48.000 --> 00:33:49.520
-- Like one of the things you've got in here
-
-
-00:33:49.520 --> 00:33:51.680
-that's shown right now is label sync.
-
-
-00:33:51.680 --> 00:33:53.320
-So one of the nice things about,
-
-
-00:33:53.320 --> 00:33:54.680
-one of the interesting things
-
-
-00:33:54.680 --> 00:33:58.520
-about different groups workflows is to have different labels
-
-
-00:33:58.520 --> 00:33:59.900
-that mean different things.
-
-
-00:33:59.900 --> 00:34:01.840
-But when you open a new repo,
-
-
-00:34:01.840 --> 00:34:03.220
-it doesn't have all those labels.
-
-
-00:34:03.220 --> 00:34:06.840
+00:34:03.060 --> 00:34:06.500
 So being able to sync those labels across an organization.
 
+00:34:06.500 --> 00:34:12.240
+Like needs triage, good first contribution, all those kind of things, right?
 
-00:34:06.840 --> 00:34:11.280
-- Like needs triage, good first contribution,
+00:34:12.240 --> 00:34:12.640
+Yeah.
 
+00:34:12.640 --> 00:34:22.620
+As I said, we have hundreds of repos just for Python and we use things like we have labels that say what API something belongs to.
 
-00:34:11.280 --> 00:34:12.360
-all those kinds of things, right?
+00:34:22.620 --> 00:34:28.980
+And that helps with the auto assign bot to make sure that issues and PRs get routed to the right team.
 
+00:34:28.980 --> 00:34:35.760
+Otherwise, you're having a human do all that triage, which is fine, but doesn't scale super well in our use case.
 
-00:34:12.360 --> 00:34:15.280
-- Yeah, as I said, we have hundreds of repos
+00:34:35.760 --> 00:34:36.420
+Yeah.
 
+00:34:36.420 --> 00:34:41.760
+And adding a label is really easy to an issue or something.
 
-00:34:15.280 --> 00:34:18.800
-just for Python and we use things like we have labels
+00:34:41.760 --> 00:34:48.100
+So having a bot that looks at label changes and just does an action based on that is a brilliant use of time.
 
+00:34:48.100 --> 00:34:48.620
+Yep.
 
-00:34:18.800 --> 00:34:23.020
-that say what API something belongs to.
-
-
-00:34:23.020 --> 00:34:26.120
-And that helps with the auto assign bot
-
-
-00:34:26.120 --> 00:34:27.700
-to make sure that issues and PRs
-
-
-00:34:27.700 --> 00:34:29.460
-get routed to the right team.
-
-
-00:34:29.460 --> 00:34:31.900
-Otherwise you're having a human do all that triage,
-
-
-00:34:31.900 --> 00:34:36.300
-which is fine, but doesn't scale super well in our use case.
-
-
-00:34:36.300 --> 00:34:37.120
-- Yeah.
-
-
-00:34:37.120 --> 00:34:38.860
-- And adding a label is really easy
-
-
-00:34:38.860 --> 00:34:41.900
-to an issue or something.
-
-
-00:34:41.900 --> 00:34:44.420
-So having a bot that looks at label changes
-
-
-00:34:44.420 --> 00:34:46.540
-and just does an action based on that
-
-
-00:34:46.540 --> 00:34:48.460
-is a brilliant use of time.
-
-
-00:34:48.460 --> 00:34:49.340
-- Yep.
-
-
-00:34:49.340 --> 00:34:50.380
+00:34:48.620 --> 00:34:49.920
 Highly recommend.
 
+00:34:49.920 --> 00:34:50.540
+Yeah.
 
-00:34:50.380 --> 00:34:51.260
-- Yeah, fantastic.
-
-
-00:34:51.260 --> 00:34:52.100
-This is great.
-
-
-00:34:52.100 --> 00:34:54.380
-- And you have an install link next to all of them.
-
-
-00:34:54.380 --> 00:34:55.420
-That mean I just click that
-
-
-00:34:55.420 --> 00:34:57.540
-and install it into one of my repos?
-
-
-00:34:57.540 --> 00:34:59.380
-- I believe that is the intent.
-
-
-00:34:59.380 --> 00:35:00.220
-And if it doesn't work,
-
-
-00:35:00.220 --> 00:35:01.660
-you should open an issue on this repo
-
-
-00:35:01.660 --> 00:35:04.100
-because my colleagues are very responsive.
-
-
-00:35:04.100 --> 00:35:04.940
-- Fantastic.
-
-
-00:35:04.940 --> 00:35:05.860
-- Yeah. - And we just need bots
-
-
-00:35:05.860 --> 00:35:07.420
-to generate bots.
-
-
-00:35:07.420 --> 00:35:09.660
-- Honestly, if my colleagues told me
-
-
-00:35:09.660 --> 00:35:11.040
-they were working on that in this repo,
-
-
-00:35:11.040 --> 00:35:12.860
-I wouldn't be surprised, but I don't know.
-
-
-00:35:12.860 --> 00:35:14.300
-(laughing)
-
-
-00:35:14.300 --> 00:35:15.140
-- The meta bot.
-
-
-00:35:15.140 --> 00:35:15.980
-- Yeah.
-
-
-00:35:15.980 --> 00:35:16.820
-- Fantastic.
-
-
-00:35:16.820 --> 00:35:20.460
-All right, well, how about some extras?
-
-
-00:35:20.460 --> 00:35:21.300
-Brian, you got anything extra
-
-
-00:35:21.300 --> 00:35:24.140
-you want to share while we're here before we call it a show?
-
-
-00:35:24.140 --> 00:35:26.140
-- No, just I'm fighting a cold
-
-
-00:35:26.140 --> 00:35:27.820
-and hopefully that'll all be over.
-
-
-00:35:27.820 --> 00:35:29.100
-- Feel better soon.
-
-
-00:35:29.100 --> 00:35:30.580
-- Yeah, maybe some sort of audit thing.
-
-
-00:35:30.580 --> 00:35:31.980
-We'll check your health status.
-
-
-00:35:31.980 --> 00:35:33.260
-We can run that against you.
-
-
-00:35:33.260 --> 00:35:35.900
-Leah, anything else you want to share with us?
-
-
-00:35:35.900 --> 00:35:37.660
-- Oh, I mean, on Twitter earlier,
-
-
-00:35:37.660 --> 00:35:39.780
-we were talking about HTTP status codes
-
-
-00:35:39.780 --> 00:35:42.260
-and it reminded me of still my forever reference
-
-
-00:35:42.260 --> 00:35:46.220
-for HTTP status codes is http.cat.
-
-
-00:35:46.220 --> 00:35:48.620
-- Yes, http.cat is fantastic.
-
-
-00:35:48.620 --> 00:35:50.180
-- It's so good.
-
-
-00:35:50.180 --> 00:35:51.000
-- It is so good.
-
-
-00:35:51.000 --> 00:35:53.040
-- Let's share a few non-funny things
-
-
-00:35:53.040 --> 00:35:54.760
-and then we'll mix that in with our joke.
-
-
-00:35:54.760 --> 00:35:56.040
-- Please do.
-
-
-00:35:56.040 --> 00:35:57.160
-- Fantastic, all right.
-
-
-00:35:57.160 --> 00:36:00.880
-The first one has to do with, speaking of GitHub,
-
-
-00:36:00.880 --> 00:36:02.640
-another cool GitHub thing.
-
-
-00:36:02.640 --> 00:36:04.200
-You know you could press a dot
-
-
-00:36:04.200 --> 00:36:05.600
-and that would do certain things.
-
-
-00:36:05.600 --> 00:36:07.520
-This only works if you're signed in.
-
-
-00:36:07.520 --> 00:36:10.200
-But now there's a command palette.
-
-
-00:36:10.200 --> 00:36:12.960
-This idea of command palettes are becoming popular in UIs.
-
-
-00:36:12.960 --> 00:36:14.320
-We've got it in VS Code.
-
-
-00:36:14.320 --> 00:36:17.680
-We've got it in like Superhuman, the email.
-
-
-00:36:17.680 --> 00:36:20.080
-And often you get them by pressing Command + K
-
-
-00:36:20.080 --> 00:36:22.520
-or Control + K, and now you have that for GitHub.
-
-
-00:36:22.520 --> 00:36:25.640
-So if I were on a repo where I could do stuff to it,
-
-
-00:36:25.640 --> 00:36:28.360
-I could hit Command + K, and then it will say,
-
-
-00:36:28.360 --> 00:36:29.200
-what do you wanna do?
-
-
-00:36:29.200 --> 00:36:33.200
-Search or jump to, I could go to pages, issues,
-
-
-00:36:33.200 --> 00:36:36.840
-I could look for, let's see, look for the app.
-
-
-00:36:36.840 --> 00:36:38.720
-If I just type app, it'll search for those.
-
-
-00:36:38.720 --> 00:36:41.460
-I could search for all sorts of things here and boom,
-
-
-00:36:41.460 --> 00:36:43.360
-it takes me and shows me all the apps.
-
-
-00:36:43.360 --> 00:36:44.200
-Isn't that cool?
-
-
-00:36:44.200 --> 00:36:45.280
-- That's so cool.
-
-
-00:36:45.280 --> 00:36:47.840
-- Command palette, yeah, that's now a thing.
-
-
-00:36:47.840 --> 00:36:49.120
-- That's beautiful.
-
-
-00:36:49.120 --> 00:36:50.980
-- And you could just, I mean, no mouse.
-
-
-00:36:50.980 --> 00:36:53.280
-I'm here, I'm in this repo, the top level,
-
-
-00:36:53.280 --> 00:36:55.680
-command K, down arrow, two times to enter,
-
-
-00:36:55.680 --> 00:36:56.520
-I'm on the issues.
-
-
-00:36:56.520 --> 00:36:58.800
-- Oh my gosh, love to see it.
-
-
-00:36:58.800 --> 00:36:59.880
-- Yeah, so that's a good one.
-
-
-00:36:59.880 --> 00:37:02.360
-The other one, the other extra,
-
-
-00:37:02.360 --> 00:37:06.560
-is Python 3.10.1 is out, released December 6th,
-
-
-00:37:06.560 --> 00:37:08.080
-so as in two days ago.
-
-
-00:37:08.080 --> 00:37:09.000
-- Wow.
-
-
-00:37:09.000 --> 00:37:11.680
-- It's got a fun little snake with a hat on.
-
-
-00:37:11.680 --> 00:37:12.520
-- Love it.
-
-
-00:37:12.520 --> 00:37:13.620
-- That's really about 3.10.
-
-
-00:37:13.620 --> 00:37:16.540
-So let me describe, I can cover the entire release for you.
-
-
-00:37:16.540 --> 00:37:19.180
-So Python 3.10.1 is the newest major release
-
-
-00:37:19.180 --> 00:37:20.820
-of the Python programming languages.
-
-
-00:37:20.820 --> 00:37:23.420
-It contains many features and optimizations.
-
-
-00:37:23.420 --> 00:37:25.120
-So now you all know what's in it.
-
-
-00:37:25.120 --> 00:37:26.180
-(laughing)
-
-
-00:37:26.180 --> 00:37:27.020
-It's very vague.
-
-
-00:37:27.020 --> 00:37:27.860
-- It's really vague.
-
-
-00:37:27.860 --> 00:37:28.680
-- It's very vague.
-
-
-00:37:28.680 --> 00:37:29.520
-(laughing)
-
-
-00:37:29.520 --> 00:37:32.380
-Apparently it has 300 commits of changes and fixes.
-
-
-00:37:32.380 --> 00:37:34.700
-One thing I would, I wanted to know,
-
-
-00:37:34.700 --> 00:37:36.260
-are there security updates?
-
-
-00:37:36.260 --> 00:37:37.100
-Yes or no?
-
-
-00:37:37.100 --> 00:37:40.220
-Like, should I, like, should I install this if I'm curious
-
-
-00:37:40.220 --> 00:37:42.620
-or should I install this now before tomorrow?
-
-
-00:37:42.620 --> 00:37:45.560
-because someone's gonna start poking around.
-
-
-00:37:45.560 --> 00:37:47.120
-I would love if it would say that.
-
-
-00:37:47.120 --> 00:37:48.880
-There's a great thing about the major features,
-
-
-00:37:48.880 --> 00:37:51.320
-but that's just 3.10, not the point release.
-
-
-00:37:51.320 --> 00:37:54.080
-So anyway, still good.
-
-
-00:37:54.080 --> 00:37:57.120
-- Yeah, we've been having fun making all of our GCP samples,
-
-
-00:37:57.120 --> 00:37:59.120
-making sure they're 3.10 compatible,
-
-
-00:37:59.120 --> 00:38:01.360
-which we're getting there.
-
-
-00:38:01.360 --> 00:38:04.560
-It's all waiting for certain dependencies to be ready.
-
-
-00:38:04.560 --> 00:38:06.720
-But a lot of fun, very exciting to see.
-
-
-00:38:06.720 --> 00:38:07.600
-- Yeah, that's awesome.
-
-
-00:38:07.600 --> 00:38:09.120
-- Well, you can look at the change log.
-
-
-00:38:09.120 --> 00:38:10.440
-So if you look at the 3.10,
-
-
-00:38:10.440 --> 00:38:13.280
-the change log, you can see 310 one and stuff.
-
-
-00:38:13.280 --> 00:38:14.120
-- I can.
-
-
-00:38:14.120 --> 00:38:15.440
-- Okay, go up a little bit.
-
-
-00:38:15.440 --> 00:38:16.720
-- Full change log there maybe?
-
-
-00:38:16.720 --> 00:38:17.560
-- Yeah.
-
-
-00:38:17.560 --> 00:38:18.380
-- Yeah, that's true.
-
-
-00:38:18.380 --> 00:38:20.600
-I can go to the change log there and check that out.
-
-
-00:38:20.600 --> 00:38:23.000
-- But having a security thing would be a good idea.
-
-
-00:38:23.000 --> 00:38:23.840
-- Yeah, just like--
-
-
-00:38:23.840 --> 00:38:24.960
-- A TLDR.
-
-
-00:38:24.960 --> 00:38:26.760
-- Yeah, exactly, exactly, cool.
-
-
-00:38:26.760 --> 00:38:29.440
-- Well, and also a lot of people didn't wanna try 310
-
-
-00:38:29.440 --> 00:38:31.520
-until we got one patch release.
-
-
-00:38:31.520 --> 00:38:33.640
-So now we have one patch release, so there's no excuse.
-
-
-00:38:33.640 --> 00:38:35.280
-- So now it's quote safe.
-
-
-00:38:35.280 --> 00:38:37.400
-I have been running it for a day in production
-
-
-00:38:37.400 --> 00:38:38.720
-and it seems okay.
-
-
-00:38:38.720 --> 00:38:41.280
-put it on one site to see if it would hang in there.
-
-
-00:38:41.280 --> 00:38:42.120
-It seems fine.
-
-
-00:38:42.120 --> 00:38:42.940
-So we're all good.
-
-
-00:38:42.940 --> 00:38:43.780
-- Yeah.
-
-
-00:38:43.780 --> 00:38:45.400
-All right, the samples that are using it are doing fine.
-
-
-00:38:45.400 --> 00:38:47.480
-They've had passing periodic builds for a while.
-
-
-00:38:47.480 --> 00:38:48.520
-- Yeah, fantastic.
-
-
-00:38:48.520 --> 00:38:49.640
-All right, are you ready for some--
-
-
-00:38:49.640 --> 00:38:50.480
-- No, I'm ready. - Chat jokes later?
-
-
-00:38:50.480 --> 00:38:51.400
-- Sorry.
-
-
-00:38:51.400 --> 00:38:54.320
-- Yes, I mean, we started our conversation off today
-
-
-00:38:54.320 --> 00:38:55.640
-talking about cats.
-
-
-00:38:55.640 --> 00:38:56.960
-- It's true.
-
-
-00:38:56.960 --> 00:38:57.840
-- Before we hit record.
-
-
-00:38:57.840 --> 00:38:59.800
-So I feel like we should round that out, yeah?
-
-
-00:38:59.800 --> 00:39:00.760
-- Definitely.
-
-
-00:39:00.760 --> 00:39:03.840
-- So first of all, httpstatuses.com
-
-
-00:39:03.840 --> 00:39:07.080
-is a fantastic place to go learn about the real meaning
-
-
-00:39:07.080 --> 00:39:09.760
-or the official meaning, let's say, of status code.
-
-
-00:39:09.760 --> 00:39:11.880
-So for example, there's 100 continue,
-
-
-00:39:11.880 --> 00:39:13.240
-and if you want details, you click on that,
-
-
-00:39:13.240 --> 00:39:14.520
-and it actually pulls this all up.
-
-
-00:39:14.520 --> 00:39:17.960
-Even shows you like the enum in Python,
-
-
-00:39:17.960 --> 00:39:19.760
-if you wanna use that. - Oh my gosh, I love that.
-
-
-00:39:19.760 --> 00:39:20.880
-- Isn't that cool? - Yeah.
-
-
-00:39:20.880 --> 00:39:22.880
-- It gives you the meaning like 100 continue,
-
-
-00:39:22.880 --> 00:39:25.040
-the initial part of a request has been received
-
-
-00:39:25.040 --> 00:39:28.200
-and has not yet been rejected by the server.
-
-
-00:39:28.200 --> 00:39:31.640
-The server intends to send a final response eventually.
-
-
-00:39:31.640 --> 00:39:35.320
-And so there's other ones like 200 okay, 201 created.
-
-
-00:39:35.320 --> 00:39:36.720
-Let's see, what else should I point out?
-
-
-00:39:36.720 --> 00:39:41.240
-304, cache not modified, 400, bad request.
-
-
-00:39:41.240 --> 00:39:42.080
-- Bad request.
-
-
-00:39:42.080 --> 00:39:44.760
-- 404, not found, 403, forbidden,
-
-
-00:39:44.760 --> 00:39:47.680
-500, internal server error.
-
-
-00:39:47.680 --> 00:39:49.840
-Yeah, 418, I'm a tbot.
-
-
-00:39:49.840 --> 00:39:51.080
-And 502, bad gateway.
-
-
-00:39:51.080 --> 00:39:53.760
-Okay, so let's do yours firstly.
-
-
-00:39:53.760 --> 00:39:54.600
-- Please.
-
-
-00:39:54.600 --> 00:39:56.440
-- I'd put out this joke and you said,
-
-
-00:39:56.440 --> 00:39:59.440
-"This is good, but oh my goodness, cats."
-
-
-00:39:59.440 --> 00:40:03.600
-- Yeah, so when I was doing my computer science degree,
-
-
-00:40:03.600 --> 00:40:06.700
-a friend shared with me HTTP.cat
-
-
-00:40:06.700 --> 00:40:09.200
-when we were learning about HTTP status codes.
-
-
-00:40:09.200 --> 00:40:11.200
-And if you go there, you will find
-
-
-00:40:11.200 --> 00:40:14.300
-one cat per HTTP status code
-
-
-00:40:14.300 --> 00:40:16.600
-representing what is going on.
-
-
-00:40:16.600 --> 00:40:18.000
-And I'm not going to lie to you,
-
-
-00:40:18.000 --> 00:40:19.200
-in my professional career,
-
-
-00:40:19.200 --> 00:40:21.000
-I still use it as a reference
-
-
-00:40:21.000 --> 00:40:22.700
-because it's my favorite one.
-
-
-00:40:22.700 --> 00:40:24.000
-And you can even,
-
-
-00:40:24.000 --> 00:40:27.500
-if you go to like HTTP.cat/200,
-
-
-00:40:27.500 --> 00:40:29.900
-it returns a JPEG of a cat that's like, okay.
-
-
-00:40:29.900 --> 00:40:30.800
-Yeah, exactly.
-
-
-00:40:30.800 --> 00:40:32.800
-And you can do that for all of the status codes.
-
-
-00:40:32.800 --> 00:40:37.000
-- 201, the cat has walked through some wet cement
-
-
-00:40:37.000 --> 00:40:40.660
-and that's too uncreated for footprints.
-
-
-00:40:40.660 --> 00:40:42.060
-Let's see what else we got in here.
-
-
-00:40:42.060 --> 00:40:43.060
-Some good ones.
-
-
-00:40:43.060 --> 00:40:46.640
-404, not modify, 304, sorry.
-
-
-00:40:46.640 --> 00:40:50.680
-The 404, the cat is hiding under some wrapping, not found.
-
-
-00:40:50.680 --> 00:40:51.520
+00:34:50.540 --> 00:34:51.100
 Fantastic.
 
+00:34:51.100 --> 00:34:51.720
+This is great.
 
-00:40:51.520 --> 00:40:52.340
-Yeah, I love this.
+00:34:52.040 --> 00:34:54.340
+And you have an install link next to all of them.
 
+00:34:54.340 --> 00:34:56.900
+Does that mean I just click that and install it into one of my repos?
 
-00:40:52.340 --> 00:40:54.600
+00:34:56.900 --> 00:34:58.740
+I believe that is the intent.
+
+00:34:58.740 --> 00:35:03.040
+And if it doesn't work, you should open an issue on this repo because my colleagues are very responsive.
+
+00:35:03.040 --> 00:35:04.400
+Fantastic.
+
+00:35:04.400 --> 00:35:04.860
+Yeah.
+
+00:35:04.860 --> 00:35:06.940
+And we just need bots to generate bots.
+
+00:35:06.940 --> 00:35:12.660
+Honestly, if my colleagues told me they were working on that in this repo, I wouldn't be surprised, but I don't know.
+
+00:35:12.660 --> 00:35:14.920
+The meta bot.
+
+00:35:14.920 --> 00:35:15.280
+Yeah.
+
+00:35:15.280 --> 00:35:16.240
+Fantastic.
+
+00:35:16.240 --> 00:35:17.080
+All right.
+
+00:35:17.080 --> 00:35:19.760
+Well, how about some extras?
+
+00:35:19.760 --> 00:35:21.600
+Brian, you got anything extra you want to?
+
+00:35:21.960 --> 00:35:23.740
+Share while we're here before we call it a show?
+
+00:35:23.740 --> 00:35:26.080
+No, just I'm fighting a cold.
+
+00:35:26.080 --> 00:35:27.520
+Hopefully that'll all be over.
+
+00:35:27.520 --> 00:35:28.020
+Yeah.
+
+00:35:28.020 --> 00:35:30.560
+Well, maybe some sort of audit thing.
+
+00:35:30.560 --> 00:35:31.920
+We'll check your health status.
+
+00:35:31.920 --> 00:35:32.880
+We can run that against you.
+
+00:35:32.880 --> 00:35:35.720
+Leah, anything else you want to share with us?
+
+00:35:35.920 --> 00:35:45.880
+Oh, I mean, on Twitter earlier, we were talking about HTTP status codes and it reminded me of still my forever reference for HTTP status codes is HTTP.cat.
+
+00:35:45.880 --> 00:35:48.360
+Yes, HTTP.cat is fantastic.
+
+00:35:48.360 --> 00:35:49.540
+It's so good.
+
+00:35:49.540 --> 00:35:50.720
+It is so good.
+
+00:35:50.720 --> 00:35:54.700
+Let me share a few non-funny things and then we'll mix that in with our joke.
+
+00:35:54.700 --> 00:35:55.400
+Please do.
+
+00:35:55.400 --> 00:35:56.400
+Fantastic.
+
+00:35:56.580 --> 00:35:56.820
+All right.
+
+00:35:56.820 --> 00:35:56.820
+All right.
+
+00:35:56.820 --> 00:36:02.380
+The first one has to do with, speaking of GitHub, another cool GitHub thing.
+
+00:36:02.380 --> 00:36:05.520
+You know you could press a dot and that would do certain things.
+
+00:36:05.520 --> 00:36:07.140
+This only works if you're signed in.
+
+00:36:07.140 --> 00:36:10.100
+But now there's a command palette.
+
+00:36:10.100 --> 00:36:12.860
+This idea of command palettes are becoming popular in UIs.
+
+00:36:12.860 --> 00:36:13.940
+We've got it in VS Code.
+
+00:36:14.300 --> 00:36:17.220
+We've got it in like superhuman, the email.
+
+00:36:17.220 --> 00:36:20.880
+And often you get them by pressing command K or control K.
+
+00:36:20.880 --> 00:36:22.380
+And now you have that for GitHub.
+
+00:36:22.380 --> 00:36:28.960
+So if I were on a repo where I could do stuff to it, I could hit command K and then it will say, what do you want to do?
+
+00:36:28.960 --> 00:36:30.320
+Search or jump to.
+
+00:36:30.320 --> 00:36:32.560
+I could go to pages, issues.
+
+00:36:32.560 --> 00:36:36.640
+I could look for, let's see, look for the app.
+
+00:36:36.640 --> 00:36:38.660
+If I just type app, it'll search for those.
+
+00:36:38.660 --> 00:36:40.940
+I could search for all sorts of things here.
+
+00:36:40.940 --> 00:36:42.940
+And boom, it takes me and shows me all the apps.
+
+00:36:42.940 --> 00:36:43.800
+Isn't that cool?
+
+00:36:43.800 --> 00:36:45.000
+That's so cool.
+
+00:36:45.000 --> 00:36:45.940
+Command palette.
+
+00:36:45.940 --> 00:36:47.520
+Yeah, that's now a thing.
+
+00:36:47.520 --> 00:36:48.600
+That's beautiful.
+
+00:36:48.600 --> 00:36:50.920
+And you could just, I mean, no mouse.
+
+00:36:50.920 --> 00:36:51.700
+I'm here.
+
+00:36:51.700 --> 00:36:53.140
+I'm in this repo, the top level.
+
+00:36:53.140 --> 00:36:55.600
+Command K, down arrow, two times, hit enter.
+
+00:36:55.600 --> 00:36:56.220
+I'm on the issues.
+
+00:36:56.220 --> 00:36:57.100
+Oh my gosh.
+
+00:36:57.100 --> 00:36:58.500
+Love to see it.
+
+00:36:58.500 --> 00:36:59.560
+Yeah, so that's a good one.
+
+00:36:59.560 --> 00:37:05.180
+The other one, the other extra is Python 310.1 is out.
+
+00:37:05.180 --> 00:37:06.600
+Released December 6th.
+
+00:37:06.600 --> 00:37:07.740
+So as in two days ago.
+
+00:37:07.740 --> 00:37:08.340
+Wow.
+
+00:37:08.340 --> 00:37:11.280
+It's got a fun little snake with a hat on.
+
+00:37:11.280 --> 00:37:12.000
+Love it.
+
+00:37:12.000 --> 00:37:13.040
+That's really about 310.
+
+00:37:13.300 --> 00:37:14.520
+So let me describe.
+
+00:37:14.520 --> 00:37:16.540
+I can cover the entire release for you.
+
+00:37:16.540 --> 00:37:20.580
+So Python 310.1 is the newest major release of the Python programming languages.
+
+00:37:20.580 --> 00:37:22.920
+It contains many features and optimizations.
+
+00:37:22.920 --> 00:37:24.660
+So now you all know what's in it.
+
+00:37:24.660 --> 00:37:26.760
+It's very vague.
+
+00:37:26.760 --> 00:37:27.500
+It's very vague.
+
+00:37:29.080 --> 00:37:32.140
+Apparently it has 300 commits of changes and fixes.
+
+00:37:32.140 --> 00:37:36.040
+One thing I would, I wanted to know, are there security updates?
+
+00:37:36.040 --> 00:37:36.860
+Yes or no?
+
+00:37:36.860 --> 00:37:37.860
+Should I install this if I'm curious?
+
+00:37:37.860 --> 00:37:42.560
+Should I install this now before tomorrow?
+
+00:37:42.560 --> 00:37:45.000
+Because someone's going to start poking around.
+
+00:37:45.000 --> 00:37:46.840
+I would love if it would say that.
+
+00:37:46.840 --> 00:37:51.140
+There's a great thing about the major features, but that's just 310, not the point release.
+
+00:37:51.620 --> 00:37:52.540
+Well, we'll have to check it out.
+
+00:37:52.540 --> 00:37:53.660
+Anyway, still good.
+
+00:37:53.660 --> 00:37:54.220
+Yeah.
+
+00:37:54.220 --> 00:38:00.740
+We've been having fun making all of our GCP samples, making sure they're 310 compatible, which we're getting there.
+
+00:38:01.180 --> 00:38:03.840
+It's all waiting for certain dependencies to be ready.
+
+00:38:03.840 --> 00:38:05.500
+But a lot of fun.
+
+00:38:05.500 --> 00:38:06.360
+Very exciting to see.
+
+00:38:06.360 --> 00:38:07.320
+Yeah, that's awesome.
+
+00:38:07.320 --> 00:38:09.040
+Well, you can look at the changelog.
+
+00:38:09.040 --> 00:38:12.440
+So if you look at the 310, the changelog, you can see 310.1 and stuff.
+
+00:38:12.440 --> 00:38:13.820
+I can.
+
+00:38:13.820 --> 00:38:15.160
+Yeah, go up a little bit.
+
+00:38:15.160 --> 00:38:16.360
+Full changelog there, maybe?
+
+00:38:16.360 --> 00:38:16.880
+Yeah.
+
+00:38:16.880 --> 00:38:18.000
+Yeah, that's true.
+
+00:38:18.000 --> 00:38:19.960
+I can go to the changelog there and check that out.
+
+00:38:19.960 --> 00:38:22.920
+But having a security thing would be an idea.
+
+00:38:22.920 --> 00:38:23.600
+Yeah, just like.
+
+00:38:23.600 --> 00:38:24.240
+A TLDR.
+
+00:38:24.240 --> 00:38:25.680
+Yeah, exactly.
+
+00:38:25.680 --> 00:38:26.140
+Exactly.
+
+00:38:26.140 --> 00:38:26.400
+Cool.
+
+00:38:26.400 --> 00:38:31.420
+Well, and also a lot of people didn't want to try 310 until we got one patch release.
+
+00:38:31.420 --> 00:38:32.760
+So now we have one patch release.
+
+00:38:32.760 --> 00:38:33.620
+So there's no excuse.
+
+00:38:33.620 --> 00:38:35.200
+So now it's safe.
+
+00:38:35.200 --> 00:38:38.260
+I have been running it for a day in production and it seems okay.
+
+00:38:38.260 --> 00:38:41.240
+Put it on one site to see if it would hang in there.
+
+00:38:41.240 --> 00:38:41.740
+It seems fine.
+
+00:38:41.740 --> 00:38:42.480
+So we're all good.
+
+00:38:42.480 --> 00:38:42.800
+Yeah.
+
+00:38:42.800 --> 00:38:43.440
+All right.
+
+00:38:43.440 --> 00:38:45.260
+The samples that are using it are doing fine.
+
+00:38:45.260 --> 00:38:47.080
+They've had passing periodic builds for a while.
+
+00:38:47.080 --> 00:38:48.020
+Yeah, fantastic.
+
+00:38:48.020 --> 00:38:48.760
+All right.
+
+00:38:48.760 --> 00:38:50.480
+Are you ready for some cat jokes later?
+
+00:38:50.480 --> 00:38:50.700
+Sorry.
+
+00:38:50.700 --> 00:38:51.780
+Yes.
+
+00:38:51.780 --> 00:38:55.400
+I mean, we started our conversation off today talking about cats.
+
+00:38:55.400 --> 00:38:56.000
+It's true.
+
+00:38:56.300 --> 00:38:57.780
+Before we hit record.
+
+00:38:57.780 --> 00:38:59.660
+So I feel like we should round that out.
+
+00:38:59.660 --> 00:39:00.020
+Definitely.
+
+00:39:00.020 --> 00:39:07.180
+So first of all, htpstatuses.com is a fantastic place to go learn about the real meaning or
+
+00:39:07.180 --> 00:39:09.660
+the official meaning, let's say, of status code.
+
+00:39:09.660 --> 00:39:11.740
+So for example, there's 100 continue.
+
+00:39:11.740 --> 00:39:14.420
+And if you want details, you click on that and it actually pulls this all up.
+
+00:39:14.420 --> 00:39:17.620
+Even shows you like the enum in Python.
+
+00:39:17.620 --> 00:39:18.620
+Oh my gosh.
+
+00:39:18.620 --> 00:39:19.440
+I love that.
+
+00:39:19.440 --> 00:39:20.220
+Isn't that cool?
+
+00:39:20.220 --> 00:39:20.600
+Yeah.
+
+00:39:20.600 --> 00:39:22.740
+It gives you the meaning like 100 continue.
+
+00:39:22.740 --> 00:39:25.940
+The initial part of a request has been received and has not yet been.
+
+00:39:26.200 --> 00:39:27.900
+Yet been rejected by the server.
+
+00:39:27.900 --> 00:39:31.420
+The server intends to send a final response eventually.
+
+00:39:31.420 --> 00:39:33.180
+And so there's other ones like 200.
+
+00:39:33.180 --> 00:39:33.760
+Okay.
+
+00:39:33.760 --> 00:39:34.920
+201 created.
+
+00:39:34.920 --> 00:39:35.680
+Let's see.
+
+00:39:35.680 --> 00:39:36.600
+What else should I point out?
+
+00:39:36.600 --> 00:39:39.180
+304 cache, not modified.
+
+00:39:39.180 --> 00:39:40.860
+400 bad request.
+
+00:39:40.860 --> 00:39:41.760
+Bad request.
+
+00:39:41.760 --> 00:39:43.000
+404 not found.
+
+00:39:43.000 --> 00:39:43.920
+403 forbidden.
+
+00:39:43.920 --> 00:39:46.960
+500 internal server error.
+
+00:39:46.960 --> 00:39:47.820
+Yeah.
+
+00:39:47.820 --> 00:39:48.260
+418.
+
+00:39:48.260 --> 00:39:49.020
+I'm a teabot.
+
+00:39:49.020 --> 00:39:49.360
+Yeah.
+
+00:39:49.820 --> 00:39:50.960
+And 502 bad gateway.
+
+00:39:50.960 --> 00:39:51.240
+Okay.
+
+00:39:51.240 --> 00:39:53.520
+So let's do yours firstly.
+
+00:39:53.520 --> 00:39:53.940
+Please.
+
+00:39:53.940 --> 00:39:54.780
+I put it.
+
+00:39:54.780 --> 00:39:58.540
+I put out this joke and you said, this is good, but oh my goodness.
+
+00:39:58.540 --> 00:39:59.300
+But yeah.
+
+00:39:59.800 --> 00:40:07.180
+So when I was doing my computer science degree, a friend shared with me, HTTP.cat, when we
+
+00:40:07.180 --> 00:40:09.140
+were learning about HTTP status codes.
+
+00:40:09.140 --> 00:40:16.080
+And if you go there, you will find one cat per HTTP status code representing what is going
+
+00:40:16.080 --> 00:40:16.440
+on.
+
+00:40:16.440 --> 00:40:19.120
+And I'm not going to lie to you in my professional career.
+
+00:40:19.120 --> 00:40:22.460
+I still use it as a reference because it's my favorite one.
+
+00:40:22.460 --> 00:40:29.260
+And you can even, if you go to like HTTP.cat slash 200, it returns a JPEG of a cat that's
+
+00:40:29.260 --> 00:40:29.780
+like, okay.
+
+00:40:29.780 --> 00:40:30.720
+Yeah, exactly.
+
+00:40:30.720 --> 00:40:32.660
+And you can do that for all of the status codes.
+
+00:40:32.660 --> 00:40:40.000
+201, the cat has walked through some wet cement and that's 201 created for footprints.
+
+00:40:40.000 --> 00:40:41.960
+Let's see what else we got in here.
+
+00:40:41.960 --> 00:40:42.840
+Some good ones.
+
+00:40:42.840 --> 00:40:44.720
+404 not modify.
+
+00:40:44.720 --> 00:40:46.020
+304, sorry.
+
+00:40:46.640 --> 00:40:49.300
+The 404, the cat is hiding under some wrapping.
+
+00:40:49.300 --> 00:40:50.260
+Not found.
+
+00:40:50.260 --> 00:40:50.800
+Fantastic.
+
+00:40:50.800 --> 00:40:51.200
+Yeah.
+
+00:40:51.200 --> 00:40:51.860
+I love this.
+
+00:40:51.860 --> 00:40:54.020
 I had not heard about this and it's glorious.
 
+00:40:54.020 --> 00:40:54.580
+Thank you.
 
-00:40:54.600 --> 00:40:57.020
-- Well, wait, is there a 418?
+00:40:54.580 --> 00:40:55.380
+Well, wait, what's it?
 
+00:40:55.380 --> 00:40:56.520
+Does there, is there a 418?
 
-00:40:57.020 --> 00:40:58.340
-- There is. - Of course there is.
+00:40:56.520 --> 00:40:57.420
+There is.
 
+00:40:57.420 --> 00:40:57.980
+Of course there is.
 
-00:40:58.340 --> 00:40:59.800
-- I mean, teapot.
-
-
-00:40:59.800 --> 00:41:01.000
-- A kitten in a teapot.
-
-
-00:41:01.000 --> 00:41:02.640
-- Literally inside of a teapot.
-
-
-00:41:02.640 --> 00:41:07.640
-All right, so I saw this joke by Breen, who is John Breen,
-
-
-00:41:07.640 --> 00:41:10.700
-and thought, that's really funny.
-
-
-00:41:10.700 --> 00:41:14.300
-What he did is he put his own personal take
-
-
-00:41:14.300 --> 00:41:15.620
-on what status code means,
-
-
-00:41:15.620 --> 00:41:16.820
-and I thought they were hilarious,
-
-
-00:41:16.820 --> 00:41:19.140
-but I thought, you know, let me take a shot at this as well,
-
-
-00:41:19.140 --> 00:41:20.880
-a little more Python focused.
-
-
-00:41:20.880 --> 00:41:22.740
-So I, I'll link to my tweet,
-
-
-00:41:22.740 --> 00:41:25.840
-I put this set of colloquial meanings
-
-
-00:41:25.840 --> 00:41:27.540
-of the HTV status codes.
-
-
-00:41:27.540 --> 00:41:28.780
-All right, you all ready for this?
-
-
-00:41:28.780 --> 00:41:29.620
-- Yeah.
-
-
-00:41:29.620 --> 00:41:30.440
-- Do it.
-
-
-00:41:30.440 --> 00:41:32.260
-- So, 200 is, what's up?
-
-
-00:41:32.260 --> 00:41:34.260
-All right. All good.
-
-
-00:41:34.260 --> 00:41:36.260
-201, hello creator.
-
-
-00:41:36.260 --> 00:41:39.260
-304, not modified or cached.
-
-
-00:41:39.260 --> 00:41:41.260
-Same old, same old.
-
-
-00:41:41.260 --> 00:41:42.760
-403, permission denied.
-
-
-00:41:42.760 --> 00:41:44.260
-Get off my lawn, kids.
-
-
-00:41:44.260 --> 00:41:46.260
-- That was my favorite.
-
-
-00:41:46.260 --> 00:41:49.260
-- 404 is just, there's no message.
-
-
-00:41:49.260 --> 00:41:50.260
-It's just not there.
-
-
-00:41:50.260 --> 00:41:52.760
-Not that that's the message, but it's just blank.
-
-
-00:41:52.760 --> 00:41:54.760
-500 is, we're bad at APIs.
-
-
-00:41:54.760 --> 00:41:55.760
-- A little bit. - Server error.
-
-
-00:41:55.760 --> 00:41:57.760
-400 is, you're bad at APIs.
-
-
-00:41:57.760 --> 00:41:58.260
-- Yes.
-
-
-00:41:58.260 --> 00:42:01.260
-- The real cardinal sin of APIs is
-
-
-00:42:01.260 --> 00:42:06.060
-200 but in the body there's a JSON that says error and a reason.
-
-
-00:42:06.060 --> 00:42:07.060
-- Oof.
-
-
-00:42:07.060 --> 00:42:09.060
-- 200 but with error text.
-
-
-00:42:09.060 --> 00:42:10.060
-We're really bad at APIs.
-
-
-00:42:10.060 --> 00:42:11.060
-- Yeah.
-
-
-00:42:11.060 --> 00:42:16.020
-- 502, we're bad at deployment or DevOps because part of the infrastructure can't get to the
-
-
-00:42:16.020 --> 00:42:17.020
-other part.
-
-
-00:42:17.020 --> 00:42:18.620
-And Brian's favorite, 418.
-
-
-00:42:18.620 --> 00:42:20.220
-Is it already April again?
-
-
-00:42:20.220 --> 00:42:21.220
-- Yeah.
-
-
-00:42:21.220 --> 00:42:26.300
-- Because the reason is that was actually put into the spec as an April Fool's joke and
-
-
-00:42:26.300 --> 00:42:27.300
-they left it.
-
-
-00:42:27.300 --> 00:42:28.300
+00:40:57.980 --> 00:40:59.100
 I'm a teapot.
 
+00:40:59.100 --> 00:41:00.480
+A kitten and a teapot.
 
-00:42:28.300 --> 00:42:29.300
-- I love that they left it.
+00:41:00.480 --> 00:41:00.940
+A kitten and a teapot.
 
+00:41:00.940 --> 00:41:02.320
+Literally inside of a teapot.
 
-00:42:29.300 --> 00:42:30.300
-- I do too.
+00:41:02.320 --> 00:41:02.900
+All right.
 
+00:41:02.900 --> 00:41:10.640
+So I saw this joke by Breen, who is John Breen, and thought, that's really funny.
 
-00:42:30.300 --> 00:42:31.640
-- I do too.
+00:41:10.640 --> 00:41:15.520
+What he did is he put his own personal take on what status code means.
 
+00:41:15.680 --> 00:41:19.080
+And I thought they were hilarious, but I thought, you know, let me take a shot at this as well.
 
-00:42:31.640 --> 00:42:33.860
-- It's like import this,
+00:41:19.080 --> 00:41:20.420
+A little more Python focused.
 
+00:41:20.420 --> 00:41:22.680
+So I'll link to my tweet.
 
-00:42:33.860 --> 00:42:37.060
-just stuff that's fun that should just always be there.
+00:41:22.680 --> 00:41:27.160
+I put this set of colloquial meanings of the HTV status codes.
 
+00:41:27.160 --> 00:41:27.760
+All right.
 
-00:42:37.060 --> 00:42:37.900
-- Yeah. - Yeah.
+00:41:27.760 --> 00:41:28.560
+You all ready for this?
 
+00:41:28.560 --> 00:41:28.940
+Yeah.
 
-00:42:37.900 --> 00:42:39.060
-- What's the harm?
+00:41:28.940 --> 00:41:29.540
+Do it.
 
+00:41:29.600 --> 00:41:31.840
+So 200 is, what's up?
 
-00:42:39.060 --> 00:42:39.880
+00:41:31.840 --> 00:41:32.500
+All right.
+
+00:41:32.500 --> 00:41:33.720
+All good.
+
+00:41:33.720 --> 00:41:35.160
+201.
+
+00:41:35.160 --> 00:41:36.080
+Hello, creator.
+
+00:41:36.080 --> 00:41:37.040
+304.
+
+00:41:37.040 --> 00:41:39.180
+Not modified or cached.
+
+00:41:39.180 --> 00:41:40.740
+It's same old, same old.
+
+00:41:40.740 --> 00:41:41.820
+403.
+
+00:41:41.820 --> 00:41:42.640
+Permission denied.
+
+00:41:42.640 --> 00:41:43.880
+It's get off my lawn, kids.
+
+00:41:43.880 --> 00:41:44.760
+That was my favorite.
+
+00:41:47.000 --> 00:41:49.140
+404 is just, there's no message.
+
+00:41:49.140 --> 00:41:49.960
+It's just not there.
+
+00:41:49.960 --> 00:41:52.500
+It's just not that that's the message, but it's just blank.
+
+00:41:52.500 --> 00:41:54.780
+500 is we're bad at APIs.
+
+00:41:54.780 --> 00:41:55.320
+I love that.
+
+00:41:55.320 --> 00:41:55.580
+Server error.
+
+00:41:55.580 --> 00:41:57.540
+400 is you're bad at APIs.
+
+00:41:57.540 --> 00:41:58.020
+Yes.
+
+00:41:58.020 --> 00:41:58.400
+Yeah.
+
+00:41:58.400 --> 00:42:05.060
+The real cardinal sin of APIs is 200, but in the body, there's a JSON that says error
+
+00:42:05.060 --> 00:42:05.780
+and a reason.
+
+00:42:05.780 --> 00:42:06.600
+Oof.
+
+00:42:06.600 --> 00:42:09.960
+200, but with error text, we're really bad at APIs.
+
+00:42:09.960 --> 00:42:10.320
+Yeah.
+
+00:42:10.320 --> 00:42:16.060
+502, we're bad at deployment or DevOps because part of the infrastructure can't get to the
+
+00:42:16.060 --> 00:42:16.480
+other part.
+
+00:42:16.480 --> 00:42:19.660
+And Brian's favorite, 418, is it already April again?
+
+00:42:19.660 --> 00:42:19.920
+Yeah.
+
+00:42:19.920 --> 00:42:26.440
+Because the reason is that was actually put into the spec as an April Fool's joke and they
+
+00:42:26.440 --> 00:42:26.940
+left it.
+
+00:42:26.940 --> 00:42:27.580
+I'm a teapot.
+
+00:42:27.580 --> 00:42:29.100
+I love that they left it.
+
+00:42:29.100 --> 00:42:30.040
+I do too.
+
+00:42:30.040 --> 00:42:31.140
+I do too.
+
+00:42:31.140 --> 00:42:33.640
+It's like import this.
+
+00:42:33.640 --> 00:42:36.820
+Just stuff that's fun that should just always be there.
+
+00:42:36.820 --> 00:42:37.240
+Yeah.
+
+00:42:37.240 --> 00:42:37.580
+Yeah.
+
+00:42:37.580 --> 00:42:38.620
 What's the harm?
 
+00:42:38.620 --> 00:42:39.480
+What's the harm?
 
-00:42:39.880 --> 00:42:41.520
+00:42:39.480 --> 00:42:40.240
 Just leave it there.
 
+00:42:40.240 --> 00:42:44.380
+Anthony, the live stream has some feedback for you, Leah.
 
-00:42:41.520 --> 00:42:44.820
-Anthony in the live stream has some feedback for you, Leah.
+00:42:44.380 --> 00:42:46.520
+These status codes using cats.
 
-
-00:42:44.820 --> 00:42:46.620
-"HTTP status codes using cats."
-
-
-00:42:46.620 --> 00:42:48.280
+00:42:46.520 --> 00:42:47.320
 Well, I never.
 
+00:42:47.320 --> 00:42:50.720
+I mean, where there's internet, there is cats, no?
 
-00:42:48.280 --> 00:42:51.320
-- I mean, where there's internet, there is cats, no?
+00:42:50.720 --> 00:42:52.240
+Oh, of course.
 
+00:42:52.240 --> 00:42:55.420
+Why we created the internet in the first place is for cats.
 
-00:42:51.320 --> 00:42:52.340
-- Oh, of course.
+00:42:55.420 --> 00:42:56.220
+Exactly.
 
+00:42:56.760 --> 00:42:57.140
+All right.
 
-00:42:52.340 --> 00:42:54.580
-- Why we created the internet in the first place
+00:42:57.140 --> 00:42:59.060
+Well, I think that's it for our show.
 
-
-00:42:54.580 --> 00:42:55.880
-is for cats.
-
-
-00:42:55.880 --> 00:42:56.840
-- Exactly.
-
-
-00:42:56.840 --> 00:42:59.320
-All right, well, I think that's it for our show.
-
-
-00:42:59.320 --> 00:43:01.200
+00:42:59.060 --> 00:43:01.040
 Brian, thanks for being here as always.
 
+00:43:01.040 --> 00:43:01.520
+Thank you.
 
-00:43:01.200 --> 00:43:02.040
+00:43:01.520 --> 00:43:02.060
 Leah, thanks for joining us.
 
+00:43:02.060 --> 00:43:02.720
+Thank you for having me.
 
-00:43:02.040 --> 00:43:02.960
-- Thank you for having me.
-
-
-00:43:02.960 --> 00:43:04.120
+00:43:02.720 --> 00:43:03.680
 Thanks for listening, everyone.
 
+00:43:03.680 --> 00:43:04.300
+Yeah.
 
-00:43:04.120 --> 00:43:05.240
-- Yeah, you bet.
+00:43:04.300 --> 00:43:05.000
+You bet.
 
-
-00:43:05.240 --> 00:43:06.440
-See y'all later. - Bye.
+00:43:05.000 --> 00:43:05.620
+See you all later.
 

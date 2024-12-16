@@ -1,596 +1,650 @@
-00:00:00 Hello and welcome to Python Bytes where we deliver Python news and headlines directly to your earbuds.
+00:00:00 Hello and welcome to Python Bytes, where we deliver Python news and headlines directly to
 
-00:00:05 This is episode 59, recorded January 4th, 2018.
-
-00:00:10 I'm Michael Kennedy.
+00:00:04 your earbuds. This is episode 59, recorded January 4th, 2018. I'm Michael Kennedy.
 
 00:00:11 And I'm Brian Okken.
 
 00:00:12 And we got a bunch of awesome stuff lined up for you in this very first episode of 2018.
 
-00:00:18 So, let's say thank you and happy new year to DigitalOcean.
+00:00:17 So let's say thank you and happy new year to DigitalOcean.
 
-00:00:22 Yeah, thanks and definitely happy new year. It's exciting to be back.
+00:00:22 Yeah, thanks. And definitely happy new year. It's exciting to be back.
 
-00:00:25 It's very exciting to be back. And we, you know, the Python news doesn't stop coming. I think if anything, it's just picking up speed. I'm afraid we might scare people a little bit with some of your picks this this time, Brian. What? The stuff near the end, the stuff near the end. So yeah.
+00:00:25 It's very exciting to be back. And we, you know, the Python news doesn't stop coming. I think if
 
-00:00:42 Another thing that's kind of scary is turning off garbage collection.
+00:00:30 anything, it's just picking up speed. I'm afraid we might scare people a little bit with some of your
 
-00:00:45 Seems like that might be bad, right? Right. Well, I was actually surprised and very interested when when I was listening to the Instagram talk at PyCon about turning off garbage collection.
+00:00:35 picks this time, Brian.
 
-00:00:55 And there's an article that they put out again, they said that they had turned it off last year and then they wanted to sort of, they were having memory problems, so they wanted to try to turn it back on a little bit, but they still have concerns.
+00:00:36 What?
 
-00:01:10 - Yeah, so maybe we should take a moment, just a step back and say, you described the original thing, so why did they start down this path of turning off garbage collection in the first place?
+00:00:37 The stuff near the end. The stuff near the end. So yeah.
 
-00:01:19 What they found was they were running many instances of their, the largest Django deployment on Python in the world.
+00:00:42 Okay.
 
-00:01:26 So they're running lots of servers with us.
+00:00:42 Another thing that's kind of scary is turning off garbage collection. Seems like that might be bad,
 
-00:01:27 And they found that the shared memory across multiple processes running that on a single server was completely falling apart because garbage collection was shifting stuff around.
+00:00:47 right?
 
-00:01:39 They said, well, could we turn it off?
+00:00:47 Right. Well, I was actually surprised and very interested when I was listening to
 
-00:01:41 And it turned out that they could, but they then, this article you're referring to says they basically were losing those gains again.
+00:00:50 the Instagram talk at PyCon about turning off garbage collection. And there's an article that
 
-00:01:46 - And we'd talked about this, I guess, a couple times of if you turn it off, then you can, eventually will run out, but if you're restarting tasks every once in a while, that completely cleans it up.
+00:00:57 they put out again. They said that they've, they had turned it off last year and then they wanted to
 
-00:01:58 - Yeah, exactly.
+00:01:03 sort of, they were having memory problems. So they wanted to try to turn it back on a little bit,
 
-00:01:58 - They were losing some of those gains, but they wanted, so they wanted to get some of those back.
+00:01:08 but they still have concerns.
 
-00:02:03 This is a really interesting, and I had to read it, read this article about three times, but it's called Copy on Write Friendly Python Garbage Collection.
+00:01:10 Yeah. So maybe we should take a moment, just a step back and say, you described the original thing.
 
-00:02:12 And it's a pretty interesting story, but the end punchline is that they've got a new addition to Python that's gonna go into Python 3.7, or it's already in there, that is called GC freeze, which what happens is they get their main stuff running with all the shared objects, but before they like fork off a bunch of threads, they call this GC freeze and all the stuff that's in memory right now at this point doesn't get garbage collected, but everything from now, from like this point in time on, will be garbage collected, which is pretty interesting.
+00:01:15 So why did they start down this path of turning off garbage collection in the first place? What
 
-00:02:47 Yeah, that's really, it's really interesting. So Python memory management is a little, I think it's a little obscure. People don't talk about it very much. And I don't think there's a lot of good write ups. You actually found a really fantastic write up on the intricate details of Python memory management. The short version is most things are cleaned up through reference counting. So number of things pointed at it, when that goes to zero, it goes away. But the problem with reference counting is cycles. I have one object that points at another that object points back at the first, they both have a count of one or higher forever, and they get leaked. And so there's this secondary garbage collection phase that goes through and looks at these items, cleans them up, and so on. So this GC freeze says, let's take all the stuff that exists now, and just tell the garbage collector to ignore it, don't touch it, don't mess with it, leave it alone, right. And so So you get like, basically your app into its normal working state and then freeze it one time.
+00:01:19 they found was they were running many instances of their, the largest Django deployment on Python in
 
-00:03:44 And then all the new stuff that would make the memory grow and grow and grow over time is going to be continually GC'd.
+00:01:25 the world. So they're running lots of servers with us. And they found that the shared memory across
 
-00:03:50 But the core essence of your app, Python runtime and a bunch of things to get started, should be kind of fixed, right?
+00:01:31 multiple processes running that on a single server was completely falling apart because garbage
 
-00:03:57 Yeah, and I think that's a pretty cool idea because that's a common model for applications to get connections up and get your normal like, sitting state, idle state, state running and then before you get requests in and and spawning stuff just at that point you're like well this is all the shared stuff let's just we don't need to move this stuff around it's always going to be there anyway it's a cool idea and apparently it saved them they were at linear linear memory growth and they slowed that down quite a bit yeah it looks really really interesting Instagram is doing amazing stuff I think in the Python space and the web space. And if any of those guys are out there listening, want to come talk about Python and Instagram on Talk Python, I'm more than welcome to any other more than welcome to come over. It'd be fun. And I definitely appreciate that they're very open about this to say, Hey, this is what we're trying. It's not like perfect yet. But it's better. Yeah, it's super cool.
+00:01:37 collection was shifting stuff around. They said, well, could we turn it off? And it turned out that
 
-00:04:53 Do you know if GC freeze is approved or just proposed for three, seven. So we have a link to the pull request that looks like it's already in.
+00:01:41 they could, but they then this article you're referring to says they basically were losing
 
-00:05:02 >> Oh, it is merged. Yes, it is merged.
+00:01:45 those gains again.
 
-00:05:04 This is pretty awesome. We have CPython on GitHub with a pull request merged in with its comment history.
+00:01:46 And we'd talked about this, I guess, a couple of times of if you turn it off, then you can
 
-00:05:11 That's new. That's the 2017 bit of magic that it's on GitHub.
+00:01:51 eventually will run out. But if you're restarting tasks every once in a while, that completely
 
-00:05:15 >> Yeah.
+00:01:57 cleans it up.
 
-00:05:16 >> Cool. So nice that we can actually track that.
+00:01:58 Yeah, exactly.
 
-00:05:19 The next thing that I want to talk about is a little bit different.
+00:01:58 They were losing some of those gains, but they wanted, so they wanted to get some of those back.
 
-00:05:22 I think this will be mostly of interest for data science folks.
+00:02:02 This is a really interesting, and I had to read it, read this article about three times,
 
-00:05:27 This is a little bit lower level maybe than it sounds, but this thing's called SpeechPy.
+00:02:06 but it's called copy on write friendly Python garbage collection. And it's a pretty interesting
 
-00:05:31 So Speech P-Y.
+00:02:13 story, but the end punchline is that they've got a new addition to Python that's going to go into
 
-00:05:33 It's a library for speech processing and recognition.
+00:02:20 Python 3.7, or it's already in there that is called GC freeze, which what happens is they get
 
-00:05:37 So this is a pretty interesting Python project.
+00:02:26 their main stuff running with all the shared objects. But before they like fork off a bunch of threads,
 
-00:05:41 You can come along and basically give it some, you know, spoken words, and it can pull out various effects and things that are sort of the essence of what you need to do speech recognition.
+00:02:33 they call this GC freeze and all the stuff that's in memory right now at this point doesn't get
 
-00:05:54 I think this works a little, you don't just feed it like, here's a say a wave file and out pops text of what it said, but it gives you what you would need to feed to a machine learning system.
+00:02:39 garbage collected, but everything from now, from like this point in time on will be garbage collected,
 
-00:06:05 Basically takes the spoken words into a representation you can feed to some kind of algorithm to actually get the text.
+00:02:45 which is pretty interesting.
 
-00:06:11 So I think that was pretty cool. And one of the things that I wanted to bring this up for is they have a really nice citation statement.
+00:02:46 Yeah, that's really, it's really interesting. So Python memory management is a little,
 
-00:06:19 So if you look at the GitHub repo, like kind of near the top, it says, If you're going to use this package, please cite it as follows.
+00:02:52 I think it's a little obscure. People don't talk about it very much. And I don't think there's a lot
 
-00:06:28 And that's interesting because there's been some talk in the scientific space, more true science, not data science, around people want to publish their software and they want to work on advancing software, but in the academic space, you have to publish articles or, you know, the whole publish or perish type of thing.
+00:02:57 of good write ups. You actually found a really fantastic write up on the intricate details of Python
 
-00:06:47 And the way you get credit for your work is to be cited in other articles.
+00:03:03 memory management. The short version is most things are cleaned up through reference counting. So number
 
-00:06:52 And so this is sort of showing a way to cite this work, which is not a paper, but which is an open source project, in the same sense that the person, the people who created it might get the same level of academic credit for their thing being cited. So I think that's pretty cool.
+00:03:09 of things pointing at it, when that goes to zero, it goes away. But the problem with reference counting
 
-00:07:10 Yeah, I don't get the syntax.
+00:03:13 is cycles, I have one object appointed another that object points back at the first, they both have a
 
-00:07:12 It must mean something. I have no idea what it is.
+00:03:19 count of one or higher forever, and they get leaked. And so there's this secondary garbage collection
 
-00:07:15 Okay.
+00:03:24 phase that goes through and looks at these items, cleans them up, and so on. So this GC freeze says,
 
-00:07:16 I thought it's kind of neat if you're doing machine learning, you need to turn waveforms into something you can process. This is pretty cool.
+00:03:32 let's take all the stuff that exists now, and just tell the garbage collector to ignore it,
 
-00:07:24 And the other thing that's kind of nice is if you look at it here, and I think it's in the documentation or the tutorial, they actually show you how to process wave files from SciPy, which is also maybe cool and handy at some point.
+00:03:36 don't touch it, don't mess with it, leave it alone, right? And so you get like, basically your app into
 
-00:07:36 Yeah, it's actually something I need to be doing some wave file processing.
+00:03:41 its like normal working state, and then freeze it one time. And then all the new stuff that would make
 
-00:07:41 Well, SciPy apparently has it.
+00:03:46 the memory grow and grow and grow over time is going to be continually GCed. But the core essence of
 
-00:07:43 Nice. How about the next one?
+00:03:52 your app, Python runtime, and a bunch of things to get started should be kind of fixed, right?
 
-00:07:46 Well, next up we've got our friends at PyBytes.
+00:03:56 Yeah. And I think that's a pretty cool idea, because that's a common model for applications to
 
-00:07:50 Is that what they're called?
+00:04:02 get connections up and get your normal like sitting state, idle state running. And then before you get
 
-00:07:51 -PyBytes. -Yeah, PyBytes.
+00:04:10 requests in and, and spawning stuff, just at that point, you're like, well, this is all the shared
 
-00:07:53 That's right.
+00:04:15 stuff. Let's just, we don't need to move this stuff around. It's always going to be there.
 
-00:07:53 They've got a new platform.
+00:04:20 Anyway, it's a cool idea. And apparently it saved them. They were at linear, linear memory growth,
 
-00:07:56 And I suddenly forgot the URL, but it's...
+00:04:26 and they slowed that down quite a bit.
 
-00:07:59 There it is.
+00:04:28 Yeah, it looks really, really interesting. Instagram is doing amazing stuff, I think,
 
-00:08:00 CodeChallenges, but the ES is after the dot.
+00:04:32 in the Python space and the web space. And if any of those guys are out there listening,
 
-00:08:03 So, CodeChallenge.es.
+00:04:37 they want to come talk about Python and Instagram on Talk Python. I'm more than welcome to any other
 
-00:08:06 [laughs]
+00:04:42 more than welcome to come over. It'd be fun.
 
-00:08:07 No, clever though.
+00:04:44 And I definitely appreciate that they're very open about this to say, hey, this is what we're trying.
 
-00:08:08 But it's...
+00:04:49 It's not like perfect yet, but it's better.
 
-00:08:09 We've covered other things before.
+00:04:51 Yeah, it's super cool. Do you know if GC freeze is approved or just proposed for 3.7?
 
-00:08:11 Like, there's a...
+00:04:57 So we have a link to the, the pull request that looks like it's already in.
 
-00:08:13 I should have looked this up.
+00:05:02 Oh, it is merged. Yes, it is merged. So this is pretty awesome, right? We have
 
-00:08:14 There's a game one that's...
+00:05:06 CPython on GitHub with a pull request merged in with its comment history. That was that's new,
 
-00:08:15 They're like going through a game and doing code challenges.
+00:05:12 right? That's the 2017 bit of magic that it's on GitHub.
 
-00:08:18 and there's code katas around.
+00:05:16 Yeah, cool. So nice that we can actually track that. So the next thing that I want to talk about
 
-00:08:21 This is a similar sort of thing.
+00:05:21 is a little bit different. I think this will be mostly of interest for data science folks. This is
 
-00:08:22 So you are able to do these little code challenges and they say, it's called bytes of Python, bytes of pi, and are their self contained 20 to 60 minute code challenges.
+00:05:27 a little bit lower level maybe than it sounds, but this thing's called SpeechPy. So SpeechPy,
 
-00:08:34 And you can write them and verify them in the browser.
+00:05:33 it's a library for speech processing and recognition. So this is a pretty interesting Python project.
 
-00:08:38 And I had I did two of them this morning and I had kind of a lot of fun with it.
+00:05:40 You can come along and basically give it some, you know, spoken words and it can pull out
+
+00:05:46 various effects and things that are sort of the essence of what you need to do speech recognition.
+
+00:05:54 I think this works a little, you don't just feed it like here's a say a wave file and out pops text of
+
+00:06:00 what it said, but it gives you what you would need to feed to a machine learning system.
+
+00:06:04 Basically takes the spoken words into a representation. You can feed to some kind of algorithm to actually
+
+00:06:10 get the text. So I think that was pretty cool. And one of the things that I wanted to bring this up
+
+00:06:16 for is they have a really nice citation statement. So if you look at the GitHub repo,
+
+00:06:21 like kind of near the top, it says, if you're going to use this package, please cite it as follows.
+
+00:06:28 And that's interesting because there's been some talk in the scientific space, more true science,
+
+00:06:35 not data science around people want to publish their software and they want to work on advancing
+
+00:06:40 software. But in the academic space, you have to publish articles or, you know, the whole publish or
+
+00:06:45 perish type of thing. And the way you get credit for your work is to be cited.
+
+00:06:51 in other articles. And so this is sort of showing a way to cite this work, which is not a paper,
+
+00:06:59 but which is an open source project in the same sense that the person, the people who created it
+
+00:07:04 might get the same level of academic credit for their thing being cited. So I think that's pretty
+
+00:07:10 cool. Yeah. I don't get the syntax, but it must mean something. I have no idea what it is.
+
+00:07:15 Okay. I thought it's kind of neat. If you're doing machine learning, you need to turn
+
+00:07:20 waveforms into something you can process. This is pretty cool. And the other thing that's kind of
+
+00:07:25 nice is if you look at it here, and I think it's in the documentation or the tutorial, they actually
+
+00:07:31 show you how to process wave files from SciPy, which is also maybe cool and handy at some point.
+
+00:07:36 Yeah. It's actually something I need to be doing some wave file processing.
+
+00:07:40 Well, SciPy apparently has it.
+
+00:07:42 Nice. How about the next one?
+
+00:07:46 Well, next up, we've got our friends at PyBytes. Is that what they're called? PyBytes.
+
+00:07:52 Yeah. PyBytes. That's right.
+
+00:07:53 They've got a new platform and I suddenly forgot the URL, but there it is. Code challenges,
+
+00:08:01 but the ES is after the dot. So code challenge.es. No, clever though. But we've covered other things
+
+00:08:11 before. I should have looked this up. There's a game one that you're going through a game and doing
+
+00:08:17 code challenges and there's code katas around. This is a similar sort of thing. So you are able to
+
+00:08:23 do these little code challenges and they say, it's called bytes of Python, bytes of pie and are,
+
+00:08:30 they're self-contained 20 to 60 minute code challenges. And you can write them and verify
+
+00:08:36 them in the browser. And I had, I did two of them this morning and I had kind of a lot of fun with it.
 
 00:08:41 It was fun.
 
-00:08:42 Thanks.
+00:08:42 Nice. And you verify them by writing pytest unit test, right?
 
-00:08:43 And you verify them by writing pi test unit test, right?
+00:08:45 You don't write it. It has pre-written pytest code that checks your answers.
 
-00:08:45 You don't write it.
+00:08:51 I see. So you've got to do some sort of thing and then you check it in and it runs basically the
 
-00:08:46 pre-written pytest code that checks your answers.
+00:08:55 test against your code and says thumbs up, thumbs down.
 
-00:08:51 - I see, so you've got to do some sort of thing and then you check it in and it runs basically the test against your code and says thumbs up, thumbs down?
+00:08:57 Yeah. Like for instance, on the second challenge, you have to write three different functions to
 
-00:08:57 - Yeah, like for instance, on the second challenge, you have to write three different functions to manipulate a list of names.
+00:09:01 manipulate a list of names. And it has tests for all of these. I went ahead and just solved one at a
 
-00:09:04 And it has tests for all of these.
+00:09:09 time, for instance. So I tried to solve the first one and then ran the tests and noticed that
 
-00:09:06 I went ahead and just solved one of it at a time, for instance, so I tried to solve the first one and then ran the test and noticed that the first one passed and then just did that and looking at the, with the help of the test output was helped me solve the rest of them.
+00:09:13 the first one passed and, and then just did that. And looking at the, with the help of the test output
 
-00:09:22 - That's really cool.
+00:09:19 was helped me solve the rest of them.
 
-00:09:23 And I also learned something by the transitive property through you.
+00:09:22 That's really cool. And I also learned something by the transitor property through you.
 
-00:09:25 - You did?
+00:09:25 You did?
 
-00:09:26 - I did.
+00:09:26 I did. I learned what you learned in that min takes a key like sort and sorted does. That way you could
 
-00:09:27 I learned what you learned in that min takes a key like sort and sorted does.
+00:09:33 sort some complex object based on like a attribute of it.
 
-00:09:33 That way you could sort some complex object based on like a attribute of it.
+00:09:36 I didn't know that. I had just discovered that this morning. So my solution for one of the
 
-00:09:36 - I didn't know that.
+00:09:42 challenges is to try to find the, find the name with the shortest first name. And I went ahead and
 
-00:09:38 I had just discovered that this morning.
+00:09:48 sorted the list by the length of the first name and then just pick the first element. Their solution
 
-00:09:40 So my solution for one of the challenges is to try to find the name with the shortest first name.
+00:09:54 uses min instead of sorting the list. You can just find the min length, which is pretty cool.
 
-00:09:47 And I went ahead and sorted the list by the length of the first name, and then just picked the first element.
+00:10:02 Yeah. That's really awesome. That's, that's gotta be quicker than a full on sort.
 
-00:09:54 Their solution uses min instead of sorting the list.
+00:10:05 One of the things I like about these sorts of quick challenges is you can probably do them
 
-00:09:59 You can just find the min length, which is pretty cool.
+00:10:09 like on your lunch break or a couple of lunch breaks to do one of them. And they just take a
 
-00:10:02 - Yeah, that's really awesome.
+00:10:15 browser. So you could just do it on your laptop. It's pretty fun.
 
-00:10:03 That's gotta be quicker than a full-on sort.
+00:10:17 Yep. That's cool. You could maybe even do it on an iPad or something if you really wanted.
 
-00:10:05 - One of the things I like about these sorts of quick challenges is you can probably do them like on your lunch break or a couple of lunch breaks to do one of them.
+00:10:21 Yeah. Well, I don't know. I haven't tried that probably.
 
-00:10:13 And they just take a browser, so you can just do it on your laptop.
+00:10:23 If it runs in the browser, I bet it would. Nice. So yeah, that's, that's really cool.
 
-00:10:17 It's pretty fun.
+00:10:27 I do like that you learn these little things like, wait, min takes a key. I didn't know that.
 
-00:10:18 - Yep, that's cool.
+00:10:32 You know, that's just, you wouldn't think you'd pick up these little things so quickly, but
 
-00:10:18 You could maybe even do it on an iPad or something if you really wanted.
+00:10:35 you know, these little challenges are nice like that. So before we get to the next item,
 
-00:10:21 - Yeah, well, I don't know.
+00:10:39 I want to say thank you to DigitalOcean. They're sponsoring this episode and many,
 
-00:10:22 I haven't tried that, probably.
+00:10:43 many other episodes. They're really a big supporter of Python bytes. So as many of you know,
 
-00:10:23 - If it runs in the browser, I bet it would.
+00:10:48 many of our bits of code or stuff on the web and our files or MP3 files that get sent down to you all go
 
-00:10:26 Nice, so yeah, that's really cool.
+00:10:56 through DigitalOcean. So Python bytes is basically delivered in all of its forms to you through DigitalOcean,
 
-00:10:28 Do you like that you learn these little things, like wait, men takes a key?
+00:11:02 have a bunch of servers there. They're super easy to work with very quick, very reliable. You can create a
 
-00:10:31 I didn't know that.
+00:11:07 new server, a new droplet, they call it in probably 30 seconds. And then you SSH in and you're off to the
 
-00:10:32 You know, that's just, you wouldn't think you'd pick up these little things so quickly, but you know, these little challenges are nice like that.
+00:11:13 races. So really, really nice and affordable and check them out at do.co slash Python and let them
 
-00:10:38 So before we get to the next item, I want to say thank you to DigitalOcean.
+00:11:19 know that you heard about it on Python bytes. So this end of the year thing, Brian, this is kind of
 
-00:10:41 They're sponsoring this episode and many, many other episodes.
+00:11:25 when, I mean, we're sort of on the other side of it, but this is when you get together with your family,
 
-00:10:44 They're really a big supporter of Python Bytes.
+00:11:29 right? People, maybe you didn't even know like, wait, I have a second cousin from wire. Python's like
 
-00:10:46 So as many of you know, many of our bits of code, our stuff on the web and our files or MP3 files that get sent down to you all go through DigitalOcean.
+00:11:36 that, right? Yeah. Yeah. You were talking about like, what is the place where you can like do sort
 
-00:10:57 So Python Bytes is basically delivered in all of its forms to you through DigitalOcean. Have a bunch of servers there.
+00:11:41 of gamified code challenges and that's check IO. So the reason that's relevant, I'm coming back to it,
 
-00:11:04 They're super easy to work with, very quick, very reliable.
+00:11:46 is there's an article by the guys at check IO called how big is the Python family? So this is really nice.
 
-00:11:07 You can create a new server, a new droplet, they call it, in probably 30 seconds.
+00:11:52 And you know, some of you I'm sure are aware of it, but many people I don't really think are aware of
 
-00:11:10 And then you SSH in, and you're off to the races.
+00:11:57 how varied Python is as it sort of as a platform. So when you say Python, typically you mean
 
-00:11:13 So really, really nice and affordable.
+00:12:04 CPython, hopefully you mean modern Python three, six, not legacy to seven Python, but we'll, we'll
 
-00:11:15 And check them out at do.co/python, and let them know that you heard about it on Python Bytes.
+00:12:12 let that slide for now. There's also things like Jython and Jython will let you write Python code,
 
-00:11:22 So this end of the year thing, Brian, this is kind of when, I mean, we're sort of on the other side of it, but this is when you get together with your family, right?
+00:12:19 but executed on the JVM and interact with Java objects. Iron Python is the same thing for.net.
 
-00:11:30 People maybe you didn't even know, like, "Wait, I have a second cousin?" From where?
+00:12:26 There's also Python for.net, which I think is a more up to date, modern variant on the same thing.
 
-00:11:35 Python's like that, right?
+00:12:33 There's Cython, which is compiled slightly different Python. There's PyPy, which is a JIT version.
 
-00:11:36 - Yeah. - Yeah.
-
-00:11:37 You were talking about like what is the place where you can like do sort of gamified code challenges, and that's Check.io.
-
-00:11:44 So the reason that's relevant, I'm coming back to it, is there's an article by the guys at Check.io called "How Big is the Python Family?" So this is really nice.
-
-00:11:52 And you know, some of you I'm sure are aware of it, but many people I don't really think are aware of how varied Python is as a platform.
-
-00:12:02 So when you say Python, typically you mean CPython.
-
-00:12:05 And hopefully you mean modern Python 3.6, not legacy 2.7 Python.
-
-00:12:11 But we'll let that slide for now.
-
-00:12:13 There's also things like Jython.
-
-00:12:16 And Jython will let you write Python code, but execute it on the JVM and interact with Java objects.
-
-00:12:23 Iron Python is the same thing for .NET.
-
-00:12:27 There's also Python 4.NET, which I think is a more up-to-date modern variant on the same thing.
-
-00:12:33 which is compiled slightly different Python.
-
-00:12:36 There's PyPy, which is a JIT version.
-
-00:12:38 MicroPython, which is Python as an--
-
-00:12:40 your app is an operating system in Python on microchips, basically.
+00:12:38 MicroPython, which is Python as an, your app is an operating system and Python on microchips basically.
 
 00:12:44 And on Talk Python, you and I talked about Grumpy, right?
 
-00:12:48 Yeah, which is on Go.
+00:12:49 Yeah. Which is on Go.
 
-00:12:50 Yeah, so Grumpy is from the YouTube guys, which is instead of using C to implement CPython, they said, "Well, what if we wrote the same thing but in Go?" And that's kind of an interesting thing.
+00:12:51 Yeah. So Grumpy is from the YouTube guys, which is instead of using C to implement CPython,
 
-00:13:01 So I thought this is just a nice grouping of all of these ideas, a quick paragraph or two on each of them.
+00:12:57 they said, well, what if we wrote the same thing, but in Go? And that's kind of an interesting thing.
 
-00:13:08 You know, if you're bringing people onto your team and you're like, "Well, wait a minute, there's actually a lot of types of Python here, check this out," right?
+00:13:01 So I thought this is just a nice grouping of all of these ideas, a quick paragraph or two on each of
 
-00:13:14 And also maybe a reminder to like, give PyPy a try.
+00:13:07 them. You know, if you bring in people onto your team and you're like, well, wait a minute,
 
-00:13:17 Like they just had a big release for both Python 2 and Python 3 versions.
+00:13:11 there's actually a lot of types of Python here, check this out. Right. And also maybe a reminder to like,
 
-00:13:21 One of the things I like about this write-up that they did is it reminds you why some of these are around.
+00:13:16 give PyPy a try. Like they just had a big release for both Python 2 and Python 3 versions.
 
-00:13:27 Like, if you had to work with .NET, then working with like Iron Python or Python.net might be like a better thing than just trying to do it other ways.
+00:13:21 One of the things I like about this writeup that they did is it reminds you why some of these are
 
-00:13:38 >> Yeah. One of the advantages there might be, if you're working on a.net app, but you want to add scripting.
+00:13:26 around. Like if you had to work with .NET, then working with like Iron Python or Python.NET might be
 
-00:13:43 >> Yeah.
+00:13:34 like a better thing than just trying to do it other ways.
 
-00:13:44 >> What are your choices? You probably don't want to give them C#.
+00:13:38 Yeah. And one of the advantages there might be, you know, if you're working on a .NET app, but you want to add scripting.
 
-00:13:46 Even if you did, like it requires full on compilation and how do you deal with that?
+00:13:43 Yeah.
 
-00:13:52 This could be a really nice way to plug in scriptability into your enterprise app, which would be pretty cool.
+00:13:44 Like what are your choices? You probably don't want to give them C Sharp. And even if you did,
 
-00:13:57 And one more thing I wanted to throw in on this conversation is, a lot of times I'll say Python runtime, and I know often people say Python interpreter.
+00:13:47 like it requires full on compilation and like, you know, how do you deal with that? Right.
 
-00:14:06 This is what the Python interpreter does. It does this and that.
+00:13:51 So this could be a really nice way to plug in like scriptability into your enterprise app,
 
-00:14:09 Well, if you look at how the whole Python family, only some of them are interpreters.
+00:13:56 which would be pretty cool.
 
-00:14:15 Some of them are compiled execution engines, right? Like the JVM.
+00:13:57 And one more thing I wanted to throw in on this conversation is a lot of times I'll say Python
 
-00:14:20 That's actually not a great example, but say PyPy, for example, or Cython.
+00:14:02 runtime. And I know often people say Python interpreter. This is what the Python interpreter
 
-00:14:24 Those two definitely are not interpreted in the traditional sense.
+00:14:08 does. It does this and that. Well, if you look at how the whole Python family, only some of them
 
-00:14:30 PyPy starts out that way, but it converts to a JIT version for the hotspots.
+00:14:13 are interpreters. Some of them are compiled execution engines, right? Like the JVM. That's actually not a
 
-00:14:35 I often say Python runtime because I kind of feel like, you know, when you say interpreter, you really just got the mindset of CPython, which is the most popular, but not always.
+00:14:21 great example, but say PyPy, for example, or Cython, those two definitely are not interpreted. And in
 
-00:14:44 What do you say?
+00:14:29 the traditional sense, PyPy starts out that way, but it converts to a JIT version for the hotspots.
 
-00:14:45 I don't usually say either.
+00:14:34 I often say Python runtime because I kind of feel like, you know, when you say interpreter, you really
 
-00:14:48 I just say Python.
+00:14:40 just got the mindset of CPython, which is the most popular, but not always. What do you say?
 
-00:14:50 Yeah, there you go.
+00:14:45 Say interpreter?
 
-00:14:51 Cool, so anyway, I think this is a nice write up and good to have it all in one place.
+00:14:46 I don't usually say either. I just say Python.
 
-00:14:55 So, I like the one that you have coming up next.
+00:14:49 Yeah, there you go.
 
-00:14:58 One of the problems I often see is I want to do some work, but I don't care if it happens right now.
+00:14:51 Cool. So anyway, I think this is a nice write up and good to have it all in one place.
 
-00:15:03 I just want to like start it and let it go somewhere.
+00:14:55 So I like the one that you have coming up next. One of the problems I often see is I want to do
 
-00:15:05 I don't usually have a great answer for that.
+00:15:01 some work, but I don't care if it happens right now. I just want to like start it and let it go
 
-00:15:07 Task processing stuff and one of the common things is often people bring up is celery.
+00:15:05 somewhere. I don't usually have a great answer for that.
 
-00:15:12 And to be honest, I've tried to get into celery a couple times, but kind of the learning curve on it, maybe it's just me, me, but I had a little bit of trouble getting into it.
+00:15:07 Task processing stuff. And one of the common things is often people bring up is celery.
 
-00:15:22 I was interested when I heard an interview on podcast.init about a library called dramatic or dramatic.
+00:15:12 And to be honest, I've tried to get into celery a couple of times, but kind of the learning curve on it,
 
-00:15:29 I'm not sure it's D-R-A-M-A-T-I-Q.
+00:15:18 maybe it's just me, but I had, I had a little bit of trouble getting into it.
 
-00:15:32 But it's a very, I'm sure since it's task scheduling, it's a quite complicated internals, I'm sure you just like declare an actor for on some code and it's pretty easy to get started.
+00:15:22 I was interested when I heard an interview on podcast.init about a library called dramatic or
 
-00:15:46 And I thought I'd point people to it.
+00:15:28 dramatic. I'm not sure. It's D R A M A T I Q. Yeah.
 
-00:15:48 Yeah, it's quite cool. You basically put a decorator onto a method, and then that method, instead of running locally, you can like send work to it.
+00:15:33 But it's a very, I'm sure since it's task scheduling, it's a quite complicated internals.
 
-00:15:56 And that send work actually kicks it off on, the example they had was RabbitMQ, I think.
+00:15:40 I'm sure you just like declare an actor for on some code and it's pretty easy to get started.
 
-00:16:02 And that there's like a producer of the work. And then there's another process that just hangs out and consumes anything that lands on the queue. It's pretty cool.
+00:15:46 I thought I'd point people to it.
 
-00:16:09 Yeah, so that you can configure like what your defaults to RabbitMQ, I think. And there's just good defaults that work right off the, just if you don't care.
+00:15:48 Yeah, it's quite cool. You basically put a decorator onto a method and then that method,
 
-00:16:20 And then there's a, you can configure it to use other things if you need to.
+00:15:53 instead of running locally, you can like send work to it. And that send work actually kicks it off on
 
-00:16:24 It apparently is well, the person and during, I forget his name, that developed this, it's used on quite significant projects.
+00:15:59 the example they had was rabbit MQ, I think. And that there's like a producer of the work.
 
-00:16:34 I mean, it, it isn't a toy project, but it's pretty easy to get started and you can configure it to be all sorts of fancy stuff if you need it to be.
+00:16:04 And then there's another process that just hangs out and consumes anything that lands on the queue.
 
-00:16:42 But one of the things I liked about the conversation is he, he brought up that he intentionally kept the documentation and the fairly terse and small so that when you're looking for something that you think you saw before, it's pretty easy to find again.
+00:16:08 It's pretty cool.
 
-00:16:57 So that's cool.
+00:16:09 Yeah. So that you can configure like what your defaults to rabbit MQ, I think. And there's
 
-00:16:58 Okay.
+00:16:15 just good defaults that work off right off the, just if you don't care. And then there's a,
 
-00:16:59 Yeah.
+00:16:21 you can configure it to use other things if you need to. It apparently is, well, the, the person
 
-00:16:59 That's an interesting point.
+00:16:27 and during, I forget his name that developed this it's used on quite significant projects. I mean,
 
-00:17:00 Yeah.
+00:16:34 it isn't a toy project, but it's pretty easy to get started and you can configure it to be all sorts
 
-00:17:01 And it looks like you can run it on top of rapid MQ or Redis.
+00:16:40 of fancy stuff if you need it to be. But one of the things I liked about the conversation is he,
 
-00:17:04 Take your pick.
+00:16:45 he brought up that he intentionally kept the documentation and the fairly terse and small so
 
-00:17:05 One final thing I want to point out that I thought was interesting is it's licensed under a GPL, but it also has commercial licenses available upon request, which, you know, people are always looking for ways to fund, basically fund their open source work.
+00:16:53 that when you're looking for something that you think you saw before, it's pretty easy to find
 
-00:17:21 And I thought that was an interesting variation that I saw going through it.
+00:16:57 again. So that's cool.
 
-00:17:24 Really? Okay, so I didn't pay attention to that.
+00:16:58 Okay. Yeah. That's an interesting point. Yeah. And it looks like you can run it on top of rabbit MQ or
 
-00:17:26 So I'm not sure what the a GPL is.
+00:17:04 Redis. Take your pick. One final thing I want to point out that I thought was interesting is it's licensed
 
-00:17:29 Yeah, I actually don't know either.
+00:17:09 under a GPL, but it also has commercial licenses available upon request, which, you know, people are
 
-00:17:30 But apparently you might want a commercial license instead.
+00:17:17 always looking for ways to fund basically fund their open source work. And I thought that was an
 
-00:17:34 Okay, so the last one I want to talk about is a little bit similar to what you're talking about running async work.
+00:17:22 interesting variation that I saw going through it.
 
-00:17:41 But it's sort of the the challenge of taking advantage of async things but not making that a problem for people trying to consume it who don't want to think of things that way. So this article is called Controlling Python Async Creep from friend of the show, Kristen Medina.
+00:17:24 Really? Okay. So I didn't pay attention to that. So I'm not sure what the a GPL is.
 
-00:17:59 And he says basically if you've got some library that is written in an async way you're supposed to await it.
+00:17:29 Yeah. I'd actually don't know either, but apparently you might want a commercial license if instead.
 
-00:18:08 But anybody who's going to call that and take advantage of that, that caller has to also be async.
+00:17:33 Okay. So the last one I want to talk about is a little bit similar to what you're talking about
 
-00:18:14 And then the caller of that has to be async.
+00:17:39 running async work, but it's sort of the challenge of taking advantage of async things, but not making
 
-00:18:16 So maybe way, way down somewhere, you're trying to do something async, and it creates this sort of chain reaction of, well, the callers of this have to be async.
+00:17:49 that a problem for people trying to consume it who don't want to think of things that way. So this
 
-00:18:23 Well, the caller of those things have to be async, and so on.
+00:17:54 article is called controlling Python async creep from friend of the show, Kristen Medina. And he says,
 
-00:18:26 It can become quite a problem.
+00:18:02 basically, if you've got some library that is written in an async way, you're supposed to await
 
-00:18:28 So he wrote this nice article basically going through three examples of where you can sort of put a stopgap and say, okay, at this level, we're no longer worried about async, but we're still taking advantages of it internally.
+00:18:07 it. But anybody who's going to call that and take advantage of that, that caller has to also be async.
 
-00:18:41 So one way you can do that is you can wait for blocks of async code.
+00:18:14 And then the caller that has to be async. So maybe way, way down somewhere, you're trying to do something
 
-00:18:45 So if you got a contact, you know, a database, two web services, read something from the file system, you want to do that sort of asynchronously, you could create those pieces of work, but then wait on them as a group.
+00:18:18 async and it creates this sort of chain reaction of, well, the callers of this have to be async. Well,
 
-00:18:56 And there's some built in ways in async.io how to do that, which is really cool.
+00:18:23 the caller of those things have to be async and so on. It becomes, it can become quite a problem.
 
-00:19:00 It's got some nice examples on that.
+00:18:28 So he wrote this nice article, basically going through three examples of where you can sort of
 
-00:19:02 So you could just use a thread and then let that thread's main bit of work be the async thing, but you don't have to deal with it.
+00:18:34 put a stopgap and say, okay, like at this level, we're no longer worried about async, but we're still
 
-00:19:09 And the most interesting, I think, is mixing async and synchronous calls.
+00:18:39 taking advantages of it internally. So one way you can do that is you can wait for blocks of async code.
 
-00:19:13 And what he does is he actually detects by looking at the traceback, I think, detects whether the caller is calling it as an async function or as a regular function and implements an async behavior or a synchronous behavior the same.
+00:18:45 So if you got to contact, you know, a database, two web services, read something from the file system,
 
-00:19:32 So you could write a single library and if somebody in Python 3.6 wants to use it in a fancy async way, it becomes magically async.
+00:18:51 you want to do that sort of asynchronously, you could create those pieces of work, but then wait on them
 
-00:19:40 But if somebody from 2.7 calls it or something like that, an older version, or they just don't call it in this async way, it just magically is a synchronous call, it doesn't use that whole stuff.
+00:18:56 as a group. And there's some built-in ways in async.io how to do that, which is really cool.
+
+00:18:59 It's got some nice examples on that. So you could just use a thread and then let that thread's main
+
+00:19:05 bit of work be the async thing, but you don't have to deal with it. And the most interesting, I think,
+
+00:19:10 is mixing async and synchronous calls. And what he does is he actually detects by looking at the
+
+00:19:18 traceback, I think, detects whether the caller is calling it as an async function or as a regular
+
+00:19:26 function and implements an async behavior or a synchronous behavior the same. So you could write
+
+00:19:33 a single library. And if somebody in Python 3.6 wants to use it in a fancy async way, it becomes
+
+00:19:38 magically async. But if somebody from 2.7 calls it or something like that, an older version, or they just
+
+00:19:44 don't call it in this async way. It just magically is a synchronous call and doesn't use that whole
+
+00:19:48 stuff.
 
 00:19:48 Okay.
 
-00:19:49 This is really an interesting way to make it possible to bring async into your package or your libraries without having the consumer of your libraries have to care about the fact that it's async.
+00:19:49 This is really an interesting way to make it possible to bring async into your package or your libraries
 
-00:20:00 But still make it something they can take advantage of.
+00:19:54 without having the consumer of your libraries have to care about the fact that it's async. But still
 
-00:20:03 That's great. I'm going to have to read this. This reminds me of the, I guess, the learning hurdle that people go through in the C++, C and C++ world when you go from single threaded applications to multi-threaded applications. You have to look in all the corners.
+00:20:01 make it into something they could take advantage of.
 
-00:20:17 Yeah, it's definitely a mind shift. Yeah, this is very much like that.
+00:20:03 Wow, that's great. I'm going to have to read this. This reminds me of the, I guess, the learning
 
-00:20:21 But yeah, Christian did a great job on this, and I really like his solution at the end.
+00:20:08 hurdle that people go through in the C++, C and C++ world when you go from single-threaded
 
-00:20:25 And actually, he has it done in if statements.
+00:20:14 applications to multi-threaded applications. You have to look in all the corners.
 
-00:20:27 I feel like you could create a decorator that would basically wrap that up and just like a magic, like, a syncable or a waitable decorator.
+00:20:17 Yeah. It's definitely a mind shift. Yeah. This is very much like that.
 
-00:20:35 It's really, really close to having some sort of decorator magic making this even better.
+00:20:21 Okay.
 
-00:20:39 Yeah, okay.
+00:20:21 But yeah, Christian did a great job on this. And I really like his solution at the end. And actually,
 
-00:20:40 All right, well, that's all our news for the week, except for that it's not.
+00:20:26 he has it done in if statements. I feel like you could create a decorator that would
+
+00:20:30 basically wrap that up in just like a magic, like a syncable or a waitable decorator. It's
+
+00:20:36 really, really close to having some sort of decorator magic, making this even better.
+
+00:20:39 Yeah. Okay. Cool.
+
+00:20:41 All right. Well, that's all our news for the week, except for that it's not.
 
 00:20:43 Well, yeah.
 
-00:20:45 We have an extra one.
+00:20:45 We have an extra one. Really quick, I just want to let people know that the Pi Tennessee
 
-00:20:46 Really quick, I just want to let people know that the Pi Tennessee conference in Nashville is coming up in almost a month from now. So if you're in the Nashville area or willing to travel there, February 10th and 11th, they've got their schedule out, the tickets are on sale and things like that.
+00:20:49 conference in Nashville is coming up in almost a month from now. So if you are in the Nashville
 
-00:21:03 And they even made a special discount code for Python bytes.
+00:20:55 area or willing to travel there, February 10th and 11th, they've got their schedule out,
 
-00:21:06 If we, you know, said, "Are you going to tell us about it?" Then definitely, here's the code.
+00:21:01 the tickets are on sale and things like that. And they even made a special discount code for
 
-00:21:11 So if you want to go to Python C, you can use the discount code Python Bytes, no spaces, capital P, capital B, and you get 10% off.
+00:21:06 Python bytes. If we said, are you going to tell us about it? Then definitely here's the,
 
-00:21:20 - Cool. - Yeah, very cool.
+00:21:10 here's the code. So if you want to go to a Pi Tennessee, you can use the discount code
 
-00:21:22 You have some pretty interesting news.
+00:21:15 Python bytes, no spaces, capital P, capital B, and you get 10% off.
 
-00:21:23 It's not directly Python related, but it very much affects all of us.
+00:21:20 Cool.
 
-00:21:28 - Yeah. - Right, codes on server, especially in the cloud.
+00:21:20 Yeah. Very cool.
 
-00:21:30 I thought I'd, I don't know what to do about this, but I saw it this morning, I thought we just, it's important enough to not ignore it.
+00:21:22 You have some pretty interesting news. It's not directly Python related, but it's very much
 
-00:21:36 So I thought I'd drop a link.
+00:21:26 affects all of us.
 
-00:21:38 What do you think? Like unplug all the internet, just go hide in a corner, something like that.
+00:21:28 Yeah.
 
-00:21:42 - It's like one of those things like having the credit services get hacked.
+00:21:28 Right. Codes on server, especially in the cloud.
 
-00:21:46 You just, I guess, be aware of it and pay attention.
+00:21:30 I thought I'd, I don't know what to do about this, but I saw it this morning. I thought we just,
 
-00:21:49 - It's very much like the Experian, what was that credit service?
+00:21:34 it's important enough to not ignore it. So I thought I'd drop a link.
 
-00:21:52 - Equifax, maybe?
+00:21:38 What do you think? Like unplug all of the internet, just go hide in a corner or something like that?
 
-00:21:53 - Equifax.
+00:21:42 It's like one of those things like having the credit services get hacked. You just,
 
-00:21:54 I'm not gonna say it, 'cause I don't wanna say the wrong one, but the eCredit Agency, I totally for some reason forget it.
+00:21:47 I guess, be aware of it and pay attention. It's very much like the Experian. What was that credit
 
-00:22:00 I think you're right.
+00:21:52 service?
 
-00:22:02 But yeah, like basically you're told, your world is crashing down.
+00:21:52 Equifax maybe?
 
-00:22:06 We're sorry.
+00:21:53 Equifax. I'm not going to say it because I don't want to say the wrong one, but the E credit agency,
 
-00:22:07 Moving on now.
+00:21:59 I totally, for some reason forgetting, I think you're right. But yeah, like basically you're told
 
-00:22:08 And this is kind of like that.
+00:22:04 your world is crashing down. We're sorry. And this is kind of like that. Let me read from what you
 
-00:22:09 Let me read from what you quote a couple articles.
+00:22:10 quote a couple of articles. Let me read what they said in the New York times here. It said that
 
-00:22:11 Let me read what they said in the New York Times here.
+00:22:15 basically there's two problems called Meltdown and Spectre could allow hackers to steal the entire
 
-00:22:15 It said, "Basically, there's two problems called meltdown and spectra.
+00:22:20 memory contents of computers, including mobile devices, personal computers, and servers running
 
-00:22:18 Could allow hackers to steal the entire memory contents of computers, including mobile devices, personal computers, and servers running in so-called cloud computer networks.
+00:22:25 in so-called cloud computer networks. There's no easy fix for Spectre, which could require a redesign
 
-00:22:27 There's no easy fix for spectra, which could require a redesign of the processors, according to researchers.
+00:22:30 of the processors, according to researchers. As for Meltdown, the software patch needed to fix the
 
-00:22:33 As for meltdown, the software patch needed to fix the issue could slow down computers by as much as 30%.
+00:22:36 issue could slow down computers by as much as 30%. So, you know, your AWS, DigitalOcean, whatever,
 
-00:22:40 So, you know, your AWS, DigitalOcean, whatever, server may just get 30% slower now.
+00:22:43 server may just get 30% slower now. Wonderful.
 
-00:22:46 Wonderful.
+00:22:46 Yeah. So, most of the places, I think Google, Amazon, and Microsoft have all said that the servers
 
-00:22:47 - Yeah, so most of the places, I think Google, Amazon, and Microsoft have all said that the servers are pretty much changed to deal with meltdown, but Spectre's still a problem.
+00:22:54 are pretty much changed to deal with Meltdown, but Spectre's still a problem.
 
-00:23:00 - I don't think there's a ton of concrete details here, at least not that I ran across.
+00:23:00 I don't think there's a ton of concrete details here, at least not that I ran across. It's sort of vague.
 
-00:23:05 It's sort of vague.
+00:23:07 Apparently, not all the details about the exploit are out, but I'd recommend people check out Risky.biz,
 
-00:23:07 Apparently, not all the details about the exploit are out.
+00:23:15 which is my favorite developer security podcast. It's super, super good. And those guys are going to
 
-00:23:11 But I'd recommend people check out Risky.biz, which is my favorite developer security podcast.
+00:23:21 definitely have an insightful conversation on this next time they're on deck.
 
-00:23:18 It's super, super good.
+00:23:26 In case we were too vague about it, it was a design flaw found in all microprocessors that allow
 
-00:23:19 And those guys are going to definitely have an insightful conversation on this next time they're on deck.
+00:23:33 attackers to read the entire memory of a computer. Yeah. Bummer.
 
-00:23:26 In case we were too vague about it, it was a design flaw found in all microprocessors that allow attackers to read the entire memory of a computer.
+00:23:37 I hope you don't do anything on the internet. Carry on now. Okay. So, yeah. So, the last thing,
 
-00:23:36 Yeah. So, bummer.
+00:23:45 this is a more positive thing. I think of it, at least. I just announced all my courses,
 
-00:23:38 I hope you don't do anything on the internet. Carry on now.
+00:23:50 not all of them, actually, only a few of them for 2018, but I announced this new deal that I'm
 
-00:23:41 Okay.
+00:23:56 having for all the Talk Python courses called the Everything Bundle. So, talkpython.fm slash
 
-00:23:43 So, yeah, so the last thing, this is a more positive thing, I think of it at least.
+00:24:01 everything. And it gets you, what'll be probably 120 hours of Python course awesomeness, including
 
-00:23:48 I just announced all my courses, not all of them actually, only a few of them, for 2018, but I announced this new deal that I'm having for all the Talk Python courses called the Everything Bundle.
+00:24:08 some new ones, Mastering PyCharm, Python 3, an Illustrated Tour, Introduction to Ansible,
 
-00:23:59 So, talkpython.fm/everything.
+00:24:13 and tons more coming. So, I was just finishing some of the videos for the PyCharm course right before
 
-00:24:02 and it gets you what will be probably 120 hours of Python course awesomeness, including some new ones, Mastering PyCharm, Python 3 and Illustrated Tour, Introduction to Ansible and tons more coming.
+00:24:19 we chatted. So, it's almost done. Cool. So, is that going to be out this month then or soon?
 
-00:24:14 So I just got, I was just finishing some of the videos for the PyCharm course right before we chatted, so it's almost done.
+00:24:23 That is going to be out probably next week. Okay. Cool. Yeah. Definitely soon. Definitely soon.
 
-00:24:21 Cool. So is that going to be out this month then? Or soon?
+00:24:28 It's so fun to create these courses and just, you know, keep exploring the different areas and helping
 
-00:24:24 That is going to be out probably next week.
+00:24:33 people get better with them. So, lots of fun. Yeah. And you do things like working with companies if
 
-00:24:26 Okay, cool.
+00:24:38 they want to, like, get access to these for, like, everybody that works there or a handful of people.
 
-00:24:27 Definitely soon, definitely soon.
+00:24:43 I definitely have special programs for, like, site licenses, things like that. I've even talked to
 
-00:24:28 It's so fun to create these courses and just, you know, keep exploring the different areas and helping people get better with them. So lots of fun.
+00:24:48 some universities about having the courses for, like, all of their students or something like that.
 
-00:24:35 Yeah, and you do things like working with companies if they want to like get access to these for like everybody that works there or a handful of people.
+00:24:53 That would be wild. Still talking.
 
-00:24:43 I definitely have special programs for like site licenses, things like that. I've even talked to some universities about having the courses for like all of their students or something like that. That would be wild. Still talking.
+00:24:56 You'll have to increase the price for them, I guess. Maybe.
 
-00:24:56 You'll have to increase the price for them, I guess.
-
-00:24:58 I guess, but they're students, you know.
+00:24:59 I guess. But they're students, you know.
 
 00:25:01 Cool.
 
-00:25:02 All right, cool.
+00:25:03 All right. Cool. Well, Brian, thanks for sharing all your news.
 
-00:25:03 Well, Brian, thanks for sharing all your news.
-
-00:25:06 And yeah, thank you.
+00:25:05 Yeah. Thank you.
 
 00:25:07 Nice to be back together after the whole holiday time off.
 
 00:25:11 Yes.
 
-00:25:12 All right.
+00:25:11 All right. Catch you later.
 
-00:25:13 Catch you later.
+00:25:12 Thank you for listening to Python Bytes.
 
-00:25:14 Thank you for listening to Python Bytes.
-
-00:25:15 Follow the show on Twitter via @pythonbytes.
+00:25:15 Follow the show on Twitter via at Python Bytes.
 
 00:25:18 That's Python Bytes as in B-Y-T-E-S.
 
-00:25:21 And get the full show notes at pythonbytes.fm.
+00:25:20 And get the full show notes at pythonbytes.fm.
 
-00:25:24 If you have a news item you want featured, just visit pythonbytes.fm and send it our We're always on the lookout for sharing something cool.
+00:25:24 If you have a news item you want featured, just visit pythonbytes.fm and send it our way.
 
-00:25:32 On behalf of myself and Brian Okken, this is Michael Kennedy.
+00:25:28 We're always on the lookout for sharing something cool.
 
-00:25:35 Thank you for listening and sharing this podcast with your friends and colleagues.
+00:25:31 On behalf of myself and Brian Okken, this is Michael Kennedy.
+
+00:25:34 Thank you for listening and sharing this podcast with your friends and colleagues.
 

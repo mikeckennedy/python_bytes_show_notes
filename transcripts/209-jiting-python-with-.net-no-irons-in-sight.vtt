@@ -1,2948 +1,2042 @@
+WEBVTT
 
-00:00:00.000 --> 00:00:05.200
-Hello and welcome to Python Bytes where we deliver Python news and headlines directly to your earbuds.
+00:00:00.001 --> 00:00:05.120
+Hello and welcome to Python Bytes, where we deliver Python news and headlines directly to your earbuds.
 
+00:00:05.120 --> 00:00:10.680
+This is episode 209, recorded on November 18th, 2020. I'm Michael Kennedy.
 
-00:00:05.200 --> 00:00:09.900
-This is episode 209 recorded on November 18th, 2020.
-
-
-00:00:09.900 --> 00:00:10.700
-I'm Michael Kennedy.
-
-
-00:00:10.700 --> 00:00:11.600
+00:00:10.680 --> 00:00:11.580
 And I'm Brian Okken.
 
-
-00:00:11.600 --> 00:00:16.200
+00:00:11.580 --> 00:00:15.920
 And this episode is brought to you by us and all the things we're offering to the Python community.
 
-
-00:00:16.200 --> 00:00:24.100
+00:00:15.920 --> 00:00:24.140
 But I kind of want to take a step back in my whole career and start back where I spent a little bit of time in .NET.
 
-
-00:00:24.100 --> 00:00:26.800
+00:00:24.140 --> 00:00:26.640
 Isn't that a weird thing for me to do on a Python podcast?
 
-
-00:00:26.800 --> 00:00:30.300
+00:00:26.860 --> 00:00:30.260
 Yeah, but you're kind of a .NET kind of guy in your past.
 
+00:00:30.260 --> 00:00:34.400
+I like C Sharp, all right. Like if I wasn't doing Python, that's probably what I would be doing.
 
-00:00:30.300 --> 00:00:31.300
-I like C# alright.
+00:00:34.400 --> 00:00:35.700
+But look.
 
-
-00:00:31.300 --> 00:00:34.500
-Like if I wasn't doing Python, that's probably what I would be doing.
-
-
-00:00:34.500 --> 00:00:35.700
-But look...
-
-
-00:00:35.700 --> 00:00:37.200
+00:00:35.700 --> 00:00:36.940
 Well, thank God for Python.
 
+00:00:36.940 --> 00:00:43.700
+Yes, I know. Well, also, I just want to point out, this is not my fault. This is Anthony Shaw's fault.
 
-00:00:37.200 --> 00:00:38.200
-Yes, I know.
+00:00:43.700 --> 00:00:44.300
+Oh, okay.
 
+00:00:44.300 --> 00:00:54.620
+Yeah. So, Anthony Shaw wrote an article showing you how to use one of the more exciting inventions, evolution, something like that,
 
-00:00:38.200 --> 00:00:41.700
-Well, also, I just want to point out, this is not my fault.
-
-
-00:00:41.700 --> 00:00:43.700
-This is Anthony Shaw's fault.
-
-
-00:00:43.700 --> 00:00:44.400
-Okay.
-
-
-00:00:44.400 --> 00:00:44.900
-Yeah.
-
-
-00:00:44.900 --> 00:00:48.700
-So, Anthony Shaw wrote an article
-
-
-00:00:48.700 --> 00:00:51.700
-showing you how to use one of the more exciting
-
-
-00:00:51.700 --> 00:00:54.700
-inventions, evolutions, something like that
-
-
-00:00:54.700 --> 00:00:58.500
+00:00:55.040 --> 00:00:58.340
 with regard to Python and how it's actually executed.
 
-
-00:00:58.500 --> 00:00:59.860
+00:00:58.340 --> 00:00:59.620
 And it has to do with .NET.
 
+00:00:59.620 --> 00:01:03.700
+So, he wrote an article called Running Python on .NET 5.
 
-00:00:59.860 --> 00:01:03.860
-So he wrote an article called "Running Python on .NET 5".
+00:01:03.700 --> 00:01:09.400
+So, there's a couple of layers we got to unpack here to finally put this together for everyone.
 
+00:01:09.500 --> 00:01:20.120
+So, way back on episode 49, like when I was living in Germany type way back, I talked about this thing called Pigeon, P-Y-J-I-O-N with Brett Cannon.
 
-00:01:03.860 --> 00:01:07.140
-So there's a couple of layers we got to unpack here to
+00:01:20.120 --> 00:01:21.080
+Okay.
 
+00:01:21.080 --> 00:01:37.180
+So, what this was is a way to like shim into CPython, something that would intercept when a frame, a function frame was being executed and, you know, hand over the Python bytecode.
 
-00:01:07.140 --> 00:01:09.460
-to finally put this together for everyone.
+00:01:37.380 --> 00:01:41.260
+When you run Python, it gets compiled to those P-Y-C files into bytecode.
 
+00:01:41.260 --> 00:01:53.020
+But then, unlike, say, .NET and Java, which compiles that to machine instruction, it just jams that through the big C eval.c loop, like the 3,000 line switch statement.
 
-00:01:09.460 --> 00:01:12.420
-So way back on episode 49, like
+00:01:53.020 --> 00:01:54.940
+That is Python's runtime, right?
 
+00:01:55.120 --> 00:02:01.020
+So, it gets like mixed into that workflow and it can actually take that.
 
-00:01:12.420 --> 00:01:14.820
-when I was living in Germany type way back,
+00:02:01.020 --> 00:02:09.020
+And there was talk about maybe compiling to the JavaScript Chromium engine, potentially, or to .NET, right?
 
+00:02:09.020 --> 00:02:18.340
+Those are like, it could be, so the idea was you could plug in some alternative JIT compiler to be given segments of Python and said, run this block of Python.
 
-00:01:14.820 --> 00:01:20.420
-I talked about this thing called PYGION, P-Y-G-I-O-N, with Brett Cannon.
+00:02:18.340 --> 00:02:19.260
+Cool, right?
 
+00:02:19.260 --> 00:02:19.440
+Okay.
 
-00:01:20.420 --> 00:01:25.920
-So what this was is a way to like shim into CPython
+00:02:19.440 --> 00:02:27.720
+So, you know, obviously, compiled code has at least the potential to be a lot faster if it really understands what it's compiling than interpreted code.
 
+00:02:27.720 --> 00:02:28.960
+Okay.
 
-00:01:25.920 --> 00:01:32.920
-something that would intercept when a frame, a function frame was being executed
+00:02:28.960 --> 00:02:30.880
+So, that's thing one.
 
+00:02:30.880 --> 00:02:37.100
+Thing two is .NET traditionally used to be this thing that ran on Windows and it only ran on Windows.
 
-00:01:32.920 --> 00:01:37.420
-and you know hand over the Python bytecode
-
-
-00:01:37.420 --> 00:01:41.420
-when you run Python it gets compiled to those pyc files into bytecode
-
-
-00:01:41.420 --> 00:01:44.120
-but then unlike say .NET and Java which
-
-
-00:01:44.120 --> 00:01:47.120
-JIT compiles that to machine instruction, they just
-
-
-00:01:47.120 --> 00:01:51.120
-jams that through the big C eval.c loop,
-
-
-00:01:51.120 --> 00:01:53.120
-like the 3000 line switch statement
-
-
-00:01:53.120 --> 00:01:55.320
-that is Python's runtime, right?
-
-
-00:01:55.320 --> 00:01:59.880
-So it gets mixed into that workflow
-
-
-00:01:59.880 --> 00:02:01.080
-and it can actually take that.
-
-
-00:02:01.080 --> 00:02:03.360
-And there was talk about maybe compiling
-
-
-00:02:03.360 --> 00:02:07.960
-to the JavaScript Chromium engine, potentially,
-
-
-00:02:07.960 --> 00:02:09.080
-or to .NET, right?
-
-
-00:02:09.080 --> 00:02:10.520
-Those are like, it could be,
-
-
-00:02:10.520 --> 00:02:11.740
-so the idea was you could plug in
-
-
-00:02:11.740 --> 00:02:14.400
-some alternative JIT compiler
-
-
-00:02:14.400 --> 00:02:16.840
-to be given segments of Python
-
-
-00:02:16.840 --> 00:02:18.920
-and said run this block of Python.
-
-
-00:02:18.920 --> 00:02:19.760
-Cool, right? - Okay.
-
-
-00:02:19.760 --> 00:02:22.040
-- So, you know, obviously compiled code
-
-
-00:02:22.040 --> 00:02:24.020
-has at least the potential to be a lot faster
-
-
-00:02:24.020 --> 00:02:26.640
-if it really understands what it's compiling
-
-
-00:02:26.640 --> 00:02:28.720
-than interpreted code.
-
-
-00:02:28.720 --> 00:02:31.280
-Okay, so that's thing one.
-
-
-00:02:31.280 --> 00:02:34.720
-Thing two is .NET traditionally used to be this thing
-
-
-00:02:34.720 --> 00:02:37.880
-that ran on Windows and it only ran on Windows.
-
-
-00:02:37.880 --> 00:02:39.840
+00:02:37.100 --> 00:02:39.600
 And that was a problem for a lot of people.
 
+00:02:39.600 --> 00:02:46.960
+So, Microsoft came up with this thing called .NET Core, which was the open source version, a multi-platform open source version of .NET.
 
-00:02:39.840 --> 00:02:42.480
-So Microsoft came up with this thing called .NET Core,
+00:02:47.800 --> 00:02:51.260
+And just recently, they said, it's really silly to have these two things.
 
+00:02:51.260 --> 00:02:57.740
+So, let's just come up with this thing called .NET 5 that is the new cross-platform open source replacement that puts those things together.
 
-00:02:42.480 --> 00:02:44.840
-which was the open source version,
+00:02:57.740 --> 00:02:58.380
+Okay?
 
+00:02:58.380 --> 00:02:59.360
+Okay.
 
-00:02:44.840 --> 00:02:47.960
-a multi-platform open source version of .NET.
+00:02:59.360 --> 00:03:01.160
+And I'm leaking to like some of the announcements.
 
+00:03:01.160 --> 00:03:02.900
+They just did a conference over there.
 
-00:02:47.960 --> 00:02:49.680
-And just recently they said,
+00:03:02.900 --> 00:03:04.300
+People can check it out if they want to go deep.
 
+00:03:04.300 --> 00:03:08.760
+Number three, things that run in .NET often are faster than Python.
 
-00:02:49.680 --> 00:02:51.480
-it's really silly to have these two things,
+00:03:08.760 --> 00:03:10.180
+Like, you can debate that.
 
+00:03:10.180 --> 00:03:17.500
+But like, especially the numerical types of bits because they work with, you know, integers and floats, not PyObject long pointers and so on.
 
-00:02:51.480 --> 00:02:53.560
-so let's just come up with a thing called .NET 5,
+00:03:17.500 --> 00:03:25.900
+And so, I just ran across a Stack Overflow post where someone was complaining that their Python implementation of something was 31 times slower than C Sharp.
 
+00:03:25.900 --> 00:03:29.460
+Like, that's outside the margin of error probably.
 
-00:02:53.560 --> 00:02:56.600
-that is the new cross-platform open source replacement
-
-
-00:02:56.600 --> 00:02:59.160
-that puts those things together, okay?
-
-
-00:02:59.160 --> 00:03:01.360
-And I'm leaking to like some of the announcements,
-
-
-00:03:01.360 --> 00:03:02.940
-they just did a conference over there,
-
-
-00:03:02.940 --> 00:03:04.720
-people can check it out if they wanna go deep.
-
-
-00:03:04.720 --> 00:03:06.840
-Number three, things that run in .NET
-
-
-00:03:06.840 --> 00:03:10.200
-often are faster than Python, like you can debate that,
-
-
-00:03:10.200 --> 00:03:12.620
-but like especially the numerical types of bits,
-
-
-00:03:12.620 --> 00:03:15.120
-because they work with integers and floats,
-
-
-00:03:15.120 --> 00:03:18.260
-not Py object long pointers and so on.
-
-
-00:03:18.260 --> 00:03:20.540
-And so I just ran across a Stack Overflow post
-
-
-00:03:20.540 --> 00:03:21.700
-where someone was complaining
-
-
-00:03:21.700 --> 00:03:23.420
-that their Python implementation
-
-
-00:03:23.420 --> 00:03:26.820
-of something was 31 times slower than C#.
-
-
-00:03:26.820 --> 00:03:30.340
-Like that's outside the margin of error probably.
-
-
-00:03:30.340 --> 00:03:31.820
+00:03:29.460 --> 00:03:30.780
 It's not good.
 
+00:03:31.520 --> 00:03:34.480
+I mean, we can debate about whether or not Python is fast or slow.
 
-00:03:31.820 --> 00:03:33.860
-I mean, we can debate about whether or not Python
+00:03:34.480 --> 00:03:39.100
+And I think that's a really interesting conversation because developing it is faster.
 
+00:03:39.100 --> 00:03:43.680
+If you bring in things like NumPy, all of a sudden you're down to C++, which is probably flat out faster.
 
-00:03:33.860 --> 00:03:34.680
-is fast or slow,
-
-
-00:03:34.680 --> 00:03:36.580
-and I think that's a really interesting conversation
-
-
-00:03:36.580 --> 00:03:39.660
-because developing it is faster.
-
-
-00:03:39.660 --> 00:03:41.020
-If you bring in things like NumPy,
-
-
-00:03:41.020 --> 00:03:42.340
-all of a sudden you're down to C++,
-
-
-00:03:42.340 --> 00:03:43.740
-which is probably flat out faster.
-
-
-00:03:43.740 --> 00:03:45.820
+00:03:43.680 --> 00:03:45.300
 And there's just all these variations, right?
 
+00:03:45.300 --> 00:03:45.940
+Yeah.
 
-00:03:45.820 --> 00:03:47.820
-So not to put too much of a point on it,
+00:03:45.940 --> 00:03:50.200
+So, not to put too much of a point on it, but it is a place where code runs pretty quickly.
 
+00:03:50.200 --> 00:03:54.680
+So, if you could get some Python code to run on that place as well, that would be pretty sweet.
 
-00:03:47.820 --> 00:03:50.280
-but it is a place where code runs pretty quickly.
+00:03:54.680 --> 00:04:02.620
+So, what people have traditionally done to make their code faster, as many people know, is compile, like, write it in C and compile it as a C extension.
 
-
-00:03:50.280 --> 00:03:52.180
-So if you could get some Python code to run
-
-
-00:03:52.180 --> 00:03:55.440
-on that place as well, that would be pretty sweet.
-
-
-00:03:55.440 --> 00:03:56.820
-So what people have traditionally done
-
-
-00:03:56.820 --> 00:03:59.100
-to make their code faster, as many people know,
-
-
-00:03:59.100 --> 00:04:01.280
-is compile it, like write it in C
-
-
-00:04:01.280 --> 00:04:02.820
-and compile it as a C extension.
-
-
-00:04:02.820 --> 00:04:05.220
+00:04:02.620 --> 00:04:04.560
 You know, things like NumPy might do that.
 
+00:04:04.560 --> 00:04:13.760
+Or use something like Cython, which basically takes sort of write it in C, you write it in Python, but then it just compiles it to C, which then is compiled to machine instructions.
 
-00:04:05.220 --> 00:04:06.420
-Or use something like Cython,
+00:04:14.140 --> 00:04:16.260
+So, there's like this sort of escape hatch, right?
 
+00:04:16.260 --> 00:04:16.600
+Yeah.
 
-00:04:06.420 --> 00:04:08.740
-which basically takes sort of write in C,
+00:04:16.600 --> 00:04:20.200
+So, .NET has this JIT compiler that comes with it.
 
+00:04:20.200 --> 00:04:25.120
+Pigeon is this project that allows you to plug a JIT compiler into the Python execution.
 
-00:04:08.740 --> 00:04:09.560
-you write it in Python,
+00:04:25.120 --> 00:04:35.000
+So, the people over at Microsoft, Brett Cannon and Dino Veland, hopefully I got that right, the people involved, have been actually working on this for the last four years.
 
+00:04:35.000 --> 00:04:40.500
+And they're now, you can now use this Pigeon project in Python 3.9.
 
-00:04:09.560 --> 00:04:11.660
-but then it just compiles it to C,
+00:04:40.780 --> 00:04:51.840
+And the reason is, back in 3.7, there was a PEP called PEP523, which was basically an API for swapping out frame execution with a replacement implementation.
 
+00:04:51.840 --> 00:04:56.880
+And that's where you might take out Interpreter and inject JIT compiler.
 
-00:04:11.660 --> 00:04:14.340
-which then is compiled to machine instructions.
+00:04:57.880 --> 00:05:01.380
+So, basically, they've just, you know, now that 3.7 came out with that, they've been building on that.
 
+00:05:01.380 --> 00:05:03.800
+And he's got some really cool examples.
 
-00:04:14.340 --> 00:04:16.660
-So there's like this sort of escape hatch, right?
+00:05:03.800 --> 00:05:11.780
+Like, all you go over there is you pip install Pigeon, you know, import Pigeon, Pigeon.enable, or like something like that to say start.
 
+00:05:11.780 --> 00:05:12.400
+And that's it.
 
-00:04:16.660 --> 00:04:20.420
-So .NET has this JIT compiler that comes with it.
+00:05:12.400 --> 00:05:14.140
+There's no other changes to your code.
 
+00:05:14.140 --> 00:05:19.420
+And now it's running JIT compiled on .NET 5 cross-platform.
 
-00:04:20.420 --> 00:04:22.700
-Pigeon is this project that allows you to plug
-
-
-00:04:22.700 --> 00:04:25.660
-a JIT compiler into the Python execution.
-
-
-00:04:25.660 --> 00:04:28.980
-So the people over at Microsoft, Brett Cannon
-
-
-00:04:28.980 --> 00:04:31.540
-and Dino Veland, hopefully I got that right,
-
-
-00:04:31.540 --> 00:04:33.880
-the people involved, have been actually working on this
-
-
-00:04:33.880 --> 00:04:36.580
-for the last four years, and they're now,
-
-
-00:04:36.580 --> 00:04:41.140
-you can now use this Pigeon project in Python 3.9.
-
-
-00:04:41.140 --> 00:04:45.700
-And the reason is back in 3.7, there was a PEP called PEP 523,
-
-
-00:04:45.700 --> 00:04:51.300
-which was basically an API for swapping out frame execution with a replacement
-
-
-00:04:51.300 --> 00:04:51.980
-implementation.
-
-
-00:04:51.980 --> 00:04:57.020
-And that's where you might take out interpreter and inject JIT compiler.
-
-
-00:04:57.020 --> 00:05:00.580
-So basically they've just, you know, now that 3.7 came out with that, they've
-
-
-00:05:00.580 --> 00:05:03.980
-been building on that and he's got some really cool examples.
-
-
-00:05:03.980 --> 00:05:08.660
-Like all you go over there is you pip install pigeon, you know, import pigeon,
-
-
-00:05:08.700 --> 00:05:12.660
-Pigeon.enable or like something like that to say start and that's it.
-
-
-00:05:12.660 --> 00:05:15.620
-There's no other changes to your code and now it's running
-
-
-00:05:15.620 --> 00:05:19.500
-JIT compiled on .NET 5 cross-platform.
-
-
-00:05:19.500 --> 00:05:20.500
+00:05:19.420 --> 00:05:20.160
 That's pretty cool.
 
-
-00:05:20.500 --> 00:05:23.000
+00:05:20.380 --> 00:05:22.980
 It's got some real interesting possibilities there, right?
 
-
-00:05:23.000 --> 00:05:23.260
+00:05:22.980 --> 00:05:23.260
 Yes.
 
+00:05:23.260 --> 00:05:32.640
+And it uses the, so there's been other things where you could like plug in Python into alternate runtimes and VMs like JITON and IronPython and so on.
 
-00:05:23.260 --> 00:05:24.800
-And it uses the...
-
-
-00:05:24.800 --> 00:05:28.500
-So there's been other things where you could like plug in Python into alternate
-
-
-00:05:28.500 --> 00:05:30.500
-run times and VMs like
-
-
-00:05:30.500 --> 00:05:32.620
-Jython and IronPython and so on.
-
-
-00:05:32.620 --> 00:05:33.460
+00:05:32.640 --> 00:05:33.440
 This is not that.
 
-
-00:05:33.460 --> 00:05:37.300
+00:05:33.440 --> 00:05:36.460
 This literally uses the same standard library.
 
+00:05:36.460 --> 00:05:40.820
+Your C extensions are supposed to still work, right?
 
-00:05:37.300 --> 00:05:39.900
-your C extensions are supposed to still work.
+00:05:40.820 --> 00:05:49.100
+So, what they did is they actually said, they actually went and they tested the entire CPython test suite on all platforms with this.
 
+00:05:49.100 --> 00:05:52.820
+And this is actually the first JIT implementation to ever pass the test suite.
 
-00:05:39.900 --> 00:05:43.300
-Right? So what they did is they actually said,
+00:05:52.820 --> 00:05:53.660
+Oh, that's pretty cool.
 
+00:05:53.660 --> 00:05:53.900
+Yeah?
 
-00:05:43.300 --> 00:05:48.500
-they actually went and they tested the entire CPython test suite on all platforms
+00:05:53.900 --> 00:05:54.280
+Right?
 
+00:05:54.280 --> 00:06:02.780
+Because so we've got things like PyPy, but it's like 94% or whatever, like some, you know, mostly, mostly Python, but it's not all Python, right?
 
-00:05:48.500 --> 00:05:50.800
-with this. And this is actually the first JIT
+00:06:02.780 --> 00:06:12.280
+So, this is really cool that they've got this high-performance runtime cross-platform JIT compiler that they just seem to have successfully plugged into Python.
 
+00:06:12.280 --> 00:06:12.820
+Yeah.
 
-00:05:50.800 --> 00:05:52.800
-implementation to ever pass the test suite.
+00:06:12.820 --> 00:06:16.260
+So, it's running which version of Python?
 
-
-00:05:52.800 --> 00:05:54.300
-- That's pretty cool. - Yeah, right?
-
-
-00:05:54.300 --> 00:05:56.800
-So we've got things like PyPy, but it's like
-
-
-00:05:56.800 --> 00:06:00.100
-94% or whatever, like some,
-
-
-00:06:00.100 --> 00:06:02.800
-you know, mostly Python, but it's not all Python, right?
-
-
-00:06:02.800 --> 00:06:04.800
-So this is really cool that they've got this
-
-
-00:06:04.800 --> 00:06:06.800
-high-performance runtime
-
-
-00:06:06.800 --> 00:06:10.000
-cross-platform JIT compiler that they just
-
-
-00:06:10.000 --> 00:06:12.400
-seem to have successfully plugged into Python.
-
-
-00:06:12.400 --> 00:06:14.400
-Yeah, so it's a
-
-
-00:06:14.400 --> 00:06:16.400
-running which version of Python?
-
-
-00:06:16.400 --> 00:06:17.000
+00:06:16.260 --> 00:06:16.860
 3.9.
 
+00:06:16.860 --> 00:06:17.580
+Oh, okay.
 
-00:06:17.000 --> 00:06:18.400
-Oh, okay. That's awesome.
+00:06:17.580 --> 00:06:18.280
+That's awesome.
 
+00:06:18.280 --> 00:06:18.620
+Yeah.
 
-00:06:18.400 --> 00:06:20.000
-Yeah, so it doesn't like
+00:06:18.620 --> 00:06:25.540
+So, it doesn't like, like a lot of these other things said, well, let's replace the Python runtime with X and then it'll be mostly the same.
 
+00:06:25.740 --> 00:06:35.580
+And so, what this does instead is it plugs in just at that PEP 5.2.3 frame execution layer and says, you want to run this part of a function.
 
-00:06:20.000 --> 00:06:23.600
-like a lot of these other things said, well, let's replace the Python runtime with
+00:06:35.580 --> 00:06:36.740
+How do you do that?
 
+00:06:36.740 --> 00:06:38.620
+It's just that little bit that changes.
 
-00:06:23.600 --> 00:06:25.800
-X and then it'll be mostly the same.
+00:06:38.620 --> 00:06:43.560
+So, other than that, it's the same old Python 3.9 that you know and love that I'm, as far as I can tell.
 
+00:06:43.560 --> 00:06:44.020
+Yeah.
 
-00:06:25.800 --> 00:06:28.600
-And so what this does instead is it plugs in
+00:06:44.020 --> 00:06:45.080
+So, that's pretty awesome.
 
+00:06:45.080 --> 00:06:45.360
+Yeah.
 
-00:06:28.600 --> 00:06:32.900
-just at that pep523 frame execution layer
+00:06:45.360 --> 00:06:46.220
+I'm pretty excited.
 
+00:06:46.220 --> 00:06:46.680
+It is pretty awesome.
 
-00:06:32.900 --> 00:06:34.600
-and says you want to run this
+00:06:46.680 --> 00:06:51.240
+And then a little, like some extra news on this, unless you already mentioned it.
 
+00:06:51.240 --> 00:06:53.020
+This happened a couple days ago.
 
-00:06:34.600 --> 00:06:35.900
-part of a function.
+00:06:53.640 --> 00:07:02.480
+Pigeon is unfortunately frozen in the Microsoft repo, but Anthony's fork is now the official fork.
 
+00:07:02.480 --> 00:07:02.840
+What?
 
-00:06:35.900 --> 00:06:49.540
-How do you do that? It's just that little bit that changes. So other than that, it's the same old Python three nine that you know, and love that I'm far as I can tell. Yeah, so that's pretty awesome. Yeah, I'm pretty awesome. And then a little like some extra news on this.
+00:07:02.840 --> 00:07:03.960
+Yeah.
 
-
-00:06:49.540 --> 00:07:03.180
-Unless you already mentioned it. This happened a couple days ago. Pigeon is unfortunately frozen in the Microsoft repo. But the Anthony's fork is now the official fork. What?
-
-
-00:07:03.440 --> 00:07:07.680
+00:07:03.960 --> 00:07:07.440
 He's doing so much interesting low-level stuff, Anthony is.
 
+00:07:07.440 --> 00:07:08.220
+Yeah.
 
-00:07:07.680 --> 00:07:10.680
-He's got his like CPython source code book and
+00:07:08.220 --> 00:07:12.800
+He's got his, like, CPython source code book and, yeah, so, yeah, that's cool you're linking over to it.
 
+00:07:12.800 --> 00:07:18.080
+So, all this stuff is very exciting and it has the possibility for code to run much faster.
 
-00:07:10.680 --> 00:07:13.180
-yeah, so yeah, that's cool you're linking over to it.
+00:07:18.080 --> 00:07:25.680
+So, for example, given something that it can tell is here's a pi long object pointer thing.
 
+00:07:25.680 --> 00:07:27.000
+Could we convert that?
 
-00:07:13.180 --> 00:07:16.880
-So all this stuff is very exciting and it has the possibility for
+00:07:27.000 --> 00:07:27.960
+And it's small.
 
+00:07:27.960 --> 00:07:34.860
+Could we convert that to just a, you know, four byte integer and do integer math instead of, like, complex math, right?
 
-00:07:16.880 --> 00:07:19.440
-code to run much faster. So for example,
+00:07:34.860 --> 00:07:36.620
+Like, that would make a tremendous difference in speed.
 
+00:07:36.620 --> 00:07:36.880
+Yeah.
 
-00:07:19.440 --> 00:07:22.480
-given something that it can tell is here's a
+00:07:36.880 --> 00:07:42.740
+That said, what they've done here so far is just let's make it run and not break.
 
+00:07:42.740 --> 00:07:43.480
+Yeah.
 
-00:07:22.480 --> 00:07:25.880
-a pi long object pointer thing,
-
-
-00:07:25.880 --> 00:07:30.240
-could we convert that, and it's small, could we convert that to just a
-
-
-00:07:30.240 --> 00:07:33.640
-you know, four by integer and do integer math instead of like
-
-
-00:07:33.640 --> 00:07:36.640
-complex math, right? Like that would make a tremendous difference in speed.
-
-
-00:07:36.640 --> 00:07:39.840
-That said, what they've done here so far is just
-
-
-00:07:39.840 --> 00:07:42.840
-let's make it run and not break.
-
-
-00:07:42.840 --> 00:07:46.140
+00:07:43.480 --> 00:07:46.020
 And now they're going to start working on the optimization.
 
+00:07:46.020 --> 00:07:53.140
+So, this JIT compiler hasn't done any optimizations yet, but they're going to start teaching Pigeon how to understand the Python code.
 
-00:07:46.140 --> 00:07:49.240
-So this JIT compiler hasn't done any optimizations yet.
+00:07:53.140 --> 00:07:59.380
+Say, could we restructure that to get the same outcome, but in a much more native to the machine way?
 
+00:07:59.380 --> 00:08:00.600
+So, is it faster?
 
-00:07:49.240 --> 00:07:51.640
-But they're going to start teaching Pidgin
+00:08:00.600 --> 00:08:01.620
+A little bit.
 
+00:08:01.620 --> 00:08:02.740
+Not a ton yet.
 
-00:07:51.640 --> 00:07:55.840
-how to understand the Python code, say, could we restructure that to get the same outcome
+00:08:02.740 --> 00:08:12.260
+But it opens the door for huge improvements by working specifically on the JIT compiler, understanding how to take code that it gets and turn it into something.
 
-
-00:07:55.840 --> 00:07:59.540
-but in a much more native to the machine way.
-
-
-00:07:59.540 --> 00:08:02.980
-So is it faster? A little bit, not a ton yet,
-
-
-00:08:02.980 --> 00:08:08.580
-but it opens the door for huge improvements by working specifically on the JIT compiler,
-
-
-00:08:08.580 --> 00:08:12.260
-understanding how to take code that it gets and turn it into something.
-
-
-00:08:12.260 --> 00:08:15.940
-Yeah, and this sort of cross work and stuff is interesting,
-
-
-00:08:15.940 --> 00:08:18.740
-just interesting about working with languages,
-
-
-00:08:18.740 --> 00:08:22.740
-working with whether or not you're going to do interpreted versus JIT compiled,
-
-
-00:08:22.740 --> 00:08:24.740
-things like that. It's a very interesting story.
-
-
-00:08:24.740 --> 00:08:25.620
+00:08:12.260 --> 00:08:12.660
 Yeah.
 
+00:08:12.660 --> 00:08:15.720
+And this sort of cross work and stuff is interesting.
 
-00:08:25.620 --> 00:08:27.780
-Yeah, and that Stack Overflow thing I linked to,
+00:08:15.720 --> 00:08:23.560
+Just interesting about, you know, working with languages, working with whether or not you're going to do interpreted versus JIT compiled and things like that.
 
+00:08:23.560 --> 00:08:24.840
+It's a very interesting story.
 
-00:08:27.780 --> 00:08:32.980
-They also talk about PyPy, P-Y-P-Y, and how it also made the example there go quite a bit faster.
-
-
-00:08:32.980 --> 00:08:36.980
-So anyway, JITs seem to be an interesting option here.
-
-
-00:08:36.980 --> 00:08:41.940
-So from PEP 523 to 621, let's keep rolling on the PEP, man.
-
-
-00:08:41.940 --> 00:08:49.620
->> The PEP 621 is, I guess, a standard, trying to standardize some of the metadata in pyproject.toml.
-
-
-00:08:49.620 --> 00:08:54.980
-So we've talked about packaging and pyproject.toml a lot, I think.
-
-
-00:08:54.980 --> 00:09:00.380
-the different projects like black and flip and others have been using.
-
-
-00:09:00.380 --> 00:09:10.260
-Is loophole in the the original spec that said yeah you can put extra stuff in there but we don't recommend it to everybody's putting extra stuff in it but.
-
-
-00:09:10.260 --> 00:09:12.860
-Are we forbidden no.
-
-
-00:09:12.860 --> 00:09:21.740
-No yeah so they took out the recommendation to not do that but there's motivation to sort of standardize on the things that are building packages
-
-
-00:09:21.740 --> 00:09:26.940
-and building wheels it'd be really great if like we could kind of standardize on what
-
-
-00:09:26.940 --> 00:09:35.580
-is in there and what names the big players are set up tools and poetry and flit of course but there's others around that do this
-
-
-00:09:35.580 --> 00:09:41.340
-and this PEP actually includes the authors of all of those in trying to get
-
-
-00:09:41.340 --> 00:09:49.260
-some of this together. Some of the motivation is to try to have some of the metadata statically defined so that
-
-
-00:09:49.260 --> 00:09:56.400
-other tools can read it quickly and we can build an ecosystem around just a standard set of things.
-
-
-00:09:56.400 --> 00:10:00.780
-That makes a lot of sense. If you're going to put it there anyway, make it at least interchangeable and useful.
-
-
-00:10:00.780 --> 00:10:06.780
-Yeah, and just kind of define what it means to have these things in there. And one of the nice
-
-
-00:10:06.780 --> 00:10:15.180
-I looked for because I kind of bugged me about the old packaging was whether or not email was required and
-
-
-00:10:15.180 --> 00:10:20.980
-it's nice to see that both name and I mean usually you should put like an author maintainer name
-
-
-00:10:20.980 --> 00:10:26.580
-and email is encouraged but I don't want to put my email in there and it's optional so that's cool.
-
-
-00:10:26.580 --> 00:10:33.680
-Yeah exactly because then it gets published to PyPI and man anytime you put your email on the internet you just get the communication.
-
-
-00:10:33.680 --> 00:10:39.640
-This is still in draft form officially, I think, but it's a, I think it'll go forward.
-
-
-00:10:39.640 --> 00:10:43.140
-I mean, it doesn't change any of the existing core metadata and it doesn't
-
-
-00:10:43.140 --> 00:10:47.420
-attempt to standardize all things that you could put in there, but some of the
-
-
-00:10:47.420 --> 00:10:52.460
-common things like name, version, description, where the readme is, which
-
-
-00:10:52.460 --> 00:10:56.820
-Python version is required, what license you have, these are all sort of standard
-
-
-00:10:56.820 --> 00:11:02.140
-things that used to be other places, but having them in the pyproject.toml
-
-
-00:11:02.140 --> 00:11:02.700
-would be great.
-
-
-00:11:02.700 --> 00:11:03.340
+00:08:24.840 --> 00:08:25.200
 Yeah.
 
+00:08:25.200 --> 00:08:26.040
+Yeah.
 
-00:11:03.440 --> 00:11:05.040
-It seems like they belong together in there.
+00:08:26.040 --> 00:08:33.000
+And that Stack Overflow thing I linked to, they also talk about PyPy, PYPy, and how it also made the example there go quite a bit faster.
 
+00:08:33.000 --> 00:08:36.640
+So, anyway, JIT seemed to be an interesting option here.
 
-00:11:05.040 --> 00:11:08.960
-So like, you know, what is the name of the project?
+00:08:36.640 --> 00:08:41.980
+So, from PEP 523 to 621, let's keep rolling on the PEP, man.
 
+00:08:41.980 --> 00:08:49.620
+The PEP 621 is, I guess, trying to standardize some of the metadata in PyProject.toml.
 
-00:11:08.960 --> 00:11:10.760
+00:08:50.100 --> 00:08:54.600
+So, we've talked about packaging in PyProject.toml a lot, I think.
+
+00:08:54.600 --> 00:09:09.200
+The different projects like Black and Flit and others have been using a loophole in the original spec that said, yeah, you can put extra stuff in there, but we don't recommend it to everybody who's putting extra stuff in it.
+
+00:09:09.200 --> 00:09:11.340
+Like, but are we forbidden?
+
+00:09:11.340 --> 00:09:12.320
+No, let's do it.
+
+00:09:13.140 --> 00:09:13.880
+No, yeah.
+
+00:09:13.880 --> 00:09:16.160
+So, they took out the recommendation to not do that.
+
+00:09:16.160 --> 00:09:22.920
+But there's motivation to sort of standardize on the things that are building packages and building wheels.
+
+00:09:22.920 --> 00:09:28.180
+It'd be really great if, like, we could kind of standardize on what is in there and what names.
+
+00:09:28.180 --> 00:09:32.540
+The big players are set up tools and poetry and Flit, of course.
+
+00:09:33.000 --> 00:09:35.220
+But there's others around that do this.
+
+00:09:35.220 --> 00:09:42.160
+And this PEP actually includes the authors of all of those in trying to get some of this together.
+
+00:09:42.160 --> 00:09:51.600
+Some of the motivation is to try to have some of the metadata statically defined so that other tools can read it quickly.
+
+00:09:51.600 --> 00:09:56.320
+And we can build an ecosystem around just a standard set of things.
+
+00:09:56.320 --> 00:09:57.220
+That makes a lot of sense.
+
+00:09:57.220 --> 00:10:00.560
+If you're going to put it there anyway, make it at least interchangeable and useful.
+
+00:10:00.940 --> 00:10:04.940
+Yeah, and just kind of define what it means to have these things in there.
+
+00:10:04.940 --> 00:10:14.400
+And one of the nice things I looked for because it kind of bugged me about the old packaging was whether or not email was required.
+
+00:10:14.400 --> 00:10:20.540
+And it's nice to see that both name and, I mean, usually you should put, like, an author or maintainer name.
+
+00:10:20.540 --> 00:10:24.660
+And email is encouraged, but I don't want to put my email in there.
+
+00:10:24.660 --> 00:10:26.660
+And it's optional, so that's cool.
+
+00:10:26.660 --> 00:10:29.200
+Yeah, exactly, because then it gets published up IPI.
+
+00:10:29.500 --> 00:10:33.260
+And, man, anytime you put your email on the internet, you just get communication.
+
+00:10:33.260 --> 00:10:39.560
+This is still in draft form officially, I think, but I think it'll go forward.
+
+00:10:39.560 --> 00:10:46.860
+It doesn't change any of the existing core metadata, and it doesn't attempt to standardize all things that you could put in there.
+
+00:10:46.860 --> 00:10:55.060
+But some of the common things like name, version, description, where the readme is, which Python version is required, what license you have.
+
+00:10:55.060 --> 00:11:02.720
+These are all sort of standard things that used to be other places, but having them in the PyProject.tom will be great.
+
+00:11:03.120 --> 00:11:05.020
+Yeah, it seems like they belong together in there.
+
+00:11:05.020 --> 00:11:08.760
+So, like, you know, what is the name of the project?
+
+00:11:08.760 --> 00:11:10.700
 What version of Python does it require?
 
+00:11:10.700 --> 00:11:11.960
+And so on, that's reasonable.
 
-00:11:10.760 --> 00:11:12.160
-And so on that's, that's reasonable.
-
-
-00:11:12.160 --> 00:11:12.480
+00:11:11.960 --> 00:11:12.420
 Yeah.
 
+00:11:12.420 --> 00:11:13.920
+I'm actually surprised.
 
-00:11:12.480 --> 00:11:14.040
-I would actually surprise them.
+00:11:13.920 --> 00:11:16.020
+I'm like, well, we haven't already standardized this stuff.
 
-
-00:11:14.040 --> 00:11:16.040
-Like what we haven't already standardized this stuff.
-
-
-00:11:16.040 --> 00:11:16.760
+00:11:16.020 --> 00:11:16.560
 Exactly.
 
+00:11:16.560 --> 00:11:18.140
+You know what else is reasonable?
 
-00:11:16.760 --> 00:11:20.040
-You know, what else is reasonable is a learning pie test.
+00:11:18.140 --> 00:11:19.960
+Is learning pytest.
 
-
-00:11:20.040 --> 00:11:20.400
+00:11:19.960 --> 00:11:20.320
 Yeah.
 
-
-00:11:20.400 --> 00:11:21.280
+00:11:20.320 --> 00:11:21.260
 That's a pretty reasonable thing.
 
+00:11:21.340 --> 00:11:22.940
+And often people do it with a book?
 
-00:11:21.280 --> 00:11:23.000
-And often people do it with a book.
-
-
-00:11:23.000 --> 00:11:24.160
+00:11:22.940 --> 00:11:24.120
 They do.
 
+00:11:24.120 --> 00:11:30.360
+And I'm still getting some really great quotes from people, which would have been good for me to be ready with that.
 
-00:11:24.160 --> 00:11:28.480
-And I'm still getting some really great quotes from people, which would
+00:11:30.360 --> 00:11:32.020
+But people contact me.
 
+00:11:32.020 --> 00:11:41.020
+I get a message probably every other day saying, man, the Python Testing with pytest book that you wrote has helped me so much get up to speed really quickly.
 
-00:11:28.480 --> 00:11:32.120
-been, would have been good for me to be ready with that, but people contact me.
-
-
-00:11:32.400 --> 00:11:35.320
-I get a message probably every other day saying,
-
-
-00:11:35.320 --> 00:11:38.560
-"Man, the Python testing with pytest book that you wrote
-
-
-00:11:38.560 --> 00:11:41.640
-has helped me so much to get up to speed really quickly."
-
-
-00:11:41.640 --> 00:11:43.440
+00:11:41.020 --> 00:11:43.420
 And I really love feedback like that.
 
-
-00:11:43.440 --> 00:11:45.920
+00:11:43.420 --> 00:11:45.800
 So if it's helped you, please let me know.
 
-
-00:11:45.920 --> 00:11:46.920
+00:11:45.800 --> 00:11:46.320
 It'd be great.
 
+00:11:46.320 --> 00:11:47.140
+Yeah.
 
-00:11:46.920 --> 00:11:49.000
-- Yeah, I'm about to release a FastAPI course.
+00:11:47.140 --> 00:11:48.940
+I'm about to release a FastAPI course.
 
+00:11:49.080 --> 00:11:53.800
+It may actually be out by the time people hear this because there's this time travel thing that we do with podcasting.
 
-00:11:49.000 --> 00:11:51.040
-It may actually be out by the time people hear this
-
-
-00:11:51.040 --> 00:11:52.800
-'cause there's this time travel thing
-
-
-00:11:52.800 --> 00:11:53.800
-that we do with podcasting.
-
-
-00:11:53.800 --> 00:11:55.380
+00:11:53.800 --> 00:11:54.940
 Not that much, but a little bit.
 
+00:11:54.940 --> 00:11:58.680
+So people should definitely check that out over at Talk Python Training.
 
-00:11:55.380 --> 00:11:57.580
-So people should definitely check that out
+00:11:58.680 --> 00:12:00.940
+And I've already started writing the next course.
 
+00:12:00.940 --> 00:12:01.700
+So that'll be fun.
 
-00:11:57.580 --> 00:11:59.200
-over at Talk Python Training.
+00:12:01.700 --> 00:12:02.760
+Big secret there.
 
+00:12:02.760 --> 00:12:03.960
+You're cranking them out.
 
-00:11:59.200 --> 00:12:01.000
-And I've already started writing the next course,
+00:12:03.960 --> 00:12:05.400
+I'm really liking this stuff.
 
+00:12:05.400 --> 00:12:07.380
+And I'm really looking forward to the FastAPI course.
 
-00:12:01.000 --> 00:12:02.140
-so that'll be fun.
+00:12:07.380 --> 00:12:07.680
+Yeah.
 
+00:12:07.680 --> 00:12:07.980
+Thanks.
 
-00:12:02.140 --> 00:12:03.140
-- Big secret there.
-
-
-00:12:03.140 --> 00:12:04.040
-- You're cranking them out.
-
-
-00:12:04.040 --> 00:12:05.420
-I'm really liking this stuff
-
-
-00:12:05.420 --> 00:12:07.540
-and I'm really looking forward to the FastAPI course.
-
-
-00:12:07.540 --> 00:12:08.380
-- Yeah, thanks.
-
-
-00:12:08.380 --> 00:12:10.460
+00:12:07.980 --> 00:12:10.320
 It's all done, recorded.
 
+00:12:10.320 --> 00:12:12.680
+It just needs the final editing set on the videos.
 
-00:12:10.460 --> 00:12:12.800
-It just needs the final editing sent on the videos
+00:12:12.680 --> 00:12:14.280
+And it's going to be really fun.
 
-
-00:12:12.800 --> 00:12:14.340
-and it's gonna be really fun.
-
-
-00:12:14.340 --> 00:12:15.540
+00:12:14.280 --> 00:12:15.460
 I think people will love that framework.
 
-
-00:12:15.540 --> 00:12:17.400
+00:12:15.460 --> 00:12:17.100
 I had a lot of fun exploring it.
 
+00:12:17.100 --> 00:12:17.260
+Cool.
 
-00:12:17.400 --> 00:12:18.900
+00:12:17.260 --> 00:12:18.340
 You know what's not a lot of fun?
 
+00:12:18.840 --> 00:12:26.560
+When you get a DMCA complaint from the Record Industry Association of America to take down your GitHub project.
 
-00:12:18.900 --> 00:12:20.860
-When you get a DMCA complaint
+00:12:26.560 --> 00:12:27.000
+What?
 
-
-00:12:20.860 --> 00:12:25.220
-from the Record Industry Association of America
-
-
-00:12:25.220 --> 00:12:26.660
-to take down your GitHub project.
-
-
-00:12:26.660 --> 00:12:27.500
-- What?
-
-
-00:12:27.500 --> 00:12:28.340
+00:12:27.000 --> 00:12:28.000
 That happens?
 
+00:12:28.000 --> 00:12:29.520
+Apparently.
 
-00:12:28.340 --> 00:12:30.140
-- Apparently.
+00:12:29.520 --> 00:12:34.020
+It happens to me all the time on a really funny story.
 
+00:12:34.020 --> 00:12:37.640
+I did a webcast years ago when I first moved to Oregon.
 
-00:12:30.140 --> 00:12:34.100
-It happened to me all the time on a really funny story.
+00:12:38.460 --> 00:12:41.240
+And there were some people who had dialed in.
 
+00:12:41.240 --> 00:12:43.500
+And it was so frustrating.
 
-00:12:34.100 --> 00:12:38.340
-I did a webcast like years ago when I first moved to Oregon
+00:12:43.500 --> 00:12:45.740
+Like there's all these hundreds of people.
 
+00:12:45.740 --> 00:12:50.120
+Somebody put the call on hold because they had someone come in their office.
 
-00:12:38.340 --> 00:12:42.060
-and there were some people who had dialed in
+00:12:50.400 --> 00:12:55.340
+It started playing like the hold music to the whole organization.
 
+00:12:55.340 --> 00:12:57.940
+Everyone, like all hundred people were hearing this hold music.
 
-00:12:42.060 --> 00:12:43.940
-and it was so frustrating.
+00:12:57.940 --> 00:13:01.020
+And we're like, how do we get rid of this one person without getting rid of the rest?
 
+00:13:01.020 --> 00:13:01.920
+It was really bad.
 
-00:12:43.940 --> 00:12:46.180
-Like there's all these, like hundreds of people,
+00:13:02.300 --> 00:13:07.960
+But the reason I bring this up now is it was like a song, an actual copyrighted song.
 
+00:13:07.960 --> 00:13:17.860
+When I published the webcast to YouTube, it got taken down because the hold music that was interrupting the webcast got a DMCA complaint.
 
-00:12:46.180 --> 00:12:48.620
-somebody put the call on hold
-
-
-00:12:48.620 --> 00:12:50.620
-'cause they had someone come in their office.
-
-
-00:12:50.620 --> 00:12:53.380
-It started playing like the hold music
-
-
-00:12:53.380 --> 00:12:56.020
-to the whole Oregon, everyone,
-
-
-00:12:56.020 --> 00:12:58.020
-like all hundred people were hearing this hold music
-
-
-00:12:58.020 --> 00:12:59.940
-and we're like, how do we get rid of this one person
-
-
-00:12:59.940 --> 00:13:02.540
-without getting rid of the rest, it was really bad.
-
-
-00:13:02.540 --> 00:13:05.900
-But the reason I bring this up now is it was like a song,
-
-
-00:13:05.900 --> 00:13:08.260
-an actual copyrighted song.
-
-
-00:13:08.260 --> 00:13:10.620
-When I published the webcast to YouTube,
-
-
-00:13:10.620 --> 00:13:13.180
-it got taken down because the old music
-
-
-00:13:13.180 --> 00:13:18.180
-that was interrupting the webcast got a DMCA complaint.
-
-
-00:13:18.180 --> 00:13:20.060
+00:13:18.460 --> 00:13:19.940
 So anyway, these things are super frustrating.
 
-
-00:13:20.060 --> 00:13:20.980
+00:13:19.940 --> 00:13:20.440
 You're like, why?
 
-
-00:13:20.980 --> 00:13:21.860
+00:13:20.440 --> 00:13:21.740
 This makes no sense.
 
-
-00:13:21.860 --> 00:13:24.620
+00:13:21.740 --> 00:13:23.540
 Anyway, so here's the story.
 
-
-00:13:24.620 --> 00:13:28.820
+00:13:23.540 --> 00:13:28.640
 GitHub had taken down YouTube-DL.
 
+00:13:28.640 --> 00:13:36.460
+YouTube-DL, I believe it's a Python project that allows, basically gives you a CLI for downloading content off of YouTube.
 
-00:13:28.820 --> 00:13:31.620
-YouTube-DL, I believe it's a Python project,
+00:13:36.460 --> 00:13:39.020
+So if you're like, oh, that video is really awesome.
 
+00:13:39.020 --> 00:13:40.180
+I wish I had it offline.
 
-00:13:31.620 --> 00:13:34.700
-that basically gives you a CLI
+00:13:40.180 --> 00:13:48.120
+YouTube-DL space URL-format or whatever, you know, you give it, you just run that and it downloads it.
 
+00:13:48.860 --> 00:13:59.640
+However, because the record industry puts a lot of songs and music videos and stuff up on YouTube, they said this theoretically could be used to download a song.
 
-00:13:34.700 --> 00:13:37.360
-for downloading content off of YouTube.
+00:13:59.640 --> 00:14:01.300
+Therefore, we hate it.
 
+00:14:01.300 --> 00:14:05.220
+And so we asked GitHub to take it down and get up dead.
 
-00:13:37.360 --> 00:13:39.080
-So if you're like, "Oh, that video's really awesome,
+00:14:05.220 --> 00:14:05.800
+Interesting.
 
+00:14:05.800 --> 00:14:06.180
+Yeah.
 
-00:13:39.080 --> 00:13:40.820
-"I wish I had it offline,"
+00:14:06.180 --> 00:14:07.500
+But here's the news.
 
+00:14:07.500 --> 00:14:15.200
+They revamped their copyright takedown policy, put a bunch of other policies in place, set up a legal defense fund, and restored YouTube download.
 
-00:13:40.820 --> 00:13:45.820
-YouTube-DL space URL-format or whatever,
-
-
-00:13:45.820 --> 00:13:48.820
-you just run that and it downloads it.
-
-
-00:13:48.820 --> 00:13:51.540
-However, because the record industry
-
-
-00:13:51.540 --> 00:13:54.740
-puts a lot of songs and music videos and stuff
-
-
-00:13:54.740 --> 00:13:58.620
-up on YouTube, they said this theoretically could be used
-
-
-00:13:58.620 --> 00:14:01.800
-to download a song, therefore we hate it,
-
-
-00:14:01.800 --> 00:14:04.640
-and so we asked GitHub to take it down.
-
-
-00:14:04.640 --> 00:14:05.480
-And GitHub did.
-
-
-00:14:05.480 --> 00:14:06.320
-- Interesting.
-
-
-00:14:06.320 --> 00:14:07.720
-- Yeah, but here's the news.
-
-
-00:14:07.720 --> 00:14:10.880
-They revamped their copyright takedown policy,
-
-
-00:14:10.880 --> 00:14:12.620
-put a bunch of other policies in place,
-
-
-00:14:12.620 --> 00:14:13.960
-set up a legal defense fund,
-
-
-00:14:13.960 --> 00:14:16.200
-and restored YouTube download.
-
-
-00:14:16.200 --> 00:14:20.120
+00:14:16.160 --> 00:14:19.820
 And gave the middle finger to RIAA, basically.
 
+00:14:19.820 --> 00:14:25.660
+Yeah, because this tool, I mean, maybe this tool helps you do something you shouldn't, but it's not itself.
 
-00:14:20.120 --> 00:14:21.000
-- Yeah, because this tool,
+00:14:25.660 --> 00:14:26.560
+Yeah, yeah.
 
+00:14:26.560 --> 00:14:39.040
+So also, you know, big shout out to the EFF, Electronic Frontier Foundation, in that they helped, like, critique and go through the actual legal bits of this and show GitHub, like, you know what?
 
-00:14:21.000 --> 00:14:24.400
-I mean, maybe this tool helps you do something you shouldn't
+00:14:39.100 --> 00:14:42.660
+Actually, their main complaint is actually not even what's happening.
 
+00:14:43.560 --> 00:14:56.900
+So the RIAA argued that the tool ran afoul of Section 1201 of U.S. copyright law by giving people the means to circumvent YouTube's DRM, digital rights management.
 
-00:14:24.400 --> 00:14:25.920
-but it's not itself.
-
-
-00:14:25.920 --> 00:14:28.600
-- Yeah, yeah, so also, you know,
-
-
-00:14:28.600 --> 00:14:32.720
-big shout out to the EFF, Electronic Frontier Foundation,
-
-
-00:14:32.720 --> 00:14:35.980
-in that they helped critique and go through
-
-
-00:14:35.980 --> 00:14:38.560
-the actual legal bits of this and show GitHub,
-
-
-00:14:38.560 --> 00:14:40.160
-like, you know what, actually,
-
-
-00:14:40.160 --> 00:14:43.680
-their main complaint is actually not even what's happening.
-
-
-00:14:43.680 --> 00:14:47.320
-So the RIA argued that the tool ran afoul
-
-
-00:14:47.320 --> 00:14:51.440
-of section 1201 of US copyright law
-
-
-00:14:51.440 --> 00:14:56.200
-by giving people the means to circumvent YouTube's DRM,
-
-
-00:14:56.200 --> 00:14:57.840
-digital right management.
-
-
-00:14:57.840 --> 00:14:59.560
+00:14:57.520 --> 00:14:59.380
 So that's the important part, right?
 
+00:14:59.380 --> 00:15:03.960
+Like, it's breaking this encryption prevention of copying that YouTube has.
 
-00:14:59.560 --> 00:15:02.500
-Like it's breaking this encryption prevention
+00:15:03.960 --> 00:15:11.920
+But then the EFF looked at the claims and said, you know, what it actually does is it just grabs the video stream and saves it to a file.
 
-
-00:15:02.500 --> 00:15:04.600
-of copying that YouTube has.
-
-
-00:15:04.600 --> 00:15:06.920
-But then the EFF looked at the claims and said,
-
-
-00:15:06.920 --> 00:15:10.240
-you know, what it actually does is it just grabs
-
-
-00:15:10.240 --> 00:15:12.120
-the video stream and saves it to a file.
-
-
-00:15:12.120 --> 00:15:15.640
+00:15:11.920 --> 00:15:14.920
 It doesn't decrypt it or re-encode it or anything.
 
+00:15:15.420 --> 00:15:22.000
+So for things like Netflix or Widevine or things like that that use DRM, this actually has no effect on it.
 
-00:15:15.640 --> 00:15:19.200
-So for things like Netflix or Widevine
+00:15:22.000 --> 00:15:28.160
+Only if the video is in an unprotected, like, MP4 format will it even work.
 
+00:15:28.160 --> 00:15:34.220
+So their main complaint that, oh, it breaks this DRM, it doesn't break DRM.
 
-00:15:19.200 --> 00:15:20.600
-or things like that that use DRM,
-
-
-00:15:20.600 --> 00:15:22.520
-this actually has no effect on it.
-
-
-00:15:22.520 --> 00:15:26.080
-Only if the video is in an unprotected,
-
-
-00:15:26.080 --> 00:15:28.960
-like MP4 format will it even work.
-
-
-00:15:28.960 --> 00:15:33.200
-So their main complaint that, oh, it breaks this DRM,
-
-
-00:15:33.200 --> 00:15:35.120
-it doesn't break DRM.
-
-
-00:15:35.120 --> 00:15:36.560
+00:15:34.220 --> 00:15:36.460
 So they said, we're putting it back.
 
+00:15:36.460 --> 00:15:36.720
+Okay.
 
-00:15:36.560 --> 00:15:37.960
-- Okay. - Yeah.
+00:15:36.720 --> 00:15:37.100
+Yeah?
 
+00:15:37.100 --> 00:15:40.800
+And as part of this, there's, like, a pretty big uproar, I believe.
 
-00:15:37.960 --> 00:15:39.120
-And as part of this,
+00:15:40.800 --> 00:15:46.500
+So GitHub is implementing new policies to avoid the repeat of such a situation moving forward.
 
+00:15:46.500 --> 00:15:54.660
+First, it says the team of technical and legal experts will manually evaluate every single section 1201 claim.
 
-00:15:39.120 --> 00:15:40.880
-there's like a pretty big uproar, I believe.
-
-
-00:15:40.880 --> 00:15:43.080
-So GitHub is implementing new policies
-
-
-00:15:43.080 --> 00:15:46.760
-to avoid the repeat of such a situation moving forward.
-
-
-00:15:46.760 --> 00:15:50.480
-First, says the team of technical and legal experts
-
-
-00:15:50.480 --> 00:15:55.440
-will manually evaluate every single section 1201 claim.
-
-
-00:15:55.440 --> 00:15:56.280
+00:15:54.660 --> 00:15:55.740
 That's cool.
 
+00:15:55.740 --> 00:15:56.020
+Yeah.
 
-00:15:56.280 --> 00:15:59.620
-And instead of just going, whoop, it goes down,
+00:15:56.020 --> 00:16:04.580
+And instead of just going, whoop, it goes down, they said if the company's team, technical and legal teams, ultimately find issues with the project,
 
+00:16:04.580 --> 00:16:08.100
+GitHub will give its owners a chance to address those problems before taking down their work.
 
-00:15:59.620 --> 00:16:03.020
-they said, if the company's team, technical legal teams,
+00:16:08.100 --> 00:16:08.640
+That's nice.
 
+00:16:08.640 --> 00:16:09.400
+Yeah, that's cool.
 
-00:16:03.020 --> 00:16:04.720
-ultimately find issues with the project,
+00:16:09.720 --> 00:16:17.100
+And GitHub is establishing a $1 million legal defense fund for developers if somebody sues them about their GitHub project.
 
+00:16:17.100 --> 00:16:18.240
+That's actually awesome.
 
-00:16:04.720 --> 00:16:06.640
-GitHub will give its owners a chance to address
+00:16:18.240 --> 00:16:20.020
+Yeah, this is a feel-good story, right?
 
+00:16:20.020 --> 00:16:20.400
+I think.
 
-00:16:06.640 --> 00:16:08.200
-those problems before taking down their work.
+00:16:20.400 --> 00:16:28.620
+Well, yeah, because the individual developers sometimes are just, like, you know, a handful of people or even just one person making some cool tool that they think is neat.
 
+00:16:28.620 --> 00:16:30.560
+You're giving this stuff away.
 
-00:16:08.200 --> 00:16:09.040
-- That's nice.
-
-
-00:16:09.040 --> 00:16:09.880
-- Yeah, that's cool.
-
-
-00:16:09.880 --> 00:16:13.720
-And GitHub is establishing a $1 million legal defense fund
-
-
-00:16:13.720 --> 00:16:16.300
-for developers if somebody sues them
-
-
-00:16:16.300 --> 00:16:17.200
-about their GitHub project.
-
-
-00:16:17.200 --> 00:16:18.440
-- That's actually awesome.
-
-
-00:16:18.440 --> 00:16:20.440
-Yeah, this is a feel-good story, right? I think.
-
-
-00:16:20.440 --> 00:16:24.440
-Well, yeah, because the individual developers sometimes are just like, you know,
-
-
-00:16:24.440 --> 00:16:28.940
-a handful of people or even just one person making some cool tool that they think is neat.
-
-
-00:16:28.940 --> 00:16:30.940
-You're giving this stuff away, you know?
-
-
-00:16:30.940 --> 00:16:33.940
+00:16:30.560 --> 00:16:33.740
 You can't get a lawyer or whatever to defend yourself.
 
+00:16:33.740 --> 00:16:38.440
+And a lot of times it's published through GitHub under your personal name, right?
 
-00:16:33.940 --> 00:16:38.940
-And a lot of times it's published to GitHub under your personal name, right?
+00:16:38.640 --> 00:16:48.740
+So, like, Talk Python has an organization, and we pay GitHub, like, 50, 60 bucks a month to have our organization maintain repos on there, right?
 
+00:16:48.740 --> 00:16:55.760
+But a lot of people, it's just, you know, GitHub.com slash Brian Ockin or slash Mike C. Kennedy or whatever.
 
-00:16:38.940 --> 00:16:42.440
-So like, Talk Python has an organization and we pay GitHub
+00:16:55.760 --> 00:16:59.140
+There's no, like, legal guards there, right?
 
+00:16:59.320 --> 00:17:00.920
+So, it's really cool that they're doing this.
 
-00:16:42.440 --> 00:16:44.440
-like 50, 60 bucks a month
-
-
-00:16:44.440 --> 00:16:48.360
-to have our organization maintain repos on there.
-
-
-00:16:48.360 --> 00:16:48.860
-Right?
-
-
-00:16:48.860 --> 00:16:50.360
-But a lot of people,
-
-
-00:16:50.360 --> 00:16:56.160
-it's just, you know, github.com/brianocken or /mikeckennedy or whatever.
-
-
-00:16:56.160 --> 00:16:59.240
-There's no like legal guards there, right?
-
-
-00:16:59.240 --> 00:17:00.900
-So it's really cool that they're doing this.
-
-
-00:17:00.900 --> 00:17:01.400
+00:17:00.920 --> 00:17:01.240
 Yeah.
 
-
-00:17:01.400 --> 00:17:02.320
+00:17:01.240 --> 00:17:02.300
 I like it.
 
+00:17:02.300 --> 00:17:07.720
+And as I was researching this into my inbox, dropped a newsletter from the EFF.
 
-00:17:02.320 --> 00:17:04.620
-And as I was researching this,
-
-
-00:17:04.620 --> 00:17:08.000
-into my inbox dropped a newsletter from the EFF.
-
-
-00:17:08.000 --> 00:17:10.200
+00:17:07.720 --> 00:17:09.920
 Apparently, I'm a subscriber to their newsletter.
 
+00:17:09.920 --> 00:17:19.500
+And they said they just launched a podcast miniseries called How to Fix the Internet that examines potential solutions to six ills facing the modern digital landscape.
 
-00:17:10.200 --> 00:17:13.340
-And they said they just launched a podcast miniseries
+00:17:19.500 --> 00:17:20.480
+And this sounds like one of them.
 
+00:17:20.560 --> 00:17:23.020
+So, people are, like, really interested in this.
 
-00:17:13.340 --> 00:17:17.340
-called "How to Fix the Internet" that examines potential solutions to six ills
+00:17:23.020 --> 00:17:25.340
+They can actually listen to the EFF series there.
 
+00:17:25.340 --> 00:17:25.740
+Yeah.
 
-00:17:17.340 --> 00:17:21.100
-facing the modern digital landscape. And this sounds like one of them. So
+00:17:25.740 --> 00:17:26.600
+Nice.
 
+00:17:26.600 --> 00:17:27.960
+Anyway, that's a wild story, right?
 
-00:17:21.100 --> 00:17:24.780
-people are like really interested in this, they can actually listen to the EFF
+00:17:27.960 --> 00:17:28.880
+It is very wild.
 
+00:17:28.880 --> 00:17:29.180
+Yeah.
 
-00:17:24.780 --> 00:17:29.420
-series there. Yeah, nice. Anyway, that's a wild story, right? It is very wild. Yeah.
-
-
-00:17:29.420 --> 00:17:31.660
-All right, what you got next here? Another one of my favorite topics?
-
-
-00:17:31.660 --> 00:17:35.100
-Yeah, so you like MongoDB, right? I do, I love it.
-
-
-00:17:35.100 --> 00:17:37.740
-So I was curious, I was actually thinking the other day,
-
-
-00:17:37.740 --> 00:17:42.620
-how small of a machine could I put MongoDB on? And then Mark Smith comes out with
-
-
-00:17:42.620 --> 00:17:48.140
-a article that says that's how to install and configure MongoDB on a Raspberry Pi.
-
-
-00:17:48.140 --> 00:17:48.860
-Wow, that's awesome.
-
-
-00:17:48.860 --> 00:17:56.900
-Which is totally cool. So it's a fairly comprehensive little guide, but I didn't know you could put Ubuntu server on a Raspberry Pi either.
-
-
-00:17:56.900 --> 00:18:05.940
-So that's how he does it. He installs Ubuntu server, 64-bit on a Raspberry Pi, configures the Wi-Fi, installs MongoDB.
-
-
-00:18:05.940 --> 00:18:11.300
-And but there's like a kind of a quirk on how you're supposed to install MongoDB on it.
-
-
-00:18:11.780 --> 00:18:18.420
-and then set up an account so that you can safely have a MongoDB server running in your house.
-
-
-00:18:18.420 --> 00:18:23.820
-He recommends this is like a local network thing, not even a company-wide thing.
-
-
-00:18:23.820 --> 00:18:26.020
-Just if you're using it yourself, go for it.
-
-
-00:18:26.020 --> 00:18:30.560
-If you already have a Raspberry Pi and that's like your thing that is running,
-
-
-00:18:30.560 --> 00:18:35.980
-that is your sort of file server or whatever reason that you have it running for,
-
-
-00:18:35.980 --> 00:18:39.220
-and you want a database, it's cool that you can set this up here, right?
-
-
-00:18:39.220 --> 00:18:44.220
-I mean, you probably wouldn't host like a professional website on it, but who knows, maybe you would.
-
-
-00:18:44.220 --> 00:18:45.620
-I've got stories.
-
-
-00:18:45.620 --> 00:18:51.220
-One of the things I love about MongoDB is just the ease of setting up storage areas for it and stuff.
-
-
-00:18:51.220 --> 00:18:53.220
-And you can just, it's easy.
-
-
-00:18:53.220 --> 00:18:56.220
-You just talk to it like you expect it to be and it just becomes that way, right?
-
-
-00:18:56.220 --> 00:18:58.220
-You don't have to run migration scripts and all that.
-
-
-00:18:58.220 --> 00:19:07.220
-Yeah, so this would be, I mean, things like a home network to collect, like, I don't know, temperature data from different places and some of that stuff.
-
-
-00:19:07.220 --> 00:19:11.220
-or whatever, things like that might be kind of a neat use for that.
-
-
-00:19:11.220 --> 00:19:16.220
-Definitely, if you've got like an IoT thing, smart home thing going on and you want to store it somewhere.
-
-
-00:19:16.220 --> 00:19:19.220
-Yeah, very cool. I love it. Nice. Good find there.
-
-
-00:19:19.220 --> 00:19:24.220
-So this next one is like this new little section I've just invented just for this one time.
-
-
-00:19:24.220 --> 00:19:26.220
-Called "Extra, Extra, Extra, Hear All About It."
-
-
-00:19:26.220 --> 00:19:30.220
-So normally we have our extras at the end, but I had so many extras this time, I'm like,
-
-
-00:19:30.220 --> 00:19:32.220
-this show's going to be super long if we just keep going.
-
-
-00:19:32.220 --> 00:19:35.220
-So this is like all the other little tiny things grouped into one.
-
-
-00:19:35.220 --> 00:19:38.340
-So four, at least four more little things, but all combined.
-
-
-00:19:38.340 --> 00:19:38.700
-Okay.
-
-
-00:19:38.700 --> 00:19:39.020
-Okay.
-
-
-00:19:39.020 --> 00:19:41.940
-Let's start with some listener feedback.
-
-
-00:19:41.940 --> 00:19:45.340
-So remember, I went on a rant, I'm known to do that sometimes,
-
-
-00:19:45.340 --> 00:19:49.300
-about the Stack Overflow Survey and how they were comparing things that were like,
-
-
-00:19:49.300 --> 00:19:50.740
-simply not comparable.
-
-
-00:19:50.740 --> 00:19:51.540
-Yes.
-
-
-00:19:51.540 --> 00:19:54.220
-And one of the things I picked on was SQL.
-
-
-00:19:54.220 --> 00:19:57.300
-And I said, it doesn't make any sense to have SQL compared to the,
-
-
-00:19:57.300 --> 00:20:01.340
-popularity of SQL compared to the popularity of Python or the popularity of C#.
-
-
-00:20:01.340 --> 00:20:05.340
-because people who do C#, they gotta use SQL.
-
-
-00:20:05.340 --> 00:20:07.340
-People who do Python, they gotta use SQL,
-
-
-00:20:07.340 --> 00:20:09.340
-but not the other way around, right?
-
-
-00:20:09.340 --> 00:20:12.340
-It's like, I don't know, it just didn't seem like they were right.
-
-
-00:20:12.340 --> 00:20:14.340
-The numbers for SQL were inflated
-
-
-00:20:14.340 --> 00:20:17.340
-because all the other people were also happening to use SQL.
-
-
-00:20:17.340 --> 00:20:20.340
-But if you ask them, like, "What kind of developer are you?"
-
-
-00:20:20.340 --> 00:20:22.340
-They wouldn't say, "I'm a SQL developer."
-
-
-00:20:22.340 --> 00:20:24.340
-They would say, "I'm a Python developer," or "I'm a Java developer,"
-
-
-00:20:24.340 --> 00:20:27.340
-or .NET, or whatever is not SQL, right?
-
-
-00:20:27.340 --> 00:20:29.340
-So John Nickerson said,
-
-
-00:20:29.340 --> 00:20:31.920
-"Hey, I feel like you're saying that people just use SQL
-
-
-00:20:31.920 --> 00:20:32.920
-"or not real developers."
-
-
-00:20:32.920 --> 00:20:34.620
-I just want to point out that, no, no, no,
-
-
-00:20:34.620 --> 00:20:36.140
-that's not at all how I felt about it.
-
-
-00:20:36.140 --> 00:20:38.380
-I think if your job mainly is to use SQL,
-
-
-00:20:38.380 --> 00:20:39.620
-then you should check that box.
-
-
-00:20:39.620 --> 00:20:40.980
-You should say SQL.
-
-
-00:20:40.980 --> 00:20:44.880
-I'm just criticizing that we've got these two things
-
-
-00:20:44.880 --> 00:20:48.640
-side by side in these surveys
-
-
-00:20:48.640 --> 00:20:51.100
-where one of them is standalone
-
-
-00:20:51.100 --> 00:20:53.380
-and then one of them also adds to the other,
-
-
-00:20:53.380 --> 00:20:56.260
-but they're put together as if they're separate
-
-
-00:20:56.260 --> 00:20:59.220
-and being compared, and that just didn't feel right to me.
-
-
-00:20:59.220 --> 00:21:04.220
-Yeah, I mean, yeah, there's definitely people that specialize in SQL queries.
-
-
-00:21:04.220 --> 00:21:09.220
-That's a cool thing, and there are people that do that as professionally,
-
-
-00:21:09.220 --> 00:21:14.220
-and I think that's super cool. But like you said, having SQL being used by your Python
-
-
-00:21:14.220 --> 00:21:19.220
-is not the same as being a SQL developer.
-
-
-00:21:19.220 --> 00:21:22.220
-Right, JavaScript has exactly the same problem.
-
-
-00:21:22.220 --> 00:21:25.220
-All the web developers that use any technology whatsoever, they also use JavaScript.
-
-
-00:21:25.220 --> 00:21:29.220
-but that doesn't mean Node.js is massively more popular than everything else.
-
-
-00:21:29.220 --> 00:21:31.220
-Also, I just wanted to quickly follow up.
-
-
-00:21:31.220 --> 00:21:33.220
-When people fill out those surveys,
-
-
-00:21:33.220 --> 00:21:35.220
-they check anything that they've ever done.
-
-
-00:21:35.220 --> 00:21:37.220
-Yes.
-
-
-00:21:37.220 --> 00:21:38.220
-So...
-
-
-00:21:38.220 --> 00:21:39.220
-Exactly.
-
-
-00:21:39.220 --> 00:21:40.220
-Have I touched CSS this year?
-
-
-00:21:40.220 --> 00:21:42.220
-Yes, I'm a CSS developer.
-
-
-00:21:42.220 --> 00:21:43.220
+00:17:29.180 --> 00:17:29.820
 All right.
 
+00:17:29.820 --> 00:17:30.460
+What you got next here?
 
-00:21:43.220 --> 00:21:46.220
-Next of the extras, this is extra number two.
+00:17:30.460 --> 00:17:31.660
+Another one of my favorite topics?
 
-
-00:21:46.220 --> 00:21:48.220
-So remember we talked a little while ago about
-
-
-00:21:48.220 --> 00:21:51.220
-Kira Van Raasen, creator of Python,
-
-
-00:21:51.220 --> 00:21:52.220
-retiring.
-
-
-00:21:52.220 --> 00:21:54.220
-We talked about him
-
-
-00:21:54.220 --> 00:21:55.900
-stepping down from the steering council
-
-
-00:21:55.900 --> 00:21:57.600
-and saying I'm just gonna chill for a while.
-
-
-00:21:57.600 --> 00:21:58.440
-- Yeah.
-
-
-00:21:58.440 --> 00:21:59.560
-- Yeah, he's done chilling.
-
-
-00:21:59.560 --> 00:22:01.220
-(laughing)
-
-
-00:22:01.220 --> 00:22:02.900
-So actually the big news,
-
-
-00:22:02.900 --> 00:22:03.980
-I think this is pretty big news,
-
-
-00:22:03.980 --> 00:22:07.460
-is that he joined, maybe as a technical fellow,
-
-
-00:22:07.460 --> 00:22:09.260
-I'm not sure exactly what his official role is,
-
-
-00:22:09.260 --> 00:22:11.260
-but he joined Microsoft now.
-
-
-00:22:11.260 --> 00:22:12.260
-As a pretty high up. - That's awesome.
-
-
-00:22:12.260 --> 00:22:13.100
-- Yeah.
-
-
-00:22:13.100 --> 00:22:15.700
-- I think he should do call support, that'd be great.
-
-
-00:22:15.700 --> 00:22:17.580
-- Yeah, so he said he decided to join,
-
-
-00:22:17.580 --> 00:22:20.380
-he said, "I decided that retirement was boring
-
-
-00:22:20.380 --> 00:22:22.980
-"and have joined developer division at Microsoft.
-
-
-00:22:22.980 --> 00:22:23.820
-"To do what?
-
-
-00:22:23.820 --> 00:22:28.080
-Too many things to say, but it'll make using Python better for sure, and not just on Windows.
-
-
-00:22:28.080 --> 00:22:29.660
-There's lots of open source here.
-
-
-00:22:29.660 --> 00:22:30.660
-Watch this space.
-
-
-00:22:30.660 --> 00:22:38.580
-And there are 5,000, no, 2,100 quoted tweets, and I'm not sure how it'll tell me how many
-
-
-00:22:38.580 --> 00:22:43.420
-conversations, but there's like an insane number of replies to it as well.
-
-
-00:22:43.420 --> 00:22:48.820
-And a bunch of familiar faces and listeners actually right there all replying to Guido.
-
-
-00:22:48.820 --> 00:22:54.260
-One in particular I'd like to point out is, I linked to this in the show notes as well,
-
-
-00:22:54.260 --> 00:22:59.020
-is somebody said, "I'm wondering, at this point in your career, do they still ask you
-
-
-00:22:59.020 --> 00:23:01.020
-to submit a resume?"
-
-
-00:23:01.020 --> 00:23:02.940
-Yes, they did.
-
-
-00:23:02.940 --> 00:23:05.540
-And I got interviewed by Kevin Scott and Andrew Tilesburg and others.
-
-
-00:23:05.540 --> 00:23:06.540
-How cool is that?
-
-
-00:23:06.540 --> 00:23:09.820
-They also asked for my diploma from university, exclamation marks.
-
-
-00:23:09.820 --> 00:23:11.420
-So, squeed up.
-
-
-00:23:11.420 --> 00:23:12.860
-- Oh my gosh.
-
-
-00:23:12.860 --> 00:23:18.140
-- Yeah, I would think you just could walk up and say, "Hey, I created one of these languages.
-
-
-00:23:18.140 --> 00:23:19.540
-I'm here, I'm ready.
-
-
-00:23:19.540 --> 00:23:21.020
-But nope, it went into support.
-
-
-00:23:21.020 --> 00:23:23.820
-- I don't even know if I can find my diploma.
-
-
-00:23:23.820 --> 00:23:24.700
-- I'd have to dig.
-
-
-00:23:24.700 --> 00:23:25.740
-I think I know where it is,
-
-
-00:23:25.740 --> 00:23:28.420
-but I know generally what part of the house it's in,
-
-
-00:23:28.420 --> 00:23:30.260
-but it's in boxes under boxes.
-
-
-00:23:30.260 --> 00:23:33.420
-Anyway, that's really interesting.
-
-
-00:23:33.420 --> 00:23:34.660
-Okay, that's two.
-
-
-00:23:34.660 --> 00:23:36.460
-So extra, extra, extra.
-
-
-00:23:36.460 --> 00:23:39.580
-If you think about popular editors in the Python space,
-
-
-00:23:39.580 --> 00:23:41.820
-really these days it feels like it's narrowing down
-
-
-00:23:41.820 --> 00:23:43.820
-into VS Code and PyCharm.
-
-
-00:23:43.820 --> 00:23:46.380
-Like it used to be just completely all over the map
-
-
-00:23:46.380 --> 00:23:47.780
-when I asked that question on Talk Python,
-
-
-00:23:47.780 --> 00:23:51.780
-And these days it's VS Code, PyCharm, VS Code, or I was on one and switched to the other.
-
-
-00:23:51.780 --> 00:23:53.780
-So, yeah, and Vim.
-
-
-00:23:53.780 --> 00:23:55.420
-They don't say something like that.
-
-
-00:23:55.420 --> 00:23:56.700
-It's either Vim or Emacs.
-
-
-00:23:56.700 --> 00:23:56.880
+00:17:31.660 --> 00:17:32.660
 Yeah.
 
+00:17:32.660 --> 00:17:34.240
+So, you like MongoDB, right?
 
-00:23:56.880 --> 00:24:04.880
-It's like one of the, those types, but right here in Portland, Oregon, roaming the streets, we now have a new editor called Nova.
+00:17:34.240 --> 00:17:34.640
+I do.
 
+00:17:34.640 --> 00:17:35.020
+I love it.
 
-00:24:04.880 --> 00:24:05.980
-From Panic.
+00:17:35.120 --> 00:17:40.200
+So, I was actually thinking the other day, how small of a machine could I put MongoDB on?
 
+00:17:40.200 --> 00:17:48.040
+And then Mark Smith comes out with an article that says that's how to install and configure MongoDB on a Raspberry Pi.
 
-00:24:05.980 --> 00:24:06.580
+00:17:48.040 --> 00:17:48.420
+Wow.
+
+00:17:48.420 --> 00:17:48.840
+That's awesome.
+
+00:17:48.840 --> 00:17:49.960
+Which is totally cool.
+
+00:17:49.960 --> 00:17:53.180
+So, it's a fairly comprehensive little guide.
+
+00:17:53.180 --> 00:17:56.820
+But I didn't know you could put Ubuntu server on a Raspberry Pi either.
+
+00:17:56.820 --> 00:17:59.140
+So, that's how he does it.
+
+00:17:59.140 --> 00:18:05.100
+He installs the Ubuntu server 64-bit on a Raspberry Pi, configures the Wi-Fi, installs MongoDB.
+
+00:18:05.100 --> 00:18:11.320
+But there's like a kind of a quirk on how you're supposed to install MongoDB on it.
+
+00:18:11.320 --> 00:18:18.320
+And then set up an account so that you can safely have a MongoDB server running in your house.
+
+00:18:18.320 --> 00:18:23.760
+He recommends this is like a local network thing, not even a company-wide thing.
+
+00:18:23.760 --> 00:18:26.000
+Just if you're using it yourself, go for it.
+
+00:18:26.000 --> 00:18:38.960
+If you already have a Raspberry Pi and that's like your thing that is running, that is your sort of file server or whatever reason that you have it running for, and you want a database, it's cool that you can set this up here, right?
+
+00:18:38.960 --> 00:18:42.740
+I mean, you probably wouldn't host like a professional website on it.
+
+00:18:42.740 --> 00:18:43.460
+But who knows?
+
+00:18:43.460 --> 00:18:44.120
+Maybe you would.
+
+00:18:44.120 --> 00:18:45.540
+I've got stories.
+
+00:18:45.740 --> 00:18:51.240
+One of the things I love about MongoDB is just the ease of like setting up storage areas for it and stuff.
+
+00:18:51.240 --> 00:18:52.120
+And you can just...
+
+00:18:52.120 --> 00:18:52.280
 Yeah.
 
+00:18:52.280 --> 00:18:52.680
+It's easy.
 
-00:24:06.580 --> 00:24:17.540
-So yeah, Panic is a developer oriented company that makes native Mac apps and they are right downtown by, by Pal's Books.
+00:18:52.680 --> 00:18:56.100
+You just talk to it like you expect it to be and it just becomes that way, right?
 
+00:18:56.100 --> 00:18:58.380
+You don't have to like run migration scripts and all that.
 
-00:24:17.540 --> 00:24:20.540
-You can see their office from the coffee shop, I think.
+00:18:58.380 --> 00:18:58.600
+Yeah.
 
+00:18:58.600 --> 00:19:06.820
+So, this would be, I mean, things like a home network to collect like, I don't know, temperature data from different places and some of that stuff.
 
-00:24:20.540 --> 00:24:21.420
-- Cool. - Yeah.
+00:19:07.560 --> 00:19:08.780
+Or, you know, whatever.
 
+00:19:08.780 --> 00:19:11.340
+Things like that might be kind of a neat use for that.
 
-00:24:21.420 --> 00:24:23.340
-So anyway, they built this thing called Nova,
+00:19:11.340 --> 00:19:11.900
+Definitely.
 
+00:19:11.900 --> 00:19:15.680
+If you've got like an IoT thing, smart home thing going on and you want to store it somewhere.
 
-00:24:23.340 --> 00:24:27.340
-which is like a reinterpretation of their interpretation
+00:19:15.680 --> 00:19:16.540
+Yeah.
 
+00:19:16.540 --> 00:19:16.760
+Yeah.
 
-00:24:27.340 --> 00:24:30.300
-of what a code developer editor should be.
+00:19:16.760 --> 00:19:17.140
+Very cool.
 
+00:19:17.140 --> 00:19:17.660
+I love it.
 
-00:24:30.300 --> 00:24:33.060
-And it's got cool things like GitHub integration
+00:19:17.660 --> 00:19:18.020
+Nice.
 
+00:19:18.020 --> 00:19:19.240
+Good find there.
 
-00:24:33.060 --> 00:24:35.260
-where it shows you, say, the issues around the code
+00:19:19.240 --> 00:19:25.920
+So, this next one is like this new little section I've just invented just for this one time called Extra, Extra, Extra, Hear All About It.
 
+00:19:25.920 --> 00:19:29.620
+So, normally we have our extras at the end, but I had so many extras this time.
 
-00:24:35.260 --> 00:24:37.100
-that you're working on and stuff like that
+00:19:29.620 --> 00:19:31.880
+I'm like, this show is going to be super long if we just keep going.
 
+00:19:31.880 --> 00:19:35.220
+So, this is like all the other little tiny things grouped into one.
 
-00:24:37.100 --> 00:24:39.500
-like as you're going through it.
+00:19:35.220 --> 00:19:38.240
+So, four, at least four more little things, but all combined.
 
-
-00:24:39.500 --> 00:24:41.940
-So I'm sticking with PyCharm.
-
-
-00:24:41.940 --> 00:24:43.100
-I looked through this, it looks neat and all,
-
-
-00:24:43.100 --> 00:24:44.260
-but I'm not using it.
-
-
-00:24:44.260 --> 00:24:46.340
-That said, I think it's worth pointing out
-
-
-00:24:46.340 --> 00:24:48.420
-that there's a new developer editor out there
-
-
-00:24:48.420 --> 00:24:49.820
-from a pretty reputable company
-
-
-00:24:49.820 --> 00:24:51.240
-that's putting a lot of energy into it.
-
-
-00:24:51.240 --> 00:24:52.080
-So that's kind of cool.
-
-
-00:24:52.080 --> 00:24:53.700
-- Yeah, it's got a Vim mode, I'll try it.
-
-
-00:24:53.700 --> 00:24:55.940
-- I think it does, I'm pretty sure I remember it.
-
-
-00:24:55.940 --> 00:24:59.060
-All right, last thing, extra, extra, extra, extra.
-
-
-00:24:59.060 --> 00:25:02.740
-I installed Big Sur on my Mac and it didn't die
-
-
-00:25:02.740 --> 00:25:04.900
-and all the Python things seem to be working.
-
-
-00:25:04.900 --> 00:25:07.700
-All the websites run, the MongoDB stuff's working.
-
-
-00:25:07.700 --> 00:25:09.420
-So that's really pretty neat.
-
-
-00:25:09.420 --> 00:25:12.420
-Homebrew stopped working, which is very frustrating
-
-
-00:25:12.420 --> 00:25:15.060
-'cause that's how I manage things like Python.
-
-
-00:25:15.060 --> 00:25:17.380
-But I just had to upgrade Xcode to the latest edition,
-
-
-00:25:17.380 --> 00:25:18.220
-and then it was good again.
-
-
-00:25:18.220 --> 00:25:20.580
-- I don't think I put Homebrew on my computer.
-
-
-00:25:20.580 --> 00:25:21.940
-- I love Homebrew. - I probably do.
-
-
-00:25:21.940 --> 00:25:23.180
-- Yeah, I like it.
-
-
-00:25:23.180 --> 00:25:24.620
-Installed Python, installed MongoDB,
-
-
-00:25:24.620 --> 00:25:25.940
-installed a lot of things like that.
-
-
-00:25:25.940 --> 00:25:28.880
-OpenSSL seems to always get in there somewhere.
-
-
-00:25:28.880 --> 00:25:33.880
-And also I said that I ordered a new MacBook Pro
-
-
-00:25:33.880 --> 00:25:37.020
-instead of the Apple Silicon thing.
-
-
-00:25:37.020 --> 00:25:37.900
-I actually canceled that,
-
-
-00:25:37.900 --> 00:25:40.720
-and I'm getting a Mac Mini Apple one.
-
-
-00:25:40.720 --> 00:25:42.020
-Very exciting, I'll let you know how it goes.
-
-
-00:25:42.020 --> 00:25:42.900
-- Oh, I can't wait.
-
-
-00:25:42.900 --> 00:25:45.300
-Actually, I didn't know they were still making minis.
-
-
-00:25:45.300 --> 00:25:46.600
-They revamped it.
-
-
-00:25:46.600 --> 00:25:50.940
-It is now faster than any mobile Mac.
-
-
-00:25:50.940 --> 00:25:53.300
-And the only thing that will beat the Mac mini
-
-
-00:25:53.300 --> 00:25:56.240
-is the $5,000 Mac Pro.
-
-
-00:25:56.240 --> 00:25:59.180
-But sometimes the $600, $700 Mac mini
-
-
-00:25:59.180 --> 00:26:00.820
-will still beat the $5,000 Mac Pro.
-
-
-00:26:00.820 --> 00:26:01.780
-It's like ridiculous.
-
-
-00:26:01.780 --> 00:26:03.260
-I might get one of these.
-
-
-00:26:03.260 --> 00:26:06.420
-I already got a really beefy monitor.
-
-
-00:26:06.420 --> 00:26:07.260
-Yeah, exactly.
-
-
-00:26:07.260 --> 00:26:09.960
-It'll do one 6K and one 4K monitor.
-
-
-00:26:09.960 --> 00:26:12.400
-So dual monitors, six and 4K.
-
-
-00:26:12.400 --> 00:26:15.240
-I'm telling you, man, this thing looks incredible.
-
-
-00:26:15.240 --> 00:26:16.800
-You look at the Geekbench scores,
-
-
-00:26:16.800 --> 00:26:19.040
-you look at the reviews, it's really awesome.
-
-
-00:26:19.040 --> 00:26:20.400
-And the price is like,
-
-
-00:26:20.400 --> 00:26:24.460
-so I got like $1,500 back by canceling my MacBook order
-
-
-00:26:24.460 --> 00:26:25.440
-and a faster computer.
-
-
-00:26:25.440 --> 00:26:26.260
-- Nice.
-
-
-00:26:26.260 --> 00:26:27.640
-- So anyway, we'll follow up on that.
-
-
-00:26:27.640 --> 00:26:28.480
-Let's see how it goes.
-
-
-00:26:28.480 --> 00:26:30.760
-Anyway, that was extra, extra, extra, extra.
-
-
-00:26:30.760 --> 00:26:31.680
-Hear all about it.
-
-
-00:26:31.680 --> 00:26:32.520
-- Nice.
-
-
-00:26:32.520 --> 00:26:35.600
-Well, so normally my spot would be number six,
-
-
-00:26:35.600 --> 00:26:38.160
-but that'd be like, we're at like nine now or something.
-
-
-00:26:38.160 --> 00:26:39.080
-- Yeah, we're at nine now.
-
-
-00:26:39.080 --> 00:26:39.920
-- Okay.
-
-
-00:26:39.920 --> 00:26:47.760
-Actually, this is a cool article. I love this story. Dale Markowitz wrote an article called,
-
-
-00:26:47.760 --> 00:26:54.080
-I'm masquering it right now, but it's a Python-driven AI stylist inspired by social media.
-
-
-00:26:54.080 --> 00:26:58.800
->> No way. So it looks at like Instagram and like influencers and stuff and says, "This
-
-
-00:26:58.800 --> 00:27:00.440
-is how we think you should dress and look."
-
-
-00:27:00.440 --> 00:27:06.360
->> Yeah. So one of the cool ideas, and it's so cool. So she works for Google. So she's
-
-
-00:27:06.360 --> 00:27:10.600
-using a whole bunch of Google tools that are available to everybody else to do things like
-
-
-00:27:10.600 --> 00:27:16.280
-Google Storage, Firebase, Cloud Vision API, Product Search API and stuff, which actually
-
-
-00:27:16.280 --> 00:27:19.960
-I've never played with any of these, but it's kind of neat that they're available to really
-
-
-00:27:19.960 --> 00:27:22.440
-anybody that they want.
-
-
-00:27:22.440 --> 00:27:30.240
-And so the idea is she took pictures of all of her, every item in her closet and then
-
-
-00:27:30.240 --> 00:27:34.940
-has like folders for containing the pictures for related.
-
-
-00:27:34.940 --> 00:27:39.900
-like let's say if you got a shirt or jacket, a few angles of the shirt and then threw those in a
-
-
-00:27:39.900 --> 00:27:46.860
-directory and then did that for everything in her closet and then took influencers that she likes like a
-
-
-00:27:46.860 --> 00:27:52.380
-couple social media accounts that that do fashion shots that she likes how they dress
-
-
-00:27:52.380 --> 00:27:59.020
-And then throws ai at it and scripts the whole thing with python. So this thing will tell her
-
-
-00:27:59.820 --> 00:28:09.180
-for this particular person that this look for this from this photo, you can kind of do this look if you use this shirt and those pants and shoes.
-
-
-00:28:09.180 --> 00:28:13.180
-And so you've already like what you've already got, you can remix it this way.
-
-
-00:28:13.180 --> 00:28:28.220
-Yeah. And I think that's, it's probably more of an ad for Google AI products. But I think it's a cool like you could do this, you know, with some free time and stuff and with some Python code to push it together.
-
-
-00:28:28.460 --> 00:28:29.460
-I love this idea.
-
-
-00:28:29.460 --> 00:28:30.460
-It's pretty cool.
-
-
-00:28:30.460 --> 00:28:31.460
-Yeah, it's pretty.
-
-
-00:28:31.460 --> 00:28:32.460
-All right, two thoughts.
-
-
-00:28:32.460 --> 00:28:36.100
-So one, I remember my statistics class, they talked about, well, if you have like three
-
-
-00:28:36.100 --> 00:28:42.580
-shirts and two pants and five socks and two pairs of shoes, how many, you know, here's
-
-
-00:28:42.580 --> 00:28:47.780
-the combinatorics of how many like combinations you might have, right?
-
-
-00:28:47.780 --> 00:28:50.040
-So those numbers get enormous, like super quick.
-
-
-00:28:50.040 --> 00:28:54.500
-So this just says like there's these, these outfits that you didn't even know you could
-
-
-00:28:54.500 --> 00:28:57.980
-to create out of like the 100 million possible things
-
-
-00:28:57.980 --> 00:29:00.860
-from your closet, which is accommodations from your closet.
-
-
-00:29:00.860 --> 00:29:01.700
-That's pretty cool.
-
-
-00:29:01.700 --> 00:29:03.740
-- Yeah, and also, like she had to put it in place.
-
-
-00:29:03.740 --> 00:29:06.120
-One of the things she had to do is put in place like a score.
-
-
-00:29:06.120 --> 00:29:07.900
-So if you, like for instance,
-
-
-00:29:07.900 --> 00:29:09.860
-if you got like multiple gray shirts,
-
-
-00:29:09.860 --> 00:29:13.260
-they all might fit picture with the gray shirt,
-
-
-00:29:13.260 --> 00:29:16.020
-but they, she made it so that there was scoring
-
-
-00:29:16.020 --> 00:29:17.580
-so that you'd get the, like the,
-
-
-00:29:17.580 --> 00:29:20.180
-you can pick the highest score outfit or something.
-
-
-00:29:20.180 --> 00:29:21.300
-- Yes.
-
-
-00:29:21.300 --> 00:29:22.140
-All right, that's cool.
-
-
-00:29:22.140 --> 00:29:24.020
-My other one is somebody should do this,
-
-
-00:29:24.020 --> 00:29:26.540
-but just for hairstyles and like beard styles,
-
-
-00:29:26.540 --> 00:29:28.860
-if you're a man, have it pick a style
-
-
-00:29:28.860 --> 00:29:31.200
-and then that person has to get that cut.
-
-
-00:29:31.200 --> 00:29:33.780
-Right?
-
-
-00:29:33.780 --> 00:29:37.840
-You're like, all right, this month I'm gonna look like this.
-
-
-00:29:37.840 --> 00:29:40.700
-Oh my gosh, all right, here we go.
-
-
-00:29:40.700 --> 00:29:41.540
-Why not?
-
-
-00:29:41.540 --> 00:29:44.540
-- Okay, you'd have to like sort of make it
-
-
-00:29:44.540 --> 00:29:46.660
-like long to short or something
-
-
-00:29:46.660 --> 00:29:48.700
-because you can't go backwards.
-
-
-00:29:48.700 --> 00:29:51.740
-- Yeah, yeah, I guess you'd have to like sort by order
-
-
-00:29:51.740 --> 00:29:53.360
-'cause you gotta wait longer
-
-
-00:29:53.360 --> 00:29:54.640
-to get it to grow back out.
-
-
-00:29:54.640 --> 00:29:55.720
-- Sort of by hand.
-
-
-00:29:55.720 --> 00:29:57.280
-- Yeah, there you go, awesome.
-
-
-00:29:57.280 --> 00:29:59.480
-- But there's some facial hairstyles
-
-
-00:29:59.480 --> 00:30:02.040
-that if we could get a tool that would tell people
-
-
-00:30:02.040 --> 00:30:05.640
-to not try certain facial hairstyles
-
-
-00:30:05.640 --> 00:30:09.040
-based on what their face shape is, that would be good.
-
-
-00:30:09.040 --> 00:30:12.000
-- That would be very, I did see a guy
-
-
-00:30:12.000 --> 00:30:14.560
-who had like a super big beard and decided to cut it off,
-
-
-00:30:14.560 --> 00:30:16.200
-but instead of just shaving it off,
-
-
-00:30:16.200 --> 00:30:17.640
-they were very careful and they came up
-
-
-00:30:17.640 --> 00:30:19.620
-with like 10 or 11 different styles.
-
-
-00:30:19.620 --> 00:30:21.400
-They shave it to one, take a picture,
-
-
-00:30:21.400 --> 00:30:22.760
-shave it to the next, take a picture.
-
-
-00:30:22.760 --> 00:30:24.120
-It was actually pretty interesting.
-
-
-00:30:24.120 --> 00:30:24.960
-- Yeah.
-
-
-00:30:24.960 --> 00:30:26.400
-- But yeah, there's some that shouldn't be done.
-
-
-00:30:26.400 --> 00:30:27.520
-(laughing)
-
-
-00:30:27.520 --> 00:30:30.200
-All right, well I already went off the deep end
-
-
-00:30:30.200 --> 00:30:31.200
-on the extras, how about you?
-
-
-00:30:31.200 --> 00:30:33.840
-- Yeah, let's skip to the joke, man.
-
-
-00:30:33.840 --> 00:30:36.080
-- Oh man, sounds good to me.
-
-
-00:30:36.080 --> 00:30:38.200
-All right, so this is a little bit of Back to the Future,
-
-
-00:30:38.200 --> 00:30:41.640
-Marty McFly and Doc, all that stuff.
-
-
-00:30:41.640 --> 00:30:43.240
-So you know, he's got that cool DeLorean,
-
-
-00:30:43.240 --> 00:30:45.920
-that stainless steel DeLorean,
-
-
-00:30:45.920 --> 00:30:48.120
-and it's got the flux capacitor.
-
-
-00:30:48.120 --> 00:30:52.160
-So this is a little graphic from DevHumor,
-
-
-00:30:52.160 --> 00:30:57.160
-from comicstrip.com and it's set in January 2006.
-
-
-00:30:57.160 --> 00:31:00.360
-All right, I'll be Marty and you can be Doc, okay?
-
-
-00:31:00.360 --> 00:31:01.560
-- Okay. - All right.
-
-
-00:31:01.560 --> 00:31:04.920
-So sitting in the Delorean about to take off this.
-
-
-00:31:04.920 --> 00:31:06.360
-So what's it like in the future, Doc?
-
-
-00:31:06.360 --> 00:31:08.640
-Is everyone using CSS3?
-
-
-00:31:08.640 --> 00:31:10.140
-- Wait, wait, you'll see.
-
-
-00:31:10.140 --> 00:31:12.120
-We're heading to 2020.
-
-
-00:31:12.120 --> 00:31:14.640
-Knowing all the problems you have with IE6,
-
-
-00:31:14.640 --> 00:31:16.880
-I'll give you something to look forward to.
-
-
-00:31:16.880 --> 00:31:19.660
-- And then in May 2020, there's a big billboard
-
-
-00:31:19.660 --> 00:31:21.840
-that says Microsoft Edge, the IE successor
-
-
-00:31:21.840 --> 00:31:24.840
-based on Google Chromium engine is coming to Linux.
-
-
-00:31:24.840 --> 00:31:25.680
-Incredible.
-
-
-00:31:25.680 --> 00:31:27.720
-- Why?
-
-
-00:31:27.720 --> 00:31:28.840
+00:19:38.240 --> 00:19:38.600
 Okay.
 
+00:19:38.600 --> 00:19:38.980
+Okay.
 
-00:31:28.840 --> 00:31:30.880
-- Yeah, because it can.
+00:19:38.980 --> 00:19:41.820
+Let's start with some listener feedback.
 
+00:19:41.820 --> 00:19:50.420
+So, remember I went on a rant, I'm known to do that sometimes, about the Stack Overflow Survey and how they were comparing things that were like simply not comparable?
 
-00:31:30.880 --> 00:31:33.600
+00:19:50.420 --> 00:19:51.420
+Yes.
+
+00:19:51.420 --> 00:19:54.180
+And one of the things I picked on was SQL.
+
+00:19:54.180 --> 00:20:01.180
+And I said it doesn't make any sense to have SQL compared to the popularity of SQL compared to the popularity of Python or the popularity of C Sharp.
+
+00:20:01.180 --> 00:20:05.080
+Because people who do C Sharp, they got to use SQL.
+
+00:20:05.400 --> 00:20:08.940
+People who do Python, they got to use SQL, but not the other way around, right?
+
+00:20:08.940 --> 00:20:10.000
+It's like, I don't know.
+
+00:20:10.000 --> 00:20:11.680
+It's just, it didn't seem like they were right.
+
+00:20:11.680 --> 00:20:17.380
+Like the numbers for SQL were inflated because all the other people were also happening to use SQL.
+
+00:20:17.380 --> 00:20:20.580
+But if you ask them like, what kind of developer are you?
+
+00:20:20.580 --> 00:20:22.040
+They wouldn't say I'm a SQL developer.
+
+00:20:22.180 --> 00:20:27.840
+They would say I'm a Python developer or I'm a Java developer or .NET or whatever is not SQL, right?
+
+00:20:27.840 --> 00:20:32.840
+So, John Nickerson said, hey, I feel like you're saying that people just use SQL or not real developers.
+
+00:20:32.840 --> 00:20:34.600
+I just want to point out that, no, no, no.
+
+00:20:34.600 --> 00:20:36.120
+That's not at all how I felt about it.
+
+00:20:36.160 --> 00:20:39.560
+I think if like your job mainly is to use SQL, then you should check that box.
+
+00:20:39.560 --> 00:20:40.440
+You should say SQL.
+
+00:20:40.440 --> 00:20:50.740
+I'm just criticizing that we've got these two things side by side in these surveys where one of them is standalone.
+
+00:20:50.740 --> 00:20:57.000
+And then one of them also adds to the other, but they're put together as if they're separate and being compared.
+
+00:20:57.000 --> 00:20:59.120
+And that just didn't feel right to me.
+
+00:20:59.120 --> 00:20:59.380
+Yeah.
+
+00:20:59.380 --> 00:21:03.740
+I mean, yeah, there's definitely people that specialize SQL queries.
+
+00:21:03.740 --> 00:21:05.540
+That's a cool thing.
+
+00:21:05.540 --> 00:21:09.100
+And there are people that do that as professionally.
+
+00:21:09.100 --> 00:21:10.500
+And I think that's super cool.
+
+00:21:10.500 --> 00:21:17.160
+But like you said, having SQL being used by your Python is not the same as being a SQL developer.
+
+00:21:17.160 --> 00:21:17.660
+Right.
+
+00:21:17.660 --> 00:21:19.620
+JavaScript has exactly the same problem.
+
+00:21:19.620 --> 00:21:20.540
+Yeah.
+
+00:21:20.540 --> 00:21:25.080
+All the web developers that use any technology whatsoever, they also use JavaScript.
+
+00:21:25.080 --> 00:21:29.340
+But that doesn't mean Node.js is massively more popular than everything else.
+
+00:21:29.340 --> 00:21:31.500
+Also, I just wanted to quickly follow up.
+
+00:21:31.500 --> 00:21:35.440
+When people fill out those surveys, they check anything that they've ever done.
+
+00:21:35.440 --> 00:21:36.380
+Yes.
+
+00:21:36.380 --> 00:21:38.800
+Exactly.
+
+00:21:38.800 --> 00:21:40.840
+Have I touched CSS this year?
+
+00:21:40.840 --> 00:21:42.140
+Yes, I'm a CSS developer.
+
+00:21:42.140 --> 00:21:42.820
+All right.
+
+00:21:42.820 --> 00:21:45.620
+Next of the extra, this is extra number two.
+
+00:21:45.620 --> 00:21:49.640
+So remember we talked a little while ago about Peter Van Rassen,
+
+00:21:49.860 --> 00:21:52.100
+creator Python, retiring.
+
+00:21:52.100 --> 00:21:56.160
+We talked about him stepping down from the steering council and saying,
+
+00:21:56.160 --> 00:21:57.300
+I'm just going to chill for a while.
+
+00:21:57.300 --> 00:21:57.680
+Yeah.
+
+00:21:57.680 --> 00:21:58.180
+Yeah.
+
+00:21:58.180 --> 00:21:58.800
+He's done chilling.
+
+00:22:01.060 --> 00:22:07.100
+So actually the big news, I think this is pretty big news, is that he joined, maybe as a technical fellow.
+
+00:22:07.100 --> 00:22:10.520
+I'm not sure exactly what the official role is, but he joined Microsoft now.
+
+00:22:10.520 --> 00:22:12.020
+That's pretty high up.
+
+00:22:12.020 --> 00:22:12.100
+That's awesome.
+
+00:22:12.100 --> 00:22:12.420
+Yeah.
+
+00:22:12.520 --> 00:22:13.700
+I think he should do call support.
+
+00:22:13.700 --> 00:22:14.380
+That'd be great.
+
+00:22:14.380 --> 00:22:15.840
+Yeah.
+
+00:22:15.840 --> 00:22:17.440
+So he said he decided to join.
+
+00:22:17.440 --> 00:22:22.360
+He said, I decided that retirement was boring and have joined developer division at Microsoft.
+
+00:22:22.360 --> 00:22:23.520
+To do what?
+
+00:22:23.520 --> 00:22:26.840
+Too many things to say, but it'll make using Python better for sure.
+
+00:22:26.840 --> 00:22:27.820
+And not just on Windows.
+
+00:22:27.960 --> 00:22:29.320
+There's lots of open source here.
+
+00:22:29.320 --> 00:22:30.220
+Watch the space.
+
+00:22:30.220 --> 00:22:35.380
+And there are 5,000, no, 2,100 quoted tweets.
+
+00:22:35.820 --> 00:22:42.860
+And I'm not sure how to tell me how many conversations, but there's like an insane number of replies to it as well.
+
+00:22:42.860 --> 00:22:47.580
+And a bunch of familiar faces and listeners actually right there all replying to Guido.
+
+00:22:47.580 --> 00:22:55.380
+One in particular I'd like to point out is, I'll link to this in the show notes as well, is somebody said,
+
+00:22:55.380 --> 00:23:00.320
+I'm wondering, you know, at this point in your career, do they still ask you to submit a resume?
+
+00:23:00.320 --> 00:23:02.140
+Yes, they did.
+
+00:23:02.140 --> 00:23:05.440
+And I got interviewed by Kevin Scott and Andrew Salzberg and others.
+
+00:23:05.500 --> 00:23:06.000
+How cool is that?
+
+00:23:06.000 --> 00:23:09.480
+They also asked for my diploma from university, exclamation marks.
+
+00:23:09.480 --> 00:23:10.640
+Says Guido.
+
+00:23:10.640 --> 00:23:12.820
+Oh my gosh.
+
+00:23:12.820 --> 00:23:13.180
+Yeah.
+
+00:23:13.180 --> 00:23:17.640
+I would think you're like, you just could walk up and say, hey, I created one of these languages.
+
+00:23:17.640 --> 00:23:18.580
+I'm here.
+
+00:23:18.580 --> 00:23:19.040
+I'm ready.
+
+00:23:19.040 --> 00:23:19.920
+But nope.
+
+00:23:19.920 --> 00:23:22.500
+I don't even know if I can find my diploma.
+
+00:23:22.500 --> 00:23:24.620
+I'd have to dig.
+
+00:23:24.620 --> 00:23:29.980
+I think I know where it is, but I know generally what part of the house it's in, but it's in boxes under boxes.
+
+00:23:29.980 --> 00:23:32.900
+Anyway, that's really interesting.
+
+00:23:32.900 --> 00:23:33.600
+Okay.
+
+00:23:33.600 --> 00:23:34.460
+That's two.
+
+00:23:34.740 --> 00:23:35.860
+So extra, extra, extra.
+
+00:23:35.860 --> 00:23:41.000
+If you think about popular editors in the Python space, really these days, it feels like it's
+
+00:23:41.000 --> 00:23:43.640
+narrowing down into VS Code and PyCharm.
+
+00:23:43.640 --> 00:23:47.720
+Like it used to be just completely all over the map when I asked that question on Talk Python.
+
+00:23:47.720 --> 00:23:51.720
+And these days it's VS Code, PyCharm, VS Code, or I was on one and switched to the other.
+
+00:23:51.720 --> 00:23:53.000
+And Vim.
+
+00:23:53.160 --> 00:23:53.340
+Yeah.
+
+00:23:53.340 --> 00:23:53.740
+And Vim.
+
+00:23:53.740 --> 00:23:55.440
+They don't say something like that.
+
+00:23:55.440 --> 00:23:56.640
+It's either Vim or Emacs.
+
+00:23:56.640 --> 00:23:56.900
+Yeah.
+
+00:23:56.900 --> 00:23:58.240
+It's like one of those types.
+
+00:23:58.240 --> 00:24:05.840
+But right here in Portland, Oregon, roaming the streets, we now have a new editor called Nova from Panic.
+
+00:24:05.840 --> 00:24:06.500
+Yeah.
+
+00:24:06.500 --> 00:24:07.340
+Panic.
+
+00:24:07.840 --> 00:24:08.040
+Yeah.
+
+00:24:08.040 --> 00:24:08.060
+Yeah.
+
+00:24:08.060 --> 00:24:14.200
+Panic is a developer-oriented company that makes native Mac apps.
+
+00:24:14.200 --> 00:24:17.500
+And they are right downtown by Pal's Books.
+
+00:24:17.660 --> 00:24:20.480
+You can see their office from the coffee shop, I think.
+
+00:24:20.480 --> 00:24:20.740
+Cool.
+
+00:24:20.740 --> 00:24:21.100
+Yeah.
+
+00:24:21.100 --> 00:24:30.300
+So anyway, they built this thing called Nova, which is like a reinterpretation of their interpretation of what a code developer editor should be.
+
+00:24:30.300 --> 00:24:39.440
+And it's got cool things like GitHub integration where it shows you, say, the issues around the code that you're working on and stuff like that as you're going through it.
+
+00:24:39.640 --> 00:24:41.860
+So I'm sticking with PyCharm.
+
+00:24:41.860 --> 00:24:42.520
+I looked at this.
+
+00:24:42.520 --> 00:24:43.860
+It looks neat and all, but I'm not using it.
+
+00:24:43.860 --> 00:24:51.240
+That said, I think it's worth pointing out that there's a new developer editor out there from a pretty reputable company that's putting a lot of energy into it.
+
+00:24:51.240 --> 00:24:51.820
+So that's kind of cool.
+
+00:24:51.820 --> 00:24:52.180
+Yeah.
+
+00:24:52.180 --> 00:24:53.160
+It's got a Vim mode.
+
+00:24:53.160 --> 00:24:53.600
+I'll try it.
+
+00:24:53.600 --> 00:24:54.440
+I think it does.
+
+00:24:54.440 --> 00:24:55.360
+I'm pretty sure I remember it.
+
+00:24:55.360 --> 00:24:56.160
+All right.
+
+00:24:56.160 --> 00:24:56.700
+Last thing.
+
+00:24:56.700 --> 00:24:58.220
+Extra, extra, extra, extra.
+
+00:24:58.220 --> 00:25:02.600
+I installed Big Sur on my Mac and it didn't die.
+
+00:25:02.600 --> 00:25:04.540
+And all the Python things seem to be working.
+
+00:25:04.540 --> 00:25:05.980
+All the websites run.
+
+00:25:05.980 --> 00:25:07.180
+The MongoDB stuff's working.
+
+00:25:07.180 --> 00:25:09.220
+So that's really pretty neat.
+
+00:25:10.220 --> 00:25:14.180
+Homebrew stopped working, which is very frustrating because that's how I manage things like Python.
+
+00:25:14.180 --> 00:25:18.140
+But I just had to upgrade Xcode to the latest edition and then it was good again.
+
+00:25:18.140 --> 00:25:20.360
+I don't think I put Homebrew on my computer.
+
+00:25:20.360 --> 00:25:21.100
+I love Homebrew.
+
+00:25:21.100 --> 00:25:21.780
+I probably do.
+
+00:25:21.780 --> 00:25:22.080
+Yeah.
+
+00:25:22.080 --> 00:25:22.940
+I like it.
+
+00:25:22.940 --> 00:25:23.780
+Install Python.
+
+00:25:23.780 --> 00:25:24.480
+Install MongoDB.
+
+00:25:24.480 --> 00:25:25.760
+Install a lot of things like that.
+
+00:25:25.760 --> 00:25:26.480
+Open SL.
+
+00:25:26.480 --> 00:25:27.160
+SSL.
+
+00:25:27.160 --> 00:25:28.240
+Seems always getting there somewhere.
+
+00:25:28.240 --> 00:25:36.540
+And also I said that I ordered a new MacBook Pro instead of the Apple Silicon thing.
+
+00:25:36.700 --> 00:25:40.460
+I actually canceled that and I'm getting a MacBook, a Mac mini, Apple one.
+
+00:25:40.460 --> 00:25:41.140
+Very exciting.
+
+00:25:41.140 --> 00:25:41.880
+I'll let you know how it goes.
+
+00:25:41.880 --> 00:25:42.760
+Oh, I can't wait.
+
+00:25:42.760 --> 00:25:45.240
+Actually, I didn't know they were still making minis.
+
+00:25:45.240 --> 00:25:46.260
+They revamped it.
+
+00:25:46.260 --> 00:25:50.880
+It is now faster than any mobile Mac.
+
+00:25:50.880 --> 00:25:55.460
+And the only thing that will beat the Mac mini is the Mac, like the $5,000 Mac Pro.
+
+00:25:56.260 --> 00:26:00.820
+But sometimes the $600, $700 Mac mini will still beat the $5,000 Mac Pro.
+
+00:26:00.820 --> 00:26:01.600
+It's like ridiculous.
+
+00:26:01.600 --> 00:26:03.260
+I'm not going to get one of these.
+
+00:26:03.260 --> 00:26:06.100
+I already got like a really beefy monitor.
+
+00:26:06.100 --> 00:26:06.860
+Yeah, exactly.
+
+00:26:06.860 --> 00:26:09.920
+It'll do one 6K and one 4K monitor.
+
+00:26:09.920 --> 00:26:12.180
+So dual monitors, 6 and 4K.
+
+00:26:12.180 --> 00:26:15.120
+I'm telling you, man, this thing looks incredible.
+
+00:26:15.120 --> 00:26:16.700
+You look at the Geekbench scores.
+
+00:26:16.700 --> 00:26:17.640
+You look at the reviews.
+
+00:26:17.640 --> 00:26:18.960
+It's really awesome.
+
+00:26:18.960 --> 00:26:19.840
+And the price is like.
+
+00:26:19.840 --> 00:26:20.200
+Okay.
+
+00:26:20.360 --> 00:26:25.300
+So I got like $1,500 back by canceling my MacBook order and a faster computer.
+
+00:26:25.300 --> 00:26:25.720
+Nice.
+
+00:26:25.720 --> 00:26:27.380
+So anyway, we'll follow up on that.
+
+00:26:27.380 --> 00:26:28.120
+Let's see how it goes.
+
+00:26:28.120 --> 00:26:30.460
+Anyway, that was extra, extra, extra, extra.
+
+00:26:30.460 --> 00:26:31.440
+You're all about it.
+
+00:26:31.440 --> 00:26:31.920
+Nice.
+
+00:26:31.920 --> 00:26:37.160
+Well, so normally my spot would be number 6, but that'd be like, what are we at?
+
+00:26:37.160 --> 00:26:38.360
+Like 9 now or something?
+
+00:26:38.360 --> 00:26:38.940
+Yeah, we're at 9, yeah.
+
+00:26:38.940 --> 00:26:39.300
+Okay.
+
+00:26:39.300 --> 00:26:42.640
+So actually, this is a cool article.
+
+00:26:42.640 --> 00:26:44.060
+I love this story.
+
+00:26:44.060 --> 00:26:49.460
+Dale Markowitz wrote an article called, I'm masquerading it right now.
+
+00:26:49.460 --> 00:26:53.940
+But it's a Python-driven AI stylist inspired by social media.
+
+00:26:53.940 --> 00:26:55.420
+No way.
+
+00:26:55.420 --> 00:26:59.560
+So it looks at like Instagram and like influencers and stuff and says, this is how we think you
+
+00:26:59.560 --> 00:27:00.260
+should dress and look?
+
+00:27:00.260 --> 00:27:00.560
+Yeah.
+
+00:27:00.560 --> 00:27:03.720
+So one of the cool ideas, and it's so cool.
+
+00:27:03.720 --> 00:27:05.360
+So she works for Google.
+
+00:27:05.360 --> 00:27:09.720
+So she's using a whole bunch of Google tools that are available to everybody else too.
+
+00:27:09.720 --> 00:27:15.840
+Things like Google Storage, Firebase, Cloud Vision API, Product Search API and stuff, which
+
+00:27:15.840 --> 00:27:19.120
+actually I've never played with any of these, but it's kind of neat that they're
+
+00:27:19.120 --> 00:27:21.260
+available to really anybody that they want.
+
+00:27:21.260 --> 00:27:28.080
+And so the idea is she took pictures of all of her, every item in her closet.
+
+00:27:28.080 --> 00:27:34.800
+And then has like folders for containing the pictures of her related.
+
+00:27:34.800 --> 00:27:39.100
+So like, let's say if you've got a shirt or jacket, a few angles of the shirt, and then
+
+00:27:39.100 --> 00:27:42.880
+threw those in a directory and then did that for everything in her closet.
+
+00:27:43.140 --> 00:27:50.320
+And then took influencers that she likes, like a couple of social media accounts that do fashion
+
+00:27:50.320 --> 00:27:52.440
+shots that she likes how they dress.
+
+00:27:52.440 --> 00:27:56.600
+And then throws AI at it and scripts the whole thing with Python.
+
+00:27:56.600 --> 00:28:03.520
+So this thing will tell her for this particular person that this look for this from this photo,
+
+00:28:03.520 --> 00:28:09.120
+you can kind of do this look if you use this shirt and those pants and these shoes.
+
+00:28:09.520 --> 00:28:13.120
+So you've already like what you've already got, you can remix it this way.
+
+00:28:13.120 --> 00:28:13.480
+Yeah.
+
+00:28:13.980 --> 00:28:20.440
+And I think that's, it's probably more of an ad for Google AI products, but I think it's
+
+00:28:20.440 --> 00:28:26.760
+a cool, like you could do this, you know, with some free time and stuff and with some Python
+
+00:28:26.760 --> 00:28:28.100
+code to push it together.
+
+00:28:28.100 --> 00:28:29.240
+I love this idea.
+
+00:28:29.240 --> 00:28:29.880
+It's pretty cool.
+
+00:28:29.880 --> 00:28:30.160
+Yeah.
+
+00:28:30.160 --> 00:28:30.460
+It's pretty.
+
+00:28:30.460 --> 00:28:30.840
+All right.
+
+00:28:30.840 --> 00:28:31.280
+Two thoughts.
+
+00:28:31.840 --> 00:28:36.140
+So one, I remember my statistics class, they talked about, well, if you have like three
+
+00:28:36.140 --> 00:28:42.680
+shirts and two pants and five socks and two pairs of shoes, how many, you know, here's
+
+00:28:42.680 --> 00:28:47.220
+the combinatorics of how many like combinations you might have.
+
+00:28:47.220 --> 00:28:47.420
+Right.
+
+00:28:47.420 --> 00:28:47.660
+Yeah.
+
+00:28:47.660 --> 00:28:49.960
+So those numbers get enormous, like super quick.
+
+00:28:49.960 --> 00:28:55.000
+So this just says like, there's these, these outfits that you didn't even know you could create
+
+00:28:55.000 --> 00:29:00.160
+out of like the a hundred million possible things from your closet, which is a combinations
+
+00:29:00.160 --> 00:29:00.740
+from your closet.
+
+00:29:00.820 --> 00:29:01.260
+That's pretty cool.
+
+00:29:01.260 --> 00:29:01.560
+Yeah.
+
+00:29:01.560 --> 00:29:03.620
+And also like she had to put it in place.
+
+00:29:03.620 --> 00:29:05.980
+One of the things she had to do is put in place like a score.
+
+00:29:05.980 --> 00:29:11.160
+So if you like, for instance, if you've got like multiple gray shirts, they all might fit
+
+00:29:11.160 --> 00:29:16.500
+picture with the gray shirt, but they, she made it so that there was scoring so that you'd
+
+00:29:16.500 --> 00:29:20.000
+get the, like the, you can pick the highest score outfit or something.
+
+00:29:20.000 --> 00:29:20.400
+Nice.
+
+00:29:20.400 --> 00:29:21.480
+All right.
+
+00:29:21.480 --> 00:29:21.940
+That's cool.
+
+00:29:21.940 --> 00:29:26.400
+My other one is somebody should do this, but just for hairstyles and like beard styles,
+
+00:29:26.400 --> 00:29:28.720
+if you're a man, have it pick a style.
+
+00:29:28.900 --> 00:29:31.000
+And then that person has to get that cut.
+
+00:29:31.000 --> 00:29:33.100
+Right.
+
+00:29:33.100 --> 00:29:37.760
+You're like, all right, this month I'm going to look like this.
+
+00:29:37.760 --> 00:29:38.400
+Oh my gosh.
+
+00:29:38.400 --> 00:29:38.840
+All right.
+
+00:29:38.840 --> 00:29:39.700
+Here we go.
+
+00:29:39.700 --> 00:29:41.100
+Why not?
+
+00:29:41.100 --> 00:29:41.820
+Oh, okay.
+
+00:29:42.340 --> 00:29:47.600
+You'd have to like, sort of make it like short, long to short or something because you can't
+
+00:29:47.600 --> 00:29:48.400
+go backwards.
+
+00:29:48.400 --> 00:29:48.880
+Yeah.
+
+00:29:48.880 --> 00:29:49.240
+Yeah.
+
+00:29:49.240 --> 00:29:53.440
+I guess you'd have to like sort by a order because it takes, you got to wait longer to
+
+00:29:53.440 --> 00:29:54.540
+get it to grow back out.
+
+00:29:54.540 --> 00:29:55.420
+Sort by handling.
+
+00:29:55.420 --> 00:29:55.840
+Yeah.
+
+00:29:55.840 --> 00:29:56.280
+There you go.
+
+00:29:56.280 --> 00:29:56.720
+Awesome.
+
+00:29:56.720 --> 00:29:56.960
+Yeah.
+
+00:29:56.960 --> 00:30:01.920
+But there's, there's some facial hairstyles that if we could get a tool that would tell people
+
+00:30:01.920 --> 00:30:08.680
+to not try certain facial hairstyles based on what they, their face shape is, that would
+
+00:30:08.680 --> 00:30:08.940
+be good.
+
+00:30:08.940 --> 00:30:14.320
+That would be very, I did see a guy who had like a super big beard and decided to cut it
+
+00:30:14.320 --> 00:30:14.500
+off.
+
+00:30:14.500 --> 00:30:18.300
+But instead of just shaving it off, they were very careful and they came up with like 10
+
+00:30:18.300 --> 00:30:19.500
+or 11 different styles.
+
+00:30:19.500 --> 00:30:22.600
+They shave it to one, take a picture, shave it to the next, take a picture.
+
+00:30:22.600 --> 00:30:23.880
+It was actually pretty interesting.
+
+00:30:23.880 --> 00:30:24.380
+Yeah.
+
+00:30:24.540 --> 00:30:25.960
+But yeah, there's some that shouldn't be done.
+
+00:30:25.960 --> 00:30:27.680
+All right.
+
+00:30:27.680 --> 00:30:30.620
+Well, I already went off the, off the deep end on the extras.
+
+00:30:30.620 --> 00:30:31.020
+How about you?
+
+00:30:31.020 --> 00:30:31.500
+Yeah.
+
+00:30:31.500 --> 00:30:33.720
+Let's skip to the joke, man.
+
+00:30:33.720 --> 00:30:34.180
+Oh man.
+
+00:30:34.180 --> 00:30:35.300
+Sounds good to me.
+
+00:30:35.300 --> 00:30:36.340
+All right.
+
+00:30:36.340 --> 00:30:40.800
+So this is a little bit of back to the future, Marty McFly and doc, all that stuff.
+
+00:30:40.800 --> 00:30:46.820
+So, you know, he's got that cool DeLorean, that stainless steel DeLorean and it's got
+
+00:30:46.820 --> 00:30:47.740
+the flux capacitor.
+
+00:30:47.740 --> 00:30:53.280
+So this is a little, little graphic from a dev humor from comic strip.com.
+
+00:30:53.640 --> 00:30:57.140
+And it's set in January, 2006.
+
+00:30:57.140 --> 00:30:57.980
+All right.
+
+00:30:57.980 --> 00:30:59.860
+I'll be Marty and you can be doc.
+
+00:30:59.860 --> 00:31:00.140
+Okay.
+
+00:31:00.140 --> 00:31:00.560
+Okay.
+
+00:31:00.560 --> 00:31:01.000
+All right.
+
+00:31:01.000 --> 00:31:04.420
+So sitting in the DeLorean about to take off this.
+
+00:31:04.420 --> 00:31:06.260
+So what's it like in the future doc?
+
+00:31:06.260 --> 00:31:07.960
+Is everyone using CSS three?
+
+00:31:07.960 --> 00:31:09.580
+Wait, wait, you'll see.
+
+00:31:09.580 --> 00:31:11.420
+We're heading to 2020.
+
+00:31:11.420 --> 00:31:16.720
+Knowing all the problems you have with IE6, I'll give you something to look forward to.
+
+00:31:16.720 --> 00:31:20.780
+Then in May, 2020, there's a big billboard that says Microsoft edge.
+
+00:31:20.900 --> 00:31:24.080
+The IE successor based on Google Chromium engine is coming to Linux.
+
+00:31:24.080 --> 00:31:25.420
+Incredible.
+
+00:31:25.420 --> 00:31:27.120
+Why?
+
+00:31:27.120 --> 00:31:27.880
+Okay.
+
+00:31:27.880 --> 00:31:29.020
+Yeah.
+
+00:31:29.020 --> 00:31:30.580
+Because it can.
+
+00:31:30.580 --> 00:31:32.660
 Just because it can.
 
+00:31:32.660 --> 00:31:33.960
+I have.
 
-00:31:33.600 --> 00:31:36.480
-- I have, so I've got a work computer that's Windows
+00:31:33.960 --> 00:31:38.800
+So I've got a work computer that's Windows and I still don't use Edge.
 
+00:31:38.800 --> 00:31:40.080
+And you're so far behind the times.
 
-00:31:36.480 --> 00:31:39.080
-and I still don't use Edge.
-
-
-00:31:39.080 --> 00:31:40.200
-- And you're so far behind the times.
-
-
-00:31:40.200 --> 00:31:41.480
+00:31:40.080 --> 00:31:41.380
 I've got Edge installed on my Mac.
 
+00:31:41.380 --> 00:31:42.000
+You do?
 
-00:31:41.480 --> 00:31:42.320
-- You do?
+00:31:42.180 --> 00:31:43.360
+Apparently it installs on a Mac.
 
+00:31:43.360 --> 00:31:43.560
+Yeah.
 
-00:31:42.320 --> 00:31:44.520
-- Apparently it installs on a Mac, yeah.
+00:31:43.560 --> 00:31:46.080
+But do you, did you install it?
 
+00:31:46.080 --> 00:31:46.600
+I did.
 
-00:31:44.520 --> 00:31:46.200
-- But do you, did you install it?
-
-
-00:31:46.200 --> 00:31:47.560
-- I did.
-
-
-00:31:47.560 --> 00:31:49.280
+00:31:46.600 --> 00:31:49.100
 Now the question is, do I use it?
 
+00:31:49.100 --> 00:31:52.060
+I've got like several browsers that I just don't really use.
 
-00:31:49.280 --> 00:31:50.840
-I've got like several browsers
+00:31:52.060 --> 00:31:53.420
+I've got Edge.
 
+00:31:53.420 --> 00:31:54.940
+I've got Brave.
 
-00:31:50.840 --> 00:31:52.120
-that I just don't really use.
+00:31:54.940 --> 00:31:56.840
+And I've got Opera.
 
-
-00:31:52.120 --> 00:31:57.120
-I've got Edge, I've got Brave, and I've got Opera.
-
-
-00:31:57.120 --> 00:31:58.560
+00:31:56.840 --> 00:31:58.400
 And I don't really use any of those.
 
-
-00:31:58.560 --> 00:32:00.160
+00:31:58.400 --> 00:31:59.960
 I just basically use Firefox.
 
-
-00:32:00.160 --> 00:32:01.880
+00:31:59.960 --> 00:32:01.720
 Unless Firefox doesn't work, then I use Chrome.
 
+00:32:01.720 --> 00:32:02.040
+Yeah.
 
-00:32:01.880 --> 00:32:02.720
-- Yeah, okay.
+00:32:02.040 --> 00:32:02.500
+Okay.
 
+00:32:02.560 --> 00:32:03.060
+So, yeah.
 
-00:32:02.720 --> 00:32:05.000
-- No, yeah, but I technically have it installed.
+00:32:03.060 --> 00:32:04.680
+But I technically have it installed.
 
+00:32:04.680 --> 00:32:08.920
+I get this big pop-up that has to update it about every three weeks.
 
-00:32:05.000 --> 00:32:08.120
-I get this big pop-up that has to update it
+00:32:08.920 --> 00:32:10.180
+Like, there's an update for your computer.
 
+00:32:10.180 --> 00:32:11.440
+Click here to upgrade Edge.
 
-00:32:08.120 --> 00:32:09.000
-about every three weeks.
+00:32:11.440 --> 00:32:13.000
+I'm like, I don't even run this thing.
 
+00:32:13.000 --> 00:32:13.940
+Why do I keep getting this?
 
-00:32:09.000 --> 00:32:10.320
-Like, there's an update for your computer,
+00:32:13.940 --> 00:32:15.120
+I know I get it.
 
+00:32:15.120 --> 00:32:16.780
+But like, why do I have to keep getting it, I guess?
 
-00:32:10.320 --> 00:32:11.520
-click here to upgrade Edge.
+00:32:16.780 --> 00:32:20.040
+You know, there's still lots of people that don't know what browser they use.
 
+00:32:20.040 --> 00:32:24.320
+They just, they don't even know what, if you ask them what browser they use, they
 
-00:32:11.520 --> 00:32:13.060
-I'm like, I don't even run this thing,
+00:32:24.320 --> 00:32:25.240
+don't know what you're saying.
 
+00:32:25.240 --> 00:32:25.560
+Yeah.
 
-00:32:13.060 --> 00:32:14.520
-why do I keep getting this?
+00:32:25.560 --> 00:32:27.400
+It's just the internet.
 
-
-00:32:14.520 --> 00:32:15.400
-I know I get it, but like,
-
-
-00:32:15.400 --> 00:32:16.880
-why do I have to keep getting it, I guess?
-
-
-00:32:16.880 --> 00:32:18.360
-- You know, there's still lots of people
-
-
-00:32:18.360 --> 00:32:20.240
-that don't know what browser they use.
-
-
-00:32:20.240 --> 00:32:22.640
-They just, they don't even know what to,
-
-
-00:32:22.640 --> 00:32:24.240
-if you ask them what browser they use,
-
-
-00:32:24.240 --> 00:32:25.400
-they don't know what you're saying.
-
-
-00:32:25.400 --> 00:32:26.240
-- Yeah.
-
-
-00:32:26.240 --> 00:32:28.080
-- It's just the internet.
-
-
-00:32:28.080 --> 00:32:29.960
+00:32:27.400 --> 00:32:29.800
 Well, what do you look on the websites for?
 
-
-00:32:29.960 --> 00:32:31.600
+00:32:29.800 --> 00:32:30.720
 I open the internet.
 
-
-00:32:31.600 --> 00:32:33.560
+00:32:31.200 --> 00:32:33.480
 You know, the internet is not an application.
 
+00:32:33.480 --> 00:32:34.960
+What?
 
-00:32:33.560 --> 00:32:34.760
-(laughing)
+00:32:34.960 --> 00:32:35.480
+It's not?
 
+00:32:35.480 --> 00:32:36.760
+Awesome.
 
-00:32:34.760 --> 00:32:36.560
-- What? It's not?
+00:32:36.760 --> 00:32:37.020
+Yeah.
 
+00:32:37.020 --> 00:32:41.320
+So, that's a pretty good little shoot to the future one.
 
-00:32:36.560 --> 00:32:38.480
-Awesome, yeah, so that's a pretty good
+00:32:41.320 --> 00:32:41.760
+Yeah.
 
+00:32:41.760 --> 00:32:42.960
+So, link to that in the show notes.
 
-00:32:38.480 --> 00:32:41.600
-little shoot to the future one.
+00:32:42.960 --> 00:32:44.100
+People want to check out the graphics.
 
-
-00:32:41.600 --> 00:32:42.440
-- Yeah.
-
-
-00:32:42.440 --> 00:32:43.260
-- So, link to that in the show notes.
-
-
-00:32:43.260 --> 00:32:44.320
-People wanna check out the graphics.
-
-
-00:32:44.320 --> 00:32:45.160
-- Cool.
-
-
-00:32:45.160 --> 00:32:45.980
+00:32:44.100 --> 00:32:45.460
 Well, thanks a lot.
 
+00:32:45.460 --> 00:32:45.960
+Yeah, you bet.
 
-00:32:45.980 --> 00:32:46.820
-- Yeah, you bet.
+00:32:45.960 --> 00:32:46.580
+Thanks for being here.
 
+00:32:46.580 --> 00:32:47.760
+And thanks to everyone for listening.
 
-00:32:46.820 --> 00:32:47.960
-Thanks for being here, and thanks to everyone for listening.
-
-
-00:32:47.960 --> 00:32:48.800
+00:32:47.760 --> 00:32:48.140
 See y'all.
 
+00:32:48.140 --> 00:32:48.340
+Bye.
 
-00:32:48.800 --> 00:32:50.500
+00:32:48.340 --> 00:32:50.340
 Thank you for listening to Python Bytes.
 
+00:32:50.340 --> 00:32:52.860
+Follow the show on Twitter via at Python Bytes.
 
-00:32:50.500 --> 00:32:52.960
-Follow the show on Twitter via @pythonbytes.
-
-
-00:32:52.960 --> 00:32:56.000
+00:32:52.860 --> 00:32:55.720
 That's Python Bytes as in B-Y-T-E-S.
 
-
-00:32:56.000 --> 00:32:59.200
+00:32:55.720 --> 00:32:58.960
 And get the full show notes at pythonbytes.fm.
 
+00:32:58.960 --> 00:33:03.160
+If you have a news item you want featured, just visit pythonbytes.fm and send it our way.
 
-00:32:59.200 --> 00:33:00.800
-If you have a news item you want featured,
-
-
-00:33:00.800 --> 00:33:03.240
-just visit pythonbytes.fm and send it our way.
-
-
-00:33:03.240 --> 00:33:06.120
+00:33:03.160 --> 00:33:05.860
 We're always on the lookout for sharing something cool.
 
+00:33:05.860 --> 00:33:08.980
+On behalf of myself and Brian Okken, this is Michael Kennedy.
 
-00:33:06.120 --> 00:33:07.960
-On behalf of myself and Brian Auchin,
-
-
-00:33:07.960 --> 00:33:09.320
-this is Michael Kennedy.
-
-
-00:33:09.320 --> 00:33:11.320
-Thank you for listening and sharing this podcast
-
-
-00:33:11.320 --> 00:33:12.960
-with your friends and colleagues.
+00:33:08.980 --> 00:33:12.400
+Thank you for listening and sharing this podcast with your friends and colleagues.
 
