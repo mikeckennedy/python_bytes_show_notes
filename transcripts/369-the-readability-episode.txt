@@ -1,46 +1,1382 @@
-00:00:00 Hello and welcome to Python Bytes where we deliver Python news and headlines directly to your earbuds. This is episode 369 69 recorded January 29th 2024 and I am Brian Okken. Hey, I'm Michael Kennedy And this episode is sponsored by us so check out our courses at Talk Python Training and the complete pytest course and thanks to patreon supporters and Really everybody that just like spreads the love and shares our podcast with other people. Thanks so much The first item is gonna be granny in Oh neat. Yes before we get into that I just want to sort of set the stage is you know, when you're running Python apps web apps in production There's usually something that talks to the web browsers and then there's the part that runs your Python code Right the part that talks to your web browser is Nginx Apache caddy one of these things that does SSL it has no knowledge of Python But then behind that step we've got micro whiskey and we've got G unicorn and those types of things, right?
+00:00:00 Hello and welcome to Python Bytes, where we deliver Python news and headlines directly to your earbuds.
 
-00:01:03 so that's where your Python code runs usually it run it'll creep multiple of them and Both those two that I named I'm big fans of micro whiskey is awesome Super fast low memory usage, but only does WSGI does no async stuff And that's a huge drawback, right? It doesn't do a sink It doesn't allow you to like properly scale a sink and a wait do you on the other hand allows you use you via corn?
+00:00:05 This is episode 369.
 
-00:01:28 Workers inside there, which is kind of like one more chain in that loop But it when you deploy it that way you can do a sink and a wait, which is awesome But there's this new ish thing coming along called granny in from the Emmett framework Which is a new Python web framework, but this is a rust based HTTP server for Python applications. So a rust version of Micro, whiskey or G unicorn? Yeah. Oh cool. That's kind of cool. It has 1.5 thousand stars on github been coming along for a while and Created by a guy Named Giovanni, I believe and Giovanni says well why I'd build this thing a couple reasons. It's a correct HTTP implementation supporting version 1 2 and Working on HTTP 3 which is awesome. It avoids the g unicorn you via corn HTTP tools tendency composition when deploying in production So this natively supports a sink and a wait like right in it along with WSGI So however, whatever kind of app you've created you can just run it right there in this thing without Chaining stuff together and one of the things that's nice about it is it's not a ton faster, but it's way more stable There's a lesser jitter and its performance profile, which I think is super cool I'll talk about in a second. But yeah has HTTP 1 & 2 excellent supports HTTPS and web sockets directly I'm not gonna send HTTPS traffic to it. I'm just using for now engine X, whatever It also supports our SGI, which is a rust server gateway interface, I guess, you know, like ASGI and WSGI So it does all the Python things plus it has a rust Direct version if that was the way you went down it and it's super easy to run but from the performance perspective you look it'll compare it down here to Let's see against you via corn and hyper corn is another one. I should have mentioned that's like a parallel to You via corn plus g unicorn, but that one I think handles it all directly from Philip Jones, which is great But if you look at so let's just say like the ASGI yet, it says it'll do Numbers, please 1.3 million requests At okay. That's just totally doesn't anything it could be over three weeks 85 86 thousand requests per second or maybe this this one's a little bit better a different get for 94,000 compare that against the UVA corn one, which is 19,000 versus 94,000 or The hyper corn at 12,000 versus 94,000, which is great. But if you look at the variation like response time on Let's say you via corn is on average eight point seven milliseconds. That's really good But the max is 320 milliseconds. Whereas if you look at this one It's two point seven, but the max is only eight point six, right? So that that variability or jitter I don't know However, the heck you say it is way more stable and you just kind of look across the board like another example six versus 70 and so on so I thought that was pretty cool So I switched if you come over here Brian the Python bytes. This is running on Granny in right now over my docker cluster for the moment So I just thought I'd see how it goes and it's been going perfectly from what I can tell So so it's pretty easy to switch then yeah, I mean all you got to do is pip install granny in and then change the Start command no matter however you run if you run it in the system D on like a VM You change the system D exec command if you do it in Docker, you just change the entry point command For a micro is give this or G unicorn that - it's basically just another startup command. Yeah, okay interesting cool Indeed indeed one thing I did want to add for people who are considering this I got to move this over So one thing it doesn't you can set it up so it'll do logging but it doesn't do like easy logging out of the box So I actually was messing around like maybe I should just do my own logging if we're not for my app started up Hey somebody click this button, but just request response logging which is pretty common So I actually ended up playing with it and using log guru to come up with a color coded added some middleware that came up with color coded request response logging that does all sorts of cool stuff like See how some of the sizes and this log are red and some are white if it's like over 500 K in the request size than it or is it red or if the response time is too slow?
+00:00:07 69!
 
-00:06:00 It'll tell her color like yellow or if it gets really slow. It'll color it red or it's a 400 or 500 code error it'll color that that part of the request Red or you know, so you can like look right at right away and see so I've decided doing your own log guru Request response stuff is pretty excellent. Actually, so that's a kind of a cool consequence playing around with this as well cool so is the like the Your use of log guru that a custom thing where you you look at the response times and color it differently or something Yeah, exactly Like it'd be easy enough to just go print this format The code is this the URL is that but I said it would be a lot more useful if it was color coded and meant Stuff right?
+00:00:08 Recorded January 29th, 2024.
 
-00:06:41 Like if it's a 404 it should be a different color than if it's a 200 or if it's a redirect It should be a different color if it's really really slow If it's you see these times like 10 milliseconds 9 milliseconds 8 milliseconds 12 milliseconds if there was a second Maybe that's a problem color that a different color and I did that by installing middleware and the this is in pyramid But it could also be whatever right you do some FastAPI or whatever It just says begin the requests Do something pass it down to the framework and then in the request and just times it and logs it and colors it there Okay, neat. Yep, indeed indeed Well, I I also want to talk about something new and old at the same time. So nice Pi test is been around for a while. But I test 8 is brand new. So I just ate just came out this weekend I'm super excited to start running with it. Actually. I've already started running with it. I We're gonna put in the show notes I put put a highlighted blog post of just by test days here and links to the the change the full changelog But the what they did was they spread out if people are running 7 like old 7x High test which that's what I was using before The changelogs a little a little just takes a little bit to parse because they spread it along The RC 1 RC 2 and the final 880 release the changes are all there So I pulled the highlights out. So the the thing I'm really excited. There's two things. I'm really excited about one is when you had an exception that would just be a red block of Exception stuff and they've there's a whole bunch of cool difference differences So there's improved ifs when when you fail an exception especially if you do - VV so very verbose or verbose verbose However, you want to think about that, but you get a colored diff instead of the big chunk of red There's also there's also this color thing, right? Yeah, it's also more more colors Normal like syntax highlighting we're used to syntax highlighted code. So there's error reports are now syntax highlighted and there's the section the different sections of the error report are Separated better and then also there's better support for standard library containers For diffing like there was usually it was a pretty good Tuple diff for instance, but if you got if you had big lists, it was a little bit hard to read It's a little bit better now and then more comprehensive assert rewrites for other comparisons Not just equal but things like not equal less than equal Other comparisons, so that's really cool Help help people debug their code That's super nice because you want to be able to just say are these two things the same and not write code around?
+00:00:11 And I am Brian Okken.
 
-00:09:34 How do you do that? Right? Yeah. Yep And also like comparisons like less than or less than or equal It's really nice for the pytest to go out and really tell you why that check failed And highlight the part of your data that where it failed so really really fun to see that there's the thing the next thing I wanted to talk about for pytest 8 was Probably pretty obscure for people that are not using X fail. So X fail is a way to say I expect this test to fail and for a lot of people why would you expect it to fail?
+00:00:12 Hey, I'm Michael Kennedy.
 
-00:10:10 For but for large organizations, it's pretty common to file a defect and You don't have control over it. So you can't just go fix it. Somebody else is responsible for fixing it So that's how we use it We and I mark mark a test as failing as expected to fail and give it a defect number and then And then when when it and that's not new But if it if it passes There's there's decisions on how to make it X pass or what to deal with do with if an X failed passes I've talked about that much a bunch on the other podcast. However the change for pytest 8 is That with X fails the trace back never showed up It didn't used to so the changes now if you there's a way to turn that on with With the - our command you can turn on X fail trace backs. So that's really nice for CI test runs to be able to see what the failure was in CI and not have to try to rerun it again So really cool excited about that. There's lots more things. So check out the changelog the reason why they bumped to eight I think is because there was a bunch of they changed the way collection works and And that change that behavior change of backwards compatibility made it so that it made sense to bump the the number I think that's the reason I'm not sure But also it's good to bump the number every once in a while so that we have that So that you can deal with that deprecations you can get rid of the code that you were meaning to get rid of So I I encourage people to run pytest 8 and check it out and turn on, you know Turn on the full strict mode and everything so that you know, if if anything breaks you can roll back if you need to -
+00:00:14 And this episode is sponsored by us.
 
-00:11:58 Awesome, there's like Christmas for you, right? Yeah major. Yeah a major version release Yeah, and it also made me when I was looking at this maybe realize that I think I need to add more color to My blog it's just black and white and it's not very fun. So I have to add more color Colors always fun. I mean, that's the theme of this episode last week It was let's just ship announce open source projects were releasing. This is like color episode called the color episode. Yeah Or as midnight the audience puts it out. There is a readability episode Very good indeed. Well, let's harken back to a couple of things on my side here So I talked about this Docker work that I've been doing That also kind of led me to the granny and stuff and playing with that as well I also forgot to give a quick shout out to the people like both Andy Shapiro and Bill Crook Pointed out said hey, you should check out granny. So when I give them credit for sending that in Thank you. But as I was doing all these Docker things I was you know, you know when you're in a unusual or an unfamiliar uncomfortable space compared to what you normally do Like right now my little browser in this episode has maybe nine tabs and that's like kind of a lot But when I was doing the Docker stuff, I'd have a 30 40 50 tabs And then I would close 30 of them because I'd solve some problem that we work its way We're just tabs everywhere. So it was just like exploring stuff all over the place, right? Like wow I must not know what I'm doing right now But you know, that's how you get to where you know what's going on along that I'd be like, oh people talk about oh my gosh Totally giving up on doing this. I'm using orb stack or pod man or if they support this OS I'm like, what are these things? So I just want to go through a host of Docker goodies that I think people will enjoy Not exactly Python specific but certainly relevant if you're doing Python and any form of containers, right?
+00:00:17 So check out our courses at Talk Python Training and the Complete pytest Course.
 
-00:13:46 So the first one of three, there's actually more Brian. I'm not gonna cover them all here I'm saving some for later because it's just it'll be a little out of control at that point So orb stack if you use Docker and you use Docker on Mac or Windows typically what you do is you get Docker desktop, right?
+00:00:22 And thanks to Patreon supporters and really everybody that just like spreads the love and shares our podcast with other people.
 
-00:14:02 So so that gives you the Docker commands that allows you to run Docker locally It might use maybe use a virtual box or something on Mac and it uses probably Windows subsystem for Linux on Windows But you run like Linux VM Linux containers on top of some hidden thing of Linux, right?
+00:00:30 Thanks so much.
 
-00:14:19 Yeah, so orb stack is kind of that they say say goodbye to slow and clunky containers and VMS It's a light and easy way to run Docker containers and Linux on one machine, right?
+00:00:30 The first item is going to be Granian.
 
-00:14:31 So well basically gives you a nice UI around it. It is a hundred percent compatible with Docker so you could say Docker run Docker exec Docker compose up or whatever it is you say and Instead of using the Docker engine. I'll use this orb stack engine, which is pretty neat. It also has its own CLI If you want to directly work with it, but basically it's kind of a one open source and two more lightweight They've got a bunch of cool commands, but they show down here somewhere Speed if you're gonna open it says open edX. I guess that's probably the the Docker compose setup for edX I'm to provision a development environment for it. It's pretty long still because I guess that's a beast of an app 17 minutes on orb stack but 45 minutes on Docker desktop to build post hog, whatever that is It's like a quarter or a third of the time it uses if you're on a laptop It uses like less than 25% of the battery as well Or it depends if you're using super based or kubernetes or whatever right but pretty cool, right? Yeah. Yeah, and oh another thing I think I think let me look. Yes. This is a big deal You and I were just talking about this before we press record It says you can run Linux machines without a fuss So one of the things I can do is I can go to like parallels and I can run Linux a boon to or whatever On my Mac my m2 mini my m2 pro mini How are you those words to go together whatever order makes the right sense there I can run them, but I can only run the arm 64 versions because I only have an arm 64 processor, but this one allows you to run Intel machines on Apple silicon with Rosetta which allows you then to run Intel based Docker images and basically be closer to what your production environment is if you're using Apple silicon So that's also a nice feature of this. That's pretty cool Yeah, it does cost money if you're a company, but it has a free version if you're just person So yeah, not an endorsement, but I thought people might find this to be pretty useful. It looks pretty cool Yeah, next one pod man But man is the best free and open source container tools so you can manage doctor containers pods and that term I believe comes from kubernetes like the unit of execution and kubernetes is called a pod and images with pod man So yeah, it lets you seamlessly work with containers and kubernetes from your local environment So this is also really cool. A lot of people are doing interesting stuff GitHub action plugins. It's got a Visual Studio Code plugin and Different things and then the third one actually third 3.5 because it kind of is - is this is pretty interesting So one of the things that kind of is inspiring once you get all this Docker stuff going is like, okay Well if that open source big complicated thing and some technology, I don't know how to run like PHP or whatever But if it has a Docker container or a Docker composed set of containers I can run it All I got to do is just tell Docker to update it when there's a new one and just run it That's super easy to do right?
+00:00:33 Oh, neat.
 
-00:17:34 So there's this like taking that to kind of the extreme as there's this thing called Casa OS. Have you heard of this?
+00:00:34 Yes, before we get into that, I just want to sort of set the stage.
 
-00:17:41 No, I neither but as 20,000 get up stars, which is pretty cool They call it your personal cloud operating system community based open source software focused on delivering Simple personal cloud experience around the Docker ecosystem. So basically if there's a thing that runs Docker This is like a an OS for running in a platform for running all that So it gives you a UI and into this this OS that they give you and it says look you can collect all your precious Data, I don't like tie together Google Drive Dropbox. I cloud one drive, etc, etc Hard drives and everything into just one drive view and then you can just access it and like map that drive over to your TV Or your computer or whatever You go there's somewhere in here where they've got all these apps that you can go Just grab and install or supports a lot of them are unfamiliar to me because I haven't done this enough But like couch potato duck DNS photo prism and they just plug into this this thing. So this is pretty interesting, right?
+00:00:37 You know, when you're running Python apps, web apps in production, there's usually something that talks to the web browsers.
 
-00:18:39 I think yeah, you think right? Yeah. I don't know what I would do with it. But you know Yeah So one of the things that I think this is sort of coming out of is they have this thing called Zim cube which instead of running all your stuff on the internet This is like kind of like a really fancy NAS Okay, network attached storage, but it also runs Docker and all these things So it says you can have up to 164 terabytes of SSD, but then it also runs all of these things and this is on Kickstarter and it was already funded at around 1.1 million US which is a lot apparently So this is kind of the the intended destination for that, but I think you can run it anywhere. So pretty cool, right?
+00:00:43 And then there's the part that runs your Python code, right?
 
-00:19:23 Yeah, I mean some people think over a million dollars is a lot. I don't you know Jump change, but you know, yeah So I don't think this thing is shipped yet, I think it's in in development still now their Kickstarter ended But yeah, so there's a whole bunch of different fun things. So orb orb stack pod man casa and Zima cube Okay, so I have a question about the orb stack Is that that doesn't generate Docker images though? Does it I mean I have to have orb stack stuff on the server as well Right. No, it it will manage it is a transparent Transparent API or CLI to the Docker CLI. Okay So so if you just install this then you can go to your command line and type Docker build Whatever, you know download and do all the things but then when you ship ship it to production you could have real Docker there Okay, okay, right. I didn't understand more like it's more I think it's mostly around kind of yeah It's mostly on the desktop side of things So it's like a simpler lighter way to do desktop stuff possibly you could run it on your own Like I said, it does have its own CLI for doing its things its way But I think people will just use as a duck Docker desktop alternative yeah, it looks like it's the the business and commercial use pricing is Slightly cheaper than Docker desktop right now. So there's benefit there Sorry, I didn't remember that Docker had gone commercial on that side as well. So yeah, that makes them more comparable, right?
+00:00:47 The part that talks to your web browser is Nginx, Apache, Caddy, one of these things that does SSL.
 
-00:20:54 As opposed to yeah, there's this other free thing. It's not terrible though. I mean like I just we just had to re-up our Docker At work and it's what we I think I paid 300 bucks for five seats per year. That's not bad Yeah, that's not bad. Not when it's not your money. It's fine. It's not my money It's easier to spend not your money. Yeah so Yeah, I love not your money spending But anyway, pretty cool Look forward to checking that out. I actually think it'd be fun to have one of those Zima cubes. I do too I really consider again. Wouldn't it be awesome to just have all those cool apps running plus, you know, 100 terabytes of storage Yeah, so it's like the cloud but it's at home. So it's just exactly top 10 It's more like fog. It's way lower down. It doesn't it's fog. It's personal personal cloud That's nice, okay cool Okay, so that's some good news and I the next step I don't know if this is good news or bad news. It depends on your perspective. So I'd like to talk about Github copilot and other assisted AI stuff so Visual Studio magazine Came out with this article called new github copilot research finds downward pressure on code quality so the the question really was kind of if I've got if I'm using code coding with copilot if I'm if I'm using using copilot to help me write some stuff is the copilot kind of like having a You know junior developer that is it more intern or is it more senior dev? Yeah, is it more intern or more senior dev?
+00:00:53 It has no knowledge of Python.
 
-00:22:40 and so the the They the result was or oh Their question was is it more senior dev or more akin to it?
+00:00:55 But then behind that step, we've got MicroWSGI.
 
-00:22:49 just the just jointed work of a short-term contractor, which I thought that was appropriate because A contractor might be very skilled, but they don't really care about they might not care about maintenance too much And yeah, exactly. So yeah, the technical debt is not a problem when you're done next week Yeah, and you don't have to yeah. Yeah One of the best ways to not deal with legacy code is shift switch jobs anyway We the answer is summarized of this white paper is summarized by We find it disconcerts. We find disconcerting trends for maintainability code churn which is the percentage of lines that are reverted or Updated less than two weeks after being authored is projected to double in 2024 as compared to 2021 pre AI baseline we further find that the percentage of added code or and Copy pasted code is increasing in proportion to updated deleted and moved Code in this regard AI generated code resembles an iterant contributor prone to violating the dryness The don't repeat yourself of the repositories visited. So this isn't that surprising to me, but it's interesting that there was a study done by get clear and also interesting that it was, you know printed in Visual Studio magazine, but I don't know if this is if the I guess the magazine probably doesn't have any ties to Microsoft but Or GitHub, but anyway interesting So Bart out in the audience has a different analogy I'd like to adapt this is not junior seniors a parrot that recycles what it Found on the web. So I'm thinking more stack overflow copy and paste action type of stuff here And grant says I read this to the research makes sense Sounds right, but copilot has benefits as senior devs like applying good patterns faster. Yeah, it's pretty interesting There it there was some comment in the article that Essentially stuff still got done faster. It's or at least got to Something working faster It's just that people often go back and you know back later and then modify and refactor the code and that's not necessarily bad But you know and get the sense that copilot is very focused on what prompt did you give me?
+00:00:59 We've got G-Unicorn and those types of things, right?
 
-00:25:15 I'm gonna do that rather than I understand what your entire project is. I've seen all 200 files I've thought that through now in that context the answer your question is X rather than Y, right?
+00:01:03 So that's where your Python code runs.
 
-00:25:26 I don't think it does that I think I mean I don't it would be a very high level of like token usage that it would have to take into account I just I think it probably just goes like alright. Well you asked me a sentence. Here's the answer Python Yeah, I actually want to play with it more. I haven't really played with copilot too much It's not something I can use at work, but on personal projects I think be fun to use it more but the the The I we're still I mean it seems like you know It seems like like ChatGPT is kind of old now and copilot It's like really old but really the we're really just starting to use these tools in Development like they said pre 2021 So it's still only a couple years that we have have under our belt working with these things and I think that I think that the tools can get better and I I I'm looking forward to being able I I both worry about the the developers that are gonna lose jobs and stuff because of this but I also I think that the tools will probably get better Like you said if it can look at your entire project and say hey In this context, this is the right call. You're repeating something you can we can already you already implemented that Let's go you call this function instead That would be great and also if we could have AI tools to to help maybe keep a style similar or the just a general Philosophy similar in around a project. I think there's room for that Once it gets there, so yeah, I wouldn't be surprised to see that happen. Yeah. All right extra extra time extra extra Oh, yeah, so my extras are like did you know that pytest 8 is out?
+00:01:05 Usually it runs, it'll create multiple of them.
 
-00:27:05 it's installed - you pip installed - you but I also if if Pytest is one of those things that you've always been thinking about doing Head on over to courses dot Python test comm and you can learn it really fast Using a course or you can grab the book, of course, so yeah, excellent. Yeah, that's very exciting Do you have any extras? I do have a couple things. I want to quickly shout out to one This has been around for plenty long. Although it's changed behind the scenes not in a way Anyway, I don't necessarily notice but it has and that's just I want to encourage people to join our newsletter If you go to Python by set of them right below the hero image There's a thing that says new letter if you go newsletter you go over there Let's become a friend of the show your information in there. This is actually a Revamped as part of my work that I did with list monk the private self-hosted email Stuff moving away from MailChimp and others. We talked about that last week two weeks ago some some number of weeks ago and That means it doesn't go anywhere We don't share it with anyone but Brian and I are planning some fun stuff I'm trying to do more with newsletters and reaching out and connecting with you Also, we would love for you to go to Python by set of em Click on newsletter and put your information in there We won't share it, but we'll try to make make it worth your while But we also haven't emailed a lot on it yet in the past So when we start using it, don't think that we like bought your your name off some list It's that we're just starting to use it more. Yes, absolutely Drives me crazy when people mark they'll come sign up for your newsletter and then they'll mark it as spam Which means other people have a harder time getting it It's like you you hyped your information into there and then you mark just doesn't unsubscribe. Just please use the unsubscribe just do Yeah, I actually wrote a ton of software I have a whole separate Docker thing running that like monitors for people marking stuff as spam because there's ways that you can receive hooks about that information and Automatically unsubscribe people if they do that, even if they don't unsubscribe But you know, it's kind of a sense that damage is still done a little bit email is a complete nightmare All right. Let's get away from email because it makes me upset. All right, so Bydantic, bydantic is awesome. Sydney Runkle who works the bydantic company Was on talk by then recently released a brand new version version 2.6.0 and Samuel Colvin said this is probably the biggest most important important release since 2.0. Well, if you scroll through the release notes for identic 2.6 There is a lot going on here and even just the new contributors is massive But apparently a ton of speed up some other things going on here that you can check out so if you're using pydantic everything's excellent just no more Python 3 7 because we've already had the The thanks and goodbye the Python 3 7 we're on to 3 8 as the minimum reasonable Python these days. Well, though Yeah, very cool. A lot of contenders. There's a lot going on here So it's a popular library. Like if we go over here and we see like, okay. Well how many things depend on it?
+00:01:07 And both those two that I named, I'm big fans of.
 
-00:30:10 where's the the used by 317,000 projects it lists one two, three, four five It looks like six and it says plus as in there's more as a plus three hundred seventeen thousand nine hundred forty six Like that's not really totally representative, but okay, I understand the UI anyway, yeah, it's used by a lot of people Well, it's used by more projects than their stars. So some people are using it and don't like it. Apparently maybe I'm on start this up people The only reason you don't see a star for me is I'm not logged in All right, and finally I wrote a new essay called use custom search engines way more this is not duck duck go versus Google versus being but rather if you use a proper browser like Vivaldi or Firefox or Even Chrome though. Anyway, you can go and set custom search engines for all sorts of cool stuff Like one I set was pipey I Brian so if I go to my my address bar I don't know if I've done it on my streaming one here. Let me see now only my proper one This is like a separate user Account over here, but I could go and just type pipey I space py test and it will search using Pypi.org's search results directly for my test or whatever it is. You type there. I didn't know you could do this It is awesome. So if you want to search unsplash for Stock footage you space and you type the thing or so space you directly search on stack overflows So instead of searching for it, oh, I was looking in looking for stack overflows So you scroll through till you find the result and you go You know just like boom just like a super short or gh for github to search only Repositories not users or whatever you want to type in incredibly easy. So that's my my essay my quick little so that's it That's not built in already. You have to well, it's supported but you have to like configure it on your browser type Yeah, you have to type basically You go to Vivaldi search and then you find just go in our new search engine or there's ways to do in Firefox There's a way to do it in Chrome. They're all different Okay, but then you just figure out if you just search a site like if you search stack overflow You'll see it stack overflow comm slash search question mark Q equals some string And so you just put percent s there and say that's the search engine. Okay, I think I'll do a PB for Python bytes. Oh You know what? I'm feeling Like we could totally do this I mean you're all dried up there. Yeah Yeah, why not? Let's get one step beautiful. Anyway, that's my set of extras. Very cool. Thanks Well, how about funny stuff? This one's quick and short. Okay, it's a picture but you don't need to know anything about the picture It's just a lawyer arguing a case. Hey, Brian says your honor. My client didn't know they were pushing to the main branch That's funny, yeah, that's it didn't know I'd push it's my embrace this is my defense. I'm sorry I took down the website during Black Friday. I thought it was my my fork That's funny. Yeah, how often have you like I guess you don't do this too much, but it's three-day weekend I want to make sure that I have my stuff pushed to Central repo so push work at home, right? You want to like yeah and sync it back up or whatever Yeah, but but make sure you're on a branch Mm-hmm. So, okay. We were talking about junior versus senior a little bit on AI stuff So I wanted to share a little picture also of this was I saw this on Mastodon Junior versus senior developer junior. It's a timeline thing So the junior developer working on project encompasses the entire time senior developer Finding the motivation to start takes up like 90% 80% of the time and then actually doing it at the end And the total times equal Yeah It's amazing. I would have altered it to make the senior like the total time is like a little bit less It's just yeah. Yeah, and the junior needs a little bit of finding the motivation but just a tiny bit It's still a good one. Yeah Cool. Well, thanks again for oops Such a great episode good to talk to you this week. It's good to have everybody in the Showing up for the live show. Thank you very much If you want to what's that link again, if you if people want to go watch the live show They can buy them by set of em slash live. Yeah. All right, cool Plus if you just go to Python bytes dot FM, it's right at the top. Yeah there. Yeah Thanks a lot. It easy we make it easy for people. Yeah. All right. See you next week file
+00:01:11 MicroWSGI is awesome.
+
+00:01:12 Super fast, low memory usage, but only does WSGI, does no async stuff.
+
+00:01:19 And that's a huge drawback, right?
+
+00:01:21 It doesn't do async.
+
+00:01:22 It doesn't allow you to like properly scale async and await.
+
+00:01:25 G-Unicorn, on the other hand, allows you to use UVicorn workers inside there, which is kind of like one more chain in that loop.
+
+00:01:34 But when you deploy it that way, you can do async and await, which is awesome.
+
+00:01:38 But there's this new-ish thing coming along called Granian from the Emmet framework, which is a new Python web framework.
+
+00:01:47 But this is a Rust-based HTTP server for Python applications.
+
+00:01:51 So a Rust version of MicroWSGI or G-Unicorn.
+
+00:01:55 Yeah?
+
+00:01:55 Oh, cool.
+
+00:01:56 That's kind of cool.
+
+00:01:57 It has 1.5,000 stars on GitHub.
+
+00:02:01 It's been coming along for a while.
+
+00:02:02 And it's created by a guy named Giovanni, I believe.
+
+00:02:08 And Giovanni says, well, why build this thing?
+
+00:02:12 A couple of reasons.
+
+00:02:13 It's a correct HTTP implementation supporting version 1.2 and working on HTTP 3, which is awesome.
+
+00:02:20 It avoids the G-Unicorn, U-Vicorn, HTTP tools' tendency composition when deploying in production.
+
+00:02:28 So this natively supports async and await, like right in it, along with WSGI.
+
+00:02:34 So whatever kind of app you've created, you can just run it right there in this thing without chaining stuff together.
+
+00:02:41 And one of the things that's nice about it is it's not a ton faster, but it's way more stable.
+
+00:02:46 There's less jitter in its performance profile, which I think is super cool.
+
+00:02:50 I'll talk about that in a second.
+
+00:02:51 But yeah, it has HTTP 1 and 2.
+
+00:02:53 Excellent.
+
+00:02:54 Supports HTTPS and WebSockets directly.
+
+00:02:56 I'm not going to send HTTPS traffic to it.
+
+00:02:59 I'm just using, for now, Nginx or whatever.
+
+00:03:01 But it also supports RSGI, which is a Rust server gateway interface, I guess.
+
+00:03:06 You know, like ASGI and WSGI.
+
+00:03:08 So it does all the Python things, plus it has a Rust direct version, if that was the way you went down it.
+
+00:03:14 And it's super easy to run.
+
+00:03:16 But from the performance perspective, if you look, it'll compare it down here to, let's see, against Uveacorn.
+
+00:03:24 And Hypercorn is another one I should have mentioned.
+
+00:03:27 That's like a parallel to Uveacorn plus Unicorn.
+
+00:03:31 But that one, I think, handles it all directly from Philip Jones, which is great.
+
+00:03:34 But if you look at, so let's just say, like, the ASGI get.
+
+00:03:38 It says it'll do, numbers please, 1.3 million requests at, okay, that's just total, doesn't mean anything.
+
+00:03:46 That could be over three weeks.
+
+00:03:47 85,000, 86,000 requests per second.
+
+00:03:50 Or maybe this one's a little bit better.
+
+00:03:53 A different get for 94,000.
+
+00:03:55 Compare that against the Uveacorn one, which is 19,000 versus 94,000.
+
+00:04:02 Or the Hypercorn at 12,000 versus 94,000, which is great.
+
+00:04:06 But if you look at the variation, like, response time on, let's say, Uveacorn is, on average, 8.7 milliseconds.
+
+00:04:15 That's really good.
+
+00:04:17 But the max is 320 milliseconds.
+
+00:04:20 Whereas if you look at this one, it's 2.7, but the max is only 8.6, right?
+
+00:04:26 So that variability or jitter, or I don't know how the heck you say it, is way more stable.
+
+00:04:31 And you just kind of look across the board, like another example is 6 versus 70, and so on.
+
+00:04:35 So I thought that was pretty cool.
+
+00:04:36 So I switched.
+
+00:04:37 If you come over here, Brian, to Python Bytes.
+
+00:04:39 This is running on Granian right now over on my Docker cluster for the moment.
+
+00:04:44 So I just thought I'd see how it goes.
+
+00:04:46 And it's been going perfectly, from what I can tell.
+
+00:04:48 So it's pretty easy to switch, then?
+
+00:04:51 Yeah.
+
+00:04:51 I mean, all you got to do is pip install Granian, and then change the start command, no matter
+
+00:04:57 however you run it.
+
+00:04:57 If you run it in the systemd on, like, a VM, you change the systemd exec command.
+
+00:05:02 If you do it in Docker, you just change the entry point command.
+
+00:05:05 For a micro-whisgi this, or gunicorn that, too.
+
+00:05:08 It's basically just another startup command.
+
+00:05:11 Yeah.
+
+00:05:11 Okay.
+
+00:05:11 Interesting.
+
+00:05:12 Cool.
+
+00:05:12 Indeed, indeed.
+
+00:05:14 One thing I did want to add for people who are considering this.
+
+00:05:18 I got to move this over.
+
+00:05:19 Go.
+
+00:05:20 One thing it doesn't.
+
+00:05:21 You can set it up so it'll do logging, but it doesn't do, like, easy logging out of the
+
+00:05:26 box.
+
+00:05:26 So I actually was messing around, like, maybe I should just do my own logging.
+
+00:05:30 Not for, hey, my app started up.
+
+00:05:33 Hey, somebody click this button.
+
+00:05:34 But just request response logging, which is pretty common.
+
+00:05:37 So I actually ended up playing with it and using Log Guru to come up with a color-coded,
+
+00:05:43 added some middleware that came up with color-coded request response logging that does all sorts
+
+00:05:48 of cool stuff.
+
+00:05:49 Like, see how some of the sizes in this log are red and some are white?
+
+00:05:53 If it's, like, over 500K in the request size, then it colors it red.
+
+00:05:58 Or if the response time is too slow, it'll color it, like, yellow.
+
+00:06:01 Or if it gets really slow, it'll color it red.
+
+00:06:03 Or it's a 400 or 500 code error.
+
+00:06:06 It'll color that part of the request red.
+
+00:06:10 So you can, like, look right away and see.
+
+00:06:13 So I've decided doing your own Log Guru request response stuff is pretty excellent, actually.
+
+00:06:18 So that's kind of a cool consequence of playing around with this as well.
+
+00:06:22 Cool.
+
+00:06:23 So is your use of Log Guru that a custom thing where you look at the response times and color
+
+00:06:29 it differently or something?
+
+00:06:30 Yeah, exactly.
+
+00:06:31 Exactly.
+
+00:06:31 Like, it'd be easy enough to just go print this format.
+
+00:06:34 The code is this.
+
+00:06:35 The URL is that.
+
+00:06:36 But I said it would be a lot more useful if it was color-coded and meant stuff, right?
+
+00:06:41 Like, if it's a 404, it should be a different color than if it's a 200.
+
+00:06:45 Or if it's a redirect, it should be a different color.
+
+00:06:47 If it's really, really slow, if you see these times, like, 10 milliseconds, 9 milliseconds,
+
+00:06:52 8 milliseconds, 12 milliseconds, if that was a second, maybe that's a problem.
+
+00:06:56 Color that a different color.
+
+00:06:57 And I did that by installing middleware in the, this isn't Pyramid, but it could also be
+
+00:07:02 whatever, right?
+
+00:07:03 You do this in FastAPI or whatever.
+
+00:07:05 It just says, begin the request, do something, pass it down to the framework, and then end
+
+00:07:11 the request and just times it and logs it and colors it there.
+
+00:07:13 Okay.
+
+00:07:14 Neat.
+
+00:07:15 Yep.
+
+00:07:15 Indeed, indeed.
+
+00:07:16 Well, I also want to talk about something new and old at the same time.
+
+00:07:23 Nice.
+
+00:07:24 pytest has been around for a while, but pytest 8 is brand new.
+
+00:07:28 So pytest 8 just came out this weekend.
+
+00:07:31 I'm super excited to start running with it.
+
+00:07:33 Actually, I've already started running with it.
+
+00:07:35 We're going to put in the show notes.
+
+00:07:38 I put a highlighted blog post of just pytest 8 is here and links to the full changelog.
+
+00:07:46 What they did was they spread out, if people are running seven, like old 7x pytest, which
+
+00:07:54 that's what I was using before.
+
+00:07:55 The changelog's a little, just takes a little bit to parse because they spread it along the
+
+00:08:02 RC1, RC2, and the final 80 release.
+
+00:08:06 The changes are all there.
+
+00:08:07 So I pulled the highlights out.
+
+00:08:10 So the thing I'm really excited, there's two things I'm really excited about.
+
+00:08:13 One is when you had an exception, there would just be a red block of exception stuff.
+
+00:08:20 And there's a whole bunch of cool differences.
+
+00:08:24 So there's improved diffs when you fail an exception, especially if you do dash VV, so very verbose
+
+00:08:32 or verbose verbose, however you want to think about that.
+
+00:08:35 But you get a colored diff instead of the big chunk of red.
+
+00:08:39 That's awesome.
+
+00:08:40 Back to this color thing, right?
+
+00:08:42 Yeah, it's also more colors.
+
+00:08:43 Normal syntax highlighting, we're used to syntax highlighted code.
+
+00:08:48 So error reports are now syntax highlighted.
+
+00:08:52 And the different sections of the error report are separated better.
+
+00:08:57 And then also, there's better support for standard library containers for diffing.
+
+00:09:05 There was usually a pretty good tuple diff, for instance.
+
+00:09:10 But if you had big lists, it was a little bit hard to read.
+
+00:09:13 It's a little bit better now.
+
+00:09:15 And then more comprehensive assert rewrites for other comparisons, not just equal, but things
+
+00:09:21 like not equal, less than equal, other comparisons.
+
+00:09:25 So that's really cool.
+
+00:09:26 Help people debug their code.
+
+00:09:29 That's super nice, because you want to be able to just say, are these two things the same
+
+00:09:33 and not write code around?
+
+00:09:34 How do you do that, right?
+
+00:09:36 Yeah.
+
+00:09:36 Yep.
+
+00:09:37 And also, comparisons like less than or less than or equal, it's really nice for the pytest
+
+00:09:43 to go out and really tell you why that check failed and highlight the part of your data
+
+00:09:49 where it failed.
+
+00:09:50 So really, really fun to see that.
+
+00:09:53 There's the thing that the next thing I wanted to talk about for pytest 8 was probably pretty
+
+00:10:00 obscure for people that are not using X fail.
+
+00:10:02 So X fail is a way to say, I expect this test to fail.
+
+00:10:07 And for a lot of people, why would you expect it to fail?
+
+00:10:11 But for large organizations, it's pretty common to file a defect and you don't have control
+
+00:10:18 over it.
+
+00:10:19 So you can't just go fix it.
+
+00:10:20 Somebody else is responsible for fixing it.
+
+00:10:22 So that's how we use it.
+
+00:10:24 And I mark a test as failing, as expected to fail, and give it a defect number.
+
+00:10:30 And then when it, and that's not new, but if it passes, there's decisions on how to make
+
+00:10:39 it X pass or what to deal with, do with if an X fail passes.
+
+00:10:43 I've talked about that a bunch on the other podcast.
+
+00:10:46 However, the change for pytest 8 is that with X fails, the traceback never showed up.
+
+00:10:54 It didn't used to.
+
+00:10:55 So the change is now, if you, there's a way to turn that on with a, with a dash R command,
+
+00:11:01 you can turn on X fail tracebacks.
+
+00:11:04 So that's really nice for CI test runs to be able to see what the failure was in CI and not
+
+00:11:11 have to try to rerun it again.
+
+00:11:12 So really cool.
+
+00:11:13 Excited about that.
+
+00:11:15 There's lots more things.
+
+00:11:16 So check out the change log.
+
+00:11:18 The reason why they bumped to eight, I think is because there was a bunch of, they changed
+
+00:11:24 the way collection works.
+
+00:11:25 And, and that chain, that behavior change of backwards compatibility made it so that it
+
+00:11:31 made sense to bump the, the, the number.
+
+00:11:33 I think that's the reason I'm not sure.
+
+00:11:35 But also it's good to bump the number every once in a while so that we have a, that so that
+
+00:11:41 you can deal with a deprecations.
+
+00:11:42 You can get rid of the code that you were meaning to get rid of.
+
+00:11:45 So I, I encourage people to run pytest 8 and check it out and turn on, you know, turn on
+
+00:11:51 the full strict mode and everything so that, you know, if, if anything breaks, you can roll
+
+00:11:57 back if you need to.
+
+00:11:58 Awesome.
+
+00:11:59 This is like Christmas for you, right?
+
+00:12:01 Yeah.
+
+00:12:01 Major.
+
+00:12:02 Yeah.
+
+00:12:02 A major version release.
+
+00:12:04 Yeah.
+
+00:12:05 And it also made me, when I was looking at this, made me realize that I think I need to
+
+00:12:08 add more color to my blog.
+
+00:12:09 It's just black and white and it's not very fun.
+
+00:12:13 So I'm have to add more color.
+
+00:12:14 Color is always fun.
+
+00:12:16 I mean, that's the theme of this episode last week.
+
+00:12:18 It was let's just ship announced open source projects.
+
+00:12:21 We're releasing this is like color episode.
+
+00:12:22 Color the color episode.
+
+00:12:24 Yeah.
+
+00:12:24 Or as midnight audience puts it out.
+
+00:12:27 There is a readability episode.
+
+00:12:28 Very good.
+
+00:12:30 Indeed.
+
+00:12:30 Well, let's harken back to a couple of things on my side here.
+
+00:12:36 So I talked about this Docker work that I've been doing.
+
+00:12:39 That also kind of led me to the Granian stuff and playing with that as well.
+
+00:12:43 I also forgot to give a quick shout out to the people like both Andy Shapiro and Bill Crook
+
+00:12:48 pointed out, said, Hey, you should check out Granian.
+
+00:12:50 So when I give them credit for sending that in, thank you.
+
+00:12:53 But as I was doing all these Docker things, I was, you know, you know, when you're in a
+
+00:12:58 unusual or an unfamiliar, uncomfortable space compared to what you normally do.
+
+00:13:03 Like right now, my little browser in this episode has maybe nine tabs and that's like
+
+00:13:08 kind of a lot.
+
+00:13:09 But when I was doing the Docker stuff, I'd have a 30, 40, 50 tabs.
+
+00:13:12 And then I would close 30 of them because I'd solve some problem that would work its way.
+
+00:13:16 It would just tabs everywhere.
+
+00:13:17 So it was just like exploring stuff all over the place, right?
+
+00:13:19 Like, wow, I must not know what I'm doing right now.
+
+00:13:22 And that's true.
+
+00:13:23 But, you know, that's how you get to where you know what's going on.
+
+00:13:27 Along that I'd be like, oh, people talk about, oh my gosh, totally giving up on doing
+
+00:13:31 this.
+
+00:13:31 I'm using OrbStack or Podman or if they support this OS.
+
+00:13:35 I'm like, what are these things?
+
+00:13:36 So I just want to go through a host of Docker goodies that I think people will enjoy.
+
+00:13:41 Not exactly Python specific, but certainly relevant if you're doing Python in any form
+
+00:13:46 of containers, right?
+
+00:13:46 So the first one of three, there's actually more, Brian.
+
+00:13:49 I'm not going to cover them all here.
+
+00:13:51 I'm saving some for later because it's just, it'll be a little out of control at that point.
+
+00:13:54 So OrbStack, if you use Docker and you use Docker on Mac or Windows, typically what you do is
+
+00:14:00 you get Docker desktop, right?
+
+00:14:02 So that gives you the Docker commands.
+
+00:14:05 It allows you to run Docker locally.
+
+00:14:06 I think it might use, maybe use VirtualBox or something on Mac.
+
+00:14:11 And it uses probably Windows subsystem for Linux on Windows.
+
+00:14:13 But you can run like Linux VM, Linux containers on top of some hidden thing of Linux, right?
+
+00:14:19 Yeah.
+
+00:14:20 So OrbStack is kind of that.
+
+00:14:22 They say, say goodbye to slow and clunky containers and VMs.
+
+00:14:25 It's a light and easy way to run Docker containers and Linux on one machine, right?
+
+00:14:31 So basically gives you a nice UI around it.
+
+00:14:35 It is 100% compatible with Docker.
+
+00:14:38 So you could say Docker run, Docker exec, Docker compose up or whatever it is you say.
+
+00:14:42 And instead of using the Docker engine, it'll use this OrbStack engine, which is pretty neat.
+
+00:14:48 It also has its own CLI if you want to directly work with it.
+
+00:14:53 But basically it's kind of a one open source and two more lightweight.
+
+00:14:58 They've got a bunch of cool commands, but they show down here somewhere.
+
+00:15:01 Speed, if you're going to open, it says open edX.
+
+00:15:06 I guess that's probably the Docker compose setup for edX.
+
+00:15:11 I'm going to provision a development environment for it.
+
+00:15:15 It's pretty long still because I guess that's a beast of an app.
+
+00:15:17 17 minutes on OrbStack, but 45 minutes on Docker desktop to build post-hog, whatever that is.
+
+00:15:23 It's like a quarter or a third of the time.
+
+00:15:26 It uses, if you're on a laptop, it uses like less than 25% of the battery.
+
+00:15:31 It's like a quarter or whatever, right?
+
+00:15:36 But pretty cool, right?
+
+00:15:37 Yeah.
+
+00:15:37 Yeah.
+
+00:15:37 Yeah.
+
+00:15:38 And oh, another thing, I think, I think, let me look.
+
+00:15:41 Yes.
+
+00:15:42 This is a big deal.
+
+00:15:42 You and I were just talking about this before we pressed record.
+
+00:15:44 It says you can run Linux machines without a fuss.
+
+00:15:47 So one of the things I can do is I can go to like parallels and I can run Linux, Ubuntu or whatever on my Mac, my M2 mini, my M2 pro mini.
+
+00:15:57 However, those words go together.
+
+00:15:59 Whatever order makes the right sense there.
+
+00:16:01 I can run them, but I can only run the ARM 64 versions because I only have an ARM 64 processor.
+
+00:16:08 But this one allows you to run Intel machines on Apple Silicon with Rosetta, which allows you then to run Intel based Docker images and basically be closer to what your production environment is if you're using Apple Silicon.
+
+00:16:23 So that's also a nice feature of this.
+
+00:16:24 That's pretty cool.
+
+00:16:25 Yeah.
+
+00:16:26 It does cost money if you're a company, but it has a free version if you're just a person.
+
+00:16:30 So not an endorsement, but I thought people might find this to be pretty useful.
+
+00:16:35 It looks pretty cool.
+
+00:16:35 Yeah.
+
+00:16:36 Next one, Podman.
+
+00:16:37 Podman is the best free and open source container tools.
+
+00:16:41 So you can manage Docker containers, pods.
+
+00:16:44 And that term, I believe, comes from Kubernetes, like the unit of execution in Kubernetes is called a pod.
+
+00:16:50 And images with Podman.
+
+00:16:52 So yeah, it lets you seamlessly work with containers and Kubernetes from your local environment.
+
+00:16:57 So this is also really cool.
+
+00:16:59 A lot of people are doing interesting stuff.
+
+00:17:01 GitHub Action plugins.
+
+00:17:03 It's got a Visual Studio Code plugin and different things.
+
+00:17:07 And then the third one, actually 3.5 because it kind of is two, is this is pretty interesting.
+
+00:17:13 So one of the things that kind of is inspiring once you get all the Docker stuff going is like, okay, well, if that open source big complicated thing and some technology,
+
+00:17:21 I don't know how to run like PHP or whatever.
+
+00:17:24 But if it has a Docker container or a Docker composed set of containers, I can run it.
+
+00:17:29 All I got to do is just tell Docker to update it when there's a new one and just run it.
+
+00:17:33 That's super easy to do, right?
+
+00:17:35 So there's this like taking that to kind of the extreme is there's this thing called Casa OS.
+
+00:17:40 Have you heard of this?
+
+00:17:41 No.
+
+00:17:41 I neither.
+
+00:17:42 But it has 20,000 GitHub stars, which is pretty cool.
+
+00:17:45 They call it your personal cloud operating system.
+
+00:17:48 Community based open source software focused on delivering simple personal cloud experience around the Docker ecosystem.
+
+00:17:55 So basically, if there's a thing that runs Docker, this is like an OS for running and a platform for running all that.
+
+00:18:01 So it gives you a UI into this OS that they give you.
+
+00:18:05 And it says, look, you can collect all your precious data.
+
+00:18:08 It'll like tie together Google Drive, Dropbox, iCloud, OneDrive, et cetera, et cetera, hard drives and everything into just one drive view.
+
+00:18:18 And then you can just access it and like map that drive over to your TV or your computer or whatever.
+
+00:18:23 There's somewhere in here where they've got all these apps that you can go just grab and install supports.
+
+00:18:30 A lot of them are unfamiliar to me because I haven't done this enough.
+
+00:18:33 But like couch potato, duck DNS, photoprism, and they just plug into this thing.
+
+00:18:38 So this is pretty interesting, right?
+
+00:18:39 I think.
+
+00:18:40 Yeah.
+
+00:18:41 You think, right?
+
+00:18:42 Yeah.
+
+00:18:42 I don't know what I would do with it.
+
+00:18:44 But, you know.
+
+00:18:45 Yeah.
+
+00:18:46 So one of the things that I think this is sort of coming out of is they have this thing called Zimma Cube,
+
+00:18:51 which instead of running all your stuff on the Internet, this is like kind of like a really fancy NAS network attached storage.
+
+00:18:59 But it also runs Docker and all these things.
+
+00:19:02 So it says you can have up to 164 terabytes of SSD.
+
+00:19:05 But then it also runs all of these things.
+
+00:19:08 And this is on Kickstarter.
+
+00:19:10 And it was already funded at around 1.1 million US, which is a lot apparently.
+
+00:19:16 So this is kind of the intended destination for that.
+
+00:19:20 But I think you can run it anywhere.
+
+00:19:21 So pretty cool, right?
+
+00:19:23 Yeah.
+
+00:19:23 I mean, some people think over a million dollars is a lot.
+
+00:19:26 I don't, you know, chump change.
+
+00:19:29 But, you know.
+
+00:19:29 Yeah.
+
+00:19:30 So I don't think this thing is shipped yet.
+
+00:19:33 I think it's in development still now that their Kickstarter ended.
+
+00:19:37 But, yeah.
+
+00:19:38 So there's a whole bunch of different fun things.
+
+00:19:40 So Orb, OrbStack, Podman, Kasa, and Zimma Cube.
+
+00:19:44 Okay.
+
+00:19:45 So I have a question about the OrbStack.
+
+00:19:47 That doesn't generate Docker images, though, does it?
+
+00:19:51 I mean, I have to have OrbStack stuff on the server as well, right?
+
+00:19:55 No.
+
+00:19:55 It will manage.
+
+00:19:57 It is a transparent API or CLI to the Docker CLI.
+
+00:20:04 Oh, okay.
+
+00:20:04 So if you just install this, then you can go to your command line and type Docker build, whatever.
+
+00:20:11 And it'll download and do all the things.
+
+00:20:13 But then when you ship it to production, you could have real Docker there.
+
+00:20:16 Okay.
+
+00:20:17 Okay.
+
+00:20:17 Right?
+
+00:20:17 Yeah, I didn't understand.
+
+00:20:18 It's more like, it's more, I think it's mostly around kind of, yeah, it's mostly on the desktop side of things.
+
+00:20:24 So it's like a simpler, lighter way to do desktop stuff.
+
+00:20:28 Possibly you could run it on your own.
+
+00:20:29 Like I said, it does have its own CLI for doing things its way.
+
+00:20:33 But I think people will just use it as a Docker desktop alternative.
+
+00:20:36 Yeah.
+
+00:20:37 And it looks like it's the business and commercial use pricing is slightly cheaper than Docker desktop right now.
+
+00:20:46 So there's a benefit there as well.
+
+00:20:48 I didn't remember that Docker had gone commercial on that side as well.
+
+00:20:52 So that makes them more comparable, right?
+
+00:20:54 As opposed to, yeah, there's this other free thing.
+
+00:20:56 It's not terrible though.
+
+00:20:57 I mean, like I just, we just had to re-up our Docker at work and it's what we, I think I paid 300 bucks for five seats per year.
+
+00:21:06 That's not bad.
+
+00:21:07 Yeah, that's not bad.
+
+00:21:08 Not when it's not your money, it's fine.
+
+00:21:09 It's not my money.
+
+00:21:10 It's easier to spend not your money.
+
+00:21:13 Yeah.
+
+00:21:13 So, yeah.
+
+00:21:16 I love not your money spending.
+
+00:21:18 But anyway, pretty cool.
+
+00:21:20 I'll look forward to checking that out.
+
+00:21:23 I actually think it'd be fun to have one of those Zima cubes.
+
+00:21:25 I do too.
+
+00:21:27 I would really consider it.
+
+00:21:28 Wouldn't it be awesome to just have all those cool apps running plus, you know, 100 terabytes of storage?
+
+00:21:33 Yeah.
+
+00:21:34 So it's like the cloud, but it's at home.
+
+00:21:35 So it's just-
+
+00:21:36 Exactly.
+
+00:21:36 It's topped in?
+
+00:21:37 It's more like fog.
+
+00:21:40 It's way lower down.
+
+00:21:42 It doesn't-
+
+00:21:43 It's fog.
+
+00:21:43 It's personal.
+
+00:21:45 Personal cloud is fog.
+
+00:21:46 Personal fog.
+
+00:21:48 That's nice.
+
+00:21:49 Okay.
+
+00:21:50 Cool.
+
+00:21:50 Okay.
+
+00:21:52 So that's some good news.
+
+00:21:54 And the next step, I don't know if this is good news or bad news.
+
+00:21:57 It depends on your perspective.
+
+00:21:59 So I'd like to talk about GitHub Copilot and other assisted AI stuff.
+
+00:22:07 So Visual Studio Magazine came out with this article called New GitHub Copilot Research Finds Downward Pressure on Code Quality.
+
+00:22:18 So the question really was kind of, if I'm using coding with Copilot, if I'm using Copilot to help me write some stuff, is the Copilot kind of like having a junior developer?
+
+00:22:35 Is it more intern or is it more senior dev?
+
+00:22:38 Yeah.
+
+00:22:39 Is it more intern or more senior dev?
+
+00:22:40 And so the result was, or their question was, is it more senior dev or more akin to the just jointed work of a short-term contractor?
+
+00:22:52 Which I thought that was appropriate because a contractor might be very skilled, but they don't really care about, they might not care about maintenance too much.
+
+00:23:01 Yeah, exactly.
+
+00:23:02 So-
+
+00:23:03 Yeah, the technical debt is not a problem when you're done next week.
+
+00:23:06 Yeah, and you don't have to, yeah, yeah.
+
+00:23:08 One of the best ways to not deal with legacy code is shift, switch jobs.
+
+00:23:13 Anyway, the answer is summarized of this white paper is summarized by, We find disconcerting trends for maintainability.
+
+00:23:28 Code churn, which is the percentage of lines that are reverted or updated less than two weeks after being authored, is projected to double in 2024 as compared to 2021, pre-AI baseline.
+
+00:23:40 We further find that the percentage of added code or, and copy pasted code is increasing in proportion to updated, deleted, and moved code.
+
+00:23:51 In this regard, AI generated code resembles an iterant contributor prone to violating the dryness, the don't repeat yourself, of the repositories visited.
+
+00:24:03 So this isn't that surprising to me, but it's interesting that there was a study done by GitClear.
+
+00:24:08 And also interesting that it was, you know, printed in Visual Studio magazine.
+
+00:24:13 But I don't know if this is, if the, I guess the magazine probably doesn't have any ties to Microsoft, but, or GitHub.
+
+00:24:22 But anyway, interesting.
+
+00:24:25 Indeed.
+
+00:24:26 So, Bart out in the audience has a different analogy.
+
+00:24:29 I'd like to adapt.
+
+00:24:31 It's not junior or senior.
+
+00:24:32 It's a parrot that recycles what it found on the web.
+
+00:24:34 So I'm thinking more stack overflow, copy and paste action type of stuff here.
+
+00:24:38 And Grant says, I read this too.
+
+00:24:41 The research makes sense.
+
+00:24:42 Sounds right.
+
+00:24:43 But Copilot has benefits of senior devs like applying good patterns faster.
+
+00:24:47 Yeah.
+
+00:24:48 Which is pretty interesting.
+
+00:24:50 There was some comment in the article that essentially stuff still got done faster.
+
+00:24:56 It's, or at least got to something working faster.
+
+00:25:00 It's just that people often go back and, you know, back later and modify and refactor the code.
+
+00:25:06 And that's not necessarily bad, but, you know.
+
+00:25:09 You get the sense that Copilot is very focused on what prompt did you give me?
+
+00:25:15 I'm going to do that.
+
+00:25:16 Rather than, I understand what your entire project is.
+
+00:25:19 I've seen all 200 files.
+
+00:25:21 I've thought that through.
+
+00:25:22 Now, in that context, the answer to your question is X rather than Y.
+
+00:25:26 Right?
+
+00:25:26 I don't think it does that.
+
+00:25:27 I think, I mean, I think it would be a very high level of like token usage that it would have to take into account.
+
+00:25:34 I just don't.
+
+00:25:34 I think it probably just goes like, all right, well, you asked me a sentence.
+
+00:25:37 Here's the answer.
+
+00:25:38 Python.
+
+00:25:38 Yeah.
+
+00:25:39 I actually want to play with it more.
+
+00:25:41 I haven't really played with Copilot too much.
+
+00:25:42 It's not something I can use at work, but on personal projects, I think it'd be fun to use it more.
+
+00:25:48 But the, we're still, I mean, it seems like, you know, it seems like, like, ChatGPT is kind of old now and Copilot is like really old.
+
+00:25:58 But really, we're really just starting to use these tools in development.
+
+00:26:03 Like they said, pre-2021.
+
+00:26:04 So it's still only a couple of years that we have under our belt working with these things.
+
+00:26:10 And I think that, I think that the tools can get better.
+
+00:26:13 And I, I, I'm looking forward to being able to, I, I both worry about the developers that are going to lose jobs and stuff because of this.
+
+00:26:21 But, I also, I think that the tools will probably get better.
+
+00:26:25 Like you said, if it can look at your entire project and say, Hey, in this context, this is the right call.
+
+00:26:32 You're, you're repeating something.
+
+00:26:34 You can, we can, we already, you already implemented that.
+
+00:26:36 Let's call this function instead.
+
+00:26:38 that would be great.
+
+00:26:40 And also if, if we could have AI tools to, to help, maybe keep a style similar or the, just a general philosophy similar around a project.
+
+00:26:49 I think there's room for that, once it gets there.
+
+00:26:53 So yeah, I wouldn't be surprised to see that happen.
+
+00:26:55 Yeah.
+
+00:26:56 All right.
+
+00:26:56 Extra, extra time.
+
+00:26:57 Extra, extra.
+
+00:26:58 Oh, yeah.
+
+00:27:00 So my extras are, like, did you know that pytest 8 is out?
+
+00:27:04 pip install dash you.
+
+00:27:06 pip install dash you.
+
+00:27:08 But I also, if, if, pytest is, is one of those things that you've always been thinking about doing, head on over to, courses.pythontest.com.
+
+00:27:18 and you can learn it really fast, using a course or you can grab the book of course.
+
+00:27:24 So yeah, excellent.
+
+00:27:25 Yeah.
+
+00:27:26 That's very exciting.
+
+00:27:26 Do you have any extras?
+
+00:27:27 I do have a couple of things.
+
+00:27:29 I want to quick give a shout out to one.
+
+00:27:32 This has been around for plenty long, although it's changed behind the scenes, not in a way, anyway, really necessarily notice.
+
+00:27:38 But it has.
+
+00:27:38 And that's just, I want to encourage people to join our newsletter.
+
+00:27:41 If you go to Python by set FM, right below the hero image, there's a thing that says new letter.
+
+00:27:45 If you go newsletter, you go over there.
+
+00:27:47 It has become a friend of the show.
+
+00:27:48 Put your information in there.
+
+00:27:50 This is actually, a revamped as part of my work that I did with ListMonk, the private self-hosted email stuff moving away from MailChimp and others.
+
+00:28:00 We talked about that last week, two weeks ago, some, some number of weeks ago.
+
+00:28:04 And that means it doesn't go anywhere.
+
+00:28:06 We don't share it with anyone.
+
+00:28:07 But Brian and I are planning some fun stuff and trying to do more with newsletters and reaching out and connecting with you all.
+
+00:28:14 So we would love for you to go to Python by set FM, click on newsletter and put your information in there.
+
+00:28:19 We won't share it, but we'll try to make, make it worth your while.
+
+00:28:22 But we also haven't emailed a lot on it yet in the past.
+
+00:28:26 So, when we start using it, don't think that we like bought your, your name off some list.
+
+00:28:32 It's a, that we're just starting to use it more.
+
+00:28:34 Yes, absolutely.
+
+00:28:35 It drives me crazy when people mark, they'll come sign up for your newsletter and then they'll mark it as spam, which means other people have a harder time getting it.
+
+00:28:42 It's like you, you typed in your information into there and then you mark just, it doesn't unsubscribe.
+
+00:28:47 Just please use the unsubscribe.
+
+00:28:49 Just use the unsubscribe.
+
+00:28:51 Yeah, I actually wrote a ton of software.
+
+00:28:52 I have a whole separate Docker thing running that like monitors for people marking stuff as spam.
+
+00:28:57 Cause there's ways that you can receive hooks about that information and automatically unsubscribe people.
+
+00:29:02 If they do that, even if they don't unsubscribe, but you know, it's kind of a sense that damage is still done a little bit.
+
+00:29:07 Email is a complete nightmare.
+
+00:29:08 All right.
+
+00:29:09 Let's get away from email.
+
+00:29:10 Cause it makes me upset.
+
+00:29:11 All right.
+
+00:29:12 So by Dantic, I Dan X, awesome.
+
+00:29:15 Sydney Runkle, who works, the Pydantic company, was on talk Python.
+
+00:29:21 And then recently released a brand new version, version 2.6.0.
+
+00:29:25 And Samuel Colvin said, this is probably the biggest, most important, important release since 2.0.
+
+00:29:31 Well, if you scroll through the release notes for Pydantic 2.6, there is a lot going on here.
+
+00:29:39 And even just the new contributors is massive, but apparently a ton of speed up some other things going on here that you can check it out.
+
+00:29:47 So if you're using Pydantic, everything's excellent.
+
+00:29:50 Just no more Python 3.7.
+
+00:29:53 Cause we've already had the, the thanks and goodbye to Python 3.7.
+
+00:29:57 We're onto 3.8 as the minimum reasonable Python these days.
+
+00:30:00 Cool though, huh?
+
+00:30:01 Yeah.
+
+00:30:02 Very cool.
+
+00:30:02 A lot of contributors.
+
+00:30:03 There's a lot going on here.
+
+00:30:05 It's a popular library.
+
+00:30:07 Like if we go over here and we see like, okay, well how many things depend on it?
+
+00:30:10 Where's the, the used by 318,000 projects?
+
+00:30:15 It lists one, two, three, four, five.
+
+00:30:17 It lists like six.
+
+00:30:18 And it says plus, as in there's more, it says plus 317,946.
+
+00:30:22 Like, that's not really, not really representative, but okay.
+
+00:30:25 I understand the UI.
+
+00:30:26 Anyway.
+
+00:30:27 Yeah.
+
+00:30:27 It's used by a lot of people.
+
+00:30:28 Well, it's used by more projects than their stars.
+
+00:30:32 So some people are using it and don't like it apparently.
+
+00:30:34 Maybe.
+
+00:30:34 Come on.
+
+00:30:35 Start this up people.
+
+00:30:36 The only reason you don't see a star for me is I'm not logged in.
+
+00:30:38 All right.
+
+00:30:39 And finally, I wrote a new essay called use custom search engines way more.
+
+00:30:44 This is not DuckDuckGo versus Google versus Bing, but rather if you use a proper browser
+
+00:30:50 like Vivaldi or Firefox or even Chrome, although anyway, you can go and set custom search
+
+00:30:56 engines for all sorts of cool stuff.
+
+00:30:58 Like one I set was PyPI, Brian.
+
+00:31:00 So if I go to my, my address bar, I don't know if I've done it on my, my streaming one
+
+00:31:04 here.
+
+00:31:04 Let me see now only my proper one.
+
+00:31:07 This is like a separate user account over here, but I could go and just type PyPI space
+
+00:31:12 pytest and it will search using PyPI.org's search results directly for pytest or whatever
+
+00:31:20 it is you type there.
+
+00:31:21 I didn't know you could do this.
+
+00:31:22 Isn't this awesome?
+
+00:31:23 So if you want to search unsplash for, stock letters, you type U space and you type
+
+00:31:29 the thing or S O space, you directly search on stack overflow.
+
+00:31:33 So instead of searching for it, oh, I was looking in, looking for stack overflow.
+
+00:31:37 So you scroll through till you find the result and you go, you know, just like, boom, just
+
+00:31:40 like a super short or GH for GitHub to search only repositories, not users or whatever you want
+
+00:31:46 to type in incredibly easy.
+
+00:31:48 So that's my, my essay and my quick little.
+
+00:31:50 So that's, that's not built in already.
+
+00:31:52 You have to, well, it's supported, but you have to like configure it on your browser.
+
+00:31:57 You have to type.
+
+00:31:57 Yeah.
+
+00:31:58 You have to type.
+
+00:31:58 Basically, you go to Vivaldi search and then you find, just go enter a new search
+
+00:32:04 engine or there's ways to do it in Firefox.
+
+00:32:05 There's a way to do it in Chrome.
+
+00:32:07 They're all different.
+
+00:32:07 Okay.
+
+00:32:07 But then you just figure out if you just search a site, like if you search stack overflow,
+
+00:32:11 you'll see it's stack overflow.com slash search question mark Q equals some string.
+
+00:32:16 And so you just put percent S there and say that's the search engine.
+
+00:32:20 Okay.
+
+00:32:20 I think I'll do a PB for Python bytes.
+
+00:32:23 Oh, you know what?
+
+00:32:25 I'm feeling, I'm feeling like we could totally do this.
+
+00:32:28 I mean, the URL's right up there.
+
+00:32:30 Yeah.
+
+00:32:31 Q equals that.
+
+00:32:32 Yeah.
+
+00:32:32 Why not?
+
+00:32:32 Yeah.
+
+00:32:33 Skip one step.
+
+00:32:33 Beautiful.
+
+00:32:34 Anyway, that's my set of extras.
+
+00:32:36 Very cool.
+
+00:32:37 Thanks.
+
+00:32:37 well, how about funny stuff?
+
+00:32:40 This one's quick and short.
+
+00:32:41 Okay.
+
+00:32:41 It's a picture, but you don't need to know anything about the picture.
+
+00:32:44 It's just a lawyer arguing a case.
+
+00:32:46 Hey, Brian says, your honor.
+
+00:32:48 My client didn't know they were pushing to the main branch.
+
+00:32:52 That's funny.
+
+00:32:54 Yeah.
+
+00:32:54 That's it.
+
+00:32:55 I didn't know I was pushing to the main branch.
+
+00:32:57 This is my defense.
+
+00:32:57 I'm sorry.
+
+00:32:59 I took down the website during Black Friday.
+
+00:33:01 I thought it was my, my fork.
+
+00:33:03 That's funny.
+
+00:33:05 Yeah.
+
+00:33:06 How often have you like, I guess you don't do this too much, but, it's a three day
+
+00:33:10 weekend.
+
+00:33:10 I want to make sure that I have my stuff pushed to, to the central repo.
+
+00:33:15 So push, but work at home, right?
+
+00:33:17 You want to like, yeah.
+
+00:33:18 And sync it back up or whatever.
+
+00:33:19 Yeah.
+
+00:33:20 But, but make sure you're on a branch.
+
+00:33:22 So, okay.
+
+00:33:24 We were talking about a junior versus senior a little bit on AI stuff.
+
+00:33:28 So I wanted to share a little picture also of, this was, I saw this on, Mastodon,
+
+00:33:35 junior versus senior developer, junior, it's a timeline thing.
+
+00:33:40 so the junior developer working on project encompasses the entire time.
+
+00:33:45 Senior developer finding the motivation to start takes up like 90%, 80% of the time, and
+
+00:33:51 then actually doing it at the end.
+
+00:33:53 and the total time is equal.
+
+00:33:55 Yeah.
+
+00:33:56 Yeah.
+
+00:33:57 That's amazing.
+
+00:33:58 I would have altered it to make the senior, like the total time is like a little bit
+
+00:34:01 less.
+
+00:34:02 It's just, yeah.
+
+00:34:04 Yeah.
+
+00:34:04 And the junior needs a little bit of finding the motivation, but just a tiny bit.
+
+00:34:08 Yeah.
+
+00:34:08 It's still, it's still a good one.
+
+00:34:11 Yeah.
+
+00:34:12 Cool.
+
+00:34:13 Well, thanks again for oops, such a great episode.
+
+00:34:17 Good to talk to you this week.
+
+00:34:19 It's good to have everybody in the, the showing up for the live show.
+
+00:34:22 Thank you very much.
+
+00:34:23 If you want to, what's that link again?
+
+00:34:26 If you, if people want to go watch the live show, I would have altered it to make the senior,
+
+00:34:28 live show.
+
+00:34:28 they can buy them by set of him slash live.
+
+00:34:31 Yeah.
+
+00:34:31 All right.
+
+00:34:32 Cool.
+
+00:34:33 plus if you just go to pythonbytes.fm, it's right at the top there.
+
+00:34:37 Yeah.
+
+00:34:37 So thanks a lot.
+
+00:34:39 We make it easy.
+
+00:34:39 We make it easy for people.
+
+00:34:40 Yeah.
+
+00:34:41 All right.
+
+00:34:42 See you next week.
 
