@@ -1,0 +1,2741 @@
+WEBVTT
+
+00:00:00.000 --> 00:00:06.760
+Hey, YouTube. Hey, Brian. Hey. It's great to be here with you as always. It's good to
+
+
+00:00:06.760 --> 00:00:11.640
+be here. Yeah. And everyone who is out here watching, thanks for being here. If you come
+
+
+00:00:11.640 --> 00:00:18.840
+later, thanks for watching the replay. Well, shall we kick it off? Yeah. Got a lot of exciting
+
+
+00:00:18.840 --> 00:00:24.560
+things. Hello and welcome to Python Bytes, where we deliver Python news and headlines
+
+
+00:00:24.560 --> 00:00:32.480
+directly to your earbuds. This is episode 286, recorded May 31st, 2022. I'm Michael
+
+
+00:00:32.480 --> 00:00:33.480
+Kennedy.
+
+
+00:00:33.480 --> 00:00:35.400
+And I'm Brian Okkend.
+
+
+00:00:35.400 --> 00:00:39.040
+And this episode is brought to you by us. If you're looking to learn Python, check out
+
+
+00:00:39.040 --> 00:00:44.240
+all the courses over at Talk Python Training. If you want to get better with testing, check
+
+
+00:00:44.240 --> 00:00:47.240
+out Brian's pytest book, second edition.
+
+
+00:00:47.240 --> 00:00:48.240
+Yes.
+
+
+00:00:48.240 --> 00:00:53.240
+Yes, indeed. Indeed. All right. Well, let's jump right into it, Brian.
+
+
+00:00:53.240 --> 00:00:56.880
+OK, actually, I do want to talk about the GIL,
+
+
+00:00:56.880 --> 00:00:59.280
+but I was just realizing that we're at 286.
+
+
+00:00:59.280 --> 00:01:02.920
+I just started watching Big Bang Theory with my youngest kid,
+
+
+00:01:02.920 --> 00:01:06.080
+and there's 279 episodes of them.
+
+
+00:01:06.080 --> 00:01:09.200
+So we have more than-- it went on forever,
+
+
+00:01:09.200 --> 00:01:11.400
+and we have more episodes than them.
+
+
+00:01:11.400 --> 00:01:13.360
+That's quite the milestone.
+
+
+00:01:13.360 --> 00:01:16.000
+I mean, you divide that by 52, that's a lot of years.
+
+
+00:01:16.000 --> 00:01:18.280
+We've been doing this for a while.
+
+
+00:01:18.280 --> 00:01:21.080
+So Python and the GIL.
+
+
+00:01:21.080 --> 00:01:22.760
+So the GIL is a thing, right?
+
+
+00:01:22.760 --> 00:01:25.760
+It's like something everybody knows about, I think.
+
+
+00:01:25.760 --> 00:01:27.160
+People know about, but not too much.
+
+
+00:01:27.160 --> 00:01:28.800
+So, I mean, you kind of,
+
+
+00:01:28.800 --> 00:01:31.360
+it means we can't do multiprocessing,
+
+
+00:01:31.360 --> 00:01:32.960
+but we can, but we can't.
+
+
+00:01:32.960 --> 00:01:34.720
+So what is it?
+
+
+00:01:34.720 --> 00:01:36.960
+And so I really like this article.
+
+
+00:01:36.960 --> 00:01:40.400
+So this is an article called
+
+
+00:01:40.400 --> 00:01:42.580
+the Python Guild Past, Present, and Future,
+
+
+00:01:42.580 --> 00:01:43.780
+because we have been talking about
+
+
+00:01:43.780 --> 00:01:46.160
+some of the no-gil options that are coming.
+
+
+00:01:46.160 --> 00:01:48.120
+And so this is really nice.
+
+
+00:01:48.120 --> 00:01:49.520
+It's, who is it?
+
+
+00:01:49.520 --> 00:01:54.520
+Gary, Barry Warsaw and Pavel Polowicz, I think.
+
+
+00:01:54.520 --> 00:02:00.520
+Anyway, really great article on the Backblaze blog.
+
+
+00:02:00.520 --> 00:02:03.640
+And it starts out and goes through
+
+
+00:02:03.640 --> 00:02:06.460
+sort of what is the GIL, why we have it.
+
+
+00:02:06.460 --> 00:02:11.060
+It's a lot around the way in some of the history
+
+
+00:02:11.060 --> 00:02:12.740
+is around reference counting.
+
+
+00:02:12.740 --> 00:02:14.720
+And maybe you knew that off the top of your head,
+
+
+00:02:14.720 --> 00:02:18.440
+but I forgot that reference counting is something
+
+
+00:02:18.440 --> 00:02:20.100
+that's how we do memory management
+
+
+00:02:20.100 --> 00:02:23.620
+and all sorts of stuff within Python.
+
+
+00:02:23.620 --> 00:02:26.020
+But to make it an easy implementation,
+
+
+00:02:26.020 --> 00:02:28.820
+there's this global interpreter lock.
+
+
+00:02:28.820 --> 00:02:32.640
+And that just basically, instead of lock like other code,
+
+
+00:02:32.640 --> 00:02:36.760
+you lock individual items, shared memory that you're using.
+
+
+00:02:36.760 --> 00:02:39.660
+We just say the interpreter, let's just lock that.
+
+
+00:02:39.660 --> 00:02:41.960
+And all of the variables that it uses.
+
+
+00:02:41.960 --> 00:02:47.900
+It's not just reference counts, but other things too.
+
+
+00:02:47.900 --> 00:02:51.180
+And this is just, it's a fairly quick read,
+
+
+00:02:51.180 --> 00:02:54.720
+but enough detail that you really kind of understand
+
+
+00:02:54.720 --> 00:02:56.460
+what's going on.
+
+
+00:02:56.460 --> 00:03:00.140
+It does talk through, you know, reference counting,
+
+
+00:03:00.140 --> 00:03:04.240
+talks through that, some of the advantages,
+
+
+00:03:04.240 --> 00:03:07.080
+why it's really kind of handy to have it around,
+
+
+00:03:07.080 --> 00:03:10.280
+but then attempts to remove it in including,
+
+
+00:03:10.280 --> 00:03:11.700
+like, I didn't know about this one.
+
+
+00:03:11.700 --> 00:03:14.460
+There was a free thread in 1999.
+
+
+00:03:14.460 --> 00:03:17.700
+- 1999, yeah, that's, I didn't know about that one.
+
+
+00:03:17.700 --> 00:03:18.540
+That's news to me.
+
+
+00:03:18.540 --> 00:03:19.820
+- It actually was successful.
+
+
+00:03:19.820 --> 00:03:22.360
+It just made your Python code really slow.
+
+
+00:03:22.360 --> 00:03:25.140
+So not good.
+
+
+00:03:25.140 --> 00:03:27.460
+And then Larry Hastings Galectomy
+
+
+00:03:27.460 --> 00:03:29.440
+that he's had a lot of PyCon talks
+
+
+00:03:29.440 --> 00:03:31.540
+or a few PyCon talks around this.
+
+
+00:03:31.540 --> 00:03:36.540
+So that's an interesting thing to read about.
+
+
+00:03:36.540 --> 00:03:41.540
+There's quite a few interesting bits in there
+
+
+00:03:41.540 --> 00:03:46.460
+but it never really got back into main Python
+
+
+00:03:46.460 --> 00:03:51.420
+But we're getting a little closer with this no-gil stuff.
+
+
+00:03:51.420 --> 00:03:55.580
+So there's no-gil stuff going on with Sam Gross.
+
+
+00:03:55.580 --> 00:03:56.460
+>>Sam Gross, yep.
+
+
+00:03:56.460 --> 00:03:57.380
+>>Yeah.
+
+
+00:03:57.380 --> 00:04:05.900
+And then also we've got Guido and others in Microsoft
+
+
+00:04:05.900 --> 00:04:09.700
+now working on this problem of speeding it up and everything.
+
+
+00:04:09.700 --> 00:04:11.500
+So really great discussion if you
+
+
+00:04:11.500 --> 00:04:14.700
+want to catch up on all the history of the gill
+
+
+00:04:14.700 --> 00:04:16.640
+and where it's going.
+
+
+00:04:16.640 --> 00:04:18.920
+And then a little prediction at the end
+
+
+00:04:18.920 --> 00:04:22.860
+of we're gonna see speed ups because of these efforts.
+
+
+00:04:22.860 --> 00:04:25.020
+We're gonna see speed ups in the next few years.
+
+
+00:04:25.020 --> 00:04:26.920
+Just, it's just gonna get faster.
+
+
+00:04:26.920 --> 00:04:30.560
+And then we, you know, if we get no gill,
+
+
+00:04:30.560 --> 00:04:33.180
+it might be maybe five years from now-ish.
+
+
+00:04:33.180 --> 00:04:34.020
+So. - Yeah.
+
+
+00:04:34.020 --> 00:04:35.220
+- It's.
+
+
+00:04:35.220 --> 00:04:36.200
+- It's pretty exciting.
+
+
+00:04:36.200 --> 00:04:37.940
+There's some very neat work.
+
+
+00:04:37.940 --> 00:04:41.860
+The stuff that Sam Gross is doing is quite interesting.
+
+
+00:04:41.860 --> 00:04:42.700
+- Yeah.
+
+
+00:04:42.700 --> 00:04:45.300
+- Yeah, and it's actually, it's pretty exciting,
+
+
+00:04:45.300 --> 00:04:48.100
+pretty exciting time to be part of Python.
+
+
+00:04:48.100 --> 00:04:51.500
+So like it's never not been exciting, but you know.
+
+
+00:04:51.500 --> 00:04:53.300
+- Yeah, it only gets more exciting.
+
+
+00:04:53.300 --> 00:04:54.140
+How's that?
+
+
+00:04:54.140 --> 00:04:54.980
+- Yeah.
+
+
+00:04:54.980 --> 00:04:57.300
+- Hey, let me ask you a meta question.
+
+
+00:04:57.300 --> 00:05:00.300
+So this is on the back end of the Python 3.11.
+
+
+00:05:00.300 --> 00:05:02.940
+So what's the difference between the Python 3.11
+
+
+00:05:02.940 --> 00:05:03.780
+and the Python 3.11?
+
+
+00:05:03.780 --> 00:05:06.780
+- Yeah, so the Python 3.11 is a little bit different.
+
+
+00:05:06.780 --> 00:05:08.100
+It's a little bit more advanced.
+
+
+00:05:08.100 --> 00:05:08.940
+It's a little bit more advanced.
+
+
+00:05:08.940 --> 00:05:09.780
+It's a little bit more advanced.
+
+
+00:05:09.780 --> 00:05:10.620
+It's a little bit more advanced.
+
+
+00:05:10.620 --> 00:05:14.900
+you a meta question. So this is on the backblaze blog. So
+
+
+00:05:14.900 --> 00:05:20.800
+backblaze.com is a one of the I think better sort of backup my
+
+
+00:05:20.800 --> 00:05:25.900
+computer somewhere off site sort of thing. Yeah. And the fact
+
+
+00:05:25.900 --> 00:05:29.260
+that they're blogging about the Python GIL is kind of
+
+
+00:05:29.260 --> 00:05:31.460
+interesting. I wonder if they're a big Python shop and we just
+
+
+00:05:31.460 --> 00:05:31.900
+didn't know it.
+
+
+00:05:31.900 --> 00:05:38.220
+Well, there's like, I didn't know. It's on their blog. But I
+
+
+00:05:38.220 --> 00:05:41.580
+I mean, we've got Barry Warsaw in there.
+
+
+00:05:41.580 --> 00:05:43.740
+- Barry Warsaw, Powell, yeah, so.
+
+
+00:05:43.740 --> 00:05:49.660
+- He says he's currently a senior engineer at LinkedIn,
+
+
+00:05:49.660 --> 00:05:52.180
+so I'm not sure.
+
+
+00:05:52.180 --> 00:05:53.740
+- Sometimes life's confusing.
+
+
+00:05:53.740 --> 00:05:57.100
+- Yeah, not sure how this ended up there, but yeah.
+
+
+00:05:57.100 --> 00:05:59.100
+- But it's cool to see Backblaze
+
+
+00:05:59.100 --> 00:06:02.140
+supporting the Python world with some dives into the--
+
+
+00:06:02.140 --> 00:06:03.700
+- Yeah, maybe somebody from Backblaze
+
+
+00:06:03.700 --> 00:06:06.260
+can reach out to us and tell us what's going on.
+
+
+00:06:06.260 --> 00:06:07.860
+- Yeah, that'd be great.
+
+
+00:06:07.860 --> 00:06:11.100
+Also great, wouldn't it be cool, Brian,
+
+
+00:06:11.100 --> 00:06:14.680
+if we could take our Python program,
+
+
+00:06:14.680 --> 00:06:17.540
+whether this is a CLI or some other app
+
+
+00:06:17.540 --> 00:06:20.460
+that we need to have for people to run,
+
+
+00:06:20.460 --> 00:06:21.300
+and instead of saying,
+
+
+00:06:21.300 --> 00:06:23.700
+well, make sure you have this version of Python at least,
+
+
+00:06:23.700 --> 00:06:25.220
+and make sure you've set up a virtual environment,
+
+
+00:06:25.220 --> 00:06:26.180
+you've installed these things,
+
+
+00:06:26.180 --> 00:06:27.500
+and then you've got this in the path,
+
+
+00:06:27.500 --> 00:06:28.980
+and then you've got this environment variable,
+
+
+00:06:28.980 --> 00:06:31.500
+now you can try to run our thing I gave you.
+
+
+00:06:31.500 --> 00:06:34.540
+If you could just give them a single binary
+
+
+00:06:34.540 --> 00:06:37.300
+that contained all the Python,
+
+
+00:06:37.300 --> 00:06:41.440
+contained the standard library and you said you run this and
+
+
+00:06:41.440 --> 00:06:42.560
+that's your app.
+
+
+00:06:42.560 --> 00:06:48.840
+That's not bad, right? So let me introduce you to pie oxy. The
+
+
+00:06:48.840 --> 00:06:53.360
+pie oxy Python runner. Now a while ago we spoke about this
+
+
+00:06:53.360 --> 00:07:00.040
+thing called. Ox oxygen pie oxidizer. That's what it was by
+
+
+00:07:00.040 --> 00:07:03.000
+oxidizer and this is kind of like.
+
+
+00:07:04.760 --> 00:07:10.760
+an advanced version of Py2exe or Py2app or PyInstaller.
+
+
+00:07:10.760 --> 00:07:14.000
+But what's really nice is that it bundles the stuff up
+
+
+00:07:14.000 --> 00:07:18.100
+just sort of all into one thing, and it runs out of memory
+
+
+00:07:18.100 --> 00:07:22.200
+instead of creating like a file structure of the files that you need
+
+
+00:07:22.200 --> 00:07:24.200
+and then, you know, sort of altering the path.
+
+
+00:07:24.200 --> 00:07:28.000
+So like a copy of Python will run that and so on.
+
+
+00:07:28.000 --> 00:07:33.960
+So this PyOxi attempts to make the features of PyOxidizer
+
+
+00:07:33.960 --> 00:07:36.240
+more accessible and simpler for people.
+
+
+00:07:36.240 --> 00:07:38.440
+OK, so here's the deal.
+
+
+00:07:38.440 --> 00:07:41.760
+It is an executable program for running Python interpreter,
+
+
+00:07:41.760 --> 00:07:46.160
+so you can just give somebody this one pyoxy file
+
+
+00:07:46.160 --> 00:07:48.200
+and they can instead of saying Python this,
+
+
+00:07:48.200 --> 00:07:52.360
+they can say pyoxy some Python file.
+
+
+00:07:52.360 --> 00:07:55.360
+Right, you can say like run Python or run Python dash
+
+
+00:07:55.360 --> 00:07:59.040
+dash and give it a file or something along those lines.
+
+
+00:07:59.040 --> 00:08:03.320
+Right, and it's just a thing you copy around.
+
+
+00:08:03.320 --> 00:08:05.240
+you don't have to worry about installing it
+
+
+00:08:05.240 --> 00:08:07.400
+or configuring your system or anything like that.
+
+
+00:08:07.400 --> 00:08:09.980
+So it's kind of a really easy way to pass around
+
+
+00:08:09.980 --> 00:08:13.120
+an executable that is Python in the standard library
+
+
+00:08:13.120 --> 00:08:16.000
+without all the overhead or setup
+
+
+00:08:16.000 --> 00:08:18.480
+of actually installing a Python runtime.
+
+
+00:08:18.480 --> 00:08:20.640
+- Okay.
+
+
+00:08:20.640 --> 00:08:21.480
+- Okay?
+
+
+00:08:21.480 --> 00:08:22.300
+- Yeah.
+
+
+00:08:22.300 --> 00:08:23.140
+- So let me go back up here.
+
+
+00:08:23.140 --> 00:08:23.960
+That's pretty cool.
+
+
+00:08:23.960 --> 00:08:25.600
+That's one of, it's a single file.
+
+
+00:08:25.600 --> 00:08:29.440
+It's a single file that is a highly portable distribution
+
+
+00:08:29.440 --> 00:08:30.680
+of CPython.
+
+
+00:08:30.680 --> 00:08:32.680
+So for example, on macOS and Linux,
+
+
+00:08:32.680 --> 00:08:35.280
+it statically links in a lot of the files
+
+
+00:08:35.280 --> 00:08:37.580
+that are dependencies that you might find.
+
+
+00:08:37.580 --> 00:08:40.280
+So if you try to run something in Python,
+
+
+00:08:40.280 --> 00:08:42.320
+it might go like, oh, you have to install
+
+
+00:08:42.320 --> 00:08:45.880
+this other C library in order for it to work correctly.
+
+
+00:08:45.880 --> 00:08:47.240
+So all those things are also,
+
+
+00:08:47.240 --> 00:08:50.400
+like its dependencies are statically compiled into it,
+
+
+00:08:50.400 --> 00:08:51.440
+which is pretty cool.
+
+
+00:08:51.440 --> 00:08:53.880
+Another thing that's interesting
+
+
+00:08:53.880 --> 00:08:55.640
+is it gives you a lot more control
+
+
+00:08:55.640 --> 00:08:58.200
+over the interpreter and how it behaves.
+
+
+00:08:58.200 --> 00:09:00.240
+Like you can pass it configuration files
+
+
+00:09:00.240 --> 00:09:03.440
+and do all sorts of crazy stuff to really tweak
+
+
+00:09:03.440 --> 00:09:05.600
+the behavior of the runtime,
+
+
+00:09:05.600 --> 00:09:08.840
+the Python runtime that it comes with.
+
+
+00:09:08.840 --> 00:09:09.760
+- Yeah.
+
+
+00:09:09.760 --> 00:09:11.000
+- And it's just to sort of make
+
+
+00:09:11.000 --> 00:09:14.560
+PyOxidizer apps more accessible.
+
+
+00:09:14.560 --> 00:09:18.720
+Okay, so yeah, so it gives you,
+
+
+00:09:18.720 --> 00:09:20.120
+it's built with PyOxidizer,
+
+
+00:09:20.120 --> 00:09:23.880
+and basically it gives you its own standalone one.
+
+
+00:09:23.880 --> 00:09:27.440
+Like I said, it has the whole interpreter,
+
+
+00:09:27.440 --> 00:09:30.240
+It has the stuff statically linked,
+
+
+00:09:30.240 --> 00:09:32.080
+it has the standard library,
+
+
+00:09:32.080 --> 00:09:35.240
+and I think you can link your own libraries into it as well,
+
+
+00:09:35.240 --> 00:09:36.880
+which is pretty awesome.
+
+
+00:09:36.880 --> 00:09:39.080
+And you could also give it, like I said, more control,
+
+
+00:09:39.080 --> 00:09:41.760
+so you can create a configuration YAML file.
+
+
+00:09:41.760 --> 00:09:44.480
+And when you run it, you can say,
+
+
+00:09:44.480 --> 00:09:46.400
+I want you to debug allocations,
+
+
+00:09:46.400 --> 00:09:49.720
+or I want you to run this command
+
+
+00:09:49.720 --> 00:09:51.680
+to initialize the interpreter
+
+
+00:09:51.680 --> 00:09:54.400
+before it starts to run any code and things like that.
+
+
+00:09:54.400 --> 00:09:58.940
+So you can give it this yaml config file and so on.
+
+
+00:09:58.940 --> 00:10:02.260
+So anyway, it's a pretty new project.
+
+
+00:10:02.260 --> 00:10:05.580
+This is from Gregory Sork.
+
+
+00:10:05.580 --> 00:10:07.760
+And he says, "It's very young.
+
+
+00:10:07.760 --> 00:10:09.860
+I hacked it together to try to get better exposure
+
+
+00:10:09.860 --> 00:10:13.160
+for PyOxidizer, for people who want to build things
+
+
+00:10:13.160 --> 00:10:15.400
+that they can distribute more easily and so on."
+
+
+00:10:15.400 --> 00:10:19.140
+And for me, he's talking about,
+
+
+00:10:19.140 --> 00:10:22.340
+oh, there's some certain circumstances
+
+
+00:10:22.340 --> 00:10:24.340
+where maybe you want to have people run your script,
+
+
+00:10:24.340 --> 00:10:27.340
+so you can send the script and then this thing and so on.
+
+
+00:10:27.340 --> 00:10:31.340
+It's supposed to be sort of on par with zip app,
+
+
+00:10:31.340 --> 00:10:35.340
+which lets you ship the zipped up thing of your app and then run it.
+
+
+00:10:35.340 --> 00:10:38.340
+But the benefit is it already comes with Python.
+
+
+00:10:38.340 --> 00:10:41.340
+Like a lot of these zip, shiv, pex, etc.,
+
+
+00:10:41.340 --> 00:10:46.340
+they all require that Python is installed on the system.
+
+
+00:10:46.340 --> 00:10:48.340
+And then you can run that, right, with its dependencies.
+
+
+00:10:48.340 --> 00:10:51.340
+But this is like, no, it even comes with Python.
+
+
+00:10:51.340 --> 00:10:52.780
+So all that is pretty good.
+
+
+00:10:52.780 --> 00:10:55.380
+What I would love to see out of this
+
+
+00:10:55.380 --> 00:10:59.980
+is, could I take this and build some sort of UI framework,
+
+
+00:10:59.980 --> 00:11:03.260
+pair that, I don't know, maybe with PyScript,
+
+
+00:11:03.260 --> 00:11:06.740
+and then get a UI framework I can ship to people
+
+
+00:11:06.740 --> 00:11:09.900
+and just go download this, double click it,
+
+
+00:11:09.900 --> 00:11:11.580
+there's your app.
+
+
+00:11:11.580 --> 00:11:13.100
+Who knows?
+
+
+00:11:13.100 --> 00:11:13.660
+Yeah.
+
+
+00:11:13.660 --> 00:11:16.940
+But anyway, you're shipping Python to people.
+
+
+00:11:16.940 --> 00:11:19.860
+This might be worth checking out.
+
+
+00:11:19.860 --> 00:11:20.540
+Yeah.
+
+
+00:11:20.540 --> 00:11:23.620
+Yeah, neat. Yeah, came out in the audience.
+
+
+00:11:23.620 --> 00:11:25.500
+Asked it looks very handy.
+
+
+00:11:25.500 --> 00:11:28.520
+Does it make cross platform?
+
+
+00:11:28.520 --> 00:11:29.900
+A cross platform executable.
+
+
+00:11:29.900 --> 00:11:31.900
+I think you might have to run a build
+
+
+00:11:31.900 --> 00:11:33.560
+command or something or ship the
+
+
+00:11:33.560 --> 00:11:34.940
+right binary for each platform,
+
+
+00:11:34.940 --> 00:11:36.780
+but it does support macOS,
+
+
+00:11:36.780 --> 00:11:40.060
+Windows and Linux, so that's pretty cool.
+
+
+00:11:40.060 --> 00:11:43.620
+Now maybe you covered this and I just missed it.
+
+
+00:11:43.620 --> 00:11:44.580
+What does it?
+
+
+00:11:44.580 --> 00:11:46.820
+Does it deal with my dependencies?
+
+
+00:11:46.820 --> 00:11:50.020
+Like if I have third party dependencies?
+
+
+00:11:50.020 --> 00:11:52.180
+That's what I'm not 100% sure how to do.
+
+
+00:11:52.180 --> 00:11:53.980
+When I looked through it, I was looking for that.
+
+
+00:11:53.980 --> 00:11:59.140
+There is this oxidized importer, which
+
+
+00:11:59.140 --> 00:12:01.980
+it talks about this embeds a copy of the Python standard
+
+
+00:12:01.980 --> 00:12:03.700
+library and it imports from memory
+
+
+00:12:03.700 --> 00:12:05.900
+using the oxidized importer.
+
+
+00:12:05.900 --> 00:12:07.620
+I think that you could use that as well
+
+
+00:12:07.620 --> 00:12:10.060
+for your own dependencies.
+
+
+00:12:10.060 --> 00:12:13.660
+And I'm pretty sure that's the goal of this PyOxidizer
+
+
+00:12:13.660 --> 00:12:14.900
+project in the first place.
+
+
+00:12:14.900 --> 00:12:17.580
+So I would think so, but nothing from this article
+
+
+00:12:17.580 --> 00:12:18.580
+was really clear.
+
+
+00:12:18.580 --> 00:12:21.580
+like here's how you bring in requests or HTTPS
+
+
+00:12:21.580 --> 00:12:24.060
+or whatever you're gonna bring along, you know?
+
+
+00:12:24.060 --> 00:12:25.180
+- Yeah.
+
+
+00:12:25.180 --> 00:12:26.020
+- Yeah.
+
+
+00:12:26.020 --> 00:12:27.460
+- Okay.
+
+
+00:12:27.460 --> 00:12:29.220
+Or pytest.
+
+
+00:12:29.220 --> 00:12:30.540
+I was actually just thinking it'd be,
+
+
+00:12:30.540 --> 00:12:34.220
+if I, you know, run these tests,
+
+
+00:12:34.220 --> 00:12:37.020
+well, what version are you using?
+
+
+00:12:37.020 --> 00:12:38.220
+Okay, just fine.
+
+
+00:12:38.220 --> 00:12:42.940
+Here, just install this and run this test with this.
+
+
+00:12:42.940 --> 00:12:45.100
+And that would be cool. - Yeah, exactly.
+
+
+00:12:45.100 --> 00:12:47.860
+Yeah, and Alvaro, when I was talking about UI stuff,
+
+
+00:12:47.860 --> 00:12:51.300
+He says, "What about PyOxi plus textual?"
+
+
+00:12:51.300 --> 00:12:54.100
+That'd be pretty neat as well, yeah.
+
+
+00:12:54.100 --> 00:12:55.820
+- Indeed. - Just around the corner.
+
+
+00:12:55.820 --> 00:12:56.660
+- Yeah, cool.
+
+
+00:12:56.660 --> 00:12:58.940
+All right, well, that's PyOxi.
+
+
+00:12:58.940 --> 00:13:00.140
+People can check it out.
+
+
+00:13:00.140 --> 00:13:03.520
+- All right.
+
+
+00:13:03.520 --> 00:13:07.620
+Well, how...
+
+
+00:13:07.620 --> 00:13:09.260
+(laughs)
+
+
+00:13:09.260 --> 00:13:10.580
+How about regular expressions?
+
+
+00:13:10.580 --> 00:13:11.480
+Do you like those?
+
+
+00:13:11.480 --> 00:13:15.540
+- When they work, I love them.
+
+
+00:13:16.420 --> 00:13:20.020
+I'm like, what is, what is this madness I've gotten myself into?
+
+
+00:13:20.020 --> 00:13:24.500
+Okay, so I was almost afraid to like talk about this, but it's a really awesome article
+
+
+00:13:24.500 --> 00:13:28.020
+because, because sometimes you need regular expressions.
+
+
+00:13:28.020 --> 00:13:32.820
+And and one of the things there's lots of that I like about this article.
+
+
+00:13:32.820 --> 00:13:38.220
+So what I'm talking about is an article called the unreasonable effectiveness of f-strings
+
+
+00:13:38.220 --> 00:13:40.340
+and verbose.
+
+
+00:13:40.340 --> 00:13:43.820
+So regular expressions in all languages,
+
+
+00:13:43.820 --> 00:13:46.720
+including I think, including Python,
+
+
+00:13:46.720 --> 00:13:51.600
+have a notion of a verbose mode.
+
+
+00:13:51.600 --> 00:13:53.660
+And I've always been enticed by this.
+
+
+00:13:53.660 --> 00:13:56.020
+The verbose mode idea is that you can,
+
+
+00:13:56.020 --> 00:13:58.780
+like instead of having this reared,
+
+
+00:13:58.780 --> 00:14:03.540
+you still have the hard to read regular expression stuff,
+
+
+00:14:03.540 --> 00:14:04.860
+but you can put comment,
+
+
+00:14:04.860 --> 00:14:07.180
+you can put spaces and comments in it.
+
+
+00:14:07.180 --> 00:14:08.020
+And then it's fine.
+
+
+00:14:08.020 --> 00:14:10.020
+- It could be multiline, right?
+
+
+00:14:10.020 --> 00:14:10.860
+- What?
+
+
+00:14:10.860 --> 00:14:11.980
+- It can be multi-line.
+
+
+00:14:11.980 --> 00:14:13.260
+- Yeah, it can be multi-line
+
+
+00:14:13.260 --> 00:14:16.260
+and you can have a bunch of comments in there to say,
+
+
+00:14:16.260 --> 00:14:17.780
+oh, this part of the regular expression,
+
+
+00:14:17.780 --> 00:14:21.420
+what it's doing is this, you know?
+
+
+00:14:21.420 --> 00:14:23.140
+And then, so it makes it,
+
+
+00:14:23.140 --> 00:14:26.060
+little snippets of regular expression are easier to read.
+
+
+00:14:26.060 --> 00:14:28.200
+You're like, oh yeah, I can see that it's doing that.
+
+
+00:14:28.200 --> 00:14:29.040
+Great.
+
+
+00:14:29.040 --> 00:14:30.620
+When it's when you clog it all together,
+
+
+00:14:30.620 --> 00:14:32.340
+which makes it really hard to read.
+
+
+00:14:32.340 --> 00:14:37.340
+So, and then, of course you can build up strings in Python
+
+
+00:14:37.660 --> 00:14:40.980
+with f-strings and do string replacement.
+
+
+00:14:40.980 --> 00:14:41.980
+How awesome.
+
+
+00:14:41.980 --> 00:14:43.780
+So that's what this article is about,
+
+
+00:14:43.780 --> 00:14:46.760
+is really talking about using,
+
+
+00:14:46.760 --> 00:14:49.700
+taking some of the complicated bits
+
+
+00:14:49.700 --> 00:14:52.500
+of your regular expression or duplicated bits
+
+
+00:14:52.500 --> 00:14:56.740
+where it shows up several times in your regular expression
+
+
+00:14:56.740 --> 00:14:58.760
+and pulling that out, that string out,
+
+
+00:14:58.760 --> 00:15:00.740
+and even maybe commenting that,
+
+
+00:15:00.740 --> 00:15:04.500
+and then dropping it in with f-strings
+
+
+00:15:04.500 --> 00:15:07.380
+to build up a complex regular expression.
+
+
+00:15:07.380 --> 00:15:11.600
+It's brilliant and it also is one of the best explanations
+
+
+00:15:11.600 --> 00:15:15.900
+I've ever read on verbose regular expressions.
+
+
+00:15:15.900 --> 00:15:17.180
+So it's pretty cool.
+
+
+00:15:17.180 --> 00:15:19.960
+- Yeah, I never really thought to refactor the pattern
+
+
+00:15:19.960 --> 00:15:22.780
+so that you have multiple strings.
+
+
+00:15:22.780 --> 00:15:24.300
+We like, here's the part that's repeated.
+
+
+00:15:24.300 --> 00:15:26.020
+So we'll have a pattern that that's that thing
+
+
+00:15:26.020 --> 00:15:28.780
+and then F string it into the other pieces.
+
+
+00:15:28.780 --> 00:15:29.980
+- Yeah.
+
+
+00:15:29.980 --> 00:15:31.020
+- But it makes perfect sense.
+
+
+00:15:31.020 --> 00:15:32.380
+Of course you should do it.
+
+
+00:15:32.380 --> 00:15:36.140
+- Yeah, and now, I mean, I don't use it.
+
+
+00:15:36.140 --> 00:15:37.620
+I mean, actually I kind of do.
+
+
+00:15:37.620 --> 00:15:41.020
+I use regular expressions on a regular basis,
+
+
+00:15:41.020 --> 00:15:46.020
+but not like every day,
+
+
+00:15:46.020 --> 00:15:48.860
+but it's always something that whenever I put it in there,
+
+
+00:15:48.860 --> 00:15:51.420
+I'm like, is anybody else gonna be able to read this?
+
+
+00:15:51.420 --> 00:15:52.980
+And so I put comments around it,
+
+
+00:15:52.980 --> 00:15:56.740
+but I've never, I haven't ever really embraced verbose mode
+
+
+00:15:56.740 --> 00:15:58.660
+and I'm definitely gonna use this now.
+
+
+00:15:58.660 --> 00:16:00.780
+- Yeah, for sure.
+
+
+00:16:00.780 --> 00:16:04.740
+The other thing real quick is you can have f-strings
+
+
+00:16:04.740 --> 00:16:05.900
+and you can have raw strings
+
+
+00:16:05.900 --> 00:16:08.860
+and you can have raw f-strings, apparently in Python.
+
+
+00:16:08.860 --> 00:16:13.100
+So the prefix is FR triple quote, multi-line.
+
+
+00:16:13.100 --> 00:16:15.340
+Like that's some serious string action
+
+
+00:16:15.340 --> 00:16:16.540
+happening right there, man.
+
+
+00:16:16.540 --> 00:16:19.420
+- Yeah, raw f-strings, nice.
+
+
+00:16:19.420 --> 00:16:23.100
+- Yeah.
+
+
+00:16:23.100 --> 00:16:25.620
+And Neil out in the audience asks you, Brian,
+
+
+00:16:25.620 --> 00:16:29.060
+do you like your regular expressions greedy or non-greedy?
+
+
+00:16:29.060 --> 00:16:30.020
+- Okay.
+
+
+00:16:30.020 --> 00:16:35.220
+It depends on what you're trying to do.
+
+
+00:16:35.220 --> 00:16:37.780
+So yeah, I don't want mine to be greedy.
+
+
+00:16:37.780 --> 00:16:38.800
+Let's share.
+
+
+00:16:38.800 --> 00:16:40.060
+Share kindly.
+
+
+00:16:40.060 --> 00:16:41.420
+All right.
+
+
+00:16:41.420 --> 00:16:42.760
+Are we ready for the next one?
+
+
+00:16:42.760 --> 00:16:43.680
+- Yes.
+
+
+00:16:43.680 --> 00:16:44.520
+- Cool.
+
+
+00:16:44.520 --> 00:16:46.260
+All right, so this one I wanna talk about,
+
+
+00:16:46.260 --> 00:16:48.700
+and I'm gonna start off from a weird place,
+
+
+00:16:48.700 --> 00:16:51.480
+from a tweet that I gave,
+
+
+00:16:51.480 --> 00:16:54.020
+because I can't find anywhere else to talk about it.
+
+
+00:16:54.020 --> 00:16:56.940
+Like this is why this needs talking about.
+
+
+00:16:56.940 --> 00:17:00.020
+So I just wanna sort of highlight some really cool stuff
+
+
+00:17:00.020 --> 00:17:02.380
+for people who are using PyCharm
+
+
+00:17:02.380 --> 00:17:05.420
+and doing open source stuff that involves pull requests.
+
+
+00:17:05.420 --> 00:17:07.220
+And these can be pull requests to your private repo,
+
+
+00:17:07.220 --> 00:17:10.140
+like one team member gave a PR back to the repo.
+
+
+00:17:10.140 --> 00:17:12.960
+It doesn't have to be open, open source.
+
+
+00:17:12.960 --> 00:17:17.620
+So if you're using PyCharm, check this out.
+
+
+00:17:17.620 --> 00:17:21.300
+Let me pull up this screen.
+
+
+00:17:21.300 --> 00:17:22.140
+Come on.
+
+
+00:17:22.140 --> 00:17:24.220
+Oh, I'm not logged in.
+
+
+00:17:24.220 --> 00:17:25.060
+Oh, there we go.
+
+
+00:17:25.060 --> 00:17:25.900
+I thought it might not.
+
+
+00:17:25.900 --> 00:17:26.720
+Let me get the image up.
+
+
+00:17:26.720 --> 00:17:27.640
+Anyway, so check this out.
+
+
+00:17:27.640 --> 00:17:29.480
+So people are probably familiar
+
+
+00:17:29.480 --> 00:17:31.660
+with the Git support in PyCharm.
+
+
+00:17:31.660 --> 00:17:33.260
+You know, VS Code, PyCharm,
+
+
+00:17:33.260 --> 00:17:35.580
+they all have really good Git support.
+
+
+00:17:35.580 --> 00:17:37.020
+You can see your changes.
+
+
+00:17:37.020 --> 00:17:39.420
+A lot of times you have this sort of,
+
+
+00:17:39.420 --> 00:17:41.660
+this gray little overlay that says
+
+
+00:17:41.660 --> 00:17:45.500
+who recently edited a file or a line.
+
+
+00:17:45.500 --> 00:17:46.780
+And it's really cool to go back
+
+
+00:17:46.780 --> 00:17:49.900
+with like GitLens turned on for CPython,
+
+
+00:17:49.900 --> 00:17:52.140
+'cause you'll see stuff from like 30 years ago,
+
+
+00:17:52.140 --> 00:17:54.740
+Guido made this commit and here was the commit message.
+
+
+00:17:54.740 --> 00:17:55.620
+You know, you're like, what?
+
+
+00:17:55.620 --> 00:17:57.440
+This is crazy, right?
+
+
+00:17:57.440 --> 00:17:59.500
+But working with PRs is one of the things
+
+
+00:17:59.500 --> 00:18:02.340
+that doesn't normally seem to fit.
+
+
+00:18:02.340 --> 00:18:04.920
+And so I don't know when this got in there,
+
+
+00:18:04.920 --> 00:18:08.760
+but not too recently, there's now a pull request tab.
+
+
+00:18:08.760 --> 00:18:11.780
+So if you open a GitHub repository,
+
+
+00:18:11.780 --> 00:18:14.560
+if you're logged into GitHub
+
+
+00:18:14.560 --> 00:18:17.180
+and that GitHub repository has a pull request
+
+
+00:18:17.180 --> 00:18:18.260
+and you open up the section,
+
+
+00:18:18.260 --> 00:18:20.180
+it gives you a list of all the open,
+
+
+00:18:20.180 --> 00:18:21.980
+and I guess maybe you can toggle it close as well,
+
+
+00:18:21.980 --> 00:18:24.180
+but all the lists of the open pull requests.
+
+
+00:18:24.180 --> 00:18:26.780
+If you click on one of them,
+
+
+00:18:26.780 --> 00:18:30.020
+It'll show you all the details of the pull request,
+
+
+00:18:30.020 --> 00:18:32.340
+the whole conversation if you click on that,
+
+
+00:18:32.340 --> 00:18:34.340
+who's the reviewer, you can change that,
+
+
+00:18:34.340 --> 00:18:37.700
+who's it assigned to, whether there's labels,
+
+
+00:18:37.700 --> 00:18:39.620
+whether it's been merged.
+
+
+00:18:39.620 --> 00:18:41.940
+And then like on the right, you have this whole conversation
+
+
+00:18:41.940 --> 00:18:44.740
+you can see sort of the flow, this person commented this
+
+
+00:18:44.740 --> 00:18:46.080
+and they made these few more changes,
+
+
+00:18:46.080 --> 00:18:48.440
+then they commented again here.
+
+
+00:18:48.440 --> 00:18:50.060
+This is all really pretty neat.
+
+
+00:18:50.060 --> 00:18:52.580
+But the thing that is noteworthy,
+
+
+00:18:52.580 --> 00:18:54.740
+the reason I brought this up is there's a button
+
+
+00:18:54.740 --> 00:18:55.780
+that says check out.
+
+
+00:18:55.780 --> 00:18:57.440
+So instead of trying to create a branch
+
+
+00:18:57.440 --> 00:18:59.220
+or fork their repo and checking,
+
+
+00:18:59.220 --> 00:19:01.900
+like you just, I don't know where this repo
+
+
+00:19:01.900 --> 00:19:04.860
+or this PR came from or what branch it was against.
+
+
+00:19:04.860 --> 00:19:06.620
+I just want to check it out and run it locally,
+
+
+00:19:06.620 --> 00:19:09.940
+run the test against it, see what it looks like, go.
+
+
+00:19:09.940 --> 00:19:11.020
+Isn't that awesome?
+
+
+00:19:11.020 --> 00:19:13.700
+- Yeah, that is really, really awesome.
+
+
+00:19:13.700 --> 00:19:14.620
+I like it.
+
+
+00:19:14.620 --> 00:19:15.740
+- Normally you're juggling a lot.
+
+
+00:19:15.740 --> 00:19:17.940
+Maybe you have CI continuous integration
+
+
+00:19:17.940 --> 00:19:19.700
+that tells you like the linting pass,
+
+
+00:19:19.700 --> 00:19:22.380
+but other times you want to actually just get it
+
+
+00:19:22.380 --> 00:19:24.680
+and run it and play with it
+
+
+00:19:24.680 --> 00:19:27.340
+and decide, did this make the code slower?
+
+
+00:19:27.340 --> 00:19:28.340
+Did it make it faster?
+
+
+00:19:28.340 --> 00:19:32.020
+Do I like how the result of this feature looks,
+
+
+00:19:32.020 --> 00:19:34.960
+especially if it's a UI thing or something, right?
+
+
+00:19:34.960 --> 00:19:36.880
+So I think this is super cool.
+
+
+00:19:36.880 --> 00:19:38.860
+And the reason I bring it up is there's nowhere
+
+
+00:19:38.860 --> 00:19:41.660
+in the documentations, if you go over to PyCharm here
+
+
+00:19:41.660 --> 00:19:43.580
+and you look for pull requests,
+
+
+00:19:43.580 --> 00:19:46.380
+they don't even mention this, right?
+
+
+00:19:46.380 --> 00:19:48.980
+So I don't think people necessarily know about this.
+
+
+00:19:48.980 --> 00:19:51.300
+It seems--
+
+
+00:19:51.300 --> 00:19:52.300
+- It's a stealth feature.
+
+
+00:19:52.300 --> 00:19:53.300
+- It's a stealth feature.
+
+
+00:19:53.300 --> 00:19:56.260
+It seems totally worth highlighting
+
+
+00:19:56.260 --> 00:19:57.820
+because dealing with PRs in that way
+
+
+00:19:57.820 --> 00:19:59.780
+is actually kind of janky, right?
+
+
+00:19:59.780 --> 00:20:02.500
+It's like it takes a little bit of understanding
+
+
+00:20:02.500 --> 00:20:04.220
+Git maybe more than, and GitHub more than
+
+
+00:20:04.220 --> 00:20:06.140
+a lot of people would off the bat.
+
+
+00:20:06.140 --> 00:20:09.460
+So if you just go click, check out, play with it,
+
+
+00:20:09.460 --> 00:20:11.700
+nope, I don't want it, or yes, I love it,
+
+
+00:20:11.700 --> 00:20:12.540
+I think that's great.
+
+
+00:20:12.540 --> 00:20:15.180
+I would still actually manage the PR in GitHub,
+
+
+00:20:15.180 --> 00:20:18.460
+but the ability to explore it super quick and easy
+
+
+00:20:18.460 --> 00:20:20.620
+within your project I think is super cool.
+
+
+00:20:20.620 --> 00:20:22.740
+- Yeah, and quickly grab the code
+
+
+00:20:22.740 --> 00:20:25.860
+because I mean, I know in GitHub, you can get it,
+
+
+00:20:25.860 --> 00:20:28.540
+you can clone their branch and--
+
+
+00:20:28.540 --> 00:20:29.380
+- Yeah, exactly.
+
+
+00:20:29.380 --> 00:20:31.220
+But it's hard, it's like not super easy, right?
+
+
+00:20:31.220 --> 00:20:34.020
+- It's several clicks at least to find it.
+
+
+00:20:34.020 --> 00:20:36.540
+And so, yeah.
+
+
+00:20:36.540 --> 00:20:40.020
+- Right, and do you actually want it cloned to your account?
+
+
+00:20:40.020 --> 00:20:41.900
+Maybe not, I just want to check out the code, you know,
+
+
+00:20:41.900 --> 00:20:45.380
+like so grab the right commit, hash, shot, whatever.
+
+
+00:20:45.380 --> 00:20:48.940
+Also really quick while we're on this topic,
+
+
+00:20:48.940 --> 00:20:50.580
+I just want to give a quick shout out to this.
+
+
+00:20:50.580 --> 00:20:53.860
+So if you go to just the jetbrains.com/pycharm right now,
+
+
+00:20:53.860 --> 00:20:56.620
+across the top, there's this-- oh, here, there's this cool
+
+
+00:20:56.620 --> 00:21:02.260
+upcoming webinar, 10 Get Things You Wish You Knew in PyCharm.
+
+
+00:21:02.260 --> 00:21:05.420
+Very oddly, that is me.
+
+
+00:21:05.420 --> 00:21:10.100
+So anyway, I'm going to do a webcast next week on June 7th
+
+
+00:21:10.100 --> 00:21:13.620
+about a whole bunch of get fun things in PyCharm and UI tools
+
+
+00:21:13.620 --> 00:21:14.340
+and whatnot.
+
+
+00:21:14.340 --> 00:21:16.900
+So if you want to check that out, they definitely can.
+
+
+00:21:16.900 --> 00:21:17.400
+Cool.
+
+
+00:21:17.400 --> 00:21:17.700
+Yeah.
+
+
+00:21:17.700 --> 00:21:17.980
+All right.
+
+
+00:21:17.980 --> 00:21:19.380
+So that's it for my thing.
+
+
+00:21:19.380 --> 00:21:21.540
+Check out if you're using PyCharm,
+
+
+00:21:21.540 --> 00:21:22.640
+check out this pull request thing.
+
+
+00:21:22.640 --> 00:21:24.620
+It's even in the free version of PyCharm.
+
+
+00:21:24.620 --> 00:21:26.640
+So it's worth noting.
+
+
+00:21:26.640 --> 00:21:27.480
+- Nice.
+
+
+00:21:27.480 --> 00:21:34.960
+- Let's see, a really, really quick real-time follow-up.
+
+
+00:21:34.960 --> 00:21:36.280
+Roman Wright, hey, Roman, says,
+
+
+00:21:36.280 --> 00:21:38.980
+"Yes, it helps me sort out PRs so much."
+
+
+00:21:38.980 --> 00:21:40.060
+I totally agree.
+
+
+00:21:40.060 --> 00:21:43.060
+And then Wolf says, "Is it available in IntelliJ
+
+
+00:21:43.060 --> 00:21:44.600
+"and does it work with GitLab?"
+
+
+00:21:44.600 --> 00:21:47.580
+I don't know if it works with GitLab.
+
+
+00:21:48.560 --> 00:21:52.160
+I'm quite sure it's available in IntelliJ,
+
+
+00:21:52.160 --> 00:21:54.960
+'cause PyCharm is just basically specialized IntelliJ.
+
+
+00:21:54.960 --> 00:21:58.960
+So I'd be very surprised if it weren't available in IntelliJ,
+
+
+00:21:58.960 --> 00:22:00.900
+but I can't say for sure in GitLab.
+
+
+00:22:00.900 --> 00:22:02.200
+I would check the documentation,
+
+
+00:22:02.200 --> 00:22:03.760
+but I also can't find that, so.
+
+
+00:22:03.760 --> 00:22:06.920
+- So on the PyCharm side,
+
+
+00:22:06.920 --> 00:22:10.120
+isn't there supposed to be some UI changes
+
+
+00:22:10.120 --> 00:22:12.720
+that happened recently, or do you know?
+
+
+00:22:12.720 --> 00:22:15.320
+- Possibly.
+
+
+00:22:15.320 --> 00:22:16.880
+One of the things that changed recently,
+
+
+00:22:16.880 --> 00:22:20.060
+that I actually kept stumbling into on the Git stuff
+
+
+00:22:20.060 --> 00:22:22.880
+is they have little overlays of who made changes when,
+
+
+00:22:22.880 --> 00:22:25.740
+kind of like that Git lens from VS Code I described.
+
+
+00:22:25.740 --> 00:22:27.960
+They started adding that and I kept clicking it by accident,
+
+
+00:22:27.960 --> 00:22:29.180
+trying to click on the line.
+
+
+00:22:29.180 --> 00:22:31.440
+So that's like, why does it keep popping up a diff?
+
+
+00:22:31.440 --> 00:22:33.100
+Oh, I see, okay.
+
+
+00:22:33.100 --> 00:22:36.560
+I kind of crashed into it, but yeah.
+
+
+00:22:36.560 --> 00:22:38.520
+Anyway, if you're doing PRs, check this out.
+
+
+00:22:38.520 --> 00:22:40.500
+If you're doing PRs and using PyJarm, check this out.
+
+
+00:22:40.500 --> 00:22:41.700
+It's definitely useful.
+
+
+00:22:43.340 --> 00:22:47.700
+>> All right, well, so we have no guests,
+
+
+00:22:47.700 --> 00:22:49.620
+so that's our items for today.
+
+
+00:22:49.620 --> 00:22:50.500
+>> It is.
+
+
+00:22:50.500 --> 00:22:51.000
+It is.
+
+
+00:22:51.000 --> 00:22:54.420
+Well, we would be remiss to not have extras, though.
+
+
+00:22:54.420 --> 00:22:55.580
+>> Of course.
+
+
+00:22:55.580 --> 00:22:56.540
+So--
+
+
+00:22:56.540 --> 00:22:57.980
+>> Are you going to do the extras first?
+
+
+00:22:57.980 --> 00:22:59.100
+Your extras first?
+
+
+00:22:59.100 --> 00:23:00.060
+>> Sure.
+
+
+00:23:00.060 --> 00:23:01.460
+I just got one.
+
+
+00:23:01.460 --> 00:23:06.140
+So it was a couple weeks ago.
+
+
+00:23:06.140 --> 00:23:11.180
+I think we talked about Panda's tutor
+
+
+00:23:11.180 --> 00:23:14.680
+switching to Piedide, I think.
+
+
+00:23:14.680 --> 00:23:19.380
+So there's an article that came out on the Piedide blog
+
+
+00:23:19.380 --> 00:23:24.640
+that is about Pandas Tutor switching to Piedide.
+
+
+00:23:24.640 --> 00:23:32.700
+And so the reason why I bring it up
+
+
+00:23:32.700 --> 00:23:35.020
+is because there's some cool stuff in here.
+
+
+00:23:35.020 --> 00:23:36.980
+It's not just, hey, we did this,
+
+
+00:23:36.980 --> 00:23:39.420
+but it's also why did we do it?
+
+
+00:23:39.420 --> 00:23:41.940
+and kind of walking through some of the stuff,
+
+
+00:23:41.940 --> 00:23:45.860
+how they did a self-contained pandas tutor wheel,
+
+
+00:23:45.860 --> 00:23:50.640
+dealing with JavaScript and imports
+
+
+00:23:50.640 --> 00:23:53.140
+and all that sort of stuff and the fine tuning
+
+
+00:23:53.140 --> 00:23:55.260
+and what work has to go further.
+
+
+00:23:55.260 --> 00:23:56.820
+So other people that are like,
+
+
+00:23:56.820 --> 00:23:59.420
+hey, this Pyodide actually proof of concept,
+
+
+00:23:59.420 --> 00:24:02.040
+it's starting to look cool, I wanna do this too.
+
+
+00:24:02.040 --> 00:24:05.180
+This might be a nice thing for people to check out.
+
+
+00:24:05.180 --> 00:24:06.740
+- Yeah, this is super nice.
+
+
+00:24:06.740 --> 00:24:10.740
+And I definitely think the, what are the rough edges
+
+
+00:24:10.740 --> 00:24:14.860
+and what worked really well, those types of lessons
+
+
+00:24:14.860 --> 00:24:16.340
+for now are gonna be really valuable
+
+
+00:24:16.340 --> 00:24:18.060
+for people trying to adopt this.
+
+
+00:24:18.060 --> 00:24:18.900
+- Yeah.
+
+
+00:24:18.900 --> 00:24:21.740
+That's all my extras.
+
+
+00:24:21.740 --> 00:24:24.420
+- All right, well, let's just make it a straight run
+
+
+00:24:24.420 --> 00:24:28.060
+for Pi Iodide and Pi Script right out.
+
+
+00:24:28.060 --> 00:24:33.060
+So last week I did two videos on Pi Script,
+
+
+00:24:33.060 --> 00:24:35.740
+which is based on Pi Iodide,
+
+
+00:24:36.700 --> 00:24:37.820
+as well.
+
+
+00:24:37.820 --> 00:24:41.740
+So first one is a 30 minutes video.
+
+
+00:24:41.740 --> 00:24:43.340
+I sort of hinted that I was working on this,
+
+
+00:24:43.340 --> 00:24:46.060
+but remember I said it wasn't quite released yet, Brian?
+
+
+00:24:46.060 --> 00:24:47.160
+- Yeah. - Last episode.
+
+
+00:24:47.160 --> 00:24:48.020
+So now it's out.
+
+
+00:24:48.020 --> 00:24:49.580
+So now you can check out, I'll link to it.
+
+
+00:24:49.580 --> 00:24:51.860
+You can check out my 30 minute Python,
+
+
+00:24:51.860 --> 00:24:54.820
+PyScript WebAssembly, Python web apps running locally,
+
+
+00:24:54.820 --> 00:24:56.520
+which is super fun.
+
+
+00:24:56.520 --> 00:24:59.820
+It's all about not just, you know,
+
+
+00:24:59.820 --> 00:25:01.960
+let's like take some Python and put it in the browser,
+
+
+00:25:01.960 --> 00:25:05.120
+but how can you use some like PyDash config settings
+
+
+00:25:05.120 --> 00:25:09.680
+to override where PyScript actually comes from.
+
+
+00:25:09.680 --> 00:25:11.300
+The Pyodide, the runtime comes from,
+
+
+00:25:11.300 --> 00:25:13.120
+so you can like put that locally in your app
+
+
+00:25:13.120 --> 00:25:14.440
+and then download it offline
+
+
+00:25:14.440 --> 00:25:16.280
+and all sorts of fun stuff there.
+
+
+00:25:16.280 --> 00:25:19.000
+So basically building an offline progressive web app
+
+
+00:25:19.000 --> 00:25:22.760
+that is like, can be almost 100% offline.
+
+
+00:25:22.760 --> 00:25:26.000
+This one calls an API, so it still needs its API.
+
+
+00:25:26.000 --> 00:25:27.080
+Anyway, that was really fun.
+
+
+00:25:27.080 --> 00:25:29.440
+And then the next day after releasing that,
+
+
+00:25:29.440 --> 00:25:30.760
+it occurred to me,
+
+
+00:25:30.760 --> 00:25:33.200
+do you know what supports progressive web apps?
+
+
+00:25:33.200 --> 00:25:35.240
+iOS and Android.
+
+
+00:25:35.240 --> 00:25:37.440
+So I created a second video called
+
+
+00:25:37.440 --> 00:25:41.240
+Python iOS Web Apps with PyScript and Offline PWAs.
+
+
+00:25:41.240 --> 00:25:44.520
+And so here is, if you look on the screen,
+
+
+00:25:44.520 --> 00:25:48.700
+there's a, on my iPad,
+
+
+00:25:48.700 --> 00:25:53.120
+there is a web app that runs PyScript
+
+
+00:25:53.120 --> 00:25:57.440
+talking to a Flask-based API over the internet.
+
+
+00:25:57.440 --> 00:26:00.480
+And it is basically, you can go up and basically say,
+
+
+00:26:00.480 --> 00:26:02.540
+install this as an app on my iPad.
+
+
+00:26:02.540 --> 00:26:04.840
+And when you launch it, that install process
+
+
+00:26:04.840 --> 00:26:09.240
+already downloads the WebAssembly and the standard library
+
+
+00:26:09.240 --> 00:26:11.760
+and all the WebAssembly stuff that makes it large.
+
+
+00:26:11.760 --> 00:26:13.960
+So you just boom, and it opens up within like
+
+
+00:26:13.960 --> 00:26:18.960
+less than two seconds, running Python client side on iOS.
+
+
+00:26:18.960 --> 00:26:20.220
+- That is so cool.
+
+
+00:26:20.220 --> 00:26:22.460
+I'm seeing lots of uses for this.
+
+
+00:26:22.460 --> 00:26:26.120
+I mean, people could do like dashboards of pipelines
+
+
+00:26:26.120 --> 00:26:29.760
+and all sorts of stuff and have them be on tablets now.
+
+
+00:26:29.760 --> 00:26:30.680
+- Yeah, absolutely.
+
+
+00:26:30.680 --> 00:26:33.080
+Yeah, it's, I mean, once you've already made it
+
+
+00:26:33.080 --> 00:26:35.880
+a progressive web app, it's like a few button clicks.
+
+
+00:26:35.880 --> 00:26:37.480
+Like this whole video about this iOS thing
+
+
+00:26:37.480 --> 00:26:39.560
+with like setting the stage and everything
+
+
+00:26:39.560 --> 00:26:41.000
+is it's three minutes.
+
+
+00:26:41.000 --> 00:26:43.320
+So, I mean, it's not a hard process to make it happen
+
+
+00:26:43.320 --> 00:26:44.920
+but it's just not obvious
+
+
+00:26:44.920 --> 00:26:46.760
+and it's really cool that it works that way.
+
+
+00:26:46.760 --> 00:26:47.600
+- Cool.
+
+
+00:26:47.600 --> 00:26:49.640
+- Yeah.
+
+
+00:26:49.640 --> 00:26:55.200
+All right, well, that's it for my items.
+
+
+00:26:55.200 --> 00:26:57.000
+I do have a joke.
+
+
+00:26:57.000 --> 00:26:57.840
+- Nice.
+
+
+00:26:57.840 --> 00:27:00.000
+- And I know you might have a joke as well.
+
+
+00:27:00.000 --> 00:27:00.840
+- Yeah.
+
+
+00:27:00.840 --> 00:27:03.320
+- Awesome, okay.
+
+
+00:27:03.320 --> 00:27:04.960
+I'll go with mine first 'cause mine's easy.
+
+
+00:27:04.960 --> 00:27:06.720
+And then I have a bonus joke for you
+
+
+00:27:06.720 --> 00:27:09.200
+based on your topic that I didn't see coming.
+
+
+00:27:09.200 --> 00:27:10.040
+Okay. - Okay.
+
+
+00:27:10.040 --> 00:27:11.400
+- So this one comes from Brian Skin.
+
+
+00:27:11.400 --> 00:27:12.520
+Thanks, Brian.
+
+
+00:27:12.520 --> 00:27:15.280
+I just sort of pointed out a joke from Seth
+
+
+00:27:15.280 --> 00:27:16.640
+and it says, "People are out here
+
+
+00:27:16.640 --> 00:27:20.480
+just dangerously throwing around SQL abstraction layers.
+
+
+00:27:20.480 --> 00:27:23.080
+And if we aren't careful, someone's gonna lose an arm."
+
+
+00:27:23.080 --> 00:27:23.920
+(Brian laughs)
+
+
+00:27:23.920 --> 00:27:24.760
+In ORM.
+
+
+00:27:24.760 --> 00:27:26.200
+(Brian laughs)
+
+
+00:27:26.200 --> 00:27:27.040
+It's pretty good, isn't it?
+
+
+00:27:27.040 --> 00:27:28.240
+- Yeah, it's really good.
+
+
+00:27:28.240 --> 00:27:33.640
+Actually, if you are careful, you can lose your arm for good.
+
+
+00:27:33.640 --> 00:27:36.520
+Yes, and still be alright.
+
+
+00:27:36.520 --> 00:27:37.520
+Yeah.
+
+
+00:27:37.520 --> 00:27:43.920
+So here's the real-time joke follow-up that based on your projects.
+
+
+00:27:43.920 --> 00:27:45.600
+Ask me why I'm looking like this.
+
+
+00:27:45.600 --> 00:27:46.600
+Why?
+
+
+00:27:46.600 --> 00:27:49.720
+Well, that's just my regular expression.
+
+
+00:27:49.720 --> 00:27:51.720
+It's terrible.
+
+
+00:27:51.720 --> 00:27:54.240
+It's really bad.
+
+
+00:27:54.240 --> 00:27:55.240
+Alright.
+
+
+00:27:55.240 --> 00:27:57.740
+- I wish I had somebody in my life I could share that with
+
+
+00:27:57.740 --> 00:27:58.580
+other than you.
+
+
+00:27:58.580 --> 00:28:01.680
+- If other people listen to the show,
+
+
+00:28:01.680 --> 00:28:02.780
+we could share with them too.
+
+
+00:28:02.780 --> 00:28:07.180
+- Okay, so there's like all sorts of AI and stuff
+
+
+00:28:07.180 --> 00:28:09.760
+going into code editors now
+
+
+00:28:09.760 --> 00:28:12.020
+that make them like do all sorts of stuff
+
+
+00:28:12.020 --> 00:28:13.420
+to help you out, right?
+
+
+00:28:13.420 --> 00:28:15.620
+So, (laughs)
+
+
+00:28:15.620 --> 00:28:21.260
+Kermit the Frog looking out of a rainy window.
+
+
+00:28:21.260 --> 00:28:24.020
+It's when you barely started writing a line of code
+
+
+00:28:24.020 --> 00:28:25.940
+and your IDE already lets you know
+
+
+00:28:25.940 --> 00:28:28.580
+about three syntax errors, two runtime errors,
+
+
+00:28:28.580 --> 00:28:30.780
+a grammar mistake, five misdemeanors,
+
+
+00:28:30.780 --> 00:28:32.480
+contempt of court, and treason.
+
+
+00:28:32.480 --> 00:28:36.420
+- Joe's getting started.
+
+
+00:28:36.420 --> 00:28:37.600
+Why is it so hard?
+
+
+00:28:37.600 --> 00:28:39.820
+That's really good.
+
+
+00:28:39.820 --> 00:28:42.460
+I kind of felt that way too.
+
+
+00:28:42.460 --> 00:28:43.900
+I was playing around with some stuff.
+
+
+00:28:43.900 --> 00:28:45.140
+I'm just like, what is good?
+
+
+00:28:45.140 --> 00:28:46.780
+This is over the top, this thing.
+
+
+00:28:46.780 --> 00:28:48.740
+- Yeah.
+
+
+00:28:48.740 --> 00:28:49.780
+So, but no, good.
+
+
+00:28:49.780 --> 00:28:51.780
+I'm glad the editors can help us out,
+
+
+00:28:51.780 --> 00:28:53.880
+but sometimes I feel like an idiot.
+
+
+00:28:53.880 --> 00:28:55.120
+Yes, indeed.
+
+
+00:28:55.120 --> 00:28:58.140
+Well, great being here with you.
+
+
+00:28:58.140 --> 00:28:59.800
+Good being here with you.
+
+
+00:28:59.800 --> 00:29:00.960
+Indeed.
+
+
+00:29:00.960 --> 00:29:02.400
+Thanks everybody for coming.
+
+
+00:29:02.400 --> 00:29:04.200
+Bye everyone.
+
+
+00:29:04.200 --> 00:29:04.840
+Thanks for being here.
+
+
+00:29:04.840 --> 00:29:05.960
+See you next time.
+

@@ -1,0 +1,4001 @@
+WEBVTT
+
+00:00:00.000 --> 00:00:05.000
+Well, hello.
+
+
+00:00:05.000 --> 00:00:09.000
+Hello, everybody.
+
+
+00:00:09.000 --> 00:00:16.000
+Hello and welcome to Python Bytes, where we deliver Python news and headlines directly to your earbuds.
+
+
+00:00:16.000 --> 00:00:22.000
+This is Episode 217, recorded, what is it, January 19, 2021.
+
+
+00:00:22.000 --> 00:00:24.000
+I'm Brian Okken.
+
+
+00:00:24.000 --> 00:00:25.000
+I'm Michael Kennedy.
+
+
+00:00:25.000 --> 00:00:27.000
+And I'm Ogie Moore.
+
+
+00:00:27.000 --> 00:00:29.660
+- Welcome, thanks for joining us.
+
+
+00:00:29.660 --> 00:00:32.760
+- Yeah, it's great to have you here.
+
+
+00:00:32.760 --> 00:00:34.680
+Yeah, thanks for coming.
+
+
+00:00:34.680 --> 00:00:37.020
+- Well, should we just jump in?
+
+
+00:00:37.020 --> 00:00:39.240
+- Let's do it.
+
+
+00:00:39.240 --> 00:00:43.040
+- Well, first off, let's see, who's first?
+
+
+00:00:43.040 --> 00:00:44.200
+Michael's first.
+
+
+00:00:44.200 --> 00:00:46.320
+- I'm first, you wanna talk about caching?
+
+
+00:00:46.320 --> 00:00:48.200
+I got some cool stuff to talk about with caching.
+
+
+00:00:48.200 --> 00:00:53.040
+So I recently got a recommendation from Ian Maurer,
+
+
+00:00:53.040 --> 00:00:56.220
+who was talking about genetics and biology
+
+
+00:00:56.220 --> 00:01:00.860
+over on talk Python, I think 154, so a while back,
+
+
+00:01:00.860 --> 00:01:04.460
+but he pointed out this project called Python Disk Cache.
+
+
+00:01:04.460 --> 00:01:08.580
+And it just seems like such a cool project to me.
+
+
+00:01:08.580 --> 00:01:10.900
+So one of the big problems or not problems,
+
+
+00:01:10.900 --> 00:01:13.540
+one of the trade-offs or the mix of resources
+
+
+00:01:13.540 --> 00:01:15.660
+we have to work with when we're running stuff in the cloud
+
+
+00:01:15.660 --> 00:01:19.380
+so often has to do with limited RAM,
+
+
+00:01:19.380 --> 00:01:24.060
+limited memory in that regard, and limited CPU,
+
+
+00:01:24.060 --> 00:01:26.260
+but usually have a ton of disk space.
+
+
+00:01:26.260 --> 00:01:30.260
+For example, on my server, I think I've got like,
+
+
+00:01:30.260 --> 00:01:32.580
+I'm using five gigs out of 25 gigs,
+
+
+00:01:32.580 --> 00:01:34.860
+but I've only got, you know,
+
+
+00:01:34.860 --> 00:01:37.120
+two or four gigs of RAM, right?
+
+
+00:01:37.120 --> 00:01:38.340
+But one of the things you can do
+
+
+00:01:38.340 --> 00:01:40.260
+to make your code incredibly fast
+
+
+00:01:40.260 --> 00:01:42.940
+is to cache stuff that's expensive, right?
+
+
+00:01:42.940 --> 00:01:45.220
+If you're gonna do a complicated series of database queries,
+
+
+00:01:45.220 --> 00:01:48.260
+maybe just save the result and refresh it every so often
+
+
+00:01:48.260 --> 00:01:49.940
+or something like that, right?
+
+
+00:01:49.940 --> 00:01:53.180
+Well, this library here is kind of the simplest version
+
+
+00:01:53.180 --> 00:01:54.860
+of one of these caches.
+
+
+00:01:54.860 --> 00:01:57.380
+Like people often recommend memcached,
+
+
+00:01:57.380 --> 00:02:00.020
+they talk about Redis,
+
+
+00:02:00.020 --> 00:02:01.980
+you might even store something in your database
+
+
+00:02:01.980 --> 00:02:02.940
+and then pull it back out.
+
+
+00:02:02.940 --> 00:02:04.600
+And all those things are fine.
+
+
+00:02:04.600 --> 00:02:05.980
+They just have extra complexity.
+
+
+00:02:05.980 --> 00:02:08.300
+Now I have a separate database server to talk to
+
+
+00:02:08.300 --> 00:02:09.860
+if I didn't have one before.
+
+
+00:02:09.860 --> 00:02:12.820
+I've got a Redis caching server now I got to share.
+
+
+00:02:12.820 --> 00:02:15.860
+What if you just use that extra hard disk space
+
+
+00:02:15.860 --> 00:02:18.100
+to make your app faster?
+
+
+00:02:18.100 --> 00:02:21.140
+A lot of the cloud systems like Linux, for example,
+
+
+00:02:21.140 --> 00:02:23.380
+they have SSDs for the hard drive.
+
+
+00:02:23.380 --> 00:02:25.040
+So if you store something and then read it back,
+
+
+00:02:25.040 --> 00:02:26.440
+it's gonna be blazing fast, right?
+
+
+00:02:26.440 --> 00:02:30.500
+So disk cache is all about allowing you to do,
+
+
+00:02:30.500 --> 00:02:31.620
+you know, put this thing in the cache,
+
+
+00:02:31.620 --> 00:02:32.460
+to get it from the cache,
+
+
+00:02:32.460 --> 00:02:34.960
+but it actually stores it in the file system.
+
+
+00:02:34.960 --> 00:02:36.260
+That's pretty cool, right?
+
+
+00:02:36.260 --> 00:02:37.620
+- Yeah.
+
+
+00:02:37.620 --> 00:02:40.120
+- Yeah, so it's super easy to use.
+
+
+00:02:40.120 --> 00:02:42.020
+You can just come up here and say,
+
+
+00:02:42.020 --> 00:02:43.460
+import disk cache,
+
+
+00:02:43.460 --> 00:02:45.340
+and just to get an item,
+
+
+00:02:45.340 --> 00:02:47.300
+I just say cache, like a dictionary basically,
+
+
+00:02:47.300 --> 00:02:48.940
+and to put it back, same thing.
+
+
+00:02:48.940 --> 00:02:50.060
+You give it a key and a value.
+
+
+00:02:50.060 --> 00:02:52.100
+It is basically like a dictionary,
+
+
+00:02:52.100 --> 00:02:53.820
+but it persists across runs,
+
+
+00:02:53.820 --> 00:02:57.340
+it's multi-threaded, multi-process safe,
+
+
+00:02:57.340 --> 00:02:58.440
+and all those kinds of things.
+
+
+00:02:58.440 --> 00:03:02.460
+So incredibly cool, it's pure Python,
+
+
+00:03:02.460 --> 00:03:05.980
+it runs in process, so there's not like a server to manage.
+
+
+00:03:05.980 --> 00:03:09.380
+It has 100% test coverage, hours of stress testing,
+
+
+00:03:09.380 --> 00:03:10.860
+it's focused on performance,
+
+
+00:03:10.860 --> 00:03:14.720
+and it actually, Django has a built-in caching API in Django,
+
+
+00:03:14.720 --> 00:03:16.500
+and you can plug this into Django.
+
+
+00:03:16.500 --> 00:03:18.740
+So when people say, "Cache with my thing,"
+
+
+00:03:18.740 --> 00:03:20.720
+even third-party apps and stuff,
+
+
+00:03:20.720 --> 00:03:22.500
+you can automatically start using this,
+
+
+00:03:22.500 --> 00:03:23.700
+which is pretty awesome.
+
+
+00:03:23.700 --> 00:03:27.380
+It has support for eviction.
+
+
+00:03:27.380 --> 00:03:32.380
+So last, most recently used, first and so on,
+
+
+00:03:32.380 --> 00:03:36.660
+you can tag things and say these can get evicted
+
+
+00:03:36.660 --> 00:03:37.740
+sooner and whatnot.
+
+
+00:03:37.740 --> 00:03:40.020
+So really, really nice, incredibly easy to use.
+
+
+00:03:40.020 --> 00:03:42.540
+I definitely recommend people check it out
+
+
+00:03:42.540 --> 00:03:44.460
+because very nice.
+
+
+00:03:44.460 --> 00:03:46.460
+It has different kinds of data structures
+
+
+00:03:47.420 --> 00:03:50.040
+that you can work with like a fan out cache,
+
+
+00:03:50.040 --> 00:03:52.380
+a Django cache, a regular cache and so on.
+
+
+00:03:52.380 --> 00:03:55.820
+So if you wanna work with some code
+
+
+00:03:55.820 --> 00:03:58.280
+and it's possibly going to run in multiple processes
+
+
+00:03:58.280 --> 00:04:00.520
+or it's gonna start and then restart,
+
+
+00:04:00.520 --> 00:04:02.000
+start and stop and then run again
+
+
+00:04:02.000 --> 00:04:04.660
+and you wanted to not have to recompute everything,
+
+
+00:04:04.660 --> 00:04:06.180
+disk cache.
+
+
+00:04:06.180 --> 00:04:07.020
+I guess they--
+
+
+00:04:07.020 --> 00:04:09.860
+- Evictions are evictions like on hold for 2020.
+
+
+00:04:09.860 --> 00:04:12.220
+- Yeah, well, because of COVID,
+
+
+00:04:12.220 --> 00:04:13.300
+you're gonna need more disk space.
+
+
+00:04:13.300 --> 00:04:14.140
+No, just kidding.
+
+
+00:04:14.140 --> 00:04:16.620
+(laughing)
+
+
+00:04:16.620 --> 00:04:17.460
+- Oh, this looks cool.
+
+
+00:04:17.460 --> 00:04:20.420
+So what's, one of the things I was confused about is
+
+
+00:04:20.420 --> 00:04:23.700
+it's a key, it's called the cat disk cache,
+
+
+00:04:23.700 --> 00:04:24.840
+but what's the difference between that
+
+
+00:04:24.840 --> 00:04:27.400
+and just like a key value store database?
+
+
+00:04:27.400 --> 00:04:32.500
+- Well, those, the key value store database in practice
+
+
+00:04:32.500 --> 00:04:33.380
+would be no different.
+
+
+00:04:33.380 --> 00:04:38.380
+So, but you have a separate server.
+
+
+00:04:38.380 --> 00:04:41.340
+Like there is a server process that runs somewhere
+
+
+00:04:41.340 --> 00:04:43.260
+that you have to have a, like a connection string
+
+
+00:04:43.260 --> 00:04:45.700
+and stuff too, that you talk to it in this way.
+
+
+00:04:45.700 --> 00:04:47.800
+This is like, I have a file
+
+
+00:04:47.800 --> 00:04:49.620
+and I use the same API to talk to it.
+
+
+00:04:49.620 --> 00:04:51.880
+So instead of having another server to manage,
+
+
+00:04:51.880 --> 00:04:53.480
+another place to run it,
+
+
+00:04:53.480 --> 00:04:55.440
+you just say like, let me just put it on the SSD
+
+
+00:04:55.440 --> 00:04:57.000
+and that's probably quite fast.
+
+
+00:04:57.000 --> 00:04:58.340
+- Cool, yeah.
+
+
+00:04:58.340 --> 00:05:00.120
+- And then we got a quick question here.
+
+
+00:05:00.120 --> 00:05:03.400
+Brandon asks, do they talk about any way to scale this out,
+
+
+00:05:03.400 --> 00:05:06.760
+say multiple servers behind a load balancer?
+
+
+00:05:06.760 --> 00:05:08.080
+I did not see anything.
+
+
+00:05:08.080 --> 00:05:11.560
+I'm pretty sure as far as I can tell that it's local.
+
+
+00:05:13.080 --> 00:05:16.820
+just like sort of a per machine type of thing,
+
+
+00:05:16.820 --> 00:05:19.300
+not a, but it does go across processes,
+
+
+00:05:19.300 --> 00:05:20.900
+but it doesn't, I haven't seen anything
+
+
+00:05:20.900 --> 00:05:22.220
+talking about multi-machine.
+
+
+00:05:22.220 --> 00:05:24.660
+I guess you could set up a, like a microservice,
+
+
+00:05:24.660 --> 00:05:26.780
+but at that point you might as well just have Redis.
+
+
+00:05:26.780 --> 00:05:29.100
+- Yeah, yeah.
+
+
+00:05:29.100 --> 00:05:32.500
+Redis is kind of on my list of things
+
+
+00:05:32.500 --> 00:05:34.200
+to try here pretty soon too, so.
+
+
+00:05:34.200 --> 00:05:35.980
+- Absolutely.
+
+
+00:05:35.980 --> 00:05:41.420
+- Another thing I wanna check out is some of the,
+
+
+00:05:42.500 --> 00:05:48.580
+Well, I like tom all lately. yeah, almost great. Tom was great. I heard that it reached 1.0
+
+
+00:05:48.580 --> 00:05:56.340
+Yeah, so it is it's at 1.0 now and and I think that they were kind of headed there anyway
+
+
+00:05:56.340 --> 00:05:59.000
+Um, so I was looking through the changelog
+
+
+00:05:59.000 --> 00:06:03.780
+um looks like they had several, uh release candidates and
+
+
+00:06:03.780 --> 00:06:09.300
+And i'm anyway, we'll talk about a little bit. So it's it's at 1.0 now
+
+
+00:06:09.620 --> 00:06:12.100
+I mean, a lot of us don't really understand.
+
+
+00:06:12.100 --> 00:06:14.540
+It's maybe I'm speaking for myself.
+
+
+00:06:14.540 --> 00:06:18.180
+Don't really get what all the specification means.
+
+
+00:06:18.180 --> 00:06:19.140
+I just use it.
+
+
+00:06:19.140 --> 00:06:19.860
+It just works.
+
+
+00:06:19.860 --> 00:06:22.340
+It's easy.
+
+
+00:06:22.340 --> 00:06:27.220
+And one of the things I use it for is the pyproject.toml file.
+
+
+00:06:27.220 --> 00:06:29.180
+It's mostly what I use it for.
+
+
+00:06:29.180 --> 00:06:34.420
+But pyproject.toml is taking off, and this is at 1.0.
+
+
+00:06:34.420 --> 00:06:36.340
+So what does this mean?
+
+
+00:06:36.340 --> 00:06:41.340
+I'm hoping that this means that we have a Python package built
+
+
+00:06:41.340 --> 00:06:44.700
+into the Python that parses TOML.
+
+
+00:06:44.700 --> 00:06:46.700
+Yeah, now the language is stable, right?
+
+
+00:06:46.700 --> 00:06:49.980
+Maybe it means I need to learn more about TOML.
+
+
+00:06:49.980 --> 00:06:52.140
+Maybe.
+
+
+00:06:52.140 --> 00:06:53.700
+But I think there's talk about it.
+
+
+00:06:53.700 --> 00:06:55.320
+I'm not sure what the state of it is.
+
+
+00:06:55.320 --> 00:06:58.420
+Maybe we could get Brett or somebody to talk about it.
+
+
+00:06:58.420 --> 00:07:05.580
+But in the meantime, if you want to play with 1.0 with Python,
+
+
+00:07:05.580 --> 00:07:07.460
+I think there might be limited choices.
+
+
+00:07:07.460 --> 00:07:08.660
+So I went out and looked.
+
+
+00:07:08.660 --> 00:07:13.940
+There's a page on the project page that shows--
+
+
+00:07:13.940 --> 00:07:15.100
+it's down at the bottom.
+
+
+00:07:15.100 --> 00:07:20.020
+It shows the different projects that implement
+
+
+00:07:20.020 --> 00:07:22.660
+the various versions of TOML.
+
+
+00:07:22.660 --> 00:07:26.500
+And there's one project-- so there's a C++ project that--
+
+
+00:07:26.500 --> 00:07:30.900
+or a handful of C++ that support the 1.0.0,
+
+
+00:07:30.900 --> 00:07:35.420
+the most recent version of TOML.
+
+
+00:07:35.420 --> 00:07:41.060
+And then various support levels for different other things.
+
+
+00:07:41.060 --> 00:07:44.740
+There's a 1.0.0 release candidate one
+
+
+00:07:44.740 --> 00:07:46.540
+that's supported by Toml kit.
+
+
+00:07:46.540 --> 00:07:49.940
+So Toml kit is a Python project that looks--
+
+
+00:07:49.940 --> 00:07:52.500
+and I think that that might be sufficient to try out
+
+
+00:07:52.500 --> 00:07:55.460
+most of the features, the new features.
+
+
+00:07:55.460 --> 00:08:01.420
+And then what I would think of as just the Toml project
+
+
+00:08:01.420 --> 00:08:03.580
+in Python, that one's only--
+
+
+00:08:03.580 --> 00:08:07.020
+it supports 0.5.0.
+
+
+00:08:07.020 --> 00:08:09.540
+So I'm not sure what's going on there.
+
+
+00:08:09.540 --> 00:08:12.060
+It'd be great if it would support the latest.
+
+
+00:08:12.060 --> 00:08:13.460
+But then I'm like, what does that mean?
+
+
+00:08:13.460 --> 00:08:17.140
+What's different between 0.5.0 and 1.0?
+
+
+00:08:17.140 --> 00:08:19.240
+And so I went and looked at the changelog.
+
+
+00:08:19.240 --> 00:08:22.700
+There's three things that jump out
+
+
+00:08:22.700 --> 00:08:25.700
+that look like they're new, really changes.
+
+
+00:08:25.700 --> 00:08:29.000
+One of them is leading zeros in exponent parts
+
+
+00:08:29.000 --> 00:08:31.060
+of floats are permitted.
+
+
+00:08:31.060 --> 00:08:33.700
+So, okay.
+
+
+00:08:33.700 --> 00:08:37.540
+Then allowing raw character tabs in basic strings
+
+
+00:08:37.540 --> 00:08:41.180
+and multi-line basic strings, that seems reasonable.
+
+
+00:08:41.180 --> 00:08:44.060
+And then the difficult one might be
+
+
+00:08:44.060 --> 00:08:48.140
+allowing heterogeneous values in arrays,
+
+
+00:08:48.140 --> 00:08:49.620
+which that's cool.
+
+
+00:08:49.620 --> 00:08:52.980
+And yeah, so apparently it wasn't there before.
+
+
+00:08:52.980 --> 00:08:57.260
+- Yeah, but none of those seem like super common stuff
+
+
+00:08:57.260 --> 00:08:58.660
+that's gonna be a big breaking change.
+
+
+00:08:58.660 --> 00:09:00.860
+Like, oh, well, of course we use heterogeneous types
+
+
+00:09:00.860 --> 00:09:02.160
+Like we're just going to mix it up
+
+
+00:09:02.160 --> 00:09:03.620
+and have random stuff in our array.
+
+
+00:09:03.620 --> 00:09:06.540
+It seems like it's probably still the built-in--
+
+
+00:09:06.540 --> 00:09:09.900
+or the pure Python one is probably decent still.
+
+
+00:09:09.900 --> 00:09:10.400
+>>Right.
+
+
+00:09:10.400 --> 00:09:12.580
+And I need the--
+
+
+00:09:12.580 --> 00:09:14.540
+I guess there's a whole bunch of these
+
+
+00:09:14.540 --> 00:09:18.260
+that are listed as clarify.
+
+
+00:09:18.260 --> 00:09:21.860
+But it is a specification, so clarify might be very important.
+
+
+00:09:21.860 --> 00:09:24.020
+But I'm not sure how important that is.
+
+
+00:09:24.020 --> 00:09:25.780
+It probably affects the implementation.
+
+
+00:09:25.780 --> 00:09:28.620
+But I'm putting this out because I'd
+
+
+00:09:28.620 --> 00:09:30.620
+I'd like to hear from people that know more than I do
+
+
+00:09:30.620 --> 00:09:33.780
+about this and how this affects Python
+
+
+00:09:33.780 --> 00:09:36.020
+and if we should care about it.
+
+
+00:09:36.020 --> 00:09:37.060
+- Yeah, yeah, for sure.
+
+
+00:09:37.060 --> 00:09:38.280
+It's very cool to see it coming along
+
+
+00:09:38.280 --> 00:09:40.540
+and it definitely lends some support
+
+
+00:09:40.540 --> 00:09:42.660
+to the whole PyProject TOML stuff.
+
+
+00:09:42.660 --> 00:09:43.500
+- Yeah.
+
+
+00:09:43.500 --> 00:09:44.320
+- Yeah.
+
+
+00:09:44.320 --> 00:09:46.780
+Hey, before we move on to Augie's first topic,
+
+
+00:09:46.780 --> 00:09:48.380
+Martin Boris asked,
+
+
+00:09:48.380 --> 00:09:51.100
+just wondering, is this disk cache thing I mentioned,
+
+
+00:09:51.100 --> 00:09:52.440
+is it a simple way to share data
+
+
+00:09:52.440 --> 00:09:54.900
+between uvicorn and gunicorn workers?
+
+
+00:09:54.900 --> 00:09:56.180
+Yes, exactly.
+
+
+00:09:56.180 --> 00:09:57.420
+That's exactly why it matters
+
+
+00:09:57.420 --> 00:10:00.140
+because it goes across the worker processes,
+
+
+00:10:00.140 --> 00:10:02.840
+or across worker process in general,
+
+
+00:10:02.840 --> 00:10:05.420
+across multi-processes and the consequence
+
+
+00:10:05.420 --> 00:10:06.980
+of multiple worker processes.
+
+
+00:10:06.980 --> 00:10:08.160
+'Cause normally you would either cache
+
+
+00:10:08.160 --> 00:10:10.900
+in like process memory, so you gotta do it like 10 times,
+
+
+00:10:10.900 --> 00:10:12.020
+'cause you've got it all fanned out
+
+
+00:10:12.020 --> 00:10:13.700
+in a different processes running.
+
+
+00:10:13.700 --> 00:10:15.420
+So this will solve that for sure.
+
+
+00:10:15.420 --> 00:10:18.060
+And then one for you, Brian, for Magnus Carlsen.
+
+
+00:10:18.060 --> 00:10:21.260
+- Yeah, does, what was that?
+
+
+00:10:21.260 --> 00:10:23.020
+Does PEP 621--
+
+
+00:10:23.020 --> 00:10:27.060
+- The Toml spec, whatever the PEP is for that.
+
+
+00:10:27.060 --> 00:10:28.960
+- Specify the version of tunnel to use?
+
+
+00:10:28.960 --> 00:10:30.260
+I don't know.
+
+
+00:10:30.260 --> 00:10:32.420
+We'll have to ask Brett about that too.
+
+
+00:10:32.420 --> 00:10:34.960
+- Yeah, I don't know either, sorry.
+
+
+00:10:34.960 --> 00:10:36.860
+All right, Augie, what you got?
+
+
+00:10:36.860 --> 00:10:38.940
+- Well, I'm here.
+
+
+00:10:38.940 --> 00:10:40.340
+Well, thank you for inviting me again.
+
+
+00:10:40.340 --> 00:10:42.820
+This is actually, you have two consecutive weeks
+
+
+00:10:42.820 --> 00:10:44.940
+of hosting Mechanical Engineers as your guest
+
+
+00:10:44.940 --> 00:10:45.780
+on the podcast.
+
+
+00:10:45.780 --> 00:10:50.780
+So, thanks for being inclusive.
+
+
+00:10:50.780 --> 00:10:53.980
+But I wanted to talk about PyKitty Graph,
+
+
+00:10:53.980 --> 00:10:57.420
+which is not new, but it's--
+
+
+00:10:57.420 --> 00:10:59.420
+- People maybe don't know this, so tell them about it.
+
+
+00:10:59.420 --> 00:11:00.320
+- Yeah, absolutely.
+
+
+00:11:00.320 --> 00:11:03.380
+So PyQt Graph is a plotting library,
+
+
+00:11:03.380 --> 00:11:07.020
+but it's a little different from the likes of Matplotlib
+
+
+00:11:07.020 --> 00:11:10.980
+and the variance or derivatives from that or a bouquet.
+
+
+00:11:10.980 --> 00:11:14.720
+PyQt Graph uses the Qt framework
+
+
+00:11:14.720 --> 00:11:18.160
+and it's meant for embedding interactive plots
+
+
+00:11:18.160 --> 00:11:20.540
+within a GUI applications.
+
+
+00:11:22.120 --> 00:11:26.320
+And as a consequence of using it as the Qt,
+
+
+00:11:26.320 --> 00:11:29.000
+you can actually get some really high performance
+
+
+00:11:29.000 --> 00:11:32.800
+out of it, which is, which Matplotlib
+
+
+00:11:32.800 --> 00:11:35.020
+is absolutely phenomenal for generating plots
+
+
+00:11:35.020 --> 00:11:39.360
+for publications or, you know, for static media on websites.
+
+
+00:11:39.360 --> 00:11:40.720
+But the moment you try and do anything
+
+
+00:11:40.720 --> 00:11:44.040
+like with mouse interactions, you might be in for a,
+
+
+00:11:44.040 --> 00:11:45.640
+you know, a bit of a tough time.
+
+
+00:11:45.640 --> 00:11:47.880
+Then-- - Right, but with this,
+
+
+00:11:47.880 --> 00:11:50.120
+you're running on like native, with Qt,
+
+
+00:11:50.120 --> 00:11:52.780
+you're running natively on the OS, right?
+
+
+00:11:52.780 --> 00:11:54.280
+- Absolutely, yeah, you're running,
+
+
+00:11:54.280 --> 00:11:56.720
+yeah, there's no client server relationship
+
+
+00:11:56.720 --> 00:11:58.240
+like you would get with a bouquet,
+
+
+00:11:58.240 --> 00:12:01.000
+which you might need in some certain situations.
+
+
+00:12:01.000 --> 00:12:06.000
+But, and anyway, so part of the PyQt Graph library is,
+
+
+00:12:06.000 --> 00:12:10.800
+which, you know, I guess I should identify
+
+
+00:12:10.800 --> 00:12:12.840
+that I am a maintainer of,
+
+
+00:12:12.840 --> 00:12:16.560
+but is that we actually bundle an example application.
+
+
+00:12:16.560 --> 00:12:18.360
+So if you're ever curious about the library
+
+
+00:12:18.360 --> 00:12:20.640
+and its capabilities, you know,
+
+
+00:12:20.640 --> 00:12:22.840
+and don't feel like reading through dozens of pages
+
+
+00:12:22.840 --> 00:12:25.120
+of documentation, you can just run this example app,
+
+
+00:12:25.120 --> 00:12:27.160
+which I have on the screen share.
+
+
+00:12:27.160 --> 00:12:29.520
+And it shows you the list of areas.
+
+
+00:12:29.520 --> 00:12:31.320
+- This comes with PyQt Graph, right?
+
+
+00:12:31.320 --> 00:12:33.000
+- Yes, yeah, it's bundled in the library.
+
+
+00:12:33.000 --> 00:12:35.520
+So if you pick up PyQt Graph, you get this.
+
+
+00:12:35.520 --> 00:12:39.040
+And here's some of the basic, you know, plots,
+
+
+00:12:39.040 --> 00:12:41.360
+but yeah, and as you can see,
+
+
+00:12:41.360 --> 00:12:43.640
+you get our mouse interactivity going
+
+
+00:12:43.640 --> 00:12:46.540
+and, you know, we can do Zoom behavior.
+
+
+00:12:48.240 --> 00:12:54.160
+And, but what's really cool about this library is that example here, basic plotting is generating
+
+
+00:12:54.160 --> 00:12:56.440
+during with this code right here.
+
+
+00:12:56.440 --> 00:13:01.440
+All those plots was in this, I can't tell how many lines, maybe 70 lines total.
+
+
+00:13:01.440 --> 00:13:02.440
+Yeah.
+
+
+00:13:02.440 --> 00:13:07.260
+But anyway, you can, within this editor here, you can change any of the code and experiment
+
+
+00:13:07.260 --> 00:13:08.260
+with yourself.
+
+
+00:13:08.260 --> 00:13:12.120
+And here on the tab, you see all these different items, you know, it does 2D, we have some
+
+
+00:13:12.120 --> 00:13:17.960
+3D capability, which you need the PyOpenGL library for.
+
+
+00:13:17.960 --> 00:13:22.700
+This one is just maybe a dozen lines of code,
+
+
+00:13:22.700 --> 00:13:24.000
+but you have a couple of plots here,
+
+
+00:13:24.000 --> 00:13:25.920
+and then just with the mouse interactivity,
+
+
+00:13:25.920 --> 00:13:28.800
+we can sub-select or here you can get our crosshairs and get
+
+
+00:13:28.800 --> 00:13:32.360
+information about what's the data underneath the mouse.
+
+
+00:13:32.360 --> 00:13:33.720
+For an analysis tool,
+
+
+00:13:33.720 --> 00:13:38.380
+it can be incredibly powerful.
+
+
+00:13:38.380 --> 00:13:40.520
+If you're generating tools for
+
+
+00:13:40.520 --> 00:13:43.840
+any engineering or scientific analysis where you
+
+
+00:13:43.840 --> 00:13:47.920
+want the user to be able to interact with the data in some way,
+
+
+00:13:47.920 --> 00:13:50.040
+you know, zoom in, zoom out, things like that,
+
+
+00:13:50.040 --> 00:13:54.960
+or a Pikey graph might be a really good option for you.
+
+
+00:13:54.960 --> 00:13:55.800
+- Yeah, absolutely.
+
+
+00:13:55.800 --> 00:13:58.080
+Can you run the basic plotting thing one real quick?
+
+
+00:13:58.080 --> 00:13:59.120
+- Oh yeah, of course.
+
+
+00:13:59.120 --> 00:14:02.120
+- So when I was looking at this,
+
+
+00:14:02.120 --> 00:14:06.520
+the thing that stood out to me was while it looks,
+
+
+00:14:06.520 --> 00:14:08.760
+like the graphs are beautiful and they look good,
+
+
+00:14:08.760 --> 00:14:09.600
+you know, the first couple of days,
+
+
+00:14:09.600 --> 00:14:11.560
+I was like, I could probably do that in Bokeh
+
+
+00:14:11.560 --> 00:14:14.800
+or Plot Layer, you know, Map Plot Layer,
+
+
+00:14:14.800 --> 00:14:16.040
+something like that, right?
+
+
+00:14:16.040 --> 00:14:18.860
+but the nice interaction between multiple graphs
+
+
+00:14:18.860 --> 00:14:20.480
+as you zoom in one, the other goes in,
+
+
+00:14:20.480 --> 00:14:23.900
+or that super high frequency yellow one
+
+
+00:14:23.900 --> 00:14:26.280
+that's people listening, it's like refreshing,
+
+
+00:14:26.280 --> 00:14:28.220
+many, many times a second, right?
+
+
+00:14:28.220 --> 00:14:32.120
+Getting high frame rates out of those like Jupyter Notebooks
+
+
+00:14:32.120 --> 00:14:33.560
+sounds tricky.
+
+
+00:14:33.560 --> 00:14:35.400
+- Yeah, and I'm actually really glad
+
+
+00:14:35.400 --> 00:14:36.560
+you brought up high frame rates.
+
+
+00:14:36.560 --> 00:14:39.640
+I'm actually on the verge of merging a pull request
+
+
+00:14:39.640 --> 00:14:42.840
+to integrate a Coupy support,
+
+
+00:14:42.840 --> 00:14:45.480
+which is the CUDA number arrays
+
+
+00:14:45.480 --> 00:14:48.720
+for some of the image data.
+
+
+00:14:48.720 --> 00:14:50.280
+And on some of our benchmarks, we're
+
+
+00:14:50.280 --> 00:14:54.280
+showing being able to go from maybe 20 frames per second
+
+
+00:14:54.280 --> 00:15:00.600
+of images up to over 150 frames per second, which monitors
+
+
+00:15:00.600 --> 00:15:01.200
+can't keep up.
+
+
+00:15:01.200 --> 00:15:05.280
+But you lessen the CPU load substantially.
+
+
+00:15:05.280 --> 00:15:06.360
+Yeah, that's fantastic.
+
+
+00:15:06.360 --> 00:15:12.040
+We got a comment question from the Anthony Shah.
+
+
+00:15:12.040 --> 00:15:16.840
+I use the built-in grapher app in macOS.
+
+
+00:15:16.840 --> 00:15:20.360
+I do not know what the built-in grapher app is.
+
+
+00:15:20.360 --> 00:15:25.000
+So I am afraid I don't know how to answer that.
+
+
+00:15:25.000 --> 00:15:26.480
+- You don't know if it can replace it or not.
+
+
+00:15:26.480 --> 00:15:28.160
+I don't know either, but yeah.
+
+
+00:15:28.160 --> 00:15:32.680
+- But PyQt Graph has a couple of dependencies.
+
+
+00:15:32.680 --> 00:15:34.200
+You need some Qt bindings.
+
+
+00:15:34.200 --> 00:15:39.200
+And right now we support Qt 5, 5.12 and newer.
+
+
+00:15:39.200 --> 00:15:40.800
+Up until very recently,
+
+
+00:15:40.800 --> 00:15:44.440
+PyQt Graph supported like virtually any Qt bindings
+
+
+00:15:44.440 --> 00:15:46.880
+you could install, like even going back a decade,
+
+
+00:15:46.880 --> 00:15:48.840
+which eventually I had to put an ax to that,
+
+
+00:15:48.840 --> 00:15:50.200
+that was just too much work.
+
+
+00:15:50.200 --> 00:15:56.440
+And so we support Qt 5.12 or newer.
+
+
+00:15:56.440 --> 00:15:58.240
+We don't support Qt 6 yet,
+
+
+00:15:58.240 --> 00:16:02.160
+although there is a pull request in to add support
+
+
+00:16:02.160 --> 00:16:04.440
+for PySide 6, which was discussed on the show
+
+
+00:16:04.440 --> 00:16:05.280
+just two weeks ago.
+
+
+00:16:05.280 --> 00:16:06.720
+- Yeah, it just came out, right?
+
+
+00:16:06.720 --> 00:16:07.920
+- Right, it just came out,
+
+
+00:16:07.920 --> 00:16:12.620
+And which I'm really thankful for contributors, you know,
+
+
+00:16:12.620 --> 00:16:14.320
+that are submitting these pull requests.
+
+
+00:16:14.320 --> 00:16:16.040
+I'm often feel bad.
+
+
+00:16:16.040 --> 00:16:18.120
+I can't keep up with the rate that they're coming in,
+
+
+00:16:18.120 --> 00:16:20.860
+but it's still appreciated.
+
+
+00:16:20.860 --> 00:16:23.160
+- Are you looking for contributors to the project?
+
+
+00:16:23.160 --> 00:16:24.000
+- Yeah, absolutely.
+
+
+00:16:24.000 --> 00:16:26.440
+And not just contributors to the code,
+
+
+00:16:26.440 --> 00:16:28.960
+but also people that can,
+
+
+00:16:28.960 --> 00:16:32.040
+that are willing to look over a pull request
+
+
+00:16:32.040 --> 00:16:35.320
+or willing to test out pull requests mainly
+
+
+00:16:35.320 --> 00:16:36.480
+with the plotting library,
+
+
+00:16:36.480 --> 00:16:39.000
+sometimes testing can be really difficult
+
+
+00:16:39.000 --> 00:16:42.840
+because like visual artifacts,
+
+
+00:16:42.840 --> 00:16:45.320
+like how do I test for that, right?
+
+
+00:16:45.320 --> 00:16:49.680
+And so sometimes a lot of, a big chunk of our testing is,
+
+
+00:16:49.680 --> 00:16:52.160
+well, does this break or does this look right?
+
+
+00:16:52.160 --> 00:16:56.560
+And being able to, you know, having somebody else,
+
+
+00:16:56.560 --> 00:16:59.560
+you know, verifies that kind of stuff
+
+
+00:16:59.560 --> 00:17:02.800
+or is a really big help.
+
+
+00:17:03.880 --> 00:17:07.560
+So yeah, if you're interested in this,
+
+
+00:17:07.560 --> 00:17:12.080
+and feel free to reach out to me directly
+
+
+00:17:12.080 --> 00:17:16.400
+or take a look at our issue tracker or pull request tracker.
+
+
+00:17:16.400 --> 00:17:19.600
+Yeah, and oh, and I guess the last thing I should say
+
+
+00:17:19.600 --> 00:17:21.640
+is it's primarily used in scientific
+
+
+00:17:21.640 --> 00:17:24.000
+and engineering applications.
+
+
+00:17:24.000 --> 00:17:26.720
+It's periodically I go through the Git log
+
+
+00:17:26.720 --> 00:17:28.240
+and I look at like the email addresses
+
+
+00:17:28.240 --> 00:17:29.560
+that people are contributing to,
+
+
+00:17:29.560 --> 00:17:33.480
+and NASA Ames Research Center and places like that.
+
+
+00:17:33.480 --> 00:17:35.480
+- It's awesome. - It's like that, but...
+
+
+00:17:35.480 --> 00:17:39.980
+But, yeah, no, I get a kick out of that.
+
+
+00:17:39.980 --> 00:17:41.680
+Yeah, that's super, super cool.
+
+
+00:17:41.680 --> 00:17:43.980
+Nice. Thanks for sharing that and good work on it.
+
+
+00:17:43.980 --> 00:17:50.680
+Well, another cool thing is Linode,
+
+
+00:17:50.680 --> 00:17:53.180
+and they're sponsoring this episode. Thank you, Linode.
+
+
+00:17:53.180 --> 00:17:56.480
+Simplify your infrastructure and cut your cloud bills in half
+
+
+00:17:56.480 --> 00:17:59.480
+with Linode's Linux virtual machines.
+
+
+00:17:59.480 --> 00:18:03.400
+develop, deploy and scale your modern
+
+
+00:18:03.400 --> 00:18:04.760
+applications faster and easier.
+
+
+00:18:04.760 --> 00:18:06.920
+Whether you're developing a personal
+
+
+00:18:06.920 --> 00:18:08.120
+project or managing larger workloads,
+
+
+00:18:08.120 --> 00:18:10.920
+you deserve simple,
+
+
+00:18:10.920 --> 00:18:11.880
+affordable and accessible cloud computing
+
+
+00:18:11.880 --> 00:18:14.680
+solutions.
+
+
+00:18:14.680 --> 00:18:16.760
+As listeners of Python Bytes, you get a
+
+
+00:18:16.760 --> 00:18:18.280
+$100 free credit.
+
+
+00:18:18.280 --> 00:18:20.840
+You can find all about the those
+
+
+00:18:20.840 --> 00:18:23.240
+details at pythonbytes.fm/lenode.
+
+
+00:18:23.240 --> 00:18:24.520
+Lenode also has data centers
+
+
+00:18:24.520 --> 00:18:26.760
+around the world
+
+
+00:18:26.760 --> 00:18:29.080
+with this same simple and consistent
+
+
+00:18:26.760 --> 00:18:32.680
+pricing regardless of location. Choose the data center nearest to your users. You also receive
+
+
+00:18:32.680 --> 00:18:40.600
+24/7, 365-day human support with no tiers or handoffs regardless of your plan size.
+
+
+00:18:40.600 --> 00:18:47.160
+You can choose shared and dedicated compute instances, or you can use your $100 credit on
+
+
+00:18:47.160 --> 00:18:55.480
+S3 compatible object storage, managed Kubernetes, and more. If it runs on Linux, it runs on Linode.
+
+
+00:18:55.480 --> 00:19:03.320
+visit pythonbytes.fm/linode and click on the create free account button to get started.
+
+
+00:19:03.320 --> 00:19:09.480
+Awesome, thanks for supporting the show, Linode. Okay, Brian, I want to cover something that
+
+
+00:19:09.480 --> 00:19:16.360
+comes to us from two listeners. This comes from Jim Kring, who pointed out some really
+
+
+00:19:16.360 --> 00:19:24.120
+interesting aspects how Python is being used in this whole parlor, social media kerfuffle.
+
+
+00:19:24.120 --> 00:19:27.480
+And a great article by my good friend and fellow Portlander,
+
+
+00:19:27.480 --> 00:19:28.560
+Mark Little.
+
+
+00:19:28.560 --> 00:19:32.320
+So let's go over the article first.
+
+
+00:19:32.320 --> 00:19:35.080
+So you guys heard there was basically
+
+
+00:19:35.080 --> 00:19:36.820
+an attempt to overthrow the US government.
+
+
+00:19:36.820 --> 00:19:38.440
+Do you guys hear that?
+
+
+00:19:38.440 --> 00:19:39.880
+That was lovely.
+
+
+00:19:39.880 --> 00:19:40.960
+What idiots.
+
+
+00:19:40.960 --> 00:19:44.800
+So a lot of the people who were there
+
+
+00:19:44.800 --> 00:19:47.960
+got kicked off of official social media,
+
+
+00:19:47.960 --> 00:19:49.720
+and they went to this site called Parler.
+
+
+00:19:49.720 --> 00:19:51.240
+So Parler, according to Wikipedia,
+
+
+00:19:51.240 --> 00:19:54.400
+as an American alt tech micro blogging and social media
+
+
+00:19:54.400 --> 00:19:55.840
+networking service.
+
+
+00:19:55.840 --> 00:19:57.520
+And it has a significant user base
+
+
+00:19:57.520 --> 00:20:01.280
+of Donald Trump supporters, conservatives, conspiracy
+
+
+00:20:01.280 --> 00:20:03.680
+theorists, and right wing extremists.
+
+
+00:20:03.680 --> 00:20:05.680
+My words, that's Wikipedia.
+
+
+00:20:05.680 --> 00:20:08.840
+So a lot of the people who stormed the Capitol
+
+
+00:20:08.840 --> 00:20:14.320
+tried to get into Congress and stop accounting the votes.
+
+
+00:20:14.320 --> 00:20:20.520
+They decided to live blog it on their personal accounts.
+
+
+00:20:20.520 --> 00:20:24.080
+But a lot of them were no longer on Twitter and whatnot,
+
+
+00:20:24.080 --> 00:20:25.600
+although some were.
+
+
+00:20:25.600 --> 00:20:27.080
+So they were on Parler.
+
+
+00:20:27.080 --> 00:20:30.400
+And they probably came to realize,
+
+
+00:20:30.400 --> 00:20:32.760
+you know, it's probably not a good idea
+
+
+00:20:32.760 --> 00:20:34.800
+of showing me charging into the Capitol
+
+
+00:20:34.800 --> 00:20:37.160
+as hundreds of people are being arrested and charged
+
+
+00:20:37.160 --> 00:20:39.880
+with federal crimes, right?
+
+
+00:20:39.880 --> 00:20:42.320
+At the same time, Parler was getting kicked off
+
+
+00:20:42.320 --> 00:20:45.640
+of Apple's App Store for the iOS.
+
+
+00:20:45.640 --> 00:20:47.920
+They were getting kicked off of the Google Play Store.
+
+
+00:20:47.920 --> 00:20:50.480
+They were getting banned in a lot of places.
+
+
+00:20:50.480 --> 00:20:52.960
+So there was this, hacker's not the right person,
+
+
+00:20:52.960 --> 00:20:56.240
+the sort of data savior person, I guess you could say,
+
+
+00:20:56.240 --> 00:20:59.600
+who came along and realized it would be great
+
+
+00:20:59.600 --> 00:21:02.420
+if we could download all of that content and save it
+
+
+00:21:02.420 --> 00:21:05.580
+and hand it over to journalists at say like ProPublica,
+
+
+00:21:05.580 --> 00:21:08.440
+hand it over to the FBI and so on.
+
+
+00:21:08.440 --> 00:21:10.800
+It turns out it wasn't very hard to do.
+
+
+00:21:10.800 --> 00:21:12.200
+There was a couple of things
+
+
+00:21:12.200 --> 00:21:15.200
+if you look through the Ars Technica article
+
+
+00:21:15.200 --> 00:21:19.680
+about how the code behind Parler was a coding mess.
+
+
+00:21:19.680 --> 00:21:22.200
+And I've tried to figure out what technology was used
+
+
+00:21:22.200 --> 00:21:23.040
+to implement it.
+
+
+00:21:23.040 --> 00:21:24.760
+I just couldn't find that anywhere.
+
+
+00:21:24.760 --> 00:21:29.360
+Anyway, it says, the reason this woman was so successful
+
+
+00:21:29.360 --> 00:21:31.380
+at grabbing all this data,
+
+
+00:21:31.380 --> 00:21:34.400
+which she got like 1 million videos
+
+
+00:21:34.400 --> 00:21:35.520
+and a whole bunch of pictures.
+
+
+00:21:35.520 --> 00:21:38.000
+There's a whole host of mistakes.
+
+
+00:21:38.000 --> 00:21:42.260
+So the public API for it used no authentication.
+
+
+00:21:42.260 --> 00:21:45.680
+Let me rephrase that, restate that.
+
+
+00:21:45.680 --> 00:21:47.880
+The public API used zero authentication,
+
+
+00:21:47.880 --> 00:21:49.120
+no rate limiting, nothing.
+
+
+00:21:49.120 --> 00:21:51.520
+Just, yeah, sure, we'll just, go ahead.
+
+
+00:21:51.520 --> 00:21:52.360
+- There you go.
+
+
+00:21:52.360 --> 00:21:53.200
+(laughing)
+
+
+00:21:53.200 --> 00:21:54.480
+- You have it all.
+
+
+00:21:54.480 --> 00:21:56.600
+Secondly, when a user deleted their post,
+
+
+00:21:56.600 --> 00:21:59.320
+the site didn't remove it, it just flagged it as deleted
+
+
+00:21:59.320 --> 00:22:01.060
+so it wouldn't show up in the feed.
+
+
+00:22:01.060 --> 00:22:03.380
+Which in and of itself is not necessarily bad,
+
+
+00:22:03.380 --> 00:22:06.960
+but you pair that with every post
+
+
+00:22:06.960 --> 00:22:09.120
+was an auto-incrementing ID,
+
+
+00:22:09.120 --> 00:22:10.600
+which meant you could just enumerate.
+
+
+00:22:10.600 --> 00:22:11.960
+You're like, oh, I'm on post 500.
+
+
+00:22:11.960 --> 00:22:13.160
+Well, let's see what 501 is.
+
+
+00:22:13.160 --> 00:22:15.560
+It doesn't matter if it's deleted, give me that.
+
+
+00:22:15.560 --> 00:22:18.120
+That's crazy, right?
+
+
+00:22:18.120 --> 00:22:23.120
+So she wrote a script in Python to go download it.
+
+
+00:22:23.120 --> 00:22:27.200
+And you can actually see like,
+
+
+00:22:27.200 --> 00:22:29.520
+here's all the videos and all the stuff
+
+
+00:22:29.520 --> 00:22:31.180
+and their IDs and whatnot.
+
+
+00:22:31.180 --> 00:22:34.120
+And in here, this is the one that Jim sent over.
+
+
+00:22:34.120 --> 00:22:37.400
+If you look, there's a gist here that shows you
+
+
+00:22:37.400 --> 00:22:39.040
+how do you download a video from Parler?
+
+
+00:22:39.040 --> 00:22:41.520
+Let's go down and find, is it here?
+
+
+00:22:41.520 --> 00:22:42.480
+No, maybe it's not there.
+
+
+00:22:42.480 --> 00:22:43.440
+I think it might be back.
+
+
+00:22:43.440 --> 00:22:45.120
+There's a part where it shows the,
+
+
+00:22:46.120 --> 00:22:49.160
+how do you download it with Python and so on.
+
+
+00:22:49.160 --> 00:22:50.800
+So you just go through and like, you know,
+
+
+00:22:50.800 --> 00:22:52.820
+screen scrape it traditional Python right there.
+
+
+00:22:52.820 --> 00:22:56.340
+So apparently Python was used to free
+
+
+00:22:56.340 --> 00:22:57.760
+and capture all of this.
+
+
+00:22:57.760 --> 00:23:01.160
+Oh, another thing that they did in Parler
+
+
+00:23:01.160 --> 00:23:04.480
+that made it easy to get was when you upload videos
+
+
+00:23:04.480 --> 00:23:06.200
+and images to places like Twitter,
+
+
+00:23:06.200 --> 00:23:08.280
+they'll auto strip the exif,
+
+
+00:23:08.280 --> 00:23:10.880
+like the geolocation and whatnot from the images.
+
+
+00:23:10.880 --> 00:23:12.440
+Now they don't need it, just post it, right?
+
+
+00:23:12.440 --> 00:23:16.660
+to like geolocation, camera name, all that kind of stuff
+
+
+00:23:16.660 --> 00:23:18.160
+is all in there.
+
+
+00:23:18.160 --> 00:23:21.700
+So there's just a bunch of badness.
+
+
+00:23:21.700 --> 00:23:26.700
+They've been since kicked off of AWS because, you know,
+
+
+00:23:26.700 --> 00:23:32.240
+crimes and now they're apparently trying to get hosted
+
+
+00:23:32.240 --> 00:23:34.820
+in a server in Russia, is that right, Auggie?
+
+
+00:23:34.820 --> 00:23:37.160
+- Yeah, there was a, actually,
+
+
+00:23:37.160 --> 00:23:38.900
+I think there's an article on Ars Technica
+
+
+00:23:38.900 --> 00:23:41.360
+that went up this morning that they're somewhat partially
+
+
+00:23:41.360 --> 00:23:45.080
+online on some Russian infrastructure, which--
+
+
+00:23:45.080 --> 00:23:47.160
+Yeah, they're only partially online because I looked,
+
+
+00:23:47.160 --> 00:23:52.520
+and it says something like, well, we're trying to come back.
+
+
+00:23:52.520 --> 00:23:53.640
+Here's a couple of posts.
+
+
+00:23:53.640 --> 00:23:59.120
+Yeah, it's not all the way back.
+
+
+00:23:59.120 --> 00:24:01.280
+They're experiencing technical difficulties,
+
+
+00:24:01.280 --> 00:24:05.240
+as in the world hates them and is trying to make them go away.
+
+
+00:24:05.240 --> 00:24:08.000
+So I'm not here to try to make this a political statement
+
+
+00:24:08.000 --> 00:24:08.920
+or anything like that.
+
+
+00:24:08.920 --> 00:24:10.200
+That's not why I covered the story.
+
+
+00:24:10.200 --> 00:24:12.240
+I covered it because I thought it's very interesting,
+
+
+00:24:12.240 --> 00:24:14.800
+both the security side and how people were able
+
+
+00:24:14.800 --> 00:24:17.560
+to leverage Python to sort of grab this stuff
+
+
+00:24:17.560 --> 00:24:18.480
+before it's gone.
+
+
+00:24:18.480 --> 00:24:20.240
+Some of the journalists were asking,
+
+
+00:24:20.240 --> 00:24:22.800
+like, is there a more accessible way to get the data?
+
+
+00:24:22.800 --> 00:24:24.840
+They're like, yes, we're gonna build,
+
+
+00:24:24.840 --> 00:24:26.000
+the woman who got it is like,
+
+
+00:24:26.000 --> 00:24:27.620
+we're gonna build some better way for you to get it.
+
+
+00:24:27.620 --> 00:24:28.480
+But right now it's like,
+
+
+00:24:28.480 --> 00:24:29.840
+I had to run into the burning building
+
+
+00:24:29.840 --> 00:24:32.640
+and grab the files before they were gone.
+
+
+00:24:32.640 --> 00:24:34.120
+- Yeah, the other thing I sort of want to point out
+
+
+00:24:34.120 --> 00:24:36.200
+about this story is it's not like Parler
+
+
+00:24:36.200 --> 00:24:39.600
+was lacking funding to develop these tools.
+
+
+00:24:39.600 --> 00:24:41.480
+they had, from what I understand,
+
+
+00:24:41.480 --> 00:24:44.500
+they had significant financial backing.
+
+
+00:24:44.500 --> 00:24:45.340
+- Yeah.
+
+
+00:24:45.340 --> 00:24:47.700
+- And whether they did not have the technical expertise,
+
+
+00:24:47.700 --> 00:24:50.220
+the time, I don't know,
+
+
+00:24:50.220 --> 00:24:54.580
+but I'm really curious as more fallout comes from this,
+
+
+00:24:54.580 --> 00:24:55.420
+you know.
+
+
+00:24:55.420 --> 00:24:57.340
+- Yeah.
+
+
+00:24:57.340 --> 00:24:58.160
+- There's gonna be some good stories
+
+
+00:24:58.160 --> 00:24:59.920
+from a technical standpoint on here.
+
+
+00:24:59.920 --> 00:25:02.220
+- Absolutely.
+
+
+00:25:02.220 --> 00:25:04.460
+Well, pretty, pretty insane.
+
+
+00:25:04.460 --> 00:25:06.540
+All right, Brian, let's move on to something more
+
+
+00:25:06.540 --> 00:25:08.980
+Devy, developer, web Devy.
+
+
+00:25:08.980 --> 00:25:11.620
+Well, maybe if you want to scrape
+
+
+00:25:11.620 --> 00:25:13.740
+the web or something else.
+
+
+00:25:13.740 --> 00:25:14.660
+Absolutely.
+
+
+00:25:14.660 --> 00:25:18.540
+Yeah, we've got a suggestion from Douglas Nichols.
+
+
+00:25:18.540 --> 00:25:20.460
+Thanks, Douglas.
+
+
+00:25:20.460 --> 00:25:22.740
+Best of the web development with Python.
+
+
+00:25:22.740 --> 00:25:23.380
+So we've seen--
+
+
+00:25:23.380 --> 00:25:25.020
+I would put Parler not in that list.
+
+
+00:25:25.020 --> 00:25:31.420
+So we've seen the best of lists like this before.
+
+
+00:25:31.420 --> 00:25:33.900
+I'm kind of a fan of them.
+
+
+00:25:33.900 --> 00:25:36.340
+But one of the things I liked about this
+
+
+00:25:36.340 --> 00:25:39.420
+is the icons are nice.
+
+
+00:25:39.420 --> 00:25:41.420
+So there's a whole bunch of different icons
+
+
+00:25:41.420 --> 00:25:43.580
+that are used to help, you know,
+
+
+00:25:43.580 --> 00:25:47.780
+you can see the likes or the follows and stuff
+
+
+00:25:47.780 --> 00:25:48.940
+of different projects.
+
+
+00:25:48.940 --> 00:25:50.460
+And then there's icons for,
+
+
+00:25:50.460 --> 00:25:53.540
+you can search for Flask projects or things like that.
+
+
+00:25:53.540 --> 00:25:54.380
+That's nice.
+
+
+00:25:54.380 --> 00:25:57.860
+But it's a pretty big comprehensive list.
+
+
+00:25:57.860 --> 00:26:01.660
+We've got web frameworks, HTTP clients, servers,
+
+
+00:26:01.660 --> 00:26:06.420
+authorization tools, URL utilities,
+
+
+00:26:06.420 --> 00:26:09.000
+open API, GraphQL, which is nice to see.
+
+
+00:26:09.000 --> 00:26:13.180
+There's even web testing and markdown listed,
+
+
+00:26:13.180 --> 00:26:16.440
+how to access third-party APIs.
+
+
+00:26:16.440 --> 00:26:19.680
+But then near the end, I really liked seeing,
+
+
+00:26:19.680 --> 00:26:21.840
+there's a bunch of utilities sections.
+
+
+00:26:21.840 --> 00:26:25.240
+So there's Flask utilities and FastAPI
+
+
+00:26:25.240 --> 00:26:28.280
+and Pyramid and Django utilities, which are really neat.
+
+
+00:26:28.280 --> 00:26:31.400
+And what I really was pleased to see
+
+
+00:26:31.400 --> 00:26:34.080
+was that even though FastAPI is, what,
+
+
+00:26:34.080 --> 00:26:35.360
+a couple of years old now,
+
+
+00:26:35.360 --> 00:26:37.940
+there's a whole bunch of FastAPI projects
+
+
+00:26:37.940 --> 00:26:42.020
+that are there to make FastAPI easier,
+
+
+00:26:42.020 --> 00:26:47.020
+like using SQLAlchemy or, you know,
+
+
+00:26:47.020 --> 00:26:52.200
+coming up with the contributions thing or--
+
+
+00:26:52.200 --> 00:26:54.580
+- Yeah, fantastic. - You know, different React,
+
+
+00:26:54.580 --> 00:26:57.380
+how to use React with it, things like that.
+
+
+00:26:57.380 --> 00:27:01.420
+So yeah, nice if you're trying to check out,
+
+
+00:27:01.420 --> 00:27:03.460
+wanna look at different tools that are available
+
+
+00:27:03.460 --> 00:27:06.160
+for web development with Python,
+
+
+00:27:06.160 --> 00:27:08.520
+this might be a good place to peruse.
+
+
+00:27:08.520 --> 00:27:12.780
+- I feel like that's one of the big challenges in general,
+
+
+00:27:12.780 --> 00:27:14.920
+you know, with people coming into Python
+
+
+00:27:14.920 --> 00:27:16.100
+or getting into new framework,
+
+
+00:27:16.100 --> 00:27:21.100
+it's like there's 500 libraries to do a thing.
+
+
+00:27:21.100 --> 00:27:22.020
+- Yes.
+
+
+00:27:22.020 --> 00:27:23.060
+- Which one should I use?
+
+
+00:27:23.060 --> 00:27:26.060
+Can I find a library, but there's too many, right?
+
+
+00:27:26.060 --> 00:27:28.720
+- Yeah, yeah, so do you have a suggestion for that?
+
+
+00:27:28.720 --> 00:27:31.840
+- Well, I think these awesome lists are super good, right?
+
+
+00:27:31.840 --> 00:27:34.160
+Because they're somewhat vetted and whatnot.
+
+
+00:27:34.160 --> 00:27:39.040
+- I recommend, so like for instance, if I was building a,
+
+
+00:27:39.040 --> 00:27:42.280
+well, it's harder now,
+
+
+00:27:42.280 --> 00:27:44.560
+but if I was building something new with the web development
+
+
+00:27:44.560 --> 00:27:45.780
+or web interface or something,
+
+
+00:27:45.780 --> 00:27:47.880
+and I didn't have like which framework to pick
+
+
+00:27:47.880 --> 00:27:49.580
+is like one of the starter things.
+
+
+00:27:49.580 --> 00:27:53.920
+It's the people I have around me as resources.
+
+
+00:27:53.920 --> 00:27:58.920
+So I know that you know about Pyramid,
+
+
+00:27:58.920 --> 00:28:02.640
+but you're also fairly knowledgeable about FastAPI.
+
+
+00:28:02.640 --> 00:28:07.640
+And I know some people that are Django friendly,
+
+
+00:28:07.640 --> 00:28:09.680
+and to know quite a bit about Django.
+
+
+00:28:09.680 --> 00:28:13.280
+So if you've got a couple of friends
+
+
+00:28:13.280 --> 00:28:16.320
+that already know one of these big hitters,
+
+
+00:28:16.320 --> 00:28:19.400
+I would go with that so that you can ask them questions.
+
+
+00:28:19.400 --> 00:28:21.720
+- Well, maybe even you don't pick the same thing,
+
+
+00:28:21.720 --> 00:28:24.440
+but you could ask, like, you chose this one.
+
+
+00:28:24.440 --> 00:28:25.800
+Tell me, you looked at a lot of the other ones.
+
+
+00:28:25.800 --> 00:28:26.880
+Why did you pick that?
+
+
+00:28:26.880 --> 00:28:27.700
+Yeah.
+
+
+00:28:27.700 --> 00:28:28.540
+- Oh yeah.
+
+
+00:28:28.540 --> 00:28:29.520
+Yeah, that's a good idea.
+
+
+00:28:29.520 --> 00:28:30.360
+- Yeah, for sure.
+
+
+00:28:30.360 --> 00:28:32.240
+Like maybe FastAPI makes sense for me.
+
+
+00:28:32.240 --> 00:28:33.080
+It doesn't make sense for you,
+
+
+00:28:33.080 --> 00:28:35.200
+but you can then see why it made sense for me
+
+
+00:28:35.200 --> 00:28:37.040
+and not for you or whatever.
+
+
+00:28:37.040 --> 00:28:37.860
+- Yeah.
+
+
+00:28:37.860 --> 00:28:40.160
+- Yeah, absolutely.
+
+
+00:28:40.160 --> 00:28:43.520
+All right.
+
+
+00:28:43.520 --> 00:28:45.360
+- All right, am I up now?
+
+
+00:28:45.360 --> 00:28:46.200
+- Yeah, you're up.
+
+
+00:28:46.200 --> 00:28:50.400
+- So, Mr. Shaw being in the audience here
+
+
+00:28:50.400 --> 00:28:51.360
+was a bit of a surprise,
+
+
+00:28:51.360 --> 00:28:55.760
+But one of the things I wanted to talk about is--
+
+
+00:28:55.760 --> 00:28:56.920
+I'm going to butcher this.
+
+
+00:28:56.920 --> 00:28:58.200
+I apologize.
+
+
+00:28:58.200 --> 00:28:59.240
+Pyjayan.
+
+
+00:28:59.240 --> 00:29:00.000
+>>Pigeon.
+
+
+00:29:00.000 --> 00:29:00.800
+I think it's Pigeon.
+
+
+00:29:00.800 --> 00:29:01.560
+I have the picture.
+
+
+00:29:01.560 --> 00:29:02.520
+It's Pigeon, right?
+
+
+00:29:02.520 --> 00:29:03.680
+>>Oh my goodness.
+
+
+00:29:03.680 --> 00:29:04.560
+OK, yes.
+
+
+00:29:04.560 --> 00:29:06.360
+What a wonderful name.
+
+
+00:29:06.360 --> 00:29:13.240
+And I've been fascinated by this.
+
+
+00:29:13.240 --> 00:29:18.280
+And so what Pigeon is--
+
+
+00:29:18.280 --> 00:29:20.960
+this feels so awkward to talk about somebody else's project
+
+
+00:29:20.960 --> 00:29:22.280
+when they're in the audience here,
+
+
+00:29:22.280 --> 00:29:24.600
+is a JIT extension of CPython
+
+
+00:29:24.600 --> 00:29:28.840
+that compiles Python code using the .NET 5 CLR.
+
+
+00:29:28.840 --> 00:29:33.840
+And what's been fascinating to me about this
+
+
+00:29:33.840 --> 00:29:39.380
+is this is like a whole area of software
+
+
+00:29:39.380 --> 00:29:42.520
+that I have absolutely no experience with.
+
+
+00:29:42.520 --> 00:29:43.680
+Like I know nothing about,
+
+
+00:29:43.680 --> 00:29:48.520
+but I've been following what Anthony's been talking about
+
+
+00:29:48.520 --> 00:29:49.680
+on Twitter about it.
+
+
+00:29:49.680 --> 00:29:53.920
+And he's been explaining what he's doing,
+
+
+00:29:53.920 --> 00:29:59.120
+along the way in these Twitter size increments
+
+
+00:29:59.120 --> 00:30:03.520
+that I feel like I'm able to follow along with the attendant
+
+
+00:30:03.520 --> 00:30:06.480
+and I found that this project absolutely fascinating
+
+
+00:30:06.480 --> 00:30:10.240
+and I'm seeing like the rates of improvement over time
+
+
+00:30:10.240 --> 00:30:12.280
+and I've just been absolutely blown away.
+
+
+00:30:12.280 --> 00:30:18.120
+And so I think this has been absolutely amazing
+
+
+00:30:18.120 --> 00:30:21.200
+And I really hope that, I'm really curious.
+
+
+00:30:21.200 --> 00:30:23.800
+So one of the benchmarks that Anthony's been using
+
+
+00:30:23.800 --> 00:30:27.200
+is his own Python implementation of the end body problem,
+
+
+00:30:27.200 --> 00:30:30.640
+which is sort of funny that it's come up
+
+
+00:30:30.640 --> 00:30:33.560
+'cause I've been wanting to do an end body
+
+
+00:30:33.560 --> 00:30:35.760
+plotting example in PyQt Graph.
+
+
+00:30:35.760 --> 00:30:41.000
+And of course, this has been sort of on my to-do
+
+
+00:30:41.000 --> 00:30:42.680
+for some time, so now I'm curious
+
+
+00:30:42.680 --> 00:30:44.620
+if I should even attempt to,
+
+
+00:30:44.620 --> 00:30:46.840
+or if it's even remotely possible
+
+
+00:30:46.840 --> 00:30:50.620
+to try and integrate those functionalities together.
+
+
+00:30:50.620 --> 00:30:53.560
+- Oh, that's cool.
+
+
+00:30:53.560 --> 00:30:56.160
+- And go ahead.
+
+
+00:30:56.160 --> 00:30:57.000
+- No, no, go ahead.
+
+
+00:30:57.000 --> 00:30:57.820
+- Oh, sorry.
+
+
+00:30:57.820 --> 00:30:59.520
+The other things that I've,
+
+
+00:30:59.520 --> 00:31:00.660
+then this is,
+
+
+00:31:00.660 --> 00:31:04.760
+these, the other thing that I've recently used
+
+
+00:31:04.760 --> 00:31:07.180
+for some extension or made use of,
+
+
+00:31:07.180 --> 00:31:08.400
+but it's not particularly new,
+
+
+00:31:08.400 --> 00:31:13.160
+is the NumPy's underscore or Dunder array function,
+
+
+00:31:14.440 --> 00:31:18.200
+functionality which is specified in NEP18.
+
+
+00:31:18.200 --> 00:31:23.200
+And what that allows for is using NumPy methods
+
+
+00:31:23.200 --> 00:31:29.480
+on not necessarily NumPy arrays.
+
+
+00:31:29.480 --> 00:31:34.160
+So for example, with Coupy, you can use like the NumPy
+
+
+00:31:34.160 --> 00:31:37.240
+methods that would operate on an ND array,
+
+
+00:31:37.240 --> 00:31:40.980
+but use it on a Coupy array.
+
+
+00:31:40.980 --> 00:31:43.840
+And this is not limited to Coupy.
+
+
+00:31:43.840 --> 00:31:47.780
+There's other libraries that offer this functionality too,
+
+
+00:31:47.780 --> 00:31:50.680
+but this makes it so much easier to integrate
+
+
+00:31:50.680 --> 00:31:56.740
+various libraries together
+
+
+00:31:56.740 --> 00:31:59.240
+with really having minimal code impact
+
+
+00:31:59.240 --> 00:32:02.080
+and having near identical APIs.
+
+
+00:32:02.080 --> 00:32:04.440
+And earlier I was talking about the pull request
+
+
+00:32:04.440 --> 00:32:08.240
+for giving Coupy support into PyKey Dgraph
+
+
+00:32:08.240 --> 00:32:11.360
+and this functionality, which was implemented in Coupy,
+
+
+00:32:11.360 --> 00:32:14.640
+but it's made the integration so much easier.
+
+
+00:32:14.640 --> 00:32:16.560
+- Nice, 'cause you guys already implemented with NumPy
+
+
+00:32:16.560 --> 00:32:17.400
+and it's just like,
+
+
+00:32:17.400 --> 00:32:19.200
+we're just gonna go through this layer basically.
+
+
+00:32:19.200 --> 00:32:21.520
+- Yeah, I mean, there's some other gotchas
+
+
+00:32:21.520 --> 00:32:22.520
+that you have to have, right?
+
+
+00:32:22.520 --> 00:32:25.200
+With handing stuff off to the GPU and stuff like that.
+
+
+00:32:25.200 --> 00:32:27.560
+But yeah, no, that's...
+
+
+00:32:27.560 --> 00:32:30.720
+But the actual size of the diff was not that big.
+
+
+00:32:30.720 --> 00:32:35.000
+- Well, and you think what it means
+
+
+00:32:35.000 --> 00:32:37.080
+to run on a CPU or run on a GPU.
+
+
+00:32:37.080 --> 00:32:41.040
+Like that's a very different whole set of computing
+
+
+00:32:41.040 --> 00:32:44.920
+and assumptions and environments and right.
+
+
+00:32:44.920 --> 00:32:49.920
+And so on and to make that a very small merge is crazy.
+
+
+00:32:49.920 --> 00:32:53.880
+- Right, yeah, no, it's fantastic.
+
+
+00:32:53.880 --> 00:32:55.720
+Yeah, it's as I said, it's nothing new.
+
+
+00:32:55.720 --> 00:32:57.560
+This functionality has existed,
+
+
+00:32:57.560 --> 00:32:59.520
+is been enabled by default in NumPy
+
+
+00:32:59.520 --> 00:33:02.080
+since version 1.17, which I believe
+
+
+00:33:02.080 --> 00:33:05.640
+is almost coming up on two years old now.
+
+
+00:33:05.640 --> 00:33:08.320
+But this is the first time I've made use
+
+
+00:33:08.320 --> 00:33:10.120
+of this functionality or been impacted
+
+
+00:33:10.120 --> 00:33:13.320
+this functionality directly and I'm so appreciative of it.
+
+
+00:33:13.320 --> 00:33:19.240
+Yeah, fantastic. And that's super cool. It's I've not really
+
+
+00:33:19.240 --> 00:33:22.560
+found a reason for me to work with QPi or anything like that.
+
+
+00:33:22.560 --> 00:33:26.800
+But I just really excited about the possibilities for people for
+
+
+00:33:26.800 --> 00:33:27.920
+who it does matter, you know?
+
+
+00:33:27.920 --> 00:33:35.840
+Yeah, I actually, I always every time I hear about it, I write a
+
+
+00:33:35.840 --> 00:33:38.120
+note down to say, Oh, I got to check this out. Looks neat.
+
+
+00:33:39.760 --> 00:33:41.760
+Absolutely.
+
+
+00:33:41.760 --> 00:33:50.320
+Well, there we go, there's our six items. Do you have anything extra for us, Michael?
+
+
+00:33:50.320 --> 00:33:54.320
+Oh, this almost could be an extra, extra, extra, extra. You're all about it.
+
+
+00:33:54.320 --> 00:33:56.320
+So I'm just going to throw a few things out really quick.
+
+
+00:33:56.320 --> 00:34:03.200
+One, I got my new M1 not long ago and actually had to send in my old laptop.
+
+
+00:34:03.200 --> 00:34:08.240
+Its battery was dying, its motherboard was dying, all sorts of things. So
+
+
+00:34:09.040 --> 00:34:10.960
+I had to put in a box and send it away.
+
+
+00:34:10.960 --> 00:34:13.540
+I'm like, I don't really want to put my data in here.
+
+
+00:34:13.540 --> 00:34:14.920
+So I just formatted that as well.
+
+
+00:34:14.920 --> 00:34:16.240
+So now I have two brand new computers.
+
+
+00:34:16.240 --> 00:34:17.820
+I'm trying to think, like, all right,
+
+
+00:34:17.820 --> 00:34:22.180
+I'm kind of getting bugged by how much spying, monitoring,
+
+
+00:34:22.180 --> 00:34:24.320
+observation, all these different companies are doing.
+
+
+00:34:24.320 --> 00:34:26.400
+So I've started running just Firefox.
+
+
+00:34:26.400 --> 00:34:30.440
+But also, a lot of times, like for example, StreamYard,
+
+
+00:34:30.440 --> 00:34:32.160
+I can't use a green screen on Firefox.
+
+
+00:34:32.160 --> 00:34:33.840
+I have to use Chrome, it says.
+
+
+00:34:33.840 --> 00:34:35.880
+And I'm like, I don't really want to use Chrome,
+
+
+00:34:35.880 --> 00:34:37.980
+but I want a green screen.
+
+
+00:34:37.980 --> 00:34:39.020
+So here I am.
+
+
+00:34:39.020 --> 00:34:41.000
+So I've started using Brave.
+
+
+00:34:41.000 --> 00:34:42.540
+Whenever something says I have to have Chrome,
+
+
+00:34:42.540 --> 00:34:43.420
+I start using Brave,
+
+
+00:34:43.420 --> 00:34:46.060
+which is a more privacy-focused browser.
+
+
+00:34:46.060 --> 00:34:47.300
+So I thought that was interesting.
+
+
+00:34:47.300 --> 00:34:50.220
+And just turning on a VPN like all the time,
+
+
+00:34:50.220 --> 00:34:53.980
+just to limit people observing,
+
+
+00:34:53.980 --> 00:34:57.100
+not that I really need to keep anything super secret.
+
+
+00:34:57.100 --> 00:35:00.020
+Two conferences are coming out with calls for proposals
+
+
+00:35:00.020 --> 00:35:03.300
+that are due quite soon.
+
+
+00:35:03.300 --> 00:35:08.260
+So the Python web conf is got some calls for proposal.
+
+
+00:35:08.260 --> 00:35:12.320
+The conference is actually March 24th.
+
+
+00:35:12.320 --> 00:35:16.820
+That order is not quite right, is it?
+
+
+00:35:16.820 --> 00:35:19.360
+22nd to 26th.
+
+
+00:35:19.360 --> 00:35:21.860
+If you look at their site,
+
+
+00:35:21.860 --> 00:35:24.820
+like the days that it's on are like sort of not in order.
+
+
+00:35:24.820 --> 00:35:27.900
+Anyway, end of March, there's a cool online conference.
+
+
+00:35:27.900 --> 00:35:30.660
+They did this last year, Six Feet Up did,
+
+
+00:35:30.660 --> 00:35:32.540
+and they're doing it again this year.
+
+
+00:35:32.540 --> 00:35:33.780
+I'm actually speaking here.
+
+
+00:35:33.780 --> 00:35:35.660
+Brian, are you speaking there?
+
+
+00:35:35.660 --> 00:35:36.660
+- The webconf?
+
+
+00:35:36.660 --> 00:35:38.140
+- Yeah.
+
+
+00:35:38.140 --> 00:35:40.580
+Well, there's a call for paper, so you could be.
+
+
+00:35:40.580 --> 00:35:41.580
+You could be on it.
+
+
+00:35:41.580 --> 00:35:44.220
+Yeah, and I think they expanded it out
+
+
+00:35:44.220 --> 00:35:45.340
+to be like five days or something.
+
+
+00:35:45.340 --> 00:35:47.580
+So there'll be a lot of content, which is very cool.
+
+
+00:35:47.580 --> 00:35:50.660
+So I'll be giving a talk on Python memory deep dive there,
+
+
+00:35:50.660 --> 00:35:51.580
+I believe.
+
+
+00:35:51.580 --> 00:35:54.320
+And then the big one, PyCon.
+
+
+00:35:54.320 --> 00:35:56.600
+PyCon is virtual again this year,
+
+
+00:35:56.600 --> 00:35:59.220
+but the call for proposals has gone out
+
+
+00:35:59.220 --> 00:36:01.780
+and is they're due February 12th.
+
+
+00:36:01.780 --> 00:36:03.580
+So if you want to be part of PyCon,
+
+
+00:36:03.580 --> 00:36:07.120
+get out there and send something in.
+
+
+00:36:07.120 --> 00:36:09.380
+- Are you going to submit something?
+
+
+00:36:09.380 --> 00:36:11.660
+- I will probably do it, yeah.
+
+
+00:36:11.660 --> 00:36:13.500
+It means I got more work to do,
+
+
+00:36:13.500 --> 00:36:16.240
+but yeah, I think I'll do it.
+
+
+00:36:16.240 --> 00:36:17.940
+You got any plans?
+
+
+00:36:17.940 --> 00:36:19.660
+- I'll probably submit something,
+
+
+00:36:19.660 --> 00:36:22.160
+maybe three, four, five, six, seven, eight, nine.
+
+
+00:36:22.160 --> 00:36:24.400
+(laughing)
+
+
+00:36:24.400 --> 00:36:26.120
+- The more you submit, the better chances you got.
+
+
+00:36:26.120 --> 00:36:27.820
+Augie, you going to submit either?
+
+
+00:36:27.820 --> 00:36:31.760
+- There's talk amongst us PyKitty Graph Maintainers
+
+
+00:36:31.760 --> 00:36:35.500
+about doing a tutorial session at SciPy.
+
+
+00:36:35.500 --> 00:36:38.640
+So I might, no, that's not listed here,
+
+
+00:36:38.640 --> 00:36:40.960
+but we're considering doing that,
+
+
+00:36:40.960 --> 00:36:41.800
+which SciPy is also virtual.
+
+
+00:36:41.800 --> 00:36:43.120
+- Oh yeah, that'd make a lot of sense.
+
+
+00:36:43.120 --> 00:36:44.920
+Yeah, that's cool.
+
+
+00:36:44.920 --> 00:36:46.080
+Awesome.
+
+
+00:36:46.080 --> 00:36:48.560
+Then final here, here, here, all about extra stuff
+
+
+00:36:48.560 --> 00:36:50.740
+is Apple is launching a racial equity
+
+
+00:36:50.740 --> 00:36:54.960
+and justice initiative, which I think is pretty cool.
+
+
+00:36:54.960 --> 00:36:58.880
+Basically, they're setting up centers to teach programming
+
+
+00:36:58.880 --> 00:37:01.220
+and other entrepreneurship skills
+
+
+00:37:01.220 --> 00:37:03.780
+in underserved communities, right?
+
+
+00:37:03.780 --> 00:37:04.900
+And I know there's again,
+
+
+00:37:04.900 --> 00:37:06.140
+a lot of political stuff around all this,
+
+
+00:37:06.140 --> 00:37:08.880
+but to me, I would just love to be in a world
+
+
+00:37:08.880 --> 00:37:10.280
+where I look around the community
+
+
+00:37:10.280 --> 00:37:13.020
+and it looks representative of everybody, right?
+
+
+00:37:13.020 --> 00:37:15.400
+I like people feel included.
+
+
+00:37:15.400 --> 00:37:17.680
+Like tech is such a wonderful space.
+
+
+00:37:17.680 --> 00:37:20.420
+I think this is a cool initiative.
+
+
+00:37:20.420 --> 00:37:21.940
+Obviously it could be,
+
+
+00:37:21.940 --> 00:37:25.180
+hopefully they deliver it in the right way.
+
+
+00:37:25.180 --> 00:37:26.020
+It's not just like,
+
+
+00:37:26.020 --> 00:37:27.640
+we're gonna teach everyone how to build iPhone apps.
+
+
+00:37:27.640 --> 00:37:28.840
+That's what the world is, right?
+
+
+00:37:28.840 --> 00:37:31.600
+You know, it's a more broad sort of conversation
+
+
+00:37:31.600 --> 00:37:33.360
+could go any which way.
+
+
+00:37:33.360 --> 00:37:34.920
+And I hopefully it was just a start.
+
+
+00:37:34.920 --> 00:37:36.600
+Like if you look, they're saying they're donating
+
+
+00:37:36.600 --> 00:37:38.400
+a hundred million dollars to this cause,
+
+
+00:37:38.400 --> 00:37:40.320
+which is a lot of money,
+
+
+00:37:40.320 --> 00:37:43.000
+but it's also only eight hours of profit to Apple.
+
+
+00:37:43.000 --> 00:37:45.920
+So yeah, it's got room to grow, I suppose.
+
+
+00:37:45.920 --> 00:37:48.720
+Anyway, I just want to give a shout out to that as well.
+
+
+00:37:48.720 --> 00:37:49.920
+That seemed pretty cool.
+
+
+00:37:49.920 --> 00:37:52.360
+Hi Brian, how about you?
+
+
+00:37:52.360 --> 00:37:53.680
+More conference stuff?
+
+
+00:37:53.680 --> 00:37:55.680
+- Well, PyCascades is,
+
+
+00:37:55.680 --> 00:37:58.640
+actually I don't remember when it is, but.
+
+
+00:37:58.640 --> 00:37:59.760
+February, possibly.
+
+
+00:37:59.760 --> 00:38:00.900
+- February, probably.
+
+
+00:38:00.900 --> 00:38:04.120
+Yep, February 20th, it starts.
+
+
+00:38:04.120 --> 00:38:07.200
+And there is the schedule's up.
+
+
+00:38:07.200 --> 00:38:09.040
+So I wanted to announce the schedule's there
+
+
+00:38:09.040 --> 00:38:10.040
+so you can check it out.
+
+
+00:38:10.040 --> 00:38:11.840
+There's still tickets available
+
+
+00:38:11.840 --> 00:38:14.360
+and you can see what's gonna happen.
+
+
+00:38:14.360 --> 00:38:18.720
+I really had fun at the in-person Pi Cascades
+
+
+00:38:18.720 --> 00:38:20.740
+and I think they did a good job
+
+
+00:38:20.740 --> 00:38:23.440
+for the online one in 2020.
+
+
+00:38:23.440 --> 00:38:25.800
+So, and we're gonna be there.
+
+
+00:38:25.800 --> 00:38:26.640
+- Yeah, we are.
+
+
+00:38:26.640 --> 00:38:28.080
+We're on a panel.
+
+
+00:38:28.080 --> 00:38:30.280
+- Yeah. - Along with Ollie Spittel.
+
+
+00:38:30.280 --> 00:38:31.560
+- Yeah, should be fun.
+
+
+00:38:31.560 --> 00:38:33.240
+But there's, - Yeah, it's gonna be fun.
+
+
+00:38:33.240 --> 00:38:35.880
+- About podcasting, but there's like another panel
+
+
+00:38:35.880 --> 00:38:40.280
+about writing technical books that looks good.
+
+
+00:38:40.280 --> 00:38:41.360
+There's a bunch of cool talks
+
+
+00:38:41.360 --> 00:38:43.840
+that I'm looking forward to seeing, so.
+
+
+00:38:43.840 --> 00:38:45.320
+- Yeah, me too, it looks great.
+
+
+00:38:45.320 --> 00:38:46.940
+I love all these online conferences
+
+
+00:38:46.940 --> 00:38:49.380
+that it's pretty accessible to everybody.
+
+
+00:38:49.380 --> 00:38:51.320
+Last year, if we would announce this,
+
+
+00:38:51.320 --> 00:38:52.400
+it'd be like, "Oh, well, I'm not in Portland,
+
+
+00:38:52.400 --> 00:38:53.760
+"so it doesn't matter to me."
+
+
+00:38:53.760 --> 00:38:54.760
+- Yeah. - Right, but.
+
+
+00:38:56.520 --> 00:38:58.700
+Agi, I know you got some stuff to shout out real quick,
+
+
+00:38:58.700 --> 00:39:02.900
+but also a quick question, a follow-up from Anthony.
+
+
+00:39:02.900 --> 00:39:07.380
+NumPy uses AVX extensions for native matrix multiplication
+
+
+00:39:07.380 --> 00:39:08.780
+on supported CPUs.
+
+
+00:39:08.780 --> 00:39:10.800
+It'd be interesting if that extension supported the same
+
+
+00:39:10.800 --> 00:39:12.660
+for non-NumPy arrays.
+
+
+00:39:12.660 --> 00:39:13.920
+Thoughts, ideas?
+
+
+00:39:13.920 --> 00:39:15.060
+- Yeah, I...
+
+
+00:39:15.060 --> 00:39:20.260
+Yes, I'm sure you can use those extensions on...
+
+
+00:39:20.260 --> 00:39:24.420
+I mean, NumPy doesn't have a monopoly on AVX extensions.
+
+
+00:39:24.420 --> 00:39:27.140
+It just needs-- whatever library you use,
+
+
+00:39:27.140 --> 00:39:28.380
+I think it just need to--
+
+
+00:39:28.380 --> 00:39:33.180
+or it would need to be compiled with the Intel MKL
+
+
+00:39:33.180 --> 00:39:37.620
+BLAS extension, which goes into build systems, which
+
+
+00:39:37.620 --> 00:39:40.580
+is way over my head.
+
+
+00:39:40.580 --> 00:39:42.580
+And I--
+
+
+00:39:42.580 --> 00:39:45.300
+Yeah, I used to live in the C++ world and whatnot,
+
+
+00:39:45.300 --> 00:39:47.700
+but I'm far from that world that you and Anthony
+
+
+00:39:47.700 --> 00:39:50.100
+are inhabiting these days.
+
+
+00:39:50.100 --> 00:39:53.860
+Right, so yeah, I'm short.
+
+
+00:39:53.860 --> 00:39:54.700
+- I'm not sure.
+
+
+00:39:54.700 --> 00:39:56.580
+But in terms of the extras,
+
+
+00:39:56.580 --> 00:39:59.040
+a couple of things I wanted to bring attention to is,
+
+
+00:39:59.040 --> 00:40:01.800
+I've been loving the Anthony Explains video series
+
+
+00:40:01.800 --> 00:40:03.640
+and these are generated by,
+
+
+00:40:03.640 --> 00:40:05.800
+oh God, I'm probably gonna mispronounce his last name,
+
+
+00:40:05.800 --> 00:40:08.580
+Anthony Stile, he's been a guest on,
+
+
+00:40:08.580 --> 00:40:10.760
+can't remember if he's been a guest here,
+
+
+00:40:10.760 --> 00:40:13.080
+but I think he's been a guest on Talk Python to me.
+
+
+00:40:13.080 --> 00:40:16.680
+He maintains Precommit, he's a pytest developer.
+
+
+00:40:16.680 --> 00:40:17.960
+- Anthony Sotili.
+
+
+00:40:17.960 --> 00:40:18.800
+- Sotili.
+
+
+00:40:21.280 --> 00:40:25.780
+And I've been absolutely loving his Anthony Explains playlist series.
+
+
+00:40:25.780 --> 00:40:29.820
+The other resource that I've recently found myself having to make use of
+
+
+00:40:29.820 --> 00:40:31.420
+is Learn X and Y Minutes.
+
+
+00:40:31.420 --> 00:40:36.860
+Sometimes I have to write something in a text stack or in a language
+
+
+00:40:36.860 --> 00:40:38.820
+I have absolutely no familiarity with.
+
+
+00:40:38.820 --> 00:40:43.060
+And so that resource has been absolutely amazing
+
+
+00:40:43.060 --> 00:40:47.760
+for the five-minute overview, right, on the real business.
+
+
+00:40:47.760 --> 00:40:48.760
+Yeah, that's cool.
+
+
+00:40:49.140 --> 00:40:52.220
+And then the other one is this book I've been reading,
+
+
+00:40:52.220 --> 00:40:54.060
+Working in Public.
+
+
+00:40:54.060 --> 00:40:56.940
+And I think Guido plugged it a while ago
+
+
+00:40:56.940 --> 00:40:58.180
+on his Twitter feed,
+
+
+00:40:58.180 --> 00:41:02.580
+but it talks about maintaining open source projects
+
+
+00:41:02.580 --> 00:41:07.620
+and some of the issues arising that I think it's,
+
+
+00:41:07.620 --> 00:41:09.420
+I'm still not done with it,
+
+
+00:41:09.420 --> 00:41:10.820
+but I think it's both helpful
+
+
+00:41:10.820 --> 00:41:13.840
+from a maintainer point of view to,
+
+
+00:41:13.840 --> 00:41:17.660
+for sanity checking your experiences might not,
+
+
+00:41:17.660 --> 00:41:19.380
+might not be as isolated.
+
+
+00:41:19.380 --> 00:41:22.600
+And I think it's helpful for new open source contributors
+
+
+00:41:22.600 --> 00:41:24.900
+to see what things might look like
+
+
+00:41:24.900 --> 00:41:27.060
+from the maintainer's perspective as well.
+
+
+00:41:27.060 --> 00:41:28.300
+- I love that. - That's a really good thing.
+
+
+00:41:28.300 --> 00:41:30.340
+Yeah, have you read it, Brian?
+
+
+00:41:30.340 --> 00:41:32.620
+- It has an audio book version, so I listened to it.
+
+
+00:41:32.620 --> 00:41:36.140
+And you wouldn't think like a book on open source
+
+
+00:41:36.140 --> 00:41:38.740
+would be good audio, but it was great.
+
+
+00:41:38.740 --> 00:41:39.640
+- Yeah, fantastic.
+
+
+00:41:39.640 --> 00:41:41.380
+Yeah, awesome.
+
+
+00:41:41.380 --> 00:41:44.060
+All right, well, Brian, should we do a joke?
+
+
+00:41:44.060 --> 00:41:45.020
+- Yes, we should.
+
+
+00:41:45.940 --> 00:41:48.460
+All right, so I put two jokes into the show notes.
+
+
+00:41:48.460 --> 00:41:50.740
+One of them is a rap song,
+
+
+00:41:50.740 --> 00:41:53.720
+which I know Brian is especially fond of.
+
+
+00:41:53.720 --> 00:41:57.500
+It's a rap song about working at the help desk.
+
+
+00:41:57.500 --> 00:41:59.620
+So if you're the help desk for your company,
+
+
+00:41:59.620 --> 00:42:02.540
+or I guess public support as well,
+
+
+00:42:02.540 --> 00:42:04.740
+it's by dual called "Here to Help."
+
+
+00:42:04.740 --> 00:42:06.340
+And man, it is so funny.
+
+
+00:42:06.340 --> 00:42:10.860
+It's a video song, you know, on YouTube.
+
+
+00:42:10.860 --> 00:42:12.100
+So it doesn't really make sense to cover it,
+
+
+00:42:12.100 --> 00:42:13.200
+but I thought I'd throw it in there
+
+
+00:42:13.200 --> 00:42:16.000
+as a pre-recommendation,
+
+
+00:42:16.000 --> 00:42:17.500
+what I'm gonna actually talk about.
+
+
+00:42:17.500 --> 00:42:18.340
+Augie, what do you think?
+
+
+00:42:18.340 --> 00:42:19.160
+I see you smiling.
+
+
+00:42:19.160 --> 00:42:23.240
+- Oh, I have to say that song was just jam after jam
+
+
+00:42:23.240 --> 00:42:24.080
+after jam, it was--
+
+
+00:42:24.080 --> 00:42:24.920
+- It is.
+
+
+00:42:24.920 --> 00:42:26.000
+(laughs)
+
+
+00:42:26.000 --> 00:42:28.520
+I need you to click your right mouse button.
+
+
+00:42:28.520 --> 00:42:29.980
+I only have one mouse.
+
+
+00:42:29.980 --> 00:42:30.960
+(laughs)
+
+
+00:42:30.960 --> 00:42:35.660
+So here's the actual Python related joke for us.
+
+
+00:42:35.660 --> 00:42:40.520
+And it's a tech support thing.
+
+
+00:42:40.520 --> 00:42:43.880
+Brian, why don't you be the person that needs some help?
+
+
+00:42:43.880 --> 00:42:45.360
+- Okay.
+
+
+00:42:45.360 --> 00:42:46.720
+Hi.
+
+
+00:42:46.720 --> 00:42:48.640
+- This is a chat by the way.
+
+
+00:42:48.640 --> 00:42:50.600
+Tech support, how may I help you?
+
+
+00:42:50.600 --> 00:42:51.680
+- Hi, I've got a problem.
+
+
+00:42:51.680 --> 00:42:54.480
+Your program is telling me to get a pet snake.
+
+
+00:42:54.480 --> 00:42:56.140
+I don't want one.
+
+
+00:42:56.140 --> 00:42:57.440
+- Excuse me?
+
+
+00:42:57.440 --> 00:42:59.040
+- It's giving me a message telling me
+
+
+00:42:59.040 --> 00:43:01.240
+I need a snake to run it.
+
+
+00:43:01.240 --> 00:43:04.520
+- Okay, read the message to me, please.
+
+
+00:43:04.520 --> 00:43:06.960
+- Python required to run the script.
+
+
+00:43:06.960 --> 00:43:09.880
+That's terrible.
+
+
+00:43:09.880 --> 00:43:12.380
+- And it's terrible, terribly good is what it is.
+
+
+00:43:12.380 --> 00:43:19.760
+- Hey, I wanted to add some humor as well.
+
+
+00:43:19.760 --> 00:43:20.600
+- All right, do it.
+
+
+00:43:20.600 --> 00:43:23.800
+- So I saw this on Twitter and it was a quote from,
+
+
+00:43:23.800 --> 00:43:28.000
+from, how do I, I don't know how to pronounce that name.
+
+
+00:43:28.000 --> 00:43:31.240
+Byron, Brian, Byron, I don't know.
+
+
+00:43:31.240 --> 00:43:33.200
+Quote from Byron Hobart,
+
+
+00:43:33.200 --> 00:43:35.520
+"Running a successful open source project
+
+
+00:43:35.520 --> 00:43:38.080
+is just goodwill hunting in reverse,
+
+
+00:43:38.080 --> 00:43:40.280
+where you start out as a respected genius
+
+
+00:43:40.280 --> 00:43:43.040
+and you end up being a janitor who gets into fights.
+
+
+00:43:43.040 --> 00:43:45.400
+- Yeah, that's awesome.
+
+
+00:43:45.400 --> 00:43:47.200
+And it goes right along with the book recommendation
+
+
+00:43:47.200 --> 00:43:48.040
+as well.
+
+
+00:43:48.040 --> 00:43:53.320
+Well, that's a good way to put a cap in.
+
+
+00:43:53.320 --> 00:43:56.840
+Yep.
+
+
+00:43:56.840 --> 00:43:59.280
+All right.
+
+
+00:43:59.280 --> 00:44:01.760
+Well, thank you, Brian.
+
+
+00:44:01.760 --> 00:44:02.600
+- Thank you. - Thank you, Yogi.
+
+
+00:44:02.600 --> 00:44:04.400
+- Thank you for having me.
+
+
+00:44:04.400 --> 00:44:05.240
+- Bye everyone.
+
+
+00:44:05.240 --> 00:44:15.240
+[BLANK_AUDIO]
+

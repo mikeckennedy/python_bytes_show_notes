@@ -1,0 +1,3357 @@
+WEBVTT
+
+00:00:00.000 --> 00:00:02.940
+>> It's been mild. Hey, everybody.
+
+
+00:00:02.940 --> 00:00:05.620
+Welcome to test, not testing code.
+
+
+00:00:05.620 --> 00:00:09.820
+Welcome to Python Bytes. Hey, Michael.
+
+
+00:00:09.820 --> 00:00:12.340
+>> Hey, Brian. Hey, everyone out there on the live stream,
+
+
+00:00:12.340 --> 00:00:14.160
+we're watching later. Thanks for being here.
+
+
+00:00:14.160 --> 00:00:15.700
+>> Well, let's kick off the show.
+
+
+00:00:15.700 --> 00:00:18.660
+This is, let's just go.
+
+
+00:00:18.660 --> 00:00:21.000
+Hello and welcome to Python Bytes where we deliver
+
+
+00:00:21.000 --> 00:00:23.400
+Python news and headlines directly to your earbuds.
+
+
+00:00:23.400 --> 00:00:26.000
+This is Episode 319,
+
+
+00:00:26.000 --> 00:00:29.220
+and recorded January 17, 2023.
+
+
+00:00:29.220 --> 00:00:30.960
+And I'm Brian Okken.
+
+
+00:00:30.960 --> 00:00:32.260
+- And I'm Michael Kennedy.
+
+
+00:00:32.260 --> 00:00:35.680
+- Well, I'm super excited to talk about
+
+
+00:00:35.680 --> 00:00:37.620
+whatever you have to share with us.
+
+
+00:00:37.620 --> 00:00:39.400
+But before we go, before we get started,
+
+
+00:00:39.400 --> 00:00:42.240
+I just want to say thanks to Microsoft for Startup
+
+
+00:00:42.240 --> 00:00:44.540
+Founders Hub for sponsoring this episode.
+
+
+00:00:44.540 --> 00:00:46.580
+Listen to their spot later in the show
+
+
+00:00:46.580 --> 00:00:49.680
+and let's see what you have to talk about, Michael.
+
+
+00:00:49.680 --> 00:00:50.740
+- What do I got to talk about?
+
+
+00:00:50.740 --> 00:00:51.580
+I also want to remind people
+
+
+00:00:51.580 --> 00:00:53.520
+they can go to Python by Set FM,
+
+
+00:00:53.520 --> 00:00:56.660
+click on the live stream and see all the upcoming live streams
+
+
+00:00:56.660 --> 00:00:57.660
+and be part of that.
+
+
+00:00:57.660 --> 00:00:59.660
+So it's always awesome to have them there.
+
+
+00:00:59.660 --> 00:01:00.860
+And follow us on Mastodon.
+
+
+00:01:00.860 --> 00:01:02.260
+We got all of our things there.
+
+
+00:01:02.260 --> 00:01:04.260
+Believe it or not, we actually do a couple of things
+
+
+00:01:04.260 --> 00:01:06.100
+on Mastodon every now and then.
+
+
+00:01:06.100 --> 00:01:11.000
+But what I want to do is actually talk about this article
+
+
+00:01:11.000 --> 00:01:13.640
+that Ned Banchelder wrote, which I found on Mastodon
+
+
+00:01:13.640 --> 00:01:18.180
+when we did our tools for readmes and other repo homepage
+
+
+00:01:18.180 --> 00:01:22.780
+types of things, called the Secure Maintainer Workflow.
+
+
+00:01:22.780 --> 00:01:26.700
+So Brian, we got to judge the level of paranoia here.
+
+
+00:01:26.700 --> 00:01:32.780
+Do you worry about people get into like pytest check?
+
+
+00:01:32.780 --> 00:01:34.740
+Do you worry about people getting on your computer
+
+
+00:01:34.740 --> 00:01:38.540
+and accessing SSH keys or things like that?
+
+
+00:01:38.540 --> 00:01:42.300
+- I don't, I don't know if I should, but I don't.
+
+
+00:01:42.300 --> 00:01:45.260
+- Well, Ned does.
+
+
+00:01:45.260 --> 00:01:48.020
+And I share some of his concern, you know,
+
+
+00:01:48.020 --> 00:01:52.440
+like on my hard drive, I have SSH keys.
+
+
+00:01:52.440 --> 00:01:55.000
+if you could figure out what computers those went to,
+
+
+00:01:55.000 --> 00:01:57.460
+you could remotely log into them.
+
+
+00:01:57.460 --> 00:02:00.060
+There's a few layers of indirection
+
+
+00:02:00.060 --> 00:02:02.120
+that make that more difficult than you would imagine,
+
+
+00:02:02.120 --> 00:02:05.040
+but still not that tricky.
+
+
+00:02:05.040 --> 00:02:07.520
+And there's been a bunch of issues.
+
+
+00:02:07.520 --> 00:02:11.560
+For example, let's see, there's the CircleCI breach,
+
+
+00:02:11.560 --> 00:02:14.640
+I believe it's probably a fair search term.
+
+
+00:02:14.640 --> 00:02:20.000
+CircleCI is super scary because they build the things
+
+
+00:02:20.000 --> 00:02:21.180
+that companies ship.
+
+
+00:02:22.400 --> 00:02:25.880
+So if you ship a website or a mobile app
+
+
+00:02:25.880 --> 00:02:29.200
+or you ship a desktop app or any of those types of things,
+
+
+00:02:29.200 --> 00:02:32.200
+it's automated potentially through CircleCI
+
+
+00:02:32.200 --> 00:02:33.040
+and you send it out.
+
+
+00:02:33.040 --> 00:02:36.240
+So if somebody say were to take over your CircleCI,
+
+
+00:02:36.240 --> 00:02:38.020
+that would be bad.
+
+
+00:02:38.020 --> 00:02:41.360
+Believe what happened was somebody had gotten hold of
+
+
+00:02:41.360 --> 00:02:45.720
+someone who works on CircleCI
+
+
+00:02:45.720 --> 00:02:49.880
+gone into their GitHub account, right?
+
+
+00:02:49.880 --> 00:02:51.880
+That could be through an SSH key
+
+
+00:02:51.880 --> 00:02:53.520
+Or when you're on your terminal,
+
+
+00:02:53.520 --> 00:02:56.640
+you could just type git add, git push,
+
+
+00:02:56.640 --> 00:02:58.240
+all those types of things, right?
+
+
+00:02:58.240 --> 00:03:02.640
+So Ned says, well, what can I do
+
+
+00:03:02.640 --> 00:03:07.640
+so that if someone did get access to run code on my behalf,
+
+
+00:03:07.640 --> 00:03:10.120
+that it maybe wouldn't be able to push directly
+
+
+00:03:10.120 --> 00:03:14.240
+to coverage.py and like just start going out.
+
+
+00:03:14.240 --> 00:03:17.120
+And that's the next thing is like, once that goes out,
+
+
+00:03:17.120 --> 00:03:20.840
+that goes to everybody's servers, many of them anyway, right?
+
+
+00:03:20.840 --> 00:03:23.240
+And then you potentially have bad code
+
+
+00:03:23.240 --> 00:03:24.200
+running on people's servers.
+
+
+00:03:24.200 --> 00:03:25.880
+So like the consequence is not just,
+
+
+00:03:25.880 --> 00:03:29.600
+oh, Ned might get hacked, but everyone using coverage.py,
+
+
+00:03:29.600 --> 00:03:32.120
+which is many, many, many, many, many people
+
+
+00:03:32.120 --> 00:03:33.400
+might get hacked, right?
+
+
+00:03:33.400 --> 00:03:36.120
+- Yeah, and it's also used on developer workstations.
+
+
+00:03:36.120 --> 00:03:38.520
+So it's going on developers' computers as well.
+
+
+00:03:38.520 --> 00:03:40.680
+- Exactly, and then rinse and repeat, right?
+
+
+00:03:40.680 --> 00:03:43.120
+Now they have SSH keys to the, what are they building?
+
+
+00:03:43.120 --> 00:03:46.200
+And on, you know, like it goes, it goes sideways fast.
+
+
+00:03:46.200 --> 00:03:48.680
+So he's like, well, I have this,
+
+
+00:03:48.680 --> 00:03:51.720
+I have terminal sessions that have implicit access
+
+
+00:03:51.720 --> 00:03:56.720
+to credentials, PyPI, Git, and so on.
+
+
+00:03:56.720 --> 00:04:02.160
+It would be better, you know, for example,
+
+
+00:04:02.160 --> 00:04:04.560
+you can push to Git without asking for a password, right?
+
+
+00:04:04.560 --> 00:04:06.640
+Either through credential cache or an SSH key
+
+
+00:04:06.640 --> 00:04:07.840
+or something like that.
+
+
+00:04:07.840 --> 00:04:10.720
+So this is problematic in a couple of ways.
+
+
+00:04:10.720 --> 00:04:13.960
+The less likely, less concerning,
+
+
+00:04:13.960 --> 00:04:18.620
+although a lot of advice sort of worries about this.
+
+
+00:04:18.620 --> 00:04:20.100
+I agree that it's not very concerning at all
+
+
+00:04:20.100 --> 00:04:23.180
+is somebody actually gets physical access to your computer.
+
+
+00:04:23.180 --> 00:04:28.340
+So I don't know what most people do,
+
+
+00:04:28.340 --> 00:04:31.460
+but you should be turning on full disk encryption,
+
+
+00:04:31.460 --> 00:04:35.500
+especially if you have a laptop, right?
+
+
+00:04:35.500 --> 00:04:37.320
+If it could be stolen,
+
+
+00:04:37.320 --> 00:04:39.140
+or especially if you travel around with it
+
+
+00:04:39.140 --> 00:04:40.300
+and it could be lost somewhere
+
+
+00:04:40.300 --> 00:04:44.340
+or picked up and lifted off like the subway or something,
+
+
+00:04:44.340 --> 00:04:46.380
+you don't want to be able just to take the disk out
+
+
+00:04:46.380 --> 00:04:47.660
+and read all the data off it, right?
+
+
+00:04:47.660 --> 00:04:50.500
+So a super easy way to do that with low overhead
+
+
+00:04:50.500 --> 00:04:52.860
+is like FileVault, which is built into macOS,
+
+
+00:04:52.860 --> 00:04:55.620
+and I'm pretty sure Windows has something built in.
+
+
+00:04:55.620 --> 00:04:57.380
+So anyway, full disk encryption.
+
+
+00:04:57.380 --> 00:04:59.500
+So chances are something bad happens there
+
+
+00:04:59.500 --> 00:05:01.580
+is really, really small.
+
+
+00:05:01.580 --> 00:05:05.800
+On the other hand though, is if you run some evil code.
+
+
+00:05:05.800 --> 00:05:10.660
+Now, evil code could come from traditional places
+
+
+00:05:10.660 --> 00:05:15.660
+like spam or phishing or those other areas,
+
+
+00:05:16.140 --> 00:05:17.900
+But for developers, especially people
+
+
+00:05:17.900 --> 00:05:20.940
+maintaining popular projects like coverage.py
+
+
+00:05:20.940 --> 00:05:23.140
+and the many other things that Ned does,
+
+
+00:05:23.140 --> 00:05:28.860
+is somebody could try to send him
+
+
+00:05:28.860 --> 00:05:32.340
+malicious code through Python and through source control.
+
+
+00:05:32.340 --> 00:05:36.740
+For example, what if somebody says, hey, Ned,
+
+
+00:05:36.740 --> 00:05:40.620
+I've got this issue with coverage.py.
+
+
+00:05:40.620 --> 00:05:44.300
+Check out this repo and run it to see the bug to reproduce it.
+
+
+00:05:44.300 --> 00:05:47.280
+It's like, you know what that might do?
+
+
+00:05:47.280 --> 00:05:48.920
+Well, whatever Ned can do on his computer
+
+
+00:05:48.920 --> 00:05:49.760
+is what it might do.
+
+
+00:05:49.760 --> 00:05:51.760
+And he says, look, if I get a huge repo,
+
+
+00:05:51.760 --> 00:05:54.120
+not a PR to coverage.py,
+
+
+00:05:54.120 --> 00:05:57.560
+but a huge set of code that coverage.py is applied to,
+
+
+00:05:57.560 --> 00:06:03.240
+you know, what is that potentially gonna do?
+
+
+00:06:03.240 --> 00:06:06.360
+He can't go code review every huge PR
+
+
+00:06:06.360 --> 00:06:09.400
+that is sent to him when it refers to someone else's repo.
+
+
+00:06:09.400 --> 00:06:10.560
+Right, so there's things you can do,
+
+
+00:06:10.560 --> 00:06:13.760
+but that's his primary concern
+
+
+00:06:13.760 --> 00:06:16.820
+is how do you deal with people sending him bad code?
+
+
+00:06:16.820 --> 00:06:22.720
+So first thing is a 1Password.
+
+
+00:06:22.720 --> 00:06:24.720
+1Password is awesome.
+
+
+00:06:24.720 --> 00:06:27.960
+Also not LastPass, don't use LastPass,
+
+
+00:06:27.960 --> 00:06:28.800
+more on that at the end,
+
+
+00:06:28.800 --> 00:06:30.560
+but oh my God, don't use LastPass.
+
+
+00:06:30.560 --> 00:06:34.760
+1Password or Bitwarden are really good choices.
+
+
+00:06:34.760 --> 00:06:38.440
+And it says, look, I store my credentials in there.
+
+
+00:06:38.440 --> 00:06:42.320
+And then you can have two shell functions
+
+
+00:06:42.320 --> 00:06:49.360
+that will load those variables into and out of the environment
+
+
+00:06:49.360 --> 00:06:50.480
+just for a moment.
+
+
+00:06:50.480 --> 00:06:55.360
+So load the GitHub credential into the environment,
+
+
+00:06:55.360 --> 00:06:58.440
+do a get push, unload it, for example, something like that.
+
+
+00:06:58.440 --> 00:06:59.560
+That's pretty cool.
+
+
+00:06:59.560 --> 00:07:02.320
+Similarly, things that are very less likely to be used
+
+
+00:07:02.320 --> 00:07:03.800
+are like PyPI credentials.
+
+
+00:07:03.800 --> 00:07:07.520
+How often do you really do a push?
+
+
+00:07:07.520 --> 00:07:11.760
+But also, I have a .ssh directory, which on Mac--
+
+
+00:07:11.760 --> 00:07:15.760
+And I think Linux as well is where the default SSH keys
+
+
+00:07:15.760 --> 00:07:17.840
+just live unencrypted hanging out there.
+
+
+00:07:17.840 --> 00:07:21.540
+So that would be something you want to keep away.
+
+
+00:07:21.540 --> 00:07:24.080
+Now he says, I don't know what to do with that.
+
+
+00:07:24.080 --> 00:07:25.800
+The comments here are very helpful.
+
+
+00:07:25.800 --> 00:07:28.720
+But the other thing is he says, if I've got to run that PR
+
+
+00:07:28.720 --> 00:07:30.440
+and somebody gives me some huge bit of code,
+
+
+00:07:30.440 --> 00:07:32.080
+I'm running that in Docker.
+
+
+00:07:32.080 --> 00:07:36.700
+So get one of the base Docker files for Python,
+
+
+00:07:36.700 --> 00:07:39.400
+log into their interactive shell,
+
+
+00:07:39.400 --> 00:07:41.620
+git clone, try it out.
+
+
+00:07:41.620 --> 00:07:48.240
+So, who cares if somebody hacks your Docker file, right?
+
+
+00:07:48.240 --> 00:07:50.360
+Or your Docker container,
+
+
+00:07:50.360 --> 00:07:52.260
+you're gonna throw it away anyway, right?
+
+
+00:07:52.260 --> 00:07:55.920
+So he asked, what else can I be doing to keep safe?
+
+
+00:07:55.920 --> 00:08:00.920
+And luckily there are comments on his blog here.
+
+
+00:08:00.920 --> 00:08:04.280
+It says, you could piggyback on the one password workflow
+
+
+00:08:04.280 --> 00:08:07.080
+to export extra SSH config.
+
+
+00:08:07.080 --> 00:08:10.560
+And go down here.
+
+
+00:08:10.560 --> 00:08:14.800
+Dirk Schaden says, "I use secretive,
+
+
+00:08:14.800 --> 00:08:18.600
+"which keeps SSH keys on the Mac locked up."
+
+
+00:08:18.600 --> 00:08:20.440
+Some comments for protecting Docker,
+
+
+00:08:20.440 --> 00:08:21.960
+although I don't really see any reason
+
+
+00:08:21.960 --> 00:08:24.380
+I would care about protecting a base Docker image.
+
+
+00:08:24.380 --> 00:08:28.020
+But Kushal Das, another core developer,
+
+
+00:08:28.020 --> 00:08:31.000
+says, "One password can do SSH."
+
+
+00:08:31.000 --> 00:08:33.640
+So one password will run an SSH agent
+
+
+00:08:33.640 --> 00:08:35.320
+that will serve up the keys on demand,
+
+
+00:08:35.320 --> 00:08:38.360
+but like prompt you for a fingerprint reading
+
+
+00:08:38.360 --> 00:08:43.360
+or verify on your watch or enter your one password password
+
+
+00:08:43.360 --> 00:08:44.640
+type thing, which is cool.
+
+
+00:08:44.640 --> 00:08:46.320
+And he also suggests using Podman,
+
+
+00:08:46.320 --> 00:08:48.400
+which has higher security than Docker.
+
+
+00:08:48.400 --> 00:08:50.240
+Again, I'm not sure why you need that.
+
+
+00:08:50.240 --> 00:08:53.040
+But finally, Brett Cannon says one password for SSH.
+
+
+00:08:53.040 --> 00:08:53.860
+Let's go.
+
+
+00:08:53.860 --> 00:08:54.700
+That seems pretty awesome.
+
+
+00:08:54.700 --> 00:08:58.020
+So anyway, these are some ideas.
+
+
+00:08:58.020 --> 00:09:01.320
+I think it's only scratching the surface, but yeah.
+
+
+00:09:01.320 --> 00:09:03.960
+And then Christopher, just to follow up,
+
+
+00:09:03.960 --> 00:09:06.600
+It says BitLocker is the FileVault equivalent for Windows.
+
+
+00:09:06.600 --> 00:09:07.440
+That's right.
+
+
+00:09:07.440 --> 00:09:08.280
+Thanks, Christopher.
+
+
+00:09:08.280 --> 00:09:11.120
+- So one of the things that, I mean, okay, so yes,
+
+
+00:09:11.120 --> 00:09:14.400
+protecting against losing your laptop
+
+
+00:09:14.400 --> 00:09:17.100
+or somebody taking it or reading your whatever.
+
+
+00:09:17.100 --> 00:09:19.840
+These are all kind of cool.
+
+
+00:09:19.840 --> 00:09:22.200
+One of the, my concern isn't really that
+
+
+00:09:22.200 --> 00:09:23.600
+somebody's gonna try to access it,
+
+
+00:09:23.600 --> 00:09:25.260
+is that I can't anymore.
+
+
+00:09:25.260 --> 00:09:31.040
+Like my laptop just dies and I can't use it anymore.
+
+
+00:09:31.040 --> 00:09:32.480
+So things like 1Password,
+
+
+00:09:32.480 --> 00:09:36.280
+I assume they're backupable so that I can get access to it.
+
+
+00:09:36.280 --> 00:09:37.120
+- Yeah, yeah.
+
+
+00:09:37.120 --> 00:09:39.800
+So 1Password stores all that information on their servers
+
+
+00:09:39.800 --> 00:09:45.720
+where you control a super long encryption key
+
+
+00:09:45.720 --> 00:09:46.920
+that they don't have.
+
+
+00:09:46.920 --> 00:09:49.120
+So there's no, if you lose it, there's no,
+
+
+00:09:49.120 --> 00:09:50.240
+I'll get my thing back.
+
+
+00:09:50.240 --> 00:09:52.400
+Part of the setup process for 1Password is they're like,
+
+
+00:09:52.400 --> 00:09:55.000
+here's your 30 character secret key
+
+
+00:09:55.000 --> 00:09:56.800
+that is combined with your password.
+
+
+00:09:56.800 --> 00:10:01.420
+And if you don't have both of those, we can't help you.
+
+
+00:10:01.420 --> 00:10:04.040
+it's encrypted with this and we don't know what it is.
+
+
+00:10:04.040 --> 00:10:07.000
+So it's pretty good.
+
+
+00:10:07.000 --> 00:10:07.840
+It's pretty good.
+
+
+00:10:07.840 --> 00:10:11.540
+It's not LastPass again, which we'll touch on.
+
+
+00:10:11.540 --> 00:10:14.920
+But so that syncs to all, like it syncs to your phone.
+
+
+00:10:14.920 --> 00:10:17.720
+It syncs to your different computers.
+
+
+00:10:17.720 --> 00:10:20.760
+There's a web version.
+
+
+00:10:20.760 --> 00:10:23.000
+It works on Windows, Mac, Linux.
+
+
+00:10:23.000 --> 00:10:24.400
+It's a pretty good option, honestly.
+
+
+00:10:24.400 --> 00:10:26.200
+It's paid, but it's not much.
+
+
+00:10:26.200 --> 00:10:28.160
+It's like five bucks a month.
+
+
+00:10:28.160 --> 00:10:29.280
+If you don't want that, Bitwarden.
+
+
+00:10:29.280 --> 00:10:31.080
+But Bitwarden's not quite as secure
+
+
+00:10:31.080 --> 00:10:32.680
+'cause I don't think it has the secret key,
+
+
+00:10:32.680 --> 00:10:35.360
+it's just the password, so you need a longer password.
+
+
+00:10:35.360 --> 00:10:36.680
+I don't know, we're going a bit down,
+
+
+00:10:36.680 --> 00:10:38.120
+too far down that rabbit hole maybe,
+
+
+00:10:38.120 --> 00:10:41.480
+but yeah, it's pretty interesting.
+
+
+00:10:41.480 --> 00:10:44.240
+Certainly it's a concern, but so for example,
+
+
+00:10:44.240 --> 00:10:46.640
+you can have file attachments in your one password,
+
+
+00:10:46.640 --> 00:10:49.840
+so you can attach like your SSH folder
+
+
+00:10:49.840 --> 00:10:54.280
+to like a logins thing that you put in there.
+
+
+00:10:54.280 --> 00:10:56.040
+So if you go to a new computer,
+
+
+00:10:56.040 --> 00:10:59.740
+you can just open that thing up and get your SSH keys,
+
+
+00:10:59.740 --> 00:11:01.940
+drop them in there and off you go.
+
+
+00:11:01.940 --> 00:11:02.780
+- Sweet.
+
+
+00:11:02.780 --> 00:11:07.220
+- But never, never lose that 30 character secret key
+
+
+00:11:07.220 --> 00:11:10.540
+'cause you're not getting back in without it.
+
+
+00:11:10.540 --> 00:11:13.900
+All right, over to you, what you got?
+
+
+00:11:13.900 --> 00:11:14.780
+- What do I have?
+
+
+00:11:14.780 --> 00:11:19.100
+I've got some web scraping, so, or a tool,
+
+
+00:11:19.100 --> 00:11:22.380
+actually a couple tools for parsing HTML and parsing JSON
+
+
+00:11:22.380 --> 00:11:24.100
+that I thought were just pretty darn cool.
+
+
+00:11:24.100 --> 00:11:26.620
+So I was reading this article, which is a decent article,
+
+
+00:11:26.620 --> 00:11:30.180
+called A Year of Writing About Web Scraping in Review.
+
+
+00:11:30.180 --> 00:11:34.300
+So somebody that got a job doing a whole bunch
+
+
+00:11:34.300 --> 00:11:36.720
+of blog posts about web scraping.
+
+
+00:11:36.720 --> 00:11:40.440
+But one of the things when he talks about doing it in Python,
+
+
+00:11:40.440 --> 00:11:45.940
+it had HTTPX and yeah, you and I both like that a lot.
+
+
+00:11:45.940 --> 00:11:46.780
+- Oh yeah, it's great stuff.
+
+
+00:11:46.780 --> 00:11:47.620
+- Pretty popular.
+
+
+00:11:47.620 --> 00:11:50.940
+But I hadn't heard of Parcel or James Path.
+
+
+00:11:50.940 --> 00:11:54.220
+Or James Path is J-A-M-E-S Path.
+
+
+00:11:54.220 --> 00:11:56.820
+And so I wanted to check that out.
+
+
+00:11:56.820 --> 00:11:58.620
+These are some pretty cool tools.
+
+
+00:11:58.620 --> 00:12:02.380
+So what Parcel does is it's a Python library
+
+
+00:12:02.380 --> 00:12:06.740
+to extract and remove data from HTML and XML.
+
+
+00:12:06.740 --> 00:12:08.620
+Sure, I guess.
+
+
+00:12:08.620 --> 00:12:10.700
+Using XPath and CSS.
+
+
+00:12:10.700 --> 00:12:13.660
+So the CSS part is the part that I'm excited about.
+
+
+00:12:13.660 --> 00:12:18.540
+So the idea is like, here's an example bit of HTML
+
+
+00:12:18.540 --> 00:12:20.380
+that we're showing on the live stream.
+
+
+00:12:20.380 --> 00:12:25.380
+And you can just like access elements
+
+
+00:12:25.380 --> 00:12:28.820
+like you would CSS access, like, you know,
+
+
+00:12:28.820 --> 00:12:31.620
+H1 colon colon text.
+
+
+00:12:31.620 --> 00:12:33.700
+I'm not sure why it's colon colon instead of dot,
+
+
+00:12:33.700 --> 00:12:35.620
+but anyway.
+
+
+00:12:35.620 --> 00:12:39.860
+- I think those are what they call like special classes
+
+
+00:12:39.860 --> 00:12:41.460
+in CSS.
+
+
+00:12:41.460 --> 00:12:42.300
+- Okay.
+
+
+00:12:42.300 --> 00:12:44.260
+- Yeah, the text is out,
+
+
+00:12:44.260 --> 00:12:46.900
+but you can do things like H1 colon hover
+
+
+00:12:46.900 --> 00:12:49.620
+and that like only triggers when it hovers,
+
+
+00:12:49.620 --> 00:12:51.260
+But yeah, colon, colon, text, you're right.
+
+
+00:12:51.260 --> 00:12:52.700
+Okay, I get it, that is weird.
+
+
+00:12:52.700 --> 00:12:57.260
+- But anyway, kind of interesting.
+
+
+00:12:57.260 --> 00:13:02.100
+I like the, and then I'm used to the, like the greater than,
+
+
+00:13:02.100 --> 00:13:04.980
+I think that's like some child of, or something like that.
+
+
+00:13:04.980 --> 00:13:05.980
+- Immediate child.
+
+
+00:13:05.980 --> 00:13:06.820
+- Immediate child.
+
+
+00:13:06.820 --> 00:13:08.460
+- Yeah, it has to be immediate child, yeah.
+
+
+00:13:08.460 --> 00:13:11.900
+- Okay, but it's fairly clear to read then
+
+
+00:13:11.900 --> 00:13:16.540
+to be able to pull out some stuff out of your HTML
+
+
+00:13:16.540 --> 00:13:18.840
+using these selectors, so that's pretty cool.
+
+
+00:13:18.840 --> 00:13:20.920
+- Yeah, that's really nice.
+
+
+00:13:20.920 --> 00:13:23.360
+I've always thought of beautiful soup for that,
+
+
+00:13:23.360 --> 00:13:24.760
+but this sounds really nice.
+
+
+00:13:24.760 --> 00:13:27.640
+- The other one that I thought was great
+
+
+00:13:27.640 --> 00:13:29.340
+and which I probably do more often
+
+
+00:13:29.340 --> 00:13:31.820
+is grabbing Jason's stuff out of Jason.
+
+
+00:13:31.820 --> 00:13:35.180
+And so I hadn't heard of James path
+
+
+00:13:35.180 --> 00:13:40.180
+and it's just some pretty cool expressions
+
+
+00:13:40.180 --> 00:13:41.800
+to be able to pull out some stuff.
+
+
+00:13:41.800 --> 00:13:46.000
+So if you've got like this example of a foo
+
+
+00:13:46.000 --> 00:13:49.120
+and foo is a dictionary element
+
+
+00:13:49.120 --> 00:13:51.480
+and it has another dictionary inside
+
+
+00:13:51.480 --> 00:13:54.840
+with bar and the value of baz.
+
+
+00:13:54.840 --> 00:13:57.960
+You can just say foo.bar and it'll return baz.
+
+
+00:13:57.960 --> 00:14:02.720
+So those are pretty cool.
+
+
+00:14:02.720 --> 00:14:05.960
+Just simple little tools about getting JSON data.
+
+
+00:14:05.960 --> 00:14:08.320
+- That's interesting.
+
+
+00:14:08.320 --> 00:14:11.280
+'Cause I never really thought of parsing JSON
+
+
+00:14:11.280 --> 00:14:14.640
+with a, I don't know, like a search?
+
+
+00:14:14.640 --> 00:14:15.520
+- Yeah.
+
+
+00:14:15.520 --> 00:14:18.040
+with a query CSS like search,
+
+
+00:14:18.040 --> 00:14:19.240
+I've always just thought of it as,
+
+
+00:14:19.240 --> 00:14:21.040
+well, I'm just gonna load it up and navigate it.
+
+
+00:14:21.040 --> 00:14:24.640
+But this is, I just wanna go to this section
+
+
+00:14:24.640 --> 00:14:27.480
+and grab this array and I don't care what's in the middle.
+
+
+00:14:27.480 --> 00:14:30.880
+- Yeah, well, and actually, so I need to play with it.
+
+
+00:14:30.880 --> 00:14:33.280
+So you're right, I've never really thought about
+
+
+00:14:33.280 --> 00:14:35.600
+too much about doing searches or something.
+
+
+00:14:35.600 --> 00:14:38.360
+I just like load it up and just navigate it.
+
+
+00:14:38.360 --> 00:14:42.400
+But if it's somewhere buried deep inside my document,
+
+
+00:14:42.400 --> 00:14:43.640
+I wouldn't know how to get it.
+
+
+00:14:43.640 --> 00:14:48.200
+So yeah, or possibly if it changes over time.
+
+
+00:14:48.200 --> 00:14:51.160
+So it's like, you know, there's a component on the site,
+
+
+00:14:51.160 --> 00:14:53.040
+on the page, but it's,
+
+
+00:14:53.040 --> 00:14:55.380
+it might be loaded anywhere on the page.
+
+
+00:14:55.380 --> 00:14:56.720
+So yeah.
+
+
+00:14:56.720 --> 00:14:57.560
+- Yeah, exactly.
+
+
+00:14:57.560 --> 00:14:59.840
+Yeah, it's kind of like a CSS selector for JSON,
+
+
+00:14:59.840 --> 00:15:02.080
+which that is a cool discovery.
+
+
+00:15:02.080 --> 00:15:03.200
+Yeah.
+
+
+00:15:03.200 --> 00:15:04.080
+- Anyway, that's it.
+
+
+00:15:04.080 --> 00:15:05.480
+A couple of short items, but.
+
+
+00:15:05.480 --> 00:15:08.040
+- Nice.
+
+
+00:15:08.040 --> 00:15:11.880
+Out there, Wilma Guggen says, "Pseudo classes."
+
+
+00:15:11.880 --> 00:15:14.300
+- And yes, pseudo classes for sure, absolutely.
+
+
+00:15:14.300 --> 00:15:16.480
+So that's like the colon hover and stuff,
+
+
+00:15:16.480 --> 00:15:19.980
+but these are all like colon read only,
+
+
+00:15:19.980 --> 00:15:24.420
+colon valid, colon, you know, these colon visited,
+
+
+00:15:24.420 --> 00:15:26.460
+but I don't know about the double colon.
+
+
+00:15:26.460 --> 00:15:27.300
+Maybe that's something else.
+
+
+00:15:27.300 --> 00:15:31.080
+Maybe it's just a special specialization of pseudo classes.
+
+
+00:15:31.080 --> 00:15:31.920
+- Yeah, I don't know.
+
+
+00:15:31.920 --> 00:15:34.440
+I have to dig into it a little bit more.
+
+
+00:15:34.440 --> 00:15:35.280
+- Same.
+
+
+00:15:35.280 --> 00:15:37.180
+I've only been doing the web for like a few weeks.
+
+
+00:15:37.180 --> 00:15:38.320
+I went to this bootcamp.
+
+
+00:15:38.320 --> 00:15:40.740
+I'm getting good at it just now.
+
+
+00:15:40.740 --> 00:15:42.540
+- All right. (laughs)
+
+
+00:15:42.540 --> 00:15:44.180
+Tell us about our sponsor.
+
+
+00:15:44.180 --> 00:15:45.060
+- All right.
+
+
+00:15:45.060 --> 00:15:48.300
+Just a moment.
+
+
+00:15:48.300 --> 00:15:50.380
+Okay, so this episode of Python Bytes
+
+
+00:15:50.380 --> 00:15:53.300
+is brought to you by Microsoft for Startups.
+
+
+00:15:53.300 --> 00:15:55.940
+So Microsoft for Startups has built Founders Hub
+
+
+00:15:55.940 --> 00:15:58.100
+to help startups be successful.
+
+
+00:15:58.100 --> 00:16:00.620
+Founders Hub provides founders at any stage
+
+
+00:16:00.620 --> 00:16:04.100
+with free resources to help solve startup challenges.
+
+
+00:16:04.100 --> 00:16:07.180
+The digital platform provides technology benefits,
+
+
+00:16:07.180 --> 00:16:09.100
+access to expert guidance,
+
+
+00:16:09.100 --> 00:16:12.440
+skilling resources, mentorship, and network connections,
+
+
+00:16:12.440 --> 00:16:14.020
+and so much more.
+
+
+00:16:14.020 --> 00:16:17.360
+Founders Hub is truly open to all,
+
+
+00:16:17.360 --> 00:16:20.900
+along with free access to GitHub and Microsoft Cloud,
+
+
+00:16:20.900 --> 00:16:24.420
+with the ability to unlock credits over time.
+
+
+00:16:24.420 --> 00:16:26.120
+Founders Hub also has partnered
+
+
+00:16:26.120 --> 00:16:27.640
+with other innovative companies
+
+
+00:16:27.640 --> 00:16:30.920
+to provide exclusive benefits and discounts.
+
+
+00:16:30.920 --> 00:16:33.560
+You'll also have access to their mentorship network,
+
+
+00:16:33.560 --> 00:16:36.160
+giving you access to a pool of hundreds of mentors
+
+
+00:16:36.160 --> 00:16:38.000
+across a range of disciplines.
+
+
+00:16:38.000 --> 00:16:40.760
+You'll be able to book a one-on-one meeting with mentors,
+
+
+00:16:40.760 --> 00:16:43.920
+many of whom are former founders themselves.
+
+
+00:16:43.920 --> 00:16:46.960
+Make your idea reality today with critical support
+
+
+00:16:46.960 --> 00:16:50.360
+you'll get from Microsoft for Startups Founders Hub.
+
+
+00:16:50.360 --> 00:16:52.080
+To join the program,
+
+
+00:16:52.080 --> 00:16:56.760
+please visit pythonbytes.fm/foundershub2022.
+
+
+00:16:56.760 --> 00:16:59.120
+The link is in your show notes.
+
+
+00:16:59.120 --> 00:17:00.000
+- Indeed.
+
+
+00:17:00.000 --> 00:17:02.660
+Thank you, Microsoft, for sponsoring the show.
+
+
+00:17:02.660 --> 00:17:05.520
+Let's see.
+
+
+00:17:05.520 --> 00:17:07.760
+What do I got next?
+
+
+00:17:07.760 --> 00:17:11.220
+Back to Git, but this time not protecting Git,
+
+
+00:17:11.220 --> 00:17:13.680
+understanding your Git repository.
+
+
+00:17:13.680 --> 00:17:14.980
+Brian, do you know what your largest
+
+
+00:17:14.980 --> 00:17:16.740
+Git repository is in size?
+
+
+00:17:16.740 --> 00:17:19.280
+- No.
+
+
+00:17:19.280 --> 00:17:21.140
+- I don't either, but I'm pretty sure
+
+
+00:17:21.140 --> 00:17:26.140
+that DocPython training, the website is just under a gig,
+
+
+00:17:26.140 --> 00:17:27.860
+and that's quite a bit.
+
+
+00:17:27.860 --> 00:17:30.660
+So maybe, I haven't looked at all the others,
+
+
+00:17:30.660 --> 00:17:32.940
+but that one's one of the larger ones that I manage,
+
+
+00:17:32.940 --> 00:17:36.100
+and it's pretty big, but is it big
+
+
+00:17:36.100 --> 00:17:37.740
+'cause it has a bunch of binary stuff
+
+
+00:17:37.740 --> 00:17:39.760
+that I should maybe find and remove?
+
+
+00:17:39.760 --> 00:17:43.060
+Is it big 'cause there's just a lot of files?
+
+
+00:17:43.060 --> 00:17:46.100
+- If you have directories named like backup one,
+
+
+00:17:46.100 --> 00:17:47.860
+backup two, stored in there.
+
+
+00:17:47.860 --> 00:17:49.380
+- No, no, no.
+
+
+00:17:49.380 --> 00:17:52.380
+Version one, version two, version one final,
+
+
+00:17:52.380 --> 00:17:53.720
+version one final final.
+
+
+00:17:53.720 --> 00:17:55.900
+Exactly, I zip those.
+
+
+00:17:55.900 --> 00:17:57.700
+I don't just have those directories.
+
+
+00:17:57.700 --> 00:17:59.420
+Yeah, so anyway, what I wanna tell you all about
+
+
+00:17:59.420 --> 00:18:01.780
+is a tool called Git Sizer.
+
+
+00:18:01.780 --> 00:18:05.580
+So it computes various size metrics for Git repositories
+
+
+00:18:05.580 --> 00:18:08.340
+and pointing out aspects of your repository
+
+
+00:18:08.340 --> 00:18:10.660
+that might cause problems.
+
+
+00:18:10.660 --> 00:18:11.780
+So if you've got a small repo,
+
+
+00:18:11.780 --> 00:18:13.980
+like who cares, don't worry about this stuff.
+
+
+00:18:13.980 --> 00:18:17.100
+But on the other hand, if you've got one where it's like,
+
+
+00:18:17.100 --> 00:18:18.620
+this thing is a pain to check out
+
+
+00:18:18.620 --> 00:18:21.980
+or CI builds are really dragging because of this,
+
+
+00:18:21.980 --> 00:18:25.020
+this segment, if not necessarily this tool,
+
+
+00:18:25.020 --> 00:18:27.040
+I think will be helpful for you.
+
+
+00:18:27.040 --> 00:18:32.040
+So I recently did an episode on monorepos with David Vjek
+
+
+00:18:33.140 --> 00:18:36.840
+and we uncovered a bunch of cool tools.
+
+
+00:18:36.840 --> 00:18:38.280
+One of them is this Git Sizer,
+
+
+00:18:38.280 --> 00:18:40.360
+because monorepos are like,
+
+
+00:18:40.360 --> 00:18:42.440
+I don't just have a repository for this project,
+
+
+00:18:42.440 --> 00:18:43.780
+I have a repository for the company,
+
+
+00:18:43.780 --> 00:18:46.240
+and all 100 people put all of their projects
+
+
+00:18:46.240 --> 00:18:49.880
+into that one repository, which is a bit of a mind bender.
+
+
+00:18:49.880 --> 00:18:51.080
+But if you do stuff like that,
+
+
+00:18:51.080 --> 00:18:52.960
+you need to think way more carefully
+
+
+00:18:52.960 --> 00:18:56.680
+about how you work with files in Git and so on.
+
+
+00:18:56.680 --> 00:19:00.280
+So you can ask questions like,
+
+
+00:19:00.280 --> 00:19:03.000
+is the repo too big overall?
+
+
+00:19:03.000 --> 00:19:05.080
+Ideally, it should be under one gig.
+
+
+00:19:05.080 --> 00:19:06.960
+Well, actually, maybe I'm over by like a couple bytes,
+
+
+00:19:06.960 --> 00:19:08.280
+but whatever.
+
+
+00:19:08.280 --> 00:19:11.160
+And they start to get out of control at five gigs.
+
+
+00:19:11.160 --> 00:19:14.040
+Like Git doesn't behave well sort of thing.
+
+
+00:19:14.040 --> 00:19:18.440
+So you can do things like avoiding compiled output.
+
+
+00:19:18.440 --> 00:19:20.560
+So if you have jar files, right?
+
+
+00:19:20.560 --> 00:19:23.020
+Or wheels, I guess in our case,
+
+
+00:19:23.020 --> 00:19:24.120
+we have less compiled output.
+
+
+00:19:24.120 --> 00:19:25.200
+But if you have say like wheels
+
+
+00:19:25.200 --> 00:19:27.880
+and you wanna keep a version of every release,
+
+
+00:19:27.880 --> 00:19:29.440
+maybe don't store that in Git.
+
+
+00:19:29.440 --> 00:19:32.140
+Maybe store that somewhere else and link to it in Git.
+
+
+00:19:32.140 --> 00:19:32.980
+I don't know.
+
+
+00:19:32.980 --> 00:19:35.340
+I also use get large file system
+
+
+00:19:35.340 --> 00:19:38.660
+instead of putting large files directly in there.
+
+
+00:19:38.660 --> 00:19:40.780
+And things that's not very compressible
+
+
+00:19:40.780 --> 00:19:44.780
+and cannot be diffed, they're very much hated by get
+
+
+00:19:44.780 --> 00:19:48.900
+because get does a lot of its work by doing deltas.
+
+
+00:19:48.900 --> 00:19:50.100
+Like, okay, here's the main one.
+
+
+00:19:50.100 --> 00:19:51.280
+And then here's just the difference
+
+
+00:19:51.280 --> 00:19:52.600
+of these versions I need to keep.
+
+
+00:19:52.600 --> 00:19:55.060
+Like this one line in this text file changed.
+
+
+00:19:55.060 --> 00:19:56.980
+Like that could be what's stored, right?
+
+
+00:19:56.980 --> 00:19:59.700
+But if it's just a binary thing that can't be diffed,
+
+
+00:19:59.700 --> 00:20:02.200
+then that's always a copy, yeah?
+
+
+00:20:02.200 --> 00:20:07.400
+So you can go through here and you download it to get started.
+
+
+00:20:07.400 --> 00:20:11.400
+It says, if you run it, it'll tell you things like processing.
+
+
+00:20:11.400 --> 00:20:13.880
+Go through the blob, basically analyzing the system.
+
+
+00:20:13.880 --> 00:20:15.560
+It says overall repository size.
+
+
+00:20:15.560 --> 00:20:16.960
+Here's how many commits there are,
+
+
+00:20:16.960 --> 00:20:18.640
+how big the commit history is.
+
+
+00:20:18.640 --> 00:20:22.480
+Here's how many trees as in folders and stuff,
+
+
+00:20:22.480 --> 00:20:26.400
+and how overall size of them and the blobs.
+
+
+00:20:26.400 --> 00:20:32.080
+This one has 55 gigs of blobs with 1.65 million blobs.
+
+
+00:20:32.080 --> 00:20:36.920
+That is a serious, serious bit of history there,
+
+
+00:20:36.920 --> 00:20:38.760
+whatever this project they ran it on.
+
+
+00:20:38.760 --> 00:20:41.760
+But it'll go through and tell you, you know,
+
+
+00:20:41.760 --> 00:20:44.120
+what's going on and yeah, you know,
+
+
+00:20:44.120 --> 00:20:47.280
+you can sort of look and get a better understanding
+
+
+00:20:47.280 --> 00:20:50.560
+of what's happening in your Git repository.
+
+
+00:20:50.560 --> 00:20:51.960
+- Cool.
+
+
+00:20:51.960 --> 00:20:55.500
+Something else that I'm sure everybody knows this already,
+
+
+00:20:55.500 --> 00:20:57.720
+but especially in CI and stuff,
+
+
+00:20:57.720 --> 00:21:01.960
+it's helpful to when you're gonna clone a branch
+
+
+00:21:01.960 --> 00:21:04.080
+to clone it to depth one
+
+
+00:21:04.080 --> 00:21:06.040
+so that you're not cloning all the history.
+
+
+00:21:06.040 --> 00:21:07.800
+You don't need it for--
+
+
+00:21:07.800 --> 00:21:12.800
+- Yeah, so I have some interesting newer version
+
+
+00:21:12.800 --> 00:21:15.220
+of that guidance for you, Brian.
+
+
+00:21:15.220 --> 00:21:16.120
+- Okay.
+
+
+00:21:16.120 --> 00:21:18.720
+- So I was looking, I watched some of the presentations
+
+
+00:21:18.720 --> 00:21:20.680
+at GitHub Universe.
+
+
+00:21:20.680 --> 00:21:21.800
+And so what you're talking about
+
+
+00:21:21.800 --> 00:21:23.440
+is what's called a shallow copy.
+
+
+00:21:23.440 --> 00:21:25.000
+So it says we're only gonna pretend
+
+
+00:21:25.000 --> 00:21:29.080
+that there's three commits deep in this branch,
+
+
+00:21:29.080 --> 00:21:30.760
+in which case you only see like three level,
+
+
+00:21:30.760 --> 00:21:33.760
+commits worth of history, and so on.
+
+
+00:21:33.760 --> 00:21:38.260
+But it is much smaller because it doesn't keep all those files over time.
+
+
+00:21:38.260 --> 00:21:43.260
+But you make the trade-off that you don't have all the history.
+
+
+00:21:43.260 --> 00:21:45.760
+If you wanted to go back and read that,
+
+
+00:21:45.760 --> 00:21:47.760
+potentially even check out back to one of those,
+
+
+00:21:47.760 --> 00:21:49.760
+you'd have to delete the thing or check it out again
+
+
+00:21:49.760 --> 00:21:52.760
+and somehow in another less shallow way.
+
+
+00:21:52.760 --> 00:21:58.760
+So what you can do that's real similar is you can do a partial clone.
+
+
+00:21:58.760 --> 00:22:02.080
+I don't know how I ended up on this page,
+
+
+00:22:02.080 --> 00:22:06.880
+but there's docs for it on the GitHub documentation page.
+
+
+00:22:06.880 --> 00:22:08.400
+So with a shallow clone,
+
+
+00:22:08.400 --> 00:22:11.440
+all that it will check out is the like depth of one,
+
+
+00:22:11.440 --> 00:22:13.480
+that's sorry, not shallow, partial clone,
+
+
+00:22:13.480 --> 00:22:18.480
+is all it will check out is level one of files,
+
+
+00:22:18.480 --> 00:22:21.020
+but all of the commit history and messages.
+
+
+00:22:21.020 --> 00:22:24.080
+So like this file has 10 changes and here's the messages,
+
+
+00:22:24.080 --> 00:22:26.680
+but it doesn't check out those nine others.
+
+
+00:22:26.680 --> 00:22:30.160
+But what's cool is if you were to switch a branch
+
+
+00:22:30.160 --> 00:22:31.360
+or go back in history,
+
+
+00:22:31.360 --> 00:22:34.260
+Git will on demand download that other one.
+
+
+00:22:34.260 --> 00:22:38.580
+So what you end up typing is you type something like
+
+
+00:22:38.580 --> 00:22:43.580
+git clone --filter colon blob equals none,
+
+
+00:22:43.580 --> 00:22:46.480
+or you can even say, I want all the files
+
+
+00:22:46.480 --> 00:22:49.480
+except for anything over a certain size
+
+
+00:22:49.480 --> 00:22:50.360
+that might be in history.
+
+
+00:22:50.360 --> 00:22:52.600
+So anything over 100K, but other than that,
+
+
+00:22:52.600 --> 00:22:56.160
+give me every file forever throughout its all history.
+
+
+00:22:56.160 --> 00:23:00.480
+So this partial clone is like a similar type of thing,
+
+
+00:23:00.480 --> 00:23:02.920
+but it's a little more flexible in that it's
+
+
+00:23:02.920 --> 00:23:07.200
+like a transparent proxy to the full history of the repo
+
+
+00:23:07.200 --> 00:23:08.280
+without cloning it.
+
+
+00:23:08.280 --> 00:23:09.400
+Does that make sense?
+
+
+00:23:09.400 --> 00:23:10.920
+- Yeah, so that might be a good workflow
+
+
+00:23:10.920 --> 00:23:13.080
+for like in a development environment.
+
+
+00:23:13.080 --> 00:23:14.600
+- Yes, exactly, yeah.
+
+
+00:23:14.600 --> 00:23:17.680
+If you're not hoping that you're going to be able
+
+
+00:23:17.680 --> 00:23:21.200
+to go offline and completely disassociate yourself
+
+
+00:23:21.200 --> 00:23:22.860
+from GitHub, right?
+
+
+00:23:22.860 --> 00:23:25.240
+If you are assuming I still have online access
+
+
+00:23:25.240 --> 00:23:27.600
+and I don't want this folder to be the true,
+
+
+00:23:27.600 --> 00:23:30.480
+complete, full history forever of the repo,
+
+
+00:23:30.480 --> 00:23:31.720
+I trust that it's other places,
+
+
+00:23:31.720 --> 00:23:33.160
+then you'd be totally good.
+
+
+00:23:33.160 --> 00:23:36.440
+The one place where the shallow clone would be really awesome
+
+
+00:23:36.440 --> 00:23:38.640
+is for CI.
+
+
+00:23:38.640 --> 00:23:41.480
+- Yeah, that's what I was mentioning.
+
+
+00:23:41.480 --> 00:23:43.640
+Yeah, right. - Yeah, yeah, yeah.
+
+
+00:23:43.640 --> 00:23:44.720
+Yeah, if you're doing it for CI,
+
+
+00:23:44.720 --> 00:23:47.600
+then your CI system does not care what the history is.
+
+
+00:23:47.600 --> 00:23:49.600
+It only cares what the current is.
+
+
+00:23:49.600 --> 00:23:50.520
+- Yeah. - Right?
+
+
+00:23:50.520 --> 00:23:52.440
+So shallow clone.
+
+
+00:23:52.440 --> 00:23:54.280
+And then similarly related to that
+
+
+00:23:54.280 --> 00:23:56.540
+is you have sparse checkouts where you can say,
+
+
+00:23:56.540 --> 00:23:57.640
+I know there's a huge repo,
+
+
+00:23:57.640 --> 00:23:59.060
+but I just want these three directories
+
+
+00:23:59.060 --> 00:24:00.100
+and stuff under them.
+
+
+00:24:00.100 --> 00:24:02.960
+And you can mix that with a partial clone.
+
+
+00:24:02.960 --> 00:24:04.520
+So you can like combine these,
+
+
+00:24:04.520 --> 00:24:05.660
+I only want the partial clone,
+
+
+00:24:05.660 --> 00:24:06.980
+but of just these three directories,
+
+
+00:24:06.980 --> 00:24:08.580
+even though there's thousands.
+
+
+00:24:08.580 --> 00:24:09.420
+- Oh, right.
+
+
+00:24:09.420 --> 00:24:11.020
+And well, and some companies do the whole like
+
+
+00:24:11.020 --> 00:24:13.920
+mega repo thing where everything's in one.
+
+
+00:24:13.920 --> 00:24:14.960
+- And that's where it would matter.
+
+
+00:24:14.960 --> 00:24:17.040
+'Cause you're like, well, I don't wanna check out
+
+
+00:24:17.040 --> 00:24:19.800
+seven terabytes, I don't want our returns out to be.
+
+
+00:24:19.800 --> 00:24:22.480
+So anyway, there's like a couple of interesting things.
+
+
+00:24:22.480 --> 00:24:25.780
+I present to you all the Git Sizer
+
+
+00:24:25.780 --> 00:24:28.220
+to give you a little bit of advice,
+
+
+00:24:28.220 --> 00:24:29.820
+but then also some of these other tools
+
+
+00:24:29.820 --> 00:24:31.780
+to help you deal with it more.
+
+
+00:24:31.780 --> 00:24:34.500
+If you're already in this realm,
+
+
+00:24:34.500 --> 00:24:38.660
+partial clone, shallow clones, and sparse checkouts
+
+
+00:24:38.660 --> 00:24:40.980
+all might be tools you can apply
+
+
+00:24:40.980 --> 00:24:43.620
+what are just built into Git that make this a lot better.
+
+
+00:24:43.620 --> 00:24:44.460
+Yeah.
+
+
+00:24:44.460 --> 00:24:46.220
+- And also LFS is not that hard to use.
+
+
+00:24:46.220 --> 00:24:48.860
+So if you really have to use LFS.
+
+
+00:24:48.860 --> 00:24:50.120
+- Yeah, I have one other thing for you.
+
+
+00:24:50.120 --> 00:24:51.640
+I did this on the Talk Python Training.
+
+
+00:24:51.640 --> 00:24:53.280
+I did a partial clone.
+
+
+00:24:53.280 --> 00:24:57.800
+We'll filter blob equals none, blob colon none.
+
+
+00:24:57.800 --> 00:24:59.360
+And without.
+
+
+00:24:59.360 --> 00:25:04.200
+So without, I had the deltas with 71,000 deltas
+
+
+00:25:04.200 --> 00:25:06.700
+and 118,000 objects.
+
+
+00:25:06.700 --> 00:25:10.760
+With 10,000 objects, 1,400 deltas.
+
+
+00:25:10.760 --> 00:25:15.600
+So much, much faster checkout.
+
+
+00:25:15.600 --> 00:25:17.200
+And like I said, it's kind of on demand.
+
+
+00:25:17.200 --> 00:25:19.560
+It'll go get the older files if it needs to.
+
+
+00:25:19.560 --> 00:25:20.400
+- Cool.
+
+
+00:25:20.400 --> 00:25:23.540
+Yeah, anyway, it seems like it's pretty handy.
+
+
+00:25:23.540 --> 00:25:26.180
+Lots of get, what are we getting to next?
+
+
+00:25:26.180 --> 00:25:29.420
+- Oh, we've, oops, right now we've got bad advice.
+
+
+00:25:29.420 --> 00:25:32.740
+So I guess this may be under category of
+
+
+00:25:32.740 --> 00:25:36.100
+do not try this at home or just don't listen to Brian,
+
+
+00:25:36.100 --> 00:25:39.180
+but it wasn't me, it was this other guy, Adrian.
+
+
+00:25:39.180 --> 00:25:41.740
+So this is a fun article called
+
+
+00:25:41.740 --> 00:25:43.900
+Data Classes Without Type Annotations.
+
+
+00:25:43.900 --> 00:25:48.260
+So I'm using data classes a lot now, I like them.
+
+
+00:25:48.260 --> 00:25:51.580
+And adders too, I like both adders and data classes.
+
+
+00:25:51.580 --> 00:25:56.220
+But anyway, so apparently, I didn't know this,
+
+
+00:25:56.220 --> 00:25:59.900
+but data classes don't really care what the type is.
+
+
+00:25:59.900 --> 00:26:03.660
+- You can put a type, but it's not a,
+
+
+00:26:03.660 --> 00:26:05.720
+it doesn't use the type.
+
+
+00:26:05.720 --> 00:26:08.500
+- It doesn't use the type at all, apparently.
+
+
+00:26:08.500 --> 00:26:11.380
+So you can do something like dot, dot, dot,
+
+
+00:26:11.380 --> 00:26:12.720
+for instance, as the type,
+
+
+00:26:12.720 --> 00:26:16.300
+and you can do some crazy things.
+
+
+00:26:16.300 --> 00:26:17.740
+So that doesn't even make any sense,
+
+
+00:26:17.740 --> 00:26:18.780
+but apparently it works fine.
+
+
+00:26:18.780 --> 00:26:20.220
+And I'm like, I don't believe it.
+
+
+00:26:20.220 --> 00:26:22.100
+So I tried it and they're right.
+
+
+00:26:22.100 --> 00:26:24.020
+It doesn't do that.
+
+
+00:26:24.020 --> 00:26:29.980
+So there's a whole bunch of discussion
+
+
+00:26:29.980 --> 00:26:31.940
+around types here and type ints.
+
+
+00:26:31.940 --> 00:26:33.860
+And some people just kind of are,
+
+
+00:26:33.860 --> 00:26:35.860
+they don't wanna use types and that's fine.
+
+
+00:26:35.860 --> 00:26:39.060
+But if you wanted to use type class or data classes,
+
+
+00:26:39.060 --> 00:26:41.300
+they kind of require you to use types,
+
+
+00:26:41.300 --> 00:26:43.140
+but apparently you can get around it.
+
+
+00:26:43.140 --> 00:26:45.420
+And I just really wanted to show
+
+
+00:26:45.420 --> 00:26:47.580
+this horrible example of code.
+
+
+00:26:47.580 --> 00:26:54.340
+And there's a data class that is called literally
+
+
+00:26:54.340 --> 00:26:59.960
+and it has a variable, anything with the type
+
+
+00:26:59.960 --> 00:27:04.960
+is a tuple with two strings in it saying can go in here.
+
+
+00:27:04.960 --> 00:27:09.300
+And we've got other variables with like lambdas expressions
+
+
+00:27:09.300 --> 00:27:13.440
+as types and also I tried this,
+
+
+00:27:13.440 --> 00:27:16.200
+you have to put from future import annotations
+
+
+00:27:16.200 --> 00:27:21.200
+in your file, but then you can put
+
+
+00:27:21.200 --> 00:27:23.620
+all sorts of horrible things in there.
+
+
+00:27:23.620 --> 00:27:25.720
+It doesn't even have, these symbols don't even have
+
+
+00:27:25.720 --> 00:27:27.800
+to be anywhere in your file.
+
+
+00:27:27.800 --> 00:27:30.960
+As long as it parses, it works fine.
+
+
+00:27:30.960 --> 00:27:35.400
+- For example, the first type is a tuple.
+
+
+00:27:35.400 --> 00:27:36.840
+It's not saying the type is tuple,
+
+
+00:27:36.840 --> 00:27:40.920
+it just is a tuple, like parenthesis, string, comma, string.
+
+
+00:27:40.920 --> 00:27:42.200
+- Yeah.
+
+
+00:27:42.200 --> 00:27:46.000
+The second one is a lambda where the type value would go
+
+
+00:27:46.000 --> 00:27:47.200
+and so on, yeah.
+
+
+00:27:47.200 --> 00:27:49.120
+- And it's not even a valid lambda.
+
+
+00:27:49.120 --> 00:27:50.240
+Well, I guess it is.
+
+
+00:27:50.240 --> 00:27:51.080
+You can have a lambda.
+
+
+00:27:51.080 --> 00:27:53.440
+- It's a parameterless lambda.
+
+
+00:27:53.440 --> 00:27:55.200
+- That only returns a string.
+
+
+00:27:55.200 --> 00:28:02.160
+How about not as an expression for a type,
+
+
+00:28:02.160 --> 00:28:07.720
+not even dot evaluate is apparently a valid type.
+
+
+00:28:07.720 --> 00:28:10.440
+And then the last one is just awful.
+
+
+00:28:10.440 --> 00:28:15.440
+just dot has as a two equals B as the parameter to has
+
+
+00:28:15.440 --> 00:28:20.840
+multiplied by syntactically bracket valid.
+
+
+00:28:20.840 --> 00:28:25.240
+These are, this is a nightmare, but it parses fine.
+
+
+00:28:25.240 --> 00:28:28.480
+- Crazy.
+
+
+00:28:28.480 --> 00:28:29.880
+Yeah, your editor might not like it.
+
+
+00:28:29.880 --> 00:28:31.660
+My PI might not like it.
+
+
+00:28:31.660 --> 00:28:32.500
+- Yeah.
+
+
+00:28:32.500 --> 00:28:34.340
+- Wow.
+
+
+00:28:34.340 --> 00:28:37.860
+- But there is some discussion of things
+
+
+00:28:37.860 --> 00:28:39.540
+that might be useful about this.
+
+
+00:28:39.540 --> 00:28:44.220
+Like if you're really not using data type annotations
+
+
+00:28:44.220 --> 00:28:45.780
+but you wanna use data classes,
+
+
+00:28:45.780 --> 00:28:49.860
+you perhaps wanna put some strings in there as the type
+
+
+00:28:49.860 --> 00:28:52.980
+to declare as a comment for what the thing is
+
+
+00:28:52.980 --> 00:28:55.420
+instead of, you know, I don't know.
+
+
+00:28:55.420 --> 00:28:56.460
+This is bad advice.
+
+
+00:28:56.460 --> 00:28:58.060
+Don't follow this, but it's fun.
+
+
+00:28:58.060 --> 00:29:04.060
+- It does break some conceptions
+
+
+00:29:04.060 --> 00:29:06.820
+that people might have about data classes.
+
+
+00:29:06.820 --> 00:29:09.560
+unlike say, Pydantic where this stuff matters.
+
+
+00:29:09.560 --> 00:29:13.740
+After like data classes, but apparently validated.
+
+
+00:29:13.740 --> 00:29:15.580
+- Yeah, and apparently this,
+
+
+00:29:15.580 --> 00:29:18.540
+so this was apparently popular or enough.
+
+
+00:29:18.540 --> 00:29:19.860
+This was written last year.
+
+
+00:29:19.860 --> 00:29:23.900
+And if you wanna try to do something similar
+
+
+00:29:23.900 --> 00:29:28.020
+to data classes where, or similar to adders
+
+
+00:29:28.020 --> 00:29:30.640
+where you have like attrib or something,
+
+
+00:29:30.640 --> 00:29:31.740
+apparently there's this other,
+
+
+00:29:31.740 --> 00:29:34.780
+you can say a typeless data class
+
+
+00:29:34.780 --> 00:29:36.480
+and you can just say it's a field.
+
+
+00:29:36.480 --> 00:29:39.580
+and get around it.
+
+
+00:29:39.580 --> 00:29:43.660
+And this is available in a PyPI package.
+
+
+00:29:43.660 --> 00:29:44.700
+So yeah.
+
+
+00:29:44.700 --> 00:29:45.560
+- Okay, cool.
+
+
+00:29:45.560 --> 00:29:48.280
+Typeless data class is fun.
+
+
+00:29:48.280 --> 00:29:53.320
+All right, well, is that all of our topics, Brian?
+
+
+00:29:53.320 --> 00:29:54.460
+- I think it is.
+
+
+00:29:54.460 --> 00:29:57.460
+I don't have any extras either.
+
+
+00:29:57.460 --> 00:29:58.860
+Do you have any extras for us?
+
+
+00:29:58.860 --> 00:30:00.700
+- I have two.
+
+
+00:30:00.700 --> 00:30:03.360
+Let's see what have I got going on here.
+
+
+00:30:03.360 --> 00:30:07.660
+So my notes in the show, share notes,
+
+
+00:30:07.660 --> 00:30:10.960
+my comment is the LastPass story just keeps getting worse.
+
+
+00:30:10.960 --> 00:30:12.740
+What I have on the screen here, what I linked to,
+
+
+00:30:12.740 --> 00:30:16.920
+does not fully communicate the degree
+
+
+00:30:16.920 --> 00:30:18.320
+to which it has gotten worse.
+
+
+00:30:18.320 --> 00:30:20.060
+So keep that in mind.
+
+
+00:30:20.060 --> 00:30:25.640
+With LastPass, it turns out that someone, guess what,
+
+
+00:30:25.640 --> 00:30:28.320
+broke into the GitHub repository of a developer
+
+
+00:30:28.320 --> 00:30:31.860
+sometime last year, like November.
+
+
+00:30:31.860 --> 00:30:34.340
+they then use that access to further their access
+
+
+00:30:34.340 --> 00:30:37.060
+and eventually got the ability to copy
+
+
+00:30:37.060 --> 00:30:42.060
+every single customer's users last pass encrypted vault,
+
+
+00:30:42.060 --> 00:30:48.140
+which sounds terrifying, shouldn't be, but it does
+
+
+00:30:48.140 --> 00:30:51.740
+because that's theoretically encrypted
+
+
+00:30:51.740 --> 00:30:56.540
+with your big long not reused password.
+
+
+00:30:56.540 --> 00:30:58.820
+That's a big if, but it should be right.
+
+
+00:30:58.820 --> 00:31:05.140
+And then it probably should have some kind of secret key type of thing like one password.
+
+
+00:31:05.140 --> 00:31:11.260
+So even if my password was the letter A for one password, it's still 27 characters from
+
+
+00:31:11.260 --> 00:31:12.980
+the person of this perspective.
+
+
+00:31:12.980 --> 00:31:13.980
+LastPass doesn't have that.
+
+
+00:31:13.980 --> 00:31:18.220
+It's just the letter A. So that's not ideal.
+
+
+00:31:18.220 --> 00:31:19.620
+There's some posts like, "Oh, well, don't worry.
+
+
+00:31:19.620 --> 00:31:22.500
+It's going to take like 100 years to decrypt this."
+
+
+00:31:22.500 --> 00:31:26.700
+- If, if, big if, that would be if they had
+
+
+00:31:26.700 --> 00:31:29.660
+the latest settings, which are like,
+
+
+00:31:29.660 --> 00:31:31.660
+if I just created a new account
+
+
+00:31:31.660 --> 00:31:35.620
+and it used like 100,000 iterations of folding the password
+
+
+00:31:35.620 --> 00:31:38.820
+and other things about how long the password has to be.
+
+
+00:31:38.820 --> 00:31:41.220
+But here's the getting the worst part.
+
+
+00:31:41.220 --> 00:31:44.300
+The older versions didn't enforce that.
+
+
+00:31:44.300 --> 00:31:47.460
+And they didn't use password folding.
+
+
+00:31:47.460 --> 00:31:49.760
+Instead of using 100,000 or a million iterations,
+
+
+00:31:49.760 --> 00:31:51.100
+they used one.
+
+
+00:31:51.100 --> 00:31:55.740
+So instead of taking 100 years or whatever it is to decrypt it
+
+
+00:31:55.740 --> 00:31:59.380
+with a regular sort of cracking GPU system,
+
+
+00:31:59.380 --> 00:32:03.300
+it takes about 25 seconds to crack the password.
+
+
+00:32:03.300 --> 00:32:06.380
+And those passwords are versioned and changed
+
+
+00:32:06.380 --> 00:32:09.700
+in this way depending on when you last used them over time.
+
+
+00:32:09.700 --> 00:32:11.460
+So if you created a password 10 years ago
+
+
+00:32:11.460 --> 00:32:14.180
+but then changed the settings, I don't think it goes back.
+
+
+00:32:14.180 --> 00:32:16.740
+Not 100% sure, but I think it's still--
+
+
+00:32:16.740 --> 00:32:19.140
+you can have historical older passwords in your vault
+
+
+00:32:19.140 --> 00:32:21.020
+that are like that.
+
+
+00:32:21.020 --> 00:32:24.600
+On top of that, it turns out that things like the URL
+
+
+00:32:24.600 --> 00:32:26.840
+of where that password belongs to,
+
+
+00:32:26.840 --> 00:32:30.760
+and your email address were stored in plain text.
+
+
+00:32:30.760 --> 00:32:36.040
+Not true with Bitwarden, not true with 1Password,
+
+
+00:32:36.040 --> 00:32:39.320
+but with LastPass, stored in plain text.
+
+
+00:32:39.320 --> 00:32:41.580
+Well, it's not plain text, it's base64 encoded,
+
+
+00:32:41.580 --> 00:32:43.180
+but we all know what that means.
+
+
+00:32:43.180 --> 00:32:47.160
+Just not readable by humans, but that's plain text.
+
+
+00:32:47.160 --> 00:32:49.440
+So, and when was it last accessed?
+
+
+00:32:49.440 --> 00:32:51.200
+So you can do things like, I want to go to the vault
+
+
+00:32:51.200 --> 00:32:54.360
+and see who has accessed some shady site.
+
+
+00:32:54.360 --> 00:32:58.480
+Like who has accessed Tinder, but also seems to be married.
+
+
+00:32:58.480 --> 00:33:00.520
+Can I blackmail that person without even figuring out
+
+
+00:33:00.520 --> 00:33:01.360
+what their password is?
+
+
+00:33:01.360 --> 00:33:03.240
+Just say, look, that's a little shady.
+
+
+00:33:03.240 --> 00:33:05.760
+I'm going to tell your wife about your Tinder account.
+
+
+00:33:05.760 --> 00:33:08.480
+You know, so I mean, there's all sorts of really bad things.
+
+
+00:33:08.480 --> 00:33:11.320
+Plus I can see that some of those passwords
+
+
+00:33:11.320 --> 00:33:16.320
+are going to my bank with a password folding of one
+
+
+00:33:16.320 --> 00:33:19.080
+or 500 or 5,000, which I can just break straight away.
+
+
+00:33:19.080 --> 00:33:21.800
+So you can use the unencrypted bits
+
+
+00:33:21.800 --> 00:33:24.900
+to target which ones you want to go after.
+
+
+00:33:24.900 --> 00:33:25.740
+It's really bad.
+
+
+00:33:25.740 --> 00:33:29.800
+So just PSA, if you use LastPass, change your passwords.
+
+
+00:33:29.800 --> 00:33:32.080
+- Yeah.
+
+
+00:33:32.080 --> 00:33:33.280
+- Period.
+
+
+00:33:33.280 --> 00:33:37.960
+'Cause this is out there and it's in plain text,
+
+
+00:33:37.960 --> 00:33:39.960
+except for the password.
+
+
+00:33:39.960 --> 00:33:40.800
+Not ideal.
+
+
+00:33:40.800 --> 00:33:45.020
+Okay, so anyway, I figured that was bad enough.
+
+
+00:33:45.020 --> 00:33:48.060
+I wanted to kind of point out,
+
+
+00:33:48.060 --> 00:33:50.460
+I know because a lot of people are like, don't worry, it's super encrypted.
+
+
+00:33:50.460 --> 00:33:51.460
+Like sometimes.
+
+
+00:33:51.460 --> 00:33:58.100
+Yeah, but who would actually do it for 25 seconds?
+
+
+00:33:58.100 --> 00:33:59.100
+I know, come on.
+
+
+00:33:59.100 --> 00:34:04.940
+I mean, if it just said, you know, like Bank of America account dot com slash logon, I
+
+
+00:34:04.940 --> 00:34:05.940
+don't know.
+
+
+00:34:05.940 --> 00:34:06.940
+That was 25 seconds.
+
+
+00:34:06.940 --> 00:34:07.940
+Probably.
+
+
+00:34:07.940 --> 00:34:08.940
+Yeah.
+
+
+00:34:08.940 --> 00:34:11.660
+I mean, banks are like kind of a unique case because they often have like a 2FA or, you
+
+
+00:34:11.660 --> 00:34:17.380
+know, what's your cat's favorite toys name or whatever you got to answer.
+
+
+00:34:17.380 --> 00:34:23.580
+Like there's many places that aren't don't have like a some kind of second check like that and my bank even has the feature of
+
+
+00:34:23.580 --> 00:34:30.220
+Even if I tell them to remember my device they won't so I have to 2fa every single time
+
+
+00:34:30.220 --> 00:34:36.820
+All right, the other thing is I woke up this morning
+
+
+00:34:36.820 --> 00:34:39.800
+with a couple thousand dollars and
+
+
+00:34:39.800 --> 00:34:46.260
+Unfortunately by the time of the recording. I no longer have that money, but I have a new Mac mini coming Brian
+
+
+00:34:47.140 --> 00:34:49.060
+- I want one of these.
+
+
+00:34:49.060 --> 00:34:52.860
+- They just announced a new Mac mini M2 Pro
+
+
+00:34:52.860 --> 00:34:57.180
+and the new MacBook Air Pros and Maxes and all that.
+
+
+00:34:57.180 --> 00:34:58.740
+So people have been waiting.
+
+
+00:34:58.740 --> 00:34:59.980
+- It says 600 bucks.
+
+
+00:34:59.980 --> 00:35:02.600
+How, where are you down 2000?
+
+
+00:35:02.600 --> 00:35:03.780
+- Wow, let us go.
+
+
+00:35:03.780 --> 00:35:05.860
+Let us go on the pass.
+
+
+00:35:05.860 --> 00:35:08.300
+So 600 bucks is the M2 version,
+
+
+00:35:08.300 --> 00:35:10.580
+which is basically the upgrade of what I have now,
+
+
+00:35:10.580 --> 00:35:12.220
+which is awesome.
+
+
+00:35:12.220 --> 00:35:15.500
+But what I want is the M2 Pro for all the video editing,
+
+
+00:35:15.500 --> 00:35:17.180
+which is like 1300 to start,
+
+
+00:35:17.180 --> 00:35:24.940
+but then you're like, I really could use a little more RAM and it's that.
+
+
+00:35:24.940 --> 00:35:27.060
+With all the video and podcast stuff,
+
+
+00:35:27.060 --> 00:35:29.020
+I need some more storage and all of a sudden it's like,
+
+
+00:35:29.020 --> 00:35:30.260
+"Oh, I'll just sell my car,
+
+
+00:35:30.260 --> 00:35:32.340
+I'll get a Mini." That'll be cool.
+
+
+00:35:32.340 --> 00:35:35.340
+But anyway, I'm very excited about this coming out.
+
+
+00:35:35.340 --> 00:35:36.780
+I'll let people know what I think when I get it,
+
+
+00:35:36.780 --> 00:35:38.300
+but I'm sure it'll be lovely.
+
+
+00:35:38.300 --> 00:35:40.140
+>> Cooper Mini or Mac Mini,
+
+
+00:35:40.140 --> 00:35:41.500
+they're about the same price.
+
+
+00:35:41.500 --> 00:35:43.140
+>> Exactly.
+
+
+00:35:44.420 --> 00:35:48.420
+One's made in Cupertino by Apple.
+
+
+00:35:48.420 --> 00:35:52.100
+The other one is Cooper made by BMW in London,
+
+
+00:35:52.100 --> 00:35:53.260
+or England somewhere.
+
+
+00:35:53.260 --> 00:35:55.180
+All right, that's it for extras though.
+
+
+00:35:55.180 --> 00:35:56.940
+Got some jokes, if you want a joke.
+
+
+00:35:56.940 --> 00:35:58.620
+- Yeah, let's do something funny.
+
+
+00:35:58.620 --> 00:36:00.820
+- Yeah, all right.
+
+
+00:36:00.820 --> 00:36:03.780
+So this one's about debugging.
+
+
+00:36:03.780 --> 00:36:06.460
+And have you ever done like,
+
+
+00:36:06.460 --> 00:36:09.560
+I've got a section and I need a break point here,
+
+
+00:36:09.560 --> 00:36:12.980
+but there's not a great way to put the break point there,
+
+
+00:36:12.980 --> 00:36:18.180
+Or you might say, I would say, if user equals such and such,
+
+
+00:36:18.180 --> 00:36:21.100
+or this value is in the range of what I expected,
+
+
+00:36:21.100 --> 00:36:22.100
+then I want it to break.
+
+
+00:36:22.100 --> 00:36:25.140
+So you might say, if something created just a variable,
+
+
+00:36:25.140 --> 00:36:26.700
+set a value, and give it a breakpoint.
+
+
+00:36:26.700 --> 00:36:31.740
+Well, this is kind of about the philosophical wonderings
+
+
+00:36:31.740 --> 00:36:33.500
+of this situation here.
+
+
+00:36:33.500 --> 00:36:34.420
+So there's a variable.
+
+
+00:36:34.420 --> 00:36:37.860
+It just says var a equals 0, JavaScript, I guess.
+
+
+00:36:37.860 --> 00:36:39.180
+Or it could be C#.
+
+
+00:36:39.180 --> 00:36:41.020
+But it has a little squiggly, which is clearly
+
+
+00:36:41.020 --> 00:36:43.580
+like unused variable, right?
+
+
+00:36:43.580 --> 00:36:44.620
+- Yes.
+
+
+00:36:44.620 --> 00:36:46.620
+- And the variable asks,
+
+
+00:36:46.620 --> 00:36:48.860
+dear programmer, what is my purpose?
+
+
+00:36:48.860 --> 00:36:52.220
+And then the programmer says,
+
+
+00:36:52.220 --> 00:36:56.820
+you're a dummy variable to place a break point on.
+
+
+00:36:56.820 --> 00:36:57.660
+Oh my God.
+
+
+00:36:57.660 --> 00:37:00.320
+(both laughing)
+
+
+00:37:00.320 --> 00:37:02.380
+Isn't that amazing?
+
+
+00:37:02.380 --> 00:37:03.500
+- That's pretty funny.
+
+
+00:37:03.500 --> 00:37:04.820
+- Yeah.
+
+
+00:37:04.820 --> 00:37:06.260
+The existential
+
+
+00:37:06.260 --> 00:37:10.500
+despair of the dummy variable.
+
+
+00:37:10.500 --> 00:37:13.980
+But it's short-lived, but it can be quite helpful and loved.
+
+
+00:37:13.980 --> 00:37:17.220
+So don't let it get you down, dummy variable.
+
+
+00:37:17.220 --> 00:37:18.240
+- Yeah.
+
+
+00:37:18.240 --> 00:37:21.420
+Or it could have been used once before
+
+
+00:37:21.420 --> 00:37:23.140
+and then somebody refactored the code
+
+
+00:37:23.140 --> 00:37:25.900
+and forgot to delete the declarations.
+
+
+00:37:25.900 --> 00:37:26.740
+- Exactly.
+
+
+00:37:26.740 --> 00:37:28.460
+Then you live a long time.
+
+
+00:37:28.460 --> 00:37:29.300
+- Yeah.
+
+
+00:37:29.300 --> 00:37:32.400
+- All right, well, that's it.
+
+
+00:37:32.400 --> 00:37:33.620
+- All right, that was funny.
+
+
+00:37:33.620 --> 00:37:34.700
+So thanks a lot.
+
+
+00:37:34.700 --> 00:37:36.460
+And thanks for joining me again today.
+
+
+00:37:36.460 --> 00:37:38.300
+And thanks, of course, to Microsoft,
+
+
+00:37:39.340 --> 00:37:41.520
+Fender sub to sponsor us.
+
+
+00:37:41.520 --> 00:37:42.360
+- You bet.
+
+
+00:37:42.360 --> 00:37:43.640
+Thanks everyone for listening.
+
+
+00:37:43.640 --> 00:37:44.480
+Bye all. - Bye.
+
+
+00:37:44.480 --> 00:37:54.480
+[BLANK_AUDIO]
+

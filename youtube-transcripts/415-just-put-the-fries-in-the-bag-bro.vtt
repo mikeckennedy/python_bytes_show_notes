@@ -1,0 +1,1070 @@
+WEBVTT
+
+00:00:00.001 --> 00:00:09.720
+hey everybody hello michael hello i am excited to have our this is gonna be a fun episode i
+
+00:00:09.720 --> 00:00:16.720
+think um but it's nice in december so let's just kick it off hello and welcome to python
+
+00:00:16.720 --> 00:00:22.600
+bytes where we deliver python news and headlines directly to earbuds this is episode 415 recorded
+
+00:00:22.600 --> 00:00:31.200
+december 23rd 2024 and i am brian aiken and i'm michael kennedy and we're excited that uh today's
+
+00:00:31.200 --> 00:00:38.680
+episode is sponsored by us so check out um talk python training and talk in python test.com
+
+00:00:38.680 --> 00:00:44.280
+where we have courses there and also thank you to patreon supporters um if you'd like to connect
+
+00:00:44.280 --> 00:00:50.620
+with the show and talk with us or give us suggestions to go on the show um look for the links in the show
+
+00:00:50.620 --> 00:00:56.940
+notes for all of the mastodon or blue sky links we check we check those and we're on both of those
+
+00:00:56.940 --> 00:01:01.160
+you think it's a little disingenuous that we have blue sky even though we live in oregon and it's
+
+00:01:01.160 --> 00:01:07.620
+winter and we haven't seen a blue sky for a very long time hey i saw a blue sky like three days ago
+
+00:01:07.620 --> 00:01:11.600
+four maybe it was a couple weeks ago okay we have them once in a while
+
+00:01:11.600 --> 00:01:19.960
+um and if you're listening to this on in your podcast player um thank you and share it with a
+
+00:01:19.960 --> 00:01:28.060
+friend and also um occasionally may be fun to switch over and uh watch us live so go to pythonbytes.fm
+
+00:01:28.060 --> 00:01:33.480
+slash live and you can see when we're going to record next except for on weird days like today where i
+
+00:01:33.480 --> 00:01:40.440
+contacted michael and said hey can we record early so we did um because well it's christmas eve eve
+
+00:01:40.440 --> 00:01:46.960
+which makes it yeah it makes it the schedule a little wacky yeah and while we're on that brian
+
+00:01:46.960 --> 00:01:53.560
+this is our last episode of the year next episode we'll just put a little seasons greeting or something
+
+00:01:53.560 --> 00:01:59.100
+and so people have to appreciate this one for all of 2024 right because this is it
+
+00:01:59.100 --> 00:02:05.720
+yeah yeah and i'm i'm i really had a fun this year so i'm grateful for everybody to stick around
+
+00:02:05.720 --> 00:02:12.260
+sticking around yeah i am too um and the final thing i want to say is um if you haven't already
+
+00:02:12.260 --> 00:02:17.760
+once you head over to pythonbytes.fm and click on newsletter and sign up for the newsletter so that
+
+00:02:17.760 --> 00:02:23.600
+you can get all of the links that we talked about in the show and some commentary around it and some
+
+00:02:23.600 --> 00:02:30.020
+notes just direct delivered right to your inbox so that would be nice so everyone needs some artisanal
+
+00:02:30.020 --> 00:02:37.040
+notes artisanal notes yes uh fresh oregon artisanal uh made in oregon so probably still dripping wet
+
+00:02:37.040 --> 00:02:46.180
+maybe a little moss on it yeah exactly um well once you take it off with the first topic michael
+
+00:02:46.180 --> 00:02:54.240
+all right let's do it so i would like to talk about durable software honestly this is something i don't
+
+00:02:54.240 --> 00:03:00.320
+hear a ton of in the python space so i thought i'd shine a little light both projects that i'm highlighting
+
+00:03:00.320 --> 00:03:06.720
+today for the main topics on my end are sub 500 github stars so they're
+
+00:03:06.720 --> 00:03:13.760
+that are used by people but they're not major projects but i think they could be really useful
+
+00:03:13.760 --> 00:03:21.280
+and so i'm kind of shining a light on on some up and coming ones let's say so the first one is dbos
+
+00:03:21.600 --> 00:03:29.840
+transact pi and the the h2 is ultra light durable execution in python so what the heck does that
+
+00:03:29.840 --> 00:03:36.640
+mean what is durable like does it have try except somewhere no more than that way way more than just
+
+00:03:36.640 --> 00:03:46.560
+error handling so what you do imagine brian that you've got some long-running process like one step of
+
+00:03:46.560 --> 00:03:53.840
+this process is i want to wait until a file shows up in this directory and then when it does we're going
+
+00:03:53.840 --> 00:03:59.360
+to process it save it over here some other system maybe you don't have direct conversation like direct
+
+00:03:59.360 --> 00:04:05.520
+connections with does some things processes it gives you a response then you take on the next like it's
+
+00:04:05.520 --> 00:04:12.000
+like a long-running slow uh it's not just going to happen all at once right and also it has to
+
+00:04:12.000 --> 00:04:18.400
+keep going you know if it's long running and you've got to restart your server or you want to deploy a
+
+00:04:18.400 --> 00:04:25.600
+new version of the app or there's even a bunch of stuff if you're doing api style things where the the
+
+00:04:25.600 --> 00:04:32.400
+worker processes periodically get restarted for memory in case they get hung up just to keep them sort of
+
+00:04:32.400 --> 00:04:37.600
+fresh right so there's all sorts of reasons your long-running thing might get shut down in the middle
+
+00:04:37.600 --> 00:04:42.320
+so that's what this thing handles so you write a python function you give it a workflow decorator
+
+00:04:42.320 --> 00:04:49.040
+and then it calls a bunch of sub functions to do its steps and they're decorated with at step and then
+
+00:04:49.040 --> 00:04:58.080
+what happens is when this runs each step before and then basically what workflow is happening what step
+
+00:04:58.080 --> 00:05:07.360
+is running what data was passed into it is serialized into postgres right and so if it crashes it just
+
+00:05:07.360 --> 00:05:12.240
+goes oh well what workflows i have going oh i see these and this one is at step five and here's this data
+
+00:05:12.240 --> 00:05:20.000
+so just run step five again and off it goes okay cool that's really cool it's not something i totally need
+
+00:05:20.000 --> 00:05:24.960
+all the time you know it's not something i feel like is a real common thing but if you were doing
+
+00:05:24.960 --> 00:05:31.760
+like a lot of email you're i'm sitting on an email process right i'm i'm managing myself which no i'm
+
+00:05:31.760 --> 00:05:36.880
+not but well i guess with less mucking sort of indirectly it was the self-hosted thing anyway
+
+00:05:36.880 --> 00:05:42.000
+it you know you're contacting a bunch of things or you're calling a bunch of apis or you're up you
+
+00:05:42.000 --> 00:05:49.120
+know uploading a bunch of files over an api like over s3 or something and the thing goes down you know you
+
+00:05:49.120 --> 00:05:54.640
+could do this to just go all right well where was i pick it up and keep going so let's see it says all
+
+00:05:54.640 --> 00:05:59.520
+you need to do is use a postgres database to connect to it there's no need for a workflow server which is
+
+00:05:59.520 --> 00:06:06.320
+cool and apparently there's this thing called aws step functions because of course there are at aws if
+
+00:06:06.320 --> 00:06:13.920
+there's any sort of possible um type of programming or execution there's a aws service for it anyway it's
+
+00:06:13.920 --> 00:06:20.480
+it's 25 times faster than that which i guess is good more cool features scheduled jobs run your
+
+00:06:20.480 --> 00:06:28.000
+workflows exactly once per time interval so con jobs sort of deal exactly once event processing use
+
+00:06:28.000 --> 00:06:34.800
+workflows to process incoming events for example a kafka topic exactly once that's pretty cool in
+
+00:06:34.800 --> 00:06:40.960
+observability all workflows are automatically emit open telemetry traces so you can anything that integrates
+
+00:06:40.960 --> 00:06:46.160
+with open telemetry which is a bunch of the different systems out there like air monitoring
+
+00:06:46.160 --> 00:06:54.320
+and sentry type things plug that in that's pretty cool so so it clearly works on the cloud does it
+
+00:06:54.320 --> 00:06:59.520
+could it work with a local thing as well yeah it just needs a postgres database so if you if you
+
+00:06:59.520 --> 00:07:04.480
+could run a postgres database or if you can run docker then you could just run the postgres image
+
+00:07:05.120 --> 00:07:12.080
+locally and you know it's the same just same port same connection stream cool yeah there you go over to
+
+00:07:12.080 --> 00:07:18.720
+you um i was just thinking about like uh recently you mentioned um uh going through and doing redoing
+
+00:07:18.720 --> 00:07:26.080
+a lot of the the um transcripts um could have possibly do something like this to if it ever dies to restart
+
+00:07:26.080 --> 00:07:31.440
+yeah exactly if you're doing or video file processing which is one that's super common
+
+00:07:31.440 --> 00:07:38.720
+you know i want to run uh conversions for these files but it's going to take two days
+
+00:07:38.720 --> 00:07:45.920
+liz out in the audience says that sounds interesting i've been trying to adopt airflow for a particular set
+
+00:07:45.920 --> 00:07:53.280
+of scheduled jobs i have but it's super complicated to set up yeah pretty cool um i want to talk about a
+
+00:07:53.280 --> 00:07:57.120
+survey a little bit that i didn't know about and i'm still a little confused but
+
+00:07:57.120 --> 00:08:05.440
+there's a there's an article on engineering at meta uh called typed python in 2024 well adopted yet
+
+00:08:05.440 --> 00:08:12.880
+usability challenges persist um but um and i'll get into the topic a little bit but i was a little
+
+00:08:12.880 --> 00:08:18.480
+confused by the survey it says this summer jet brains meta and microsoft collaborated collaborated to
+
+00:08:18.480 --> 00:08:25.280
+conduct a comprehensive survey on the state of python typing and uh perhaps i just missed that or it
+
+00:08:25.280 --> 00:08:30.080
+wasn't the results were announced or maybe this is the announcement because this is not the jetbrain
+
+00:08:30.080 --> 00:08:36.400
+developer survey this is something else this is a survey that happened uh through july through
+
+00:08:36.400 --> 00:08:48.080
+october beginning of october i guess um anyway so uh back to the topic at hand um so the the idea is uh 10 years
+
+00:08:48.080 --> 00:08:53.840
+after the introduction of PEP 484 with i didn't can't believe it's been 10 years uh we surveyed the
+
+00:08:53.840 --> 00:09:00.000
+current state of python type systems and the tool developed tools developers are using and uh like i said
+
+00:09:00.000 --> 00:09:10.000
+it's a it was a jet brains meta microsoft thing um so the findings 88 of respondents always or often use
+
+00:09:10.000 --> 00:09:17.120
+types in their python code um the ide tooling documentation and catching bugs are drivers
+
+00:09:17.120 --> 00:09:24.400
+for the high adoption of types in survey responses so and we'll get to the there's a there's a couple
+
+00:09:24.400 --> 00:09:31.840
+other things in here too but i wanted to highlight this because um like catching bugs that's what i thought
+
+00:09:31.840 --> 00:09:40.880
+people would use this for uh using pipe pipe or my pie um and and other you know other tools to to check for
+
+00:09:40.880 --> 00:09:50.800
+type errors um but i think that the big the big wins are in documentation and ide tooling um i i started using
+
+00:09:50.800 --> 00:09:58.800
+it for documentation primarily uh to document how somebody should use a method um to and i think it's super
+
+00:09:58.800 --> 00:10:04.560
+helpful to say yeah it's going to be a list of strings that you're going to pass in here um it just helps
+
+00:10:04.560 --> 00:10:10.960
+to understand how especially for non-obvious things um is it going to be a tuple is a list i guess it doesn't
+
+00:10:10.960 --> 00:10:19.280
+matter it's an iterable um but um that's really helpful then the ide tooling came out came along and started
+
+00:10:19.280 --> 00:10:25.840
+making it a lot easier just to to have type hints and everything work right um when using you now i don't
+
+00:10:25.840 --> 00:10:31.840
+have to hop over to another screen or another uh like find the definition of a function to find out
+
+00:10:31.840 --> 00:10:39.280
+what's in there i can get type hints to help me and the um the pop-up dialogues the whatever uh what the
+
+00:10:39.280 --> 00:10:45.680
+code what are those things called um anyway um the ones where it's in a separate file no yeah well like
+
+00:10:45.680 --> 00:10:51.920
+if you if you start typing a function you hit print and it's in the ide tells you oh autocomplete yeah
+
+00:10:51.920 --> 00:10:58.320
+autocomplete stuff um it's really helpful to be able to know oh yeah it's gonna go in here i wish
+
+00:10:58.320 --> 00:11:04.640
+that there was a way to shorten it because some stuff that has so many so i'm using all the time and is
+
+00:11:04.640 --> 00:11:09.360
+there's so many arguments that it's like this big giant blob thing and it's not helpful but anyway
+
+00:11:09.920 --> 00:11:17.120
+got to decrease your font size or even maybe or just like yeah just the standard library stuff that
+
+00:11:17.120 --> 00:11:24.400
+i'm using all the time don't keep popping that up uh i don't need type hints for print just saying um so
+
+00:11:24.400 --> 00:11:32.480
+uh all right i need type hints i just don't need to pop up there anyway um so interesting survey the uh the
+
+00:11:33.200 --> 00:11:39.200
+one of the interesting things here was that people were using it even for personal stuff just personal
+
+00:11:39.200 --> 00:11:49.600
+projects 66 percent of respondents said they use still use uh type hints always or often and uh 78
+
+00:11:49.600 --> 00:11:55.360
+of professionals that it makes sense it was it'd be more when with your work code than personal code but
+
+00:11:55.360 --> 00:12:02.480
+i'm finding that myself i'm using it even for personal stuff i'm using type type hints so a little bit of
+
+00:12:02.480 --> 00:12:08.080
+interesting things on which ids or people are using it's a little different from from the developer survey
+
+00:12:08.800 --> 00:12:15.200
+uh but maybe they had a different set of lists list set that people could choose from so mostly vs code
+
+00:12:15.200 --> 00:12:24.960
+uh pycharm up there plus emacs and neo vim emacs or neo vim and other uh but like the developer survey had
+
+00:12:24.960 --> 00:12:35.440
+had mostly what oh ide was vs code pycharm vim jupiter notebooks you know anyway so had probably just
+
+00:12:35.440 --> 00:12:40.640
+more selection or something i think there was more there were many options in the the psf one yeah
+
+00:12:40.640 --> 00:12:48.080
+the jeb the pycharm was the same but vs code was smaller interesting yeah different audience as well who
+
+00:12:48.080 --> 00:12:59.520
+knows yeah anyway uh so uh i what the real takeaways here though for for me as a trainer and other people
+
+00:12:59.520 --> 00:13:04.960
+that try to teach people is i think we need to do a better job at teaching um some of the
+
+00:13:04.960 --> 00:13:14.080
+the reasons why people are not using types um and are what we've got not required for my project lack of familiarity
+
+00:13:14.080 --> 00:13:23.760
+they're too complex and uh it's hard to hard to use or set up and push back from co-workers or co-maintainers is
+
+00:13:23.760 --> 00:13:35.200
+uh the the is like 50 50 people anyway um oh wow it's not percent because the top is 150 so i'm not sure what's going on here
+
+00:13:35.200 --> 00:13:38.240
+um so that's otherwise known as 33 percent
+
+00:13:38.240 --> 00:13:50.160
+34 i don't know uh but the um what i found is that that i there were i always run into something that's
+
+00:13:50.160 --> 00:13:58.000
+complex like a um you know a uh uh pie test fixture i don't know i still don't know how to type those
+
+00:13:58.000 --> 00:14:04.400
+correctly um but you can type you can do type hints for most things and if you run into complex stuff
+
+00:14:04.400 --> 00:14:10.720
+just don't worry about it move on um that's my recommendation uh there's you can jump go down that
+
+00:14:10.720 --> 00:14:16.160
+rabbit hole and try to uh try to do things but i think that that's something that people would train
+
+00:14:16.160 --> 00:14:22.320
+when training we teach people how to use type hints in simple things like this is if it's an int do this
+
+00:14:22.320 --> 00:14:31.360
+but uh i think it's important to maybe say hey sometimes it's complex um just like there's there's
+
+00:14:31.360 --> 00:14:36.000
+ways to do that but you also don't need to worry about it uh people can look up the docs for that
+
+00:14:37.120 --> 00:14:44.560
+i do appreciate the uh the addition of not having to import like capital list and capital uh you know
+
+00:14:44.560 --> 00:14:51.600
+whatever the other ones yeah like dict and yeah and all them yeah yeah and you can just do lowercase
+
+00:14:51.600 --> 00:14:58.560
+list and dict and stuff like that now yeah which is better that's 310 and above yeah yeah so anyway uh
+
+00:14:58.560 --> 00:15:06.240
+some interesting information here on the on typing it's nice awesome well you know what i think we just
+
+00:15:06.240 --> 00:15:16.880
+more typing let's just it's all typing all to close out 2024 so i would like to talk about right typer
+
+00:15:16.880 --> 00:15:26.880
+okay ght typer a fast and efficient type assistant for python including tensor shape interfaces and data
+
+00:15:26.880 --> 00:15:34.800
+science thingies so what the heck is this so you're saying brian that a lot of developers will write
+
+00:15:34.800 --> 00:15:42.800
+types when they write their functions but if you adopt a code base and it doesn't have typing or you have
+
+00:15:42.800 --> 00:15:49.920
+some colleague who utterly resists it resists adding times like i will not do this but as a group you've
+
+00:15:49.920 --> 00:15:57.280
+decided yeah we're doing it and somehow that person still works there uh you could use this thing right
+
+00:15:57.280 --> 00:16:03.200
+so this would be good for old projects just untyped projects whatever you know a lot of examples of
+
+00:16:03.200 --> 00:16:09.440
+projects that didn't have typing were things that traditionally supported two and three python two and
+
+00:16:09.440 --> 00:16:14.640
+three all right and like they're like well we can't have types because we want to support python
+
+00:16:14.640 --> 00:16:19.680
+two and now they're like you know what take take a hike python two maybe it's time to add types to
+
+00:16:19.680 --> 00:16:25.840
+them right so that's what this thing could do so what you do is you run your python program you say
+
+00:16:25.840 --> 00:16:32.240
+like python 3 dash m right typer and then you you can even use do it via testing i've never seen a nested
+
+00:16:32.240 --> 00:16:39.520
+dash m i love it okay so python dash m right type or dash m py test dash continue on collect all right you
+
+00:16:39.520 --> 00:16:44.640
+could do that and what it will do in this case is it'll run all of your tests and it'll look at the
+
+00:16:44.640 --> 00:16:52.960
+data exchanged for each function and then it will create the signatures of those functions with typing
+
+00:16:52.960 --> 00:17:00.400
+automatically oh wow yeah so it efficiently computes type annotation coverage for files and
+
+00:17:00.400 --> 00:17:06.000
+directories and it infers shapes of annotations for data science thingies like i said numpy jacks
+
+00:17:06.000 --> 00:17:12.800
+py torch etc compatible with jacks typing bear type and type guard we've covered bear type and type guard
+
+00:17:12.800 --> 00:17:20.880
+both awesome jacks typing don't know jacks apparently there are some other tools like monkey type and pi
+
+00:17:20.880 --> 00:17:29.600
+annotate but if you look at the timing the performance it's uh pretty good so it's like significantly
+
+00:17:29.600 --> 00:17:35.120
+faster than some of these tools right so near zero overhead so you can kind of run it on a complicated
+
+00:17:35.120 --> 00:17:44.000
+app and so on okay this looks great yeah and you can run a particular script and then what it'll do
+
+00:17:44.000 --> 00:17:52.640
+is it'll output i believe a separate file and it says look you just had def barnacle took an x but no
+
+00:17:52.640 --> 00:18:00.240
+that that x is a colon numpy dot nd array and this function returns an nd array right yeah
+
+00:18:02.080 --> 00:18:08.480
+that's cool or if you want to have it annotate bear type remember bear type will verify that it's actually
+
+00:18:08.480 --> 00:18:14.880
+right at runtime you can have it do that sort of deal or even if you have a partially annotated but not
+
+00:18:14.880 --> 00:18:22.880
+entirely annotated thing it will annotate that as well yeah so you can specify the output top files whether or
+
+00:18:22.880 --> 00:18:29.360
+not over to out overwrite your files obviously the assumption would be that that is in storage control
+
+00:18:29.360 --> 00:18:34.480
+you've committed it you run this and override it then you look at the diff and you decide i think
+
+00:18:34.480 --> 00:18:39.520
+that would be the best way to use it right that way you can view the diff and go looks good accept
+
+00:18:39.520 --> 00:18:43.280
+that change looks good accept that change i don't know about that one skip that change you know like
+
+00:18:43.280 --> 00:18:50.400
+that kind of kind of deal yeah anyway i think this is pretty awesome and it could be real helpful for
+
+00:18:50.400 --> 00:18:56.800
+people it's it's kind of one of those tools you don't use often it's like fluent or one of these other
+
+00:18:56.800 --> 00:19:01.760
+upgrade things it's like well i ran it once i got the old code to the new code now i just work
+
+00:19:01.760 --> 00:19:06.400
+new code style but at the same time that's real serious drudgery that you could avoid
+
+00:19:06.400 --> 00:19:15.520
+yeah now i gotta try it on my uh my code base is partly like i said i sometimes trip up on fixtures
+
+00:19:15.520 --> 00:19:19.840
+and maybe it'll tell me how to i bet it'll tell you i don't know what to put for fixtures either but
+
+00:19:19.840 --> 00:19:25.040
+it could probably discover it yeah yeah christian now in the audience points out faster than monkey
+
+00:19:25.040 --> 00:19:34.400
+type smiley love it um oh this is neat i'm looking forward to playing with that cool indeed
+
+00:19:34.400 --> 00:19:40.400
+all right um it's getting to the end of the year i'm feeling a little lazy
+
+00:19:41.840 --> 00:19:50.240
+are you no tell us more no not um but uh but maybe trey hunter is so trey hunter wrote a blog post
+
+00:19:50.240 --> 00:19:57.600
+called lazy self-installing python scripts with uv and i think that time is right for us to go back to
+
+00:19:57.600 --> 00:20:05.440
+using our own personal scripts more because it's now so much easier with with uv and python so um i used
+
+00:20:05.440 --> 00:20:10.960
+i mean i i thought about this i used to have my own bin the home directory bin directory full of a
+
+00:20:10.960 --> 00:20:17.200
+whole bunch of little scripts i got a men i got a tilde bin come on now yeah tilde bin um so i've got uh
+
+00:20:17.200 --> 00:20:24.800
+i actually to be honest i haven't done this much more lately because it's not trivial with python
+
+00:20:24.800 --> 00:20:31.040
+um and i don't really write a lot of bash anymore or anything uh i mean a little bit but um nothing i
+
+00:20:31.040 --> 00:20:37.520
+want to keep want to keep around anyway but that's a there's a lot of everyday python everyday tasks
+
+00:20:37.520 --> 00:20:44.800
+that um that maybe maybe would help to to code up with python and it's easier now so uh trey walks
+
+00:20:44.800 --> 00:20:51.120
+through it starts out with uh talking about how you can how you do this with uh just creating a file
+
+00:20:51.120 --> 00:20:58.320
+um in a bin directory it has to be in your path um so that's i don't remember if he talks about that
+
+00:20:58.320 --> 00:21:06.640
+or not but you have to possibly modify yours dot zhrc or your bash rc or something um to get to get your
+
+00:21:06.640 --> 00:21:13.840
+home directory bin in your path but after it's there um you can stick a file in there and change the
+
+00:21:13.840 --> 00:21:21.040
+permissions on it the execute bit um and oh yeah and then make sure that it's um uh it's a directory in
+
+00:21:21.040 --> 00:21:27.520
+your path variable um and then um and then you can just run it whenever you want from any directory
+
+00:21:27.520 --> 00:21:36.240
+the the there's a slight difference is uh the what pound bang um what do i don't know what you call this
+
+00:21:36.240 --> 00:21:44.320
+thing shebang shebang the shebang at the top he has an example of just uh uh using uh user bin env python 3
+
+00:21:44.960 --> 00:21:51.600
+and that's uh that works fine for for things that without dependencies so just a little python script
+
+00:21:51.600 --> 00:21:59.760
+which is actually still pretty useful uh the the it's interesting the example though he says um uh his
+
+00:21:59.760 --> 00:22:07.040
+script like my script dot pi but then he has an example of uh bin zero that um just prints out 80 zeros
+
+00:22:07.040 --> 00:22:13.360
+which is kind of cool but that that really wouldn't be zero dot pi that would just be zero so you just
+
+00:22:13.360 --> 00:22:19.760
+take off the dot pi so you can just type it um so the problem that he wants to talk about in this is uh
+
+00:22:19.760 --> 00:22:28.640
+with dependencies and he has an example that uses uh that he uses he normalizes audio uh of a given video
+
+00:22:28.640 --> 00:22:38.400
+file with the ffm peg uh and and great tool but yeah it's something you have to install so um or it depends
+
+00:22:38.400 --> 00:22:48.400
+the script depends on ffm peg normalize um and the ffm peg utility so how do you deal with this he said he used
+
+00:22:48.400 --> 00:22:56.880
+to be using pipx but now uv makes it super easy you don't have to you don't it doesn't even have to be installed to write the script you use the
+
+00:22:57.600 --> 00:23:06.720
+the um the shebang again but instead of of python you call dash s or dash capital s uv run
+
+00:23:06.720 --> 00:23:16.320
+and dash just script and then you you have these three slashes with script in there and then three slashes at the end all in comments
+
+00:23:16.320 --> 00:23:23.120
+but then you can require which python so you can say requires python and dependencies and it looks it looks like there's a bunch of
+
+00:23:23.120 --> 00:23:31.360
+i wonder how much of the uh pyproject.tomal syntax goes in here but this is very toml like but you got your uh
+
+00:23:31.360 --> 00:23:38.320
+dependencies there and it just runs it so what it yeah and by the way not only does it install the
+
+00:23:38.320 --> 00:23:43.760
+dependencies when you run it if they're not there it will install python if python 312 is not there
+
+00:23:44.960 --> 00:23:50.960
+yeah and it checks it uh everyone like like say you haven't run something for a few weeks and there's
+
+00:23:50.960 --> 00:23:56.160
+been um it's not the correct versions anymore or they somebody's taking something down it'll check it and
+
+00:23:56.160 --> 00:24:01.120
+get the right thing and it happens so fast that you don't have to worry about it if you're connected with
+
+00:24:01.120 --> 00:24:09.680
+a connection but uh the so i tried this morning and i was thrilled to see the it says like reading that
+
+00:24:09.680 --> 00:24:17.760
+it's it's it's the output of your script but then it also says uh reading inline script metadata from
+
+00:24:17.760 --> 00:24:23.520
+and then it has the the title of the script and i have a lot of scripts that i pipe the output to stuff so
+
+00:24:23.520 --> 00:24:30.400
+i was hoping that that i wanted like what's gonna mess up my output it doesn't it this reading inline stuff
+
+00:24:31.760 --> 00:24:40.080
+comes out on standard error so and can i can i add a uh one more command flag okay what trey is
+
+00:24:40.080 --> 00:24:47.840
+suggesting here if you go back up to the env dash uh uv command yeah with the capital s just add a dash
+
+00:24:47.840 --> 00:24:53.360
+lowercase q and all that goes away it's the same output as anything so what's the dash is that just
+
+00:24:53.360 --> 00:24:58.080
+script or something i guess i've never used it i just tell it to run the script so i don't know what the
+
+00:24:58.080 --> 00:25:04.560
+dash s does the dash q will get rid of get rid of that it'll get rid of the the management output of
+
+00:25:04.560 --> 00:25:10.480
+uv yeah because i don't really care about that yeah like you don't want that if you're not in this
+
+00:25:10.480 --> 00:25:14.480
+i think if you're trying to this is really nice because it's a super simple way to as long as
+
+00:25:14.480 --> 00:25:19.360
+somebody has uv that's all you need to start distributing like utilities to them but though
+
+00:25:19.360 --> 00:25:26.560
+you don't want them necessarily to see the actually so i might i think i'll probably leave it on because
+
+00:25:26.560 --> 00:25:34.560
+um so that i can see that it it's um what it's pulling from and um where it's like when it updates
+
+00:25:34.560 --> 00:25:39.600
+things or something if it has to install something it'll output that but then but it doesn't mess up
+
+00:25:39.600 --> 00:25:44.000
+the output like i said it's it's going to standard error so if your pipe standard out to something else
+
+00:25:44.000 --> 00:25:52.560
+it'll still work fine so um anyway cool to very nice to write up like how to use command line utilities
+
+00:25:52.560 --> 00:25:59.280
+now with python so yeah you've got uv tool install for the packages with entry points all sorts of nice
+
+00:25:59.280 --> 00:26:01.680
+stuff yeah uv everywhere
+
+00:26:01.680 --> 00:26:10.720
+all right those are our items um i've only got one extra that i want to talk about do you have any
+
+00:26:10.720 --> 00:26:17.440
+questions i got a couple okay um this is pretty quick i really appreciate i forget what this is
+
+00:26:17.440 --> 00:26:24.640
+called um so anyway i've got a the complete py choice course of of course i've split it up somebody
+
+00:26:24.640 --> 00:26:31.280
+people can buy it in payments if they want it but it's it's like 59 bucks so on python test.com there's
+
+00:26:31.280 --> 00:26:37.920
+also uh the the new discord community is going really great um it's a one-time admission just to
+
+00:26:37.920 --> 00:26:45.120
+help with the costs of everything um and then uh a really quick hello py test course anyway i've priced
+
+00:26:45.120 --> 00:26:51.200
+these where i think they're completely reasonable for people however you might not live have a software
+
+00:26:51.200 --> 00:26:58.720
+engineering job and live in oregon um or the us so i was really thrilled the other day somebody from india
+
+00:26:58.720 --> 00:27:05.360
+just got out of college uh doesn't have a job yet but is or maybe they have a starter job but they're
+
+00:27:05.360 --> 00:27:10.480
+they looked at this wherever they live and they said this is too much for me can i get a discount
+
+00:27:10.480 --> 00:27:17.200
+i don't have like the regional pricing set up so i really parity they call pricing parity that's it
+
+00:27:17.200 --> 00:27:26.000
+so i really appreciate that so if you can find me on uh linkedin or um or a blue sky or mastodon and just ask
+
+00:27:26.000 --> 00:27:31.600
+or and um and i'll work with you so just i appreciate people reaching out
+
+00:27:33.360 --> 00:27:39.680
+that's it that's it excellent excellent all right i have a couple here let's i'll go through them quick
+
+00:27:39.680 --> 00:27:51.280
+over the blue sky we've got hugo vk says hey python 314 alpha 3 is out and it's got the links to the what's
+
+00:27:51.280 --> 00:27:57.200
+new and so on and reasons i don't understand pictures a very delicious looking cake which i'm here for but
+
+00:27:58.000 --> 00:28:05.760
+anyway people can check that out that was from a couple of days ago yeah maybe a week not quite a
+
+00:28:05.760 --> 00:28:13.200
+week ago five days ago so the testing of python 314 continues remember i believe it's there's supposed
+
+00:28:13.200 --> 00:28:20.400
+to be seven total releases before it goes to beta and gets kind of locked down ish so you got that it's
+
+00:28:20.400 --> 00:28:29.360
+not cake it's pi 3.14 oh my gosh how did i miss it how did i miss it all right one thing that drives me
+
+00:28:29.360 --> 00:28:37.520
+crazy if you're a mac person is there's like almost always a command you can hit for settings that is the same
+
+00:28:37.520 --> 00:28:44.160
+command comma any app you want the settings for command comma unless it's just disrespect in its
+
+00:28:44.160 --> 00:28:49.840
+own self has no self-respect command comma will bring up whatever settings it has web browser
+
+00:28:49.840 --> 00:28:58.480
+word editor whatever that's but check for update is all over the map some apps automatically check for
+
+00:28:58.480 --> 00:29:03.840
+updates some the only tell you there's an update if you check for it firefox and zen browser only do it if
+
+00:29:03.840 --> 00:29:10.080
+you pull the about screen and show it then it'll tell you but on vivaldi if you pull the about screen
+
+00:29:10.080 --> 00:29:16.160
+it won't tell you if there's an update like it's all all annoying so i i went through and i added a
+
+00:29:16.160 --> 00:29:22.080
+check for update hotkey so this is kind of a cool trick i thought people would appreciate it if you go to
+
+00:29:22.080 --> 00:29:28.160
+mac os you go to settings you go to keyboard you go to keyboard shortcuts then you go to app shortcuts and
+
+00:29:28.160 --> 00:29:35.760
+pick out individual apps and say i want this menu whatever the menu text is long as case sensitive
+
+00:29:35.760 --> 00:29:40.480
+spaces everything it's super annoying you can't edit it so get it right is it capital four check for
+
+00:29:40.480 --> 00:29:45.040
+updates or lowercase four check for updates you got to get that right but then you can just say control
+
+00:29:45.040 --> 00:29:49.600
+u and then you go or whatever you want to pick and then if you just like in any app if you set up the
+
+00:29:49.600 --> 00:29:54.160
+ones you cared about checking and just hit check for updates and it pulls it up it's kind of nice
+
+00:29:54.160 --> 00:30:01.600
+i'm just still blown away that i never knew that command comma was the settings thing it's almost
+
+00:30:01.600 --> 00:30:07.360
+every apple command comma will do what you're looking for okay yeah yeah but there's no update
+
+00:30:07.360 --> 00:30:13.920
+equivalent so control u now is from my computer okay so i got firefox obs vs code zen browser
+
+00:30:13.920 --> 00:30:17.680
+source tree like source tree is one of those that it'll go months without telling you there's an update
+
+00:30:17.680 --> 00:30:23.920
+but if you check there's almost always an update all right on to the next thing what do we got next
+
+00:30:23.920 --> 00:30:29.600
+oh i just uh wanted to talk about something really kind of fun and interesting on talk python i got
+
+00:30:29.600 --> 00:30:36.560
+two things on talk about them real quick here but this is a fun web more more not not so much a talk
+
+00:30:36.560 --> 00:30:43.200
+python thing just like a fun web design thinking about urls so check this out brown we can go to any um
+
+00:30:43.200 --> 00:30:50.400
+any episode here so peter wang it was on and peter wang is super fun if you look at that episode page you
+
+00:30:50.400 --> 00:30:57.120
+can see there's a thumbnail like a social media image of that which is also the youtube thumbnail
+
+00:30:57.120 --> 00:31:05.120
+right yeah and let me see if i can make this wider so you can see it's going to be small but up here if
+
+00:31:05.120 --> 00:31:14.400
+i just type dot jpg on the end of the url i get the thumbnail and if i just type vtt which is web vtt
+
+00:31:14.400 --> 00:31:20.560
+transcripts i get the transcripts oh cool isn't that isn't that fun so i would encourage people to
+
+00:31:20.560 --> 00:31:26.080
+think more about like instead of having a bunch of different ways to get things just you think about
+
+00:31:26.080 --> 00:31:32.960
+like resource i don't know what you call it it's a little bit rest ish but i think it's neat like
+
+00:31:32.960 --> 00:31:37.680
+maybe if i had a json representation i could just put dot json on the end and it would represent the data of
+
+00:31:37.680 --> 00:31:42.080
+the podcast as json i don't really know what i would put there but anyway i thought i just want to
+
+00:31:42.080 --> 00:31:48.960
+encourage people you can play that at talk python but encourage people to just think about making
+
+00:31:48.960 --> 00:31:59.200
+cool little url api interactivity bits that way neat i like it yeah thanks all right next i did a
+
+00:31:59.200 --> 00:32:03.520
+mega write-up you can see that on the talk python blog back by thunder fm slash blog
+
+00:32:05.680 --> 00:32:11.840
+16 minutes reading time it suggests for this i wrote up a in-depth analysis of the top
+
+00:32:11.840 --> 00:32:19.200
+talk python episodes top five and i even did a little jupiter notebook action to come up with
+
+00:32:19.200 --> 00:32:22.480
+where are they on the scale and how does that compare against the average number of downloads
+
+00:32:22.480 --> 00:32:30.720
+number one is awesome text tricks with nlp and spacey with vincent warmerdom number two
+
+00:32:31.680 --> 00:32:38.960
+this one really surprised me it was so popular being a developer with a adhd with chris brandy
+
+00:32:38.960 --> 00:32:45.200
+awesome episode i didn't expect to be popular version apis with stanislav
+
+00:32:45.200 --> 00:32:49.600
+pandas and beyond with wes mckinney that's not surprising
+
+00:32:49.600 --> 00:32:54.880
+and the state of flask and palace with david lord so those are the top five but like
+
+00:32:55.520 --> 00:33:01.440
+just super detailed dive into like what was covered what was important and stuff so i did that
+
+00:33:01.440 --> 00:33:09.120
+sunday yeah sunday morning the house was quiet people were chilling so i'm like i'm gonna write
+
+00:33:09.120 --> 00:33:14.240
+well with um i mean it's a 16 minute read with everybody with adhd i don't think anybody's gonna
+
+00:33:14.240 --> 00:33:20.640
+read the whole thing yeah maybe the people who were served by that podcast were not now
+
+00:33:21.600 --> 00:33:26.160
+you could always listen to the episodes but it like highlights what was covered no i think that's
+
+00:33:26.160 --> 00:33:28.640
+cool um yeah neat yeah thanks
+
+00:33:28.640 --> 00:33:36.000
+okay now we're down i'm oh wait no one more thing since we talked about i wasn't originally going to
+
+00:33:36.000 --> 00:33:40.880
+point this out but since we talked about typing so much and you talked about teaching and typing i
+
+00:33:40.880 --> 00:33:47.200
+have a four and a half hour course called rock solid python and type hints and tools so over at
+
+00:33:47.200 --> 00:33:50.400
+talk python i'll put that link in the show notes and people can check that out this is one of my
+
+00:33:50.400 --> 00:33:58.000
+absolute favorite courses of all of our 50 or so courses and it's it's a good one this type of stuff is
+
+00:33:58.000 --> 00:34:09.120
+it's really neat neat okay are you ready for the joke i am this one if you've heard of lol code some of these
+
+00:34:09.120 --> 00:34:16.640
+these like joke languages this is one of them but it's a little bit more python oriented i guess i'll
+
+00:34:16.640 --> 00:34:21.520
+say let me see if i can zoom in for making it a little legible so we come down here and there's a
+
+00:34:21.520 --> 00:34:27.440
+table chart so it's like an alternative language so if you want to write um
+
+00:34:27.440 --> 00:34:37.600
+if you want to write python like code but you don't like it so you've got like return instead of writing return you can say it's given
+
+00:34:37.600 --> 00:34:47.520
+and if you want to say plus one it says riz so this is called python with a riz or uh no that's not
+
+00:34:47.520 --> 00:34:54.240
+exactly that's it's that's its description pygat and i'm not in this world very much it kind of goes off a
+
+00:34:54.240 --> 00:35:05.600
+lot of um like twitch stream type of terminology so you've got print instead of print you gap for true you get
+
+00:35:05.600 --> 00:35:14.000
+aurora for false it's cooked you bop instead of deaf and then for while loops it's let him cook just let him cook
+
+00:35:14.000 --> 00:35:19.120
+so for example a while true would be let him cook aurora
+
+00:35:19.120 --> 00:35:33.040
+um import is gate glaze let's see uh if lf else's chat is this real yo chat only in ohio okay that's funny
+
+00:35:33.520 --> 00:35:40.960
+oh class is skibbity i actually get that reference but oh break is just put the fries in the bag bro
+
+00:35:40.960 --> 00:35:52.800
+uh raise is crash out okay and then assert i love a cert a certain sus yeah it's pretty
+
+00:35:54.240 --> 00:36:02.640
+oh oh oh sus i think we should add to the language maybe yeah so this is pretty good okay let's see all
+
+00:36:02.640 --> 00:36:11.040
+right so now let's look at an example okay so we've got here we've got here on the left we've got glaze
+
+00:36:11.040 --> 00:36:12.920
+Gaze numpy R and P.
+
+00:36:12.920 --> 00:36:15.860
+Lock in random glazed choice.
+
+00:36:15.860 --> 00:36:20.620
+And then skibity risley in plurus pass, I guess.
+
+00:36:20.620 --> 00:36:23.140
+Anyway, Duke Dennis equals zero.
+
+00:36:23.140 --> 00:36:24.340
+Says, let him cook, Aurora.
+
+00:36:24.340 --> 00:36:25.260
+Just let him cook.
+
+00:36:25.260 --> 00:36:26.840
+And chat, is this real cooked?
+
+00:36:26.840 --> 00:36:30.180
+Crash out error.
+
+00:36:30.180 --> 00:36:31.600
+Only in Ohio.
+
+00:36:31.600 --> 00:36:33.040
+Just put it in the fries, bro.
+
+00:36:33.040 --> 00:36:34.540
+Just put the fries in the bag, bro.
+
+00:36:34.540 --> 00:36:39.160
+This is good.
+
+00:36:39.160 --> 00:36:40.620
+I think it really runs.
+
+00:36:40.740 --> 00:36:41.360
+I'm pretty sure.
+
+00:36:41.360 --> 00:36:46.100
+Well, I think that we should have like a conversion.
+
+00:36:46.100 --> 00:36:50.280
+That you can take some code and convert it to this.
+
+00:36:50.280 --> 00:36:51.400
+Yeah, yeah.
+
+00:36:51.400 --> 00:36:52.700
+Like a transpiler sort of thing.
+
+00:36:52.700 --> 00:36:53.860
+Or just an upgrader.
+
+00:36:53.860 --> 00:36:57.140
+Like a two to three, but a pie to gap.
+
+00:36:57.140 --> 00:37:01.140
+Skibity risler plurus.
+
+00:37:01.140 --> 00:37:05.480
+Just put the fries in the bag, bro.
+
+00:37:05.480 --> 00:37:08.680
+That might be my favorite.
+
+00:37:10.440 --> 00:37:11.100
+Or let him cook.
+
+00:37:11.100 --> 00:37:11.940
+Just let him cook.
+
+00:37:11.940 --> 00:37:14.980
+Chat, is this real?
+
+00:37:14.980 --> 00:37:16.700
+This is good.
+
+00:37:16.700 --> 00:37:17.540
+Crash out.
+
+00:37:17.540 --> 00:37:18.780
+Crash out.
+
+00:37:18.780 --> 00:37:19.340
+All right.
+
+00:37:19.340 --> 00:37:21.040
+Well, you ready to crash out on this episode?
+
+00:37:21.040 --> 00:37:21.380
+Call him.
+
+00:37:21.380 --> 00:37:21.940
+I am.
+
+00:37:21.940 --> 00:37:23.320
+Just put them in the fries, bro.
+
+00:37:23.320 --> 00:37:24.660
+Put the fries in the bag, bro.
+
+00:37:24.660 --> 00:37:26.520
+Indeed.
+
+00:37:26.520 --> 00:37:28.120
+Well, awesome.
+
+00:37:28.120 --> 00:37:30.480
+All right.
+
+00:37:30.640 --> 00:37:34.100
+Well, thanks, everybody, for a wonderful 2024.
+
+00:37:34.100 --> 00:37:39.540
+And we're going to, like we said, we'll have a short thank you episode next week, possibly.
+
+00:37:39.540 --> 00:37:40.640
+Possibly.
+
+00:37:40.640 --> 00:37:43.900
+And then, but we'll see everybody in 2025.
+
+00:37:43.900 --> 00:37:46.760
+Bye, y'all.
+
+00:37:46.760 --> 00:37:50.200
+you
+

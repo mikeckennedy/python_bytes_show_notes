@@ -1,0 +1,2913 @@
+WEBVTT
+
+00:00:00.000 --> 00:00:09.200
+Hey everyone, thanks for joining the live stream and for or watching later on YouTube.
+
+
+00:00:09.200 --> 00:00:13.560
+It's great. Are you ready to get started?
+
+
+00:00:13.560 --> 00:00:15.560
+Let's get started. Hello everyone.
+
+
+00:00:15.560 --> 00:00:20.880
+Okay. Hello and welcome to Python Bytes where we deliver Python news and headlines directly
+
+
+00:00:20.880 --> 00:00:27.320
+to your earbuds. This is episode 351 recorded September 5th and I am Brian Okken.
+
+
+00:00:27.320 --> 00:00:28.880
+And I'm Michael Kennedy.
+
+
+00:00:28.880 --> 00:00:35.480
+And this episode is also sponsored by Sentry. Thank you, Sentry. And if you want to reach
+
+
+00:00:35.480 --> 00:00:41.000
+any of us or the show, either of us or the show, we're@mkennedy@brianhawkin.com and
+
+
+00:00:41.000 --> 00:00:48.320
+at Python Bytes, all at fosstodon.org. And if you're listening later and you'd like to join
+
+
+00:00:48.320 --> 00:00:56.240
+the show live sometime, you can join us on YouTube at pythonbytes.fm/live. And we'd love
+
+
+00:00:56.240 --> 00:00:57.240
+to have you here.
+
+
+00:00:57.240 --> 00:00:59.560
+>> Indeed.
+
+
+00:00:59.560 --> 00:01:02.200
+>> What do you got for us first, Michael?
+
+
+00:01:02.200 --> 00:01:05.440
+>> Let's talk about multiprocessing.
+
+
+00:01:05.440 --> 00:01:10.160
+So MPyre, not pyre, but MPyre.
+
+
+00:01:10.160 --> 00:01:12.760
+Pyre is the type checker from meta.
+
+
+00:01:12.760 --> 00:01:18.480
+MPyre is something entirely different about multiprocessing.
+
+
+00:01:18.480 --> 00:01:22.840
+So it's a Python package for easy multiprocessing
+
+
+00:01:22.840 --> 00:01:25.720
+that's faster than the built-in multiprocessing,
+
+
+00:01:25.720 --> 00:01:30.400
+but has a similar API, has really good error reporting,
+
+
+00:01:30.400 --> 00:01:32.640
+and a bunch of other types of reporting,
+
+
+00:01:32.640 --> 00:01:34.880
+like how well did that session go?
+
+
+00:01:34.880 --> 00:01:37.200
+You know, like how well did you utilize
+
+
+00:01:37.200 --> 00:01:41.440
+the multiprocessing capabilities, your machine, and so on.
+
+
+00:01:41.440 --> 00:01:43.720
+So yeah, let's dig into it.
+
+
+00:01:43.720 --> 00:01:47.520
+So the whole acronym for the name
+
+
+00:01:47.520 --> 00:01:49.880
+is Multiprocessing is Really Easy,
+
+
+00:01:49.880 --> 00:01:51.920
+which is not what most people say, right?
+
+
+00:01:51.920 --> 00:01:54.480
+- No.
+
+
+00:01:54.480 --> 00:01:58.840
+But it's a package that's faster than multiprocessing
+
+
+00:01:58.840 --> 00:02:00.960
+in most cases, has more features,
+
+
+00:02:00.960 --> 00:02:02.720
+and is generally more user-friendly
+
+
+00:02:02.720 --> 00:02:05.420
+than the default multiprocessing package.
+
+
+00:02:05.420 --> 00:02:10.700
+It has APIs like multiprocessing.pool,
+
+
+00:02:10.700 --> 00:02:14.200
+but it also has the benefits of things
+
+
+00:02:14.200 --> 00:02:15.920
+like copy-on-write shared objects.
+
+
+00:02:15.920 --> 00:02:18.120
+We're gonna come back to that later as well.
+
+
+00:02:18.120 --> 00:02:23.360
+But also the ability to have like init and exit,
+
+
+00:02:23.360 --> 00:02:29.640
+Setup Teardown for your workers, some more state that you can use and so on.
+
+
+00:02:29.640 --> 00:02:31.440
+So pretty cool.
+
+
+00:02:31.440 --> 00:02:32.920
+It has a progress bar.
+
+
+00:02:32.920 --> 00:02:38.560
+It has TQDM progress built right into it across the multiple processes.
+
+
+00:02:38.560 --> 00:02:42.080
+So you can say things like, "Here is some work I want you to do.
+
+
+00:02:42.080 --> 00:02:44.040
+There's a hundred items."
+
+
+00:02:44.040 --> 00:02:50.120
+Split that across five cores and as those different processes complete the work for
+
+
+00:02:50.120 --> 00:02:56.200
+individual elements, give me a unified progress bar, which is pretty awesome, right?
+
+
+00:02:56.200 --> 00:02:57.640
+Yeah. Yeah. Very cool.
+
+
+00:02:57.640 --> 00:03:01.480
+Yeah. Yeah. It's got a progress dashboard. Actually, I have no idea what that is.
+
+
+00:03:01.480 --> 00:03:06.600
+It has a worker insights that you can ask when it's done, like how well did,
+
+
+00:03:06.600 --> 00:03:09.320
+you know, how efficient was that multi-processing story?
+
+
+00:03:09.320 --> 00:03:15.960
+Graceful and user-friendly exception handling. It has timeouts. So you can say,
+
+
+00:03:16.920 --> 00:03:22.640
+I would like the execution of the work to not take more than three seconds.
+
+
+00:03:22.640 --> 00:03:28.840
+And actually, you can even say things such as, if the worker process itself takes 10
+
+
+00:03:28.840 --> 00:03:33.360
+seconds or more to exit, maybe there's like some something happening over there that's
+
+
+00:03:33.360 --> 00:03:38.960
+like a hung connection on a database thing, or who knows, right, some network thing, you
+
+
+00:03:38.960 --> 00:03:43.040
+can actually set a different timeout for the process, which is pretty cool.
+
+
+00:03:43.040 --> 00:03:45.600
+It has automatic chunking.
+
+
+00:03:45.600 --> 00:03:50.520
+So instead of saying I have 100 things, let's go individually one at a time, hand them off
+
+
+00:03:50.520 --> 00:03:57.720
+to workers, it can break them up into bigger blocks, including NumPy arrays, which is pretty
+
+
+00:03:57.720 --> 00:03:59.040
+cool.
+
+
+00:03:59.040 --> 00:04:03.640
+You can set the maximum number of tasks that are allowed to run at any given moment.
+
+
+00:04:03.640 --> 00:04:07.240
+I guess you can set the workers, but also like if it does this chunking, you can say
+
+
+00:04:07.240 --> 00:04:10.320
+how many things can run to avoid memory problems.
+
+
+00:04:10.320 --> 00:04:20.980
+You could even say, I want to use five processes, but after 10 bits of work on any given process,
+
+
+00:04:20.980 --> 00:04:25.700
+give me a new worker and shut down the others in case there's like leaky memory or other
+
+
+00:04:25.700 --> 00:04:28.220
+things along those lines.
+
+
+00:04:28.220 --> 00:04:32.780
+You can create a pool of them through a daemon option, a whole bunch of stuff.
+
+
+00:04:32.780 --> 00:04:40.260
+It uses dill to serialize across the multi-process processes, which is cool because it gives
+
+
+00:04:40.260 --> 00:04:48.980
+you more exotic serialization options for say objects that are not pickable, lambdas,
+
+
+00:04:48.980 --> 00:04:53.780
+functions and other things in IPython and Jupyter notebooks. So all that's pretty awesome,
+
+
+00:04:53.780 --> 00:04:54.780
+right?
+
+
+00:04:54.780 --> 00:04:55.780
+>> Yeah.
+
+
+00:04:55.780 --> 00:05:02.660
+>> Yeah. So the API is super, super simple. From Empire import WorkerPool, with WorkerPool,
+
+
+00:05:02.660 --> 00:05:09.220
+jobs equal five, pool.map, some function, some data, go. So this jobs here tells you
+
+
+00:05:09.220 --> 00:05:17.140
+how many processes to run basically. For the progress bar, you just set progress bar equals
+
+
+00:05:17.140 --> 00:05:23.140
+true. That's not too bad. Another thing that's cool is you can have shared objects. So you
+
+
+00:05:23.140 --> 00:05:34.140
+can have some shared data that's passed across without basically using shared memory, I think
+
+
+00:05:34.140 --> 00:05:38.340
+is how that it works, so that it's more efficient instead of trying to pick a load across. I
+
+
+00:05:38.340 --> 00:05:39.780
+I think they have to be read-only or something.
+
+
+00:05:39.780 --> 00:05:40.780
+There's a whole bunch about it.
+
+
+00:05:40.780 --> 00:05:43.940
+>> Oh, interesting. You pass it into the worker pool.
+
+
+00:05:43.940 --> 00:05:45.780
+>> Yeah. You say worker pool.
+
+
+00:05:45.780 --> 00:05:49.620
+These things, I want you to set them up in a way to be shared.
+
+
+00:05:49.620 --> 00:05:52.020
+I think, like I said, in a read-only way
+
+
+00:05:52.020 --> 00:05:57.940
+across all the processes instead of trying to copy them over.
+
+
+00:05:57.940 --> 00:06:03.100
+You have a setup and a tear down thing
+
+
+00:06:03.100 --> 00:06:07.740
+that you can do to prepare the worker when it gets started.
+
+
+00:06:07.740 --> 00:06:12.740
+You can ask it for the insights, like I said,
+
+
+00:06:12.740 --> 00:06:16.380
+and then benchmarks it shows it's significantly faster.
+
+
+00:06:16.380 --> 00:06:19.780
+Not just, they compare it not just against multi-processing,
+
+
+00:06:19.780 --> 00:06:21.180
+but they say, here's how you do it,
+
+
+00:06:21.180 --> 00:06:22.900
+here's what happens if you do it in a serial way.
+
+
+00:06:22.900 --> 00:06:24.380
+Here's what multi-processing
+
+
+00:06:24.380 --> 00:06:26.640
+and process pool executors look like.
+
+
+00:06:26.640 --> 00:06:30.000
+But it also compares against JobLib, Dask, and Array.
+
+
+00:06:30.000 --> 00:06:33.540
+And it's pretty much hanging there
+
+
+00:06:33.540 --> 00:06:35.060
+with the best of them, isn't it?
+
+
+00:06:35.060 --> 00:06:39.820
+Yeah, it's just a titch faster than Ray everywhere.
+
+
+00:06:39.820 --> 00:06:42.420
+Just a bit.
+
+
+00:06:42.420 --> 00:06:46.140
+One other thing, I don't remember where it was
+
+
+00:06:46.140 --> 00:06:48.860
+in this huge long list of things,
+
+
+00:06:48.860 --> 00:06:53.020
+but you can also pin the CPUs to CPU cores,
+
+
+00:06:53.020 --> 00:06:56.700
+which can be really valuable when you're thinking about
+
+
+00:06:56.700 --> 00:07:02.080
+taking advantage of L1, L2 CPU caches.
+
+
+00:07:02.080 --> 00:07:05.480
+So if your processes are bouncing around back and forth,
+
+
+00:07:05.480 --> 00:07:06.680
+one's working with some data,
+
+
+00:07:06.680 --> 00:07:09.600
+then it switches to another core,
+
+
+00:07:09.600 --> 00:07:14.560
+and then it has to pull in new data into the L2 cache,
+
+
+00:07:14.560 --> 00:07:17.800
+which is like hundreds of times slower than real memory.
+
+
+00:07:17.800 --> 00:07:18.840
+And that slows it down,
+
+
+00:07:18.840 --> 00:07:20.240
+then they switch back and they keep running.
+
+
+00:07:20.240 --> 00:07:24.640
+So you can say, pin these workers to these CPUs,
+
+
+00:07:24.640 --> 00:07:27.280
+and you've got a better chance of them
+
+
+00:07:27.280 --> 00:07:29.840
+not redoing their cache all the time.
+
+
+00:07:29.840 --> 00:07:30.680
+So that's kind of cool.
+
+
+00:07:30.680 --> 00:07:33.020
+There's just a bunch of neat little features in here.
+
+
+00:07:33.020 --> 00:07:36.480
+If you're already using multiprocessing, you might check this out.
+
+
+00:07:36.480 --> 00:07:40.160
+If you care about performance, for real.
+
+
+00:07:40.160 --> 00:07:43.600
+Why are you using multiprocessing if you don't care about performance?
+
+
+00:07:43.600 --> 00:07:50.880
+Well, I mean, you're looking to pull out the final little bits of performance, I suppose.
+
+
+00:07:50.880 --> 00:07:55.480
+These benchmarks are cool, but they're doing computation on the workers.
+
+
+00:07:55.480 --> 00:08:00.240
+There's a lot of what you're doing is like talking to queues and talking to networks
+
+
+00:08:00.240 --> 00:08:03.040
+and talking to databases.
+
+
+00:08:03.040 --> 00:08:05.560
+It doesn't matter what framework you used to do that long as you're doing something
+
+
+00:08:05.560 --> 00:08:06.560
+parallel.
+
+
+00:08:06.560 --> 00:08:07.560
+Right?
+
+
+00:08:07.560 --> 00:08:08.560
+Yeah.
+
+
+00:08:08.560 --> 00:08:09.560
+Well, yeah.
+
+
+00:08:09.560 --> 00:08:10.560
+Well, I don't know.
+
+
+00:08:10.560 --> 00:08:11.560
+That's why you have to do your own benchmarks.
+
+
+00:08:11.560 --> 00:08:12.600
+Yeah, for sure.
+
+
+00:08:12.600 --> 00:08:17.960
+And then there's that article over on Medium by the creator as well that gives you a whole
+
+
+00:08:17.960 --> 00:08:19.520
+lot of background on all this stuff.
+
+
+00:08:19.520 --> 00:08:20.520
+Oh, neat.
+
+
+00:08:20.520 --> 00:08:21.520
+Nice.
+
+
+00:08:21.520 --> 00:08:22.520
+Yeah.
+
+
+00:08:22.520 --> 00:08:23.520
+This is quite a long article.
+
+
+00:08:23.520 --> 00:08:25.320
+And I think it's actually more relevant.
+
+
+00:08:25.320 --> 00:08:30.440
+For example, it's got screenshots where it shows, if you use something like, let me read
+
+
+00:08:30.440 --> 00:08:38.640
+really quickly, Ray or Joblib, and you get some kind of exception, it just says, "Exception
+
+
+00:08:38.640 --> 00:08:39.640
+occurred."
+
+
+00:08:39.640 --> 00:08:40.640
+Yikes.
+
+
+00:08:40.640 --> 00:08:45.480
+Whereas with this one, with Empire, you get things like, "Here's the call stack that goes
+
+
+00:08:45.480 --> 00:08:49.520
+back a little more correctly to the right function, and here's the arguments that were
+
+
+00:08:49.520 --> 00:08:52.800
+passed over."
+
+
+00:08:52.800 --> 00:08:56.980
+So when it crashes, you know, cause you have like five processes potentially all doing
+
+
+00:08:56.980 --> 00:08:57.980
+stuff.
+
+
+00:08:57.980 --> 00:08:59.260
+One of them crashed, like what data did they have?
+
+
+00:08:59.260 --> 00:09:00.260
+I don't know.
+
+
+00:09:00.260 --> 00:09:01.260
+It's in parallel.
+
+
+00:09:01.260 --> 00:09:02.260
+It's hard.
+
+
+00:09:02.260 --> 00:09:03.260
+Right.
+
+
+00:09:03.260 --> 00:09:06.980
+So having the arguments like these are the ones that cause the error is, is pretty excellent.
+
+
+00:09:06.980 --> 00:09:07.980
+Yeah.
+
+
+00:09:07.980 --> 00:09:08.980
+Cool.
+
+
+00:09:08.980 --> 00:09:11.940
+Anyway, Empire, that's what I got for number one.
+
+
+00:09:11.940 --> 00:09:15.260
+All right, cool.
+
+
+00:09:15.260 --> 00:09:20.860
+I want to have, I have something else that starts with M.
+
+
+00:09:20.860 --> 00:09:22.300
+Mop up.
+
+
+00:09:22.300 --> 00:09:26.060
+So mop up is something that I learned about
+
+
+00:09:26.060 --> 00:09:27.820
+from an article by Glyph.
+
+
+00:09:27.820 --> 00:09:30.380
+So let me jump to the article first.
+
+
+00:09:30.380 --> 00:09:32.980
+So Glyph wrote an article saying,
+
+
+00:09:32.980 --> 00:09:35.400
+get your Mac Python from python.org.
+
+
+00:09:35.400 --> 00:09:36.880
+That's what I already do.
+
+
+00:09:36.880 --> 00:09:39.340
+I've tried all the other stuff
+
+
+00:09:39.340 --> 00:09:43.900
+and I just like just the downloader from python.org.
+
+
+00:09:43.900 --> 00:09:46.260
+So this article talks about reasons
+
+
+00:09:46.260 --> 00:09:48.500
+why that's probably what you want.
+
+
+00:09:48.500 --> 00:09:52.180
+And that's probably what if you're writing a tutorial,
+
+
+00:09:52.180 --> 00:09:54.240
+That's probably what your users need to do too.
+
+
+00:09:54.240 --> 00:09:56.400
+If they're using a Mac.
+
+
+00:09:56.400 --> 00:09:59.240
+And I won't go through all the details,
+
+
+00:09:59.240 --> 00:10:03.540
+but he goes through reasons why you probably want this one
+
+
+00:10:03.540 --> 00:10:07.920
+and not things like, what are the others?
+
+
+00:10:07.920 --> 00:10:10.700
+Homebrew, you can brew install your Python,
+
+
+00:10:10.700 --> 00:10:12.780
+but he doesn't recommend it.
+
+
+00:10:12.780 --> 00:10:13.740
+And you can read on it.
+
+
+00:10:13.740 --> 00:10:16.080
+Pyenv, I've tried it.
+
+
+00:10:16.080 --> 00:10:19.080
+It like messes up other stuff for me.
+
+
+00:10:19.080 --> 00:10:21.960
+So I like the downloader from Python,
+
+
+00:10:21.960 --> 00:10:25.780
+But one of the things that I don't like is that if like,
+
+
+00:10:25.780 --> 00:10:28.820
+if I had Python 3.11.4 installed
+
+
+00:10:28.820 --> 00:10:31.620
+and now Python 3.11.5 is out,
+
+
+00:10:31.620 --> 00:10:33.260
+how do I get that on my computer?
+
+
+00:10:33.260 --> 00:10:34.660
+Do I just reinstall it?
+
+
+00:10:34.660 --> 00:10:35.740
+Yes, you can.
+
+
+00:10:35.740 --> 00:10:40.460
+But Glyph made a new thing called Mopup.
+
+
+00:10:40.460 --> 00:10:45.220
+So what Mopup does is you just pip install Mopup.
+
+
+00:10:45.220 --> 00:10:47.100
+And it's like the only thing I install
+
+
+00:10:47.100 --> 00:10:50.660
+on my global Python versions.
+
+
+00:10:50.660 --> 00:10:55.460
+like 3.11, pip install, update pip and install this
+
+
+00:10:55.460 --> 00:10:56.300
+and that's it.
+
+
+00:10:56.300 --> 00:10:58.820
+Everything else goes into a virtual environment.
+
+
+00:10:58.820 --> 00:10:59.660
+But--
+
+
+00:10:59.660 --> 00:11:01.620
+- Or pipx install.
+
+
+00:11:01.620 --> 00:11:02.640
+- Exactly.
+
+
+00:11:02.640 --> 00:11:05.200
+But mop up, what's the usage?
+
+
+00:11:05.200 --> 00:11:07.040
+So I just tried it this morning.
+
+
+00:11:07.040 --> 00:11:08.920
+I didn't pass it any flags.
+
+
+00:11:08.920 --> 00:11:11.020
+I just installed it and ran it
+
+
+00:11:11.020 --> 00:11:16.020
+and it updated me from Python 3.11.4 to Python 3.11.5
+
+
+00:11:16.020 --> 00:11:19.860
+without me having to re-download anything other than this.
+
+
+00:11:19.860 --> 00:11:23.460
+So I'm gonna set up something that goes through.
+
+
+00:11:23.460 --> 00:11:25.280
+I've got a lot of versions on my computer.
+
+
+00:11:25.280 --> 00:11:29.640
+I've got, I think, well, I've got 3.7 through 3.12 installed
+
+
+00:11:29.640 --> 00:11:34.440
+and I want all of them to be on the latest bug fix release.
+
+
+00:11:34.440 --> 00:11:37.480
+So I'm just gonna use probably use
+
+
+00:11:37.480 --> 00:11:44.480
+Brett Cannon's Py installer or Python installer,
+
+
+00:11:44.480 --> 00:11:47.860
+Py on my Mac to go to each of the versions
+
+
+00:11:47.860 --> 00:11:50.740
+and run mop up on all of them to update it.
+
+
+00:11:50.740 --> 00:11:53.580
+So that's what I'd like to do.
+
+
+00:11:53.580 --> 00:11:55.060
+Anyway, it's cool.
+
+
+00:11:55.060 --> 00:11:56.140
+I'm really excited about this
+
+
+00:11:56.140 --> 00:11:58.220
+because this was like the one hole
+
+
+00:11:58.220 --> 00:12:03.220
+in using the Python.org installer is having updated.
+
+
+00:12:03.220 --> 00:12:05.340
+So, nice.
+
+
+00:12:05.340 --> 00:12:08.420
+- Yep, interesting, interesting.
+
+
+00:12:08.420 --> 00:12:11.660
+I gotta admit, I'm still a brew install Python 3
+
+
+00:12:11.660 --> 00:12:12.860
+sort of person.
+
+
+00:12:12.860 --> 00:12:14.140
+- Okay.
+
+
+00:12:14.140 --> 00:12:16.060
+- And the drawback, the main drawback
+
+
+00:12:16.060 --> 00:12:17.540
+that Glyph makes an argument for,
+
+
+00:12:17.540 --> 00:12:24.380
+which is valid is you don't control necessarily the version of Python that you get.
+
+
+00:12:24.380 --> 00:12:33.820
+Because if you brew install some other YouTube downloader app or whatever rando thing, it
+
+
+00:12:33.820 --> 00:12:40.340
+might say, "Well, I need a Python 3.12 and you only have 3.8," and it'll auto-upgrade
+
+
+00:12:40.340 --> 00:12:42.300
+on you without you knowing.
+
+
+00:12:42.300 --> 00:12:45.660
+I'm always running the absolute latest Python anyway.
+
+
+00:12:45.660 --> 00:12:49.260
+And so when those other packages say greater than 310,
+
+
+00:12:49.260 --> 00:12:51.460
+like I don't care, I already have greater than 310.
+
+
+00:12:51.460 --> 00:12:53.740
+And so, I don't know.
+
+
+00:12:53.740 --> 00:12:57.380
+That's the world I'm living in now, but that's okay for me.
+
+
+00:12:57.380 --> 00:12:58.300
+- Oh, okay.
+
+
+00:12:58.300 --> 00:13:00.180
+So I'm a package maintainer,
+
+
+00:13:00.180 --> 00:13:04.860
+so I have multiple versions on my box.
+
+
+00:13:04.860 --> 00:13:09.340
+But in a lot of people like PyEnv for that reason,
+
+
+00:13:09.340 --> 00:13:10.700
+but I don't.
+
+
+00:13:11.580 --> 00:13:18.340
+I've had trouble with PyEnv too, especially around the Apple Silicon, Rosetta, compiler
+
+
+00:13:18.340 --> 00:13:19.340
+mismatch.
+
+
+00:13:19.340 --> 00:13:21.980
+Like, there's just, like it wouldn't install for me.
+
+
+00:13:21.980 --> 00:13:28.260
+And so, yeah, I think the Python.org is a good recommendation.
+
+
+00:13:28.260 --> 00:13:30.220
+Okay, cool.
+
+
+00:13:30.220 --> 00:13:31.220
+Yep.
+
+
+00:13:31.220 --> 00:13:32.220
+Yep.
+
+
+00:13:32.220 --> 00:13:33.220
+All right.
+
+
+00:13:33.220 --> 00:13:36.580
+Before we move on to our next topic, Brian.
+
+
+00:13:36.580 --> 00:13:41.780
+Well, I'd like to thank Sentry for sponsoring this episode of Python Bytes.
+
+
+00:13:41.780 --> 00:13:48.080
+You know Sentry for their error tracking service, but did you know that you can take it all the way through
+
+
+00:13:48.080 --> 00:13:53.080
+your multi-tier and distributed app with their distributed tracing feature? How cool is that?
+
+
+00:13:53.080 --> 00:13:57.580
+Distributed tracing is a debugging technique that involves tracking
+
+
+00:13:57.580 --> 00:14:01.980
+the requests of your system starting from the very beginning, like the user action,
+
+
+00:14:01.980 --> 00:14:05.580
+all the way to the back end, database, and third-party services.
+
+
+00:14:05.580 --> 00:14:14.980
+This can help you identify if the cause of an error in one project is due to an error in another project.
+
+
+00:14:14.980 --> 00:14:16.980
+That's very useful.
+
+
+00:14:16.980 --> 00:14:23.080
+Every system can benefit from distributed tracing, but they're useful especially for microservices.
+
+
+00:14:23.080 --> 00:14:27.080
+In microservice architecture, logs won't give you the full picture.
+
+
+00:14:27.080 --> 00:14:31.880
+So you can't debug every request in full by reading the logs.
+
+
+00:14:31.880 --> 00:14:35.520
+But distributed tracing with a platform like Sentry
+
+
+00:14:35.520 --> 00:14:38.760
+can give you a visual overview of which services were called
+
+
+00:14:38.760 --> 00:14:41.320
+during the execution of certain requests.
+
+
+00:14:41.320 --> 00:14:44.220
+Aside from debugging and visualizing architecture,
+
+
+00:14:44.220 --> 00:14:49.020
+distributed tracing also helps you identify performance bottlenecks.
+
+
+00:14:49.020 --> 00:14:51.180
+Through a visual like Gantt chart,
+
+
+00:14:51.180 --> 00:14:55.860
+you can see if a particular span in your stack took longer than expected
+
+
+00:14:55.860 --> 00:14:59.860
+and how it could be causing slowdowns in other parts of your app.
+
+
+00:14:59.860 --> 00:15:06.660
+Learn more and see examples in the tracing section of their docs at docs.sentry.io.
+
+
+00:15:06.660 --> 00:15:10.020
+To take advantage of all the features of the Sentry platform,
+
+
+00:15:10.020 --> 00:15:15.940
+create your free account. And for Python Bytes listeners, be sure to use code Python Bytes,
+
+
+00:15:15.940 --> 00:15:20.660
+all one word, and activate a free month of their premium paid services.
+
+
+00:15:20.660 --> 00:15:28.020
+Get started today at pythonbytes.fm/sentry. Thank you, Sentry, for supporting Python Bytes.
+
+
+00:15:29.540 --> 00:15:56.020
+Indeed, thank you Sentry. And I want to bring it back to a similar bingo, bring it back to something I gave a shout out to before. multi threading and meta, I talked about both those. And I want to cover this article posted on engineering at meta, which is on the facebook.com domain, actually not the meta domain, but whatever.
+
+
+00:15:56.700 --> 00:16:01.820
+engineering at Meta, because it's really about Instagram anyway. And it talks about this new
+
+
+00:16:01.820 --> 00:16:07.100
+thing called immortal objects. And Brian, would you want to live forever? Like a vampire?
+
+
+00:16:07.100 --> 00:16:07.600
+No.
+
+
+00:16:07.600 --> 00:16:13.740
+Me either. Definitely, definitely not. For a while. I mean, I could, I could take a few more
+
+
+00:16:13.740 --> 00:16:21.020
+years, but not infinity. But Python objects, they can benefit from this infinity. And so I want to
+
+
+00:16:21.020 --> 00:16:30.780
+I want to go through this new PEP 683, which is accepted in 3.12.
+
+
+00:16:30.780 --> 00:16:32.120
+So that's pretty exciting.
+
+
+00:16:32.120 --> 00:16:37.900
+This is part of the Sender Performance work that's coming out of the meta team.
+
+
+00:16:37.900 --> 00:16:44.940
+And I want to look at it not originally, but let's look it over on omnivore.app.
+
+
+00:16:44.940 --> 00:16:49.960
+This is my new favorite way for research because I can put highlights and notes.
+
+
+00:16:49.960 --> 00:16:56.320
+So Instagram has introduced immortal objects to PEP 683.
+
+
+00:16:56.320 --> 00:17:02.000
+Now Python objects can bypass reference counting checks and live forever through the entire
+
+
+00:17:02.000 --> 00:17:07.440
+execution of the runtime, at least from when they're created to the end.
+
+
+00:17:07.440 --> 00:17:15.480
+So you know, traditionally, typically, I guess I should say, Python objects have a whole
+
+
+00:17:15.480 --> 00:17:19.760
+bunch of information about them on the object that is allocated on the heap.
+
+
+00:17:19.760 --> 00:17:26.040
+This even includes numbers and those things change over time.
+
+
+00:17:26.040 --> 00:17:32.440
+So if I have x equals a string and then I say y equals x, it goes up to that thing and
+
+
+00:17:32.440 --> 00:17:36.400
+says plus plus, you know, plus equals one on the reference count.
+
+
+00:17:36.400 --> 00:17:40.120
+And when y goes away, then that minus minuses it, right?
+
+
+00:17:40.120 --> 00:17:41.680
+When that number hits zero, it gets cleaned up.
+
+
+00:17:41.680 --> 00:17:45.680
+There's also stuff on the object for cycles and garbage collection.
+
+
+00:17:45.680 --> 00:17:48.280
+So there's a lot of stuff that's happening there, right?
+
+
+00:17:48.280 --> 00:17:49.100
+- Yeah.
+
+
+00:17:49.100 --> 00:17:52.840
+- And so what they're doing is,
+
+
+00:17:52.840 --> 00:17:56.480
+they're running a lot of Django for Instagram,
+
+
+00:17:56.480 --> 00:17:57.740
+which is pretty awesome.
+
+
+00:17:57.740 --> 00:18:02.180
+However, what they're trying to take advantage of
+
+
+00:18:02.180 --> 00:18:07.180
+is the fact that there's a lot of similar data,
+
+
+00:18:07.180 --> 00:18:10.000
+similar memory usage when I load up Python.
+
+
+00:18:10.000 --> 00:18:13.000
+So if I type Python on the terminal
+
+
+00:18:13.000 --> 00:18:15.320
+and then I open up a new terminal and type Python,
+
+
+00:18:15.320 --> 00:18:18.400
+it's gone through exactly the same startup process, right?
+
+
+00:18:18.400 --> 00:18:22.840
+So it's loaded the same shared libraries or DLLs.
+
+
+00:18:22.840 --> 00:18:27.840
+It's created its negative 255 to 255 flywheel numbers
+
+
+00:18:27.840 --> 00:18:33.160
+that it's gonna reuse instead of when you say
+
+
+00:18:33.160 --> 00:18:35.920
+the number seven, it doesn't always create a new seven.
+
+
+00:18:35.920 --> 00:18:38.120
+You always have the seven that was created at startup,
+
+
+00:18:38.120 --> 00:18:40.640
+exceptions, those kinds of things, right?
+
+
+00:18:40.640 --> 00:18:47.560
+Well, if you have a web server that's got 10 or 20 or 100 worker processes that all
+
+
+00:18:47.560 --> 00:18:53.240
+went through the same startup for a Python app, you would want to have things like that
+
+
+00:18:53.240 --> 00:18:59.780
+number seven or some exception type or whatever modules, right, core modules that are loaded.
+
+
+00:18:59.780 --> 00:19:05.000
+You would like to have one copy of those in memory on Linux and then have a copy on write
+
+
+00:19:05.000 --> 00:19:07.380
+thing for the stuff that actually changes.
+
+
+00:19:07.380 --> 00:19:10.400
+But those other pieces, you want them to stay the same, yeah?
+
+
+00:19:10.400 --> 00:19:20.400
+There's no point in having a different representation of the number four for every process if there's some way to share that memory that was created at startup.
+
+
+00:19:20.400 --> 00:19:23.400
+And we don't need reference counts updated and all that stuff.
+
+
+00:19:23.400 --> 00:19:37.400
+Exactly. What they found was while many of their Python objects are practically or effectively immutable, they didn't actually over time behave that way.
+
+
+00:19:37.400 --> 00:19:39.440
+that way. So they have graphs of private memory and shared
+
+
+00:19:39.440 --> 00:19:43.440
+memory. And what you would hope is that the shared memory stays
+
+
+00:19:43.440 --> 00:19:46.760
+pretty stable over time, or maybe even grows, maybe you're
+
+
+00:19:46.760 --> 00:19:49.680
+doing new stuff that's like pulled in similar things. But
+
+
+00:19:49.680 --> 00:19:53.160
+that's not what happens in practice on current Python, the
+
+
+00:19:53.160 --> 00:19:56.360
+shared memory goes down and down and down. Because even though
+
+
+00:19:56.360 --> 00:20:00.880
+that object, or let's say that flywheel number that got created
+
+
+00:20:00.880 --> 00:20:04.920
+to be shared, it still got his reference count number change.
+
+
+00:20:04.920 --> 00:20:07.760
+So throughout the behavior of one app, it might go, well,
+
+
+00:20:07.760 --> 00:20:11.640
+four was used 300 times here and 280 over there.
+
+
+00:20:11.640 --> 00:20:13.720
+So those are not the same four.
+
+
+00:20:13.720 --> 00:20:16.760
+Because on the reference count, they have 281 and 301,
+
+
+00:20:16.760 --> 00:20:18.600
+or whatever it is, right?
+
+
+00:20:18.600 --> 00:20:20.840
+And so that shared memory is falling down
+
+
+00:20:20.840 --> 00:20:24.720
+because the garbage collector and just
+
+
+00:20:24.720 --> 00:20:26.960
+the interacting with the ref count
+
+
+00:20:26.960 --> 00:20:31.520
+is in very meaningless and small ways
+
+
+00:20:31.520 --> 00:20:33.560
+changing pieces of the shared memory
+
+
+00:20:33.560 --> 00:20:35.720
+to make them fall out of the shared state.
+
+
+00:20:35.720 --> 00:20:38.920
+So this whole pep, this whole idea is
+
+
+00:20:38.920 --> 00:20:42.800
+we're gonna make those types of things
+
+
+00:20:42.800 --> 00:20:45.080
+so that their reference count can't change,
+
+
+00:20:45.080 --> 00:20:47.080
+their GC structures can't change,
+
+
+00:20:47.080 --> 00:20:48.160
+they cannot be changed,
+
+
+00:20:48.160 --> 00:20:52.120
+they're just always set to some magic number
+
+
+00:20:52.120 --> 00:20:56.520
+for like this thing's reference count is unchanged, right?
+
+
+00:20:56.520 --> 00:20:58.440
+So if you look at like the object header,
+
+
+00:20:58.440 --> 00:21:01.640
+it's got a GC header, reference count, object type,
+
+
+00:21:01.640 --> 00:21:05.800
+been in the actual data, well, for the ones that don't change,
+
+
+00:21:05.800 --> 00:21:09.280
+now these new ones can be set so even their GC header
+
+
+00:21:09.280 --> 00:21:11.200
+and the reference counts don't change.
+
+
+00:21:11.200 --> 00:21:12.160
+Cool, right?
+
+
+00:21:12.160 --> 00:21:13.640
+Yeah.
+
+
+00:21:13.640 --> 00:21:16.280
+And what that means is, if you come down here,
+
+
+00:21:16.280 --> 00:21:18.440
+it says there are some challenges.
+
+
+00:21:18.440 --> 00:21:20.780
+First, they had to make sure that applications wouldn't
+
+
+00:21:20.780 --> 00:21:24.880
+crash if some objects suddenly had different ref counts.
+
+
+00:21:24.880 --> 00:21:28.480
+Second, it changes the core memory representation
+
+
+00:21:28.480 --> 00:21:32.960
+of a Python object, which if you work in the C level,
+
+
+00:21:32.960 --> 00:21:34.480
+and just directly with the memory,
+
+
+00:21:34.480 --> 00:21:38.340
+that's pointers to the object, that can be tricky.
+
+
+00:21:38.340 --> 00:21:40.200
+And finally, the core implementation
+
+
+00:21:40.200 --> 00:21:43.520
+relies on adding checks explicitly
+
+
+00:21:43.520 --> 00:21:45.600
+to the increment and decrement,
+
+
+00:21:45.600 --> 00:21:49.400
+add ref, remove ref, decrement ref,
+
+
+00:21:49.400 --> 00:21:52.640
+which are two of the hottest bits of code in all of Python,
+
+
+00:21:52.640 --> 00:21:55.320
+as in the most performance critical.
+
+
+00:21:55.320 --> 00:21:57.660
+So if you make a change to it,
+
+
+00:21:57.660 --> 00:22:01.200
+If you make all the Python slower for this, that's bad.
+
+
+00:22:01.200 --> 00:22:03.720
+And they did make Python slower, but only 2%.
+
+
+00:22:03.720 --> 00:22:06.200
+And they believe that the benefit they get
+
+
+00:22:06.200 --> 00:22:09.240
+is actually worth it, 'cause you bring in,
+
+
+00:22:09.240 --> 00:22:12.360
+for heavy workloads, you get actually better performance.
+
+
+00:22:12.360 --> 00:22:14.160
+So it's a trade-off, but there it is.
+
+
+00:22:14.160 --> 00:22:17.720
+- One of the things, I was reading this article,
+
+
+00:22:17.720 --> 00:22:19.880
+and one of the things that confused me was,
+
+
+00:22:19.880 --> 00:22:23.880
+is this just something internal to Python
+
+
+00:22:23.880 --> 00:22:26.100
+that it's gonna happen under the hood,
+
+
+00:22:26.100 --> 00:22:28.540
+or do I need to change my syntax in any way?
+
+
+00:22:28.540 --> 00:22:31.260
+>> Yes, I was looking for that as well.
+
+
+00:22:31.260 --> 00:22:33.120
+Every single thing about,
+
+
+00:22:33.120 --> 00:22:34.660
+I went and read the PEP and everything
+
+
+00:22:34.660 --> 00:22:36.860
+I remember from reading the PEP,
+
+
+00:22:36.860 --> 00:22:39.380
+maybe I missed something, but everything I got from the PEP
+
+
+00:22:39.380 --> 00:22:43.740
+was the C layer.
+
+
+00:22:43.740 --> 00:22:51.380
+It was, here's the Pi immortal call that you make in the C API.
+
+
+00:22:51.380 --> 00:22:53.940
+So what I would like to see is something where you
+
+
+00:22:53.940 --> 00:22:59.220
+set a decorate, like kind of like a data class, like this thing is outside of
+
+
+00:22:59.220 --> 00:23:04.980
+garbage collection, this class is out or this, I don't know, some way to say in
+
+
+00:23:04.980 --> 00:23:10.400
+Python, this thing is immortal for now, at least.
+
+
+00:23:10.400 --> 00:23:11.500
+Yeah.
+
+
+00:23:11.500 --> 00:23:12.420
+But I didn't see it either.
+
+
+00:23:12.420 --> 00:23:16.980
+It also would be good, even if we could just do like, like that would
+
+
+00:23:16.980 --> 00:23:18.820
+be kind of like a constant then also.
+
+
+00:23:18.820 --> 00:23:23.920
+Uh, we could set up some, some constants in your system that, that are immortal.
+
+
+00:23:23.920 --> 00:23:24.760
+or something.
+
+
+00:23:24.760 --> 00:23:25.600
+- Yeah.
+
+
+00:23:25.600 --> 00:23:26.420
+- Anyway.
+
+
+00:23:26.420 --> 00:23:27.260
+Huh, okay.
+
+
+00:23:27.260 --> 00:23:30.480
+- Yeah, like the dictionary of a module that loads up
+
+
+00:23:30.480 --> 00:23:32.120
+if you're not dynamically changing it,
+
+
+00:23:32.120 --> 00:23:33.480
+which you almost never do,
+
+
+00:23:33.480 --> 00:23:36.000
+unless you're like mocking something out,
+
+
+00:23:36.000 --> 00:23:37.840
+like let it be, you know?
+
+
+00:23:37.840 --> 00:23:39.160
+It's just tell it it's the same.
+
+
+00:23:39.160 --> 00:23:40.360
+Don't, don't--
+
+
+00:23:40.360 --> 00:23:42.400
+- Yeah, I'd be curious to see,
+
+
+00:23:42.400 --> 00:23:44.720
+in this implement, as they're implementing it,
+
+
+00:23:44.720 --> 00:23:46.480
+it does seem like parts of the system
+
+
+00:23:46.480 --> 00:23:47.600
+are gonna go a little bit slower,
+
+
+00:23:47.600 --> 00:23:50.600
+but also parts of it are gonna go faster
+
+
+00:23:50.600 --> 00:23:52.480
+'cause you don't have to do all that work, but--
+
+
+00:23:52.480 --> 00:23:53.320
+- Exactly, right.
+
+
+00:23:53.320 --> 00:23:56.040
+- Right, yeah, you don't have to do a lot of stuff.
+
+
+00:23:56.040 --> 00:23:58.120
+Okay, like the garbage collection cycles
+
+
+00:23:58.120 --> 00:24:00.000
+that happen over time, right?
+
+
+00:24:00.000 --> 00:24:01.520
+This seems to just be excluded
+
+
+00:24:01.520 --> 00:24:04.200
+from garbage collection entirely, so that's cool.
+
+
+00:24:04.200 --> 00:24:06.960
+So they have some graphs of what happened afterwards,
+
+
+00:24:06.960 --> 00:24:08.440
+and the before and after,
+
+
+00:24:08.440 --> 00:24:10.880
+and on the after in the shared memory,
+
+
+00:24:10.880 --> 00:24:13.640
+well, sorry, the before, it went almost to zero.
+
+
+00:24:13.640 --> 00:24:16.080
+Like it went from, you know,
+
+
+00:24:16.080 --> 00:24:19.640
+y-axis with no numbers, really high,
+
+
+00:24:19.640 --> 00:24:21.760
+to y-axis low with no numbers.
+
+
+00:24:21.760 --> 00:24:24.960
+But I don't know exactly what this is, maybe a percent, but like I said, it
+
+
+00:24:24.960 --> 00:24:31.360
+doesn't really, really, say, but after processing as few as 300 requests,
+
+
+00:24:31.360 --> 00:24:37.560
+it was like a 10th of the original shared memory was left and that was it.
+
+
+00:24:37.560 --> 00:24:44.080
+Now, after it's down to it's 75, 80% still shared, which is pretty excellent.
+
+
+00:24:44.080 --> 00:24:45.400
+Okay, cool.
+
+
+00:24:45.400 --> 00:24:51.200
+But as you said, this is like one of the internal core things from what I can
+
+
+00:24:51.200 --> 00:24:57.640
+tell. They do say that this is foundational work for the per interpreter
+
+
+00:24:57.640 --> 00:25:02.880
+gill, PEP 684, as well as making the global interpreter lock optional in
+
+
+00:25:02.880 --> 00:25:10.280
+CPython 703, because if you know an object is never going to change, not
+
+
+00:25:10.280 --> 00:25:15.880
+even its ref count, not even its GC state, and definitely not its data, well,
+
+
+00:25:15.880 --> 00:25:21.000
+you can have at it with multithreading, right? The problem with multithreading
+
+
+00:25:21.000 --> 00:25:24.840
+is something has changed in between two operations.
+
+
+00:25:24.840 --> 00:25:27.100
+And if you know it's never gonna change,
+
+
+00:25:27.100 --> 00:25:29.760
+you can just completely remove all the checks
+
+
+00:25:29.760 --> 00:25:31.320
+that you need to do and make it a lot faster.
+
+
+00:25:31.320 --> 00:25:33.720
+So that's why it's there to support.
+
+
+00:25:33.720 --> 00:25:35.040
+That's why it's relevant
+
+
+00:25:35.040 --> 00:25:37.580
+for some of these parallelism peps.
+
+
+00:25:37.580 --> 00:25:40.280
+So anyway, pretty cool.
+
+
+00:25:40.280 --> 00:25:43.520
+This is coming in 3.12, I guess.
+
+
+00:25:43.520 --> 00:25:44.760
+- Nice.
+
+
+00:25:44.760 --> 00:25:45.600
+Cool.
+
+
+00:25:45.600 --> 00:25:50.720
+Well, I'd like to talk about something that,
+
+
+00:25:50.720 --> 00:25:57.280
+I don't really think about that much in that that is docstrings for docstring formats.
+
+
+00:25:57.280 --> 00:26:03.000
+And I just ran across this article and I'm covering it partly just as a question to the
+
+
+00:26:03.000 --> 00:26:04.000
+audience.
+
+
+00:26:04.000 --> 00:26:10.880
+So the article is from Scott Robinson and it's called Common Docstring Formats in Python.
+
+
+00:26:10.880 --> 00:26:14.760
+And docstrings, people forget what they are.
+
+
+00:26:14.760 --> 00:26:18.400
+Like, let's say you have a function called add numbers or something.
+
+
+00:26:18.400 --> 00:26:20.820
+You can do, you can really do any kind of quote,
+
+
+00:26:20.820 --> 00:26:23.880
+but the first string in a function,
+
+
+00:26:23.880 --> 00:26:26.660
+if it's not assigned to a variable is the doc string
+
+
+00:26:26.660 --> 00:26:28.960
+and it's the first element anyway.
+
+
+00:26:28.960 --> 00:26:34.220
+The first line is a little, it's usually one line
+
+
+00:26:34.220 --> 00:26:37.580
+and then maybe a space and then some other stuff.
+
+
+00:26:37.580 --> 00:26:40.380
+And the apparently there's several format,
+
+
+00:26:40.380 --> 00:26:42.800
+common formats of this.
+
+
+00:26:42.800 --> 00:26:45.060
+You can also, you can get access to it
+
+
+00:26:45.060 --> 00:26:47.560
+by the underscore doc attribute of something.
+
+
+00:26:47.560 --> 00:26:51.080
+So if you have a reference to a function,
+
+
+00:26:51.080 --> 00:26:53.900
+you can say dot dunder doc,
+
+
+00:26:53.900 --> 00:26:56.040
+and you can see the doc string.
+
+
+00:26:56.040 --> 00:27:00.920
+And a lot of like IDEs use this to pop up hints and stuff.
+
+
+00:27:00.920 --> 00:27:03.880
+That's one of the reasons why you wanna have like the first,
+
+
+00:27:03.880 --> 00:27:06.280
+at least the first line be an explanation
+
+
+00:27:06.280 --> 00:27:08.120
+that is good for somebody to see
+
+
+00:27:08.120 --> 00:27:09.980
+if it pops up on them and stuff.
+
+
+00:27:09.980 --> 00:27:13.120
+Anyway, which format should this be?
+
+
+00:27:13.120 --> 00:27:17.240
+So it covers a handful of different formats.
+
+
+00:27:17.240 --> 00:27:21.880
+There's a restructured text doc stream format.
+
+
+00:27:21.880 --> 00:27:26.580
+So you've got all this like descriptions of parameters
+
+
+00:27:26.580 --> 00:27:28.120
+and the types and stuff.
+
+
+00:27:28.120 --> 00:27:31.120
+This is scary looking to me.
+
+
+00:27:31.120 --> 00:27:36.060
+Let's go through next, Google doc stream format.
+
+
+00:27:36.060 --> 00:27:40.660
+This one makes a little more sense, but again, I don't know.
+
+
+00:27:40.660 --> 00:27:42.960
+It says int and it talks about the different parameters.
+
+
+00:27:42.960 --> 00:27:45.520
+And if you really have to describe them,
+
+
+00:27:45.520 --> 00:27:47.060
+This is probably one of my favorites.
+
+
+00:27:47.060 --> 00:27:49.100
+This looks pretty good.
+
+
+00:27:49.100 --> 00:27:53.140
+Return, what is the information that it returns?
+
+
+00:27:53.140 --> 00:27:54.940
+What are the arguments and why?
+
+
+00:27:54.940 --> 00:27:58.740
+Some like one-liner explanations, not too bad.
+
+
+00:27:58.740 --> 00:28:01.340
+There's a NumPy SciPy doc format.
+
+
+00:28:01.340 --> 00:28:02.780
+This is also pretty clear.
+
+
+00:28:02.780 --> 00:28:07.800
+Maybe a little, let's compare the two.
+
+
+00:28:07.800 --> 00:28:09.860
+I guess it's got an extra line
+
+
+00:28:09.860 --> 00:28:12.200
+because you're doing the underscore line,
+
+
+00:28:12.200 --> 00:28:15.180
+which is, I guess, okay.
+
+
+00:28:15.180 --> 00:28:19.440
+It looks sort of, I don't know, this is a lot of space.
+
+
+00:28:19.440 --> 00:28:23.060
+But I'm just curious if people are really using this.
+
+
+00:28:23.060 --> 00:28:28.060
+Looking at this, I can see the benefit of describing,
+
+
+00:28:28.060 --> 00:28:32.180
+if it's not clear from the name of your function,
+
+
+00:28:32.180 --> 00:28:33.700
+describing stuff.
+
+
+00:28:33.700 --> 00:28:35.260
+And I also like type hints.
+
+
+00:28:35.260 --> 00:28:37.860
+So this seems like a great argument for type hints
+
+
+00:28:37.860 --> 00:28:41.340
+because the types would be great just right in the,
+
+
+00:28:41.340 --> 00:28:43.860
+right with the parameters.
+
+
+00:28:44.940 --> 00:28:48.120
+And then if you don't have to describe the type,
+
+
+00:28:48.120 --> 00:28:51.440
+maybe just have variable names that are more clear.
+
+
+00:28:51.440 --> 00:28:56.440
+So my personal preference really is use type hints
+
+
+00:28:56.440 --> 00:29:00.840
+and then also have a description
+
+
+00:29:00.840 --> 00:29:02.180
+if you're gonna do a doc string
+
+
+00:29:02.180 --> 00:29:04.240
+and it's not obvious from the name of the function,
+
+
+00:29:04.240 --> 00:29:07.140
+then have a description of what the function does
+
+
+00:29:07.140 --> 00:29:07.980
+and that's it.
+
+
+00:29:07.980 --> 00:29:13.280
+And then if it's unclear about what really
+
+
+00:29:13.280 --> 00:29:16.040
+what the stuff is, the behavior of different parameters,
+
+
+00:29:16.040 --> 00:29:16.880
+then add that.
+
+
+00:29:16.880 --> 00:29:21.200
+But I, again, I'd love to hear back from people.
+
+
+00:29:21.200 --> 00:29:26.200
+Go ahead and send me a message on @brianokin@fosstodon.org.
+
+
+00:29:26.200 --> 00:29:28.080
+This worked great last week.
+
+
+00:29:28.080 --> 00:29:30.120
+I got some great feedback.
+
+
+00:29:30.120 --> 00:29:32.580
+And so I'd love to hear what people are doing
+
+
+00:29:32.580 --> 00:29:33.880
+for their docstring formats.
+
+
+00:29:33.880 --> 00:29:36.240
+Do you use docstring formats, Michael?
+
+
+00:29:36.240 --> 00:29:39.240
+- I'm familiar with docstring formats
+
+
+00:29:39.240 --> 00:29:40.080
+and I've played with them.
+
+
+00:29:40.080 --> 00:29:42.160
+I like the Google one best, I think.
+
+
+00:29:42.160 --> 00:29:45.940
+But I'm with you, if you have good variable names,
+
+
+00:29:45.940 --> 00:29:47.640
+do you need the parameter information?
+
+
+00:29:47.640 --> 00:29:50.180
+If you use type hints, do you need the parameter information
+
+
+00:29:50.180 --> 00:29:51.620
+to say the type?
+
+
+00:29:51.620 --> 00:29:54.260
+If you have a return declaration with a type,
+
+
+00:29:54.260 --> 00:29:56.020
+do you need to have the returns?
+
+
+00:29:56.020 --> 00:29:58.900
+If the function has a good name, get user,
+
+
+00:29:58.900 --> 00:30:00.460
+air angle bracket, optional user.
+
+
+00:30:00.460 --> 00:30:03.900
+Like, oh, well, it returns a user or it returns none.
+
+
+00:30:03.900 --> 00:30:06.580
+How much more do you need to say about what it returns?
+
+
+00:30:06.580 --> 00:30:07.420
+Right?
+
+
+00:30:07.420 --> 00:30:11.220
+There's a lot of, it's a little bit of a case study
+
+
+00:30:11.220 --> 00:30:14.500
+And yes, you wanna be very thorough,
+
+
+00:30:14.500 --> 00:30:17.980
+but also good naming goes a really long way
+
+
+00:30:17.980 --> 00:30:20.060
+to like limit the amount of comments
+
+
+00:30:20.060 --> 00:30:22.620
+and docs you gotta put onto a thing.
+
+
+00:30:22.620 --> 00:30:24.060
+There are times when it makes sense though,
+
+
+00:30:24.060 --> 00:30:29.060
+like if you're talking about range or something like that,
+
+
+00:30:29.060 --> 00:30:35.460
+is it inclusive of both numbers?
+
+
+00:30:35.460 --> 00:30:38.260
+If I say one to 10, do I get one, two, three, four up to 10
+
+
+00:30:38.260 --> 00:30:41.180
+or I get one, two, three, four up to nine, right?
+
+
+00:30:41.180 --> 00:30:44.940
+Like those situations where you might need to say
+
+
+00:30:44.940 --> 00:30:48.860
+the non-inclusive upper bound of the ring,
+
+
+00:30:48.860 --> 00:30:51.660
+I don't know, whatever, something like that, right?
+
+
+00:30:51.660 --> 00:30:53.700
+- Yeah, yeah.
+
+
+00:30:53.700 --> 00:30:57.300
+I do like an explanation of what's returned though.
+
+
+00:30:57.300 --> 00:30:59.500
+Often it's not obvious.
+
+
+00:30:59.500 --> 00:31:02.260
+And even if you are doing a type hint
+
+
+00:31:02.260 --> 00:31:04.900
+and you can get the type of what's returned,
+
+
+00:31:04.900 --> 00:31:06.940
+what's the meaning of what's returned is,
+
+
+00:31:06.940 --> 00:31:10.140
+If that's not obvious, please put that in a doc string.
+
+
+00:31:10.140 --> 00:31:11.660
+- Yep. - Yeah.
+
+
+00:31:11.660 --> 00:31:13.300
+Anyway, cool.
+
+
+00:31:13.300 --> 00:31:15.660
+- I wonder, I don't, this is an honest question.
+
+
+00:31:15.660 --> 00:31:19.560
+I have no idea if you express it in any of this documentation
+
+
+00:31:19.560 --> 00:31:22.000
+or if the editors consume it,
+
+
+00:31:22.000 --> 00:31:24.340
+but what would be really awesome is if there was a way
+
+
+00:31:24.340 --> 00:31:27.780
+to express all possible exception types
+
+
+00:31:27.780 --> 00:31:29.820
+in the entire call stack, right?
+
+
+00:31:29.820 --> 00:31:31.640
+Like you could get a value error,
+
+
+00:31:31.640 --> 00:31:35.100
+you could get a database connection error,
+
+
+00:31:35.100 --> 00:31:38.460
+or you could get a uniqueness constraint exception,
+
+
+00:31:38.460 --> 00:31:40.300
+any of those three, then you could have editors
+
+
+00:31:40.300 --> 00:31:42.020
+where you just hit like Alt + Enter,
+
+
+00:31:42.020 --> 00:31:43.980
+right, the error handling goes bam, bam, bam,
+
+
+00:31:43.980 --> 00:31:47.340
+here's the three types of things you might catch.
+
+
+00:31:47.340 --> 00:31:48.380
+That would be awesome.
+
+
+00:31:48.380 --> 00:31:49.620
+But I don't know if you can express
+
+
+00:31:49.620 --> 00:31:53.340
+the possible range of exceptions in there or not.
+
+
+00:31:53.340 --> 00:31:55.380
+- Or unless you've, yeah,
+
+
+00:31:55.380 --> 00:31:58.180
+and especially if you're calling any extra functions
+
+
+00:31:58.180 --> 00:32:00.780
+within a function, you don't know
+
+
+00:32:00.780 --> 00:32:03.140
+if it's gonna raise an exception possibly.
+
+
+00:32:04.220 --> 00:32:09.100
+Anyway, that's something I would see actually really useful there that you don't express
+
+
+00:32:09.100 --> 00:32:12.220
+in like the type information or the name or any of those things.
+
+
+00:32:12.220 --> 00:32:13.220
+Yeah.
+
+
+00:32:13.220 --> 00:32:14.220
+Cool.
+
+
+00:32:14.220 --> 00:32:16.220
+Well, those are our items.
+
+
+00:32:16.220 --> 00:32:18.540
+Michael, do you have any extras for us?
+
+
+00:32:18.540 --> 00:32:21.340
+I have an extra for you in particular.
+
+
+00:32:21.340 --> 00:32:22.340
+How about that?
+
+
+00:32:22.340 --> 00:32:23.340
+Okay.
+
+
+00:32:23.340 --> 00:32:26.820
+Let's start with that one then.
+
+
+00:32:26.820 --> 00:32:30.720
+So last week you asked about GitHub releases.
+
+
+00:32:30.720 --> 00:32:31.720
+Who uses these?
+
+
+00:32:31.720 --> 00:32:32.720
+Should I be bothered?
+
+
+00:32:32.720 --> 00:32:36.920
+There's this person that seems to be telling everyone on GitHub they should use releases
+
+
+00:32:36.920 --> 00:32:37.920
+if they're not.
+
+
+00:32:37.920 --> 00:32:39.000
+Do I care?
+
+
+00:32:39.000 --> 00:32:45.880
+And Red Turnbull, who's been on Talk Python to talk about building Mac apps with Python,
+
+
+00:32:45.880 --> 00:32:49.040
+GitHub said there, said, "GitHub releases questions.
+
+
+00:32:49.040 --> 00:32:53.400
+I use them and I like them so people can subscribe to be notified of new releases.
+
+
+00:32:53.400 --> 00:33:00.840
+I use gh, the GitHub command line, github release create to create one in the command
+
+
+00:33:00.840 --> 00:33:03.240
+every time I push to PyPI.
+
+
+00:33:03.240 --> 00:33:05.400
+I'm sure this can be done as an action,
+
+
+00:33:05.400 --> 00:33:08.200
+but I don't push that often, so it's fine with me.
+
+
+00:33:08.200 --> 00:33:11.400
+Anyway, there's some feedback for you.
+
+
+00:33:11.400 --> 00:33:12.760
+- Thanks.
+
+
+00:33:12.760 --> 00:33:16.560
+Yeah, I actually got quite a few people reaching out,
+
+
+00:33:16.560 --> 00:33:17.600
+and I really appreciate it.
+
+
+00:33:17.600 --> 00:33:21.000
+And it did convince me that I'm gonna start
+
+
+00:33:21.000 --> 00:33:25.140
+trying to figure it out using get releases,
+
+
+00:33:25.140 --> 00:33:28.440
+but I also want to make sure
+
+
+00:33:28.440 --> 00:33:30.240
+that it's automated as much as possible.
+
+
+00:33:30.240 --> 00:33:32.480
+I don't want to add redundant work just for the heck of it.
+
+
+00:33:32.480 --> 00:33:36.320
+>> So you're going to set up some automation to go around and tell everyone on GitHub who
+
+
+00:33:36.320 --> 00:33:38.160
+doesn't have releases going yet?
+
+
+00:33:38.160 --> 00:33:39.160
+>> No.
+
+
+00:33:39.160 --> 00:33:40.160
+>> They should do releases?
+
+
+00:33:40.160 --> 00:33:44.080
+Think of all the contributor badges you're going to get.
+
+
+00:33:44.080 --> 00:33:45.080
+>> Yeah.
+
+
+00:33:45.080 --> 00:33:48.080
+>> I'm just kidding.
+
+
+00:33:48.080 --> 00:33:49.720
+All right.
+
+
+00:33:49.720 --> 00:33:51.240
+Let's talk about one more thing.
+
+
+00:33:51.240 --> 00:33:56.280
+We've heard about PyPI issues where people are uploading malicious packages and a lot
+
+
+00:33:56.280 --> 00:34:01.880
+of times it's crypto kiddies and other idiots who are doing that or researchers to like
+
+
+00:34:01.880 --> 00:34:04.780
+just prove a concept that it can be done.
+
+
+00:34:04.780 --> 00:34:11.320
+But Lazarus hackers who are pretty sure yeah, North Korean state sponsored hacking group
+
+
+00:34:11.320 --> 00:34:20.400
+is uploaded a fake VMware VM connect library targeting it professionals.
+
+
+00:34:20.400 --> 00:34:24.280
+So it only had 237 downloads.
+
+
+00:34:24.280 --> 00:34:30.720
+But when you start to think about state actor hacking level of stuff getting installed onto
+
+
+00:34:30.720 --> 00:34:36.280
+your machine, that's like a minimum format OS.
+
+
+00:34:36.280 --> 00:34:37.280
+Maybe just throw it in the trash.
+
+
+00:34:37.280 --> 00:34:38.280
+I don't know.
+
+
+00:34:38.280 --> 00:34:40.740
+It's like pretty bad level of being infected.
+
+
+00:34:40.740 --> 00:34:41.920
+So I don't know.
+
+
+00:34:41.920 --> 00:34:45.080
+I have no action or further thoughts.
+
+
+00:34:45.080 --> 00:34:47.760
+Just like, hey, that's worth checking out.
+
+
+00:34:47.760 --> 00:34:53.760
+>> Yeah, and maybe we do need to care about the pipeline and whatever.
+
+
+00:34:53.760 --> 00:34:55.840
+>> But in the supply chain,
+
+
+00:34:55.840 --> 00:34:59.180
+but we do have the new security person,
+
+
+00:34:59.180 --> 00:35:01.420
+Mike, that was hired, so that's excellent.
+
+
+00:35:01.420 --> 00:35:02.380
+>> Yes.
+
+
+00:35:02.380 --> 00:35:04.600
+>> He was in the audience when we announced it, that was great.
+
+
+00:35:04.600 --> 00:35:07.440
+I believe it's Mike, hopefully I got the name right.
+
+
+00:35:07.440 --> 00:35:11.300
+Over to you, that's what I got.
+
+
+00:35:11.300 --> 00:35:15.080
+>> Okay. Well, I was having a conversation with,
+
+
+00:35:15.080 --> 00:35:19.840
+Was actually this the I don't know how to pronounce that JNY JNY
+
+
+00:35:19.840 --> 00:35:21.360
+on
+
+
+00:35:21.360 --> 00:35:26.900
+Pi the pie bites slack. We were talking about using talking about
+
+
+00:35:26.900 --> 00:35:35.540
+Using TRS-80 computers and I said, hey, I I remember typing in lunar lander on my TRS-80 way back when
+
+
+00:35:35.540 --> 00:35:41.280
+Copied it out of the back of the magazine and he's he said I've got a copy
+
+
+00:35:41.280 --> 00:35:44.000
+copy of
+
+
+00:35:44.040 --> 00:35:47.120
+Lunar lander that works on Python. I'm like, oh, I want to try it and
+
+
+00:35:47.120 --> 00:35:50.440
+And I I still can't I'm gonna get back to him
+
+
+00:35:50.440 --> 00:35:55.760
+But I can't get his to work and then I looked around and there was this other cool one
+
+
+00:35:55.760 --> 00:36:04.400
+Lunar lander Python I found that's a four years old and apparently it was done as part of a
+
+
+00:36:04.400 --> 00:36:07.120
+fundamentals of computing course
+
+
+00:36:07.120 --> 00:36:12.320
+Which is which is pretty impressive. I couldn't get it to work, but their website looks great
+
+
+00:36:12.440 --> 00:36:19.840
+So they have a website with it attached to it with with like screenshots and it was good fonts, too
+
+
+00:36:19.840 --> 00:36:26.140
+Yeah, and it looks exactly like the lunar lander that I typed into my TRS 80. So I'm pretty excited about that
+
+
+00:36:26.140 --> 00:36:32.260
+Anyway, but I can't get that to work either. So if anybody's got like a lunar lander
+
+
+00:36:32.260 --> 00:36:39.280
+Copy or something that works on works with modern Python. I would love to play with it
+
+
+00:36:39.280 --> 00:36:42.400
+I also want to hack with it with my daughter and stuff.
+
+
+00:36:42.400 --> 00:36:49.160
+So anyway, that's the only extra thing I got is bring on the Winnebender.
+
+
+00:36:49.160 --> 00:36:53.520
+>> I like it. Yeah, Mike Falders here,
+
+
+00:36:53.520 --> 00:36:56.480
+Falders here, the security guy and people are
+
+
+00:36:56.480 --> 00:36:59.080
+thanking him and stuff for all the security work.
+
+
+00:36:59.080 --> 00:37:00.720
+So just getting started, but yeah,
+
+
+00:37:00.720 --> 00:37:02.920
+it's not an easy job, I'm sure.
+
+
+00:37:02.920 --> 00:37:05.360
+>> Yeah, and we're pretty excited.
+
+
+00:37:05.360 --> 00:37:07.840
+I can't think of a better person to do this job.
+
+
+00:37:07.840 --> 00:37:12.200
+>> Indeed. Shall we play some bingo?
+
+
+00:37:12.200 --> 00:37:13.640
+>> Sure.
+
+
+00:37:13.640 --> 00:37:17.960
+>> All right. This is our joke. Programmer bingo. I love it.
+
+
+00:37:17.960 --> 00:37:19.800
+So bingo works,
+
+
+00:37:19.800 --> 00:37:23.000
+everybody gets a different card with different options.
+
+
+00:37:23.000 --> 00:37:24.880
+Typically, it's numbers, but in this case,
+
+
+00:37:24.880 --> 00:37:27.920
+it's programmer actions or statements.
+
+
+00:37:27.920 --> 00:37:30.680
+You call out or have happened,
+
+
+00:37:30.680 --> 00:37:32.320
+and as they get called out,
+
+
+00:37:32.320 --> 00:37:35.600
+you mark them off and whoever completes a row or column,
+
+
+00:37:35.600 --> 00:37:37.440
+or I don't know, something diagonal.
+
+
+00:37:37.440 --> 00:37:40.160
+I don't play that much bingo, but you win, right?
+
+
+00:37:40.160 --> 00:37:44.600
+And so this is a possible programmer bingo card.
+
+
+00:37:44.600 --> 00:37:47.600
+We should come up with one, a whole bunch of them.
+
+
+00:37:47.600 --> 00:37:49.160
+So I'll just read you some of the options
+
+
+00:37:49.160 --> 00:37:50.600
+out of this card, okay, Ryan?
+
+
+00:37:50.600 --> 00:37:57.640
+So we've got number one, written code without comments.
+
+
+00:37:57.640 --> 00:38:01.120
+Everybody can check that one off.
+
+
+00:38:01.120 --> 00:38:03.560
+For all of the C-inspired language people,
+
+
+00:38:03.560 --> 00:38:06.080
+forgot a semicolon at the end of a line.
+
+
+00:38:06.080 --> 00:38:07.200
+That's good.
+
+
+00:38:07.200 --> 00:38:11.520
+I can certainly relate with number three, close 12 tabs after fixing an issue.
+
+
+00:38:11.520 --> 00:38:12.680
+Oh yeah.
+
+
+00:38:12.680 --> 00:38:13.800
+Oh yeah.
+
+
+00:38:13.800 --> 00:38:18.160
+Uh, also relate number four, 20 warnings, zero errors.
+
+
+00:38:18.160 --> 00:38:22.040
+Works on my machine, man.
+
+
+00:38:22.040 --> 00:38:23.440
+Yeah, yeah, exactly.
+
+
+00:38:23.440 --> 00:38:27.120
+The number five is program didn't run on someone else's computer.
+
+
+00:38:27.120 --> 00:38:32.220
+And instantiation of the works on my machine problem.
+
+
+00:38:32.220 --> 00:38:35.860
+And then this number six to do less greater than completed tasks.
+
+
+00:38:35.860 --> 00:38:38.380
+Number seven, copied code from Stack Overflow.
+
+
+00:38:38.380 --> 00:38:40.500
+I'm pretty sure we can all check that one off.
+
+
+00:38:40.500 --> 00:38:42.380
+Close program without saving it.
+
+
+00:38:42.380 --> 00:38:43.980
+Okay. Number nine,
+
+
+00:38:43.980 --> 00:38:46.860
+asked to fix a laptop because you're a programmer.
+
+
+00:38:46.860 --> 00:38:48.580
+I have a problem with my computer,
+
+
+00:38:48.580 --> 00:38:50.460
+like please don't, please don't.
+
+
+00:38:50.460 --> 00:38:52.820
+Number 10, turned your bug into a feature.
+
+
+00:38:52.820 --> 00:38:56.820
+11, deleted block of code and regretted it later.
+
+
+00:38:56.820 --> 00:39:01.060
+Finally, learned a new programming language but never used it.
+
+
+00:39:01.060 --> 00:39:02.580
+Hello TypeScript.
+
+
+00:39:02.580 --> 00:39:04.900
+>> We could come up with so many of these.
+
+
+00:39:04.900 --> 00:39:07.740
+We should we should totally do we should do so good aren't they?
+
+
+00:39:07.740 --> 00:39:09.460
+You could just go on and on. Yeah.
+
+
+00:39:09.460 --> 00:39:14.540
+Yeah. Like have a backup copy of your code repository,
+
+
+00:39:14.540 --> 00:39:16.820
+even though it's yeah.
+
+
+00:39:16.820 --> 00:39:19.180
+Yeah. Zip is my source control.
+
+
+00:39:19.180 --> 00:39:23.500
+Yeah. Yeah.
+
+
+00:39:23.500 --> 00:39:26.500
+And then there's usually a free one in the middle
+
+
+00:39:26.500 --> 00:39:30.100
+that could just be need to need to update PIP.
+
+
+00:39:32.340 --> 00:39:34.100
+That's exactly a pip is out of date.
+
+
+00:39:34.100 --> 00:39:35.140
+(laughing)
+
+
+00:39:35.140 --> 00:39:36.260
+- pip is out of date.
+
+
+00:39:36.260 --> 00:39:37.620
+Yeah.
+
+
+00:39:37.620 --> 00:39:38.460
+Awesome.
+
+
+00:39:38.460 --> 00:39:41.500
+Well, as usual, pleasure to talk with you, Michael,
+
+
+00:39:41.500 --> 00:39:44.700
+and thank you so much Sentry for sponsoring this episode.
+
+
+00:39:44.700 --> 00:39:48.420
+Again, everybody check out Sentry and go to,
+
+
+00:39:48.420 --> 00:39:49.900
+what was that link again?
+
+
+00:39:49.900 --> 00:39:52.620
+Pythonbytes.com/sentry.
+
+
+00:39:52.620 --> 00:39:53.460
+- /sentry.
+
+
+00:39:53.460 --> 00:39:55.280
+Thanks, Brian.
+
+
+00:39:55.280 --> 00:39:56.120
+- Thank you, bye.
+
+
+00:39:56.120 --> 00:39:56.960
+- See y'all.
+
+
+00:39:56.960 --> 00:40:06.960
+[BLANK_AUDIO]
+

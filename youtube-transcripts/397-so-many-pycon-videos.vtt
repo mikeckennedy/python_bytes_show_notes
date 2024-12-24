@@ -1,0 +1,1529 @@
+WEBVTT
+
+00:00:00.001 --> 00:00:04.020
+Hey, everybody. Welcome to Python Bytes.
+
+00:00:04.020 --> 00:00:06.680
+Should we get started?
+
+00:00:06.680 --> 00:00:09.920
+Let's do it. Hey, Brian. Hey, everyone.
+
+00:00:09.920 --> 00:00:15.660
+Hello and welcome to Python Bytes, where we deliver Python news and headlines
+
+00:00:15.660 --> 00:00:19.920
+directly to your earbuds. This is episode 397, recorded
+
+00:00:19.920 --> 00:00:22.660
+August 20th. And I am Brian Okken.
+
+00:00:22.660 --> 00:00:24.800
+And I'm Michael Kennedy.
+
+00:00:26.180 --> 00:00:31.220
+This show, this episode is sponsored by us. So check out our stuff, our courses and training
+
+00:00:31.220 --> 00:00:35.220
+and everything. Links in the show notes, of course. You can
+
+00:00:35.220 --> 00:00:38.680
+connect with us on Mastodon or Fosstodon.
+
+00:00:38.680 --> 00:00:43.200
+We're at mkennedy at Brian Okken at Python Bytes. But you can find
+
+00:00:43.200 --> 00:00:47.080
+all of those in the show notes as well. Also, you can go to
+
+00:00:47.080 --> 00:00:51.100
+pythonbytes.fm/live if you want to join us in the
+
+00:00:51.100 --> 00:00:52.300
+studio audience.
+
+00:00:53.600 --> 00:00:58.080
+And finally, we have some exciting news about the
+
+00:00:58.080 --> 00:01:02.840
+handcrafted artisanal show notes in email form.
+
+00:01:02.840 --> 00:01:08.420
+Our email friends of the show list has reached a milestone and we've already
+
+00:01:08.420 --> 00:01:10.840
+sent out prizes, which is awesome.
+
+00:01:10.840 --> 00:01:15.760
+Yes. Check your mail. You may be a lucky winner. I know two folks have already
+
+00:01:15.760 --> 00:01:20.500
+redeemed some courses over at Talk Python and over on your platform, right?
+
+00:01:20.500 --> 00:01:24.260
+Yep. You may already be a wiener. So check your email.
+
+00:01:24.260 --> 00:01:26.660
+What do you got for us, Michael?
+
+00:01:26.660 --> 00:01:30.700
+I've been waiting and waiting to talk about this.
+
+00:01:30.700 --> 00:01:33.780
+So let's talk about Pi Awaitable.
+
+00:01:33.780 --> 00:01:38.680
+Was bad, but it had to be done. You know what I mean?
+
+00:01:38.680 --> 00:01:42.760
+So Pi Awaitable. This is something I feel like
+
+00:01:42.760 --> 00:01:47.220
+probably not a ton of people are going to be using, but
+
+00:01:47.220 --> 00:01:53.360
+the concurrency models in Python are only increasing.
+
+00:01:53.360 --> 00:01:56.520
+The use of async and await is only increasing.
+
+00:01:56.520 --> 00:01:58.520
+And people writing code,
+
+00:01:58.520 --> 00:02:02.100
+people writing code in
+
+00:02:02.100 --> 00:02:07.180
+C and Rust in other languages to basically
+
+00:02:07.180 --> 00:02:11.800
+create lower level faster bits is increasing.
+
+00:02:11.800 --> 00:02:14.420
+And so I put this out there to help
+
+00:02:14.420 --> 00:02:19.080
+those of you who are saying, maybe I want to rewrite the section in C
+
+00:02:19.080 --> 00:02:21.580
+or integrate with this other bit of code in C.
+
+00:02:21.860 --> 00:02:24.500
+So this is a project called Pi Awaitable,
+
+00:02:24.500 --> 00:02:27.300
+which is really for people writing
+
+00:02:27.300 --> 00:02:30.620
+code in C, C extensions for Python.
+
+00:02:30.620 --> 00:02:30.960
+Okay.
+
+00:02:30.960 --> 00:02:31.800
+Okay.
+
+00:02:31.800 --> 00:02:35.100
+And interestingly, it comes from Peter.
+
+00:02:35.100 --> 00:02:38.740
+Last name is
+
+00:02:38.740 --> 00:02:40.820
+Birma.
+
+00:02:40.820 --> 00:02:41.500
+Peter Birma.
+
+00:02:41.500 --> 00:02:44.280
+And if you check out his website, it's pretty interesting, actually.
+
+00:02:44.280 --> 00:02:46.460
+Hey, I'm Peter, software engineer from the United States.
+
+00:02:46.780 --> 00:02:48.120
+I'm 16 years old.
+
+00:02:48.120 --> 00:02:49.480
+I've been writing.
+
+00:02:49.480 --> 00:02:51.780
+I've been coding since I was nine.
+
+00:02:51.780 --> 00:02:54.620
+And this is just one of my many projects.
+
+00:02:54.620 --> 00:02:55.620
+So there's a bunch of projects.
+
+00:02:55.620 --> 00:02:59.080
+You can see that like the pointers.py joke
+
+00:02:59.080 --> 00:03:01.260
+that was going around a while ago.
+
+00:03:01.260 --> 00:03:01.980
+He did that and stuff.
+
+00:03:01.980 --> 00:03:04.420
+Anyway, so that's kind of interesting and impressive.
+
+00:03:04.420 --> 00:03:09.680
+And so this is a library that lets you create
+
+00:03:09.680 --> 00:03:15.700
+code in C that can accept an async Python function.
+
+00:03:15.700 --> 00:03:21.200
+So if you write async def in Python, right,
+
+00:03:21.200 --> 00:03:24.920
+and create some function that uses async and await,
+
+00:03:24.920 --> 00:03:28.480
+and you pass it off to the C layer,
+
+00:03:28.480 --> 00:03:31.260
+well, that used to be kind of tricky.
+
+00:03:31.260 --> 00:03:34.760
+This used to be, this was suggested as a pep,
+
+00:03:34.760 --> 00:03:35.760
+if you check it out.
+
+00:03:35.760 --> 00:03:39.040
+I don't know if it got far enough to have a number,
+
+00:03:39.040 --> 00:03:41.740
+but there's like the whole PEP write-up
+
+00:03:41.740 --> 00:03:43.240
+of what is the value of this?
+
+00:03:43.240 --> 00:03:44.040
+Why does it exist?
+
+00:03:44.040 --> 00:03:44.720
+How do you use it?
+
+00:03:44.760 --> 00:03:45.560
+How should it be added?
+
+00:03:45.560 --> 00:03:48.620
+And from what I gather,
+
+00:03:48.620 --> 00:03:55.440
+what I understand is that since this thing only uses the public ABI,
+
+00:03:55.440 --> 00:03:59.180
+the public interface of the C API,
+
+00:03:59.180 --> 00:04:02.000
+it doesn't necessarily have to be part of CPython.
+
+00:04:02.000 --> 00:04:04.100
+It could just be a third-party library.
+
+00:04:04.600 --> 00:04:05.600
+So here it is.
+
+00:04:05.600 --> 00:04:05.600
+So here it is.
+
+00:04:05.600 --> 00:04:08.220
+And here's how you, here it goes, Brian.
+
+00:04:08.220 --> 00:04:11.720
+This will connect with you, I think.
+
+00:04:11.720 --> 00:04:14.300
+Hash include pyawaitable.h.
+
+00:04:14.300 --> 00:04:15.080
+Here we go.
+
+00:04:16.820 --> 00:04:23.400
+Here's a function that takes a Python coroutine function,
+
+00:04:23.400 --> 00:04:25.640
+or an async def type of function,
+
+00:04:25.640 --> 00:04:32.680
+uses this library to create something that can be awaited on it,
+
+00:04:32.680 --> 00:04:33.440
+and then it returns it.
+
+00:04:33.540 --> 00:04:38.140
+So then that basically turns the C function into an async,
+
+00:04:38.140 --> 00:04:40.700
+something that can be awaited from Python.
+
+00:04:40.700 --> 00:04:42.560
+Okay.
+
+00:04:42.560 --> 00:04:47.040
+So the C function is the thing that you're waiting for completion of?
+
+00:04:47.040 --> 00:04:47.480
+Yes.
+
+00:04:47.480 --> 00:04:51.620
+So here's a C extension written with this library
+
+00:04:51.620 --> 00:04:54.700
+that itself is effectively an async def function
+
+00:04:54.700 --> 00:04:58.620
+that you just await as if it was a native Python one
+
+00:04:58.620 --> 00:05:00.480
+in the event loop and all that kind of stuff.
+
+00:05:00.480 --> 00:05:03.420
+And it can coordinate with other async things
+
+00:05:03.420 --> 00:05:07.100
+like your own ones or the built-in async.io.sleep or whatever.
+
+00:05:07.100 --> 00:05:08.700
+That's pretty cool.
+
+00:05:08.700 --> 00:05:09.660
+Pretty cool?
+
+00:05:09.660 --> 00:05:13.060
+So I'm pretty short and sweet and pretty focused,
+
+00:05:13.060 --> 00:05:14.800
+so I'm not going to say much more about it,
+
+00:05:14.800 --> 00:05:16.100
+but check it out.
+
+00:05:16.100 --> 00:05:17.580
+It's pretty new,
+
+00:05:17.580 --> 00:05:23.360
+but it seems not super advanced in terms of what it does.
+
+00:05:23.360 --> 00:05:26.200
+So if you're doing a lot of C and async programming,
+
+00:05:26.200 --> 00:05:28.340
+you can check it out and see what you think of it
+
+00:05:28.340 --> 00:05:29.360
+and use it and contribute.
+
+00:05:29.360 --> 00:05:30.900
+Nice.
+
+00:05:30.900 --> 00:05:32.840
+All right.
+
+00:05:32.840 --> 00:05:36.140
+Well, I want to show you something pretty.
+
+00:05:36.140 --> 00:05:38.260
+So look at this plot.
+
+00:05:38.260 --> 00:05:39.280
+This is amazing.
+
+00:05:39.280 --> 00:05:43.560
+So this is just a coal production since 1900.
+
+00:05:43.560 --> 00:05:45.700
+So why am I showing this?
+
+00:05:45.700 --> 00:05:47.800
+Because it looks like it came out of a magazine or something.
+
+00:05:47.800 --> 00:05:49.580
+You've got these call-outs.
+
+00:05:49.580 --> 00:05:55.120
+It's a stacked plot, but it's got the colors.
+
+00:05:55.120 --> 00:06:04.200
+Instead of doing a key, they're listed as colored names in one of the descriptions.
+
+00:06:04.440 --> 00:06:04.940
+This is great.
+
+00:06:04.940 --> 00:06:07.500
+So anyway, I like this plot.
+
+00:06:07.500 --> 00:06:09.380
+I want to do something like this.
+
+00:06:09.380 --> 00:06:14.440
+And luckily, there's an article called Annotated Area Charts with Plotline.
+
+00:06:15.160 --> 00:06:17.380
+Plotline is an open source Python library.
+
+00:06:17.380 --> 00:06:27.560
+And this is just a tutorial that walks you through doing this wonderful, very professional-looking plot.
+
+00:06:28.700 --> 00:06:31.420
+And it doesn't even look that complicated.
+
+00:06:31.420 --> 00:06:38.820
+Anyway, so going through this looks pretty fun to try to do some fancy plots like this.
+
+00:06:38.820 --> 00:06:42.980
+Maybe make me look more professional at my job.
+
+00:06:43.080 --> 00:06:48.920
+So it uses Plotline, which I hadn't heard of.
+
+00:06:48.920 --> 00:06:54.080
+And Plotline is based on ggplot2.
+
+00:06:54.080 --> 00:06:59.660
+And it says Plotline is an implementation of a grammar of graphics.
+
+00:07:00.340 --> 00:07:04.020
+I did not know that gg and ggplot was grammar of graphics.
+
+00:07:04.020 --> 00:07:06.240
+That's cool.
+
+00:07:06.240 --> 00:07:07.640
+I learned that today.
+
+00:07:07.640 --> 00:07:08.280
+So that's cool.
+
+00:07:08.280 --> 00:07:11.220
+Anyway, I'm like, well, wait a second.
+
+00:07:11.220 --> 00:07:12.780
+Is this open source?
+
+00:07:12.780 --> 00:07:15.620
+Yeah, it's all on GitHub.
+
+00:07:15.620 --> 00:07:18.340
+And MIT licensed.
+
+00:07:18.340 --> 00:07:23.100
+So I feel safe with talking about licenses a lot lately.
+
+00:07:23.100 --> 00:07:26.240
+And I am paying more attention to the licenses that I use.
+
+00:07:27.200 --> 00:07:32.560
+Anyway, just a fairly quick shout-out to this wonderful, oh, who wrote it?
+
+00:07:32.560 --> 00:07:34.700
+It was Nicola Renni.
+
+00:07:34.700 --> 00:07:37.260
+And a great-looking blog, too.
+
+00:07:37.260 --> 00:07:41.920
+But anyway, just had to make really beautiful plots with Plotline.
+
+00:07:41.920 --> 00:07:43.540
+That's a nice-looking blog.
+
+00:07:43.540 --> 00:07:46.400
+And very nice-looking presentation.
+
+00:07:46.400 --> 00:07:50.800
+So Plotline is new to me, so good to know.
+
+00:07:50.800 --> 00:07:56.260
+Right on to the next one.
+
+00:07:56.940 --> 00:07:59.260
+We have DeltaBase.
+
+00:07:59.260 --> 00:08:06.840
+So, Brian, I'm sure you've heard of SQLite, the embedded database that you can just point
+
+00:08:06.840 --> 00:08:07.760
+at a file and run.
+
+00:08:07.760 --> 00:08:11.680
+So DeltaBase is kind of like that, but broader, I guess.
+
+00:08:11.680 --> 00:08:18.460
+It's a lightweight, comprehensive solution for managing Delta tables built on Polars and Delta
+
+00:08:18.460 --> 00:08:18.860
+Lake.
+
+00:08:18.860 --> 00:08:19.480
+All right.
+
+00:08:19.480 --> 00:08:23.560
+So some definitions for this makes sense.
+
+00:08:23.560 --> 00:08:29.340
+So Polars is a data framework very much like Pandas.
+
+00:08:29.760 --> 00:08:35.080
+I actually had the guy who created it on Talk Python quite a while ago when it came out.
+
+00:08:35.080 --> 00:08:39.220
+And the idea is, one, it's super fast.
+
+00:08:39.220 --> 00:08:44.560
+But two, the way that you work with it is a so-called fluent API.
+
+00:08:45.220 --> 00:08:46.740
+Scrolling for an example, not finding one.
+
+00:08:46.740 --> 00:08:50.940
+A fluent API that has deferred execution.
+
+00:08:50.940 --> 00:08:54.820
+So when you work with Panda, you might say, do this filter and then transform this and then
+
+00:08:54.820 --> 00:08:56.180
+multiply that thing by something.
+
+00:08:58.120 --> 00:09:02.000
+It just does every one of those steps and then processes it together.
+
+00:09:02.000 --> 00:09:05.700
+With Polars, it says, okay, I see what you're doing.
+
+00:09:05.700 --> 00:09:08.280
+And first you told me to multiply.
+
+00:09:08.280 --> 00:09:10.460
+And then you told me to filter.
+
+00:09:10.460 --> 00:09:14.900
+But if I filter and then multiply, I'll be multiplying way fewer things, potentially.
+
+00:09:14.900 --> 00:09:15.380
+Right.
+
+00:09:15.380 --> 00:09:17.340
+So that's kind of the big difference.
+
+00:09:17.340 --> 00:09:18.800
+Anyway, super cool.
+
+00:09:18.800 --> 00:09:19.940
+Built on Rust.
+
+00:09:19.940 --> 00:09:23.160
+So obviously, it's got some pizzazz behind it.
+
+00:09:23.160 --> 00:09:23.340
+Wait.
+
+00:09:23.340 --> 00:09:27.600
+So are you saying that you can write it in a fluent way that makes sense to you, but it'll
+
+00:09:27.600 --> 00:09:29.560
+rearrange it if it makes sense to pull?
+
+00:09:29.560 --> 00:09:29.680
+Yeah.
+
+00:09:29.680 --> 00:09:31.840
+It has like a query optimizer type of deal.
+
+00:09:31.840 --> 00:09:36.900
+It's not quite a query because you're not writing a query, but yeah, it has a deferred
+
+00:09:36.900 --> 00:09:38.800
+execution and it takes into consideration.
+
+00:09:38.800 --> 00:09:44.340
+If I remember this correctly, it takes into account all the different steps because it doesn't
+
+00:09:44.340 --> 00:09:46.900
+actually execute until you give it like the command.
+
+00:09:46.900 --> 00:09:49.560
+And so it's built up all these steps that it can do.
+
+00:09:49.560 --> 00:09:51.160
+And so it can make decisions about that.
+
+00:09:51.160 --> 00:09:52.260
+Oh, that's cool.
+
+00:09:52.260 --> 00:09:52.720
+Okay.
+
+00:09:52.720 --> 00:09:53.560
+Yeah, which is really cool.
+
+00:09:53.560 --> 00:09:56.280
+But in other ways, it's very similar to Pandas.
+
+00:09:56.540 --> 00:10:00.280
+Not trying to be a copy of it, but it kind of plays the same space.
+
+00:10:00.280 --> 00:10:01.000
+All right.
+
+00:10:01.000 --> 00:10:02.080
+So that's one thing.
+
+00:10:02.080 --> 00:10:04.920
+The other is Delta Lake.
+
+00:10:04.920 --> 00:10:10.760
+This is an implementation of Delta Lake, I guess.
+
+00:10:10.760 --> 00:10:15.920
+And with a space, rather than without a space.
+
+00:10:15.920 --> 00:10:16.940
+Oh, that clears it up.
+
+00:10:16.940 --> 00:10:17.240
+Totally.
+
+00:10:17.340 --> 00:10:17.700
+Oh, yeah.
+
+00:10:17.700 --> 00:10:19.480
+So absolutely.
+
+00:10:19.480 --> 00:10:19.720
+Absolutely.
+
+00:10:19.720 --> 00:10:27.340
+So this is a format, actually, that allows you to talk with computational engines such
+
+00:10:27.340 --> 00:10:34.960
+as Spark, Hive, Snowflake, but also things like DuckDB and others.
+
+00:10:34.960 --> 00:10:36.740
+And you can just point it at a local file.
+
+00:10:36.820 --> 00:10:38.040
+You don't even have to have a server.
+
+00:10:38.040 --> 00:10:38.360
+Okay.
+
+00:10:38.360 --> 00:10:46.700
+So this is a pretty cool looking library that lets you basically, you know, it's optimized
+
+00:10:46.700 --> 00:10:55.220
+for doing up search and all sorts of things like that efficient versioning and so on.
+
+00:10:55.420 --> 00:11:00.920
+So you just pointed at some path if you want, sort of the SQLite experience.
+
+00:11:01.480 --> 00:11:04.200
+And then you say, here's a table.
+
+00:11:04.200 --> 00:11:06.560
+It has a primary key with its name.
+
+00:11:06.560 --> 00:11:09.340
+And here is a bunch of data I want you to put into it.
+
+00:11:09.340 --> 00:11:19.060
+And notice that there is no, here's my SQL create statement and my table schema and all
+
+00:11:19.060 --> 00:11:20.180
+of those things, right?
+
+00:11:20.180 --> 00:11:21.040
+Like, where is that?
+
+00:11:21.040 --> 00:11:22.560
+Doesn't exist, does it?
+
+00:11:22.560 --> 00:11:27.340
+So you just say, I'm going to commit this thing.
+
+00:11:27.880 --> 00:11:31.540
+Also, if you go, you can do select statements against it, right?
+
+00:11:31.540 --> 00:11:33.480
+Query statement, SQL statements against it.
+
+00:11:33.480 --> 00:11:37.900
+You go and look at the docs, which I did.
+
+00:11:37.900 --> 00:11:38.380
+Here we go.
+
+00:11:38.380 --> 00:11:41.300
+Which are a bit of a work in progress here.
+
+00:11:41.300 --> 00:11:46.620
+However, if you go and check out the docs, it shows you, for example, under connecting that
+
+00:11:46.620 --> 00:11:51.940
+you can connect to just a path, but you could also connect to an S3 bucket.
+
+00:11:52.940 --> 00:12:01.760
+You can connect to some kind of Azure data lake container or Google cloud storage, or as
+
+00:12:01.760 --> 00:12:02.780
+you saw, a big query.
+
+00:12:02.780 --> 00:12:04.960
+So this is pretty interesting, right?
+
+00:12:04.960 --> 00:12:09.500
+Just change your connection string and you get these different data tables.
+
+00:12:09.500 --> 00:12:10.680
+Neat.
+
+00:12:10.680 --> 00:12:11.340
+Data lakes, rather.
+
+00:12:11.340 --> 00:12:11.640
+Yeah.
+
+00:12:11.640 --> 00:12:14.540
+So that's what I have for people.
+
+00:12:14.540 --> 00:12:19.060
+If they're doing this kind of stuff, you know, this is something, kind of a wrapper around
+
+00:12:19.060 --> 00:12:19.540
+those things.
+
+00:12:19.540 --> 00:12:23.500
+Also not super popular, but I don't know.
+
+00:12:23.500 --> 00:12:27.820
+This week, I kind of felt like shining a light on things that were new and could maybe catch
+
+00:12:27.820 --> 00:12:28.380
+on with folks.
+
+00:12:28.380 --> 00:12:29.260
+Yeah.
+
+00:12:29.260 --> 00:12:31.960
+It looks fun.
+
+00:12:31.960 --> 00:12:32.820
+Yes.
+
+00:12:32.820 --> 00:12:38.880
+Also fun videos, I think.
+
+00:12:38.880 --> 00:12:47.900
+So I wanted to highlight a blog post on the PyCon blog at blogspot, which still just cracks
+
+00:12:47.900 --> 00:12:48.280
+me up.
+
+00:12:48.280 --> 00:12:56.600
+But anyway, it's PyCon US 2024 recap and recording release, which I was confused by.
+
+00:12:56.600 --> 00:13:00.360
+I would have thought I recording the release was something you had to sign to make sure that
+
+00:13:00.360 --> 00:13:02.380
+your video was releasable.
+
+00:13:02.380 --> 00:13:07.500
+No, we just wanted to say that the videos from PyCon are out.
+
+00:13:07.500 --> 00:13:09.940
+And I'll take a look at those in a second.
+
+00:13:09.940 --> 00:13:17.940
+One of the highlights that they noticed was that there were a lot of people showing up.
+
+00:13:17.940 --> 00:13:21.700
+There was a total attendance of 2,991.
+
+00:13:21.700 --> 00:13:27.600
+That's 2,551 in person and 440 online.
+
+00:13:27.600 --> 00:13:29.380
+So that's pretty cool.
+
+00:13:29.580 --> 00:13:35.440
+I was just curious, I went and looked, Michael reminded me that if you go to look at PyCon
+
+00:13:35.440 --> 00:13:42.140
+on Wikipedia, it has a list of years of attendees.
+
+00:13:42.140 --> 00:13:45.940
+2003, there were 200 people in Washington, D.C.
+
+00:13:45.940 --> 00:13:47.560
+That's awesome.
+
+00:13:47.560 --> 00:13:50.460
+I think it was like in a hotel or something.
+
+00:13:51.420 --> 00:13:57.320
+And then I started going in Portland and we were at over 3,000 in Portland.
+
+00:13:57.320 --> 00:14:01.420
+And then Cleveland was over 3,000 as well.
+
+00:14:01.420 --> 00:14:04.720
+And then the pandemic hit and it went down quite a ways.
+
+00:14:04.720 --> 00:14:09.000
+But we're back to better numbers.
+
+00:14:09.000 --> 00:14:10.280
+2022 was 1,700.
+
+00:14:11.280 --> 00:14:16.520
+2023 now is over, was 2,100.
+
+00:14:16.520 --> 00:14:19.480
+And now we're up to 2,500-ish in person.
+
+00:14:19.480 --> 00:14:20.740
+It's going better.
+
+00:14:20.740 --> 00:14:23.300
+I think I'm not.
+
+00:14:25.920 --> 00:14:30.420
+I'd be totally up for going possibly next year, but I'm totally going to hit Long Beach in
+
+00:14:30.420 --> 00:14:31.120
+2026.
+
+00:14:31.120 --> 00:14:31.980
+That sounds great.
+
+00:14:31.980 --> 00:14:35.140
+I'm definitely going to Long Beach.
+
+00:14:35.140 --> 00:14:35.680
+Yeah.
+
+00:14:35.680 --> 00:14:37.480
+Bring on some SoCal.
+
+00:14:37.480 --> 00:14:38.060
+Let's do it.
+
+00:14:38.060 --> 00:14:38.700
+Okay.
+
+00:14:38.700 --> 00:14:43.040
+So they also announced in this announcement that there was a, where is it?
+
+00:14:43.040 --> 00:14:43.860
+Somewhere in there.
+
+00:14:43.860 --> 00:14:46.440
+It has a link to the YouTube thing.
+
+00:14:46.440 --> 00:14:47.700
+So you can find the link there.
+
+00:14:47.700 --> 00:14:49.060
+But you can also see it in our show notes.
+
+00:14:49.060 --> 00:14:53.800
+So if you go to PyConUS at YouTube, all the videos are now up.
+
+00:14:53.800 --> 00:14:58.140
+And my favorite way to get them is to just hop over to the playlists.
+
+00:14:58.140 --> 00:15:01.520
+You can go to the, there's a 2024 thing.
+
+00:15:01.520 --> 00:15:04.340
+But underneath it, you can see the full playlist.
+
+00:15:04.340 --> 00:15:11.440
+And I like that one because I can see all of the names of the videos.
+
+00:15:11.440 --> 00:15:14.120
+You don't just hit play on the playlist and just binge?
+
+00:15:14.120 --> 00:15:14.920
+No.
+
+00:15:14.920 --> 00:15:16.480
+No way.
+
+00:15:17.480 --> 00:15:22.620
+But so if you, if you just hit the playlist though, if you start it, you can pause it.
+
+00:15:22.620 --> 00:15:28.580
+But then all the little, all the, the playlist is over on the side, but you can't see the titles.
+
+00:15:28.580 --> 00:15:29.340
+Yeah.
+
+00:15:29.340 --> 00:15:29.620
+Yeah.
+
+00:15:29.620 --> 00:15:29.800
+Yeah.
+
+00:15:29.800 --> 00:15:33.200
+So I agree with you the same way as I do the same way.
+
+00:15:33.200 --> 00:15:38.500
+Anyway, I've already got queued up and you can search, you can search easier with this,
+
+00:15:38.500 --> 00:15:40.060
+this way as well.
+
+00:15:40.060 --> 00:15:41.120
+I'll go away.
+
+00:15:41.120 --> 00:15:46.560
+And so I already queued up a search for test stuff, of course.
+
+00:15:46.780 --> 00:15:50.760
+And I've got queued up pipe, pipe test for unit testers by Paul Gansel.
+
+00:15:50.760 --> 00:15:52.520
+And then this one looks pretty good.
+
+00:15:52.520 --> 00:15:55.860
+Testing data pipelines with the emotish Swain.
+
+00:15:55.860 --> 00:15:57.420
+Yeah, it does look cool.
+
+00:15:57.980 --> 00:16:00.240
+Anyway, lots of stuff to check out.
+
+00:16:00.240 --> 00:16:02.800
+Awesome.
+
+00:16:02.800 --> 00:16:03.400
+Awesome.
+
+00:16:03.400 --> 00:16:04.720
+I think that's all we got for that.
+
+00:16:04.720 --> 00:16:06.160
+That's all we got.
+
+00:16:06.160 --> 00:16:07.920
+Those are all of our main items.
+
+00:16:10.320 --> 00:16:10.720
+Yeah.
+
+00:16:10.720 --> 00:16:12.420
+Got any extras?
+
+00:16:12.420 --> 00:16:14.080
+I do.
+
+00:16:14.080 --> 00:16:17.620
+I have, I have multiple.
+
+00:16:22.700 --> 00:16:25.180
+I have a couple of things I want to talk about actually.
+
+00:16:25.180 --> 00:16:27.500
+One, I just impromptu added here.
+
+00:16:27.500 --> 00:16:35.300
+So I've been, one of the things, one of the things I've been working on, Brian, is trying
+
+00:16:35.300 --> 00:16:43.940
+to do like a little bit less being not distracted by my phone, but just pulled in by my phone
+
+00:16:43.940 --> 00:16:46.780
+and other digital things.
+
+00:16:46.780 --> 00:16:47.080
+Right?
+
+00:16:47.080 --> 00:16:53.320
+You go, you're like, oh, I got a notification for a text from someone or my music stopped.
+
+00:16:53.380 --> 00:16:54.340
+Why the heck did it stop?
+
+00:16:54.340 --> 00:16:56.060
+Crappy AirPods.
+
+00:16:56.060 --> 00:16:58.440
+I got to go back and like, find it and make it go again.
+
+00:16:58.440 --> 00:17:00.240
+Because I paused it for three minutes.
+
+00:17:00.240 --> 00:17:01.400
+So it must have killed the app.
+
+00:17:01.400 --> 00:17:02.340
+Like that makes sense.
+
+00:17:02.340 --> 00:17:03.260
+You know what?
+
+00:17:03.260 --> 00:17:04.380
+Super computer in your pocket.
+
+00:17:04.380 --> 00:17:09.180
+So you go and open it up and you're like, oh, wait, that has a little dot or that has a
+
+00:17:09.180 --> 00:17:11.160
+little like badge of three unwrap.
+
+00:17:11.160 --> 00:17:11.660
+What is that?
+
+00:17:11.660 --> 00:17:13.580
+And then you start scrolling and then you're over there.
+
+00:17:13.580 --> 00:17:23.060
+And then, you know, it just, there's just this like pressure or this sort of gravity
+
+00:17:23.060 --> 00:17:24.920
+of, of that thing being around.
+
+00:17:24.920 --> 00:17:28.460
+So I am taking an attempt and I would love to hear your thoughts on this.
+
+00:17:28.460 --> 00:17:35.620
+I'm making an attempt to make my home screen feel less, more, less like a black hole
+
+00:17:35.620 --> 00:17:38.340
+that sucks me in and more like a, I've come here for a purpose.
+
+00:17:38.340 --> 00:17:40.740
+Let me do the thing and then go on.
+
+00:17:40.740 --> 00:17:49.120
+I would, I looked at maybe getting an Android phone, like a really option to have like a real
+
+00:17:49.120 --> 00:17:52.700
+dumb interface, like the nothing phone would be really cool or something like that.
+
+00:17:52.740 --> 00:17:57.980
+But with my Apple watch and all my other things, basically I have to just throw that thing in
+
+00:17:57.980 --> 00:17:58.440
+the trash.
+
+00:17:58.440 --> 00:18:02.600
+If I switched Android, which is really unfortunate, but I'm like, all right, well, I'm sticking
+
+00:18:02.600 --> 00:18:03.020
+with my iPhone.
+
+00:18:03.020 --> 00:18:06.120
+So I'm, I started using this thing called dumb phone.
+
+00:18:06.120 --> 00:18:06.800
+Have you heard of this?
+
+00:18:06.800 --> 00:18:07.520
+No.
+
+00:18:07.520 --> 00:18:16.340
+So what it does is it uses some weird tricks to take over your home screen on iPhone.
+
+00:18:16.340 --> 00:18:21.120
+And it just has a really, really simple display.
+
+00:18:21.120 --> 00:18:24.480
+Like the phone, instead of being an icon, it's just the word phone.
+
+00:18:24.480 --> 00:18:28.400
+Your messages, instead of being the green thing with the, like the three in red is just the
+
+00:18:28.400 --> 00:18:29.180
+word messages.
+
+00:18:30.180 --> 00:18:30.940
+And so on.
+
+00:18:30.940 --> 00:18:31.860
+Okay.
+
+00:18:31.860 --> 00:18:36.140
+And so for example, here's a, I'll link to it.
+
+00:18:36.140 --> 00:18:39.820
+A screenshot of my iPhone 13 mini.
+
+00:18:40.560 --> 00:18:44.960
+It just says web bone messages, maps, weather, and photos on a gray white text on a gray
+
+00:18:44.960 --> 00:18:45.340
+background.
+
+00:18:45.340 --> 00:18:46.940
+And you can swipe it over.
+
+00:18:46.940 --> 00:18:51.100
+Like the next one I think is videos, podcast news, something like that.
+
+00:18:51.100 --> 00:18:54.560
+You know, and the ones like productivity, like mail on calendar.
+
+00:18:55.720 --> 00:18:56.080
+Okay.
+
+00:18:56.080 --> 00:18:59.260
+If you still want, you still wrote where you're at Mac, you can, you can pull down, you can
+
+00:18:59.260 --> 00:19:03.040
+search, or you can even keep swiping until you get past this.
+
+00:19:03.040 --> 00:19:08.880
+Anyway, this, I'm trying this and people, if they want to try to go down this path so far,
+
+00:19:08.880 --> 00:19:09.540
+I'm liking it.
+
+00:19:09.540 --> 00:19:11.820
+I've been messing with my phone.
+
+00:19:11.820 --> 00:19:12.960
+It's been effective.
+
+00:19:12.960 --> 00:19:15.400
+I've been like stuck in my phone less.
+
+00:19:15.400 --> 00:19:18.200
+I'm not a person like, oh, I can't have my phone with me.
+
+00:19:18.200 --> 00:19:19.260
+I have it with me all the time.
+
+00:19:19.260 --> 00:19:24.520
+But when I go and like check my messages, I don't end up somewhere else as often.
+
+00:19:24.520 --> 00:19:31.240
+Let's say, so I did, I just like took, I've just got a handful of things like those
+
+00:19:31.240 --> 00:19:36.980
+sorts of things, on my home screen, but I just have a few on my, on the first screen
+
+00:19:36.980 --> 00:19:38.700
+and everything else is on some other page.
+
+00:19:38.700 --> 00:19:43.200
+Um, yeah, that makes sense so that I can just see my, and then I have a background picture
+
+00:19:43.200 --> 00:19:44.760
+of my lovely wife there so I can see.
+
+00:19:44.760 --> 00:19:45.800
+Oh, yeah.
+
+00:19:45.800 --> 00:19:47.280
+I didn't have to give it my background.
+
+00:19:47.280 --> 00:19:49.580
+I guess I could put a background, but it wouldn't look right.
+
+00:19:49.580 --> 00:19:50.640
+Cause the way this thing works.
+
+00:19:50.640 --> 00:19:53.340
+So also I took off all of the badges.
+
+00:19:53.640 --> 00:19:59.280
+Um, the, the, the, the only thing that I, the only thing that gets a little number that
+
+00:19:59.280 --> 00:20:05.600
+I still left was, the phone messages because I, I actually don't check that very much.
+
+00:20:05.600 --> 00:20:07.240
+So I'd like to see if there's a message.
+
+00:20:07.240 --> 00:20:09.340
+Um, not, not actual.
+
+00:20:09.340 --> 00:20:09.900
+Oh yeah.
+
+00:20:09.900 --> 00:20:13.960
+Actual messages and you know, phone, like somebody left a voicemail.
+
+00:20:14.360 --> 00:20:16.780
+Um, like who does that anymore anyway?
+
+00:20:16.780 --> 00:20:19.840
+Uh, but, but at the same time I don't answer my phone.
+
+00:20:20.000 --> 00:20:24.720
+So, if, if I don't recognize it, so the doctor might leave it messengers anyway.
+
+00:20:24.720 --> 00:20:25.400
+Yeah, exactly.
+
+00:20:25.640 --> 00:20:28.380
+But I'll be curious to see how long you can deal with that.
+
+00:20:28.380 --> 00:20:34.080
+Um, you could also just get a cheap phone, but you know, maybe you can, but that's hard to do now.
+
+00:20:34.080 --> 00:20:42.740
+So it's super, well, it's like, okay, well, I also want to have, you know, a nice GPS if I'm somewhere and I want to have car play in my car.
+
+00:20:42.740 --> 00:20:46.640
+Cause I have like a big display that's like a beautiful screen while I'm driving.
+
+00:20:46.640 --> 00:20:53.340
+And yeah, it's like, and occasionally you're stuck somewhere and you want to read something or whatever.
+
+00:20:53.340 --> 00:20:53.680
+Yeah.
+
+00:20:53.680 --> 00:20:53.880
+Yeah.
+
+00:20:53.880 --> 00:20:54.720
+I'm not trying to not use it.
+
+00:20:54.720 --> 00:20:59.300
+I'm just trying to like, when I open and I look at it, I don't want it to be a black hole.
+
+00:20:59.300 --> 00:21:03.820
+And right now, oddly, it's like a very dark gray, not black, but it's a gray hole.
+
+00:21:03.820 --> 00:21:06.180
+It's a gray hole that has no interest to me.
+
+00:21:06.180 --> 00:21:07.380
+Okay.
+
+00:21:07.380 --> 00:21:07.860
+We'll see.
+
+00:21:07.860 --> 00:21:09.020
+I'll report back.
+
+00:21:09.020 --> 00:21:09.760
+I'll report back.
+
+00:21:09.760 --> 00:21:12.480
+Either I give up or I do that.
+
+00:21:12.480 --> 00:21:18.540
+And then one more thing, we're coming up on the last, last time for the code in a castle.
+
+00:21:18.540 --> 00:21:25.520
+So if you want to come to Italy with me and talk about Python and databases and APIs and all sorts of fun stuff,
+
+00:21:25.520 --> 00:21:29.860
+you've got a couple of weeks to sign up.
+
+00:21:29.860 --> 00:21:34.260
+So code in a castle.com and I hope to see you there.
+
+00:21:34.260 --> 00:21:35.680
+Nice.
+
+00:21:35.680 --> 00:21:36.400
+Cool.
+
+00:21:38.600 --> 00:21:44.220
+Um, the extra I've got is I want to say, Hey, I finally got the, the new course done.
+
+00:21:44.220 --> 00:21:46.180
+So hello, pie test is available.
+
+00:21:46.180 --> 00:21:49.000
+It's I gotta figure out how to take this away.
+
+00:21:49.000 --> 00:21:51.800
+It says 16 lessons, but it's not, it's 12 lessons.
+
+00:21:51.800 --> 00:21:58.780
+Uh, some of the, some of the things it's like counting the intro and the, the source code as lessons.
+
+00:21:58.780 --> 00:22:00.600
+Those aren't really lessons, but anyway.
+
+00:22:00.600 --> 00:22:09.280
+Um, so, 16 lessons under 90 minutes, I think, slightly under 90 minutes, including the intro and outro.
+
+00:22:09.420 --> 00:22:13.560
+So there are only a few minutes of video there, but, but, check it out.
+
+00:22:13.560 --> 00:22:23.280
+Uh, you can, you can have full, full, the full content table of contents is there at, courses.pythontest.com.
+
+00:22:23.280 --> 00:22:25.480
+And yeah, loved it.
+
+00:22:25.480 --> 00:22:27.200
+Loved to hear what people think.
+
+00:22:27.200 --> 00:22:30.240
+And I'm going to just stick it with 10 bucks for a while.
+
+00:22:30.240 --> 00:22:34.160
+Uh, had a lot of great feedback that said that's about, that's a cool price point.
+
+00:22:34.160 --> 00:22:36.300
+So we'll leave it.
+
+00:22:36.300 --> 00:22:36.600
+Yeah.
+
+00:22:36.600 --> 00:22:37.640
+Awesome.
+
+00:22:37.640 --> 00:22:39.260
+And congratulations.
+
+00:22:39.260 --> 00:22:40.220
+That's a big deal.
+
+00:22:40.220 --> 00:22:41.260
+Thanks.
+
+00:22:41.260 --> 00:22:47.360
+And I'm kind of, if we're, we talked about this a little bit, I used a Camtasia to record
+
+00:22:47.360 --> 00:22:47.700
+this.
+
+00:22:47.700 --> 00:22:55.780
+Um, and I'm gonna, I think I'm going to try to try working with, OBS studio a little
+
+00:22:55.780 --> 00:22:55.980
+bit.
+
+00:22:55.980 --> 00:22:56.780
+You definitely should.
+
+00:22:56.780 --> 00:23:02.680
+Um, there's, there's some stuff I love about Camtasia though, that, OBS doesn't
+
+00:23:02.680 --> 00:23:03.540
+seem like it does.
+
+00:23:03.540 --> 00:23:08.400
+Um, but let's, let's talk after, let's talk after there's some really neat stuff.
+
+00:23:08.400 --> 00:23:10.440
+I know you have a little mini stream deck as well.
+
+00:23:10.440 --> 00:23:14.340
+And that's really awesome for like swapping up the views while you're doing recording and
+
+00:23:14.340 --> 00:23:14.860
+stuff.
+
+00:23:14.860 --> 00:23:15.140
+So.
+
+00:23:15.140 --> 00:23:15.780
+Yeah.
+
+00:23:15.780 --> 00:23:15.840
+Yeah.
+
+00:23:15.840 --> 00:23:16.240
+Cool.
+
+00:23:16.240 --> 00:23:16.340
+Yeah.
+
+00:23:16.340 --> 00:23:17.080
+Cool.
+
+00:23:17.080 --> 00:23:19.380
+Well, do you have anything funny for us?
+
+00:23:20.180 --> 00:23:21.480
+I will let you be the judge.
+
+00:23:21.480 --> 00:23:23.600
+I have philosophy for us.
+
+00:23:23.600 --> 00:23:24.380
+Okay.
+
+00:23:24.380 --> 00:23:29.800
+So previously we've talked about the tower programming and I want to come back to the tower programming.
+
+00:23:29.800 --> 00:23:39.280
+And this is like a parody, ancient philosophy, sort of Eastern philosophy sort of thing here.
+
+00:23:39.280 --> 00:23:43.740
+So this one is a 4.3 from the tower.
+
+00:23:43.740 --> 00:23:44.080
+Okay.
+
+00:23:44.080 --> 00:23:44.820
+Okay.
+
+00:23:45.740 --> 00:23:48.700
+Master was explaining the nature of Tau to one of his novices.
+
+00:23:48.700 --> 00:23:53.620
+The Tau is embodied in all software, regardless of how insignificant, said the master.
+
+00:23:53.620 --> 00:23:57.060
+Is the Tau in a handheld calculator?
+
+00:23:57.060 --> 00:23:57.900
+Asked the novice.
+
+00:23:57.900 --> 00:24:00.320
+It is, came the reply.
+
+00:24:00.320 --> 00:24:02.300
+Is the Tau in a video game?
+
+00:24:02.300 --> 00:24:03.320
+Continued the novice.
+
+00:24:03.320 --> 00:24:06.000
+It is even in a video game, said the master.
+
+00:24:06.000 --> 00:24:09.260
+And is the Tau in the DOS or a personal computer?
+
+00:24:09.880 --> 00:24:11.960
+The master coughed and shifted positions lightly.
+
+00:24:11.960 --> 00:24:13.560
+The lesson is over for today, he said.
+
+00:24:13.560 --> 00:24:16.840
+Yeah.
+
+00:24:16.840 --> 00:24:19.580
+Pretty good.
+
+00:24:19.580 --> 00:24:20.280
+Yeah.
+
+00:24:20.280 --> 00:24:20.840
+Yeah.
+
+00:24:20.840 --> 00:24:21.520
+That's good.
+
+00:24:21.520 --> 00:24:29.280
+And you can be okay with, like joking about DOS because it doesn't even exist anymore.
+
+00:24:29.280 --> 00:24:29.800
+Exactly.
+
+00:24:29.800 --> 00:24:30.760
+Exactly.
+
+00:24:30.760 --> 00:24:32.400
+It's not going to hurt anybody.
+
+00:24:32.400 --> 00:24:36.820
+Except for those three people who are still on their 386 and won't give it up.
+
+00:24:39.020 --> 00:24:40.720
+Word perfect is perfect for me.
+
+00:24:40.720 --> 00:24:41.400
+I love it.
+
+00:24:41.400 --> 00:24:42.420
+Come on.
+
+00:24:42.420 --> 00:24:44.700
+I remember getting my 386.
+
+00:24:44.700 --> 00:24:48.940
+I'm like, gosh, I don't think I can, I don't think I'll need another computer for a really long time.
+
+00:24:48.940 --> 00:24:49.300
+I know.
+
+00:24:49.300 --> 00:24:50.620
+I got a 486.
+
+00:24:50.620 --> 00:24:54.120
+DX33, not the SX25 megahertz.
+
+00:24:54.120 --> 00:24:55.600
+The DX33.
+
+00:24:55.600 --> 00:24:57.660
+And it had a turbo button and it was amazing.
+
+00:24:57.660 --> 00:24:58.880
+A turbo button.
+
+00:24:58.880 --> 00:25:00.400
+Like, why would you turn it off?
+
+00:25:00.400 --> 00:25:06.360
+Because if you wanted to play the games written for the 286, they went really fast and you couldn't play them at all.
+
+00:25:06.360 --> 00:25:06.840
+It was out of control.
+
+00:25:06.840 --> 00:25:12.360
+So if you hit, if you disable turbo, it was more of a slow it down button, but they didn't want to call it that.
+
+00:25:12.360 --> 00:25:18.420
+So you could play the ones that just use the frame rate instead of real time per frame.
+
+00:25:18.420 --> 00:25:21.000
+Like MechWarrior and stuff, I think was out of control.
+
+00:25:21.000 --> 00:25:25.100
+It was like those old record players that you had, that speed controls on them.
+
+00:25:25.100 --> 00:25:26.020
+Yes, exactly.
+
+00:25:26.020 --> 00:25:27.700
+For the small ones or the big ones.
+
+00:25:27.700 --> 00:25:27.880
+Yeah.
+
+00:25:27.880 --> 00:25:29.720
+45s and whatever.
+
+00:25:31.960 --> 00:25:32.280
+Funny.
+
+00:25:32.280 --> 00:25:33.220
+Nice.
+
+00:25:33.220 --> 00:25:33.940
+Okay.
+
+00:25:33.940 --> 00:25:39.680
+Well, thanks again for our wonderful Python bytes and, we'll see everybody next week.
+
+00:25:39.680 --> 00:25:40.520
+Yeah.
+
+00:25:40.520 --> 00:25:41.340
+See you later.
+
+00:25:41.340 --> 00:25:41.820
+Thanks everyone.
+
+00:25:41.820 --> 00:25:41.820
+Bye.
+
+00:25:41.820 --> 00:25:41.820
+Bye.
+
+00:25:41.820 --> 00:25:41.920
+Bye.
+
+00:25:41.920 --> 00:25:44.660
+Thank you.
+
