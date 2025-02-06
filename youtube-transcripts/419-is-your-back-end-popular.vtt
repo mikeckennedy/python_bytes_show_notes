@@ -1,0 +1,908 @@
+WEBVTT
+
+00:00:00.001 --> 00:00:06.480
+hey michael hello hello uh it's great to be here again
+
+00:00:06.480 --> 00:00:15.600
+and i'm always good ready to kick it off let's kick it hello and welcome to python
+
+00:00:15.600 --> 00:00:21.080
+bytes where we deliver python news and headlines directly to your earbuds this is episode 419
+
+00:00:21.080 --> 00:00:29.120
+recorded february 4th 2025 and i am brian auken and i'm michael kennedy and this episode is
+
+00:00:29.120 --> 00:00:37.520
+sponsored by us check out our courses um at either python test.com or talk python.com no wait
+
+00:00:37.520 --> 00:00:43.680
+that's right isn't it talk python.com will work yeah that's right um also thank you to our patreon
+
+00:00:43.680 --> 00:00:48.480
+supporters we don't thank them very much but uh they do help um help with the show so thanks
+
+00:00:48.480 --> 00:00:56.240
+if you'd like to connect with the show please uh hop on blue sky or mastodon and uh the links to both
+
+00:00:56.240 --> 00:01:02.880
+michael and myself and the show are in the show notes um and if you'd like to join us live it's
+
+00:01:02.880 --> 00:01:09.600
+tuesday today but normally it's monday normally monday at 10 at pacific time um go to pythonbytes.fm
+
+00:01:09.600 --> 00:01:17.120
+slash live and finally we are getting some great feedback about our um updated beefier show notes
+
+00:01:17.120 --> 00:01:25.280
+with uh deep dives so we um in the email list so if you'd like to get um a uh some background around
+
+00:01:25.280 --> 00:01:31.600
+um all the topics we cover and a little more info than what we um have in the show notes uh join the
+
+00:01:31.600 --> 00:01:40.080
+newsletter just go to pythonbytes.fm and it's really easy to figure out so definitely is how about
+
+00:01:40.080 --> 00:01:47.120
+check it out um and there's a lot of great content there uh and uh you're gonna it's it's a email
+
+00:01:47.120 --> 00:01:54.560
+type content that i was trying to go into the first topic there we'll get there we'll get there so yeah
+
+00:01:54.560 --> 00:02:00.800
+if you're gonna attach something maybe we'd have a mime type like a graphic or zip file or something
+
+00:02:00.800 --> 00:02:07.360
+so last week this is like groundhog day mime types mime type.io remember i talked about that
+
+00:02:07.360 --> 00:02:16.240
+well i got some nice feedback from folks including rave guns who said hey you mentioned mime type.io that
+
+00:02:16.240 --> 00:02:22.000
+reminds me of something that happened just last week i need to map file names to this and i thought surely
+
+00:02:22.000 --> 00:02:28.800
+someone's already done this and it turns out that the standard library already has a built-in
+
+00:02:29.680 --> 00:02:34.640
+mime types and you can ask it hey what is given this file name what do you think its extension is
+
+00:02:34.640 --> 00:02:45.280
+okay so even better right yeah well well well no not so fast this sent me down such a rabbit hole okay
+
+00:02:45.280 --> 00:02:54.640
+so there are weird things that this mime types library does like there's not that many and especially for the common ones
+
+00:02:55.680 --> 00:03:03.520
+they it's a list of like 100 or something you know but if you look at the implementation in c python for
+
+00:03:03.520 --> 00:03:11.440
+mime types what it does is it looks at a set of files that come with each different operating system
+
+00:03:11.440 --> 00:03:20.000
+raspberry pi ubuntu mac os windows 7 whatever it it doesn't have a single built-in
+
+00:03:21.200 --> 00:03:25.440
+mime type like it won't tell you what they are it doesn't know what text.txt is it doesn't know what
+
+00:03:25.440 --> 00:03:32.800
+html is it just looks at these files which is really weird to me because that means you get different
+
+00:03:32.800 --> 00:03:39.680
+answers for mime types based on your operating system like docker might if you run Linux in a docker
+
+00:03:39.680 --> 00:03:47.200
+container it might give you different output than say desktop Linux and stuff real just thinking you know for
+
+00:03:47.200 --> 00:03:51.360
+like 30 seconds around this it seems like maybe you should build in all the known ones
+
+00:03:51.360 --> 00:03:58.240
+and then if it overrides it like something special about the machine configuration says this mime type is something different maybe
+
+00:03:58.240 --> 00:04:03.200
+consider overriding it with a local file definition but just omitting them all very weird
+
+00:04:03.200 --> 00:04:10.960
+plus it'll tell you things that are wrong like that xml should be text xml not application xml
+
+00:04:12.400 --> 00:04:18.320
+okay so that sent me looking i'm like well that's not great surely there's some on then on pypi so i
+
+00:04:18.320 --> 00:04:24.240
+looked at for like python magic and python magic is awesome what it does is you give it a file it's
+
+00:04:24.240 --> 00:04:28.320
+based on lib magic or some kind of c library or something so you got to install that with brew which
+
+00:04:28.320 --> 00:04:35.280
+is kind of weird but okay fine so you got that and then what it does is you say hey given this
+
+00:04:35.280 --> 00:04:45.040
+uh this file like this pdf tell me what kind it is and it says hey this is application.pdf but the way it
+
+00:04:45.040 --> 00:04:54.560
+knows this is it goes and it actually reads the the file right it doesn't just look at the extension it
+
+00:04:54.560 --> 00:05:01.280
+goes ah you said it's a .jpeg but when i looked at it i inspected the binary header for the image and it looks like it's a
+
+00:05:01.280 --> 00:05:07.680
+a png so we're going to tell you it's png super helpful when you're talking about the file system
+
+00:05:07.680 --> 00:05:13.760
+super duper unhelpful when you're building web applications you know like when you need to
+
+00:05:13.760 --> 00:05:20.400
+specify the mime type because what if your image lives in s3 storage how are you going to ask what
+
+00:05:20.400 --> 00:05:25.120
+i should return if i want to link just redirect someone to it we've got to download it from s3 feed it to
+
+00:05:25.120 --> 00:05:29.600
+the thing yeah throw away the temporary file and send it back and all these other ones they all
+
+00:05:29.600 --> 00:05:34.000
+look at the files like if you don't look at the file how are you going to know it's like okay if you
+
+00:05:34.000 --> 00:05:40.080
+want to be super thorough yes but what if the files in a database the files in like remote storage like
+
+00:05:40.080 --> 00:05:47.600
+you don't want to go get the file you want your best guess right so brian this has led me to create
+
+00:05:47.600 --> 00:05:54.160
+github.com/mixykennedy/content-types available on pypi as content types
+
+00:05:54.160 --> 00:06:03.040
+so it does exactly what you would think it tells you given an extension what is the mime types
+
+00:06:03.040 --> 00:06:09.840
+it even includes a cli so you can say like after uv tool install it you can just say type content
+
+00:06:09.840 --> 00:06:16.320
+types anywhere in your terminal give it any form of file name and it will tell you what comes out
+
+00:06:16.320 --> 00:06:23.040
+that's kind of handy so if you're curious it has way more content types than the mime types and they're
+
+00:06:23.040 --> 00:06:29.120
+correct so that's always good we'll talk about that in a second uh but you say content types get
+
+00:06:29.120 --> 00:06:34.240
+content type you give it some kind of file name as long as it has an extension it doesn't matter if it's
+
+00:06:34.240 --> 00:06:39.920
+a https to some file or it's just a file path on your hard drive if it has an extension
+
+00:06:39.920 --> 00:06:47.600
+we'll be able to tell you what its mime type is so is this just a like a big lookup of extension to
+
+00:06:48.160 --> 00:06:54.640
+type pretty much yeah it's like a massive massive lookup of those things but the thing is gathering
+
+00:06:54.640 --> 00:06:58.400
+them all up right so for example if you look at the built-in mine types like well why don't you just
+
+00:06:58.400 --> 00:07:04.480
+have mime types and use that one it varies but two it's wrong about things like if you ask mdn
+
+00:07:04.480 --> 00:07:13.120
+mozilla developer networks what dot xml should be it says it's application dot xml it used to be this older
+
+00:07:13.120 --> 00:07:20.560
+text xml it's not anymore but the built-in um python one says it's the old style it's also missing things
+
+00:07:20.560 --> 00:07:31.680
+like tgz and gz zip and flack and epub and all these types you would expect so anyway i didn't spend that
+
+00:07:31.680 --> 00:07:35.920
+long i spent a few hours building this thing but i'm like there i fixed it it doesn't depend on the
+
+00:07:35.920 --> 00:07:41.440
+operating system it doesn't have to read the file you don't have to download it from s3 storage to
+
+00:07:41.440 --> 00:07:48.960
+tell you what it is it just it just given a file name it'll tell you what the content type is or mime
+
+00:07:48.960 --> 00:07:52.880
+type somebody asked why don't you name it mime types i'm like i don't know really how to import
+
+00:07:52.880 --> 00:07:58.720
+something that overrides a built-in as a third-party package and make that useful experience you know what
+
+00:07:58.720 --> 00:08:04.240
+i mean so yeah anyway that's what it's called so hopefully this helps people it's built in python it has
+
+00:08:04.240 --> 00:08:13.120
+something like 180 different types and it has 31 types that are not known to um the built-in library
+
+00:08:13.120 --> 00:08:24.080
+and common stuff like i said like um fonts or m4a's audio files or web a's for other audio files or w
+
+00:08:24.080 --> 00:08:32.080
+a lot of stuff right rars ttf seems like you should know what that is anyway i present to the world this
+
+00:08:32.080 --> 00:08:40.000
+project i worked on over the weekend nice i like it yeah thanks always threw me the m4a's were audio mp4s
+
+00:08:40.000 --> 00:08:50.960
+yeah i know it's m4a it's not anyway um but since i you i work with audio uh as well so hey um uh
+
+00:08:51.840 --> 00:09:01.440
+good job i think and uh let's talk about jango a little bit so um white tail like tail 6.4 is here
+
+00:09:01.440 --> 00:09:07.520
+uh in there's an announcement enjoy a smoother content experience with white tail 6.4 i don't
+
+00:09:07.520 --> 00:09:15.040
+actually use white tail 6.4 but all right or white tail but um but uh but i play one on tv no um but
+
+00:09:15.040 --> 00:09:21.680
+there's it's i'm glad white tails here uh it's a it's a really cool platform uh content management
+
+00:09:21.680 --> 00:09:27.680
+system built on top of django why am i bringing this up um it's it's great that they've got a release and
+
+00:09:27.680 --> 00:09:34.560
+there's some cool stuff but the thing that i really am excited about is if we go down it says it's this
+
+00:09:34.560 --> 00:09:40.720
+version uh incorporates django tasks library and that's the cool that's a cool bit according to me
+
+00:09:40.720 --> 00:09:47.040
+um so the django task library and there's a release notes too that we'll link to it also is pretty
+
+00:09:47.040 --> 00:09:54.000
+excited about the django tests so what are django tasks um let's see oh yeah oh by the way some of the
+
+00:09:54.000 --> 00:10:00.160
+cool things about um about white tail it's used by nasa and google and nhs and some of those are still
+
+00:10:00.160 --> 00:10:10.880
+operating uh so um django tasks is a is a it if we look at it it says it's a backport but it's
+
+00:10:10.880 --> 00:10:17.200
+it's really the it's really the implementation that you can play with right now of a thing uh defined
+
+00:10:17.200 --> 00:10:25.680
+in dep 14 and uh that's a django enhancement proposal for background workers and this is accepted
+
+00:10:26.720 --> 00:10:34.480
+and one of the things whether you love or hate it uh django enhancement proposals don't happen quickly
+
+00:10:34.480 --> 00:10:40.240
+partly it's because we really they they do lts support and they really don't want to break things
+
+00:10:40.240 --> 00:10:48.080
+in the end and they just don't happen fast but that's okay um we love you django uh but the so django
+
+00:10:48.080 --> 00:10:56.560
+tasks is background workers um around um yeah but just background workers so like you're not in the normal
+
+00:10:56.560 --> 00:11:05.360
+loop um there's a cool i was following this rabbit hole and there's this cool um on the
+
+00:11:05.360 --> 00:11:14.880
+django tasks uh forum bringing background workers into django core um there's a talk um that was given
+
+00:11:14.880 --> 00:11:23.920
+at django con europe 2024 and this is a great talk listen to this talking about how uh really the the normal
+
+00:11:24.560 --> 00:11:30.080
+the cycle of a web page of like you do a request and a response that doesn't work for a lot of stuff
+
+00:11:30.080 --> 00:11:36.240
+and you need background tasks um and other tasks to run at different times or even just later like
+
+00:11:36.240 --> 00:11:43.040
+you know you don't have to wait we'll work on it um uh so that's cool so and so now the the
+
+00:11:43.040 --> 00:11:50.320
+implementation of this is being done um in j the django test application and you can use it and the
+
+00:11:51.200 --> 00:11:56.720
+since um since um since whitetail is using it i think it's pretty stable and i think people should
+
+00:11:56.720 --> 00:12:03.840
+feel free to to to use it and provide feedback if you run into any issues so they're really ramping up
+
+00:12:03.840 --> 00:12:09.680
+trying to get this um get all the kinks out so pretty cool yeah that's really cool i think a lot of
+
+00:12:09.680 --> 00:12:17.280
+times people overthink how much infrastructure you need to say run something in the background like
+
+00:12:17.280 --> 00:12:23.440
+oh this thing takes five seconds and if we do it on the view call then it's going to slow down the
+
+00:12:23.440 --> 00:12:29.280
+website a whole bunch so let's set up celery and redis and a queue and like whoa it was running all on
+
+00:12:29.280 --> 00:12:33.520
+its own until just a second ago and things like this where it's kind of just a background thread like
+
+00:12:33.520 --> 00:12:36.960
+okay well we just kick it to the thread and maybe you want to log it to a database or
+
+00:12:37.680 --> 00:12:40.480
+send an email but you're going to take a second so just let that happen
+
+00:12:40.480 --> 00:12:47.440
+yeah it's great and also uh for people that are thinking about using this django tasks project to
+
+00:12:47.440 --> 00:12:54.320
+to put um put something in place um i think that's where i would lean if uh partly because
+
+00:12:54.320 --> 00:13:01.040
+that's where you know uh django eventually is going but also um you've got whitetail as an open source
+
+00:13:01.040 --> 00:13:05.680
+project you can look to see how they're doing it so you can look to see other projects implemented yeah
+
+00:13:05.680 --> 00:13:11.600
+excellent excellent excellent excellent and by the way brian are you familiar with all the wordpress
+
+00:13:11.600 --> 00:13:17.680
+drama have you been tracking this yeah oh it's so insane people if you haven't been tracking this
+
+00:13:17.680 --> 00:13:25.600
+wordpress has gone off the rails so maybe if you're out looking for i don't know a different cms instead
+
+00:13:25.600 --> 00:13:32.800
+of wordpress wagtail check it out less drama less drama or if you didn't want to do that you could build it
+
+00:13:32.800 --> 00:13:40.960
+yourself right just build it definitely so there's a really nice article from armin roniker and he's
+
+00:13:40.960 --> 00:13:46.640
+doing a lot of great writing lately so i'm really really enjoying it basically this is something of a
+
+00:13:46.640 --> 00:13:55.840
+a rant and a call to arms if you will to depend less depend less saying look there's there's a lot of
+
+00:13:55.840 --> 00:14:01.600
+pressure and encouragement to say if there's anything that you can use as a third party dependency
+
+00:14:01.600 --> 00:14:11.120
+rather than building it into your own code do that that's how you stay agile unless it's not unless it
+
+00:14:11.120 --> 00:14:19.280
+just becomes a drag you know if you have one function that you need and there's some library that has a
+
+00:14:19.280 --> 00:14:24.000
+100 functions and it does a whole bunch of stuff but it has that one thing you need you could depend
+
+00:14:24.000 --> 00:14:30.960
+upon it but then what if you want to go to python 3 14 and it doesn't upgrade in time and you're stuck
+
+00:14:30.960 --> 00:14:37.200
+right and you know one library that's one thing but then you multiply that times 100 and it gets real
+
+00:14:37.200 --> 00:14:44.000
+complicated real quick so he pulls out an example and says look what about terminal size this is mostly
+
+00:14:44.000 --> 00:14:49.920
+speaking in rust terms but it it equally applies to python so that's why i'm covering it says
+
+00:14:49.920 --> 00:15:00.080
+terminal size is a package that you can use and it tells you the size of the terminal like 8 80 by 25 or
+
+00:15:00.080 --> 00:15:09.120
+47 by 100 or whatever the rows columns of the terminal is it tells you that right well that thing has been
+
+00:15:09.120 --> 00:15:16.320
+pretty much unchanged for a long long time but it's had 26 releases because the stuff that it depends upon
+
+00:15:16.320 --> 00:15:22.800
+has been churning and has to be you've got to you know use the newer dependency of this library so that
+
+00:15:22.800 --> 00:15:28.160
+your thing will build on the new version of the runtime right instead of just being basic right
+
+00:15:28.160 --> 00:15:36.160
+why you know if terminal itself terminal size itself hasn't changed why do you have to keep rebuilding it
+
+00:15:36.160 --> 00:15:42.160
+re-releasing it he has a funny term but big supply chain will tell you you must do it this way big
+
+00:15:42.160 --> 00:15:50.560
+supply chain yeah exactly it's like big tobacco big supply chain and as well as open source people
+
+00:15:50.560 --> 00:15:54.640
+right they're like oh you know why are you putting this in here you could just use this library and this
+
+00:15:54.640 --> 00:16:01.920
+this pull requests or similarly for code reviews at enterprise places and there's one quote i want to read
+
+00:16:01.920 --> 00:16:07.680
+to you all about it and then kind of leave it there it says it's time to have a new perspective we should
+
+00:16:07.680 --> 00:16:13.280
+give kudos to engineers who write a small function themselves instead of hooking in a transitive web of
+
+00:16:13.280 --> 00:16:20.000
+packages we should be suspicious of big dependency graphs celebrate celebrated are the minimal
+
+00:16:20.000 --> 00:16:25.120
+dependencies the humble function that just quietly does the job and the code doesn't need to be touched
+
+00:16:25.120 --> 00:16:35.120
+for years because it was done right what do you think brian um all right i i take issue with this okay
+
+00:16:35.120 --> 00:16:43.360
+okay the the i get the i get the idea and i i agree with um for some things like something like terminal
+
+00:16:43.360 --> 00:16:49.600
+size i don't know how to determine a terminal size but i i imagine that i would probably pull in a library
+
+00:16:49.600 --> 00:16:54.160
+or something to do that but i wouldn't expect that it would have to pull in a lot of stuff yeah um
+
+00:16:54.160 --> 00:17:02.240
+uh so if like i really you know there's a lot of like um there's a lot of stuff i depend on because
+
+00:17:02.240 --> 00:17:07.680
+i don't want to figure it out um but i also don't really want those things to be too deep you know for
+
+00:17:07.680 --> 00:17:15.440
+instance um but that's all that and that that's the that's the trade-off you you either either you know
+
+00:17:16.480 --> 00:17:21.440
+so what's the problem so what's the problem writing yourself is because you don't you're not if you're
+
+00:17:21.440 --> 00:17:29.680
+not the expert in this field why would you think you got it right um and i wouldn't necessarily think
+
+00:17:29.680 --> 00:17:35.760
+it was right just because there's a package for it but uh i know i'm not an expert at it so that's why
+
+00:17:35.760 --> 00:17:42.080
+i grabbed a package and also i don't want to think about like security problems and other things in the future
+
+00:17:42.800 --> 00:17:50.400
+if there's a issue with uh with certain packages like like why do people use stuff like redis i'm
+
+00:17:50.400 --> 00:17:56.640
+sure you could just write a caching system on your own um there's reasons why we use these packages but
+
+00:17:56.640 --> 00:18:03.040
+yeah yeah and to be fair armin says look it's not black and white they're important libraries that
+
+00:18:03.040 --> 00:18:08.160
+solve hard problems like web web frameworks and graphics libraries and things like that right
+
+00:18:09.360 --> 00:18:18.400
+but i think it's more like left pad yeah do we really need a library with three dependencies to
+
+00:18:18.400 --> 00:18:23.840
+just pad a string probably not i don't think we do that that much in python though or maybe we do not
+
+00:18:23.840 --> 00:18:30.320
+as much not as much but i'll give you an example like so i started working with postmark i'm trying
+
+00:18:30.320 --> 00:18:38.480
+to move away from send grid it's not going as good as it could i suppose so i'm like oh postmark
+
+00:18:38.480 --> 00:18:44.080
+awesome this is you know similarly priced seems to be pretty reputable they really cracked down on
+
+00:18:44.080 --> 00:18:48.400
+spammers which is the problem with um singred from what i can tell at least my personal experience
+
+00:18:48.400 --> 00:18:53.840
+so it says okay look if you want to use it there's official libraries just go over here and grab one like
+
+00:18:53.840 --> 00:19:00.720
+boom there's a rails gem there's a dot net postmark library there's a java one there's a php one there's
+
+00:19:00.720 --> 00:19:06.080
+a craft what the heck is craft but anyway there's one of them uh there's a node.js one there's a cli one
+
+00:19:06.080 --> 00:19:11.760
+there's one for wordpress there's one for grunt one for zapier the most popular programming language
+
+00:19:11.760 --> 00:19:19.360
+in the world is missing but you know i don't know whatever it is whatever so probably pi pi probably pi pi has
+
+00:19:19.360 --> 00:19:28.400
+one right postmark email sure that's cool uh okay so there's this one called postmark is the top one
+
+00:19:28.400 --> 00:19:39.360
+updated 2017. 2017. it has a single sentence no documentation if i go to it i guess i could
+
+00:19:39.360 --> 00:19:46.160
+download it uh let's see let me try another one so what about this post marker one um what versions of
+
+00:19:46.160 --> 00:19:50.320
+python oh this is actually pretty this works pretty well uh but you start looking through these and a
+
+00:19:50.320 --> 00:20:00.240
+lot of them are like oh man i don't know it's it's okay like here's one something for in django from 2011
+
+00:20:00.240 --> 00:20:08.720
+one from flash from 2020 right but i wanted one for court right async it doesn't really matter it's
+
+00:20:08.720 --> 00:20:15.520
+courted i want one that supports async yeah okay here we go again so i could try to work with one of
+
+00:20:15.520 --> 00:20:23.360
+those libraries and go hey guys can we think about adding an async api to this or you go to chat cpt pro
+
+00:20:23.360 --> 00:20:31.840
+say do you know what the postmark live uh api is yes create me one that does async and await an async
+
+00:20:31.840 --> 00:20:39.680
+io based one that uses http x for its implementation bam you got it it works fine you can stick that in your
+
+00:20:39.680 --> 00:20:45.360
+code off the race as you go right i don't have to worry about whether their library supports python 3
+
+00:20:45.360 --> 00:20:52.480
+14 when it comes out or not and there's no security things because it's just me and postmark having a
+
+00:20:52.480 --> 00:20:57.680
+little chat and things like that so i think and i'm not saying like don't use packages don't contribute
+
+00:20:57.680 --> 00:21:03.840
+packages i mean literally i opened the show with like here's my new package but yeah i i think there
+
+00:21:03.840 --> 00:21:08.800
+are also it's easier than ever these days to go i need one function that does this thing
+
+00:21:10.480 --> 00:21:15.840
+i like call this one api point like give me that function boom here it is so i don't know i think
+
+00:21:15.840 --> 00:21:23.680
+there's there's some balance to be had yeah also um good api docs uh like it might be that postmark
+
+00:21:23.680 --> 00:21:30.000
+just has pretty decent api docs and you could just build it yourself anyway or that i was gonna i was
+
+00:21:30.000 --> 00:21:35.280
+gonna build up myself and then i'm like well let me ask chat yeah sure and see if it gets it close and
+
+00:21:35.280 --> 00:21:42.960
+now i'll tweak it if needed i'm like no it got it exactly right well that's cool it even it even made
+
+00:21:42.960 --> 00:21:51.200
+the client not just use httpx but it even made the async client an async context manager so i can say
+
+00:21:51.200 --> 00:22:02.240
+async with postmark client off it goes i mean it's sweet yeah i what i hope i hope that uh people like
+
+00:22:02.240 --> 00:22:09.280
+postmark and other services that have apis that we're using i hope they keep the documentation
+
+00:22:09.280 --> 00:22:14.800
+good and not think that people are just going to use ai to generate the stuff anyway so you don't need
+
+00:22:14.800 --> 00:22:20.640
+the documentation we still need the documentation because sometimes it's wrong or we have bugs or
+
+00:22:20.640 --> 00:22:26.480
+something has to be debugged so yeah yeah and by the way if there was an official python one that had
+
+00:22:26.480 --> 00:22:31.600
+async support i would have more than gladly used it i didn't want to create my own it just doesn't exist
+
+00:22:31.600 --> 00:22:36.000
+right and so maybe we could turn this around a little bit and say if you're out there listening
+
+00:22:36.000 --> 00:22:41.040
+and you work for a company like postmark that has an api and you're like well it's too much to create
+
+00:22:41.040 --> 00:22:49.280
+an api uh client in python i bet it's not if you asked yeah yeah yeah but then you have people in
+
+00:22:49.280 --> 00:22:54.080
+the house to to review it and say yeah that's probably what we want let's right then open source
+
+00:22:54.080 --> 00:23:00.960
+it and people can like contribute to it and yeah but but that i think the zero to one like oh we're not going to create it for this
+
+00:23:00.960 --> 00:23:05.360
+for this we'll just give people the docs and let them rewrite it like a million times across all the
+
+00:23:05.360 --> 00:23:10.880
+developers i don't think that makes as much sense as it used to because it's not that hard to create
+
+00:23:10.880 --> 00:23:19.280
+one these days yeah yeah agreed cool yeah anyway thanks armin for the cool article i'm i'm extra less
+
+00:23:19.280 --> 00:23:26.000
+i'm without extras but i know you're not um well i want to we have another another uh topic oh yeah
+
+00:23:26.000 --> 00:23:30.000
+that's right we do before we get to your extras how about we do your main topic yeah
+
+00:23:30.000 --> 00:23:36.560
+i forgot it's an odd one let's go well so we were talking about like building packages though i'm just
+
+00:23:36.560 --> 00:23:44.160
+curious um uh what back end build back end you used um do you use setup tools or hatch or actually i use
+
+00:23:44.160 --> 00:23:51.440
+hatchling okay for the build back end i'm on pyproject.tomal and i use uv build uv publish as the workflow
+
+00:23:51.440 --> 00:23:57.440
+okay okay okay cool um i haven't done the uv uh i've done uv build but i haven't done the publish
+
+00:23:57.440 --> 00:24:04.960
+bit before yeah um however so pyproject.tomal we've been following it on um uh the rise of
+
+00:24:04.960 --> 00:24:13.200
+pyproject.tomal on the show um and this uh there's a there's this i'm cracking up the there's a blog uh
+
+00:24:13.200 --> 00:24:21.440
+from bastion vent venter venter sorry bastion um it the title of the blog is still don't have a title
+
+00:24:21.440 --> 00:24:29.440
+which is an awesome title for a blog um just saying uh he did this investigation both last year and this
+
+00:24:29.440 --> 00:24:37.200
+year and uh it's about how with the popularity of build back ends for projects using pyproject.tomal
+
+00:24:37.200 --> 00:24:44.880
+so this is the second second version um kind of a fun just little data set uh there's he actually
+
+00:24:44.880 --> 00:24:51.120
+uses data set nice um but the results are interesting uh i think i'm going to pull up from
+
+00:24:51.120 --> 00:24:59.120
+last year and this year so we get the same graph uh okay so last year we had uh setup tools uh was
+
+00:24:59.120 --> 00:25:09.840
+definitely in the lead uh poetry next hatchling and then uh flit um and then other was about the same
+
+00:25:09.840 --> 00:25:17.920
+as flit maybe a little bit bigger and then this year looking at the graph again uh setup tools poetry but
+
+00:25:17.920 --> 00:25:25.600
+there's uh not as much growth in poetry uh hatchling is growing a lot more now and then i think that's a
+
+00:25:25.600 --> 00:25:31.120
+a good job with that one flits down and um and then the other is actually bigger than flit i don't know
+
+00:25:31.120 --> 00:25:38.480
+what all the others are um but anyway the uh what takeaway there's some and then there's some the plot
+
+00:25:38.480 --> 00:25:45.200
+shows a relative distribute distribution over the quarters and you can really see there that hatchling is
+
+00:25:45.200 --> 00:25:55.280
+really growing and uh and um flits actually on the decline um looks like looks like poetry is kind of
+
+00:25:55.280 --> 00:26:01.920
+on the decline as well a little bit um i think i would see i think there's just a lot more projects
+
+00:26:01.920 --> 00:26:09.440
+now um but but i think hatchling is sort of taking some lead i in this isn't really that
+
+00:26:09.440 --> 00:26:17.840
+surprising to me because i i uh i think that um setup would a big decline in setup tools for a while was
+
+00:26:17.840 --> 00:26:24.720
+because flit and hatchling were working so much better but setup tools had some updates with uh being able to
+
+00:26:24.720 --> 00:26:31.120
+to use it with uh pipe project.toml better and um and those updates i think have improved things
+
+00:26:31.120 --> 00:26:37.760
+so i use both now i'm using hatchling for some projects especially when i want fine control but if
+
+00:26:37.760 --> 00:26:44.080
+it's really just a really simple thing um especially if i'm doing it in a corporate setting i'll probably
+
+00:26:44.080 --> 00:26:50.080
+use setup tools because it's um i don't know it's more it's more mainstream people know about it more i don't have to explain anything
+
+00:26:50.080 --> 00:26:59.040
+so uh just interesting looking at the the trends for for uh backends so yeah that's interesting i wonder
+
+00:26:59.040 --> 00:27:07.920
+what the you know the sort of the default behavior for different projects you know if there's certain
+
+00:27:07.920 --> 00:27:15.200
+projects that will create like popular cookie cutter templates or other things oh yeah that make an outsized
+
+00:27:15.200 --> 00:27:21.280
+impact on this i'm not sure nothing comes to mind but there could be something like oh this thing would
+
+00:27:21.280 --> 00:27:26.640
+be way lower except for it's used this it's used in this project that's used by so many people or something
+
+00:27:26.640 --> 00:27:31.600
+yeah that would be interesting to know um what is when you say like i can't remember
+
+00:27:31.600 --> 00:27:38.080
+oh uv has its own right so if you say um is does uva have its own build back in instead of
+
+00:27:38.080 --> 00:27:43.440
+not that i know of i for the it just will build any pyproject.toml using the specified build back
+
+00:27:43.440 --> 00:27:50.000
+in as far as i know so for mine i put hatchling in my pyproject.toml then i just say uv build and
+
+00:27:50.000 --> 00:27:56.240
+it it does it i think yeah i'm just like you uv has a uv in it so you can initialize that pyproject.toml
+
+00:27:56.240 --> 00:28:03.280
+i was i'm curious what back end it's oh i have no idea i have to have to play with you do your extras and
+
+00:28:03.280 --> 00:28:11.120
+i'll tell you the answer okay um i'll go to the i've got a couple extras um first off i'll jump
+
+00:28:11.120 --> 00:28:18.640
+ahead uh so one of the things that we've got with python bytes and i think uh i think you do this with
+
+00:28:18.640 --> 00:28:26.080
+um talk python to me as well is there's a episodes page that lists all the episodes i mean there's it's
+
+00:28:26.080 --> 00:28:30.800
+one line each so why not just list them all um so if you're curious about an old episode you can take
+
+00:28:30.800 --> 00:28:37.760
+it take a look uh test i wanted this for testing code so testing code used to be uh something like
+
+00:28:37.760 --> 00:28:45.520
+this if you go to all episodes it'll show the the title of the episode and the information um and then
+
+00:28:45.520 --> 00:28:52.320
+you see 30 of them and then if you want to see more you go to the next page but i've got 225 episodes uh
+
+00:28:52.320 --> 00:28:59.840
+still um why um you have to that's a lot of clicking to go through all of them so the the update i've got
+
+00:28:59.840 --> 00:29:07.920
+is that i um i'm i'm handwriting this but it's not that hard um i've got an archive page now that has
+
+00:29:07.920 --> 00:29:15.360
+all episodes so you can see all those of testing code um they're reverse ordered uh i and i i think that's
+
+00:29:15.360 --> 00:29:22.160
+right for season one because there's a lot here um but for season one was long yeah i know nine years
+
+00:29:22.160 --> 00:29:30.400
+uh 223 episodes yeah whatever um time for season two and uh it'll probably be shorter than nine years
+
+00:29:30.400 --> 00:29:37.040
+for season two we'll see probably but i might reverse these and have them one two three instead of three
+
+00:29:37.040 --> 00:29:43.600
+two one or whatever we'll see anyway uh that's my first extra the second extra is something completely
+
+00:29:43.600 --> 00:29:51.440
+different has nothing to do with uh with python i just came across this thing called name grapher and um
+
+00:29:51.440 --> 00:30:00.720
+uh and i think it's it's around about like u.s names and uh because i was curious why we did where there
+
+00:30:00.720 --> 00:30:07.840
+weren't any bryans around anymore but the peak of brian was 1970 um and i looked at michael also um
+
+00:30:07.840 --> 00:30:15.280
+michael's been popular i got a little broader distribution but still extremely 70s kids but it
+
+00:30:15.280 --> 00:30:25.200
+was it was the number one uh name in the uh 60s 90 60s 70s in the 80s and 90s i think or something like
+
+00:30:25.200 --> 00:30:30.000
+that it's been number one for a long time so yeah you're popular there's a lot of
+
+00:30:30.000 --> 00:30:36.080
+my my wife always jokes at her she yells my name in a supermarket like three guys will turn around
+
+00:30:36.080 --> 00:30:43.360
+yeah uh anyway uh it's it's kind of fun to look up look up some names anyway that's interesting to
+
+00:30:43.360 --> 00:30:49.520
+apply to yourself and if you're going to have a kid you you can think about you can put your
+
+00:30:49.520 --> 00:30:55.680
+considered names into there and see what you get yeah we thought we were being clever with uh with a name
+
+00:30:55.680 --> 00:31:02.960
+and it was not clever hey i you know i think the reason like if you look at your daughter's name it
+
+00:31:02.960 --> 00:31:11.920
+was spiked right around her her age right when she was born yeah but i imagine that parents we think of
+
+00:31:11.920 --> 00:31:17.360
+like other parents that we know to a large degree right when you're having your a younger kid you're like
+
+00:31:18.640 --> 00:31:23.200
+okay well i don't know a lot of people such and such names so that must be kind of unique i'll do that but it's
+
+00:31:23.200 --> 00:31:32.080
+it's unique for your generation but not for the coming one or something right exactly so you got to look for some something that's unique for both so like
+
+00:31:32.080 --> 00:31:38.800
+my recommendation for a girl's name esther like no esters around or the well there's some but not very many
+
+00:31:38.800 --> 00:31:46.720
+um and it may be featured in a jane uh jane austen novel given that it's like popular in the 1800s
+
+00:31:46.720 --> 00:31:51.520
+okay there you go ethel there's not gonna be any other ethels at this school yeah the long tail of ethel is
+
+00:31:51.520 --> 00:31:59.360
+thin okay um do you have anything extras for us nothing other than real-time follow-up so here's what i got for
+
+00:31:59.360 --> 00:32:08.000
+you i did a quick uh uv init and i got a very simple thing that uh pipe project.tomwell that just says
+
+00:32:08.000 --> 00:32:16.720
+a readme it requires python 313 and empty dependencies and so i added requests uv add and then it added um
+
+00:32:16.720 --> 00:32:23.920
+that made it added a version that's funky anyway it added a version because of that oh nice it added uh
+
+00:32:23.920 --> 00:32:29.040
+the dependencies to just add requests or whatever but it does not specify a build backend
+
+00:32:29.040 --> 00:32:37.200
+weird because maybe you're not going to publish it maybe it's just i don't know right yeah right
+
+00:32:37.200 --> 00:32:41.440
+maybe it's just for you just want a little local package like a mono repo sort of deal i don't know
+
+00:32:41.440 --> 00:32:48.080
+yeah also you can i think you can just push those up anyway uh i wonder what happened
+
+00:32:48.080 --> 00:32:52.320
+anyway this is what i found this is what i've discovered by using the latest nearly latest uv
+
+00:32:53.280 --> 00:32:58.720
+yeah i'm having fun with uv so yeah me too definitely definitely you want us to fun a joke
+
+00:32:58.720 --> 00:33:08.320
+yeah let's do a joke all right this one celebrates in quotes getting a job or not getting a job and it's
+
+00:33:08.320 --> 00:33:15.040
+entitled the long path to rejection in parentheses for software developers so for a normal person this might
+
+00:33:15.040 --> 00:33:20.960
+be really short send a cv get rejected and it has this uh this graphic of stepping on a rake
+
+00:33:20.960 --> 00:33:29.680
+whack it you know the face like do and then for the software engineer you got to do more it shows
+
+00:33:29.680 --> 00:33:34.960
+them like kind of this is free brian like kind of grinding the rail on a rake instead of a skateboard
+
+00:33:34.960 --> 00:33:40.720
+send us a cv interview with hr interview with the developers technical interview whack get rejected
+
+00:33:42.560 --> 00:33:48.400
+this is great he's doing a kickflip ollie down the stairs with a rake so and then gets rejected
+
+00:33:48.400 --> 00:33:57.840
+think that would be enough wouldn't you yeah but somehow somehow it is not yeah i never mastered the
+
+00:33:57.840 --> 00:34:04.560
+kickflip ollie but i did master uh trying the kickflip ollie and falling down and getting lots of blood from that
+
+00:34:07.600 --> 00:34:13.040
+i i mastered the amazing back landing when you go on the skateboard whoop and it shoots out in front
+
+00:34:13.040 --> 00:34:18.560
+where you just land flat on your back like oh yeah not there yourself uh last last thought of the show
+
+00:34:18.560 --> 00:34:25.120
+christian letterman says the default is set of tools for type project tunnel which you know defaults are
+
+00:34:25.120 --> 00:34:32.080
+powerful in terms of keeping people doing it yeah that might be the 50 maintain maintainings people and you
+
+00:34:32.080 --> 00:34:38.080
+you know to be honest since uv came around i don't really think about back ends much anymore um
+
+00:34:38.080 --> 00:34:45.840
+i just kind of use uv yeah yeah all right and marco out there says maybe this is a podcast you could
+
+00:34:45.840 --> 00:34:53.600
+start instead of testing code skating code brian skating code yeah skater go and code
+
+00:34:56.560 --> 00:35:06.000
+skater ship all right all right cool bye bye
+

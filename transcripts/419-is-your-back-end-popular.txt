@@ -1,0 +1,1384 @@
+00:00:00 Hello and welcome to Python Bytes, where we deliver Python news and headlines directly to your earbuds.
+
+00:00:04 This is episode 419, recorded February 4th, 2025.
+
+00:00:09 And I am Brian Okken.
+
+00:00:10 And I am Michael Kennedy.
+
+00:00:11 And this episode is sponsored by us.
+
+00:00:14 Check out our courses at either pythontest.com or talkpython.com.
+
+00:00:20 No, wait, that's right, isn't it?
+
+00:00:21 Talkpython.com will work.
+
+00:00:23 Yeah, that's right.
+
+00:00:24 Also, thank you to our Patreon supporters.
+
+00:00:27 We don't thank them very much, but they do help with the show.
+
+00:00:30 So thanks.
+
+00:00:31 If you'd like to connect with the show, please hop on Blue Sky or Mastodon.
+
+00:00:36 And the links to both Michael and myself and the show are in the show notes.
+
+00:00:41 And if you'd like to join us live, it's Tuesday today, but normally it's Monday.
+
+00:00:46 Normally Monday at 10 at Pacific time.
+
+00:00:48 Go to pythonbytes.fm/live.
+
+00:00:52 And finally, we are getting some great feedback about our updated beefier show notes with deep dives.
+
+00:00:59 So we, in the email list.
+
+00:01:01 So if you'd like to get some background around all the topics we cover and a little more info than what we have in the show notes, join the newsletter.
+
+00:01:11 Just go to pythonbytes.fm.
+
+00:01:13 And it's really easy to figure out.
+
+00:01:15 So.
+
+00:01:16 Definitely is.
+
+00:01:16 How about.
+
+00:01:17 Check it out.
+
+00:01:18 And there's a lot of great content there.
+
+00:01:20 And you're going to.
+
+00:01:22 It's a email type.
+
+00:01:24 Content.
+
+00:01:26 I was trying to go into the first topic there.
+
+00:01:29 We'll get there.
+
+00:01:30 We'll get there.
+
+00:01:31 So, yeah.
+
+00:01:31 If you're going to attach something, maybe we would have a Mime type.
+
+00:01:34 Like a graphic or zip file or something.
+
+00:01:36 So last week, this is like Groundhog Day.
+
+00:01:39 Mime types.
+
+00:01:40 Mime type.io.
+
+00:01:41 Remember I talked about that.
+
+00:01:42 Yeah.
+
+00:01:43 Well, got some nice feedback from folks, including Rafe Guns, who said, hey, you mentioned Mime type.io.
+
+00:01:50 That reminds me of something that happened just last week.
+
+00:01:53 I need to map file names to this.
+
+00:01:55 And I thought, surely someone's already done this.
+
+00:01:57 And it turns out that the standard library already has a built-in Mime types.
+
+00:02:02 And you can ask it, hey, what is given this file name?
+
+00:02:04 What do you think its extension is?
+
+00:02:06 Okay.
+
+00:02:06 So, even better, right?
+
+00:02:08 Yeah.
+
+00:02:08 Well, well, well.
+
+00:02:10 No, not so fast.
+
+00:02:11 This sent me down such a rabbit hole.
+
+00:02:15 Okay.
+
+00:02:15 So, there are weird things that this Mime types library does.
+
+00:02:20 Like, there's not that many.
+
+00:02:21 And especially for the common ones, it's a list of like 100 or something.
+
+00:02:26 You know?
+
+00:02:27 But if you look at the implementation in CPython for Mime types, what it does is it looks at a set of files that come with each different operating system.
+
+00:02:36 Raspberry Pi, Ubuntu, macOS, Windows 7, whatever.
+
+00:02:41 It doesn't have a single built-in Mime type.
+
+00:02:44 Like, it won't tell you what they are.
+
+00:02:45 It doesn't know what text.txt is.
+
+00:02:47 It doesn't know what HTML is.
+
+00:02:48 It just looks at these files, which is really weird to me.
+
+00:02:51 Because that means you get different answers for Mime types based on your operating system.
+
+00:02:56 Like, Docker might, if you run Linux in a Docker container, it might give you different output than, say, Desktop Linux and stuff.
+
+00:03:02 Real just thinking, you know, for like 30 seconds around this, it seems like maybe you should build in all the known ones.
+
+00:03:08 And then if it overrides it, like something special about the machine configuration says this Mime type is something different, maybe consider overriding it with a local file definition.
+
+00:03:17 But just omitting them all, very weird.
+
+00:03:19 Plus, it'll tell you things that are wrong, like that XML should be text slash XML, not application slash XML.
+
+00:03:25 Okay.
+
+00:03:26 So that sent me looking.
+
+00:03:28 I'm like, well, that's not great.
+
+00:03:29 Surely there's something on PyPI.
+
+00:03:31 So I looked for like Python Magic.
+
+00:03:32 And Python Magic is awesome.
+
+00:03:34 What it does is you give it a file.
+
+00:03:36 It's based on libmagic or some kind of C library or something.
+
+00:03:39 So you've got to install that with brew, which is kind of weird.
+
+00:03:41 But okay, fine.
+
+00:03:42 So you got that.
+
+00:03:43 And then what it does is you say, hey, given this file, like this PDF, tell me what kind it is.
+
+00:03:51 And it says, hey, this is application.pdf.
+
+00:03:53 But the way it knows this is it goes and it actually reads the file.
+
+00:03:58 It doesn't just look at the extension.
+
+00:04:00 It goes, ah, you said it's a .jpg.
+
+00:04:03 But when I looked at it, I inspected the binary header for the image.
+
+00:04:06 And it looks like it's a PNG.
+
+00:04:08 So we're going to tell you it's PNG.
+
+00:04:09 Super helpful when you're talking about the file system.
+
+00:04:12 Super duper unhelpful when you're building web applications.
+
+00:04:16 You know, like when you need to specify the MIME type.
+
+00:04:19 Because what if your image lives in S3 storage?
+
+00:04:22 How are you going to ask what I should return if I want to link, just redirect someone to it?
+
+00:04:26 Got to download it from S3, feed it to the thing.
+
+00:04:28 Yeah.
+
+00:04:29 Throw away the temporary file and send it back.
+
+00:04:31 And all these other ones, they all look at the file.
+
+00:04:33 Like, if you don't look at the file, how are you going to know?
+
+00:04:35 It's like, okay, if you want to be super thorough, yes.
+
+00:04:37 But what if the file's in a database?
+
+00:04:39 The file's in, like, remote storage?
+
+00:04:41 Like, you don't want to go get the file.
+
+00:04:43 You want your best guess, right?
+
+00:04:45 So, Brian, this has led me to create GitHub.com /mikeckennedy/ content dash types.
+
+00:04:50 Available on PyPI as content types.
+
+00:04:52 So, it does exactly what you would think.
+
+00:04:57 It tells you, given an extension, what is the MIME types.
+
+00:05:00 It even includes a CLI.
+
+00:05:01 So you can say, like, after UV tool install it, you can just say, type content types anywhere in your terminal.
+
+00:05:07 Give it any form of file name, and it will tell you what comes out.
+
+00:05:11 That's kind of handy.
+
+00:05:11 So, if you're curious, it has way more content types than the MIME types, and they're correct.
+
+00:05:17 That's always good.
+
+00:05:18 We'll talk about that in a second.
+
+00:05:19 But you just say content types, get content type.
+
+00:05:22 You give it some kind of file name, as long as it has an extension.
+
+00:05:24 It doesn't matter if it's a HTTPS to some file, or it's just a file path on your hard drive.
+
+00:05:30 If it has an extension, we'll be able to tell you what its MIME type is.
+
+00:05:34 So, is this just, like, a big lookup of extension to type?
+
+00:05:38 Pretty much.
+
+00:05:39 Yeah, it's like a massive, massive lookup of those things.
+
+00:05:42 But the thing is gathering them all up, right?
+
+00:05:44 So, for example, if you look at the built-in MIME types, like, well, why don't you just have MIME types and use that?
+
+00:05:49 One, it varies.
+
+00:05:50 But two, it's wrong about things like, if you ask MDN, Mozilla Developer Networks, what .xml should be, it says it's application.xml.
+
+00:06:00 It used to be this older text.xml.
+
+00:06:02 It's not anymore.
+
+00:06:03 But the built-in Python one says it's the old style.
+
+00:06:07 It's also missing things like TGZ and GZ Zip and Flack and EPUB and all these types you would expect.
+
+00:06:14 So, anyway, I didn't spend that long.
+
+00:06:16 I spent a few hours building this thing, but I'm like, there, I fixed it.
+
+00:06:19 It doesn't depend on the operating system.
+
+00:06:21 It doesn't have to read the file.
+
+00:06:23 You don't have to download it from S3 storage to tell you what it is.
+
+00:06:27 It just, given a file name, it'll tell you what the content type is.
+
+00:06:31 Or MIME types.
+
+00:06:32 Somebody asked, why don't you name it MIME types?
+
+00:06:34 I'm like, I don't know really how to import something that overrides a built-in as a third-party package and make that useful experience.
+
+00:06:41 You know what I mean?
+
+00:06:41 So, anyway, that's what it's called.
+
+00:06:43 So, hopefully this helps people.
+
+00:06:45 It's built-in Python.
+
+00:06:46 It has something like 180 different types and it has 31 types that are not known to the built-in library.
+
+00:06:54 Common stuff, like I said, like fonts or M4As, audio files, or WebAs for other audio files, or WM.
+
+00:07:03 A lot of stuff, right?
+
+00:07:04 RARS, TTF.
+
+00:07:06 It seems like you should know what that is.
+
+00:07:08 Anyway, I present to the world this project I worked on over the weekend.
+
+00:07:12 Nice.
+
+00:07:13 I like it.
+
+00:07:13 Yeah.
+
+00:07:14 Thanks.
+
+00:07:14 It always threw me that M4As were audio MP4s.
+
+00:07:17 Yeah, I know.
+
+00:07:18 It's M4A.
+
+00:07:19 It's not MP4.
+
+00:07:20 Anyway, but since I work with audio as well.
+
+00:07:25 So, hey, good job, I think.
+
+00:07:28 And let's talk about Django a little bit.
+
+00:07:31 So, Wagtail, Wagtail 6.4 is here.
+
+00:07:34 There's an announcement.
+
+00:07:36 Enjoy a smoother content experience with Wagtail 6.4.
+
+00:07:39 I don't actually use Wagtail 6.4, or Wagtail.
+
+00:07:43 But I play one on TV.
+
+00:07:46 No, but I'm glad Wagtail's here.
+
+00:07:49 It's a really cool platform, content management system built on top of Django.
+
+00:07:54 Why am I bringing this up?
+
+00:07:56 It's great that they've got a release and there's some cool stuff.
+
+00:08:00 But the thing that I really am excited about is, if we go down, it says, this version incorporates Django Tasks library.
+
+00:08:08 And that's the cool bit, according to me.
+
+00:08:11 So, the Django Tasks library.
+
+00:08:13 And there's a release notes, too, that we'll link, too.
+
+00:08:15 It also is pretty excited about the Django Tasks.
+
+00:08:18 So, what are Django Tasks?
+
+00:08:19 Let's see.
+
+00:08:21 Oh, yeah.
+
+00:08:22 Oh, by the way.
+
+00:08:23 Some of the cool things about Wagtail, it's used by NASA and Google and NHS.
+
+00:08:27 Wow.
+
+00:08:28 Some of those are still operating.
+
+00:08:29 So, Django Tasks is a, if we look at it, it says it's a backport.
+
+00:08:36 But it's really the implementation that you can play with right now of a thing defined in DEP 14.
+
+00:08:45 And that's a Django enhancement proposal for background workers.
+
+00:08:49 And this is accepted.
+
+00:08:50 And one of the things, whether you love or hate it, Django enhancement proposals don't happen quickly.
+
+00:08:58 Partly, it's because we really, they do LTS support and they really don't want to break things.
+
+00:09:03 And they just don't happen fast.
+
+00:09:06 But that's okay.
+
+00:09:07 We love you, Django.
+
+00:09:08 But the, so Django Tasks is background workers around, yeah, but just background workers.
+
+00:09:16 So, like, you're not in the normal loop.
+
+00:09:18 There's a cool, I was following this rabbit hole, and there's this cool on the Django Tasks forum bringing background workers into Django Core.
+
+00:09:30 There's a talk that was given at DjangoCon Europe 2024.
+
+00:09:36 And this is a great talk.
+
+00:09:37 Listen to this, talking about how really the normal, the cycle of a web page of, like, you do a request and then a response, that doesn't work for a lot of stuff.
+
+00:09:48 And you need background tasks and other tasks to run at different times, or even just later.
+
+00:09:53 Like, you don't have to wait.
+
+00:09:54 We'll work on it.
+
+00:09:55 So, that's cool.
+
+00:09:58 And so now, the implementation of this is being done in the Django Tasks application.
+
+00:10:05 And you can use it.
+
+00:10:06 And since Wagtail is using it, I think it's pretty stable.
+
+00:10:11 And I think people should feel free to use it and provide feedback if you run into any issues.
+
+00:10:17 So, they're really ramping up trying to get this, get all the kinks out.
+
+00:10:21 So, pretty cool.
+
+00:10:22 Yeah, that's really cool.
+
+00:10:22 I think a lot of times people overthink how much infrastructure you need to, say, run something in the background.
+
+00:10:29 Like, oh, this thing takes five seconds.
+
+00:10:31 And if we do it on the view call, then it's going to slow down the website a whole bunch.
+
+00:10:36 So, let's set up Celery and Redis and a queue and, like, whoa, whoa, whoa.
+
+00:10:40 It was running all on its own until just a second ago.
+
+00:10:42 Yeah.
+
+00:10:43 Things like this where it's kind of just a background thread.
+
+00:10:45 Like, okay, well, we just kick it to the thread and maybe you want to log it to a database or send an email.
+
+00:10:49 But you're going to take a second.
+
+00:10:50 So, just let that happen.
+
+00:10:51 Yeah.
+
+00:10:52 It's great.
+
+00:10:53 And also, for people that are thinking about using this Django Tasks project to put something in place,
+
+00:10:59 I think that's where I would lean, partly because that's where Django eventually is going.
+
+00:11:07 But also, you've got Wagtail as an open source project.
+
+00:11:10 You can look to see how they're doing it.
+
+00:11:11 So, you can look to see how the project's implemented.
+
+00:11:13 Yeah, excellent.
+
+00:11:14 Excellent, excellent.
+
+00:11:15 And by the way, Ryan, are you familiar with all the WordPress drama?
+
+00:11:18 Have you been tracking this?
+
+00:11:19 Yeah.
+
+00:11:20 Oh, it's so insane.
+
+00:11:21 People, if you haven't been tracking this, WordPress has gone off the rails.
+
+00:11:26 So, maybe if you're out looking for, I don't know, a different CMS instead of WordPress, Wagtail.
+
+00:11:31 Check it out.
+
+00:11:32 Less drama.
+
+00:11:33 Less drama.
+
+00:11:33 Or if you didn't want to do that, you could build it yourself, right?
+
+00:11:35 Definitely.
+
+00:11:36 So, there's a really nice article from Armin Roeneker.
+
+00:11:39 And he's doing a lot of great writing lately.
+
+00:11:42 So, I'm really, really enjoying it.
+
+00:11:43 Basically, this is something of a rant and a call to arms, if you will, to depend less.
+
+00:11:50 Depend less.
+
+00:11:51 Saying, look, there's a lot of pressure and encouragement to say, if there's anything that
+
+00:11:56 you can use as a third-party dependency, rather than building it into your own code, do that.
+
+00:12:01 That's how you stay agile.
+
+00:12:03 Unless it's not.
+
+00:12:04 Unless it just becomes a drag.
+
+00:12:06 You know, if you have one function that you need, and there's some library that has 100 functions,
+
+00:12:12 and it does a whole bunch of stuff, but it has that one thing you need, you could depend
+
+00:12:16 upon it.
+
+00:12:16 But then, what if you want to go to Python 3.14 and it doesn't upgrade in time and you're
+
+00:12:22 stuck, right?
+
+00:12:23 And, you know, one library, that's one thing, but then you multiply that times 100 and it
+
+00:12:28 gets real complicated real quick.
+
+00:12:29 So, he pulls out an example and says, look, what about terminal size?
+
+00:12:32 This is mostly speaking in Rust terms, but it equally applies to Python.
+
+00:12:36 So, that's why I'm covering it.
+
+00:12:38 It says, terminal size is a package that you can use and it tells you the size of the
+
+00:12:43 terminal, like 80 by 25 or 47 by 100 or whatever the rows, columns of the terminal is.
+
+00:12:49 It tells you that, right?
+
+00:12:50 Well, that thing has been pretty much unchanged for a long, long time, but it's had 26 releases
+
+00:12:57 because the stuff that it depends upon has been churning and has to be, you've got to, you
+
+00:13:03 know, use the newer dependency of this library so that your thing will build on the new version
+
+00:13:07 of the runtime, right?
+
+00:13:08 Instead of just being basic, right?
+
+00:13:10 Why, you know, if terminal itself, terminal size itself hasn't changed, why do you have
+
+00:13:14 to keep rebuilding it, re-releasing it?
+
+00:13:16 Here's a funny term, but big supply chain will tell you, you must do it this way.
+
+00:13:20 Big supply chain.
+
+00:13:21 Yeah, exactly.
+
+00:13:22 It's like big tobacco, big supply chain.
+
+00:13:25 And as well as open source people, right?
+
+00:13:28 They're like, oh, you know, why are you putting this in here?
+
+00:13:30 You could just use this library and this pull requests or similarly for code reviews at
+
+00:13:35 enterprise places.
+
+00:13:36 And there's one quote I want to read to you all about it and then kind of leave it there.
+
+00:13:41 It says, it's time to have a new perspective.
+
+00:13:42 We should give kudos to engineers who write a small function themselves instead of hooking
+
+00:13:47 in a transitive web of packages.
+
+00:13:49 We should be suspicious of big dependency graphs.
+
+00:13:52 Celebrated are the minimal dependencies, the humble function that just quietly does the job
+
+00:13:58 and the code doesn't need to be touched for years because it was done right.
+
+00:14:01 What do you think, Brian?
+
+00:14:02 I take issue with this.
+
+00:14:06 Okay.
+
+00:14:07 Okay.
+
+00:14:07 I get the idea and I agree with for some things, like something like terminal size.
+
+00:14:15 I don't know how to determine a terminal size, but I imagine that I would probably pull in
+
+00:14:20 a library or something to do that, but I wouldn't expect that it would have to pull in a lot of
+
+00:14:23 stuff.
+
+00:14:24 Yeah.
+
+00:14:24 So if like, I really, you know, there's a lot of like, there's a lot of stuff I depend
+
+00:14:30 on because I don't want to figure it out.
+
+00:14:32 But I also don't really want those things to be too deep, you know, for instance.
+
+00:14:36 But that's the trade-off.
+
+00:14:40 You either, you know, so what's the problem?
+
+00:14:44 So what's the problem writing yourself is because you don't, you're not, if you're not the expert
+
+00:14:49 in this field, why would you think you got it right?
+
+00:14:52 I wouldn't necessarily think it was right just because there's a package for it, but I know
+
+00:14:59 I'm not an expert at it.
+
+00:15:00 So that's why I grabbed a package.
+
+00:15:02 And also, I don't want to think about like security problems and other things in the future.
+
+00:15:06 If there's an issue with certain packages, like why do people use stuff like Redis?
+
+00:15:13 I'm sure you could just write a caching system on your own.
+
+00:15:16 There's reasons why we use these packages, but.
+
+00:15:19 Yeah.
+
+00:15:20 Yeah.
+
+00:15:21 And to be fair, Armin says, look, it's not black and white.
+
+00:15:23 They're important libraries that solve hard problems like web frameworks and graphics libraries
+
+00:15:28 and things like that.
+
+00:15:28 But I think it's more like left pad.
+
+00:15:31 Yeah.
+
+00:15:32 Do we really need a library with three dependencies to just pad a string?
+
+00:15:36 Probably not.
+
+00:15:37 I don't think we do that that much in Python though, or maybe we do.
+
+00:15:40 Not as much.
+
+00:15:41 Not as much.
+
+00:15:41 But I'll give you an example.
+
+00:15:43 Like, so I started working with Postmark.
+
+00:15:45 I'm trying to move away from SendGrid, not going as good as it could, I suppose.
+
+00:15:50 So I'm like, oh, Postmark.
+
+00:15:52 Awesome.
+
+00:15:53 This is, you know, similarly priced.
+
+00:15:55 Seems to be pretty reputable.
+
+00:15:57 They really cracked down on spammers, which is the problem with SendGrid from what I
+
+00:16:01 can tell, at least my personal experience.
+
+00:16:02 So it says, okay, look, if you want to use it, there's official libraries.
+
+00:16:05 Just go over here and grab one.
+
+00:16:07 Like, boom.
+
+00:16:07 There's a Rails gem.
+
+00:16:08 There's a .NET Postmark library.
+
+00:16:10 There's a Java one.
+
+00:16:11 There's a PHP one.
+
+00:16:12 There's a Kraft.
+
+00:16:13 What the heck is Kraft?
+
+00:16:14 But anyway, there's one of them.
+
+00:16:15 There's a Node.js one.
+
+00:16:16 There's a CLI one.
+
+00:16:17 There's one for WordPress.
+
+00:16:18 There's one for Grunt.
+
+00:16:19 One for Zapier.
+
+00:16:20 The most popular programming language in the world is missing.
+
+00:16:22 But, you know, I don't know, whatever it is.
+
+00:16:25 Whatever.
+
+00:16:25 So probably PyPI.
+
+00:16:27 Probably PyPI has one, right?
+
+00:16:29 Postmark email.
+
+00:16:31 Sure.
+
+00:16:31 That's cool.
+
+00:16:32 Okay.
+
+00:16:33 So there's this one called Postmark, the top one.
+
+00:16:36 Updated 2017.
+
+00:16:37 2017.
+
+00:16:39 It has a single sentence.
+
+00:16:41 No documentation.
+
+00:16:42 No documentation.
+
+00:16:42 If I go to it, I guess I could download it.
+
+00:16:45 Let's see.
+
+00:16:46 Let me try another one.
+
+00:16:47 So what about this Postmarker one?
+
+00:16:49 What versions of Python?
+
+00:16:51 Oh, this is actually pretty.
+
+00:16:52 This works pretty well.
+
+00:16:53 But you start looking through these, and a lot of them are like, oh, man.
+
+00:16:56 I don't know.
+
+00:16:57 It's okay.
+
+00:16:58 Like, here's one something for Django from 2011.
+
+00:17:02 One from Flash from 2020, right?
+
+00:17:04 But I wanted one for Quart, right?
+
+00:17:07 Async.
+
+00:17:07 It doesn't really matter if it's Quart.
+
+00:17:08 I want one that supports Async.
+
+00:17:10 Yeah.
+
+00:17:11 Okay.
+
+00:17:12 Here we go again.
+
+00:17:12 So I could try to work with one of those libraries and go, hey, guys, can we think about adding
+
+00:17:16 an Async API to this?
+
+00:17:18 Or go to ChatGPT Pro.
+
+00:17:20 Do you know what the Postmark API is?
+
+00:17:23 Yes.
+
+00:17:23 Create me one that does Async and an Async.io-based one that uses HTTP X-Rex implementation.
+
+00:17:30 Bam.
+
+00:17:31 Got it.
+
+00:17:31 It works fine.
+
+00:17:32 You can stick that in your code and off the race as you go, right?
+
+00:17:35 And I don't have to worry about whether their library supports Python 3.14 when it comes
+
+00:17:39 out or not.
+
+00:17:40 And there's no security things because it's just me and Postmark having a little chat
+
+00:17:44 and things like that.
+
+00:17:45 So I think, and I'm not saying like, don't use packages, don't contribute packages.
+
+00:17:49 I mean, literally, I opened the show with like, here's my new package.
+
+00:17:51 But I think there are also, it's easier than ever these days to go, I need one function that
+
+00:17:57 does this thing.
+
+00:17:58 I like call this one API endpoint.
+
+00:18:00 Like, give me that function.
+
+00:18:01 Boom.
+
+00:18:01 Here it is.
+
+00:18:02 So I don't know.
+
+00:18:03 I think there's some balance to be had.
+
+00:18:05 Yeah.
+
+00:18:06 Also, good API docs.
+
+00:18:09 Like, it might be that Postmark just has pretty decent API docs and you can just build it
+
+00:18:13 yourself anyway.
+
+00:18:14 Or that's what...
+
+00:18:15 I was going to build it myself.
+
+00:18:16 And then I'm like, well, let me ask chat.
+
+00:18:18 Yeah, sure.
+
+00:18:19 And see if it gets it close.
+
+00:18:21 And I'll tweak it if needed.
+
+00:18:22 I'm like, no, it got it exactly right.
+
+00:18:24 Well, that's cool.
+
+00:18:26 It even made the client not just use HTTPX, but it even made the async client an async context
+
+00:18:34 manager.
+
+00:18:35 So I can say async with Postmark client.
+
+00:18:37 Da, da, da, da.
+
+00:18:38 Off it goes.
+
+00:18:39 I mean, it was sweet.
+
+00:18:40 Yeah.
+
+00:18:41 What I hope, I hope that people like Postmark and other services that have APIs that we're
+
+00:18:47 using, I hope they keep the documentation good and not think that people are just going
+
+00:18:52 to use AI to generate the stuff anyway.
+
+00:18:54 So you don't need the documentation.
+
+00:18:55 We still need the documentation because sometimes it's wrong or we have bugs or something has to
+
+00:19:01 be debugged.
+
+00:19:01 So anyway.
+
+00:19:03 Yeah.
+
+00:19:03 And by the way, if there was an official Python one that had async support, I would have
+
+00:19:07 more than gladly used it.
+
+00:19:08 I didn't want to create my own.
+
+00:19:10 It just doesn't exist.
+
+00:19:11 Right.
+
+00:19:11 And so maybe we could turn this around a little bit and say, if you're out there listening and
+
+00:19:15 you work for a company like Postmark that has an API and you're like, well, it's too much
+
+00:19:19 to create an API client in Python.
+
+00:19:22 I bet it's not if you ask.
+
+00:19:23 Yeah.
+
+00:19:24 Yeah.
+
+00:19:25 And then you have people in-house to review it and say, yeah, that's probably what we
+
+00:19:30 want.
+
+00:19:30 Right.
+
+00:19:31 Then open source it and people can contribute to it.
+
+00:19:33 Yeah.
+
+00:19:34 But I think the zero to one, like, oh, we're not going to create it for this.
+
+00:19:39 We'll just give people the docs and let them rewrite it like a million times across all the
+
+00:19:43 developers.
+
+00:19:43 I don't think that makes as much sense as it used to because it's not that hard to create
+
+00:19:47 one these days.
+
+00:19:47 Yeah.
+
+00:19:48 Yeah.
+
+00:19:48 Agreed.
+
+00:19:49 Cool.
+
+00:19:49 Yeah.
+
+00:19:49 Anyway, thanks, Armin, for the cool article.
+
+00:19:52 Talking about building packages, though, I was curious what backend, build backend you
+
+00:19:58 used.
+
+00:19:59 Do you use setup tools or hatch or hatchling?
+
+00:20:02 I use hatchling.
+
+00:20:03 Okay.
+
+00:20:04 For the build backend, my pyproject.toml.
+
+00:20:06 And I use uvbuild, uvpublish as the workflow.
+
+00:20:10 Okay.
+
+00:20:10 Okay.
+
+00:20:11 Cool.
+
+00:20:11 I haven't done the uv.
+
+00:20:12 I've done uvbuild, but I haven't done the publish bit before.
+
+00:20:16 Yeah.
+
+00:20:17 However, so pyproject.toml, we've been following it on the rise of pyproject.toml on the show.
+
+00:20:23 And there's this, I'm cracking up.
+
+00:20:28 There's a blog from Bastion Venther.
+
+00:20:31 Sorry, Bastion.
+
+00:20:34 The title of the blog is still don't have a title, which is an awesome title for a blog.
+
+00:20:38 Just saying.
+
+00:20:39 He did this investigation both last year and this year.
+
+00:20:44 And it's about how, with the popularity of build backends for projects using pyproject.toml.
+
+00:20:51 So this is the second version.
+
+00:20:52 Kind of a fun, just little data set.
+
+00:20:56 There's, he actually uses data set.
+
+00:20:59 Nice.
+
+00:20:59 But the results are interesting, I think.
+
+00:21:02 I'm going to pull up from last year and this year so we can get the same graph.
+
+00:21:06 Okay.
+
+00:21:07 So last year, we had setup tools was definitely in the lead.
+
+00:21:11 Poetry next, hatchling, and then flit.
+
+00:21:17 And then other was about the same as flit, maybe a little bit bigger.
+
+00:21:21 And then this year, looking at the graph, again, setup tools, poetry, but there's not as much growth in poetry.
+
+00:21:29 Hatchling is growing a lot more now.
+
+00:21:32 And then.
+
+00:21:33 Yeah, no fact, that's a good job with that one.
+
+00:21:34 Flit's down.
+
+00:21:35 And then the other's actually bigger than flit.
+
+00:21:38 I don't know what all the others are.
+
+00:21:39 But anyway, the takeaway, there's some, and then there's some, the plot shows a relative distribution.
+
+00:21:47 Over the quarters.
+
+00:21:48 And you can really see there that hatchling is really growing.
+
+00:21:52 And, and flits actually on the decline.
+
+00:21:56 Looks like, looks like poetry is kind of on the decline as well, a little bit.
+
+00:22:01 I think I would see, I think there's just a lot more projects now.
+
+00:22:05 But, but I think hatchling is sort of taking some lead.
+
+00:22:09 I, and this, this, this isn't really that surprising to me because I, I, I think that set up what a big decline in set up tools for a while was because flit and hatchling were working so much better.
+
+00:22:23 But set up tools had some updates with being able to use it with a pipe project at Toml better.
+
+00:22:28 And, and those updates, I think have improved things.
+
+00:22:32 So I use both now.
+
+00:22:34 I'm using hatchling for some projects, especially when I want fine control.
+
+00:22:37 But if it's really just a really simple thing, especially if I'm doing it in a corporate setting, I'll probably use set up tools because it's, I don't know, it's more, it's more mainstream.
+
+00:22:47 People know about it more.
+
+00:22:48 I don't have to explain anything.
+
+00:22:50 So just interesting looking at the, the trends for, for backends.
+
+00:22:55 Yeah, that's interesting.
+
+00:22:56 I wonder what the, you know, the, sort of the default behavior for different projects, you know, if there's certain projects that will create like popular cookie cutter templates or other things.
+
+00:23:07 Oh yeah.
+
+00:23:08 That make an outsized impact on this.
+
+00:23:10 I'm not sure.
+
+00:23:11 Nothing comes to mind, but there could be something like, oh, this thing would be way lower except for it's used this, it's used in this project that's used by so many people or something.
+
+00:23:20 Yeah.
+
+00:23:20 It would be interesting to know.
+
+00:23:22 What is, when you say like, I can't remember.
+
+00:23:24 Oh, UV has its own, right?
+
+00:23:26 So if you say, does UV have its own build backend instead of build backend?
+
+00:23:30 Not that I know of.
+
+00:23:31 For the, it just will build any pyproject.toml using the specified build backend as far as I know.
+
+00:23:36 So for mine, I put hatchling in my pyproject.toml, then I just say UV build and it does it.
+
+00:23:42 Yeah.
+
+00:23:43 I'm just like, UV has a UV in it, so you can initialize that pyproject.toml.
+
+00:23:47 I'm curious what backend it specified is.
+
+00:23:50 Oh, I have no idea.
+
+00:23:52 I have to play with that.
+
+00:23:53 You do your extras and I'll tell you the answer.
+
+00:23:55 Okay.
+
+00:23:56 I'll go to the, I've got a couple extras.
+
+00:24:00 First off, I'll jump ahead.
+
+00:24:02 So one of the things that we've got with Python bytes, and I think, I think you do this with talk Python to me as well, is there's a episodes page that lists all the episodes.
+
+00:24:14 I mean, it's one line each.
+
+00:24:16 So why not?
+
+00:24:17 Just list them all.
+
+00:24:17 So if you're curious about an old episode, you can take a look.
+
+00:24:20 I wanted this for testing code.
+
+00:24:23 So testing code used to be something like this.
+
+00:24:26 So if you go to all episodes, it'll show the title of the episode and the information.
+
+00:24:32 And then you see 30 of them.
+
+00:24:34 And then if you want to see more, you go to the next page.
+
+00:24:36 But I've got 225 episodes still.
+
+00:24:39 Why you have to, that's a lot of clicking to go through all of them.
+
+00:24:44 So the update I've got is that I'm handwriting this, but it's not that hard.
+
+00:24:50 I've got an archive page now that has all episodes.
+
+00:24:54 So you can see all episodes of testing code.
+
+00:24:56 They're reverse ordered.
+
+00:24:58 And I think that's right for season one, because there's a lot here.
+
+00:25:02 But for season one was long.
+
+00:25:05 Yeah, I know.
+
+00:25:06 Nine years, 223 episodes.
+
+00:25:08 Yeah, whatever.
+
+00:25:09 Time for season two.
+
+00:25:12 And it'll probably be shorter than nine years for season two.
+
+00:25:15 We'll see.
+
+00:25:15 Probably.
+
+00:25:16 But I might reverse these and have them one, two, three instead of three, two, one.
+
+00:25:20 We'll see.
+
+00:25:20 Anyway, that's my first extra.
+
+00:25:22 The second extra is something completely different.
+
+00:25:25 It has nothing to do with Python.
+
+00:25:28 I just came across this thing called Namegrapher.
+
+00:25:31 And I think it's about US names.
+
+00:25:36 Because I was curious why there weren't any Bryans around anymore.
+
+00:25:41 But the peak of Brian was 1970.
+
+00:25:43 And I looked up Michael also.
+
+00:25:45 Michael's been popular.
+
+00:25:47 I got a little broader distribution, but still extremely 70s kids.
+
+00:25:52 But it was the number one name in the 60s, 70s, and 80s, and 90s, I think, or something like that.
+
+00:26:02 It's been number one for a long time.
+
+00:26:04 So you're popular.
+
+00:26:06 There's a lot of Mike's out there.
+
+00:26:06 My wife always jokes at her.
+
+00:26:09 She yells my name in a supermarket.
+
+00:26:11 Like, three guys will turn around.
+
+00:26:12 Yeah.
+
+00:26:13 Anyway, it's kind of fun to look up some names.
+
+00:26:17 Anyway, that's my answer.
+
+00:26:19 Interesting to apply to yourself.
+
+00:26:20 And if you're going to have a kid, you can think about, you can put your considered names into there and see what you get.
+
+00:26:25 Yeah, we thought we were being clever with a name.
+
+00:26:29 And it was not clever.
+
+00:26:32 Hey, you know, I think the reason, like, if you look at your daughter's name, it was spiked right around her age, right, when she was born.
+
+00:26:40 Yeah.
+
+00:26:40 But I imagine that parents, we think of, like, other parents that we know to a large degree, right?
+
+00:26:46 Yeah.
+
+00:26:46 When you're having a younger kid, you're like, okay, well, I don't know a lot of people with such and such names.
+
+00:26:51 So that must be kind of unique.
+
+00:26:52 I'll do that.
+
+00:26:53 But it's unique for your generation, but not for the coming one or something, right?
+
+00:26:56 Exactly.
+
+00:26:57 So you got to look for something that's unique for both.
+
+00:27:00 So, like, my recommendation for a girl's name, Esther.
+
+00:27:03 Like, no Esthers around.
+
+00:27:05 Well, there's some, but not very many.
+
+00:27:07 And it may be featured in a Jane Austen novel, given that it's, like, popular in the 1800s.
+
+00:27:14 Okay, there you go.
+
+00:27:15 Ethel.
+
+00:27:15 There's not going to be any other Ethels at the school.
+
+00:27:17 Oh, yeah.
+
+00:27:18 The long tail of Ethel is thin.
+
+00:27:20 Okay.
+
+00:27:21 Do you have anything extras for us?
+
+00:27:23 Nothing other than real-time follow-up.
+
+00:27:25 So here's what I got for you.
+
+00:27:27 I did a quick UV init, and I got a very simple thing, Pyproject.tomahill, that just says a readme.
+
+00:27:34 It requires Python 313 and empty dependencies.
+
+00:27:37 And so I added requests, UV add.
+
+00:27:39 And then it added, that made it add an aversion.
+
+00:27:44 That's funky.
+
+00:27:44 Anyway, it added a version because of that.
+
+00:27:46 Oh, nice.
+
+00:27:47 And then it added the dependencies to just add requests or whatever.
+
+00:27:51 But it does not specify a build backend.
+
+00:27:53 Weird.
+
+00:27:55 Because maybe you're not going to publish it.
+
+00:27:56 Maybe it's just, I don't know.
+
+00:27:58 Oh, right.
+
+00:27:58 Yeah.
+
+00:27:58 Right.
+
+00:27:59 Maybe it's just for you.
+
+00:27:59 You just want a little local package, like a mono repo sort of deal.
+
+00:28:02 I don't know.
+
+00:28:03 Yeah.
+
+00:28:03 Also, I think you can just push those up.
+
+00:28:06 Anyway.
+
+00:28:06 I wonder what happens.
+
+00:28:07 Anyway, this is what I found.
+
+00:28:08 This is what I've discovered by using the latest, nearly latest UV.
+
+00:28:11 Yeah.
+
+00:28:12 I'm having fun with UV.
+
+00:28:13 Yeah, me too.
+
+00:28:14 Definitely, definitely.
+
+00:28:15 You know what else is fun?
+
+00:28:16 A joke.
+
+00:28:17 Yeah, let's do a joke.
+
+00:28:18 All right.
+
+00:28:20 This one celebrates, in quotes, getting a job or not getting a job.
+
+00:28:24 And it's entitled, The Long Path to Rejection, in parentheses, for software developers.
+
+00:28:28 So for a normal person, this might be really short.
+
+00:28:31 Send a CV.
+
+00:28:32 Get rejected.
+
+00:28:33 And it has this graphic of stepping on a rake.
+
+00:28:36 Whack.
+
+00:28:37 You know, the face is like, oh.
+
+00:28:38 And then, for the software engineer, you got to do more.
+
+00:28:42 It shows him, like, kind of, this is for you, Brian, like, kind of grinding a rail on a rake
+
+00:28:47 instead of a skateboard.
+
+00:28:48 Send a CV.
+
+00:28:49 Interview with HR.
+
+00:28:50 Interview with the developers.
+
+00:28:51 Technical interview.
+
+00:28:52 Whack.
+
+00:28:53 Get rejected.
+
+00:28:54 This is great.
+
+00:28:55 He's doing a kickflip all the way down the stairs with a rake.
+
+00:28:58 And then gets rejected.
+
+00:29:00 And then get rejected.
+
+00:29:00 I think that would be enough, wouldn't you?
+
+00:29:01 Yeah.
+
+00:29:02 But somehow, somehow it is not.
+
+00:29:06 Yeah.
+
+00:29:07 I never mastered the kickflip, Uli.
+
+00:29:09 But I did master trying the kickflip, Uli, and falling down and getting lots of blood from that.
+
+00:29:15 I mastered the amazing back landing when you go on the skateboard.
+
+00:29:22 Whoop!
+
+00:29:22 And it shoots out in frontwards.
+
+00:29:23 You just land flat on your back.
+
+00:29:25 Like, oh!
+
+00:29:25 Yeah.
+
+00:29:26 Out there yourself.
+
+00:29:26 Last thought of the show.
+
+00:29:28 Christian Letterman says, the default is set of tools.
+
+00:29:32 Okay.
+
+00:29:32 By pyproject.toml, which, you know, defaults are powerful in terms of keeping people doing that.
+
+00:29:36 Yeah.
+
+00:29:37 That might be the 50% maintenance people.
+
+00:29:40 And, you know, to be honest, since UV came around, I don't really think about backends much anymore.
+
+00:29:46 I just kind of use UV.
+
+00:29:48 Yeah.
+
+00:29:49 All right.
+
+00:29:50 And Marco out there says, maybe this is a podcast you could start instead of testing code.
+
+00:29:54 Skating code, Brian.
+
+00:29:55 Skating code.
+
+00:29:56 Yeah.
+
+00:29:57 Skater go home and code.
+
+00:30:00 Skatership.
+
+00:30:03 Skatership.
+
+00:30:03 All right.
+
+00:30:04 Cool.
+
+00:30:04 Bye.
+
