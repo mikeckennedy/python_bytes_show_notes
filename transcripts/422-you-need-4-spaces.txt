@@ -1,0 +1,1130 @@
+00:00:00 Hello and welcome to Python Bytes where we deliver Python news and headlines directly to your earbuds.
+
+00:00:05 This is episode 422 recorded March 3rd, 2025.
+
+00:00:09 I am Michael Kennedy.
+
+00:00:10 And I am Brian Okken.
+
+00:00:11 And this episode is brought to you by us.
+
+00:00:14 Check out Brian's pytest courses.
+
+00:00:16 Check out the ones over at Talk Python Training.
+
+00:00:19 We're up to almost 475 hours.
+
+00:00:22 275 hours?
+
+00:00:24 I mean, not that many.
+
+00:00:24 275 hours of courses over at Talk Python.
+
+00:00:27 There are many to choose from there.
+
+00:00:28 and Ryan's book and Patreon supporters and all these things.
+
+00:00:31 Thank you so much.
+
+00:00:32 Also, we're continuing to improve and evolve our newsletter, which gives you, I think, insights into the episode
+
+00:00:39 that we maybe didn't explicitly call out and certainly are not in the show notes.
+
+00:00:42 So head over to pythonbytes.fm, click on newsletter, put in your email.
+
+00:00:46 We will be kind and gentle to it, but we'll send you cool stuff, usually the day of or after the day after the show.
+
+00:00:53 Yeah, so with that said, Ryan, how do we start our show today?
+
+00:00:57 Let's start it with a video, kind of.
+
+00:00:59 - Wait, isn't this already a video?
+
+00:01:01 People want to watch it?
+
+00:01:01 - Yeah, yeah.
+
+00:01:03 - Very mad at you.
+
+00:01:04 - Yeah, so I'm trying to add this to the stage.
+
+00:01:08 What's going on?
+
+00:01:09 Oh, the wrong, yeah, anyway.
+
+00:01:11 There we go.
+
+00:01:13 Technical difficulties that won't make any sense to anybody listening.
+
+00:01:16 So, we don't normally cover video because it's, I don't know, I don't know why,
+
+00:01:22 but I don't watch a lot of Python videos, I guess.
+
+00:01:25 But this one is a do not miss.
+
+00:01:28 So Henik put out a video called my 2025 UV based project, Python project layout for production apps.
+
+00:01:36 And I was paid attention to this partly to see what he was up to and I like UV.
+
+00:01:43 But also this, so this, when you watch it, his example is a FastAPI app.
+
+00:01:50 And in his world, an app is usually like, really a website app.
+
+00:01:56 And later he's gonna go on to talk about Docker, I think, because this is a part one, part one of a series.
+
+00:02:04 But this one's already enough that I think it's really useful.
+
+00:02:07 And especially in a lot of the, some of the stuff I deal with I think of an app as anything that's packaged, kind of.
+
+00:02:17 Like it's not a package, it's not something you put on PyPI, but it's a bunch of your own code
+
+00:02:23 that you normally would have used a requirements.txt file, and I like his model better.
+
+00:02:28 So I'm gonna jump in, I got a couple tabs because it's kind of hard to like navigate.
+
+00:02:35 Anyway, snapshot videos.
+
+00:02:37 So I stopped them where I wanted to.
+
+00:02:39 So the video is great, it's about 25 minutes long, it's pretty quick to watch.
+
+00:02:46 Here we've got the project layout.
+
+00:02:49 So his project layout is using a source layout.
+
+00:02:53 And really, there's no requirements file.
+
+00:02:56 All of the requirements are in the pyproject.toml.
+
+00:02:59 And instead of a custom lock file or one you manually do, he's just recommending that you let
+
+00:03:06 UV take care of a lot of the project stuff.
+
+00:03:09 And actually, even with--
+
+00:03:11 and we'll take a look at a little bit more of what's in pyproject.toml.
+
+00:03:15 But he's recommending that you go ahead and check in the UV lock.
+
+00:03:18 So if you're letting UV handle your virtual environment, it's gonna create a lock file, and if you commit that,
+
+00:03:25 then UV run later will use that and use all of the stuff in the lock file,
+
+00:03:31 and you, instead of running Python, you clone the repo, run UV run on your project,
+
+00:03:37 and it's gonna grab everything out of the lock file.
+
+00:03:41 It's just like pin dependencies.
+
+00:03:42 It's pretty sweet.
+
+00:03:43 - Yep, I 100% agree with him.
+
+00:03:46 Check in the UV lock file.
+
+00:03:47 And then you don't also, you don't even have to do UV run if you don't want, you can just
+
+00:03:51 do UV sync and it will also use the pin dependencies in the lock file.
+
+00:03:55 And then, because some systems, they require to run kind of with their setup.
+
+00:04:00 For example, Pyramid, you need to use PSERV and then it's like configuration file or flask,
+
+00:04:07 you can do like flask run or Django.
+
+00:04:09 Like, so if you still want to stick with that, you can just do UV sync.
+
+00:04:11 So UV sync will grab all the, everything out of the lock file then.
+
+00:04:15 Yes.
+
+00:04:16 - Exactly.
+
+00:04:17 - And--
+
+00:04:18 - I think it might even create the virtual environment, though I haven't actually tried that yet.
+
+00:04:21 - Yeah, it does.
+
+00:04:22 Yeah, if you don't have one already, it'll create it.
+
+00:04:24 And also, if you already had one, and it was out of sync, like UV sync, that's kind of what the part of the sync does.
+
+00:04:32 If somebody updated some of the requirements, so the UV lock had changed,
+
+00:04:37 then UV sync will rewrite the virtual environment.
+
+00:04:41 So--
+
+00:04:42 - Nice.
+
+00:04:43 And so he's showing also that his version of how to specify the Python version
+
+00:04:50 is to just specify it within your pyproject.toml and UV will grab that and install it if necessary.
+
+00:04:57 And then also interesting discussion around version because pyproject.toml requires a version
+
+00:05:04 but with a lot of applications we don't really utilize the version because it's just code that you're pushing and running.
+
+00:05:12 So he said, "Just set it, if you don't care about the version, just set it to zero,
+
+00:05:16 and then people will realize you're not using it." So...
+
+00:05:20 The world's most common version.
+
+00:05:22 Yeah.
+
+00:05:22 And then also a discussion around the separation of dependency groups that came in recently
+
+00:05:28 that UV handles nicely in PyProject TOML files.
+
+00:05:33 And that allows you to separate your dependencies based on really what the application needs
+
+00:05:39 versus what you need for development.
+
+00:05:41 this will work then you can run. In production it won't install your like pytest and stuff,
+
+00:05:49 but it'll install everything else. But when you're creating a virtual environment locally to develop,
+
+00:05:54 it'll grab those also. So very cool to have all of this together. And then build system,
+
+00:06:01 I didn't really realize that you could specify UV as a build backend. And I'm going to have to
+
+00:06:11 hatchling in mind and, I believe several people have pointed out that hatchling is
+
+00:06:16 the default. And the reason that we, when we played with this the very, very first time
+
+00:06:20 it didn't show up with any build back in is because we created in, application mode,
+
+00:06:25 but I think if we created a package mode, there's a way to say like, well, what really
+
+00:06:29 kind of project are you creating? Then it specifies the build back in explicitly, I
+
+00:06:32 think. So anyway, a lot of, a lot of options there, but yeah, very cool.
+
+00:06:36 Yeah, and actually just an enjoyable video too.
+
+00:06:40 I like what he's doing there.
+
+00:06:41 So check it out.
+
+00:06:42 Very nice.
+
+00:06:44 Well, let's talk about async and await.
+
+00:06:49 So there's this cool project called AIO Limiter, an efficient implementation of a rate limiter for async I/O.
+
+00:06:56 And this comes to us from Martin Peters.
+
+00:06:59 Martin Peters, at least at one point, was the most prolific Stack Overflow Python person.
+
+00:07:06 period. So that was fun. And this project is a something that got created as a result
+
+00:07:13 of an answer on Stack Overflow by him. So not a big surprise. I've, I'll beat on the
+
+00:07:19 dead horse a little bit, Brian. I feel like there's a really, there's a big missing piece
+
+00:07:23 for async and await in Python. And that is any sort of mechanism or control or, or understanding
+
+00:07:30 or adjustment or whatever of the underlying running of async code in general.
+
+00:07:36 Right?
+
+00:07:36 If I call an async function and I say a way to thing, how does it run?
+
+00:07:41 Well, you don't know.
+
+00:07:43 It might be running in an event loop that you've created, it might be running in one
+
+00:07:47 that you, a framework created.
+
+00:07:49 You don't sometimes often, most of the time let's say, you don't get a choice on how that
+
+00:07:53 loop is created.
+
+00:07:54 For example, if you're using FastAPI, FastAPI creates a loop and says, "Here, you can use
+
+00:07:58 this one.
+
+00:07:59 like it. You know what I mean? Whereas systems like.NET, they've got thread pools and async
+
+00:08:06 I/O pools and contexts and stuff that you can say, "Hey, on this one, I want you to
+
+00:08:11 limit to 10. So if you're doing work, just do 10 at a time. When you're done with one,
+
+00:08:15 allow the other ones to come in, otherwise queue them and just make them away." Right?
+
+00:08:18 Stuff like that is kind of missing. So all these projects are trying to backfill that
+
+00:08:23 kind of functionality into Python's async and await. And this is cool. So it does give
+
+00:08:27 you like suppose you're working on a project and you're using an external API
+
+00:08:32 and the API says you have a rate limit of five per second if you go over that
+
+00:08:36 we're gonna start failing and telling you status code 429 too many requests
+
+00:08:40 wait however long and try again but that becomes like really janky right so with
+
+00:08:45 this thing what you can do is I can create a rate limiter and say I'm willing to allow a hundred calls within a 30-second window or the example I gave
+
+00:08:54 five calls within a one-second window or whatever, right?
+
+00:08:57 Something like that.
+
+00:08:58 And then you just put that into a async with block and then stuff that happens in that window
+
+00:09:03 will be limited by this rate limit.
+
+00:09:05 - Okay.
+
+00:09:06 - Cool, right?
+
+00:09:06 So it makes it really easy to handle those kinds of things.
+
+00:09:09 But often it's not like I'm going to make all of the calls here, you know what I mean?
+
+00:09:15 It's I want all the async calls in the system to be limited in this way,
+
+00:09:19 not the ones that I'm controlling the particular function of, which is sort of the crux of my complaint that I started with.
+
+00:09:26 But this is nice.
+
+00:09:26 You create one of these somewhere, and then anywhere you use this rate limit
+
+00:09:30 as a context manager, it is subject to that rate limiting.
+
+00:09:34 So it doesn't have to be the same function.
+
+00:09:36 It doesn't have to be all the codes are happening at the same time within the block.
+
+00:09:40 So, you know, that's a pretty nice thing, right?
+
+00:09:43 As long as you just put that in all the places you need it.
+
+00:09:45 Like, for example, one of the problems you can do is you're getting too many requests.
+
+00:09:48 You can overwhelm your database, and because you're awaiting it asynchronously,
+
+00:09:53 you could just keep feeding it to the database, even if the database is slowing down
+
+00:09:56 and slowing down and slowing down.
+
+00:09:57 So like in your data access layer, you could just wrap all of your queries
+
+00:10:01 in one of these things that say, don't let more than, I don't know, 10 per second
+
+00:10:05 or whatever is reasonable for your database.
+
+00:10:08 That's kind of low, but you know what I mean.
+
+00:10:10 Like you can sort of control that.
+
+00:10:11 - So you might like have one of these rate limiter for your database and then maybe one for an external API or-
+
+00:10:19 - Yes, theoretically, and they could be different, right?
+
+00:10:22 - Yeah, okay, that makes sense.
+
+00:10:24 - Yeah, anyway, yeah, I thought this was kinda cool, and people who are worried about trying to solve
+
+00:10:29 that problem, then they can use this as one of the tools there.
+
+00:10:35 - Computers are so fast, sometimes we're like, it's too fast, slow down a little bit.
+
+00:10:38 - Yeah, it's like, let's make it allow it to do all the work and not wait on any of it,
+
+00:10:42 like, usually good, sometimes bad.
+
+00:10:45 - Sometimes bad.
+
+00:10:47 - But the thing on the end doesn't like it.
+
+00:10:49 - Yep.
+
+00:10:50 - Yeah, and out in the audience we got a, "Wow, cool," says Aziz.
+
+00:10:53 "I had this limit problem a lot." Yeah, awesome.
+
+00:10:55 Hope it helps.
+
+00:10:56 - Yeah, hope it limits your problems.
+
+00:10:58 - It does limit, it will limit your problems.
+
+00:11:01 What's next?
+
+00:11:02 - That was weak.
+
+00:11:02 So, I wanna talk about SpyStuff.
+
+00:11:05 So, Lucas Lange wrote an article about SpyStuff.
+
+00:11:10 Actually, "A Peek into a Possible Future "of Python in the Browser." who, there's a, it's a kind of a fun article also,
+
+00:11:19 but a great picture as well, some cool picture of the mountains.
+
+00:11:22 Anyway, and you know, he's, I trust what he, I trust his opinion because of his involvement with Python and everything,
+
+00:11:30 but this is interesting about a lot of the core Python people really involved with thinking about the web.
+
+00:11:38 So there's a section about looking back on, I haven't read this, or seen this,
+
+00:11:44 but apparently there was a Gary Bernhardt talk about the birth and death of JavaScript.
+
+00:11:48 I'll have to go back and look at that.
+
+00:11:50 And then, but basically talking about the history of Python and--
+
+00:11:53 - Wait, wait, wait, wait, wait.
+
+00:11:54 If you have not seen the birth and death of JavaScript, it needs to go to the top of your list.
+
+00:11:59 - Okay.
+
+00:12:00 - The birth and death of JavaScript is a seminal video that is both hilarious and very insightful.
+
+00:12:06 - Okay, well--
+
+00:12:06 - And the JavaScript is part of the joke.
+
+00:12:09 - Okay, JavaScript, all right.
+
+00:12:11 Well, then he goes on to talk about Pyodide other things and using NumPy and Cython and stuff. But the real thrust here is a new research
+
+00:12:27 project called SPI. S, capital S, capital P, lower Y, I guess. So that's SPI stuff.
+
+00:12:36 The article says the SPI is a research project in its early stages. At the moment, don't
+
+00:12:41 attempt to use it yet unless you plan to contribute.
+
+00:12:44 But maybe you do plan to contribute.
+
+00:12:47 Both incomplete implementation-wise and design-wise, but so early stages.
+
+00:12:53 But it sounds pretty cool.
+
+00:12:55 So there's this-- I like the idea.
+
+00:12:57 So there's this-- I'm going to jump down to the demo, see if we can get it to play.
+
+00:13:02 So-- ooh, I had video sound too, but I don't think you hear that.
+
+00:13:05 But anyway, there's a demo of it working, of some shapes shifting around.
+
+00:13:09 And that's actually running in the browser already, but you just can't, I guess it's not complete yet.
+
+00:13:15 But this idea of having things that look like Python.
+
+00:13:20 So when you're, there's like blue code and red code is the idea.
+
+00:13:25 And the blue code is stuff that just like acts like Python.
+
+00:13:28 And that's great for debugging and stuff.
+
+00:13:31 And because people are used to writing in Python.
+
+00:13:34 And then there's a redshift model of, 'cause that's what we do a lot is like,
+
+00:13:39 whether we should compile it or not.
+
+00:13:40 But this will pre-compute a lot of the stuff that's blue into a pre-compiled version.
+
+00:13:49 Anyway, all the little compilation parts to make things run faster.
+
+00:13:53 But I really like the idea that you've got a level where you're running it just as pure Python
+
+00:13:59 and then you can deploy it and it runs as a compiled part.
+
+00:14:03 So anyway, I'm probably getting this wrong at early stages, but we've got links to this article and then to the Spy Project itself,
+
+00:14:11 which a lot of activity just recently.
+
+00:14:14 So anyway, I like that and mostly, I don't know why I brought this up.
+
+00:14:20 The, the, the story of Python in the web browser, better and better.
+
+00:14:24 So anyway, I also bookmarked this article as something super interesting that should,
+
+00:14:31 you know, might be worth talking and reading up on.
+
+00:14:33 So thanks for covering it.
+
+00:14:34 Yeah.
+
+00:14:34 And if you've got a deeper, - We're on the verge.
+
+00:14:36 - You mentioned we could bring it up later again as well.
+
+00:14:39 - Yeah, yeah, it's early days, so maybe there'll be more news on it.
+
+00:14:42 I'm very excited about the possibility of Python in the browser.
+
+00:14:47 It'll uncork some amazing stuff if that really gets running seamlessly.
+
+00:14:52 - And really, I'm saying the browser, but really what we're also meaning is that
+
+00:14:57 if we could not have different front-end and back-end languages, so if we do all the dynamic front-end stuff with Python,
+
+00:15:04 be cool.
+
+00:15:05 Exactly.
+
+00:15:06 Exactly.
+
+00:15:07 Like, so I think that the browser manufacturers could do significantly more to make this better for, for example, every one of them ships a
+
+00:15:17 JavaScript runtime that's optimized.
+
+00:15:19 Right.
+
+00:15:19 Not a single one of them ships the WebAssembly version of Ruby or the web
+
+00:15:25 assembly version of CPython, you know, Pyodide or the WebAssembly version of
+
+00:15:29 .NET for Blazor or all these things.
+
+00:15:32 And so all of those projects are like, well, it'd be great to use this.
+
+00:15:35 but it's really slow to download the whole runtime on each page separately.
+
+00:15:39 - Yeah.
+
+00:15:40 - Every browser could say, "We will provide and keep up to date "as part of our binaries,"
+
+00:15:46 or just off of the internet or whatever as you download it, "a shared Python runtime, a shared Ruby runtime,
+
+00:15:52 "a shared.NET runtime," and so on, and they don't.
+
+00:15:55 - Yeah.
+
+00:15:56 - Right, but all these complaints about, "Well, the web frontend's too slow
+
+00:16:00 "'cause you gotta download all this stuff," like, yes, you do now, but it could theoretically be that they say, well, we're going to support like an
+
+00:16:08 open sort of management of these, these binary, these WebAssembly runtimes that
+
+00:16:12 you might need to download.
+
+00:16:13 Sure, the extras you got to download every time like JavaScript, but the core
+
+00:16:17 runtime of 10 megs, we'll like update that with our browser or just update it as it
+
+00:16:22 changes on the web.
+
+00:16:23 I wish they would do that.
+
+00:16:25 Right.
+
+00:16:25 I mean, you know, they do it for JavaScript.
+
+00:16:27 I mean, come on now.
+
+00:16:29 Right.
+
+00:16:29 It's like, it sounds crazy, but at the same time they do it for JavaScript and
+
+00:16:32 they write their own.
+
+00:16:33 All right, they wouldn't even have to write their own.
+
+00:16:35 They just got to allow the run of random others.
+
+00:16:38 Okay, enough of that.
+
+00:16:39 Let's talk about reloading stuff in the browser.
+
+00:16:41 Instead, that sounds fun.
+
+00:16:42 So there's two projects I want to tell you about.
+
+00:16:45 One is the big heavyweight does so much stuff to help you write web applications,
+
+00:16:51 type in the editor, and have that stuff magically change.
+
+00:16:55 For example, by default, if I run a Flask app and I go over to the, I run it and I open it up in a browser,
+
+00:17:01 and I see the page I'm working on, and then I go over and I edit the Jinja template.
+
+00:17:05 I hit save, and I refresh the browser, nothing happens.
+
+00:17:09 I have to go back to Flask, restart Flask, go back to the browser, reload the browser,
+
+00:17:15 now I can see my changes.
+
+00:17:17 You can level that up one by going to Flask and say you're running in debug mode,
+
+00:17:21 so if you see any changes, please rerun Flask and reload the templates if I edit the templates.
+
+00:17:27 Then you can just edit your thing, save it, go over to your browser, hit refresh, see the changes.
+
+00:17:33 But what would be nicer if I could have like two thirds of my screen be my editor,
+
+00:17:37 one third of my screen be the web browser.
+
+00:17:39 And as I type, I see stuff just changing on the page.
+
+00:17:43 So if I put a CSS class on a thing, I don't have to go to the other app and do anything.
+
+00:17:47 It just literally just the changes that apply like every second or so, right?
+
+00:17:52 So that's what this Relodium thing is, but it does a lot.
+
+00:17:56 So I want to put this out there for people as a cool option.
+
+00:17:59 I'm not sure I'm going to put it out there as a recommendation yet.
+
+00:18:01 So let me tell you.
+
+00:18:02 So for example, it will not just do the experience I told you about, but it will
+
+00:18:07 actually rerun every function.
+
+00:18:10 If you make a change to a function, it will rerun it and you can actually
+
+00:18:13 have it doing like live profiling.
+
+00:18:16 So as you, as you type there, it'll give you a profiled output of the thing and so
+
+00:18:24 on.
+
+00:18:24 So if you kind of want to explore it, it gives you like that idea more broadly.
+
+00:18:27 So it works there.
+
+00:18:29 it comes with a PyCharm plugin which is what the little animation is so you can
+
+00:18:33 actually see a visual representation of like the performance time and how it's
+
+00:18:37 running and reworking and so on. Okay so that's pretty neat. Comes with an AI
+
+00:18:41 thing I'm gonna skip that I don't know what that is or care. It has yeah so
+
+00:18:47 generally if you make a change to a function it will re-execute the current
+
+00:18:51 function providing immediate feedback and if there's an error it doesn't die
+
+00:18:55 it just goes well okay once you fix it things are going to be good and it'll
+
+00:18:58 start working again. So it's kind of durable to that, you know. And it'll
+
+00:19:03 refresh files throughout the entire project, looking at dependencies. So if I
+
+00:19:07 make a change to like one bit, then it'll change the others, you know, like with
+
+00:19:10 new import or whatever. For Django, it does exactly what I was telling you, like
+
+00:19:15 as you type, not just as you type HTML, but as you type Python. So the example
+
+00:19:20 they have here is they, they're doing a query for all objects and then they
+
+00:19:24 slice it to do a limit, paging and limiting type of business, and as they change the numbers
+
+00:19:30 in the slice in Python, the web browser is automatically updating the results without
+
+00:19:35 them touching it.
+
+00:19:35 That's pretty cool.
+
+00:19:37 Yeah, it's pretty cool, right?
+
+00:19:39 Similarly for Flask, it automatically reloads Flask, but again, it says, look, it'll hot
+
+00:19:44 reload the Flask app, but if you just set Flask debug to be true, Flask will already
+
+00:19:50 do that, you know what I mean?
+
+00:19:52 So the one thing it doesn't do is it doesn't refresh the page as you type on one side.
+
+00:19:57 The stuff on the right doesn't change, right?
+
+00:19:58 Another thing it does, it'll for SQLAlchemy because it's like running functions over and
+
+00:20:03 over and over, it might start to do insert, insert, insert to the database.
+
+00:20:07 So it does these auto runs and transactions that roll back so it doesn't tweak the database.
+
+00:20:12 Oh, interesting.
+
+00:20:13 Yeah.
+
+00:20:13 And it also does hot reload for pandas.
+
+00:20:16 So if you're messing with your data frame or things like that, it'll just automatically
+
+00:20:20 be updating as you type.
+
+00:20:21 - All right, pretty interesting, right, Brian?
+
+00:20:23 - Yeah.
+
+00:20:24 - Yeah, I don't know if I talked about it before, but just since people might want
+
+00:20:27 a less intrusive version of that.
+
+00:20:29 So I have this project called Server Hot Reload over on GitHub, and it's a single JavaScript file.
+
+00:20:34 And if you just include the JavaScript file in your page, it will give you the same functionality
+
+00:20:40 for web apps that will reload the template.
+
+00:20:43 So for example, if you just include the JavaScript at the top of the page,
+
+00:20:48 and then Flask, if you run it with Flask debug, or Pyramid automatically reloads in debug mode.
+
+00:20:54 You can set that in the config file, and I'm sure you can do similar stuff with Django.
+
+00:20:59 And then you just browse on one side, code on the other, and you just start typing,
+
+00:21:03 and off it goes, and even detects if you set it up right, or even like reload the page if you change an image
+
+00:21:08 that was being used, and things like that.
+
+00:21:11 So, super cool, but this one, it doesn't go all crazy.
+
+00:21:14 It doesn't require an IDE plugin and all that kind of stuff.
+
+00:21:18 Basically what it does is it looks at the response from the server and says, "Is the
+
+00:21:22 hash of the HTML changed?
+
+00:21:24 If yes, reload the page.
+
+00:21:26 If it's not changed, then don't reload the page," that kind of thing.
+
+00:21:29 So anyway, two ways to basically work in your editor, start typing, and having some kind
+
+00:21:36 of output web or in Relodium, other places, just automatically changing as you type so
+
+00:21:41 you don't have to manage that.
+
+00:21:42 You're just like, "Oh, what's this class?
+
+00:21:43 Oh, that looks really great.
+
+00:21:44 No, we need more padding here, da-da-da," off it goes.
+
+00:21:47 - So the server one probably doesn't do the, like if you change Python or--
+
+00:21:53 - Technically no, it doesn't do that.
+
+00:21:55 However, if you set Flask to do that automatically and then it re-requests the page, then yes it does.
+
+00:22:01 You know what I mean?
+
+00:22:01 - Okay, got it.
+
+00:22:02 - So if you're willing to use the framework tools, then it does.
+
+00:22:06 - Okay, okay, very good, cool.
+
+00:22:08 - Yeah, but it's nowhere near as intense, which I think for some people is a drawback
+
+00:22:12 and other people is a plus, depending on where you are.
+
+00:22:16 - Okay, nice.
+
+00:22:17 - All right, that's it for all of our items, isn't it?
+
+00:22:19 - Yeah, it is.
+
+00:22:21 - Well then, what have you got for extras?
+
+00:22:24 - I got just a pet project of mine that I wanted to talk about.
+
+00:22:30 So the Complete pytest course has been out for a while, and there's a couple things about it that are a little,
+
+00:22:36 that I'd really kind of like to change, so I'm working on some changes.
+
+00:22:40 First of all, if you see, if you go to the, and look at it, it says there's 162 lessons.
+
+00:22:45 It seems a little scary and the reason is because I've chopped it all up into, so there's
+
+00:22:51 16 chapters in the book, the course covers the entire book, 16 chapters, each video covers
+
+00:22:57 a section of a chapter and that's where, plus welcome videos and stuff, that's where the
+
+00:23:04 162 comes in.
+
+00:23:06 But that's a little, there's actually 162 videos which is a little intimidating, especially
+
+00:23:12 if you're looking at one and you kind of like, there's a lot here.
+
+00:23:17 But I mean, it's all good if you like to go in just like a few minutes at a time, that's great.
+
+00:23:23 But some people wanna just chunk through an entire chapter in like a lunch break or something.
+
+00:23:28 So the alternate version that I'm working on is chopping this up into just chapters.
+
+00:23:35 So most chapters will be one video.
+
+00:23:37 And then you can just chunk through like just watching one video, you can watch it in a weekend,
+
+00:23:43 or not a weekend, in like, you know, 20 minutes or something like that.
+
+00:23:47 There's a couple chapters, chapter two and chapter three are pretty big, writing test functions,
+
+00:23:53 and then fixtures, pretty big concepts.
+
+00:23:56 So they're a little longer, so I'm chopping those not into one video, but like three videos.
+
+00:24:03 And so, when I get all done, the new version will be not 162 lessons, but like 20 lessons or something like that.
+
+00:24:13 And then I'll probably make that the default and I'll just have both of them available
+
+00:24:17 because some people might like the little more granularity and it's not more effort on me to have both of them around.
+
+00:24:24 So they'll both be around.
+
+00:24:26 Anyway, that's what I'm up to.
+
+00:24:29 - Cool.
+
+00:24:30 Yeah, I like the small little videos.
+
+00:24:31 I think it's a way better reference material.
+
+00:24:34 You don't wanna have to go like, where in that 15 minute video was the thing I wanted?
+
+00:24:38 - Yeah, that's the benefit.
+
+00:24:39 The other thing is I like to, for videos, I like to probably set them at like 1.2 speed
+
+00:24:45 or 1.3 speed the first time, or 1.25, maybe 1.4, to get an overview really quickly.
+
+00:24:53 And you have to reset that for every video, and that's somewhat a little annoying.
+
+00:24:57 - That's a hassle.
+
+00:24:58 - Yeah.
+
+00:24:59 - That is a hassle.
+
+00:25:00 All right, well let's see what I got for extra.
+
+00:25:01 I got an oldie, something fun here.
+
+00:25:04 So there was a Hacker News thread or Reddit thread.
+
+00:25:08 I'm gonna go with Hacker News.
+
+00:25:09 Pretty sure it was Hacker News talking about, hey, could some people recommend
+
+00:25:13 some cool, legit programmer fiction books?
+
+00:25:18 Right, like I want a spy thriller that has to do with programming but that's not stupid.
+
+00:25:24 Right, it's not like, whoa, this is VB6, I know that.
+
+00:25:27 I'm gonna track their IP, like, you know what?
+
+00:25:29 That's not how it works.
+
+00:25:31 More Mr. Robot, less Jurassic Park or whatever that was.
+
+00:25:34 I can't remember.
+
+00:25:35 So, the book that I thought was really cool I'll give a shout out to is by Mark Russinovich
+
+00:25:40 who is the CTO of Azure.
+
+00:25:41 And apparently I bought this book in 2012 just to give you a sense.
+
+00:25:44 So it's not brand new, but it is a super cool series as long as you keep in mind like its computer world was 2012
+
+00:25:51 so people can check that out if they're interested.
+
+00:25:53 Also, Warp on Windows.
+
+00:25:56 I'm a big fan of Warp, the terminal.
+
+00:25:59 It's been working out super, super well.
+
+00:26:01 I tried ghost TT or ghost DD or whatever, however you say that.
+
+00:26:06 Just, I cannot do it.
+
+00:26:07 I can't do it.
+
+00:26:08 Like, it doesn't even let you like select text with hotkeys and stuff.
+
+00:26:11 It just puts like control H and stuff in there.
+
+00:26:14 And then until you can work with it as an editor, no, I can't do it.
+
+00:26:19 So, I mean, I know there's some way, like you can hold shift and arrow, but you can't do like control shift arrow to do
+
+00:26:26 like word by word.
+
+00:26:27 And you can't do, like you can do a home, but you can't do like shift home.
+
+00:26:30 These are like really weird, like editing and stuff where like some of it just starts putting
+
+00:26:33 escape characters into the thing.
+
+00:26:36 I don't remember exactly what it was 'cause when I saw it, I'm like, okay,
+
+00:26:39 we'll come back to this some other time.
+
+00:26:40 Anyway, if you are on Windows and you're looking for a better terminal, and I know Windows has fewer options
+
+00:26:46 and less good options than the other places for a variety of terminals, like there's Windows Terminal,
+
+00:26:52 and then, I don't know, is there anything else?
+
+00:26:54 I'm not sure.
+
+00:26:54 There's definitely Command Prompt.
+
+00:26:56 - Well, PowerShell runs within Windows Terminal.
+
+00:26:58 Like you can run Git Bash or PowerShell or whatever the DOS-like stuff.
+
+00:27:03 You can run all that in Windows Terminal.
+
+00:27:05 - Oh, right, okay.
+
+00:27:06 - Right?
+
+00:27:08 You can do the same in Warp.
+
+00:27:10 You can choose, do I want PowerShell, do I want Git Bash or whatever.
+
+00:27:13 But the thing that is the outer bit of it, you know, the app itself, there's not many options.
+
+00:27:20 So this is a cool thing that people can check out.
+
+00:27:21 I'll link to the video 'cause it's fun, but you can just go to warp.dev or wherever it is.
+
+00:27:25 Okay.
+
+00:27:27 Our friends over at Teaching Python Podcast, they are participating in being
+
+00:27:33 part of the PyCon 2025 Education Summit.
+
+00:27:37 And they're pointing out that, Hey, the applications are going to be, you know,
+
+00:27:45 sending a proposal very, very soon.
+
+00:27:48 So that was, I think last Friday and today is Monday.
+
+00:27:52 So, just recently opened up and they said the main theme is, in the age of AI, how do we maintain the creative,
+
+00:27:58 empathetic, and critical thinking skills we need to make us human and great coders?
+
+00:28:02 We want to know, and so there's a whole bunch of ideas around this.
+
+00:28:05 So, we've got Kelly and Sean and a bunch of other people participating in this, so if that resonates with you,
+
+00:28:12 check it out.
+
+00:28:13 - No, I was just chuckling because even before AI, we hadn't figured that out as far as I could tell.
+
+00:28:18 - Yeah, I don't really know the answer, So I'm going to ask ChatGPT, I'll get back to you.
+
+00:28:22 [laughing]
+
+00:28:22 Okay.
+
+00:28:23 [laughing]
+
+00:28:26 Yeah, one more extra here real quick.
+
+00:28:28 I just noticed that Granian, which is powering Python by ZFM, by the way, and many, many other things,
+
+00:28:33 just came out with their 2.0 release right there, seven hours ago.
+
+00:28:37 How's that for fresh, shocking news?
+
+00:28:39 Breaking news.
+
+00:28:39 Breaking news.
+
+00:28:42 [imitating drum roll]
+
+00:28:43 As far as I can tell, there's a bunch of cool changes here.
+
+00:28:46 One thing that's not cool is as far as I can tell it doesn't run FastAPI apps.
+
+00:28:50 So if you have Gradient, powering your FastAPI app, you might test this before you just update.
+
+00:28:58 There's also breaking changes in the CLI of like how you specify certain constraints and stuff.
+
+00:29:03 That's easy enough to fix because it tells you this constraint such and such,
+
+00:29:06 but I think there's something going on where at least all of my FastAPI apps stopped working when I switched to this,
+
+00:29:12 but all the other ones like Cort and Flask and Pyramid all work fine.
+
+00:29:16 - Interesting.
+
+00:29:17 - Don't know why.
+
+00:29:18 And Cort is async first just like FastAPI.
+
+00:29:21 So I don't know what's going on, but they were not having it.
+
+00:29:24 So I just pinned the version to less than two for those until whatever happens here gets figured out.
+
+00:29:29 So there's just a little PSA.
+
+00:29:31 All right, with that.
+
+00:29:32 - So seven hours ago, you already tried it?
+
+00:29:35 - Not on purpose.
+
+00:29:36 I tried it three hours after it was released.
+
+00:29:38 I needed to ship something else, but my deployment process is check something in the Git
+
+00:29:44 and then have it go rebuild the Docker images and restart them.
+
+00:29:47 And that's all, check all the dependencies, is there anything we can update?
+
+00:29:50 Like, does Ubuntu have security fixes we need to apply?
+
+00:29:54 Can we update the web server in case there's a security fix for it?
+
+00:29:57 And then we'll rerun the dependencies and we'll restart it.
+
+00:30:01 And then it didn't restart, I'm like, wait a minute, what?
+
+00:30:03 Why, what's going on here?
+
+00:30:05 This is not good.
+
+00:30:07 So that's how I learned that there's a new release of "Granny." - Okay.
+
+00:30:11 - You know what I mean?
+
+00:30:12 It's not like I was like, "Oh, I gotta try it that quick." It tried itself on me and then it didn't go so well,
+
+00:30:17 so I scrambled to fix it.
+
+00:30:19 - Okay, got it.
+
+00:30:20 - Yeah, yep.
+
+00:30:21 Okay, joke?
+
+00:30:23 - I'd love a joke.
+
+00:30:24 - Tabs or spaces?
+
+00:30:25 This one has to do with tabs or spaces.
+
+00:30:27 I'll tell you a joke before the joke, a pre-joke, if you will, to get everyone in the mood.
+
+00:30:31 This is like the bad joke, the bad comedian that shows up before the one you actually came to see.
+
+00:30:36 So we were at PyCon, I don't know.
+
+00:30:39 I think this might've even been in Portland.
+
+00:30:40 This was a while ago.
+
+00:30:42 And there was some company that was clearly not very tuned into Python.
+
+00:30:46 They were just a coder company, right?
+
+00:30:48 And they were like coming to sell their coder tools to the Python people.
+
+00:30:51 And so as they wanted to make a spicy t-shirt and the spicy t-shirt said, "Tabs or spaces, fight."
+
+00:30:58 Like this is the stupidest shirt I've seen at the whole conference.
+
+00:31:01 I mean, tabs are basically disallowed.
+
+00:31:03 They're not exactly disallowed, but they're pretty much disallowed.
+
+00:31:06 - Like that's not an argument, it's over.
+
+00:31:08 - And you're like, you're trying to set up as a debate, like you could do two spaces, four spaces and fight,
+
+00:31:13 but you can't do tabs versus spaces at a Python conference.
+
+00:31:17 Anyway, but people are going around with shirts nonetheless.
+
+00:31:19 I think I got one to cut the lawn in.
+
+00:31:21 - Okay, well, on that topic, two spaces or four spaces?
+
+00:31:25 - Four, unless I'm doing JavaScript then two, 'cause for some reason the tools seem to default
+
+00:31:29 to two for JavaScript, you?
+
+00:31:32 like four usually, but I'm noticing that I'm using two frequently as well.
+
+00:31:38 So, okay.
+
+00:31:40 - Very contrarian.
+
+00:31:41 Okay.
+
+00:31:42 You're an enigma wrapped in a fuzzy cloud.
+
+00:31:45 Okay.
+
+00:31:46 How about this for, this is the real joke.
+
+00:31:47 So I don't know if this is better or worse, but this is what people came for.
+
+00:31:51 Code puns.
+
+00:31:52 You ready, Brian?
+
+00:31:53 - Yeah.
+
+00:31:53 - A Python programmer walks into a bar and opens a tab.
+
+00:31:56 The bartender tells them to sit at the table since they will need four spaces.
+
+00:32:04 That's what I got for y'all.
+
+00:32:10 No it's hilarious, see?
+
+00:32:11 That's why people listen.
+
+00:32:13 Yeah, yeah, yeah.
+
+00:32:14 Oh no, I'm like advertising it poorly.
+
+00:32:17 That was hilarious, man.
+
+00:32:18 Good joke.
+
+00:32:19 Now, there's actually a bunch more here.
+
+00:32:20 We've talked about this place before, right?
+
+00:32:22 Yeah.
+
+00:32:23 Let's see.
+
+00:32:24 They're not all good.
+
+00:32:25 Why did the four loops stop running?
+
+00:32:27 It took a break.
+
+00:32:28 Yeah.
+
+00:32:29 How do you convert a JavaScript bug?
+
+00:32:31 You console it, like it's console log and so on.
+
+00:32:34 There we go.
+
+00:32:38 - No, it's good, thanks.
+
+00:32:39 - I think it was hilarious, I know.
+
+00:32:41 I hear the flaws, no, not really.
+
+00:32:43 But that's what I brought anyway.
+
+00:32:47 - Good talking with you again, and thanks everybody for listening.
+
+00:32:50 - Yeah, you bet, bye all.
+
