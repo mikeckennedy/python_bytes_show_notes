@@ -1,0 +1,1715 @@
+WEBVTT
+
+00:00:00.001 --> 00:00:05.400
+Hello and welcome to Python Bytes, where we deliver Python news and headlines directly to your earbuds.
+
+00:00:05.400 --> 00:00:09.980
+This is episode 423, recorded March 10, 2025.
+
+00:00:09.980 --> 00:00:11.420
+And I am Brian Okken.
+
+00:00:11.420 --> 00:00:12.460
+And I'm Michael Kennedy.
+
+00:00:12.460 --> 00:00:23.440
+And thanks everybody again for supporting us through training courses at pythontest.com and at talkpython.fm.
+
+00:00:23.440 --> 00:00:25.600
+So lots of great courses there.
+
+00:00:25.600 --> 00:00:28.020
+And our Patreon supporters, of course.
+
+00:00:28.020 --> 00:00:28.440
+Thank you.
+
+00:00:28.440 --> 00:00:31.940
+And for people that'd like to get a hold of us, we'd love to get here.
+
+00:00:31.940 --> 00:00:40.240
+If you've got a suggestion for the show or have a question about it or correction, you can reach the show at pythontest.fm.
+
+00:00:40.240 --> 00:00:48.000
+And there's also in the show notes, there's links to our Blue Sky and Mastodon links.
+
+00:00:48.000 --> 00:00:51.320
+And you can also sign up at pythontest.fm.
+
+00:00:51.320 --> 00:00:56.360
+You can go to live to see when the next live show is going to go on.
+
+00:00:56.880 --> 00:01:03.840
+Or you can sign up for the newsletter and get everything we talked about sent directly to your inbox, which is cool.
+
+00:01:03.840 --> 00:01:04.260
+Yeah.
+
+00:01:04.260 --> 00:01:06.480
+And they can crush that bell on YouTube, too.
+
+00:01:06.480 --> 00:01:07.220
+Oh, yeah.
+
+00:01:07.220 --> 00:01:08.160
+Subscribing on YouTube.
+
+00:01:08.160 --> 00:01:09.040
+That would be great.
+
+00:01:09.040 --> 00:01:09.760
+Yeah.
+
+00:01:09.760 --> 00:01:10.160
+Yeah.
+
+00:01:11.020 --> 00:01:16.600
+So speaking of subscribing or scribing, what are we talking about first?
+
+00:01:16.600 --> 00:01:20.740
+Well, how's your SQL game, Brian?
+
+00:01:20.740 --> 00:01:22.180
+A little weak, actually.
+
+00:01:22.180 --> 00:01:22.780
+Yeah.
+
+00:01:22.780 --> 00:01:23.660
+Mine's a little weak as well.
+
+00:01:23.660 --> 00:01:24.520
+It's atrophied a bit.
+
+00:01:24.520 --> 00:01:29.300
+You know, I've got its table and I got another table and I want to do a join on that table.
+
+00:01:29.300 --> 00:01:31.640
+And then maybe I want to use an aggregation function.
+
+00:01:31.640 --> 00:01:32.940
+How do I do that again?
+
+00:01:32.940 --> 00:01:37.140
+Well, there's a lot of cool tools and libraries around there to solve that.
+
+00:01:37.140 --> 00:01:44.720
+For example, you can use SQLAlchemy or SQL Model and then you just talk in Python terms and classes and stuff.
+
+00:01:44.720 --> 00:01:49.940
+And then somehow magically deep down when it docs the database, it'll do that kind of stuff for you.
+
+00:01:49.940 --> 00:01:51.640
+You still kind of got to know the queries.
+
+00:01:51.640 --> 00:01:55.100
+So it's not perfect, but it doesn't perfectly solve it for you.
+
+00:01:55.100 --> 00:01:59.800
+But I want to introduce everyone to a new tool called PySQL Scribe.
+
+00:02:00.140 --> 00:02:04.860
+And the idea here is similar to that, except for you use it for real SQL.
+
+00:02:04.860 --> 00:02:17.500
+So, for example, if you want to know how to do one of these joins or you want to get some support doing that and you're not already using SQLAlchemy, it's not reasonable to say, well, let me re-implement everything I'm doing in SQLAlchemy.
+
+00:02:17.500 --> 00:02:23.280
+So I can ask it a question to get a simple SQL statement that I just want to use outside of SQLAlchemy.
+
+00:02:23.280 --> 00:02:23.500
+Right.
+
+00:02:23.500 --> 00:02:24.000
+Okay.
+
+00:02:24.000 --> 00:02:24.840
+So that's kind of what this is.
+
+00:02:24.840 --> 00:02:30.920
+So you can take this thing and you teach it about different things, which database you're using.
+
+00:02:30.920 --> 00:02:37.200
+Because even though SQL is a general query language, it does not generally work against any database.
+
+00:02:37.200 --> 00:02:37.820
+Right.
+
+00:02:37.820 --> 00:02:40.480
+Each database has its own dialect.
+
+00:02:41.020 --> 00:02:41.420
+Right.
+
+00:02:41.420 --> 00:02:47.920
+So the way you say, for example, specify parameters for MySQL is different than the way you do for Microsoft SQL Server.
+
+00:02:47.920 --> 00:02:50.200
+And while they are similar, they're not the same.
+
+00:02:50.200 --> 00:02:53.760
+So what you do is with this is you say, I'm working with this particular database.
+
+00:02:53.760 --> 00:02:57.460
+And then you say, you give it information about your tables.
+
+00:02:57.460 --> 00:02:57.960
+Right.
+
+00:02:57.960 --> 00:02:59.780
+So here's a table name.
+
+00:02:59.780 --> 00:03:01.480
+Here it's columns and so on.
+
+00:03:01.480 --> 00:03:08.280
+And then you can just say, create a little builder and say, builder.select this column, that column from this table build.
+
+00:03:08.280 --> 00:03:13.960
+And what it builds is it outputs a select or a SQL statement of some sort.
+
+00:03:13.960 --> 00:03:16.780
+So in this case, select the various columns from the table.
+
+00:03:16.780 --> 00:03:17.860
+Cool, right?
+
+00:03:17.860 --> 00:03:18.400
+Yeah.
+
+00:03:18.400 --> 00:03:18.880
+Yeah.
+
+00:03:18.880 --> 00:03:21.860
+But you can do more than that.
+
+00:03:21.860 --> 00:03:28.660
+You can, let's see, you can create your own class by creating a class that is decorated.
+
+00:03:28.660 --> 00:03:35.840
+And then it will know that, you know, basically you can create either your own queries or you can create your own dialect.
+
+00:03:35.840 --> 00:03:38.240
+So for example, here's a MySQL table.
+
+00:03:38.240 --> 00:03:41.860
+So you don't have to specify the dialect because it's a MySQL table.
+
+00:03:41.860 --> 00:03:42.780
+It knows the dialect.
+
+00:03:42.780 --> 00:03:49.000
+And if you go further down here, you can see it understands more complicated things like join.
+
+00:03:49.000 --> 00:03:50.840
+Like first I want to select this thing.
+
+00:03:50.840 --> 00:03:56.900
+Then I want to join on that table on this thing and then build and it'll write the join statement for you.
+
+00:03:56.900 --> 00:03:57.800
+Just pretty neat.
+
+00:03:58.080 --> 00:04:00.240
+You can also do, like I said, functions.
+
+00:04:00.240 --> 00:04:02.280
+Let me scroll down a tad to that.
+
+00:04:02.280 --> 00:04:11.200
+So for example, if you wanted to write something that did, you know, uppercase in the select statement or max of some value out of there, right?
+
+00:04:11.200 --> 00:04:13.420
+And a group by type of thing.
+
+00:04:13.420 --> 00:04:22.120
+So you could just go and write that in terms of the SQL scribe, the PySQL scribe, and then it will actually generate all that for you.
+
+00:04:22.120 --> 00:04:23.100
+So that's pretty neat.
+
+00:04:23.360 --> 00:04:29.740
+And finally, you can combine them if you have one builder inside of another builder type of thing.
+
+00:04:29.740 --> 00:04:30.860
+And it'll join.
+
+00:04:30.860 --> 00:04:32.360
+It's a more complicated thing.
+
+00:04:32.360 --> 00:04:36.460
+So the more you do with the SQL, you know, probably the more helpful this is.
+
+00:04:36.460 --> 00:04:40.760
+If you're just doing real simple select and where statements, maybe not that helpful.
+
+00:04:40.920 --> 00:04:42.580
+But that is my first item.
+
+00:04:42.580 --> 00:04:43.720
+I think it might help some folks.
+
+00:04:43.720 --> 00:04:43.920
+Yeah.
+
+00:04:43.920 --> 00:04:44.940
+Yeah.
+
+00:04:44.940 --> 00:04:49.000
+I guess you're probably the wrong person to ask, but I was just curious about the use case.
+
+00:04:49.000 --> 00:05:03.180
+So like, for instance, I guess if you had an application that the user could select which database they're connecting to, and then you could create the different features based on that and just, I guess.
+
+00:05:03.580 --> 00:05:03.680
+Yeah.
+
+00:05:03.680 --> 00:05:06.080
+I don't think it's operational in a sense.
+
+00:05:06.080 --> 00:05:09.480
+I think it's more, because if you're doing it operationally, just use an ORM.
+
+00:05:09.480 --> 00:05:09.920
+Okay.
+
+00:05:09.920 --> 00:05:11.080
+Because it does that, right?
+
+00:05:11.080 --> 00:05:18.060
+I think it's, I would like this thing to help me write the queries because I'm, sometimes I forget.
+
+00:05:18.060 --> 00:05:21.540
+Like if you're doing data science, you might be connecting to different data sources.
+
+00:05:21.540 --> 00:05:25.480
+You might be going, oh, I want to ask this question, but oh, that's probably a join.
+
+00:05:25.480 --> 00:05:26.540
+How do I do that again?
+
+00:05:26.540 --> 00:05:27.180
+And so on.
+
+00:05:27.400 --> 00:05:27.680
+Okay.
+
+00:05:27.680 --> 00:05:28.200
+Yeah.
+
+00:05:28.200 --> 00:05:33.020
+I was actually, because I was just thinking about putting an application together and I was like, it's pretty lightweight.
+
+00:05:33.020 --> 00:05:34.300
+I don't really want an ORM.
+
+00:05:34.300 --> 00:05:38.160
+So I was going to do raw SQL, but then I.
+
+00:05:38.160 --> 00:05:38.320
+Yeah.
+
+00:05:38.320 --> 00:05:49.560
+So what you might do is you might run this one, you might give it your specification, run it one time, and then hard code the responses as parameterized queries in your Python code.
+
+00:05:49.560 --> 00:05:56.560
+And don't revisit it again until you might need to change the query in a sufficiently complicated way that you can't just like type another column or something.
+
+00:05:56.560 --> 00:05:57.040
+You know what I mean?
+
+00:05:57.040 --> 00:05:57.340
+Yeah.
+
+00:05:57.340 --> 00:05:57.620
+Okay.
+
+00:05:57.620 --> 00:05:58.060
+Yeah.
+
+00:05:58.060 --> 00:05:58.620
+Interesting.
+
+00:05:58.620 --> 00:05:59.080
+Cool.
+
+00:05:59.080 --> 00:06:08.740
+One addition that I added here, added sort of an idea I added, I guess, is I, I just, as getting ready for this, I'd thought, you know what?
+
+00:06:08.740 --> 00:06:15.880
+This is like typing in the names of the columns and the available tables seems like that should be automated.
+
+00:06:16.500 --> 00:06:23.960
+So I don't know if Daniel, the guy who created it, is any, has any interest in this, but I said, Hey, wouldn't it be cool if you could give it a create script?
+
+00:06:23.960 --> 00:06:32.960
+You know, you can go to your database and say, create an entire create script for the entire database with all the columns and the relationships and indexes and all that kind of stuff.
+
+00:06:32.960 --> 00:06:40.760
+If you could just point it at that, and then it could generate all the tables as an thing you pull in by table name.
+
+00:06:40.760 --> 00:06:45.020
+And then it just automatically knows the structure of everything of all your tables.
+
+00:06:45.020 --> 00:06:51.640
+Right. So I said, Hey, maybe you can make it pars a SQL data, create a data definition language, create script sort of thing.
+
+00:06:51.640 --> 00:06:54.800
+So I gave a little example of something that you might be able to do there.
+
+00:06:54.800 --> 00:07:00.160
+So who knows if that comes around, if he likes the idea or not, but I think there's some cool ways to expand this.
+
+00:07:00.160 --> 00:07:01.060
+Cool. Nice.
+
+00:07:01.060 --> 00:07:01.740
+Yeah. All right.
+
+00:07:01.740 --> 00:07:02.540
+Over to you.
+
+00:07:03.440 --> 00:07:08.960
+Well, I'm going to add, I'm going to look at a map of Python.
+
+00:07:08.960 --> 00:07:12.420
+So I ran across this article.
+
+00:07:12.420 --> 00:07:14.720
+It's kind of cool.
+
+00:07:14.720 --> 00:07:23.780
+So the idea is around looking at PyPI has got tons of packages there, but there's a lot of dependencies between them.
+
+00:07:24.260 --> 00:07:30.360
+And visualizing kind of how, what would it look like if we visualize all of this?
+
+00:07:30.880 --> 00:07:33.480
+So there's a couple of visualizations here.
+
+00:07:33.480 --> 00:07:40.020
+And I actually got a little lost in trying to interpret this, but it's pretty dots.
+
+00:07:40.880 --> 00:07:47.260
+But you can, you know, you can zoom in a little bit on, on some of these, the scroll wheel works on this to zoom in.
+
+00:07:47.260 --> 00:07:53.320
+And I'm not, I couldn't figure out what the spacing meant, but anyway, I, the, why I'm okay.
+
+00:07:53.320 --> 00:07:56.400
+So since I don't really know what this is doing, why am I covering it?
+
+00:07:56.400 --> 00:08:02.800
+One of the things I thought was great was it was just sort of a discussion around dealing with large data.
+
+00:08:02.800 --> 00:08:08.220
+And, you know, the, the big, the data set of PyPI is a pretty big data set.
+
+00:08:08.720 --> 00:08:22.960
+There is big, there's copies in BigQuery so that you can query that instead of, instead of querying PyPI all the time, which is something that I've done with the Python or pytest plugin list as well.
+
+00:08:22.960 --> 00:08:27.080
+But the, it's, but then there's some discussions.
+
+00:08:27.080 --> 00:08:28.680
+Well, there's, there's some junk in there.
+
+00:08:28.680 --> 00:08:37.860
+There's, there's, there's packages that don't have like source code listed or there's, you know, other things that make them really not,
+
+00:08:38.140 --> 00:08:39.300
+they're not really open source.
+
+00:08:39.300 --> 00:08:41.700
+They're just utilizing PyPI or something.
+
+00:08:41.700 --> 00:08:43.520
+Sometimes companies do that.
+
+00:08:43.520 --> 00:08:48.240
+Anyway, so there's some discussion around filtering that, which is an interesting discussion.
+
+00:08:48.240 --> 00:08:55.840
+And then a little bit of discussion about deciding what graphing mechanism to use and, and how to visualize it.
+
+00:08:55.840 --> 00:08:57.880
+So I, I just really appreciated the discussion.
+
+00:08:57.880 --> 00:09:02.480
+So if you're into visualizing data, I think this might be an interesting thing.
+
+00:09:02.480 --> 00:09:04.360
+Plus it's just a really fun visualization.
+
+00:09:04.980 --> 00:09:09.880
+And then at the end, there's a link that said, oh yeah, by the way, there's a better UI for this.
+
+00:09:09.880 --> 00:09:10.600
+I'm like, oh, okay.
+
+00:09:10.600 --> 00:09:11.540
+Let's take a look at that.
+
+00:09:11.540 --> 00:09:12.920
+And this is just cool.
+
+00:09:12.920 --> 00:09:16.960
+It's the spaceship, I don't know, spaceship operating manual.
+
+00:09:16.960 --> 00:09:18.080
+Wow.
+
+00:09:18.480 --> 00:09:20.360
+So this is like the galaxy of Python.
+
+00:09:20.360 --> 00:09:23.060
+And let's see if we have W and S for forward and back.
+
+00:09:23.060 --> 00:09:23.160
+Yeah.
+
+00:09:23.160 --> 00:09:26.980
+The first one was kind of like, I don't know, old school maps.
+
+00:09:26.980 --> 00:09:27.600
+It was really cool.
+
+00:09:27.600 --> 00:09:31.940
+But old school maps and like, you know, the days of like sailing and exploring.
+
+00:09:31.940 --> 00:09:32.940
+And this is like Hubble.
+
+00:09:33.480 --> 00:09:33.760
+Yeah.
+
+00:09:33.760 --> 00:09:35.060
+So look, look at this.
+
+00:09:35.060 --> 00:09:36.220
+We move forward and back.
+
+00:09:36.220 --> 00:09:36.740
+Oops.
+
+00:09:36.740 --> 00:09:38.000
+Let's see.
+
+00:09:38.000 --> 00:09:38.440
+W.
+
+00:09:38.440 --> 00:09:40.040
+See if we can get this to go.
+
+00:09:40.040 --> 00:09:41.000
+This is great.
+
+00:09:41.000 --> 00:09:45.840
+So for people listening, I'm zooming in and it's like you're going through a star field.
+
+00:09:45.840 --> 00:09:49.200
+And these are, these are Python dependencies that we're going around in.
+
+00:09:49.200 --> 00:09:54.140
+It's just, it's, it's a fun, I don't know, video game, video visualization thing.
+
+00:09:54.140 --> 00:09:54.560
+So.
+
+00:09:54.560 --> 00:09:56.080
+I'm going to play with, I haven't seen this before.
+
+00:09:56.080 --> 00:09:56.880
+I'm going to play this later.
+
+00:09:57.500 --> 00:09:57.860
+Thanks.
+
+00:09:57.860 --> 00:09:59.220
+You're just wasting like a half an hour of my day.
+
+00:09:59.220 --> 00:10:00.480
+You're welcome.
+
+00:10:00.480 --> 00:10:01.320
+Yeah.
+
+00:10:01.320 --> 00:10:07.380
+And so this, this is, this is all on, on GitHub also.
+
+00:10:07.380 --> 00:10:12.320
+So if you want to take a look at how he did the filtering and I'm, I'm linked to this because
+
+00:10:12.320 --> 00:10:13.920
+I'm going to take a look at how he's doing.
+
+00:10:13.920 --> 00:10:18.960
+So even a reproduction guide said there's the SQL query.
+
+00:10:18.960 --> 00:10:23.480
+So if you, if you'd like to do some big query stuff for around PyPI, there's an example.
+
+00:10:23.480 --> 00:10:25.660
+There's a process Jason.
+
+00:10:25.660 --> 00:10:29.740
+So how he's using the filters and stuff and then converting it to a graph.
+
+00:10:29.740 --> 00:10:37.540
+So some great, nice open source or nice examples of how to do data and visualization and stuff.
+
+00:10:37.540 --> 00:10:37.960
+So.
+
+00:10:37.960 --> 00:10:38.500
+Yeah.
+
+00:10:38.500 --> 00:10:39.080
+I love it.
+
+00:10:39.080 --> 00:10:39.540
+It's beautiful.
+
+00:10:39.540 --> 00:10:40.580
+Very, very cool.
+
+00:10:40.580 --> 00:10:40.800
+Yeah.
+
+00:10:40.800 --> 00:10:43.840
+You all have to follow the links to explore it.
+
+00:10:43.840 --> 00:10:44.780
+Yeah.
+
+00:10:44.780 --> 00:10:47.560
+And play with, play with the, the space one.
+
+00:10:47.560 --> 00:10:48.160
+That's fun.
+
+00:10:48.160 --> 00:10:48.580
+So.
+
+00:10:48.580 --> 00:10:48.980
+Yeah.
+
+00:10:48.980 --> 00:10:50.480
+The space one is the one I was thinking of.
+
+00:10:50.480 --> 00:10:51.240
+Awesome.
+
+00:10:51.240 --> 00:10:53.700
+I want to talk Rust, C++ and Python.
+
+00:10:53.700 --> 00:10:57.580
+I heard Bjorn was saying that C++ is under attack, Brian.
+
+00:10:57.580 --> 00:10:58.520
+How do you feel about that?
+
+00:10:58.520 --> 00:10:59.900
+It's under attack.
+
+00:10:59.900 --> 00:11:00.660
+I think so.
+
+00:11:00.660 --> 00:11:06.040
+I heard people say that I've heard a lot of, we really, you know, new software should be
+
+00:11:06.040 --> 00:11:07.480
+written in a memory safe language.
+
+00:11:07.480 --> 00:11:10.000
+And that's, you know, that doesn't work with C++.
+
+00:11:10.000 --> 00:11:12.020
+Anyway, that's not the point of this.
+
+00:11:12.340 --> 00:11:12.480
+Yeah.
+
+00:11:12.480 --> 00:11:13.200
+The point is.
+
+00:11:13.200 --> 00:11:15.040
+I'll have a comment later that we'll have to add.
+
+00:11:15.040 --> 00:11:15.300
+So.
+
+00:11:15.300 --> 00:11:15.700
+Yeah.
+
+00:11:15.700 --> 00:11:16.620
+Okay.
+
+00:11:16.620 --> 00:11:17.740
+I'm here for it.
+
+00:11:17.740 --> 00:11:18.360
+I'm here for it.
+
+00:11:18.360 --> 00:11:19.400
+But that's not what it's about.
+
+00:11:19.400 --> 00:11:21.460
+This is by Martin Otsiak.
+
+00:11:21.460 --> 00:11:27.340
+And it is Rust, C++ and Python trends in jobs on Hacker News.
+
+00:11:27.340 --> 00:11:28.040
+Interesting.
+
+00:11:28.040 --> 00:11:28.660
+Yeah.
+
+00:11:29.020 --> 00:11:34.960
+So there's, I don't know how he found this data, but somehow, hey, look, maybe just conversations
+
+00:11:34.960 --> 00:11:40.300
+on Hacker News might serve as a proxy for programming language job demand.
+
+00:11:40.660 --> 00:11:46.400
+So there's two questions, you know, ask Hacker News who is hiring and ask Hacker News who
+
+00:11:46.400 --> 00:11:49.180
+wants to be hired for February, 2025.
+
+00:11:49.180 --> 00:11:55.080
+And then there's graphs of how many times those appear for Python, Rust and C++.
+
+00:11:55.080 --> 00:12:00.920
+So if you look at it and this data actually goes back, I don't know what, I guess it's
+
+00:12:00.920 --> 00:12:03.840
+as of February, but this goes all the way back to 2021.
+
+00:12:03.840 --> 00:12:07.300
+So this is pretty long-term data, five years, four years.
+
+00:12:08.000 --> 00:12:12.660
+And so if you look at Python, it's trending downward pretty sharply.
+
+00:12:12.660 --> 00:12:18.320
+So are C++ and Rust, although they're starting to take up, I guess they're all a little bit
+
+00:12:18.320 --> 00:12:19.800
+starting to take up here at the very end.
+
+00:12:19.800 --> 00:12:24.480
+But the Python one is trending downward faster than the other two.
+
+00:12:24.480 --> 00:12:25.400
+So what does that mean?
+
+00:12:25.400 --> 00:12:31.420
+Like that people more and more at a higher rate of speed, people are not asking who is
+
+00:12:31.420 --> 00:12:33.540
+hiring in a particular language, right?
+
+00:12:33.540 --> 00:12:37.040
+Now, if you look at the other one, the inverse, who wants to be hired?
+
+00:12:37.040 --> 00:12:38.460
+Hey, we need people.
+
+00:12:38.460 --> 00:12:39.420
+We need people in this.
+
+00:12:39.420 --> 00:12:44.080
+They're all going up a little bit generally, but Python is going up way faster.
+
+00:12:44.080 --> 00:12:45.960
+So fewer people asking to be hired.
+
+00:12:45.960 --> 00:12:48.900
+More and more people are going, where do I find Python people?
+
+00:12:48.900 --> 00:12:54.040
+It looks like there's more demand for Python people over time.
+
+00:12:54.040 --> 00:12:58.940
+There's still more demand for C++ and more demand for Rust people, but at a slower rate
+
+00:12:58.940 --> 00:12:59.440
+of speed.
+
+00:12:59.440 --> 00:13:00.320
+Interesting, huh?
+
+00:13:00.320 --> 00:13:00.840
+Yeah.
+
+00:13:00.840 --> 00:13:00.880
+Yeah.
+
+00:13:00.880 --> 00:13:08.140
+And I was totally depressed for a while looking at this graph because of the sharp downward
+
+00:13:08.140 --> 00:13:11.820
+trend of all programmers, at least for C++, Rust and Python.
+
+00:13:11.820 --> 00:13:12.880
+I'm like, oh no.
+
+00:13:12.880 --> 00:13:20.640
+But it looks like if you just look at it from 2021 to now, it's a downward slope.
+
+00:13:20.640 --> 00:13:22.100
+But if it's kind of...
+
+00:13:22.100 --> 00:13:23.180
+Which one though?
+
+00:13:23.180 --> 00:13:25.140
+Who's hiring or who wants to be hired?
+
+00:13:25.560 --> 00:13:27.280
+Well, I guess I don't get it.
+
+00:13:27.280 --> 00:13:28.300
+Like the who's hiring.
+
+00:13:28.300 --> 00:13:34.040
+If that's individuals trying to find a job or don't have a job, they either have or want.
+
+00:13:34.040 --> 00:13:34.800
+Okay.
+
+00:13:34.800 --> 00:13:35.080
+Right.
+
+00:13:35.080 --> 00:13:37.940
+They don't have a job at all, or they have a job that they don't want.
+
+00:13:37.940 --> 00:13:40.020
+They want one in that technology.
+
+00:13:40.020 --> 00:13:40.640
+Okay.
+
+00:13:40.640 --> 00:13:42.100
+Who's trying to hire Python?
+
+00:13:42.220 --> 00:13:42.820
+Oh, right.
+
+00:13:42.820 --> 00:13:43.160
+Okay.
+
+00:13:43.160 --> 00:13:48.080
+So the fact that that's going down means fewer people are not in a job that they want, right?
+
+00:13:48.080 --> 00:13:49.540
+They're like, they're employed.
+
+00:13:49.540 --> 00:13:50.300
+That's a good thing.
+
+00:13:50.300 --> 00:13:51.200
+And they're employed kind of happily.
+
+00:13:51.200 --> 00:13:52.820
+So the fact that that goes down is good.
+
+00:13:52.820 --> 00:13:53.960
+And then you look at the next one.
+
+00:13:53.960 --> 00:13:57.320
+I don't know if this is good or bad, but there's fewer people per...
+
+00:13:57.320 --> 00:13:58.840
+They're not easily filling the jobs.
+
+00:13:58.840 --> 00:14:03.260
+It's getting harder and harder to fill the Python jobs at a faster rate than it is for the others.
+
+00:14:03.260 --> 00:14:06.440
+That means basically there's more employer demand, I'm pretty sure.
+
+00:14:06.440 --> 00:14:07.700
+That makes sense.
+
+00:14:07.700 --> 00:14:10.120
+Per candidate, I guess, if you can somehow...
+
+00:14:10.120 --> 00:14:11.220
+That's more optimistic then.
+
+00:14:11.520 --> 00:14:13.660
+Yeah, I think it's optimistic on both graphs.
+
+00:14:13.660 --> 00:14:14.740
+It just depends how you read it.
+
+00:14:14.740 --> 00:14:15.080
+Yeah.
+
+00:14:15.080 --> 00:14:15.560
+Yeah.
+
+00:14:15.560 --> 00:14:17.280
+I mean, it's hacker news, right?
+
+00:14:17.280 --> 00:14:19.940
+But it's still an interesting angle, you know?
+
+00:14:19.940 --> 00:14:20.400
+Yeah.
+
+00:14:20.400 --> 00:14:29.340
+I guess my take on the C++ versus other things or the demise of C++ or whatever, I don't think
+
+00:14:29.340 --> 00:14:30.900
+we're going to see a demise of C++.
+
+00:14:30.900 --> 00:14:33.460
+But there's a lot of stuff.
+
+00:14:33.460 --> 00:14:35.800
+It is difficult to learn.
+
+00:14:35.800 --> 00:14:38.740
+No doubt about it.
+
+00:14:38.740 --> 00:14:40.600
+Rust, I think, is difficult to learn too.
+
+00:14:40.820 --> 00:14:46.220
+But it's, I think, more manageable for people to come up to speed on a small project with
+
+00:14:46.220 --> 00:14:47.560
+Rust than Python.
+
+00:14:47.560 --> 00:14:49.340
+But maybe I'm wrong about that.
+
+00:14:49.340 --> 00:14:57.160
+But I think one of the gains of Rust is we need a way...
+
+00:14:57.160 --> 00:14:58.180
+It's around Python.
+
+00:14:58.180 --> 00:15:03.220
+We have this great Python project, but there's a little bit of it here that needs to be sped
+
+00:15:03.220 --> 00:15:03.380
+up.
+
+00:15:03.380 --> 00:15:04.060
+What do we do?
+
+00:15:04.160 --> 00:15:07.760
+Do we jump into C++ that we don't know about or Rust that we don't know about?
+
+00:15:07.760 --> 00:15:09.360
+And I think people are choosing Rust.
+
+00:15:09.360 --> 00:15:11.900
+So anyway, that's my take on that.
+
+00:15:12.180 --> 00:15:16.100
+Yeah, I listen to a couple of cybersecurity, computer security podcasts.
+
+00:15:16.100 --> 00:15:21.300
+And there's some really interesting conversations about like, if you're going to, you know, they
+
+00:15:21.300 --> 00:15:30.820
+just did one of them just did an analysis and said, I think 70% of all, 70 or 80% of all security problems with
+
+00:15:30.820 --> 00:15:36.700
+iOS were memory corruption, memory failure issues, right?
+
+00:15:36.700 --> 00:15:40.480
+Off by one on an array, use after free, right?
+
+00:15:40.480 --> 00:15:44.320
+Like the whole category of like things that happen because you're in a memory unsafe language.
+
+00:15:44.980 --> 00:15:49.600
+Microsoft was something like in the 60 to 70% of all security problems with the software
+
+00:15:49.600 --> 00:15:51.380
+has to do with memory issues.
+
+00:15:51.380 --> 00:15:52.240
+Oh, yeah.
+
+00:15:52.240 --> 00:15:54.820
+And he goes, you can just go through them like one after another.
+
+00:15:54.820 --> 00:15:58.080
+And they're all, they've all got that flavor, if not the exact same numbers.
+
+00:15:58.080 --> 00:15:58.640
+You know what I mean?
+
+00:15:58.640 --> 00:15:59.080
+Yeah.
+
+00:15:59.080 --> 00:16:05.340
+And so if you're choosing new, you're choosing new projects to start from scratch and you're
+
+00:16:05.340 --> 00:16:11.440
+picking some systems level language like C, C++, Rust, whatever, and you don't choose
+
+00:16:11.440 --> 00:16:16.980
+a memory safe language, you're basically choosing to have, you know, two and a half times as
+
+00:16:16.980 --> 00:16:19.060
+many vulnerabilities in your software.
+
+00:16:19.060 --> 00:16:25.000
+And that, I think that's what the, my language is under attack feel is.
+
+00:16:25.000 --> 00:16:29.560
+It's like, yeah, but that fact is still a fact that I'm sorry, but it is, you know?
+
+00:16:29.560 --> 00:16:30.080
+Yeah.
+
+00:16:30.080 --> 00:16:33.300
+And you can do stuff, you can do stuff in say C++, right?
+
+00:16:33.300 --> 00:16:33.480
+Right.
+
+00:16:33.480 --> 00:16:37.700
+And you need like smart pointers and things that will automatically free them and so on, but
+
+00:16:37.700 --> 00:16:40.400
+probably not for C, but it's still present, you know?
+
+00:16:40.440 --> 00:16:43.940
+There's still S print F that was, you know, print F that was wrong or whatever.
+
+00:16:43.940 --> 00:16:44.500
+Yeah.
+
+00:16:44.500 --> 00:16:49.540
+And I guess I've spent so much of my life in the low level world of like device drivers
+
+00:16:49.540 --> 00:16:55.420
+and stuff that that's one of the beautiful things about C++ is a memory mapped hardware
+
+00:16:55.420 --> 00:17:00.760
+access system is really easy to put together in C++ and I don't know how to do it somewhere
+
+00:17:00.760 --> 00:17:00.980
+else.
+
+00:17:00.980 --> 00:17:05.800
+I mean, I'm sure there's ways, but so, and we're always going to have software talk to
+
+00:17:05.800 --> 00:17:06.100
+hardware.
+
+00:17:06.340 --> 00:17:11.420
+So unless it gets really easy to do that in another language, we'll have C++.
+
+00:17:11.420 --> 00:17:12.660
+Yeah.
+
+00:17:12.660 --> 00:17:14.740
+Or someone builds a little layer.
+
+00:17:14.740 --> 00:17:16.400
+Well, it probably already is.
+
+00:17:16.400 --> 00:17:17.220
+We just don't know.
+
+00:17:17.220 --> 00:17:17.980
+I don't know Matt.
+
+00:17:17.980 --> 00:17:18.220
+Yeah.
+
+00:17:18.220 --> 00:17:18.600
+Yeah.
+
+00:17:18.600 --> 00:17:18.780
+Yeah.
+
+00:17:18.780 --> 00:17:19.240
+I don't either.
+
+00:17:19.240 --> 00:17:21.480
+I don't live, I don't live in that world these days.
+
+00:17:21.480 --> 00:17:23.320
+Anyway, that's pretty interesting stuff.
+
+00:17:23.320 --> 00:17:23.560
+Yeah.
+
+00:17:23.560 --> 00:17:23.960
+Yeah.
+
+00:17:23.960 --> 00:17:24.320
+All right.
+
+00:17:24.320 --> 00:17:25.680
+Over to you for your final thing.
+
+00:17:26.220 --> 00:17:30.920
+Well, so there is help and it is only a keyword away.
+
+00:17:30.920 --> 00:17:35.080
+So I, you know, occasionally I forget about this.
+
+00:17:35.080 --> 00:17:40.620
+So it's so tempting if you have a question about the world of Python or anything is to just
+
+00:17:40.620 --> 00:17:41.680
+Google something more.
+
+00:17:41.680 --> 00:17:43.700
+I mean, what am I using now?
+
+00:17:43.700 --> 00:17:45.880
+Not Google, something else, some Google alternative.
+
+00:17:47.100 --> 00:17:50.620
+And, but there's help there and it's pretty good.
+
+00:17:50.620 --> 00:17:55.580
+So linking to Trey Hunter's article, features of Python's help function.
+
+00:17:55.580 --> 00:17:59.460
+And help is, is really pretty good with Python.
+
+00:17:59.460 --> 00:18:00.580
+And it's part of built in.
+
+00:18:00.580 --> 00:18:03.680
+I don't know if it was built in from the language at the beginning, but it's been there for as
+
+00:18:03.680 --> 00:18:04.560
+long as I've been using it.
+
+00:18:04.900 --> 00:18:09.300
+But if you say help, you can give it a string and you can give it a, you can say help on
+
+00:18:09.300 --> 00:18:09.720
+a function.
+
+00:18:09.720 --> 00:18:16.100
+You can say help on a module, symbols, keywords, topics, objects, and there's useful stuff that
+
+00:18:16.100 --> 00:18:16.860
+often comes out.
+
+00:18:16.860 --> 00:18:20.640
+So this article is talking through some of the things you can do.
+
+00:18:20.640 --> 00:18:23.260
+One of the things that I like is looking at meta help.
+
+00:18:23.260 --> 00:18:24.840
+The meta help is pretty interesting.
+
+00:18:24.840 --> 00:18:31.700
+You can have basically there's a, if you say help and give it the quote topics, you get a
+
+00:18:31.700 --> 00:18:35.580
+list of available topics and you've got stuff like strings.
+
+00:18:35.580 --> 00:18:36.580
+I looked up strings.
+
+00:18:36.580 --> 00:18:38.760
+I'm like, well, I don't use strings, but I looked it up.
+
+00:18:38.760 --> 00:18:41.780
+And one of the things that strings has is all these scapegoats.
+
+00:18:41.780 --> 00:18:45.880
+So like, what is a, what does the line feed code look like?
+
+00:18:45.880 --> 00:18:49.340
+And what's a, you know, all of those, those are in the.
+
+00:18:49.340 --> 00:18:52.760
+Like the backslash T, the backslash N, but there's got to be some that I don't know.
+
+00:18:52.760 --> 00:18:53.340
+Yeah.
+
+00:18:53.340 --> 00:18:54.500
+There's a bunch of others.
+
+00:18:54.500 --> 00:18:58.380
+And so there's, there's a lot of interesting information in here.
+
+00:18:58.380 --> 00:19:05.200
+And I think I remember looking at, I don't know, like literals and some of the, some of
+
+00:19:05.200 --> 00:19:06.020
+the other things in here.
+
+00:19:06.020 --> 00:19:07.580
+Namespaces is a good one.
+
+00:19:07.580 --> 00:19:13.460
+Just probably a really good discussion around none and, and numbers and objects.
+
+00:19:13.460 --> 00:19:17.960
+And there's a lot of great information around, around Python just available with the help
+
+00:19:17.960 --> 00:19:18.340
+utility.
+
+00:19:18.340 --> 00:19:20.200
+So here we go.
+
+00:19:20.200 --> 00:19:21.220
+Help symbols.
+
+00:19:21.220 --> 00:19:22.880
+So here's all the symbols of Python.
+
+00:19:23.540 --> 00:19:28.340
+So if you're curious what all the keywords, oh yeah, you can just have a list of all the
+
+00:19:28.340 --> 00:19:28.940
+keywords there.
+
+00:19:28.940 --> 00:19:30.740
+There's really not that many Python keywords.
+
+00:19:30.740 --> 00:19:31.180
+Wow.
+
+00:19:31.180 --> 00:19:32.200
+That's pretty interesting.
+
+00:19:32.200 --> 00:19:32.960
+Anyway.
+
+00:19:32.960 --> 00:19:33.700
+Yeah.
+
+00:19:33.700 --> 00:19:34.760
+Don't forget help.
+
+00:19:34.760 --> 00:19:40.720
+And those keywords are things that you can't use as variables or functions or let's say symbols
+
+00:19:40.720 --> 00:19:42.080
+more broadly in Python.
+
+00:19:42.080 --> 00:19:47.640
+I just realized that from this PySQL scribe, I was like, why do you have to say select thing
+
+00:19:47.640 --> 00:19:49.380
+than dot from underscore.
+
+00:19:49.380 --> 00:19:50.260
+Oh.
+
+00:19:50.260 --> 00:19:54.160
+And I, and I knew that the old parser, that would probably be the case, right?
+
+00:19:54.160 --> 00:19:54.580
+Yeah.
+
+00:19:54.580 --> 00:19:58.260
+Because it's just looks for the word from, but with the new like peg parser forward looking
+
+00:19:58.260 --> 00:20:01.420
+thing, I thought, oh, it's going to be smart enough to know that this is being used in an
+
+00:20:01.420 --> 00:20:02.700
+expression and not keyword.
+
+00:20:02.700 --> 00:20:03.220
+No.
+
+00:20:03.220 --> 00:20:05.920
+So you can say help symbols and keywords.
+
+00:20:05.920 --> 00:20:09.800
+And those are the things you can't name symbols at all.
+
+00:20:09.800 --> 00:20:10.320
+Yeah.
+
+00:20:10.320 --> 00:20:13.360
+You don't really have to memorize them though, because Python will not let you.
+
+00:20:13.360 --> 00:20:14.380
+Like it's just.
+
+00:20:14.380 --> 00:20:15.860
+It's going to be like, Hey, that's a keyword.
+
+00:20:15.860 --> 00:20:16.360
+Yeah.
+
+00:20:16.360 --> 00:20:17.020
+Don't do that.
+
+00:20:17.180 --> 00:20:17.760
+Can't do that.
+
+00:20:17.760 --> 00:20:19.180
+Yeah, for sure.
+
+00:20:19.180 --> 00:20:19.780
+For sure.
+
+00:20:19.780 --> 00:20:20.300
+All right.
+
+00:20:20.300 --> 00:20:20.780
+Extras.
+
+00:20:20.780 --> 00:20:21.260
+What do you think?
+
+00:20:21.260 --> 00:20:22.080
+Yeah.
+
+00:20:22.080 --> 00:20:22.940
+Extras would be great.
+
+00:20:22.940 --> 00:20:23.420
+Do you got any?
+
+00:20:23.420 --> 00:20:23.800
+Got any?
+
+00:20:23.800 --> 00:20:24.240
+Yeah.
+
+00:20:24.240 --> 00:20:24.380
+Yeah.
+
+00:20:24.380 --> 00:20:25.900
+I got one quick, quick, quick.
+
+00:20:25.900 --> 00:20:32.160
+So last week I mentioned that granion, granion is going strong.
+
+00:20:32.160 --> 00:20:33.420
+How many stars?
+
+00:20:33.420 --> 00:20:34.700
+3,200.
+
+00:20:34.700 --> 00:20:36.660
+This is the rust based one.
+
+00:20:36.660 --> 00:20:37.220
+Oh yeah.
+
+00:20:37.220 --> 00:20:37.620
+That is based.
+
+00:20:37.620 --> 00:20:43.340
+That basically is like a handy wrapper around hyper, right?
+
+00:20:43.340 --> 00:20:46.900
+Which hyper is a rust HTTP engine.
+
+00:20:46.940 --> 00:20:48.440
+And that has 15,000 stars.
+
+00:20:48.440 --> 00:20:49.620
+So quite popular.
+
+00:20:49.620 --> 00:20:56.400
+But that they released 2.0 and that meant FastAPI and probably a lot of starlet stuff as
+
+00:20:56.400 --> 00:20:56.600
+well.
+
+00:20:56.600 --> 00:20:58.640
+Just stopped working categorically.
+
+00:20:58.640 --> 00:20:59.020
+Whoops.
+
+00:20:59.680 --> 00:21:11.140
+Well, the next day out rolls patch release 2.0 and that was a good idea.
+
+00:21:11.140 --> 00:21:15.900
+And FastAPI makes heavy use of any IO.
+
+00:21:16.560 --> 00:21:18.740
+So that seems like that was probably the problem.
+
+00:21:18.740 --> 00:21:20.200
+Give it another go.
+
+00:21:20.200 --> 00:21:22.420
+And all the FastAPI things are happy again.
+
+00:21:22.420 --> 00:21:22.980
+Cool.
+
+00:21:22.980 --> 00:21:25.060
+So just as a follow up from last week, really.
+
+00:21:25.060 --> 00:21:25.640
+Yeah.
+
+00:21:25.640 --> 00:21:29.700
+I wouldn't point it out that normally, but because since I said it didn't work, I'll put it back
+
+00:21:29.700 --> 00:21:30.620
+on the checkbox.
+
+00:21:30.620 --> 00:21:31.360
+If now it works again.
+
+00:21:31.360 --> 00:21:31.720
+All right.
+
+00:21:31.720 --> 00:21:32.220
+That's all I got.
+
+00:21:32.220 --> 00:21:33.260
+Quick and easy.
+
+00:21:33.260 --> 00:21:34.700
+I got no extras.
+
+00:21:34.700 --> 00:21:39.720
+Although it just reminded me, I guess I don't have a page for this, but looking at dependencies,
+
+00:21:39.720 --> 00:21:42.040
+I had to pull up.
+
+00:21:42.680 --> 00:21:48.680
+I was looking for like I had a big, large, large set of packages that work together, internal
+
+00:21:48.680 --> 00:21:49.080
+thing.
+
+00:21:49.080 --> 00:21:51.140
+And something was using Greenlit.
+
+00:21:51.140 --> 00:21:53.760
+And I'm like, what is using Greenlit?
+
+00:21:53.760 --> 00:21:57.220
+And I pulled out pip dep tree.
+
+00:21:57.220 --> 00:22:05.100
+So I love pip dep tree to quickly take a look at what, if you run that, if you just pip install
+
+00:22:05.100 --> 00:22:11.000
+it and run it, and it'll show you in a tree form what all you have installed and what dependencies
+
+00:22:11.000 --> 00:22:11.580
+there are.
+
+00:22:12.000 --> 00:22:17.160
+And so I searched, easily searched through that and found out that Playwright was using
+
+00:22:17.160 --> 00:22:17.540
+Greenlit.
+
+00:22:17.540 --> 00:22:21.140
+And I'm like, oh, well, I'll trust them that they have a good reason to use it.
+
+00:22:21.140 --> 00:22:25.280
+So I just needed to update my Playwright and we were good to go.
+
+00:22:25.280 --> 00:22:26.900
+Excellent.
+
+00:22:26.900 --> 00:22:27.220
+Yeah.
+
+00:22:27.220 --> 00:22:28.280
+I've used that a lot.
+
+00:22:28.280 --> 00:22:28.920
+It's really nice.
+
+00:22:28.920 --> 00:22:36.980
+I use the UV pip compile thing, which now embeds that information into the requirements.txt file,
+
+00:22:36.980 --> 00:22:38.200
+which is nice as well.
+
+00:22:38.200 --> 00:22:38.960
+Oh, yeah.
+
+00:22:38.960 --> 00:22:39.280
+Okay.
+
+00:22:39.280 --> 00:22:39.680
+Yeah.
+
+00:22:39.680 --> 00:22:39.940
+Yeah.
+
+00:22:39.980 --> 00:22:41.800
+So I haven't used it that much lately.
+
+00:22:41.800 --> 00:22:46.520
+But yeah, if you're in any project that doesn't have one of those generated files, then it's...
+
+00:22:46.520 --> 00:22:51.580
+And another problem you can run into with just having it generate the stuff is, I don't know
+
+00:22:51.580 --> 00:22:55.640
+about you, but when you add stuff to your requirements file, it'd be that piproject.toml
+
+00:22:55.640 --> 00:22:58.720
+or requirements.txt equivalent or whatever.
+
+00:22:58.720 --> 00:23:02.780
+It's easy to put stuff in there and then not take it out because it's like, I don't think
+
+00:23:02.780 --> 00:23:05.620
+I've used it anymore, but it could break stuff and let's just...
+
+00:23:05.620 --> 00:23:06.460
+What's it hurting in there?
+
+00:23:06.460 --> 00:23:09.400
+You know, like it can become real easy for that to become stale.
+
+00:23:09.400 --> 00:23:15.060
+So, you know, you get a little better look of it from piped up tree maybe.
+
+00:23:15.060 --> 00:23:17.020
+Anyway, how about a joke?
+
+00:23:17.020 --> 00:23:18.240
+Sounds good.
+
+00:23:18.240 --> 00:23:23.660
+I brought a series of battling conspiracy theories to do with technology here.
+
+00:23:23.660 --> 00:23:24.600
+That sounds fun, right?
+
+00:23:24.600 --> 00:23:25.260
+Yeah.
+
+00:23:25.260 --> 00:23:27.580
+So here's a flat earther.
+
+00:23:27.580 --> 00:23:30.680
+I'm all here for making fun of flat earthers.
+
+00:23:30.680 --> 00:23:34.240
+I'm a computer engineer and I affirm that the earth is flat.
+
+00:23:34.240 --> 00:23:40.800
+But apparently John Davis, the secretary of the Flat Earth Society, you are not alone, Brian.
+
+00:23:40.800 --> 00:23:45.020
+Just because no one else around you thinks the earth is flat, that doesn't mean there's not
+
+00:23:45.020 --> 00:23:48.100
+a whole hive of people on the internet.
+
+00:23:48.100 --> 00:23:49.500
+All over the globe.
+
+00:23:49.500 --> 00:23:50.700
+All over the globe.
+
+00:23:50.700 --> 00:23:53.240
+So what is the response?
+
+00:23:53.240 --> 00:23:53.800
+Okay.
+
+00:23:53.800 --> 00:23:58.520
+I'm a geologist and I say that computers work because there are very small people inside
+
+00:23:58.520 --> 00:23:59.360
+doing all the work.
+
+00:23:59.360 --> 00:24:00.560
+Yeah.
+
+00:24:00.560 --> 00:24:01.900
+I gotcha.
+
+00:24:01.900 --> 00:24:03.940
+I think right back atcha.
+
+00:24:03.940 --> 00:24:08.740
+And then the subtitle, or if this is not, but if it weren't, XKCD, the hover, whatever that
+
+00:24:08.740 --> 00:24:13.720
+is, says this earth is flat versus computers work because there are very small people inside
+
+00:24:13.720 --> 00:24:14.380
+doing all the work.
+
+00:24:14.380 --> 00:24:19.540
+Was the geologist inspired by Amazon's just walk out technology?
+
+00:24:19.540 --> 00:24:22.700
+Remember, do you know the story behind that?
+
+00:24:22.700 --> 00:24:23.280
+No.
+
+00:24:23.280 --> 00:24:27.580
+You know the Amazon walk in, pick up wherever you want, you register your card, pick up
+
+00:24:27.580 --> 00:24:29.580
+wherever you want, you walk out and they just charge you?
+
+00:24:29.580 --> 00:24:30.020
+Yeah.
+
+00:24:30.300 --> 00:24:35.700
+I'm pretty sure that, I don't have any good sources off the top of my head right now,
+
+00:24:35.700 --> 00:24:40.800
+but that that was actually, instead of being super smart AI, which is what it was billed
+
+00:24:40.800 --> 00:24:45.960
+as there were just people in countries where it was cheap enough, just paid to sit there and watch
+
+00:24:45.960 --> 00:24:47.960
+a camera and just like mark down what you got.
+
+00:24:47.960 --> 00:24:56.380
+And then like, and someday maybe it was supposed to eventually become powered by AI and video
+
+00:24:56.380 --> 00:24:56.940
+recognition.
+
+00:24:56.940 --> 00:25:01.780
+But the working versions were just people watching you on camera and marking it down
+
+00:25:01.780 --> 00:25:03.220
+as you picked up and put down stuff.
+
+00:25:03.220 --> 00:25:03.720
+Yeah.
+
+00:25:03.720 --> 00:25:04.440
+Interesting.
+
+00:25:04.440 --> 00:25:05.020
+Okay.
+
+00:25:05.020 --> 00:25:06.380
+Anyway, I think that's the reference there.
+
+00:25:06.380 --> 00:25:07.220
+That is funny.
+
+00:25:07.220 --> 00:25:14.460
+There was a, somebody posted the other day about some studies that people are doing.
+
+00:25:14.720 --> 00:25:19.220
+So a lot of people are using AI for stuff and I'm using it for some things as well, but the,
+
+00:25:19.220 --> 00:25:25.960
+but for some things companies are doing like they're putting together lists of tasks and having
+
+00:25:25.960 --> 00:25:30.300
+like, if they were going to like hire a person to do this, a person should be able to do this
+
+00:25:30.300 --> 00:25:33.040
+task and this is kind of the output they should get.
+
+00:25:33.040 --> 00:25:40.460
+And, and then putting that, those tests to AI, like agents and just other ways to use AI
+
+00:25:40.460 --> 00:25:42.620
+and rating them that way.
+
+00:25:42.960 --> 00:25:49.120
+And if you do that and have, have domain experts come up with these tests, like AI is not doing
+
+00:25:49.120 --> 00:25:49.480
+well.
+
+00:25:49.480 --> 00:25:55.420
+And, and, but one of the results was about like 16% correct on a lot of these.
+
+00:25:55.420 --> 00:26:01.500
+And if the comment was, while impressive and that went on and I'm like, while impressive,
+
+00:26:01.500 --> 00:26:07.680
+that's just not, I've never got a 16% score in, in school and had somebody say, wow, that's
+
+00:26:07.680 --> 00:26:10.020
+impressive, but you need to grade on a good curve there.
+
+00:26:10.020 --> 00:26:11.980
+There you go.
+
+00:26:12.180 --> 00:26:12.880
+Business Insider.
+
+00:26:12.880 --> 00:26:14.540
+Oh, go away cookies.
+
+00:26:14.540 --> 00:26:18.740
+Amazon's just walk out technology relies on hundreds of workers in India watching you
+
+00:26:18.740 --> 00:26:19.020
+shop.
+
+00:26:19.020 --> 00:26:23.400
+That, that is ridiculous.
+
+00:26:23.400 --> 00:26:24.360
+Yeah.
+
+00:26:24.360 --> 00:26:26.620
+I thought it was RFID or something like that.
+
+00:26:26.620 --> 00:26:28.680
+No, it's magic.
+
+00:26:28.680 --> 00:26:29.560
+It's magic.
+
+00:26:29.560 --> 00:26:31.160
+Yeah.
+
+00:26:31.160 --> 00:26:33.820
+What a boring job or maybe interesting.
+
+00:26:33.960 --> 00:26:34.360
+I don't know.
+
+00:26:34.360 --> 00:26:35.740
+Watching people shop.
+
+00:26:35.740 --> 00:26:36.300
+Yeah.
+
+00:26:36.300 --> 00:26:37.760
+Maybe.
+
+00:26:37.760 --> 00:26:40.220
+Anyway.
+
+00:26:40.220 --> 00:26:40.880
+All right.
+
+00:26:40.880 --> 00:26:43.200
+Well, good episode as usual.
+
+00:26:43.200 --> 00:26:44.420
+Uh, good to talk with you.
+
+00:26:44.420 --> 00:26:47.680
+Thanks to everybody for tuning in and we'll see you next week.
+
+00:26:47.680 --> 00:26:48.060
+Yeah.
+
