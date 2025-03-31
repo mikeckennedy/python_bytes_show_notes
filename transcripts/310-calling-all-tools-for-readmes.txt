@@ -1274,7 +1274,7 @@
 
 00:35:16 Amazing.
 
-00:35:16 It's a 2E embedded in a Webby.
+00:35:16 It's a TUI embedded in a Webby.
 
 00:35:20 And I have seen this other places, too.
 
