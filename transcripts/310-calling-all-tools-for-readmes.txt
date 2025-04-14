@@ -658,7 +658,7 @@
 
 00:16:05 Correct.
 
-00:16:06 You can use something like UV-corn if you wanted to.
+00:16:06 You can use something like uvicorn if you wanted to.
 
 00:16:08 So it can operate as an ASG I-app.
 
