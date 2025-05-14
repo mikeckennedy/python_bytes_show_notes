@@ -734,7 +734,7 @@
 
 00:18:42 of dates that it found.
 
-00:18:43 It actually does a whole bunch of things, but that's the default or the, the one that
+00:18:43 It actually does a whole bunch of things, but that's the default or the one that
 
 00:18:48 we're talking about find dates.
 
@@ -870,7 +870,7 @@
 
 00:22:10 I'm showing up some of the, some of the examples from date util of how to use it.
 
-00:22:14 And it's based, I, I imagine this is one of the reasons why date finder is so used because,
+00:22:14 And it's based, I imagine this is one of the reasons why date finder is so used because,
 
 00:22:20 this is non-trivial even to use date util.
 

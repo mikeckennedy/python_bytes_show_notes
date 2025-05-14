@@ -1660,7 +1660,7 @@
 
 00:49:02 And so you can basically set up, it looks like, like, you know, in the background, it's, it's called early, early refresh or something like that.
 
-00:49:11 And, you know, what it'll, you know, in the example that they give you, you know, if you've sort of, you know, called this, you know, within the, the given time period, it'll automatically go and sort of refresh it for you in the background, which I think is really cool.
+00:49:11 And, you know, what it'll, you know, in the example that they give you, you know, if you've sort of, you know, called this, you know, within the given time period, it'll automatically go and sort of refresh it for you in the background, which I think is really cool.
 
 00:49:25 Yeah. Okay. So this one says, I want the cache time to be 10 minutes, but if it gets called on minute seven to nine, in terms of the age of the cache result, go ahead and recompute it.
 
