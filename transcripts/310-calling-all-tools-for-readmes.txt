@@ -556,7 +556,7 @@
 
 00:13:39 Got hotkeys, all sorts of fun stuff.
 
-00:13:42 Lots of, you can do like the advanced view with columns and all of these things.
+00:13:42 Lots of, you can do like the advanced view with_columns and all of these things.
 
 00:13:45 So I encourage that out.
 
@@ -1660,7 +1660,7 @@
 
 00:49:02 And so you can basically set up, it looks like, like, you know, in the background, it's, it's called early, early refresh or something like that.
 
-00:49:11 And, you know, what it'll, you know, in the example that they give you, you know, if you've sort of, you know, called this, you know, within the, the, the given time period, it'll automatically go and sort of refresh it for you in the background, which I think is really cool.
+00:49:11 And, you know, what it'll, you know, in the example that they give you, you know, if you've sort of, you know, called this, you know, within the, the given time period, it'll automatically go and sort of refresh it for you in the background, which I think is really cool.
 
 00:49:25 Yeah. Okay. So this one says, I want the cache time to be 10 minutes, but if it gets called on minute seven to nine, in terms of the age of the cache result, go ahead and recompute it.
 
@@ -1730,7 +1730,7 @@
 
 00:52:31 all sorts of funny shenanigans. Well, this, this is breaking here. And we've just noticed on Twitter
 
-00:52:37 that the JavaScript verified account that it's the program. The, the, the Twitter name is real
+00:52:37 that the JavaScript verified account that it's the program. The, the Twitter name is real
 
 00:52:44 programming language with 51 million followers. And there's a big message on it, Brian. What's the
 

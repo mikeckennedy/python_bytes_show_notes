@@ -94,7 +94,7 @@
 
 00:02:48 If there's other cool projects using it, I'd want to use by all these sort of things.
 
-00:02:54 And then you can, the, the editor only selects, it only shows you the ones, the, the one at a time, which is nice.
+00:02:54 And then you can, the editor only selects, it only shows you the ones, the one at a time, which is nice.
 
 00:03:00 But then you've got this, this whole generated, really nice looking readme with tables and everything like built in.
 
@@ -208,7 +208,7 @@
 
 00:04:57 I'm, I'm, I'm pretty excited about this.
 
-00:04:59 Actually, I, I might, I might play around with this, for my next project.
+00:04:59 Actually, I might, I might play around with this, for my next project.
 
 00:05:02 I've got some stuff that may end up on PyPI soon and it'd be cool to do it.
 
@@ -716,7 +716,7 @@
 
 00:18:01 And I really appreciate that.
 
-00:18:03 It actually, the demo here is better than the, the read me in the, date finder, read me.
+00:18:03 It actually, the demo here is better than the read me in the, date finder, read me.
 
 00:18:08 So, so maybe I guess a pull request is necessary, but anyway.
 
@@ -734,7 +734,7 @@
 
 00:18:42 of dates that it found.
 
-00:18:43 It actually does a whole bunch of things, but that's the default or the, the, the one that
+00:18:43 It actually does a whole bunch of things, but that's the default or the, the one that
 
 00:18:48 we're talking about find dates.
 
@@ -756,7 +756,7 @@
 
 00:19:19 I also really kind of liked this way to play.
 
-00:19:21 So the, the video shows this way to play with things of, of it just had a list of strings
+00:19:21 So the video shows this way to play with things of, of it just had a list of strings
 
 00:19:26 and then, used a comprehension to convert that, to, to call a function on a whole bunch
 
@@ -774,7 +774,7 @@
 
 00:19:41 It's super hard, but, normally because it's so picky, right?
 
-00:19:45 You've got to go to the, the date time parsing language, almost look up.
+00:19:45 You've got to go to the date time parsing language, almost look up.
 
 00:19:50 So if I put percent D, D, D, D, D, that might mean the year, but if it's capital D, it might
 
@@ -806,7 +806,7 @@
 
 00:20:31 So, it's used kind of all over the place.
 
-00:20:34 The behind the scenes though, it's taking the, what the dates that it found to the, the strings
+00:20:34 The behind the scenes though, it's taking the, what the dates that it found to the strings
 
 00:20:40 and passing those to date util.
 
@@ -840,7 +840,7 @@
 
 00:21:34 Both of them are good examples of how to do both.
 
-00:21:36 and I, I like some of the newer stuff is using pie test with parameterization, but it's
+00:21:36 and I like some of the newer stuff is using pie test with parameterization, but it's
 
 00:21:41 good.
 
@@ -870,7 +870,7 @@
 
 00:22:10 I'm showing up some of the, some of the examples from date util of how to use it.
 
-00:22:14 And it's based, I, I, I imagine this is one of the reasons why date finder is so used because,
+00:22:14 And it's based, I, I imagine this is one of the reasons why date finder is so used because,
 
 00:22:20 this is non-trivial even to use date util.
 
