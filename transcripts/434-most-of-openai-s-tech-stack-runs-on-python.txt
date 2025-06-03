@@ -1,0 +1,878 @@
+00:00:00 Hello and welcome to Python Bytes, where we deliver Python news and headlines directly to your earbuds.
+
+00:00:05 This is episode 434, recorded June 2nd, 2025.
+
+00:00:11 I'm Michael Kennedy.
+
+00:00:12 And I am Brian Arkin.
+
+00:00:14 And I am super happy to say that this episode is brought to you by DigitalOcean.
+
+00:00:20 They've got, obviously, a bunch of amazing servers, but some really cool Gen.AI features we want to tell you about as well.
+
+00:00:26 So we're going to be telling you about that later.
+
+00:00:27 The link with a $200 credit is in the show notes.
+
+00:00:32 So no spoiler there.
+
+00:00:34 If you would like to talk to us on very social things, tell us about what we might want to cover, give us feedback on what we have.
+
+00:00:42 Links to our Mastodon and Blue Sky accounts are at the top of the show notes as well.
+
+00:00:48 You can join us live right here, right now on YouTube.
+
+00:00:51 Almost always Monday at 10, unless something stirs up the calendar and breaks that.
+
+00:00:57 But we try to do Monday, 10 a.m. Pacific time.
+
+00:00:59 All the older episodes are there as well.
+
+00:01:01 And finally, if you want an artisanal, handcrafted, special email from Brian with extra information about what's going on in the show.
+
+00:01:10 Well, sign up to our mailing list.
+
+00:01:13 And Brian, some people have been saying that they had been having trouble receiving emails.
+
+00:01:17 Like they signed up and they didn't get them.
+
+00:01:19 Yeah.
+
+00:01:19 Yeah.
+
+00:01:20 Well, that's because there's a bunch of jerks on the internet and they make it hard to have nice things like email that works.
+
+00:01:27 So it's like so many spam filters and other things that I've done some reworking.
+
+00:01:32 And I think some people who signed up probably will start getting email again.
+
+00:01:36 But basically their email providers had been saying, hey, you're sending from an IP address that has previously sent spam.
+
+00:01:43 Blocked.
+
+00:01:44 Well, we use Syngrid.
+
+00:01:45 Syngrid just round robins us through a whole bunch of different IP addresses.
+
+00:01:48 And if we happen to get one that previously got flagged, well, then you might get unsubscribed from an email list.
+
+00:01:53 How much fun is that?
+
+00:01:54 So I've done a bunch of coding behind the scenes to try to limit those effects and just send it again next time because it'll be a different IP address.
+
+00:02:02 Ah, jerks.
+
+00:02:03 So, that is the spammers.
+
+00:02:06 Yeah, thanks.
+
+00:02:07 And I guess with that, we're ready to kick it off.
+
+00:02:10 What you got?
+
+00:02:11 Well, I've been speeding up some test suites.
+
+00:02:14 So I'm interested in this blog post on trail of bits.blog.
+
+00:02:20 It's a trail of bits blog.
+
+00:02:22 And I think we've covered some stuff from them before, but anyway.
+
+00:02:26 Yeah, usually they're a security company.
+
+00:02:27 They do really interesting research into a lot of security things.
+
+00:02:31 Oh, really? Okay.
+
+00:02:32 Well, apparently one of the things they've worked on is, or at least they're writing about, is making, yeah, it says trail of bits collaborated with PyPI several years ago to add features and improve security defaults across the Python ecosystem.
+
+00:02:46 But they also, today we'll look at equally critical aspect of holistic software security, test suite performance.
+
+00:02:54 So there was some effort to speed up the test suite.
+
+00:02:58 And this is incredible.
+
+00:02:59 So one of the reasons why I'm covering this is to speed up test suites.
+
+00:03:03 But also I often get questions about is pytest robust enough to test a large system?
+
+00:03:11 And yes, it is.
+
+00:03:12 And I actually don't even think I'd, I mean, Warehouse is a decent size.
+
+00:03:16 Apparently they've had the current, or the test suite as I've read this writing is 4,700 test count.
+
+00:03:23 The test count was 4,700.
+
+00:03:25 It's quite a few tests.
+
+00:03:27 And so Warehouse, Paras, PyPI.
+
+00:03:29 There's a nice graph on the blog post showing the time spent.
+
+00:03:34 So they went from 163 seconds.
+
+00:03:36 So that's what, two minutes and almost two and a half, three minutes?
+
+00:03:42 Yeah, almost three minutes.
+
+00:03:43 Almost three minutes down to 30 seconds.
+
+00:03:46 So this is a nice speed up.
+
+00:03:48 And even as the test counts were going up, the time spent was going down.
+
+00:03:53 So how did they do this?
+
+00:03:55 The big chunk of the performance improvement was switching to pytest XDist.
+
+00:04:00 So XDist is a plugin by the pytest team, by the core team, or at least that's who's maintaining it.
+
+00:04:06 And that is 67% of the reduction.
+
+00:04:10 What it does is it allows you to run it on multiple cores.
+
+00:04:14 So like I think in this one, they had a 32-core machine.
+
+00:04:18 They can run it on multiple cores.
+
+00:04:19 So you use multiprocessing?
+
+00:04:20 Yeah.
+
+00:04:21 Threading, right, yeah.
+
+00:04:22 Yeah, it is multiprocessing.
+
+00:04:25 I think there's some configuration there that you can fiddle with, but mostly it's multiprocessing.
+
+00:04:32 So there is some overhead in doing that, So you wouldn't want to try to speed up a really fast, already fast, small test.
+
+00:04:39 The test suite would go slower with XGIS.
+
+00:04:41 But anyway, this is a larger one.
+
+00:04:44 But one of the things I like about this is because it's not a free lunch for XGIS because it's not always easy to split up your test suite like this one.
+
+00:04:55 So they were talking about parallelizing the test execution.
+
+00:05:00 You just say num process equals auto or dash in equals auto, and that just runs it on a bunch.
+
+00:05:07 It doesn't really work if you have things that are a shared resource like a database.
+
+00:05:11 So they also talked about setting up database fixtures such that each test worker gets its own isolated database.
+
+00:05:27 So they kind of show some of the code on how to do that.
+
+00:05:30 But this is open source code, so you can go check out the entire thing if you want.
+
+00:05:33 The other thing that you get with XDIST is very tertiary reporting.
+
+00:05:38 So they increase the readability by using pytest Sugar.
+
+00:05:42 And I don't use pytest Sugar a lot, but it sure is popular.
+
+00:05:46 And it gives you little check marks.
+
+00:05:48 But one of the things it does is makes XDIST even more verbose.
+
+00:05:52 But it's kind of a nice green check marks.
+
+00:05:56 It feels good. It's better than the little dots.
+
+00:05:59 Anyway, so that was a massive improvement with X-Disk, but that's not all.
+
+00:06:05 Python 3.12 added the ability for coverage.py to run faster by using the sysmonitoring module, and NedBatch Elder implemented that a while ago.
+
+00:06:19 So they turned that on with a coverage core environmental variable, and that sped things up quite a bit as well, another 53% time reduction.
+
+00:06:29 then test discovery phase this is an easy one didn't didn't increase time that much but it's just everybody should do this it's one line config to say where are my tests so that's a good one and then a last one is unnecessary import overhead is this kind of an interesting thing that I was like how did they do this and through testing and they're using a thing called dd trace And that is through, what is DD trace through?
+
+00:06:58 Datadog library.
+
+00:07:00 But what, what it's, I don't know what it does really, but I just checked it out.
+
+00:07:04 I'm like, why, how are they?
+
+00:07:05 I looked at the pull request to see how they did it.
+
+00:07:08 And they're using a flag dash P that is, allows you to turn off plugins, either turn on or turn off plugins in your test suite.
+
+00:07:18 And DD trace doesn't look like it's a high test plugin, but it does have one.
+
+00:07:23 So I took a look.
+
+00:07:25 DDTrace comes with a couple of pytest plugins.
+
+00:07:27 So that makes sense that those are going to pull in DDTrace when the plugins get read.
+
+00:07:33 So anyway, interesting side tangent right there.
+
+00:07:36 But really interesting read on how to speed up test suites.
+
+00:07:41 And this has reminded me that I really need, I've got a whole bunch of tricks up my sleeve too.
+
+00:07:45 I'd like to, I need to start a how to speed up your test suite post or series of posts.
+
+00:07:51 Yeah, that's super interesting.
+
+00:07:52 Good stuff.
+
+00:07:53 me ideas.
+
+00:07:54 Yeah. Anyway, and I'll have actually my next top, the next topic we talk about later in the episode will be around speeding up test suites as well. So,
+
+00:08:02 okay. Well, it's all about speed this week. Speed. Test speed. All right. This one is super interesting. And so I came across, I don't even see this. I don't spend that much time on X. Not necessarily because I've got like some vendetta against X, although you would know that for me, not reviews on, I think it was on Doc Python. Somebody absolutely like went, is having like a moment.
+
+00:08:27 Because I said, hey, Mastodon's cool.
+
+00:08:28 Oh my gosh. Anyway, no, I don't spend that much time on there because I just find that like, I feel like the algorithm just hides my stuff and I don't get into really conversations or engagement.
+
+00:08:38 So that said, I ran across this thing that is super interesting from Pietro Charano.
+
+00:08:44 Charano? And it says, people aren't talking enough about how most of open AI, aka ChattiePT, Tech stack runs on Python.
+
+00:08:55 And there's this screenshot of a newsletter that talks about it.
+
+00:09:01 So the tech stack.
+
+00:09:02 This is super interesting.
+
+00:09:03 Python.
+
+00:09:04 Most of the product's code is written in Python.
+
+00:09:07 Frameworks.
+
+00:09:08 FastAPI.
+
+00:09:09 The Python framework used for building APIs quickly using standard Python type hints and Pydantic.
+
+00:09:14 Talks about it.
+
+00:09:15 C for parts of the code that need to be highly optimized.
+
+00:09:18 The team uses lower level C for the programming language.
+
+00:09:22 And then something called Temporal for asynchronous workflows.
+
+00:09:26 Temporal is a neat workflow solution that makes multi-step workflows reliable even when individual steps crash without much effort by developers.
+
+00:09:34 I actually don't know what Temporal is.
+
+00:09:36 Maybe it's Python.
+
+00:09:37 It probably is.
+
+00:09:37 It sounds like it.
+
+00:09:38 Just to remind me, this is OpenAI's tech stack?
+
+00:09:41 Yes.
+
+00:09:42 Okay.
+
+00:09:43 Did some searching and I came up with the original article there.
+
+00:09:46 And this comes from a conversation around building ChatGPT's images, the image generation stuff, where you say, make me an infographic about what I've been talking about or whatever, which is incredible these days.
+
+00:10:00 So the article is entitled Building, Launching, and Scaling ChatGPT Images.
+
+00:10:05 It's OpenAI's biggest launch yet with 100 million new users generating 700 million images in the first week.
+
+00:10:12 But how is it built?
+
+00:10:13 Let's talk about Python, right?
+
+00:10:15 So Python, FastAPI, C, and Temporal.
+
+00:10:18 How cool is that?
+
+00:10:19 For people who are like, well, it's fun to use Python for these toy projects, but it's an unserious language for unserious people who don't build real things.
+
+00:10:27 Or is it?
+
+00:10:28 100 million new users in a week.
+
+00:10:29 That's pretty epic.
+
+00:10:30 Well done, FastAPI.
+
+00:10:32 Well done, new versions of Python.
+
+00:10:34 All these things.
+
+00:10:35 I got to know, what is Temporal?
+
+00:10:37 Is this what it is?
+
+00:10:38 Probably not even a, you know, a double execution.
+
+00:10:41 This is written in Go, so apparently Temporal is probably not.
+
+00:10:44 Anyway, isn't that interesting?
+
+00:10:45 It's always fun to have a data point.
+
+00:10:46 Yeah.
+
+00:10:48 I like that.
+
+00:10:48 I think there's a lot that we don't even know.
+
+00:10:52 People don't talk about that are written in Python and FastAPI now.
+
+00:10:55 So it's a different world.
+
+00:10:57 What else is nice?
+
+00:10:59 DigitalOcean.
+
+00:10:59 DigitalOcean is awesome.
+
+00:11:01 Yeah, DigitalOcean powered Python Bytes for a very long time.
+
+00:11:04 I love DigitalOcean.
+
+00:11:05 I highly recommend them.
+
+00:11:06 But you got something specific to say, don't you?
+
+00:11:09 I do.
+
+00:11:09 This episode of Python Bytes is brought to you by DigitalOcean.
+
+00:11:13 DigitalOcean is a comprehensive cloud infrastructure that's simple to spin up even for the most complex workloads.
+
+00:11:20 And it's a way better value than most cloud providers.
+
+00:11:23 At DigitalOcean, companies can save up to 30% off their cloud bill.
+
+00:11:27 DigitalOcean boasts 99.99% uptime SLAs and industry-leading pricing on bandwidth.
+
+00:11:35 It's built to be the cloud backbone of businesses small and large.
+
+00:11:39 And with GPU-powered virtual machines plus storage, databases, and networking capabilities all on one platform, AI developers can confidently create apps using that their users love.
+
+00:11:50 Devs have access to the complete set of infrastructure tools they need for both training and inference so they can build anything they dream up.
+
+00:11:58 DigitalOcean provides full-service cloud infrastructure that's simple to use, reliable no matter the use case, scalable for any size business, and affordable at any budget.
+
+00:12:08 VMs start at just $4 a month and GPUs under $1 per hour.
+
+00:12:13 Easy to spin up infrastructure built to simplify even the most intense business demands.
+
+00:12:18 That's DigitalOcean.
+
+00:12:19 And if you use DO4 bytes, you can get $200 in free credit to get started.
+
+00:12:26 Take a breath.
+
+00:12:26 DigitalOcean is the cloud that's got you covered.
+
+00:12:29 Please use our link when checking out their offer.
+
+00:12:33 You'll find it in the podcast player show notes.
+
+00:12:35 It's a clickable chapter URL as you're hearing this segment, and it's at the top of the episode page at pythonbytes.fm.
+
+00:12:44 Thank you to DigitalOcean for supporting Python Bytes.
+
+00:12:46 Indeed. Thank you very much.
+
+00:12:48 All right. Let's see what we got next, Brian.
+
+00:12:50 Okay.
+
+00:12:51 PyCon. Neither of us made it a PyCon this year, did we?
+
+00:12:54 That's too bad.
+
+00:12:55 Yeah.
+
+00:12:55 But, you know, c'est la vie.
+
+00:12:57 Sometimes that's how it is.
+
+00:12:59 And I would venture that most of the people listening to this show didn't.
+
+00:13:04 because if everyone listening to the show attended PyCon, it would sell out many times over.
+
+00:13:10 So that would mean most people here are very excited to know that they can now watch these talks.
+
+00:13:16 Most of them.
+
+00:13:17 There's something going on with 40 of them, but there's a bunch, there's what, 120 of the talks are online here.
+
+00:13:23 So I'm linking to the playlists for the PyCon videos, which is pretty cool.
+
+00:13:29 This came out a lot quicker than it did last time.
+
+00:13:31 Last time it was months until they published these, which was unfortunate.
+
+00:13:36 But, you know, this is like a week or something after the conference.
+
+00:13:40 So that was really good.
+
+00:13:41 That's incredible speed.
+
+00:13:43 Yeah.
+
+00:13:43 Yeah, yeah, yeah.
+
+00:13:44 And I pulled up something I want to highlight.
+
+00:13:46 It's too hard to navigate the playlist.
+
+00:13:48 So I'm just going to read them out that I like here.
+
+00:13:51 So I found the keynote by Cory Doctorow to be super interesting.
+
+00:13:55 It was basically how, like, going deep into his whole in poopification stuff that he's been talking about, which is a really, really interesting idea.
+
+00:14:05 A little hard to hear because mask, but you know, it's okay.
+
+00:14:09 Still worth listening to.
+
+00:14:11 There's one talk entitled 503 Days Working Full-Time on FOSS, Lessons Learned, which sounds really interesting.
+
+00:14:21 There's Going from Notebooks to Scalable Systems with Katherine Nelson.
+
+00:14:26 And I just had her on Talk Python.
+
+00:14:29 So for all of these, I'm linking them in the show notes.
+
+00:14:31 And when I say, and on Talk Python, I linked over to that episode or that video or whatever as well, because her talk is not quite published yet. It's just recorded in advance. Unlearning SQL. Doesn't that sound interesting?
+
+00:14:41 Like most people are trying to learn SQL. Why would I unlearn it? The most bizarre software bugs in history. It was interesting. The PyArrow Revolution in Pandas. I also did an episode with Reuben Lerner about that. What They Didn't Tell You About Building a JIT Compiler in CPython by Brant Booker. Also did a Doc Python episode about that and linked to that one. This one's cool from Hennick, design pressure, the invisible hand that shapes your code.
+
+00:15:06 He's got some really interesting architectural ideas, so super cool.
+
+00:15:09 Marmo, the notebook that compiles Python for reproducibility and reusability, and I talked about an episode about that.
+
+00:15:18 GPU programming in pure Python, and I talked about an episode about that.
+
+00:15:22 And finally, scaling the mountain, a framework for tackling large tech debt, large scale tech
+
+00:15:28 debt.
+
+00:15:28 Oh, that looks interesting.
+
+00:15:30 Don't all those talks sound super interesting.
+
+00:15:31 Yeah.
+
+00:15:32 Yeah.
+
+00:15:32 So I've linked all of them.
+
+00:15:34 I pulled them out.
+
+00:15:35 Y'all can check them out if you want.
+
+00:15:37 They're in the show notes.
+
+00:15:38 The most bizarre software bugs in history.
+
+00:15:40 Total clickbait, but I'm going to watch it this afternoon.
+
+00:15:42 I've got to.
+
+00:15:43 Exactly.
+
+00:15:44 I can't wait to watch it.
+
+00:15:45 Yeah, no, it's fun.
+
+00:15:47 All right.
+
+00:15:47 Over to you.
+
+00:15:48 Okay.
+
+00:15:49 This is an interesting header on this, but table of contents, expand.
+
+00:15:55 Anyway, I just wanted to find some posts to talk about this because it's a technique that I use for speeding up test suites.
+
+00:16:05 And it wasn't covered in the last posts that we talked about.
+
+00:16:09 So optimizing Python import performance.
+
+00:16:12 So in the previous discussion, we talked about removing, using Dashp and pytest to remove plugins that might remove imports of things you don't need.
+
+00:16:24 What if there's things that you do need, but not all the time?
+
+00:16:27 So one of the things I want to talk about is this test collection.
+
+00:16:31 So like the other one, they used Python-X import time.
+
+00:16:37 And you use it by just like running, like you can run your app or you can run pytest afterwards.
+
+00:16:42 And you can find out, it prints out a list of, this has been an instance Python 3.7, I think.
+
+00:16:49 But it prints out a list of all of the imports and how long it took to import them.
+
+00:16:53 And it's a little bit hard to parse because it's sort of like a text-based tree level thing.
+
+00:17:00 But it's not bad.
+
+00:17:03 And looking at all of that, you can try to find out which ones are slow.
+
+00:17:09 So one of the techniques is lazy imports.
+
+00:17:12 And this is a weird quirk about Python that I didn't learn until recently, was that when you import something, normally we put the imports at the top of the file.
+
+00:17:21 But when you import a module, it imports everything that that module imports also.
+
+00:17:26 So if you don't, if the things that you're depending on are not really part of the, if the user of it doesn't really need to import that stuff, like just for imports, you can hide that import within a function and it still acts globally.
+
+00:17:43 So like in this example, it says process data, import pandas as PD.
+
+00:17:48 It's only imported when the function runs.
+
+00:17:50 But even after that function, that pandas is available in the module for everything else also.
+
+00:17:56 Kind of a weird quirk, but it works good.
+
+00:17:59 And I'm just going to tie this together to testing right away.
+
+00:18:03 Tests, test collection, at test collection time, pytest imports everything.
+
+00:18:08 So if you don't, and you probably don't need to import any of your dependencies at collection time.
+
+00:18:15 So I look for any expensive imports and move those into a fixture, usually a module level auto use fixture to get that import to only run when the test runs, not when you're doing collection.
+
+00:18:32 So that's an important trick.
+
+00:18:34 Avoiding circular imports.
+
+00:18:36 So I just thought that, so I, hopefully you're already doing this already, but it says circular imports force Python to handle incomplete modules.
+
+00:18:45 They slow down execution and cause errors.
+
+00:18:47 I knew they caused errors.
+
+00:18:49 I didn't understand the just slow down execution part.
+
+00:18:52 So there might be a way to, like there might be some legitimate cycles, sort of, but get rid of them.
+
+00:18:58 That's weird.
+
+00:18:59 It does sometimes have to, you have to restructure code.
+
+00:19:02 The third thing is keeping dunder and nits very light.
+
+00:19:06 And this is a tough one for pytest tests and stuff because sometimes I have a tendency to shove things into dunder and nits, and especially for importing everything, but keeping those dunder and nits files as clean and fast as possible.
+
+00:19:23 So there's other things in this article as well, but those are the three that I really hit on to try to speed up test suites as cleaning up the import time.
+
+00:19:32 So, yeah, that's really cool.
+
+00:19:34 And you might wonder, like, well, what is slow?
+
+00:19:36 What is fast?
+
+00:19:37 How do you know?
+
+00:19:38 Well, there are tools to import profile imports.
+
+00:19:41 We've talked about them before.
+
+00:19:42 I don't remember which one we covered, but there's one called import underscore profile.
+
+00:19:46 Cool.
+
+00:19:47 I was looking for that.
+
+00:19:48 Nice.
+
+00:19:48 Yeah.
+
+00:19:49 And so you can just say run my code dash m import profile, and then you can just give it the things that you would be importing, and it gives you a nice little timing of them.
+
+00:19:59 And probably a lot of them are super slow and you're wasting your energy to deal with trying to optimize that stuff.
+
+00:20:04 But some are fast.
+
+00:20:06 I mean, some are not fast.
+
+00:20:08 And some use a lot of memory and different things like that.
+
+00:20:10 So this is actually pretty interesting to see how that all works, right?
+
+00:20:13 Yeah.
+
+00:20:14 And actually, so when I was doing some optimization for a big test suite recently, you got to measure because there were things that were fairly large packages that I just assumed they were going to be slow.
+
+00:20:27 But they had their import system optimized already.
+
+00:20:31 So those ones don't really, some packages that seem large like pandas or something might actually be pretty quick.
+
+00:20:39 But it looks like it's, in this example, wasn't.
+
+00:20:42 But like NumPy, it does a lot, but it's a pretty, it's a faster import.
+
+00:20:48 So interesting.
+
+00:20:50 It also depends, you know, how are you, you only import it once per process, right?
+
+00:20:55 it's not going to be imported over and over again.
+
+00:20:57 So if it's 100 milliseconds, is it worth worrying about?
+
+00:21:00 Maybe, maybe not.
+
+00:21:01 And also with throwing things away, like let's say you've got, so one of the things often in a test requirement or development requirements file or something or in your test requirements, there might be, so there's two sets of things that I look at often.
+
+00:21:19 They're pytest plugins that are useful for developers to run locally, but they're not really needed in CI.
+
+00:21:26 So you can like take them out in CI.
+
+00:21:28 And then the reverse is like in CI, we often have, I often have like a reporting system.
+
+00:21:33 Like I might export all the data to a database and have some plugins to handle that.
+
+00:21:39 And that's not needed locally.
+
+00:21:40 So turning those off locally so that you can have a little faster run.
+
+00:21:44 So things like that.
+
+00:21:45 So anyway, speeding up testing is a good thing.
+
+00:21:48 Yeah, absolutely.
+
+00:21:48 It's all right.
+
+00:21:49 Extras, you got extras?
+
+00:21:50 I got, yeah.
+
+00:21:51 So I've got a couple extras.
+
+00:21:52 how about you?
+
+00:21:54 Let's go with yours first. I got a few too. Okay.
+
+00:21:56 So this is pretty quick. So this is from Hugo Peps and Co. A little bit of history about where PEP came from. I've just been using it since using the word, but apparently Barry Warsaw came up with the acronym and he calls it a backronym. He liked the sound of PEP because it's peppy before he came up with the Python enhancement proposal acronym so that's an interesting thing but that also takes a look at since then there's been a lot of improvement proposals and enhancement proposal like acronyms all over the place in different different communities so this is interesting like astro pie proposals for enhancement and you totally know that they intentionally reverse those so they can make ape. That's great.
+
+00:22:46 Yeah, that's fun.
+
+00:22:47 The second one is pythontest.com.
+
+00:22:51 My blog has got a fresh coat of paint. It's got light and dark modes, but it's more colorful now. It also makes it glaringly obvious that I don't blog as much as I'd like to.
+
+00:23:01 The fourth oldest post is from January of 2024.
+
+00:23:05 Oops, gotta get on that.
+
+00:23:07 But one of the neat things I like about it is, and part of it is, I didn't really like my theme so i wasn't really vlogging much so
+
+00:23:13 i think i like it better hopefully i will and it's still running on you go or what's it running on yeah
+
+00:23:18 it's hugo with um in this i don't even it's a javascript based search thing um and it it's pretty zippy this is all just like anyway
+
+00:23:29 i like yeah very cool uh one of the what was it i was gonna one there was one change that i'm hopefully maybe might change is the light mode for code highlighting looks fine, but it's a little hard to read with dark.
+
+00:23:43 I don't know, that red on black.
+
+00:23:45 Yeah, yeah, yeah.
+
+00:23:46 You could probably change that with a little CSS action.
+
+00:23:48 Probably, yeah.
+
+00:23:50 Anyway, those are my extras.
+
+00:23:51 How about you?
+
+00:23:52 Oh, yeah, very nice.
+
+00:23:53 I got a few.
+
+00:23:55 Just following up on your extra real quick, I'm doing a Stories from Python history, like through the years panel, and Barry Warshaw is going to be on there, on the 6th, which is what, four days, Thursday, something like that.
+
+00:24:08 Okay.
+
+00:24:08 Yeah, that PEP story.
+
+00:24:10 I want to try to get him to talk about that.
+
+00:24:11 So my extras.
+
+00:24:13 This one is certainly could be a full-fledged item, but I don't have enough experience.
+
+00:24:18 I don't really know.
+
+00:24:19 But here's the deal.
+
+00:24:20 So you could have some kind of SaaS bug system.
+
+00:24:23 Could be Jira.
+
+00:24:24 Everyone loves Jira.
+
+00:24:25 Or it could be GitHub issues or it could be something else.
+
+00:24:28 But what if you just want something low-key, you know it's going to be right there with your projects, Git is already distributed, So there's this thing called GitBug.
+
+00:24:37 And the idea is this is a distributed offline-first standalone issue management tool that embeds issues, comments, and more as objects into side your Git repository.
+
+00:24:48 So when you Git clone, you just get the issues.
+
+00:24:51 And when you Git pull, you update your issues.
+
+00:24:53 Oh, cool.
+
+00:24:54 Interesting, right?
+
+00:24:55 It comes with some kind of UI.
+
+00:24:57 I haven't played with it that much.
+
+00:24:58 A CLI, TUI, or even a web browser that you can run based on this.
+
+00:25:03 So that's pretty neat.
+
+00:25:04 And then there's something about it will sync back and forth with things like GitHub issues and so on if you want to go GitLab using something called bridges.
+
+00:25:13 I think that's pretty cool, actually.
+
+00:25:14 I don't know how it works, but it's pretty cool.
+
+00:25:17 But I've not used it at all and I have no interest in using it because for me, all my stuff's on GitHub.
+
+00:25:22 I'm just going to use GitHub issues.
+
+00:25:24 It's just fine.
+
+00:25:25 But I can see certain use cases.
+
+00:25:26 This will be pretty neat.
+
+00:25:27 What else have I got?
+
+00:25:28 Follow up from last week.
+
+00:25:29 there's a our face but um this is from neil mitchell remember we talked about pyrefly the new um type linter my pi like thing for from meta
+
+00:25:42 yeah and i said oh yeah it's kind of like ty or formerly red knot from astral and i said oh but astral has this lsp so we got a nice comment on that show from neil it says hey from the fire pyrefly team here thanks for taking a look at our project we do have an lsp ide first and lsps um are approximately approximately synonyms nowadays and we're exploring whether this can be added to pilance so there's more to pyrefly than i gave them credit for very cool yeah yeah what else oh i
+
+00:26:13 think that's it you ready ready for a joke ides and lsps are synonyms i think um the autocomplete feature the features that make IDEs more than just a basic editor.
+
+00:26:25 Okay.
+
+00:26:25 Like go to definition, refactor, find usages, that kind.
+
+00:26:28 I think that's what he's saying.
+
+00:26:29 Okay.
+
+00:26:30 Yeah.
+
+00:26:30 I mean, I wouldn't fire up PowerFly just from a command prompt.
+
+00:26:36 I need to edit this email.
+
+00:26:38 Let me fire up an LSP.
+
+00:26:40 Yeah, exactly.
+
+00:26:41 But I think that's what he said.
+
+00:26:42 Like the features of IDEs are basically just back in or front ends to LSPs.
+
+00:26:47 All right.
+
+00:26:47 Are you ready for a joke?
+
+00:26:48 You did a nice job full circling your whole experience.
+
+00:26:52 so I'm going to do that as well like with your pytest and so on. So check this out. We're all as programmers aware by now surely that AI tools are good at writing code and it's going to mean some sort of change for us somehow, right? Some of us are worried that you know maybe this might be the end. So the joke is there's two programmers who are super they're like about to be hung in the gallows, right?
+
+00:27:18 It's pretty intense. It says programmers worried about ChatGPT. And then they look over at the other guy. He's also, he says, mathematicians who survived the invention of the calculator.
+
+00:27:29 Looks like it's the first time, eh?
+
+00:27:32 It's pretty good, right?
+
+00:27:33 Yeah, it's pretty good.
+
+00:27:35 I wonder if that image was made with ChatGPT.
+
+00:27:37 That would be sweet sauce on it.
+
+00:27:40 Probably not, but it's probably from a movie I haven't seen.
+
+00:27:43 Yeah, probably.
+
+00:27:45 First time?
+
+00:27:46 Mathematicians who survived.
+
+00:27:47 Yeah, gosh.
+
+00:27:49 I'm going to show my age, but I still remember all my math teachers saying, you have to learn how to do this by hand because you're not going to mark around with a calculator every day.
+
+00:27:59 Yeah, you're not going to, are you?
+
+00:28:00 Wait.
+
+00:28:01 Well, you know, maybe.
+
+00:28:02 Maybe.
+
+00:28:03 Yeah.
+
+00:28:03 Maybe you hold enough to your phone.
+
+00:28:05 Yes, I will.
+
+00:28:05 Yeah.
+
+00:28:06 Or your watch or whatever.
+
+00:28:07 Yeah, and my kid's oddly good at putting her phone at anything, like a math problem and getting an answer.
+
+00:28:15 She uses it to check her work, which I think is good.
+
+00:28:18 At least that's the claim.
+
+00:28:20 But anyway.
+
+00:28:21 We live in amazing times, but also interesting times as the curse slash quote goes.
+
+00:28:27 Yeah.
+
+00:28:28 I'm going to have to read the comments to figure out what async and banana suits mean.
+
+00:28:33 Oh, yeah, there was a banana suit at one of the videos on Python.
+
+00:28:38 Yeah, yeah.
+
+00:28:38 You have any out there pointed out that from one of the, pulling out some of the talks, one more talk I thought was interesting was Pablo Galindo, Salgatos, and Yuri Silvanov.
+
+00:28:47 that Silvanov was especially fun talking about async and wearing banana costumes.
+
+00:28:52 What could be better?
+
+00:28:54 Nice.
+
+00:28:55 Yeah.
+
+00:28:55 Well done, guys.
+
+00:28:56 Yeah.
+
+00:28:56 Very nice.
+
+00:28:57 Thanks for being here, Brian.
+
+00:28:58 Thanks everyone for listening.
+
+00:28:59 See you.
+
+00:28:59 Bye.
+
+00:29:00 Bye.
+

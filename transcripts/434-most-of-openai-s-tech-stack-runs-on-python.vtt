@@ -1,0 +1,1412 @@
+WEBVTT
+
+00:00:00.020 --> 00:00:05.020
+Hello and welcome to Python Bytes, where we deliver Python news and headlines directly to your earbuds.
+
+00:00:05.760 --> 00:00:11.280
+This is episode 434, recorded June 2nd, 2025.
+
+00:00:11.740 --> 00:00:12.380
+I'm Michael Kennedy.
+
+00:00:12.800 --> 00:00:13.900
+And I am Brian Arkin.
+
+00:00:14.180 --> 00:00:19.660
+And I am super happy to say that this episode is brought to you by DigitalOcean.
+
+00:00:20.120 --> 00:00:25.860
+They've got, obviously, a bunch of amazing servers, but some really cool Gen.AI features we want to tell you about as well.
+
+00:00:26.080 --> 00:00:27.440
+So we're going to be telling you about that later.
+
+00:00:27.620 --> 00:00:32.180
+The link with a $200 credit is in the show notes.
+
+00:00:32.380 --> 00:00:33.660
+So no spoiler there.
+
+00:00:34.380 --> 00:00:42.160
+If you would like to talk to us on very social things, tell us about what we might want to cover, give us feedback on what we have.
+
+00:00:42.420 --> 00:00:47.980
+Links to our Mastodon and Blue Sky accounts are at the top of the show notes as well.
+
+00:00:48.480 --> 00:00:51.040
+You can join us live right here, right now on YouTube.
+
+00:00:51.470 --> 00:00:56.940
+Almost always Monday at 10, unless something stirs up the calendar and breaks that.
+
+00:00:57.080 --> 00:00:58.920
+But we try to do Monday, 10 a.m. Pacific time.
+
+00:00:59.540 --> 00:01:01.160
+All the older episodes are there as well.
+
+00:01:01.520 --> 00:01:09.740
+And finally, if you want an artisanal, handcrafted, special email from Brian with extra information about what's going on in the show.
+
+00:01:10.540 --> 00:01:12.660
+Well, sign up to our mailing list.
+
+00:01:13.320 --> 00:01:17.160
+And Brian, some people have been saying that they had been having trouble receiving emails.
+
+00:01:17.300 --> 00:01:18.980
+Like they signed up and they didn't get them.
+
+00:01:19.280 --> 00:01:19.460
+Yeah.
+
+00:01:19.800 --> 00:01:19.900
+Yeah.
+
+00:01:20.180 --> 00:01:27.100
+Well, that's because there's a bunch of jerks on the internet and they make it hard to have nice things like email that works.
+
+00:01:27.540 --> 00:01:32.440
+So it's like so many spam filters and other things that I've done some reworking.
+
+00:01:32.930 --> 00:01:36.100
+And I think some people who signed up probably will start getting email again.
+
+00:01:36.580 --> 00:01:42.780
+But basically their email providers had been saying, hey, you're sending from an IP address that has previously sent spam.
+
+00:01:43.220 --> 00:01:43.540
+Blocked.
+
+00:01:44.040 --> 00:01:44.680
+Well, we use Syngrid.
+
+00:01:45.200 --> 00:01:48.220
+Syngrid just round robins us through a whole bunch of different IP addresses.
+
+00:01:48.460 --> 00:01:53.560
+And if we happen to get one that previously got flagged, well, then you might get unsubscribed from an email list.
+
+00:01:53.610 --> 00:01:54.240
+How much fun is that?
+
+00:01:54.480 --> 00:02:01.980
+So I've done a bunch of coding behind the scenes to try to limit those effects and just send it again next time because it'll be a different IP address.
+
+00:02:02.440 --> 00:02:03.240
+Ah, jerks.
+
+00:02:03.720 --> 00:02:04.080
+So,
+
+00:02:04.740 --> 00:02:05.540
+that is the spammers.
+
+00:02:06.060 --> 00:02:06.540
+Yeah, thanks.
+
+00:02:07.500 --> 00:02:10.500
+And I guess with that, we're ready to kick it off.
+
+00:02:10.539 --> 00:02:10.860
+What you got?
+
+00:02:11.080 --> 00:02:14.460
+Well, I've been speeding up some test suites.
+
+00:02:14.880 --> 00:02:20.580
+So I'm interested in this blog post on trail of bits.blog.
+
+00:02:20.720 --> 00:02:21.780
+It's a trail of bits blog.
+
+00:02:22.880 --> 00:02:25.520
+And I think we've covered some stuff from them before, but
+
+00:02:25.520 --> 00:02:25.800
+anyway.
+
+00:02:26.100 --> 00:02:27.400
+Yeah, usually they're a security company.
+
+00:02:27.470 --> 00:02:31.320
+They do really interesting research into a lot of security things.
+
+00:02:31.780 --> 00:02:32.520
+Oh, really? Okay.
+
+00:02:32.800 --> 00:02:45.220
+Well, apparently one of the things they've worked on is, or at least they're writing about, is making, yeah, it says trail of bits collaborated with PyPI several years ago to add features and improve security defaults across the Python ecosystem.
+
+00:02:46.300 --> 00:02:48.580
+But they also, today
+
+00:02:48.580 --> 00:02:49.300
+we'll look at
+
+00:02:49.300 --> 00:02:54.060
+equally critical aspect of holistic software security, test suite performance.
+
+00:02:54.640 --> 00:02:58.380
+So there was some effort to speed up the test suite.
+
+00:02:58.400 --> 00:02:59.700
+And this is incredible.
+
+00:02:59.860 --> 00:03:03.180
+So one of the reasons why I'm covering this is to speed up test suites.
+
+00:03:03.240 --> 00:03:10.760
+But also I often get questions about is pytest robust enough to test a large system?
+
+00:03:11.140 --> 00:03:11.960
+And yes, it is.
+
+00:03:12.310 --> 00:03:15.740
+And I actually don't even think I'd, I mean, Warehouse is a decent size.
+
+00:03:16.820 --> 00:03:23.580
+Apparently they've had the current, or the test suite as I've read this writing is 4,700 test count.
+
+00:03:23.820 --> 00:03:25.020
+The test count was 4,700.
+
+00:03:25.400 --> 00:03:26.380
+It's quite a few tests.
+
+00:03:27.090 --> 00:03:29.100
+And so Warehouse, Paras, PyPI.
+
+00:03:29.540 --> 00:03:34.100
+There's a nice graph on the blog post showing the time spent.
+
+00:03:34.170 --> 00:03:36.400
+So they went from 163 seconds.
+
+00:03:36.660 --> 00:03:41.660
+So that's what, two minutes and almost two and a half,
+
+00:03:41.760 --> 00:03:42.180
+three minutes?
+
+00:03:42.510 --> 00:03:43.260
+Yeah, almost three minutes.
+
+00:03:43.580 --> 00:03:45.920
+Almost three minutes down to 30 seconds.
+
+00:03:46.120 --> 00:03:47.360
+So this is a nice speed up.
+
+00:03:48.380 --> 00:03:53.100
+And even as the test counts were going up, the time spent was going down.
+
+00:03:53.410 --> 00:03:54.280
+So how did they do this?
+
+00:03:55.120 --> 00:04:00.240
+The big chunk of the performance improvement was switching to pytest XDist.
+
+00:04:00.560 --> 00:04:06.260
+So XDist is a plugin by the pytest team, by the core team, or at least that's who's maintaining it.
+
+00:04:06.560 --> 00:04:10.620
+And that is 67% of the reduction.
+
+00:04:10.980 --> 00:04:14.380
+What it does is it allows you to run it on multiple cores.
+
+00:04:14.640 --> 00:04:18.100
+So like I think in this one, they had a 32-core machine.
+
+00:04:18.519 --> 00:04:19.019
+They can run it
+
+00:04:19.019 --> 00:04:19.100
+on multiple cores.
+
+00:04:19.100 --> 00:04:20.260
+So you use multiprocessing?
+
+00:04:20.880 --> 00:04:20.959
+Yeah.
+
+00:04:21.019 --> 00:04:21.959
+Threading, right, yeah.
+
+00:04:22.260 --> 00:04:24.620
+Yeah, it is multiprocessing.
+
+00:04:25.140 --> 00:04:31.440
+I think there's some configuration there that you can fiddle with, but mostly it's multiprocessing.
+
+00:04:32.260 --> 00:04:38.520
+So there is some overhead in doing that, So you wouldn't want to try to speed up a really fast, already fast, small test.
+
+00:04:39.490 --> 00:04:41.400
+The test suite would go slower with XGIS.
+
+00:04:41.580 --> 00:04:43.300
+But anyway, this is a larger one.
+
+00:04:44.160 --> 00:04:54.960
+But one of the things I like about this is because it's not a free lunch for XGIS because it's not always easy to split up your test suite like this one.
+
+00:04:55.780 --> 00:05:00.140
+So they were talking about parallelizing the test execution.
+
+00:05:00.940 --> 00:05:06.960
+You just say num process equals auto or dash in equals auto, and that just runs it on a bunch.
+
+00:05:07.200 --> 00:05:11.300
+It doesn't really work if you have things that are a shared resource like a database.
+
+00:05:11.940 --> 00:05:26.520
+So they also talked about setting up database fixtures such that each test worker gets its own isolated database.
+
+00:05:27.020 --> 00:05:29.960
+So they kind of show some of the code on how to do that.
+
+00:05:30.040 --> 00:05:33.260
+But this is open source code, so you can go check out the entire thing if you want.
+
+00:05:33.830 --> 00:05:37.960
+The other thing that you get with XDIST is very tertiary reporting.
+
+00:05:38.960 --> 00:05:42.660
+So they increase the readability by using pytest Sugar.
+
+00:05:42.850 --> 00:05:46.160
+And I don't use pytest Sugar a lot, but it sure is popular.
+
+00:05:46.430 --> 00:05:47.740
+And it gives you little check marks.
+
+00:05:48.110 --> 00:05:52.580
+But one of the things it does is makes XDIST even more verbose.
+
+00:05:52.880 --> 00:05:55.640
+But it's kind of a nice green check marks.
+
+00:05:56.460 --> 00:05:58.700
+It feels good. It's better than the little dots.
+
+00:05:59.480 --> 00:06:05.400
+Anyway, so that was a massive improvement with X-Disk, but that's not all.
+
+00:06:05.700 --> 00:06:19.420
+Python 3.12 added the ability for coverage.py to run faster by using the sysmonitoring module, and NedBatch Elder implemented that a while ago.
+
+00:06:19.790 --> 00:06:28.820
+So they turned that on with a coverage core environmental variable, and that sped things up quite a bit as well, another 53% time reduction.
+
+00:06:29.940 --> 00:06:57.720
+then test discovery phase this is an easy one didn't didn't increase time that much but it's just everybody should do this it's one line config to say where are my tests so that's a good one and then a last one is unnecessary import overhead is this kind of an interesting thing that I was like how did they do this and through testing and they're using a thing called dd trace And that is through, what is DD trace through?
+
+00:06:58.820 --> 00:06:59.700
+Datadog library.
+
+00:07:00.260 --> 00:07:04.420
+But what, what it's, I don't know what it does really, but I just checked it out.
+
+00:07:04.480 --> 00:07:05.480
+I'm like, why, how are they?
+
+00:07:05.900 --> 00:07:08.260
+I looked at the pull request to see how they did it.
+
+00:07:08.560 --> 00:07:18.340
+And they're using a flag dash P that is, allows you to turn off plugins, either turn on or turn off plugins in your test suite.
+
+00:07:18.760 --> 00:07:23.440
+And DD trace doesn't look like it's a high test plugin, but it does have one.
+
+00:07:23.500 --> 00:07:24.240
+So I took a look.
+
+00:07:25.040 --> 00:07:26.960
+DDTrace comes with a couple of pytest plugins.
+
+00:07:27.260 --> 00:07:32.800
+So that makes sense that those are going to pull in DDTrace when the plugins get read.
+
+00:07:33.040 --> 00:07:36.680
+So anyway, interesting side tangent right there.
+
+00:07:36.980 --> 00:07:40.340
+But really interesting read on how to speed up test suites.
+
+00:07:41.030 --> 00:07:44.840
+And this has reminded me that I really need, I've got a whole bunch of tricks up my sleeve too.
+
+00:07:45.260 --> 00:07:50.280
+I'd like to, I need to start a how to speed up your test suite post or series of posts.
+
+00:07:51.480 --> 00:07:52.480
+Yeah, that's super interesting.
+
+00:07:52.850 --> 00:07:53.220
+Good stuff.
+
+00:07:53.280 --> 00:07:53.660
+me ideas.
+
+00:07:54.130 --> 00:08:02.500
+Yeah. Anyway, and I'll have actually my next top, the next topic we talk about later in the episode will be around speeding up test suites as well. So,
+
+00:08:02.940 --> 00:08:26.140
+okay. Well, it's all about speed this week. Speed. Test speed. All right. This one is super interesting. And so I came across, I don't even see this. I don't spend that much time on X. Not necessarily because I've got like some vendetta against X, although you would know that for me, not reviews on, I think it was on Doc Python. Somebody absolutely like went, is having like a moment.
+
+00:08:27.280 --> 00:08:28.580
+Because I said, hey, Mastodon's cool.
+
+00:08:28.680 --> 00:08:29.900
+Oh my gosh. Anyway,
+
+00:08:30.580 --> 00:08:30.820
+no,
+
+00:08:30.860 --> 00:08:31.480
+I don't spend that much time
+
+00:08:31.480 --> 00:08:38.479
+on there because I just find that like, I feel like the algorithm just hides my stuff and I don't get into really conversations or engagement.
+
+00:08:38.780 --> 00:08:44.260
+So that said, I ran across this thing that is super interesting from Pietro Charano.
+
+00:08:44.680 --> 00:08:54.680
+Charano? And it says, people aren't talking enough about how most of open AI, aka ChattiePT, Tech stack runs on Python.
+
+00:08:55.130 --> 00:09:00.560
+And there's this screenshot of a newsletter that talks about it.
+
+00:09:01.440 --> 00:09:02.160
+So the tech stack.
+
+00:09:02.450 --> 00:09:03.340
+This is super interesting.
+
+00:09:03.700 --> 00:09:03.920
+Python.
+
+00:09:04.460 --> 00:09:06.840
+Most of the product's code is written in Python.
+
+00:09:07.300 --> 00:09:07.720
+Frameworks.
+
+00:09:08.160 --> 00:09:08.720
+FastAPI.
+
+00:09:09.180 --> 00:09:14.340
+The Python framework used for building APIs quickly using standard Python type hints and Pydantic.
+
+00:09:14.860 --> 00:09:15.360
+Talks about it.
+
+00:09:15.700 --> 00:09:18.240
+C for parts of the code that need to be highly optimized.
+
+00:09:18.470 --> 00:09:21.940
+The team uses lower level C for the programming language.
+
+00:09:22.520 --> 00:09:25.520
+And then something called Temporal for asynchronous workflows.
+
+00:09:26.260 --> 00:09:33.580
+Temporal is a neat workflow solution that makes multi-step workflows reliable even when individual steps crash without much effort by developers.
+
+00:09:34.020 --> 00:09:35.380
+I actually don't know what Temporal is.
+
+00:09:36.160 --> 00:09:37.060
+Maybe it's Python.
+
+00:09:37.320 --> 00:09:37.860
+It probably is.
+
+00:09:37.880 --> 00:09:38.340
+It sounds like it.
+
+00:09:38.640 --> 00:09:41.460
+Just to remind me, this is OpenAI's tech stack?
+
+00:09:41.820 --> 00:09:42.020
+Yes.
+
+00:09:42.340 --> 00:09:42.520
+Okay.
+
+00:09:43.120 --> 00:09:45.620
+Did some searching and I came up with the original article there.
+
+00:09:46.000 --> 00:09:59.680
+And this comes from a conversation around building ChatGPT's images, the image generation stuff, where you say, make me an infographic about what I've been talking about or whatever, which is incredible these days.
+
+00:10:00.160 --> 00:10:05.020
+So the article is entitled Building, Launching, and Scaling ChatGPT Images.
+
+00:10:05.620 --> 00:10:12.080
+It's OpenAI's biggest launch yet with 100 million new users generating 700 million images in the first week.
+
+00:10:12.340 --> 00:10:13.200
+But how is it built?
+
+00:10:13.560 --> 00:10:15.240
+Let's talk about Python, right?
+
+00:10:15.640 --> 00:10:17.920
+So Python, FastAPI, C, and Temporal.
+
+00:10:18.170 --> 00:10:18.860
+How cool is that?
+
+00:10:19.320 --> 00:10:26.960
+For people who are like, well, it's fun to use Python for these toy projects, but it's an unserious language for unserious people who don't build real things.
+
+00:10:27.360 --> 00:10:27.720
+Or is it?
+
+00:10:28.160 --> 00:10:29.560
+100 million new users in a week.
+
+00:10:29.820 --> 00:10:30.340
+That's pretty epic.
+
+00:10:30.920 --> 00:10:32.000
+Well done, FastAPI.
+
+00:10:32.220 --> 00:10:34.540
+Well done, new versions of Python.
+
+00:10:34.950 --> 00:10:35.480
+All these things.
+
+00:10:35.880 --> 00:10:37.260
+I got to know, what is Temporal?
+
+00:10:37.540 --> 00:10:38.260
+Is this what it is?
+
+00:10:38.410 --> 00:10:40.460
+Probably not even a, you know, a double execution.
+
+00:10:41.000 --> 00:10:43.820
+This is written in Go, so apparently Temporal is probably not.
+
+00:10:44.080 --> 00:10:44.820
+Anyway, isn't that interesting?
+
+00:10:45.200 --> 00:10:46.120
+It's always fun to have a data point.
+
+00:10:46.780 --> 00:10:46.960
+Yeah.
+
+00:10:48.060 --> 00:10:48.580
+I like that.
+
+00:10:48.820 --> 00:10:51.440
+I think there's a lot that we don't even know.
+
+00:10:52.320 --> 00:10:55.500
+People don't talk about that are written in Python and FastAPI now.
+
+00:10:55.770 --> 00:10:56.620
+So it's a different world.
+
+00:10:57.620 --> 00:10:57.800
+What
+
+00:10:57.800 --> 00:10:58.280
+else is
+
+00:10:58.280 --> 00:10:58.500
+nice?
+
+00:10:59.000 --> 00:10:59.440
+DigitalOcean.
+
+00:10:59.700 --> 00:11:00.460
+DigitalOcean is awesome.
+
+00:11:01.160 --> 00:11:03.960
+Yeah, DigitalOcean powered Python Bytes for a very long time.
+
+00:11:04.030 --> 00:11:04.900
+I love DigitalOcean.
+
+00:11:05.160 --> 00:11:06.520
+I highly recommend them.
+
+00:11:06.800 --> 00:11:08.800
+But you got something specific to say, don't you?
+
+00:11:09.080 --> 00:11:09.300
+I do.
+
+00:11:09.720 --> 00:11:13.240
+This episode of Python Bytes is brought to you by DigitalOcean.
+
+00:11:13.680 --> 00:11:19.800
+DigitalOcean is a comprehensive cloud infrastructure that's simple to spin up even for the most complex workloads.
+
+00:11:20.420 --> 00:11:22.840
+And it's a way better value than most cloud providers.
+
+00:11:23.190 --> 00:11:26.900
+At DigitalOcean, companies can save up to 30% off their cloud bill.
+
+00:11:27.600 --> 00:11:34.860
+DigitalOcean boasts 99.99% uptime SLAs and industry-leading pricing on bandwidth.
+
+00:11:35.340 --> 00:11:39.160
+It's built to be the cloud backbone of businesses small and large.
+
+00:11:39.580 --> 00:11:50.020
+And with GPU-powered virtual machines plus storage, databases, and networking capabilities all on one platform, AI developers can confidently create apps using that their users love.
+
+00:11:50.440 --> 00:11:58.500
+Devs have access to the complete set of infrastructure tools they need for both training and inference so they can build anything they dream up.
+
+00:11:58.820 --> 00:12:08.380
+DigitalOcean provides full-service cloud infrastructure that's simple to use, reliable no matter the use case, scalable for any size business, and affordable at any budget.
+
+00:12:08.780 --> 00:12:13.100
+VMs start at just $4 a month and GPUs under $1 per hour.
+
+00:12:13.510 --> 00:12:18.200
+Easy to spin up infrastructure built to simplify even the most intense business demands.
+
+00:12:18.640 --> 00:12:19.460
+That's DigitalOcean.
+
+00:12:19.830 --> 00:12:25.760
+And if you use DO4 bytes, you can get $200 in free credit to get started.
+
+00:12:26.140 --> 00:12:26.540
+Take a breath.
+
+00:12:26.980 --> 00:12:29.540
+DigitalOcean is the cloud that's got you covered.
+
+00:12:29.900 --> 00:12:32.680
+Please use our link when checking out their offer.
+
+00:12:33.020 --> 00:12:35.040
+You'll find it in the podcast player show notes.
+
+00:12:35.440 --> 00:12:43.880
+It's a clickable chapter URL as you're hearing this segment, and it's at the top of the episode page at pythonbytes.fm.
+
+00:12:44.160 --> 00:12:46.240
+Thank you to DigitalOcean for supporting Python
+
+00:12:46.240 --> 00:12:46.600
+Bytes.
+
+00:12:46.920 --> 00:12:47.820
+Indeed. Thank you very much.
+
+00:12:48.520 --> 00:12:50.560
+All right. Let's see what we got next, Brian.
+
+00:12:50.960 --> 00:12:51.140
+Okay.
+
+00:12:51.520 --> 00:12:54.000
+PyCon. Neither of us made it a PyCon this year, did we?
+
+00:12:54.280 --> 00:12:54.780
+That's too bad.
+
+00:12:55.160 --> 00:12:55.280
+Yeah.
+
+00:12:55.600 --> 00:12:56.840
+But, you know, c'est la vie.
+
+00:12:57.070 --> 00:12:58.660
+Sometimes that's how it is.
+
+00:12:59.040 --> 00:13:04.820
+And I would venture that most of the people listening to this show didn't.
+
+00:13:04.860 --> 00:13:09.520
+because if everyone listening to the show attended PyCon, it would sell out many times over.
+
+00:13:10.060 --> 00:13:16.400
+So that would mean most people here are very excited to know that they can now watch these talks.
+
+00:13:16.960 --> 00:13:17.520
+Most of them.
+
+00:13:17.780 --> 00:13:23.520
+There's something going on with 40 of them, but there's a bunch, there's what, 120 of the talks are online here.
+
+00:13:23.900 --> 00:13:29.280
+So I'm linking to the playlists for the PyCon videos, which is pretty cool.
+
+00:13:29.640 --> 00:13:31.740
+This came out a lot quicker than it did last time.
+
+00:13:31.980 --> 00:13:36.040
+Last time it was months until they published these, which was unfortunate.
+
+00:13:36.760 --> 00:13:40.160
+But, you know, this is like a week or something after the conference.
+
+00:13:40.400 --> 00:13:41.040
+So that was really good.
+
+00:13:41.660 --> 00:13:42.660
+That's incredible speed.
+
+00:13:43.160 --> 00:13:43.240
+Yeah.
+
+00:13:43.680 --> 00:13:44.280
+Yeah, yeah, yeah.
+
+00:13:44.800 --> 00:13:46.700
+And I pulled up something I want to highlight.
+
+00:13:46.980 --> 00:13:48.640
+It's too hard to navigate the playlist.
+
+00:13:48.820 --> 00:13:51.000
+So I'm just going to read them out that I like here.
+
+00:13:51.300 --> 00:13:55.560
+So I found the keynote by Cory Doctorow to be super interesting.
+
+00:13:55.640 --> 00:14:05.140
+It was basically how, like, going deep into his whole in poopification stuff that he's been talking about, which is a really, really interesting idea.
+
+00:14:05.940 --> 00:14:09.480
+A little hard to hear because mask, but you know, it's okay.
+
+00:14:09.850 --> 00:14:10.680
+Still worth listening to.
+
+00:14:11.820 --> 00:14:20.180
+There's one talk entitled 503 Days Working Full-Time on FOSS, Lessons Learned, which sounds really interesting.
+
+00:14:21.060 --> 00:14:26.280
+There's Going from Notebooks to Scalable Systems with Katherine Nelson.
+
+00:14:26.920 --> 00:14:28.800
+And I just had her on Talk Python.
+
+00:14:29.340 --> 00:14:31.460
+So for all of these, I'm linking them in the show notes.
+
+00:14:31.660 --> 00:14:41.280
+And when I say, and on Talk Python, I linked over to that episode or that video or whatever as well, because her talk is not quite published yet. It's just recorded in advance. Unlearning SQL. Doesn't that sound interesting?
+
+00:14:41.680 --> 00:15:05.480
+Like most people are trying to learn SQL. Why would I unlearn it? The most bizarre software bugs in history. It was interesting. The PyArrow Revolution in Pandas. I also did an episode with Reuben Lerner about that. What They Didn't Tell You About Building a JIT Compiler in CPython by Brant Booker. Also did a Doc Python episode about that and linked to that one. This one's cool from Hennick, design pressure, the invisible hand that shapes your code.
+
+00:15:06.280 --> 00:15:09.100
+He's got some really interesting architectural ideas, so super cool.
+
+00:15:09.820 --> 00:15:18.340
+Marmo, the notebook that compiles Python for reproducibility and reusability, and I talked about an episode about that.
+
+00:15:18.780 --> 00:15:22.380
+GPU programming in pure Python, and I talked about an episode about that.
+
+00:15:22.470 --> 00:15:28.600
+And finally, scaling the mountain, a framework for tackling large tech debt, large scale tech
+
+00:15:28.600 --> 00:15:28.820
+debt.
+
+00:15:28.950 --> 00:15:29.780
+Oh, that looks interesting.
+
+00:15:30.220 --> 00:15:31.400
+Don't all those talks sound super interesting.
+
+00:15:31.920 --> 00:15:32.080
+Yeah.
+
+00:15:32.460 --> 00:15:32.620
+Yeah.
+
+00:15:32.720 --> 00:15:33.040
+So
+
+00:15:33.040 --> 00:15:34.440
+I've linked all of them.
+
+00:15:34.440 --> 00:15:35.000
+I pulled them out.
+
+00:15:35.260 --> 00:15:37.060
+Y'all can check them out if you want.
+
+00:15:37.160 --> 00:15:37.720
+They're in the show notes.
+
+00:15:38.160 --> 00:15:39.900
+The most bizarre software bugs in history.
+
+00:15:40.440 --> 00:15:42.440
+Total clickbait, but I'm going to watch it this afternoon.
+
+00:15:42.800 --> 00:15:43.240
+I've got to.
+
+00:15:43.720 --> 00:15:43.920
+Exactly.
+
+00:15:44.600 --> 00:15:45.560
+I can't wait to watch it.
+
+00:15:45.860 --> 00:15:46.800
+Yeah, no, it's fun.
+
+00:15:47.080 --> 00:15:47.360
+All right.
+
+00:15:47.620 --> 00:15:47.980
+Over to you.
+
+00:15:48.260 --> 00:15:48.420
+Okay.
+
+00:15:49.380 --> 00:15:54.460
+This is an interesting header on this, but table of contents, expand.
+
+00:15:55.060 --> 00:16:04.420
+Anyway, I just wanted to find some posts to talk about this because it's a technique that I use for speeding up test suites.
+
+00:16:05.240 --> 00:16:09.680
+And it wasn't covered in the last posts that we talked about.
+
+00:16:09.960 --> 00:16:12.400
+So optimizing Python import performance.
+
+00:16:12.660 --> 00:16:23.760
+So in the previous discussion, we talked about removing, using Dashp and pytest to remove plugins that might remove imports of things you don't need.
+
+00:16:24.040 --> 00:16:27.080
+What if there's things that you do need, but not all the time?
+
+00:16:27.250 --> 00:16:30.040
+So one of the things I want to talk about is this test collection.
+
+00:16:31.660 --> 00:16:36.840
+So like the other one, they used Python-X import time.
+
+00:16:37.360 --> 00:16:41.800
+And you use it by just like running, like you can run your app or you can run pytest afterwards.
+
+00:16:42.260 --> 00:16:48.780
+And you can find out, it prints out a list of, this has been an instance Python 3.7, I think.
+
+00:16:49.040 --> 00:16:52.880
+But it prints out a list of all of the imports and how long it took to import them.
+
+00:16:53.100 --> 00:17:00.420
+And it's a little bit hard to parse because it's sort of like a text-based tree level thing.
+
+00:17:00.900 --> 00:17:02.360
+But it's not bad.
+
+00:17:03.700 --> 00:17:09.339
+And looking at all of that, you can try to find out which ones are slow.
+
+00:17:09.680 --> 00:17:11.780
+So one of the techniques is lazy imports.
+
+00:17:12.140 --> 00:17:20.740
+And this is a weird quirk about Python that I didn't learn until recently, was that when you import something, normally we put the imports at the top of the file.
+
+00:17:21.120 --> 00:17:26.040
+But when you import a module, it imports everything that that module imports also.
+
+00:17:26.900 --> 00:17:43.400
+So if you don't, if the things that you're depending on are not really part of the, if the user of it doesn't really need to import that stuff, like just for imports, you can hide that import within a function and it still acts globally.
+
+00:17:43.720 --> 00:17:47.680
+So like in this example, it says process data, import pandas as PD.
+
+00:17:48.780 --> 00:17:50.420
+It's only imported when the function runs.
+
+00:17:50.880 --> 00:17:55.700
+But even after that function, that pandas is available in the module for everything else also.
+
+00:17:56.680 --> 00:17:58.960
+Kind of a weird quirk, but it works good.
+
+00:17:59.800 --> 00:18:02.860
+And I'm just going to tie this together to testing right away.
+
+00:18:03.320 --> 00:18:08.500
+Tests, test collection, at test collection time, pytest imports everything.
+
+00:18:08.960 --> 00:18:14.640
+So if you don't, and you probably don't need to import any of your dependencies at collection time.
+
+00:18:15.020 --> 00:18:32.060
+So I look for any expensive imports and move those into a fixture, usually a module level auto use fixture to get that import to only run when the test runs, not when you're doing collection.
+
+00:18:32.420 --> 00:18:33.640
+So that's an important trick.
+
+00:18:34.040 --> 00:18:35.580
+Avoiding circular imports.
+
+00:18:36.020 --> 00:18:45.140
+So I just thought that, so I, hopefully you're already doing this already, but it says circular imports force Python to handle incomplete modules.
+
+00:18:45.350 --> 00:18:47.340
+They slow down execution and cause errors.
+
+00:18:47.780 --> 00:18:48.680
+I knew they caused errors.
+
+00:18:49.110 --> 00:18:51.820
+I didn't understand the just slow down execution part.
+
+00:18:52.020 --> 00:18:58.500
+So there might be a way to, like there might be some legitimate cycles, sort of, but get rid of them.
+
+00:18:58.620 --> 00:18:58.900
+That's weird.
+
+00:18:59.799 --> 00:19:02.440
+It does sometimes have to, you have to restructure code.
+
+00:19:02.800 --> 00:19:06.240
+The third thing is keeping dunder and nits very light.
+
+00:19:06.560 --> 00:19:23.560
+And this is a tough one for pytest tests and stuff because sometimes I have a tendency to shove things into dunder and nits, and especially for importing everything, but keeping those dunder and nits files as clean and fast as possible.
+
+00:19:23.820 --> 00:19:32.420
+So there's other things in this article as well, but those are the three that I really hit on to try to speed up test suites as cleaning up the import time.
+
+00:19:32.560 --> 00:19:33.020
+So,
+
+00:19:33.160 --> 00:19:34.580
+yeah, that's really cool.
+
+00:19:34.740 --> 00:19:36.820
+And you might wonder, like, well, what is slow?
+
+00:19:36.830 --> 00:19:37.280
+What is fast?
+
+00:19:37.290 --> 00:19:37.760
+How do you know?
+
+00:19:38.160 --> 00:19:40.980
+Well, there are tools to import profile imports.
+
+00:19:41.400 --> 00:19:42.360
+We've talked about them before.
+
+00:19:42.720 --> 00:19:46.380
+I don't remember which one we covered, but there's one called import underscore profile.
+
+00:19:46.920 --> 00:19:47.100
+Cool.
+
+00:19:47.100 --> 00:19:47.800
+I was looking for that.
+
+00:19:48.200 --> 00:19:48.560
+Nice.
+
+00:19:48.880 --> 00:19:49.060
+Yeah.
+
+00:19:49.210 --> 00:19:49.300
+And
+
+00:19:49.300 --> 00:19:59.120
+so you can just say run my code dash m import profile, and then you can just give it the things that you would be importing, and it gives you a nice little timing of them.
+
+00:19:59.740 --> 00:20:04.260
+And probably a lot of them are super slow and you're wasting your energy to deal with trying to optimize that stuff.
+
+00:20:04.480 --> 00:20:05.700
+But some are fast.
+
+00:20:06.430 --> 00:20:07.940
+I mean, some are not fast.
+
+00:20:08.440 --> 00:20:10.980
+And some use a lot of memory and different things like that.
+
+00:20:10.980 --> 00:20:13.520
+So this is actually pretty interesting to see how that all works, right?
+
+00:20:13.880 --> 00:20:14.140
+Yeah.
+
+00:20:14.650 --> 00:20:26.960
+And actually, so when I was doing some optimization for a big test suite recently, you got to measure because there were things that were fairly large packages that I just assumed they were going to be slow.
+
+00:20:27.400 --> 00:20:31.280
+But they had their import system optimized already.
+
+00:20:31.420 --> 00:20:39.100
+So those ones don't really, some packages that seem large like pandas or something might actually be pretty quick.
+
+00:20:39.800 --> 00:20:42.120
+But it looks like it's, in this example, wasn't.
+
+00:20:42.460 --> 00:20:48.120
+But like NumPy, it does a lot, but it's a pretty, it's a faster import.
+
+00:20:48.460 --> 00:20:49.240
+So interesting.
+
+00:20:50.400 --> 00:20:54.960
+It also depends, you know, how are you, you only import it once per process, right?
+
+00:20:55.000 --> 00:20:57.260
+it's not going to be imported over and over again.
+
+00:20:57.740 --> 00:21:00.640
+So if it's 100 milliseconds, is it worth worrying about?
+
+00:21:00.780 --> 00:21:00.920
+Maybe,
+
+00:21:01.080 --> 00:21:01.580
+maybe not.
+
+00:21:01.800 --> 00:21:18.800
+And also with throwing things away, like let's say you've got, so one of the things often in a test requirement or development requirements file or something or in your test requirements, there might be, so there's two sets of things that I look at often.
+
+00:21:19.220 --> 00:21:25.820
+They're pytest plugins that are useful for developers to run locally, but they're not really needed in CI.
+
+00:21:26.090 --> 00:21:27.940
+So you can like take them out in CI.
+
+00:21:28.360 --> 00:21:33.220
+And then the reverse is like in CI, we often have, I often have like a reporting system.
+
+00:21:33.440 --> 00:21:38.660
+Like I might export all the data to a database and have some plugins to handle that.
+
+00:21:39.120 --> 00:21:40.340
+And that's not needed locally.
+
+00:21:40.620 --> 00:21:44.260
+So turning those off locally so that you can have a little faster run.
+
+00:21:44.500 --> 00:21:45.280
+So things like that.
+
+00:21:45.560 --> 00:21:47.620
+So anyway, speeding up testing is a good thing.
+
+00:21:48.000 --> 00:21:48.500
+Yeah, absolutely.
+
+00:21:48.660 --> 00:21:48.920
+It's all right.
+
+00:21:49.440 --> 00:21:50.320
+Extras, you got extras?
+
+00:21:50.980 --> 00:21:51.460
+I got, yeah.
+
+00:21:51.750 --> 00:21:52.820
+So I've got a couple extras.
+
+00:21:52.960 --> 00:21:54.040
+how about you?
+
+00:21:54.180 --> 00:21:56.060
+Let's go with yours first. I got a few too. Okay.
+
+00:21:56.160 --> 00:22:44.940
+So this is pretty quick. So this is from Hugo Peps and Co. A little bit of history about where PEP came from. I've just been using it since using the word, but apparently Barry Warsaw came up with the acronym and he calls it a backronym. He liked the sound of PEP because it's peppy before he came up with the Python enhancement proposal acronym so that's an interesting thing but that also takes a look at since then there's been a lot of improvement proposals and enhancement proposal like acronyms all over the place in different different communities so this is interesting like astro pie proposals for enhancement and you totally know that they intentionally reverse those so they can make ape. That's great.
+
+00:22:46.260 --> 00:22:46.780
+Yeah, that's fun.
+
+00:22:47.940 --> 00:22:51.040
+The second one is pythontest.com.
+
+00:22:51.200 --> 00:23:01.120
+My blog has got a fresh coat of paint. It's got light and dark modes, but it's more colorful now. It also makes it glaringly obvious that I don't blog as much as I'd like to.
+
+00:23:01.440 --> 00:23:04.780
+The fourth oldest post is from January of 2024.
+
+00:23:05.300 --> 00:23:07.080
+Oops, gotta get on that.
+
+00:23:07.300 --> 00:23:13.760
+But one of the neat things I like about it is, and part of it is, I didn't really like my theme so i wasn't really vlogging much so
+
+00:23:13.760 --> 00:23:18.600
+i think i like it better hopefully i will and it's still running on you go or what's it running on yeah
+
+00:23:18.600 --> 00:23:29.580
+it's hugo with um in this i don't even it's a javascript based search thing um and it it's pretty zippy this is all just like anyway
+
+00:23:29.580 --> 00:23:31.180
+i like yeah very cool uh
+
+00:23:31.180 --> 00:23:42.840
+one of the what was it i was gonna one there was one change that i'm hopefully maybe might change is the light mode for code highlighting looks fine, but it's a little hard to read with dark.
+
+00:23:43.220 --> 00:23:44.980
+I don't know, that red on black.
+
+00:23:45.160 --> 00:23:45.540
+Yeah, yeah, yeah.
+
+00:23:46.600 --> 00:23:48.360
+You could probably change that with a little CSS action.
+
+00:23:48.720 --> 00:23:49.600
+Probably, yeah.
+
+00:23:50.080 --> 00:23:50.980
+Anyway, those are my extras.
+
+00:23:51.580 --> 00:23:51.880
+How about you?
+
+00:23:52.400 --> 00:23:53.460
+Oh, yeah, very nice.
+
+00:23:53.720 --> 00:23:54.400
+I got a few.
+
+00:23:55.460 --> 00:24:07.800
+Just following up on your extra real quick, I'm doing a Stories from Python history, like through the years panel, and Barry Warshaw is going to be on there, on the 6th, which is what, four days, Thursday, something like that.
+
+00:24:08.180 --> 00:24:08.280
+Okay.
+
+00:24:08.720 --> 00:24:09.660
+Yeah, that PEP story.
+
+00:24:10.000 --> 00:24:11.300
+I want to try to get him to talk about that.
+
+00:24:11.600 --> 00:24:12.400
+So my extras.
+
+00:24:13.020 --> 00:24:18.120
+This one is certainly could be a full-fledged item, but I don't have enough experience.
+
+00:24:18.380 --> 00:24:19.200
+I don't really know.
+
+00:24:19.720 --> 00:24:20.440
+But here's the deal.
+
+00:24:20.660 --> 00:24:22.840
+So you could have some kind of SaaS bug system.
+
+00:24:23.160 --> 00:24:23.720
+Could be Jira.
+
+00:24:24.000 --> 00:24:24.880
+Everyone loves Jira.
+
+00:24:25.300 --> 00:24:28.080
+Or it could be GitHub issues or it could be something else.
+
+00:24:28.540 --> 00:24:36.440
+But what if you just want something low-key, you know it's going to be right there with your projects, Git is already distributed, So there's this thing called GitBug.
+
+00:24:37.280 --> 00:24:48.160
+And the idea is this is a distributed offline-first standalone issue management tool that embeds issues, comments, and more as objects into side your Git repository.
+
+00:24:48.700 --> 00:24:49.620
+So when you
+
+00:24:49.620 --> 00:24:51.380
+Git clone, you just get the issues.
+
+00:24:51.580 --> 00:24:53.320
+And when you Git pull, you update your issues.
+
+00:24:53.720 --> 00:24:54.100
+Oh, cool.
+
+00:24:54.540 --> 00:24:55.000
+Interesting, right?
+
+00:24:55.120 --> 00:24:57.120
+It comes with some kind of UI.
+
+00:24:57.340 --> 00:24:58.480
+I haven't played with it that much.
+
+00:24:58.860 --> 00:25:03.420
+A CLI, TUI, or even a web browser that you can run based on this.
+
+00:25:03.700 --> 00:25:04.660
+So that's pretty neat.
+
+00:25:04.770 --> 00:25:13.120
+And then there's something about it will sync back and forth with things like GitHub issues and so on if you want to go GitLab using something called bridges.
+
+00:25:13.580 --> 00:25:14.480
+I think that's pretty cool, actually.
+
+00:25:14.830 --> 00:25:16.540
+I don't know how it works, but it's pretty cool.
+
+00:25:17.460 --> 00:25:22.740
+But I've not used it at all and I have no interest in using it because for me, all my stuff's on GitHub.
+
+00:25:22.960 --> 00:25:23.840
+I'm just going to use GitHub issues.
+
+00:25:24.020 --> 00:25:24.480
+It's just fine.
+
+00:25:25.100 --> 00:25:26.680
+But I can see certain use cases.
+
+00:25:26.790 --> 00:25:27.460
+This will be pretty neat.
+
+00:25:27.720 --> 00:25:28.280
+What else have I got?
+
+00:25:28.820 --> 00:25:29.720
+Follow up from last week.
+
+00:25:29.920 --> 00:25:42.140
+there's a our face but um this is from neil mitchell remember we talked about pyrefly the new um type linter my pi like thing for from meta
+
+00:25:42.140 --> 00:25:43.100
+yeah and
+
+00:25:43.100 --> 00:26:13.540
+i said oh yeah it's kind of like ty or formerly red knot from astral and i said oh but astral has this lsp so we got a nice comment on that show from neil it says hey from the fire pyrefly team here thanks for taking a look at our project we do have an lsp ide first and lsps um are approximately approximately synonyms nowadays and we're exploring whether this can be added to pilance so there's more to pyrefly than i gave them credit for very cool yeah yeah what else oh i
+
+00:26:13.540 --> 00:26:13.660
+think
+
+00:26:13.660 --> 00:26:14.020
+that's it
+
+00:26:14.020 --> 00:26:24.640
+you ready ready for a joke ides and lsps are synonyms i think um the autocomplete feature the features that make IDEs more than just a basic editor.
+
+00:26:25.160 --> 00:26:25.260
+Okay.
+
+00:26:25.300 --> 00:26:27.660
+Like go to definition, refactor, find
+
+00:26:27.660 --> 00:26:28.540
+usages, that
+
+00:26:28.540 --> 00:26:28.680
+kind.
+
+00:26:28.780 --> 00:26:29.580
+I think that's what he's saying.
+
+00:26:29.840 --> 00:26:30.040
+Okay.
+
+00:26:30.300 --> 00:26:30.380
+Yeah.
+
+00:26:30.620 --> 00:26:34.860
+I mean, I wouldn't fire up PowerFly just from a command prompt.
+
+00:26:36.120 --> 00:26:37.660
+I need to edit this email.
+
+00:26:38.480 --> 00:26:40.000
+Let me fire up an LSP.
+
+00:26:40.540 --> 00:26:40.980
+Yeah, exactly.
+
+00:26:41.220 --> 00:26:42.320
+But I think that's what he said.
+
+00:26:42.360 --> 00:26:46.740
+Like the features of IDEs are basically just back in or front ends to LSPs.
+
+00:26:47.120 --> 00:26:47.320
+All right.
+
+00:26:47.320 --> 00:26:48.100
+Are you ready for a joke?
+
+00:26:48.480 --> 00:26:48.780
+You did
+
+00:26:48.780 --> 00:26:49.220
+a
+
+00:26:49.220 --> 00:26:52.040
+nice job full circling your whole experience.
+
+00:26:52.700 --> 00:27:18.160
+so I'm going to do that as well like with your pytest and so on. So check this out. We're all as programmers aware by now surely that AI tools are good at writing code and it's going to mean some sort of change for us somehow, right? Some of us are worried that you know maybe this might be the end. So the joke is there's two programmers who are super they're like about to be hung in the gallows, right?
+
+00:27:18.340 --> 00:27:28.540
+It's pretty intense. It says programmers worried about ChatGPT. And then they look over at the other guy. He's also, he says, mathematicians who survived the invention of the calculator.
+
+00:27:29.820 --> 00:27:30.860
+Looks like it's the first time, eh?
+
+00:27:32.520 --> 00:27:33.160
+It's pretty good, right?
+
+00:27:33.380 --> 00:27:35.020
+Yeah, it's pretty good.
+
+00:27:35.520 --> 00:27:37.640
+I wonder if that image was made with ChatGPT.
+
+00:27:37.920 --> 00:27:39.420
+That would be sweet sauce on it.
+
+00:27:40.660 --> 00:27:43.280
+Probably not, but it's probably from a movie I haven't seen.
+
+00:27:43.660 --> 00:27:44.040
+Yeah, probably.
+
+00:27:45.160 --> 00:27:45.700
+First time?
+
+00:27:46.480 --> 00:27:47.240
+Mathematicians who survived.
+
+00:27:47.910 --> 00:27:48.520
+Yeah, gosh.
+
+00:27:49.960 --> 00:27:59.060
+I'm going to show my age, but I still remember all my math teachers saying, you have to learn how to do this by hand because you're not going to mark around with a calculator every day.
+
+00:27:59.300 --> 00:28:00.200
+Yeah, you're not going to, are you?
+
+00:28:00.460 --> 00:28:00.580
+Wait.
+
+00:28:01.000 --> 00:28:01.320
+Well,
+
+00:28:01.520 --> 00:28:02.200
+you know, maybe.
+
+00:28:02.900 --> 00:28:03.040
+Maybe.
+
+00:28:03.380 --> 00:28:03.580
+Yeah.
+
+00:28:03.820 --> 00:28:04.860
+Maybe you hold enough to your phone.
+
+00:28:05.040 --> 00:28:05.420
+Yes, I will.
+
+00:28:05.680 --> 00:28:05.900
+Yeah.
+
+00:28:06.160 --> 00:28:06.320
+Or
+
+00:28:06.320 --> 00:28:06.960
+your watch or whatever.
+
+00:28:07.460 --> 00:28:07.880
+Yeah, and
+
+00:28:07.880 --> 00:28:15.300
+my kid's oddly good at putting her phone at anything, like a math problem and getting an answer.
+
+00:28:15.800 --> 00:28:15.900
+She
+
+00:28:15.900 --> 00:28:16.400
+uses it
+
+00:28:16.400 --> 00:28:18.200
+to check her work, which I think is good.
+
+00:28:18.540 --> 00:28:19.360
+At least that's the claim.
+
+00:28:20.720 --> 00:28:21.440
+But anyway.
+
+00:28:21.900 --> 00:28:27.360
+We live in amazing times, but also interesting times as the curse slash quote goes.
+
+00:28:27.720 --> 00:28:28.000
+Yeah.
+
+00:28:28.280 --> 00:28:32.220
+I'm going to have to read the comments to figure out what async and banana suits mean.
+
+00:28:33.620 --> 00:28:37.240
+Oh, yeah, there was a banana suit at one
+
+00:28:37.240 --> 00:28:38.200
+of the videos on Python.
+
+00:28:38.200 --> 00:28:38.480
+Yeah, yeah.
+
+00:28:38.570 --> 00:28:47.579
+You have any out there pointed out that from one of the, pulling out some of the talks, one more talk I thought was interesting was Pablo Galindo, Salgatos, and Yuri Silvanov.
+
+00:28:47.600 --> 00:28:51.840
+that Silvanov was especially fun talking about async and wearing banana costumes.
+
+00:28:52.410 --> 00:28:52.940
+What could be better?
+
+00:28:54.040 --> 00:28:54.260
+Nice.
+
+00:28:55.160 --> 00:28:55.300
+Yeah.
+
+00:28:55.560 --> 00:28:55.960
+Well done, guys.
+
+00:28:56.410 --> 00:28:56.480
+Yeah.
+
+00:28:56.900 --> 00:28:57.220
+Very nice.
+
+00:28:57.600 --> 00:28:58.240
+Thanks for being here, Brian.
+
+00:28:58.500 --> 00:28:59.020
+Thanks everyone for listening.
+
+00:28:59.300 --> 00:28:59.500
+See you.
+
+00:28:59.700 --> 00:28:59.840
+Bye.
+
+00:29:00.120 --> 00:29:00.220
+Bye.
+
