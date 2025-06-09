@@ -1,0 +1,1157 @@
+WEBVTT
+
+00:00:00.020 --> 00:00:04.960
+Hello and welcome to Python Bytes, where we deliver Python news and headlines directly to your earbuds.
+
+00:00:05.360 --> 00:00:09.720
+This is episode 435, recorded June 9th, 2025.
+
+00:00:10.600 --> 00:00:11.680
+And I am Brian Okken.
+
+00:00:11.860 --> 00:00:12.580
+And I'm Michael Kennedy.
+
+00:00:13.000 --> 00:00:15.140
+And this episode is sponsored by us.
+
+00:00:15.480 --> 00:00:25.500
+So please check out all the awesome courses at Talk Python Training and lots of different options for learning pytest at pythontest.com.
+
+00:00:26.110 --> 00:00:26.820
+So check that out.
+
+00:00:26.850 --> 00:00:28.580
+And also thank you to our Patreon supporters.
+
+00:00:28.680 --> 00:00:31.280
+They've been sticking around for a long time, and we really appreciate them.
+
+00:00:31.500 --> 00:00:39.360
+If you'd like to connect with us, more about this later, but if you'd like to connect with us, please check out the links in the show notes.
+
+00:00:40.120 --> 00:00:45.260
+Links to both Blue Sky and Mastodon are there.
+
+00:00:45.680 --> 00:00:53.320
+And if you would like to join us live, you can head on over to pythonbytes.fm/live, and it'll show you how to do that.
+
+00:00:53.500 --> 00:00:54.400
+There's a link at the top.
+
+00:00:54.490 --> 00:00:55.040
+It's really easy.
+
+00:00:56.020 --> 00:01:04.460
+And then also, when you're listening and you want to check out all the cool things that we talk about but don't want to write them down, no worries.
+
+00:01:04.839 --> 00:01:10.840
+Just go ahead and sign up to be part of the newsletter, and we'll send those directly to your inbox.
+
+00:01:11.580 --> 00:01:11.680
+So
+
+00:01:11.680 --> 00:01:16.360
+with that, do you have a cool item for us, Michael?
+
+00:01:16.660 --> 00:01:17.380
+I do.
+
+00:01:17.460 --> 00:01:18.740
+I have some stuff I want to talk about.
+
+00:01:20.479 --> 00:01:21.280
+It's an
+
+00:01:21.280 --> 00:01:25.220
+update on things I've spoken about before, but it could have been six years ago.
+
+00:01:25.300 --> 00:01:28.840
+I can't remember when we covered this and I for some reason didn't do a search.
+
+00:01:29.240 --> 00:01:29.820
+So here's the deal.
+
+00:01:30.280 --> 00:01:38.340
+You are writing an application and you're doing things like, hey, I need to have my app save some content in a file.
+
+00:01:38.580 --> 00:01:39.980
+I don't want the user to access it.
+
+00:01:40.160 --> 00:01:41.800
+I want my app to be able to get to it.
+
+00:01:41.960 --> 00:01:42.740
+And that's pretty much it.
+
+00:01:42.840 --> 00:01:45.240
+Like maybe a SQLite DB file, right?
+
+00:01:45.420 --> 00:01:47.880
+That's not a thing that the users should be tracking down.
+
+00:01:47.880 --> 00:01:55.040
+You don't want to put it in their My Documents on Windows or somewhere in the user profile on Mac or Linux or something like that, right?
+
+00:01:55.080 --> 00:01:56.620
+You need to save it somewhere.
+
+00:01:56.920 --> 00:01:58.140
+It needs to be associated with the user.
+
+00:01:58.380 --> 00:01:59.440
+They need to have permissions right there.
+
+00:01:59.760 --> 00:02:11.440
+So I previously talked about appdurs, the appdurs package, a small Python module for determining appropriate platform-specific directories like user directories or stuff like that, right?
+
+00:02:11.860 --> 00:02:13.360
+So where's your config?
+
+00:02:13.640 --> 00:02:14.540
+Where's your cache directory?
+
+00:02:14.680 --> 00:02:20.820
+So on macOS, that's like tilde slash capital library, capital L library, cache.
+
+00:02:21.320 --> 00:02:23.320
+Then you probably use app name, something like that.
+
+00:02:23.320 --> 00:02:24.220
+Those kinds of things, right?
+
+00:02:24.500 --> 00:02:24.540
+You
+
+00:02:24.540 --> 00:02:24.880
+want to get
+
+00:02:24.880 --> 00:02:26.700
+access to that and put things in there.
+
+00:02:27.080 --> 00:02:28.780
+And it drives me nuts, Brian.
+
+00:02:29.170 --> 00:02:31.000
+I go to my user profile.
+
+00:02:31.310 --> 00:02:39.140
+If I want to look at hidden files, there's a ton of dot this app, dot that app settings in my user profile.
+
+00:02:39.610 --> 00:02:40.640
+And they're not there for me.
+
+00:02:40.940 --> 00:02:49.920
+They're there because the designers of those apps were too lazy, usually, too lazy to put that into the appropriate location on that platform, right?
+
+00:02:50.220 --> 00:02:51.520
+There's some that maybe I should mess with.
+
+00:02:51.680 --> 00:02:57.700
+Like, for example, OhMyZShell, you might want to go and tweak like your prompt, how that looks or whatever.
+
+00:02:57.940 --> 00:02:59.420
+And right, you would get to that from there.
+
+00:02:59.450 --> 00:03:02.880
+But a lot of things, they just do it because like, well, we'll just do a dot because it's hidden.
+
+00:03:03.220 --> 00:03:03.980
+People won't see that.
+
+00:03:04.380 --> 00:03:05.240
+Just drop it right in there.
+
+00:03:05.310 --> 00:03:10.920
+So I implore people listening to put stuff in the right place or a better place.
+
+00:03:11.180 --> 00:03:15.420
+Well, okay, I'm guilty of this, but I don't really think about Windows too much.
+
+00:03:15.450 --> 00:03:21.280
+I just think about like in a Linux-y environment, the home directory is usually the right place.
+
+00:03:21.780 --> 00:03:25.640
+well I well maybe I mean let me see what I got in here I don't think so but
+
+00:03:25.640 --> 00:03:26.280
+let
+
+00:03:26.280 --> 00:03:33.400
+me do an an A um what do I do my hidden ones there you know I do it this way hold on I do it this way so for example um
+
+00:03:33.400 --> 00:03:36.620
+well I'm probably doing it the wrong way there too so you're probably maybe but
+
+00:03:36.620 --> 00:03:49.580
+there's like studio 3t which is a MongoDB GUI management tool it has all of its settings in here is that something that I should be working with should I be seeing this probably not it's like a dot 3t folder and it's got like
+
+00:03:49.580 --> 00:03:50.860
+roaming history
+
+00:03:50.860 --> 00:03:56.080
+and crap in there i've got dot android for whenever i have that android sdk doing something
+
+00:03:56.080 --> 00:03:58.000
+i've got um
+
+00:03:58.000 --> 00:04:25.320
+i mean i can see like i've got a dot aws maybe it's got things in there right but i have a dot matplotlib for real there's a dot matplotlib in here why why is it here i don't know there's a pip audit cache literally it's called cache should i see the cache. No, the cache is not for reading. It should be in, there's literally a cache folder on all these platforms where it goes. And maybe on Linux, it literally is just like there, but okay, fine. But on the other ones, it shouldn't be, right? Anyway,
+
+00:04:25.540 --> 00:04:27.300
+maybe I'm
+
+00:04:27.300 --> 00:04:39.360
+ranting a bit hard on this, but you should probably do these correct things. And I wasn't even thinking about Windows, although Windows does have a different set of places things go, right? So this thing was great and I recommended appdirs.
+
+00:04:39.730 --> 00:04:44.860
+But if you go up a little bit, it says, note, this project has officially been deprecated.
+
+00:04:45.140 --> 00:04:45.720
+Oh, no.
+
+00:04:46.180 --> 00:04:46.460
+No.
+
+00:04:46.940 --> 00:04:47.960
+We were so close.
+
+00:04:49.280 --> 00:04:53.060
+So it says, you may want to check out platformdirs, which is my recommendation.
+
+00:04:53.900 --> 00:04:58.960
+So moving over to platformdirs, this is under toxdev, T-O-X-dev.
+
+00:04:59.790 --> 00:05:00.700
+So full group there.
+
+00:05:01.220 --> 00:05:07.020
+And it's a small Python module for determining the appropriate platform-specific directories, such as I just said.
+
+00:05:07.360 --> 00:05:10.160
+However, it's better in some ways.
+
+00:05:10.720 --> 00:05:14.820
+So it has, I don't know if you noticed before, but there's maybe three or four directories on the app doors.
+
+00:05:14.980 --> 00:05:19.520
+This one has documents, downloads, pictures, videos, music, desktop, runtime, et cetera, et cetera.
+
+00:05:19.680 --> 00:05:25.960
+Lots of different places that you might want to go to depending on what platform you're on, right?
+
+00:05:26.260 --> 00:05:28.020
+It has a better typing.
+
+00:05:28.520 --> 00:05:32.020
+It has been rewritten to use path as in path
+
+00:05:32.020 --> 00:05:32.560
+objects
+
+00:05:32.560 --> 00:05:33.300
+from pathlib
+
+00:05:33.300 --> 00:05:33.960
+and
+
+00:05:33.960 --> 00:05:34.420
+all that.
+
+00:05:34.920 --> 00:05:38.940
+It's got CI testing against all the different platforms that it supports.
+
+00:05:39.420 --> 00:05:44.560
+So very, very cool that this is not only continues to live, but it's actually gotten much better.
+
+00:05:45.160 --> 00:05:49.300
+Yeah, and the TOX development group is going to keep it updated.
+
+00:05:49.970 --> 00:05:50.560
+So cool.
+
+00:05:50.820 --> 00:05:51.260
+Yeah, exactly.
+
+00:05:51.880 --> 00:05:55.520
+It can't require that much support over time, right?
+
+00:05:55.520 --> 00:05:56.040
+These things are
+
+00:05:56.040 --> 00:05:56.860
+not super
+
+00:05:56.860 --> 00:05:58.700
+dynamic, but I do really appreciate them.
+
+00:05:59.280 --> 00:06:08.200
+Modernizing it, you know, I think that some of the changes were that basically the app just got out of sync with Python rather than out of sync with the platforms, right?
+
+00:06:08.360 --> 00:06:09.900
+It was just like, well, it doesn't have types.
+
+00:06:10.100 --> 00:06:12.540
+And so now we got, you know, and there's just a bunch of stuff like that.
+
+00:06:12.780 --> 00:06:15.620
+So I'm very happy to see it and recommend platform DERS.
+
+00:06:15.760 --> 00:06:18.480
+I already used it to massive success on some projects.
+
+00:06:18.880 --> 00:06:21.040
+I was like, I want to use this and some cool caching things.
+
+00:06:21.120 --> 00:06:22.220
+And it made my app so much better.
+
+00:06:22.440 --> 00:06:22.980
+And guess what?
+
+00:06:23.080 --> 00:06:25.480
+There's not yet another.Michael's app cache
+
+00:06:26.020 --> 00:06:27.700
+in my tilde slash.
+
+00:06:28.680 --> 00:06:29.000
+Over to you.
+
+00:06:29.400 --> 00:06:32.320
+I'll have to do this on some of my applications.
+
+00:06:32.600 --> 00:06:33.180
+So anyway.
+
+00:06:33.220 --> 00:06:34.140
+It's worth considering.
+
+00:06:34.340 --> 00:06:35.460
+So I'm glad you brought it up.
+
+00:06:35.740 --> 00:06:35.940
+All right.
+
+00:06:37.180 --> 00:06:47.040
+I'd like to actually want to do a shout out to Bob Belderbos because he posted, I think he posted on several platforms, but I saw it on LinkedIn.
+
+00:06:48.340 --> 00:06:49.440
+It says, I love make files.
+
+00:06:49.860 --> 00:06:53.860
+They save me time and help my team work in a more uniform way.
+
+00:06:54.340 --> 00:06:55.580
+I'd love to be able to say this.
+
+00:06:55.720 --> 00:06:56.680
+I love make files also.
+
+00:06:56.860 --> 00:06:57.920
+Actually, I don't love them.
+
+00:06:58.320 --> 00:06:59.120
+I'm just used to them.
+
+00:06:59.500 --> 00:07:02.320
+So I throw in a make file into something that makes sense.
+
+00:07:02.700 --> 00:07:07.520
+But for a very long time, nobody else on my projects have been familiar with makefiles.
+
+00:07:07.580 --> 00:07:07.720
+So
+
+00:07:07.720 --> 00:07:07.860
+I
+
+00:07:07.860 --> 00:07:07.980
+can't use them.
+
+00:07:07.980 --> 00:07:08.340
+That would be
+
+00:07:08.340 --> 00:07:08.440
+me.
+
+00:07:08.860 --> 00:07:09.660
+I'd be like, what's a makefile?
+
+00:07:09.960 --> 00:07:10.520
+Why do we have this?
+
+00:07:11.020 --> 00:07:11.580
+That would be in Python.
+
+00:07:12.060 --> 00:07:17.820
+So some Python projects I use, I use Tox because you can do kind of some similar stuff with Tox.
+
+00:07:18.060 --> 00:07:20.660
+But it is annoying that it like creates a virtual environment.
+
+00:07:20.840 --> 00:07:22.740
+It's better with uv now because it's fast.
+
+00:07:22.960 --> 00:07:31.400
+But still, there is, so there's a new kid on the block, or at least new to me, called, that Bob has introduced.
+
+00:07:31.820 --> 00:07:33.240
+And it's called Poe the Poet.
+
+00:07:33.480 --> 00:07:40.660
+And I was a little leery because I thought it maybe was too tied to the poetry project.
+
+00:07:41.020 --> 00:07:43.600
+But even if it is, you don't have to use it with it.
+
+00:07:43.880 --> 00:07:46.080
+I'm using it without it, of course.
+
+00:07:46.320 --> 00:07:52.660
+But anyway, so the thing I love about this is, as an example, I'm leaving this on Bob's post because it's great.
+
+00:07:53.520 --> 00:07:56.860
+In your pyproject.toml, that's where you define the tasks.
+
+00:07:57.180 --> 00:08:02.020
+And this is great because I don't have to have an extra thing, an extra file in my project.
+
+00:08:02.320 --> 00:08:04.140
+This makes sense to just put it there.
+
+00:08:05.300 --> 00:08:11.900
+So here's an example of like, so a test action would be, you can just define it as pytest or something.
+
+00:08:12.180 --> 00:08:16.100
+Or Cove, you can have pytest running with coverage.
+
+00:08:17.160 --> 00:08:26.900
+The linter is rough, which is, it's funny, people still do this, but actually I remember rough better than I remember lint anymore, but you know, it's just me.
+
+00:08:27.220 --> 00:08:31.020
+But anyway, some cool type.
+
+00:08:31.450 --> 00:08:33.820
+Oh, he has tie check for the ty.
+
+00:08:34.659 --> 00:08:35.020
+What?
+
+00:08:35.680 --> 00:08:36.479
+Wow, he's on top
+
+00:08:36.479 --> 00:08:36.840
+of that.
+
+00:08:37.180 --> 00:08:37.840
+That is super new.
+
+00:08:38.719 --> 00:08:39.599
+Integrates well with uv.
+
+00:08:39.849 --> 00:08:40.580
+I tried it out.
+
+00:08:40.760 --> 00:08:41.479
+It is pretty slick.
+
+00:08:41.940 --> 00:08:50.280
+So the Poet the Poet documentation says batteries included task runner that works well with poetry or with uv.
+
+00:08:50.720 --> 00:08:52.240
+I'm definitely using it with uv.
+
+00:08:53.940 --> 00:08:58.860
+There's a bunch of cool things how to define this in the documentation.
+
+00:08:59.050 --> 00:08:59.620
+It's pretty good.
+
+00:09:00.390 --> 00:09:09.120
+So you can, like Bob said, you just add a section called tool.po.tasks and then define a bunch of actions.
+
+00:09:09.620 --> 00:09:15.140
+There's ways to have built-up actions like you would with a make file or tox.
+
+00:09:15.800 --> 00:09:17.000
+Actually, I don't know if you can do this, tox.
+
+00:09:17.340 --> 00:09:20.980
+Anyway, you'd have multiple actions that run one after another.
+
+00:09:21.380 --> 00:09:22.560
+The sequences is pretty cool.
+
+00:09:23.260 --> 00:09:27.640
+You can also add help text to things, which is nice.
+
+00:09:28.040 --> 00:09:30.940
+Anyway, but having it right in, I just love it.
+
+00:09:30.940 --> 00:09:33.660
+It's right in the PyProject.toml, and it works well with uv.
+
+00:09:34.620 --> 00:09:34.940
+Love that.
+
+00:09:35.380 --> 00:09:38.000
+So definitely going to switch it for a lot of projects.
+
+00:09:38.480 --> 00:09:39.560
+And there's an example.
+
+00:09:40.160 --> 00:09:45.820
+I'm not sure where the example is right now, but in the kind of getting started, or maybe it was Bob.
+
+00:09:46.020 --> 00:10:04.660
+Anyway, adding it to your development dependencies within your PyProject.toml is slick because then now if you're using, hopefully you're using development dependencies within your Project.toml so that new developers can just install all the tools they need to just by using that.
+
+00:10:04.900 --> 00:10:06.040
+So pretty cool.
+
+00:10:07.000 --> 00:10:07.320
+Love it.
+
+00:10:07.460 --> 00:10:08.260
+Yeah, very cool.
+
+00:10:08.270 --> 00:10:13.620
+And by the way, did you catch that the logo of Poe the Poet is Edgar Allan Poe?
+
+00:10:13.880 --> 00:10:15.040
+Yeah, he's the poet.
+
+00:10:15.340 --> 00:10:15.880
+Very interesting.
+
+00:10:16.200 --> 00:10:16.380
+Okay,
+
+00:10:17.000 --> 00:10:18.560
+next up is some data science.
+
+00:10:19.220 --> 00:10:25.980
+There's an article I'm linking to on the new stack by Jacob Jackson.
+
+00:10:27.180 --> 00:10:35.500
+This is that Pandas 3.0 will significantly boost performance by replacing NumPy with PyArrow as the default engine,
+
+00:10:35.840 --> 00:10:36.560
+enabling faster
+
+00:10:36.560 --> 00:10:39.640
+loading and reading of columnar data.
+
+00:10:40.200 --> 00:10:57.620
+So since 2.0, I think Pandas has had possible support for PyArrow, which is more of an analytics type backend than NumPy, which is more database-y, like traditional rows, like here's an entry in its internal structure,
+
+00:10:57.860 --> 00:10:58.700
+making
+
+00:10:58.700 --> 00:11:06.040
+it much easier to ask questions like, what's the average or the max of this aspect of the data?
+
+00:11:06.210 --> 00:11:15.740
+What is the average sales price for these million rows is way faster in a columnar orientation because you just go write down the data as it is.
+
+00:11:15.970 --> 00:11:20.200
+It makes it slower for row type of operations, but that's less common for data science.
+
+00:11:20.580 --> 00:11:26.260
+It also does much, much faster reading and writing of files and all sorts of things.
+
+00:11:26.860 --> 00:11:33.360
+So I recently spoke with Reuben Lerner about the PyArrow revolution on Talk Python not too long ago,
+
+00:11:33.740 --> 00:11:34.080
+and that
+
+00:11:34.080 --> 00:11:34.560
+was a lot of fun.
+
+00:11:34.840 --> 00:11:45.180
+Basically, we talked about all the benefits of PyArrow and why you might consider it, But the news here is that this will be the default in 3.0 for Pandas.
+
+00:11:45.520 --> 00:11:46.480
+When is that coming out?
+
+00:11:46.780 --> 00:11:47.420
+Who knows, right?
+
+00:11:47.640 --> 00:11:55.040
+Pandas have been around for like many, many, many years, and it's on version 2, so maybe it's going to take, what, another 15 years for version 3 to come out?
+
+00:11:55.380 --> 00:11:55.980
+I don't know.
+
+00:11:56.480 --> 00:11:57.900
+I think
+
+00:11:57.900 --> 00:12:07.540
+the perception of versions is changing over, you know, we talked about zero and all this stuff, but I think versions are starting to go faster these days, right?
+
+00:12:07.620 --> 00:12:12.300
+Django is on five and it was just on four and it's been around a long time, but it should be out pretty soon.
+
+00:12:12.700 --> 00:12:15.700
+So we're not exactly sure on the timing. I know some people will know better than me, but
+
+00:12:15.700 --> 00:12:16.100
+anyway.
+
+00:12:16.160 --> 00:12:23.860
+Also may have been like that just switching out the backend is a big enough change that they decided that's a good reason to switch to a three.
+
+00:12:24.220 --> 00:12:25.600
+Yeah, that's a very good point.
+
+00:12:25.800 --> 00:12:34.680
+It says over time Pyro is becoming better and better integrated with Pandas, but using it as a backend is still experimental and isn't recommended in production.
+
+00:12:35.280 --> 00:12:41.680
+Presumably until 3.0 where it becomes the default in which it would become recommended because you'd have to work around it to know better, right?
+
+00:12:42.360 --> 00:12:43.260
+Anyway, that's my item.
+
+00:12:43.940 --> 00:12:44.600
+Check out Pyro.
+
+00:12:44.700 --> 00:12:49.520
+Check out the conversation I had with Reuben about it to see what's coming for Pandas.
+
+00:12:49.700 --> 00:12:49.960
+Cool.
+
+00:12:50.660 --> 00:12:50.920
+All right.
+
+00:12:51.540 --> 00:12:55.140
+I wanted to talk about data science a little bit as well.
+
+00:12:56.500 --> 00:13:00.960
+And I'm going to point to a project called Point Blank.
+
+00:13:01.460 --> 00:13:04.820
+It's data validation made beautiful and powerful.
+
+00:13:05.080 --> 00:13:08.460
+At least that's the sales pitch or the sub point.
+
+00:13:08.720 --> 00:13:14.240
+Anyway, so I don't do a lot of data science, but I really think this is a cool idea.
+
+00:13:14.750 --> 00:13:25.700
+Even without data science, any sort of pipeline stuff of checking data within your pipeline makes sense and what to do with it.
+
+00:13:25.840 --> 00:13:26.800
+So here's the idea.
+
+00:13:27.020 --> 00:13:33.880
+So it says it's a powerful yet elegant data validation framework for Python that transforms how you ensure data quality.
+
+00:13:34.240 --> 00:13:40.480
+There's a chainable API that you can use to validate data against comprehensive quality checks.
+
+00:13:41.480 --> 00:13:46.020
+And it says visualize through stunning interactive reports, which I haven't looked at the reports yet.
+
+00:13:46.040 --> 00:13:49.700
+But anyway, so I'm just at the top example.
+
+00:13:50.660 --> 00:13:59.880
+You've got, you import point blank, and then you have these validation features where you can take a data set and validate it.
+
+00:14:00.150 --> 00:14:08.500
+In this example, it says, okay, on column D, there, you know, there's validate that the values are greater than 100.
+
+00:14:09.040 --> 00:14:10.820
+There's more than 100 values there.
+
+00:14:11.860 --> 00:14:21.240
+And then actually on column C, validate that there's less than or equal, the values are less than or equal to five.
+
+00:14:21.640 --> 00:14:25.840
+And then there's certain columns exist.
+
+00:14:26.020 --> 00:14:28.240
+Make sure the date and the time exist in those columns.
+
+00:14:28.640 --> 00:14:39.020
+So you get data frames in, or data sets and data frames, and you've got to be able to make sure that they're in the right shape, the data's in the right place.
+
+00:14:39.960 --> 00:14:41.140
+And that's awesome.
+
+00:14:41.380 --> 00:14:42.360
+And what do you do if they don't?
+
+00:14:42.460 --> 00:14:47.360
+Well, there's a REPL with some validation, Git tabular report.
+
+00:14:47.860 --> 00:14:50.220
+That's great for when you're debugging stuff and looking at it.
+
+00:14:50.500 --> 00:14:52.120
+But what about in real time?
+
+00:14:52.480 --> 00:14:53.360
+You're not going to want to do that.
+
+00:14:53.520 --> 00:14:58.140
+And this is something you can use in real time to check all this because it's got these cool actions.
+
+00:14:58.500 --> 00:15:06.540
+So there's a bunch of actions as part of this where you can set up callbacks.
+
+00:15:06.720 --> 00:15:11.760
+It's got a default one that's built in to notify you on Slack.
+
+00:15:12.280 --> 00:15:15.460
+I don't use Slack anymore, but there's a function called one.
+
+00:15:15.510 --> 00:15:26.640
+So if there's any failures, you can set up your own notify function, which I love this idea of just, like, give me an API to, like, fill this in, and I can fill that in with whatever I want.
+
+00:15:26.670 --> 00:15:27.120
+I can call
+
+00:15:27.120 --> 00:15:27.280
+it rest API.
+
+00:15:27.280 --> 00:15:29.180
+I'm going to send myself an email or whatever.
+
+00:15:29.680 --> 00:15:29.960
+Yeah, whatever.
+
+00:15:32.140 --> 00:15:33.020
+I'll hook it up.
+
+00:15:33.320 --> 00:15:41.160
+And so this idea of, like, just run this all the time, and then if there's problems with your data chain, let somebody know about it in real time.
+
+00:15:41.490 --> 00:15:42.140
+Love that idea.
+
+00:15:42.190 --> 00:15:43.200
+You can even log it.
+
+00:15:44.000 --> 00:15:44.800
+Lots of stuff there.
+
+00:15:45.260 --> 00:15:47.620
+And looks like the interface is pretty intuitive.
+
+00:15:48.360 --> 00:15:56.660
+They've got a roadmap for additional validation methods, advanced logging capabilities, more messaging actions.
+
+00:15:58.630 --> 00:16:00.060
+So kind of a neat project.
+
+00:16:00.230 --> 00:16:06.340
+I love that it's set up already with a code of conduct and a governance system.
+
+00:16:06.640 --> 00:16:08.760
+So pretty promising little project.
+
+00:16:10.280 --> 00:16:11.260
+so that's that's
+
+00:16:11.260 --> 00:16:14.920
+it for that i'm really i like it i like the idea of this a lot yeah
+
+00:16:14.920 --> 00:16:38.600
+i like it too i'm not sure um it'd be fun to to to hear somebody that's used it and see um is it something that really can be used in real time to for uh does it slow things down too much i imagine not because you're gonna do a little bit of work just after you've done a lot of work in a few places validate it a few places in the pipeline to make sure everything's still kosher.
+
+00:16:39.340 --> 00:16:40.980
+It definitely, you know,
+
+00:16:41.100 --> 00:16:48.680
+data science has the feel a lot of times of I'm going to do a little bit of work to get things set up and I'm going to do some complex calculations on lots of data.
+
+00:16:49.020 --> 00:16:49.160
+Yeah.
+
+00:16:49.680 --> 00:17:06.060
+Rather than a bunch of tiny little function calls. I think here's a function, a bit of functionality I'm adding to like an API. It would be totally reasonable to say, I want that to be under 10 milliseconds for this API call. No one's going, I need my notebook to process stuff unless than 10 milliseconds.
+
+00:17:06.310 --> 00:17:08.959
+Like if you add a little overhead, it's probably fine.
+
+00:17:09.220 --> 00:17:12.980
+This certainly looks like it's going to be useful for unit tests as well, right?
+
+00:17:13.339 --> 00:17:14.319
+Yeah, yep.
+
+00:17:14.620 --> 00:17:16.500
+And checking to make sure.
+
+00:17:16.870 --> 00:17:25.560
+Yeah, and that's the sort of thing is like, okay, you've checked all the pieces, but this is, once you put everything together, are we like losing something somewhere?
+
+00:17:25.740 --> 00:17:34.560
+Is some part of the process filling in nulls or treating invalid data incorrectly and putting garbage in there or something?
+
+00:17:35.780 --> 00:17:35.860
+Yeah,
+
+00:17:36.120 --> 00:17:39.520
+it's super easy to lose pieces of data on some of these things.
+
+00:17:40.040 --> 00:17:43.080
+How is this for a tie-in onto my first extra?
+
+00:17:43.540 --> 00:17:43.640
+Okay.
+
+00:17:43.840 --> 00:17:49.360
+If you're working with pollers or something, you can say, I want to do some calculations, and what you get back is a new data frame.
+
+00:17:49.860 --> 00:17:54.440
+By default, what you get back are the columns you've asked for, like the new computer columns.
+
+00:17:54.940 --> 00:18:03.280
+But maybe what you intended is, I want to add a column to the existing data frame, not take a data frame and transform it into a new data frame that has just the stuff you asked for.
+
+00:18:03.580 --> 00:18:06.540
+So instead of doing an operation, you would say dot width columns,
+
+00:18:07.320 --> 00:18:08.160
+then do the operation.
+
+00:18:08.320 --> 00:18:11.000
+And it will keep the original data frame and then add on to it, right?
+
+00:18:11.260 --> 00:18:15.020
+You would maybe like that these columns exist test.
+
+00:18:15.300 --> 00:18:17.840
+Then you would be able to say, oh, we've lost some of the columns.
+
+00:18:18.280 --> 00:18:19.280
+Who forgot the width columns?
+
+00:18:19.800 --> 00:18:20.840
+Why would you know to do that, Brian?
+
+00:18:21.020 --> 00:18:26.380
+Because you take our Polars for Power Users course that we just released last week.
+
+00:18:26.660 --> 00:18:27.100
+Oh, nice.
+
+00:18:27.620 --> 00:18:27.740
+Yeah.
+
+00:18:28.240 --> 00:18:29.780
+So this is out.
+
+00:18:29.980 --> 00:18:31.740
+It's by Chris Trudeau.
+
+00:18:31.940 --> 00:18:34.320
+It's a really awesome course, Polarist for Power Users.
+
+00:18:34.780 --> 00:18:36.940
+Three hours, almost just under three hours.
+
+00:18:37.240 --> 00:18:40.120
+And you can go and learn a whole bunch of cool things, how to work with Polarist.
+
+00:18:40.300 --> 00:18:44.340
+And Polarist uses PyArrow underneath the covers or Arrow underneath the covers.
+
+00:18:44.860 --> 00:18:47.140
+So you can also get some cool experience with that.
+
+00:18:47.240 --> 00:18:48.080
+So people, check this out.
+
+00:18:48.280 --> 00:18:50.800
+It's been well-received and continuing to go.
+
+00:18:51.040 --> 00:18:52.460
+All right, that's my only extra I have.
+
+00:18:52.460 --> 00:18:54.380
+I have a joke, but you got any extras before we do that?
+
+00:18:54.440 --> 00:18:54.520
+Oh,
+
+00:18:54.880 --> 00:18:56.300
+I'm loaded with extras this week.
+
+00:18:57.980 --> 00:19:00.060
+So let's load them up so there's my point blank.
+
+00:19:00.660 --> 00:19:05.040
+I was interested, so I haven't been using Ruff.
+
+00:19:05.420 --> 00:19:08.020
+I use Ruff a lot, but I don't tweak it very much.
+
+00:19:08.020 --> 00:19:17.280
+I haven't, well, there's a bunch of new rules or not really new, but there's a lot of rules that you can turn on for Ruff for checking your code.
+
+00:19:18.840 --> 00:19:23.780
+And if you look at the rules list, there's a lot of rules that you could add.
+
+00:19:23.960 --> 00:19:32.300
+So I was interested in this discussion on Reddit about, hey, Ruff users, what are the rules you're using and what are you ignoring?
+
+00:19:33.480 --> 00:19:38.600
+This one was amusing to me that said, I start every project and select all and ignore none.
+
+00:19:39.660 --> 00:19:43.340
+That's not realistic because some of them conflict with each other.
+
+00:19:44.160 --> 00:19:47.560
+So I think this was probably a joke, but I'm not sure.
+
+00:19:48.150 --> 00:19:56.820
+I do like, so there's some serious people that said, hey, this is my set that had like PyFlakes rules and PyCode style and warnings and errors.
+
+00:19:57.920 --> 00:19:59.020
+Seems like a decent set.
+
+00:19:59.080 --> 00:20:06.120
+It's just kind of a fun thing to see what other people are using and maybe check out some things.
+
+00:20:07.360 --> 00:20:10.280
+Here's somebody else that has a different way.
+
+00:20:10.460 --> 00:20:18.460
+Instead of picking which rules they use, it's a select all but ignore certain rules that don't make sense for them.
+
+00:20:19.540 --> 00:20:22.040
+And yeah, just kind of an interesting discussion.
+
+00:20:22.380 --> 00:20:28.260
+Anyway, I'm not sure if I covered this one already, but this was as of May 26th.
+
+00:20:28.100 --> 00:20:32.280
+3.26 Python 3.14.0 beta 2 is out.
+
+00:20:32.660 --> 00:20:38.080
+So if you're testing new Python versions, make sure to keep up on the new betas that come out.
+
+00:20:38.800 --> 00:20:38.920
+Nice.
+
+00:20:39.080 --> 00:20:39.620
+Yeah, I don't know.
+
+00:20:39.740 --> 00:20:40.540
+I don't think we covered it.
+
+00:20:40.800 --> 00:20:40.960
+Okay.
+
+00:20:41.900 --> 00:20:45.220
+And I guess sort of a, oh, I got a couple more topics.
+
+00:20:45.540 --> 00:21:37.640
+One of them is if you happen, like just randomly wanted to switch Mastodon servers and not lose anything, not like lose anybody that might be following you already. There is a way to do it. And we'll link to an article on how to do this on Fetty Tips. And it's not, this is not a trivial action. So I guess don't do it on an empty stomach. Looks like a lot of steps, but I'm glad somebody pointed that out. Why might you? Well, there's been a little bit of drama on Fostadon lately. And I am not the expert on this but um i'm there's enough people i trust that um are migrating away from fosdon that i'm looking into it um just haven't done it yet because yeah anyway um thoughts on fosdon i have i have
+
+00:21:37.640 --> 00:21:46.700
+noticed people who i thought followed me i got notifications yeah on macedon that they had followed me and i think that's why i think they were moving accounts yeah
+
+00:21:46.780 --> 00:21:55.160
+yeah i got some too i'm like well i want to follow them too and i was already following them so um So if you want, and so I guess this is public service as well.
+
+00:21:55.500 --> 00:22:03.020
+Even if you're not considering switching, if you're getting notifications from people that they're, that you, that you're like, I thought they all already followed me.
+
+00:22:03.380 --> 00:22:05.220
+It's probably because of something around this.
+
+00:22:05.420 --> 00:22:15.800
+The last thing I wanted to talk about is I was, I've, I've got some, I think that my Python or yeah, pythontest.com.
+
+00:22:16.220 --> 00:22:18.220
+That's what I got. Yeah. That's my site.
+
+00:22:19.000 --> 00:22:26.340
+I don't know if I can trust the analytics that I was using before because I think I'm getting hit hard by AI bots and stuff.
+
+00:22:26.760 --> 00:22:32.160
+So I did update my robots.txt, but I'm also checking out a new analytics package.
+
+00:22:32.520 --> 00:22:40.200
+I'm trying out Fathom Analytics, and I chose them because they don't collect data on anybody.
+
+00:22:41.360 --> 00:22:48.040
+It's just which pages were hit and which pages weren't, and they are GDPR compliant.
+
+00:22:48.660 --> 00:22:49.820
+So, yeah.
+
+00:22:50.240 --> 00:22:52.960
+Anyway, I'm not much more of a plug than that other
+
+00:22:52.960 --> 00:22:53.900
+than I'm trying it out.
+
+00:22:54.440 --> 00:22:55.460
+And, yeah, we'll see.
+
+00:22:55.640 --> 00:22:56.420
+Yeah, very cool.
+
+00:22:56.440 --> 00:22:56.740
+That's it.
+
+00:22:57.580 --> 00:22:58.240
+Awesome, awesome.
+
+00:22:58.550 --> 00:22:59.160
+Yeah, I'm
+
+00:22:59.160 --> 00:23:01.460
+still loving Umami Analytics.
+
+00:23:02.220 --> 00:23:04.980
+Again, GDPR, even better than GDPR compliant.
+
+00:23:05.070 --> 00:23:06.160
+Like, no cookies whatsoever.
+
+00:23:06.640 --> 00:23:07.040
+How's that?
+
+00:23:07.360 --> 00:23:11.160
+And we self-host it, so we don't have to – we don't share the data with anybody.
+
+00:23:11.530 --> 00:23:13.900
+So we don't have to tell you about how we're sharing our data with people.
+
+00:23:14.280 --> 00:23:16.180
+Because we're not sharing data with people, which I think is great.
+
+00:23:16.900 --> 00:23:17.080
+Okay.
+
+00:23:17.960 --> 00:23:18.320
+Effortless.
+
+00:23:18.540 --> 00:23:19.360
+It says effortless.
+
+00:23:19.640 --> 00:23:20.440
+I'm not sure it's effortless.
+
+00:23:20.580 --> 00:23:24.460
+I've expended effort when the migrations don't work or whatever.
+
+00:23:24.640 --> 00:23:25.460
+But you know what?
+
+00:23:25.500 --> 00:23:25.820
+It's fine.
+
+00:23:25.940 --> 00:23:26.320
+It's still good.
+
+00:23:26.600 --> 00:23:27.520
+Better than Google Analytics.
+
+00:23:28.060 --> 00:23:28.240
+All right.
+
+00:23:28.300 --> 00:23:29.980
+Are you ready for something fun as well?
+
+00:23:30.340 --> 00:23:30.560
+Yes.
+
+00:23:30.640 --> 00:23:30.900
+I'm not sure
+
+00:23:30.900 --> 00:23:31.540
+if I call this fun.
+
+00:23:31.540 --> 00:23:34.180
+I think it's fun E in a sort of sympathy way.
+
+00:23:34.340 --> 00:23:41.380
+So this joke is a cartoon called Programming Humor, from Programming Humor, called Emotional Damage.
+
+00:23:41.840 --> 00:23:47.920
+And I think, Brian, you want to be the one, you want to act this down, you want to be the one that does the first square?
+
+00:23:48.420 --> 00:23:53.960
+Sure. Hey, there's two people looking at a dog. Does your dog bite?
+
+00:23:54.380 --> 00:23:58.660
+No, but it can hurt you in other ways. I don't know if I was going to say this. I'll do the dog.
+
+00:23:58.730 --> 00:24:03.280
+The dog says, the feature you spent hours coding will not be deployed. Management finds it unnecessary.
+
+00:24:04.340 --> 00:24:05.380
+And the person starts crying.
+
+00:24:07.980 --> 00:24:08.700
+Does your dog bite?
+
+00:24:08.780 --> 00:24:10.020
+No, but it can hurt you.
+
+00:24:11.440 --> 00:24:16.440
+Yeah. Do you know what's more rough than software having that happen with you?
+
+00:24:17.360 --> 00:24:47.340
+hardware people um i've got i remember this was decades ago but i was working with on a team and somebody got a was retiring and they were kind of roasting him during the retirement but um uh he was a fbj developer or known asic developer doing uh um custom chips and like he'd worked on like dozens of projects and only like five percent of them ever shipped most of them got canceled before the project end date. So that's rough.
+
+00:24:49.720 --> 00:24:53.380
+Yeah, the lead time is definitely longer in hardware than it is on software, right?
+
+00:24:53.600 --> 00:24:56.100
+Like from the time you work on it until the time it's out. Yeah,
+
+00:24:56.220 --> 00:25:02.340
+it's in like, you know, single digits or fractional digits of years instead of weeks or months.
+
+00:25:03.480 --> 00:25:10.680
+I definitely think about the, I'll watch documentaries about, you know, like the Cassini probe that went to Saturn it went to?
+
+00:25:11.600 --> 00:25:11.700
+And
+
+00:25:11.700 --> 00:25:12.060
+these people
+
+00:25:12.060 --> 00:25:15.900
+will be like, yeah, we started that 25 years ago, and now I'm done with this project.
+
+00:25:16.380 --> 00:25:17.160
+Moving on to the next.
+
+00:25:17.320 --> 00:25:19.100
+It's like you get two or three projects for your life.
+
+00:25:19.400 --> 00:25:19.720
+Crazy.
+
+00:25:20.080 --> 00:25:23.800
+Those things better not burn up in the atmosphere on their way out.
+
+00:25:24.720 --> 00:25:24.960
+Yeah.
+
+00:25:25.340 --> 00:25:32.080
+Well, may the dogs that talk about unshipped features stay away from you all.
+
+00:25:32.320 --> 00:25:32.480
+Yep.
+
+00:25:33.360 --> 00:25:33.480
+Bye.
+
+00:25:33.800 --> 00:25:33.940
+Bye.
+
