@@ -1,0 +1,1014 @@
+00:00:00 Hello and welcome to Python Bytes, where we deliver Python news and headlines directly to your earbuds.
+
+00:00:06 This is episode 436, recorded June 16th, 2025.
+
+00:00:13 I'm Michael Kennedy.
+
+00:00:14 And I'm Brian Okken.
+
+00:00:15 And this episode is brought to you by PropelAuth.
+
+00:00:19 We want to say thank you, thank you to PropelAuth for sponsoring the show.
+
+00:00:23 I'm going to tell you more about them later, but TLDR, if you have to do authentication in your app, that can be a huge hassle.
+
+00:00:30 It's not the core business of your app.
+
+00:00:32 Give them a look.
+
+00:00:33 They'll solve that problem for you and let you go back to building whatever you're supposed to be building.
+
+00:00:36 Speaking of supposed to, you're supposed to be following us on some form of social, I would say, don't you think, Brian?
+
+00:00:42 So we got our social media links out on the top of the show notes, so check that out there.
+
+00:00:48 We do our live streaming if you want to be part of the show while we record it.
+
+00:00:52 We flip the switch and make it go live around 10 a.m. on Mondays Pacific time and all the older versions are there as well.
+
+00:01:01 And finally, if you want a really nice detailed email summary with extra information and background details on what we talk about, become a friend of the show, sign up for our mailing list.
+
+00:01:11 We're not here to spam you or to resell you for sure, just to send you notes about things like what we covered in the show, maybe a very rare announcement of like a new course or some event or something like that.
+
+00:01:25 But we'd appreciate it if you signed up there as well.
+
+00:01:28 And Brian, I've always been impressed with the ability to do multi-threaded programming.
+
+00:01:36 I've enjoyed it on other languages and platforms where it was sort of full-featured.
+
+00:01:40 So that's why I was so excited when FreeThreadedPython came out.
+
+00:01:44 But it only partly came out, didn't it, in 3.13?
+
+00:01:47 Like partially or with a caveat.
+
+00:01:49 Yeah.
+
+00:01:50 So let's see.
+
+00:01:52 Here we go.
+
+00:01:53 So and what was that?
+
+00:01:55 PEP 70, now I have 703.
+
+00:01:57 So anyway, there was, I can't remember the PEP for when we had free-threaded as an option that you could turn on.
+
+00:02:05 But then now there was an announcement, exciting news.
+
+00:02:09 I saw this on the socials, it was on Mastodon, from Hugo von Caminad.
+
+00:02:16 Exciting news, PEP 779, which was the criteria for supported status for free-threaded Python, has been accepted.
+
+00:02:24 which means free threaded python is now a supported build what that means is they will drop the experimental label for um and so for for 3.1 3.414 beta 3 due on tuesday it will no longer be experimental so that we um really what that means is we're ready to kind of support it actually i wasn't sure really exactly what this meant so um hop over to the uh hugo linked to a discussion and I might have the wrong link there.
+
+00:02:55 So this discussion, here we go, was talking about the steering council approving 779, which was the criteria, with the effect of removing experimental.
+
+00:03:07 And then there's a lot of details of what all this means for phase two.
+
+00:03:10 There's a lot of stuff that has to happen in phase two, which is like making sure that the API, ABI compatibility requirements for experimental projects, some performance and memory guardrails.
+
+00:03:25 We've talked about those before.
+
+00:03:26 I do like this.
+
+00:03:27 There's a section on what documentation needs to be there before we completely jump in with both feet.
+
+00:03:33 We need to make sure documentation is clearly written and maintained.
+
+00:03:36 There's some high-level concurrency primitives and some benchmark requirements that are needed.
+
+00:03:41 If you pop down to the end, it says, we're confident that the project is on the right path and we appreciate the continued dedication from everyone working to make free threading ready for a broader adoption across the Python community. So there's a lot of work to do. And I wasn't quite sure exactly how much work there is left to do. So, you know, I asked some people. So I got a response of like, hey, does this mean that we're going to be the default? And I knew the answer that it's not going to be for a while, but I wanted to have somebody more core than me answer that. And Thomas Wooters says, Basically, it's going to be a few years before it's really the default.
+
+00:04:23 And really, how do we say default?
+
+00:04:27 It's going to be at least, it can't happen before 3.16 because of the stable ABI support requirement.
+
+00:04:34 And it may take longer.
+
+00:04:35 So, and really default is a squishy concept.
+
+00:04:39 So good answer from Thomas, thanks.
+
+00:04:41 But this is encouraging.
+
+00:04:43 I'm excited to move forward with the free threading path.
+
+00:04:47 I'm as well.
+
+00:04:48 You got to go slow with this kind of thing because it's such a change, especially at the lower level C API and integration like you're talking about.
+
+00:04:57 Yeah.
+
+00:04:57 Yeah.
+
+00:04:58 But I'm very excited for it.
+
+00:04:59 I think it opens up a lot of very interesting opportunities.
+
+00:05:03 Like right now, if I write Python code and I don't go do something explicit like multiprocessing, I can get 10% of my computing resources, which is pretty darn low.
+
+00:05:14 So the ability to just say run this in parallel and actually get it to run normal without the constraints of serializing over to multiple processes is really cool.
+
+00:05:24 And that's kind of where some of the documentation needs are there.
+
+00:05:26 And maybe those are already there, but I just don't know where they are.
+
+00:05:29 But the thoughts of, okay, I'd like to have my project.
+
+00:05:33 Like let's say I want my project to be supported on support to free threading.
+
+00:05:38 What does that mean?
+
+00:05:39 What do I need to look out for?
+
+00:05:41 I mean, I obviously need to check all of my dependencies to make sure that they're tested on that.
+
+00:05:46 But what do I need to test?
+
+00:05:48 And things like that.
+
+00:05:49 Those are good things to document.
+
+00:05:51 Yeah, yeah.
+
+00:05:52 I suspect if you're doing pure Python, it's pretty straightforward.
+
+00:05:55 There's always the concern that whatever you're doing needs to be thread safe, right?
+
+00:06:00 And I think people put Python aside in programming in general.
+
+00:06:04 they don't think enough about the thread safety aspects or even error handling sort of consistency type of stuff.
+
+00:06:12 Like I took three steps, there was an error, but the fourth step was required to put it back into a consistent state.
+
+00:06:17 I caught the error, it's fine.
+
+00:06:18 Like, no, it's not fine, it's really broken.
+
+00:06:20 So there's a lot of situations like that.
+
+00:06:23 I think you might need to consider, you know, if you're doing multi-line Python things, you might need a lock statement.
+
+00:06:31 We'll see, we'll see what shakes out.
+
+00:06:32 We also really like Python to be super easy for people to come on board.
+
+00:06:37 I mean, people are building web scrapers in 10 lines of code or something.
+
+00:06:41 Yeah.
+
+00:06:42 And we don't want to get rid of that easiness.
+
+00:06:45 So, yeah.
+
+00:06:47 Yeah, I totally 100% agree with that.
+
+00:06:49 I do think that the complexity lies down in the libraries less than in your application, right?
+
+00:06:55 Because in your application, you can decide, well, I'm not doing the writing, so problem solved.
+
+00:06:59 But as a library developer, you can't necessarily decide, not without just saying it doesn't work, you can't decide whether your library is being used in a multithread situation.
+
+00:07:09 So I think the simple use case of throwing together a script there.
+
+00:07:12 So Kishan out there says, do we need to use locks in Python now with the three-threaded version?
+
+00:07:18 I think yes, maybe, but only if you're doing a multithreaded code.
+
+00:07:23 But you might need that anyway before because of the multi-line consistencies, right?
+
+00:07:30 Even though every line might run on its own, like this block of five, you're not guaranteed that it's going to run as a block.
+
+00:07:36 Anyway, way more details than we necessarily need to go into, but it's going to be interesting.
+
+00:07:40 And I imagine these conversations are coming back with this being the default thing.
+
+00:07:44 And if you want to try it out, uv makes it super simple.
+
+00:07:48 uv, create a virtual environment with like Python, say VV, I think probably 3135T would do it.
+
+00:07:55 Although I haven't tried, I have not tried.
+
+00:07:56 Well, yeah, but basically, definitely 3.14T, hopefully.
+
+00:08:00 Yeah, clearly we should have tried this before.
+
+00:08:02 So we'll get back to you on that one.
+
+00:08:05 Yeah, exactly.
+
+00:08:05 We'll figure it out.
+
+00:08:06 We'll figure it out.
+
+00:08:08 Speaking of figuring it out, what am I going to figure out here?
+
+00:08:09 So let's talk about, actually, I have one other sort of async and threaded thing to talk about later.
+
+00:08:17 I mean, let's talk about that first.
+
+00:08:18 Let's change the order here.
+
+00:08:19 Look at that.
+
+00:08:20 Boom, we can do it live.
+
+00:08:21 So I want to talk about PyLeak, P -Y-L -E-A-K.
+
+00:08:25 For like a memory leak, but instead of checking for memory leaks, what it looks for is asyncio tasks, threads, and event loop leaks.
+
+00:08:34 Okay.
+
+00:08:34 Right?
+
+00:08:34 So if I run, if I call a function that's asynchronous, and I think it is synchronous, but I call it without assigning it to a variable or awaiting or anything like that, that just creates the coroutine and the unexecuted coroutine just chills there until it gets cleaned up and it doesn't actually run that operation, right?
+
+00:08:53 Not good.
+
+00:08:54 So that's what this library is about.
+
+00:08:56 It's about detecting those types of things.
+
+00:08:58 So let's go look at some examples.
+
+00:09:00 So you can do context managers.
+
+00:09:04 You can say async with no task leaks.
+
+00:09:07 And then if you somewhere within the execution of that context block, if you do that and you somehow call an async function, but you don't await it.
+
+00:09:17 Like, for example, here they say async io.createTask given a sleep.
+
+00:09:21 That will come up as an error.
+
+00:09:23 It can either be a warning or an exception.
+
+00:09:24 If you want it to break the build in a test, you can say treat as errors.
+
+00:09:28 And it'll say, look, you called this function and you didn't wait for it.
+
+00:09:32 And tying this back to what you were just talking about, Brian, you can say with no thread leaks.
+
+00:09:38 And if you create a thread and start it, but you don't hang on to it as a variable, then it'll tell you like, hey, you're no longer in control of this thread.
+
+00:09:48 This could be a problem, right?
+
+00:09:50 So basically, I imagine it's probably the thread kept running on the other side of that context manager.
+
+00:09:55 I'm not entirely sure.
+
+00:09:56 You can also do that for event loop blocking, right?
+
+00:10:00 And the event loop is the asyncio event loop, right?
+
+00:10:02 So this one's actually really interesting.
+
+00:10:05 It's if you're doing blocking work in an asyncio event loop, that itself should be asyncio aware, right?
+
+00:10:13 If I'm calling an HTTP endpoint for some kind of external service, I should probably be using HTTPX's async client, not request
+
+00:10:23 get, which means basically it says like I'm doing an IO thing, but it's blocking because I'm not using the AIO native version of it, right?
+
+00:10:32 And so the example here is like if you call time.sleep when you're checking for no blocking, that's an error because you should be using AIO.sleep, which you await.
+
+00:10:42 and allows other work to happen at the same time, right?
+
+00:10:46 So basically it clogs up the entire AIO processing across all of the multi-concurrent contexts.
+
+00:10:54 They're not threads, but like, right, the stuff that can run side by side, it blocks it.
+
+00:10:58 So this will detect that.
+
+00:11:00 That's really cool.
+
+00:11:01 Yeah, this is a really neat library.
+
+00:11:02 There's a bunch more stuff.
+
+00:11:03 You can do this as decorators.
+
+00:11:04 You can get detailed stack traces.
+
+00:11:06 It'll show you like details about what has happened here.
+
+00:11:10 Like there's a leak task called task two on line nine of this example.
+
+00:11:15 And it shows you the code of what happened and so on.
+
+00:11:19 Yeah, lots of different things going on here.
+
+00:11:22 I don't want to go into like too much detail.
+
+00:11:24 So I've kind of gone on and on about it.
+
+00:11:26 But it's not just a single thing.
+
+00:11:28 This is a pretty comprehensive library.
+
+00:11:30 And I like it.
+
+00:11:30 I like it a lot.
+
+00:11:32 I reached out to the rough folks and said it would be really great if you could detect when there's an async function that's called that wasn't awaited.
+
+00:11:40 And they said, that really sounds great.
+
+00:11:42 We have or are considering it, but it's really hard to do.
+
+00:11:46 And so, you know, maybe you could just throw this in here as like one more thing and set the error version and then run pytest and see what happens, you know?
+
+00:11:54 Yeah.
+
+00:11:55 So seeing, I'm just curious how you would use this.
+
+00:11:58 I would expect, especially as you're building up an application, especially if it's maybe all the time, but maybe your first time doing an async application just to make sure that you're doing things right, putting some of these around, decorators
+
+00:12:10 around some of your methods within your code.
+
+00:12:14 Would you, once you have things production ready, would you take this stuff out or would you leave it in place?
+
+00:12:19 Just to.
+
+00:12:21 I think I might put it in a unit test, but take it out of production.
+
+00:12:24 Okay.
+
+00:12:25 Probably what I would do.
+
+00:12:26 You know, the area where this really helps is, it's helpful when you're creating a new project, but when you're creating a new project, you're in the mindset of, I'm going to call a function, oh, it's async, and you're actively working on that code, unless you're vibe coding, then all bets are off.
+
+00:12:40 But if you're legitimately working on it, then you're like in the flow, and your editor ideally gives you a little warning about those kinds of things.
+
+00:12:48 However, what this really helps is if you're converting from a synchronous situation to an async one.
+
+00:12:54 Like, for example, when I converted the Talk Python code from synchronous pyramid to async court, which is basically async flask, there was a few places I messed up there's so much code and there's all these functions are called and you look at the code and it looks fine. But if you convert that function from sync to async, but you forget to find every place you're using it and add in a wait, then that's, that's when this happens.
+
+00:13:20 So does it, what happens in like the, so does it work anyway? It's just slower or what happens?
+
+00:13:28 So for the thread one, it may work anyway, but like the async one, the async task one, Maybe, maybe not, because if you don't await it, it doesn't actually execute.
+
+00:13:39 Yeah.
+
+00:13:39 Right.
+
+00:13:39 You create the co-routine, but then it's the awaiting of it that actually makes it go.
+
+00:13:45 And so if you said like, log this message asynchronously, but you don't await it, it's never going to log it.
+
+00:13:51 Right.
+
+00:13:51 Maybe if you call create task, it might start.
+
+00:13:54 I don't know.
+
+00:13:54 There's like some different ways in which it could be done.
+
+00:13:56 No, but this is, this is great to have some, I feel like this is like what scaffolding or training wheels or something to put on stuff just to make sure.
+
+00:14:04 that things are running right.
+
+00:14:06 This is good.
+
+00:14:06 Yeah, it's definitely, definitely good.
+
+00:14:08 Cool.
+
+00:14:09 What else is good?
+
+00:14:10 Authentication that you don't have to deal with is good.
+
+00:14:12 Yes, it is.
+
+00:14:13 So on that note, we want to thank PropelOth.
+
+00:14:16 So this episode is sponsored by PropelOth.
+
+00:14:19 PropelOth is the easiest way to turn authentication into your advantage.
+
+00:14:24 For B2B SaaS companies, great authentication is non-negotiable, but it can often be a hassle.
+
+00:14:30 With PropelOth, it's more than just functional, it's powerful.
+
+00:14:33 PropelAuth comes with tools like managed UIs, enterprise SSO, robust user management features, and actionable insights.
+
+00:14:41 As your product grows, PropelAuth adapts with it supporting more advanced authentication features.
+
+00:14:47 And the best part, PropelAuth has native support for major Python libraries like FastAPI, Flask, and Django.
+
+00:14:54 You can easily integrate them into your product.
+
+00:14:57 When auth is effortless, your team can focus on scaling, not troubleshooting.
+
+00:15:02 That means more releases, happier customers, and more growth for your business.
+
+00:15:06 Check them out to get started today.
+
+00:15:08 The link is in your podcast player's show notes.
+
+00:15:10 It's a clickable chapter URL as you're hearing this segment, and it's at the top of the episode page at pythonbytes.fm.
+
+00:15:18 Thank you to PropelAuth for supporting Python Bytes.
+
+00:15:21 Yes, indeed.
+
+00:15:21 Thanks, PropelAuth.
+
+00:15:23 And I would like to point out, Brian, that all of the chapters are clickable.
+
+00:15:29 So I don't know if everyone even knows that most of our episodes have chapters.
+
+00:15:33 If they don't, that's usually because I forgot somehow, which is not the case.
+
+00:15:37 But every item on there for the chapters is also a link to the main resource of whatever.
+
+00:15:43 Like, for example, the PyLeak one will link to the PyLeak GitHub repo if you click it.
+
+00:15:47 And I don't like people to skip on us, but I mean, I understand if we're talking about a topic that you really don't care about, that's one of the cool things about the chapter markers.
+
+00:15:57 You can just skip to the next topic or something.
+
+00:15:59 Yeah, or if you've heard it four times, you're like, yeah, this is the seventh time I've heard about this library.
+
+00:16:03 You can skip it if you want.
+
+00:16:04 I mean, the show is pretty short, but still.
+
+00:16:08 Nonetheless, nonetheless.
+
+00:16:09 All right, let's talk about the thing that I was going to talk about first, but kicked it down the line, which is typed FFmpeg.
+
+00:16:18 Okay.
+
+00:16:18 So I don't know if folks know, but FFmpeg is a command line CLI video processing masterpiece.
+
+00:16:26 It is a beast of a library.
+
+00:16:29 And it's actually what I use for the Talk Python training courses to generate all these different versions and resolutions and streaming styles and stuff.
+
+00:16:39 And we had, let's say, a five-hour course.
+
+00:16:42 Probably turn FFmpeg loose on the videos for, I don't know, 15, 20 hours, something like that, and just let it grind
+
+00:16:48 on my Apple Silicon.
+
+00:16:50 And I've got a whole bunch of automation to make that happen, which is cool.
+
+00:16:53 It would be easier if this existed, probably.
+
+00:16:56 So this typed FFmpeg is a Python wrapper that supports working with filters and typing for FFmpeg.
+
+00:17:05 So pretty neat.
+
+00:17:06 And it's kind of like PyLeak.
+
+00:17:08 It's more comprehensive than you would imagine.
+
+00:17:10 So this one offers a modern Pythonic interface to FFmpeg, providing extensive support for complex filters with pictures.
+
+00:17:19 It's inspired by FFmpeg-Python, But this one enhances that functionality with autocomplete, comprehensive type information, JSON serialization, and so on.
+
+00:17:30 So like if you look at the repo they show you, if you type ffmpeg.input.
+
+00:17:37 And then down comes a huge list of things with stunning documentation and type information.
+
+00:17:43 I mean, look at that, Brian.
+
+00:17:44 That's pretty nice there, right?
+
+00:17:46 Yeah, it really is.
+
+00:17:47 Yeah, I was really surprised.
+
+00:17:48 So it comes with zero dependencies, comprehensive filter support, robust typing.
+
+00:17:54 You know, that's the point of it, basically.
+
+00:17:56 Graph visualization, which I was talking about, hinting at.
+
+00:17:59 Partial evaluation, media file analysis, and a bunch of things.
+
+00:18:03 So easy to use.
+
+00:18:05 It shows you how you can, you know, if you wanted to flip a video horizontally and then output it, you can see a little graph of input, and then it applies all the operations.
+
+00:18:14 There's an H flip operation in the graph, and then there's an output to the file.
+
+00:18:18 You get it more and more.
+
+00:18:20 I know this is like, you get even that interactive playground where you can drag and drop the filter bits together.
+
+00:18:26 What?
+
+00:18:27 I know.
+
+00:18:28 I'm telling you, it's way more than you would expect.
+
+00:18:30 So yeah, really neat to visualize what's happening.
+
+00:18:33 And yeah, I don't do this kind of stuff where I'm like creating really complex graphs.
+
+00:18:38 It's more like format conversion, resolution conversion stuff that I use it for.
+
+00:18:42 But yeah, if you do a lot with FFMPEG and you do stuff with video, check this out.
+
+00:18:46 If you pay hundreds or thousands of dollars providers to like re-encode video for you you definitely want to check this out oh okay yeah it might be might be saving a lot of money i used to use aws they've got some video processing api sort of thing and eventually it was cecil phillip actually that convinced me i should just do ffmpeg
+
+00:19:05 yeah it was probably just calling ffmpeg in the background i'm sure that they are which is
+
+00:19:09 crazy right yeah i mean it's a little bit faster if they do it but you know what I only do it once per course.
+
+00:19:17 It's not very often.
+
+00:19:18 Well, I guess if you're doing all of your courses for like 15 hours, I get why you have to pay people to do that.
+
+00:19:25 But, you know, whatever.
+
+00:19:26 Yeah.
+
+00:19:27 Cool.
+
+00:19:27 Yep.
+
+00:19:28 If you use good caching, then life is much easier.
+
+00:19:31 You can just rerun it if you add a new video to re-encode the whole thing.
+
+00:19:34 I love cache.
+
+00:19:35 I do too.
+
+00:19:36 Over to you.
+
+00:19:37 I was going to talk about, what am I going to talk about?
+
+00:19:40 I'm going to talk about pytest.
+
+00:19:43 I kind of like pytest, actually.
+
+00:19:45 You don't say.
+
+00:19:47 It's a fun article by Tim Kaminen.
+
+00:19:50 And this is short, so I almost put it as a second, like an extra, but it's just really cool.
+
+00:19:56 So his article is optimizing test execution, and it's running live server tests last with pytest.
+
+00:20:04 Okay, so this is about testing websites, using the live server fixture.
+
+00:20:10 And so if you're using that, we're using Playwright or Selenium, that's definitely, this is definitely for you.
+
+00:20:17 But also really if you have, the techniques in this are really cool for, even if you're just having, if you have any other, like if you have a test suite that's, there's some slow parts and it's slow because of some fixture that you're using, like some external resource or whatever, any test that uses that is a little slower.
+
+00:20:37 You can use the same technique.
+
+00:20:38 So I just want to preface that.
+
+00:20:40 So why run slow tests last?
+
+00:20:44 Why does he want to run them last?
+
+00:20:46 Well, for efficiency, you get faster feedback for unit tests.
+
+00:20:50 That allows you to, faster feedback for the fast tests.
+
+00:20:53 I don't know why he puts unit tests.
+
+00:20:55 It could be any fast test.
+
+00:20:56 Allows you to catch and fix issues easier, faster.
+
+00:20:59 You're not waiting for them.
+
+00:21:00 Also, resource management keeps resources consumed by slow tests, like database connections, external services and stuff, not tied up through the whole test.
+
+00:21:10 So keeping those isolated at the end.
+
+00:21:12 Totally makes sense.
+
+00:21:13 So how do we do this?
+
+00:21:16 Well, he's talking about installing pytest Playwright, which also is a great plugin to drive web tests using pytest.
+
+00:21:25 And pytest Django.
+
+00:21:26 So this application is running a Django app.
+
+00:21:30 And then using, so his tests are using Live Server.
+
+00:21:34 So what does he do?
+
+00:21:35 He's adding a new marker, an E2E marker for end-to-end.
+
+00:21:39 But he's not actually marking anything with that manually.
+
+00:21:43 he comes by and uses one of the pytest's lovely hook functions.
+
+00:21:48 And this one is collect modify items.
+
+00:21:50 And it's sort of an oddball.
+
+00:21:51 So it's good to have like some easy examples like that.
+
+00:21:55 What this does is it goes through all your tests and looks for all of them that are using the live server fixture.
+
+00:22:01 And then it does a couple things.
+
+00:22:04 He's adding the marker E to E.
+
+00:22:06 So adding the end to end marker to all of the tests that use live server, It really, it was, you could do live server marker.
+
+00:22:14 You could do any marker name you want.
+
+00:22:15 But why do we do that?
+
+00:22:17 I'll get to that later.
+
+00:22:18 So he's adding the marker to the slower tests.
+
+00:22:21 And then he's splitting them up and running all the other tests first and then the live server test second.
+
+00:22:28 And that's really kind of the trick about pytest Collect Modify Items is the way to either you can bail on some tests or you can reorder them.
+
+00:22:38 and he's using the reorder.
+
+00:22:41 But since we're having to loop through all of them anyway, he's using that to add the marker.
+
+00:22:46 And then, so why do that?
+
+00:22:48 Well, he's got a little example with a slow one or fast one.
+
+00:22:53 But you can use that marker then and say, you know what, I'm debugging a unit test.
+
+00:22:57 I don't want the live servers ones to run.
+
+00:22:59 So you can say, hey, don't run the end-to-end ones.
+
+00:23:02 You can say pytest-sm, not ed, and that will run all of your tests that are not using a live server.
+
+00:23:08 And that's a cool use of markers, auto automatically applying markers.
+
+00:23:13 It's a cool thing.
+
+00:23:14 And then also, for example, you can if you just want to run the live server ones, you can, you know, say E dash M E as well.
+
+00:23:22 So a really fun little example of how to automate pushing your slow test to the end and being able to select them or not select them.
+
+00:23:30 I love I love this idea.
+
+00:23:32 Something I think I might adopt it.
+
+00:23:35 That's nice.
+
+00:23:36 Also, gentle introduction to hook functions, because hook functions can be a little scary.
+
+00:23:42 And something simple like reordering your tests doesn't seem like it'd be simple, but it's only, what, 13 lines of code, including a comment, some blank lines.
+
+00:23:50 It's not bad.
+
+00:23:51 Yeah, that's not too bad at all.
+
+00:23:52 Okay.
+
+00:23:53 Yeah, I'm definitely going to look at this, because I've got some tests that are blazing fast and some that are pretty slow for the various web apps I got.
+
+00:24:00 So, yeah, I'll check it out.
+
+00:24:01 I don't use live server or any of those things, but, you know, it's like I want to get the sitemap and then call a representative subset of things within there just to make sure it's all hanging together.
+
+00:24:11 That's definitely an E-to-E test.
+
+00:24:13 Well, and also like, so I see a lot of cases if somebody is using a database connection, they'll have like, or, you know, using a database to, even if it's just a mock database or a small one, but they've got a whole bunch of test data that they filled in.
+
+00:24:28 And maybe it's not really slow, but it's slower than their other stuff.
+
+00:24:32 It's often accessed via a fixture, and you can easily select the tests that use that fixture.
+
+00:24:38 It's pretty cool.
+
+00:24:40 The other thing I brought this up by because is I want to make sure everybody, I mean, yes, I write about pytest a lot, but I like other people to write about it too.
+
+00:24:49 So please, if you've written some cool pytest documentation, send them to me.
+
+00:24:55 Indeed.
+
+00:24:56 Looks good.
+
+00:24:57 All right.
+
+00:24:57 Let's jump over to some extras.
+
+00:24:59 All right.
+
+00:25:00 We have a new course at Talk Python Training, and this is the very first announcement for it.
+
+00:25:05 I haven't even got a chance to send out email about this, but Vincent Bormerdom, who's been on Python Bytes before, created a short LLM building blocks for Python course.
+
+00:25:16 And so this isn't like prompt engineering or anything like that.
+
+00:25:19 It's like, what are some good libraries you can use to build code that uses LLMs for various things?
+
+00:25:26 How do you get structured output?
+
+00:25:27 Like, for example, how can you use Pydantic to communicate to the LLM how it should speak to you in a JSON response instead of a text response?
+
+00:25:36 Stuff like that.
+
+00:25:37 Yeah, super neat.
+
+00:25:37 So check the course out.
+
+00:25:39 It's just 19 bucks over at Talk Python Training.
+
+00:25:41 Just go to Courses or go to talkpython.fm.
+
+00:25:44 Click on Courses.
+
+00:25:45 It'll be right there at the top of the new courses list.
+
+00:25:47 So check that out.
+
+00:25:48 That's super exciting.
+
+00:25:49 Also, over at Talk Python, I've done this thing called deep dives where it goes into a particular episode and you can look at it.
+
+00:25:58 It'll tell you like background on the guests, background on important concepts you might want to learn to like get a better sense of understanding what's going on or, you know, diving extra details into each of the things we've spoken about and so on.
+
+00:26:13 So the news is I have finished a long journey of getting one of those deep dive analysis for every Talk Python episode for the last 10 years.
+
+00:26:22 And the result is 600,000 words of analysis.
+
+00:26:26 If you were to go through and read them all, it's 4.5 million characters.
+
+00:26:29 That's a lot of content.
+
+00:26:31 But that makes the search over there better because if you search, that now includes basically the search engine considers the deep dive as part of the episode and looks for content within there, not just within what I put in the show notes and so on.
+
+00:26:46 So really, really cool.
+
+00:26:48 Super proud of that.
+
+00:26:49 That was a lot of work, but it is now done.
+
+00:26:52 So I wrote a little article about that and I'll link to it if you're more interested than what I just said.
+
+00:26:56 Nice.
+
+00:26:57 Also, remember I had a rant.
+
+00:26:59 I even named last week's episode, stop putting your dot folders in my tilde dash or tilde slash
+
+00:27:04 or whatever.
+
+00:27:05 Well, Eric Mesa said, hey, the places to store dot files is defined by the XDG standard on Linux.
+
+00:27:13 Because remember, it's like I was winging about doing this to my macOS setup.
+
+00:27:18 And, you know, Windows is even worse because the dot files and folders are not even hidden, right?
+
+00:27:23 But what about Linux?
+
+00:27:24 Well, this XDG standard speaks to that.
+
+00:27:29 And so I even did a little, put together a little cheat sheet on it or whatever.
+
+00:27:33 So put stuff in your, you know, where do the config files go?
+
+00:27:36 Well, they go in home slash, you know, like tilde, whatever your dollar home is, right?
+
+00:27:41 Basically tilde slash dot config.
+
+00:27:43 So maybe dot config slash my app, some settings.
+
+00:27:46 Or there's a cache folder and then you put it into the dot cache in there.
+
+00:27:52 There's still a few dot folders in your repo, but not one for every single application you happen to have run or something has run for you.
+
+00:28:00 So this is kind of cool.
+
+00:28:01 People can check it out.
+
+00:28:02 There's a lot of details I've put together here.
+
+00:28:04 And even a way to use this XDG library, which is right here somewhere, and Python, how to use it.
+
+00:28:11 So, or actually just a function you can use.
+
+00:28:13 But pretty cool.
+
+00:28:13 That's pretty cool.
+
+00:28:15 Any idea what XDG stands for?
+
+00:28:17 Zero.
+
+00:28:20 Yeah, I have zero idea.
+
+00:28:22 Okay, that's fine.
+
+00:28:24 we'll look it up for next time.
+
+00:28:25 I did look it up as part of like putting that little cheat sheet thing together.
+
+00:28:29 But then it was last week and I forgot.
+
+00:28:32 Yeah, that's me.
+
+00:28:35 Okay.
+
+00:28:35 Is that your extras?
+
+00:28:36 No, I got a couple more.
+
+00:28:37 I'll go quick.
+
+00:28:37 Okay.
+
+00:28:38 Every time I think, you know, are you a fan of Scarface?
+
+00:28:40 You watch that when you're younger?
+
+00:28:42 No, this is a godfather.
+
+00:28:43 Sorry, this is a godfather.
+
+00:28:44 This is a godfather.
+
+00:28:44 This is a godfather.
+
+00:28:46 This is a godfather.
+
+00:28:47 This is a godfather.
+
+00:28:54 that's me and open the pro version of open ai i thought like okay i'm just gonna go back to being a regular normal user this thing and then no they go and release o3 pro so i'm like i gotta have to pay the ridiculous money to try that out again because it it's really worth it although i will say i'll take one for the team here i will say o1 pro was incredible and it's starting to be phased out i don't know how much longer it'll last o3 pro does not seem nearly as good to me not not even close i don't know why o3 is pretty good but so maybe i'll i'm considering going back to a regular user again. But every time I'm out, Brian, pull me right back in. Okay.
+
+00:29:30 Another one, this is dynamic. When I wrote it down, it was 17. Right now it's 20. But Python Bytes is the 20th most popular tech news podcast in the world. According to good pods. Okay.
+
+00:29:42 According to good pods, which is decent. And number one, developer news show period. How about that?
+
+00:29:50 developer not like also covers just tech or ai or whatever that's pretty cool so thanks good pods for pointing that out i used to use chartable but then spotify bought them and shut them down thanks spotify i think it was spotify i'm pretty sure they were definitely bought and shut down okay i want you anyone out there listening do not take action on this item until you hear the second follow-up item in this extra because it's important important on june 3rd python 3 13 4 was released. Hey, right, this is cool. Covered some CVEs that had to be fixed. So we quickly got things like tarball security issues that could be really bad if you process tarballs from external input. So you might think, I want to go install that. No, no, no. Just a few days later, hey, 3.13.5 is out because we had to quickly release this to fix an issue that was in 3.13.4.
+
+00:30:47 Okay.
+
+00:30:48 So make sure you get 3.13.5 if you have either 3.13.3 or 4 because 4 doesn't actually, I don't know what the actual issue was, but this one is like, oh my gosh, we've got to fix it again.
+
+00:31:00 That's it.
+
+00:31:00 Those are my extras.
+
+00:31:01 All right.
+
+00:31:02 I only have a couple, but let's pop over.
+
+00:31:05 So along the free threading topic, this was mentioned by what John Hagen sent this in.
+
+00:31:15 And this is from the python.org discussion thread.
+
+00:31:20 There's a discussion thread called the is free threading our only option.
+
+00:31:27 This is from Eric Snow, whose opinion I at least want to listen to.
+
+00:31:31 So there's an interesting discussion about really about whether or not free threading is the only way to go.
+
+00:31:37 And he does mention he's not recommending to not support free threading, but there's other things to think.
+
+00:31:43 So I'm just going to drop this link.
+
+00:31:46 It's kind of a long discussion, but it's an interesting read.
+
+00:31:51 Yeah, it's also noteworthy that Eric Snow did a ton of the work on sub-interpreters.
+
+00:31:56 Yeah, and that's part of it is talking around sub-interpreters.
+
+00:32:01 And some of the interesting discussions here, like one of the things popped down that I thought from Antoine Petrou, and he's the maintainer py arrow, says, just as a data point, our library supports free-threaded Python, but I've not even looked at sub-interpreters.
+
+00:32:20 So, and I kind of, I know that it's going to be complicated to, or at least it might be complicated to think about free threading, but thinking about subinterpreters blows my brain up.
+
+00:32:32 So I'm not thinking about them at all.
+
+00:32:34 What if you could have each thread have its own subinterpreter?
+
+00:32:37 How about that?
+
+00:32:38 Or multiple subinterpreters.
+
+00:32:40 I don't know.
+
+00:32:41 Or each subinterpreters have its own multiple threads.
+
+00:32:45 Sure.
+
+00:32:45 Yeah, hence the brain blowing up.
+
+00:32:47 Yeah, anyway.
+
+00:32:49 And another free threading topic.
+
+00:32:52 This is from Hugo von Kamanad.
+
+00:32:55 Free threaded Python in GitHub Actions.
+
+00:32:58 This is just, he actually released this in March.
+
+00:33:01 But this is really how to make sure.
+
+00:33:05 So we're encouraging people now to make sure with 3.14, at the very least with 3.14, to test free threading for their project.
+
+00:33:14 So if you have a third part, if you are a maintainer of a third party, basically if I can get your stuff via pip and it's got a library that I can use in other code, please test it for free threading and then tell people whether or not you're supporting free threading.
+
+00:33:32 And this discussion is how to do that within GitHub Actions.
+
+00:33:36 So a really great write up on how, and it's basically just add a T to the, it's not bad.
+
+00:33:43 So this isn't a lot of extra work.
+
+00:33:45 Indeed, not too much. All right. Well, you're ready for a joke.
+
+00:33:49 Yes.
+
+00:33:49 Close it out with an idea. So naming things is hard, right? There's the famous joke, which will introduce this joke is that there's two things in computer science that are hard.
+
+00:34:02 Naming things, cache and validation and off by one errors, right?
+
+00:34:05 Yeah.
+
+00:34:05 So this one comes from programming humor and it's a bit of a meme. It has two senior devs just like fighting, like, you know, literally wrestling, fighting away.
+
+00:34:14 It says here's a code review meeting.
+
+00:34:16 The variable name should be number to be updated, says one of the senior devs while she's throwing down the other senior dev.
+
+00:34:22 The variable name should be updated number.
+
+00:34:25 Meanwhile, the junior dev is sitting there eating popcorn, watching it go down while working on a new file with variable names such as AA1 and XYZ.
+
+00:34:37 Yeah.
+
+00:34:37 And I'm over here.
+
+00:34:38 Do you guys have naming?
+
+00:34:39 Do you have naming debates?
+
+00:34:40 Sorry, go ahead.
+
+00:34:41 You're over there.
+
+00:34:41 No, we use linters to do that.
+
+00:34:44 to do the argument for us.
+
+00:34:46 But I'm looking at this going, it's a camel case.
+
+00:34:50 It needs to be a snake case.
+
+00:34:51 What's up with this?
+
+00:34:52 It's got to be like a JavaScript or a C-sharp argument.
+
+00:34:57 And I'm one of the worst.
+
+00:34:58 We've got to get in or take them both down.
+
+00:35:00 I'm one of the worst whenever I see style guides getting written, which I always cringe when there's a new style guide in a team.
+
+00:35:08 But I always make sure to make sure that it complies.
+
+00:35:13 it's at least adds to and doesn't distract from actual like common practice in the rest of the industry and the other thing is for the short variable names uh that you you have to allow things like xyz for uh for and i i and j for loop variables and stuff
+
+00:35:31 although i do agree that using both i and j is evil because some fonts you can't really tell much of a difference between the too so
+
+00:35:38 yeah yeah but like for n in int you know like that's like steeped in historical math style like you know outside of programming right like
+
+00:35:49 yeah yeah and i've had people like x and y for algebra absolutely and then i've had people like uh gripe about using i as a variable like variable for a loop and i'm like that's just so common is like for i in this especially if it's not a nested loop, why not?
+
+00:36:06 Yeah.
+
+00:36:07 Well, have you done any C++?
+
+00:36:09 Come on.
+
+00:36:10 That's like one of the first things you do.
+
+00:36:11 Four and I equals zero.
+
+00:36:14 I++, I less than N.
+
+00:36:16 You index into the array because that's how it goes.
+
+00:36:19 Yeah.
+
+00:36:20 Anyway, well.
+
+00:36:21 So you don't invite me to your code review meeting because I'll be the grump in the background.
+
+00:36:27 Well, maybe you should.
+
+00:36:31 I know you don't like what they wrote, but they have a point.
+
+00:36:34 Right. Let the I be. Let it be. Yeah. All right. Well, thanks.
+
+00:36:39 Yeah. Thank you as always. And thanks everyone. Bye y'all.
+
+00:36:42 Bye.
+

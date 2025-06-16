@@ -1,0 +1,1685 @@
+WEBVTT
+
+00:00:00.020 --> 00:00:05.560
+Hello and welcome to Python Bytes, where we deliver Python news and headlines directly to your earbuds.
+
+00:00:06.020 --> 00:00:12.120
+This is episode 436, recorded June 16th, 2025.
+
+00:00:13.140 --> 00:00:13.740
+I'm Michael Kennedy.
+
+00:00:14.220 --> 00:00:15.140
+And I'm Brian Okken.
+
+00:00:15.440 --> 00:00:18.940
+And this episode is brought to you by PropelAuth.
+
+00:00:19.260 --> 00:00:23.120
+We want to say thank you, thank you to PropelAuth for sponsoring the show.
+
+00:00:23.500 --> 00:00:30.240
+I'm going to tell you more about them later, but TLDR, if you have to do authentication in your app, that can be a huge hassle.
+
+00:00:30.460 --> 00:00:31.820
+It's not the core business of your app.
+
+00:00:32.320 --> 00:00:32.900
+Give them a look.
+
+00:00:33.220 --> 00:00:36.340
+They'll solve that problem for you and let you go back to building whatever you're supposed to be building.
+
+00:00:36.700 --> 00:00:42.500
+Speaking of supposed to, you're supposed to be following us on some form of social, I would say, don't you think, Brian?
+
+00:00:42.610 --> 00:00:47.980
+So we got our social media links out on the top of the show notes, so check that out there.
+
+00:00:48.420 --> 00:00:52.440
+We do our live streaming if you want to be part of the show while we record it.
+
+00:00:52.840 --> 00:01:00.620
+We flip the switch and make it go live around 10 a.m. on Mondays Pacific time and all the older versions are there as well.
+
+00:01:01.080 --> 00:01:11.100
+And finally, if you want a really nice detailed email summary with extra information and background details on what we talk about, become a friend of the show, sign up for our mailing list.
+
+00:01:11.500 --> 00:01:25.020
+We're not here to spam you or to resell you for sure, just to send you notes about things like what we covered in the show, maybe a very rare announcement of like a new course or some event or something like that.
+
+00:01:25.220 --> 00:01:27.920
+But we'd appreciate it if you signed up there as well.
+
+00:01:28.120 --> 00:01:35.700
+And Brian, I've always been impressed with the ability to do multi-threaded programming.
+
+00:01:36.140 --> 00:01:40.360
+I've enjoyed it on other languages and platforms where it was sort of full-featured.
+
+00:01:40.360 --> 00:01:44.040
+So that's why I was so excited when FreeThreadedPython came out.
+
+00:01:44.400 --> 00:01:46.980
+But it only partly came out, didn't it, in 3.13?
+
+00:01:47.360 --> 00:01:47.480
+Like
+
+00:01:47.480 --> 00:01:48.260
+partially or
+
+00:01:48.260 --> 00:01:49.020
+with a caveat.
+
+00:01:49.480 --> 00:01:49.840
+Yeah.
+
+00:01:50.260 --> 00:01:51.480
+So let's see.
+
+00:01:52.180 --> 00:01:52.980
+Here we go.
+
+00:01:53.520 --> 00:01:55.280
+So and what was that?
+
+00:01:55.480 --> 00:01:57.520
+PEP 70, now I have 703.
+
+00:01:57.900 --> 00:02:05.520
+So anyway, there was, I can't remember the PEP for when we had free-threaded as an option that you could turn on.
+
+00:02:05.960 --> 00:02:09.380
+But then now there was an announcement, exciting news.
+
+00:02:09.420 --> 00:02:15.840
+I saw this on the socials, it was on Mastodon, from Hugo von Caminad.
+
+00:02:16.380 --> 00:02:24.380
+Exciting news, PEP 779, which was the criteria for supported status for free-threaded Python, has been accepted.
+
+00:02:24.700 --> 00:02:55.320
+which means free threaded python is now a supported build what that means is they will drop the experimental label for um and so for for 3.1 3.414 beta 3 due on tuesday it will no longer be experimental so that we um really what that means is we're ready to kind of support it actually i wasn't sure really exactly what this meant so um hop over to the uh hugo linked to a discussion and I might have the wrong link there.
+
+00:02:55.800 --> 00:03:06.500
+So this discussion, here we go, was talking about the steering council approving 779, which was the criteria, with the effect of removing experimental.
+
+00:03:07.300 --> 00:03:10.540
+And then there's a lot of details of what all this means for phase two.
+
+00:03:10.800 --> 00:03:25.020
+There's a lot of stuff that has to happen in phase two, which is like making sure that the API, ABI compatibility requirements for experimental projects, some performance and memory guardrails.
+
+00:03:25.160 --> 00:03:26.040
+We've talked about those before.
+
+00:03:26.890 --> 00:03:27.620
+I do like this.
+
+00:03:27.840 --> 00:03:33.240
+There's a section on what documentation needs to be there before we completely jump in with both feet.
+
+00:03:33.340 --> 00:03:36.460
+We need to make sure documentation is clearly written and maintained.
+
+00:03:36.820 --> 00:03:40.900
+There's some high-level concurrency primitives and some benchmark requirements that are needed.
+
+00:03:41.820 --> 00:04:22.800
+If you pop down to the end, it says, we're confident that the project is on the right path and we appreciate the continued dedication from everyone working to make free threading ready for a broader adoption across the Python community. So there's a lot of work to do. And I wasn't quite sure exactly how much work there is left to do. So, you know, I asked some people. So I got a response of like, hey, does this mean that we're going to be the default? And I knew the answer that it's not going to be for a while, but I wanted to have somebody more core than me answer that. And Thomas Wooters says, Basically, it's going to be a few years before it's really the default.
+
+00:04:23.060 --> 00:04:25.540
+And really, how do we say default?
+
+00:04:27.240 --> 00:04:34.040
+It's going to be at least, it can't happen before 3.16 because of the stable ABI support requirement.
+
+00:04:34.360 --> 00:04:35.400
+And it may take longer.
+
+00:04:35.880 --> 00:04:39.060
+So, and really default is a squishy concept.
+
+00:04:39.380 --> 00:04:40.980
+So good answer from Thomas, thanks.
+
+00:04:41.620 --> 00:04:42.480
+But this is encouraging.
+
+00:04:43.200 --> 00:04:46.760
+I'm excited to move forward with the free threading path.
+
+00:04:47.120 --> 00:04:47.640
+I'm as well.
+
+00:04:48.020 --> 00:04:57.060
+You got to go slow with this kind of thing because it's such a change, especially at the lower level C API and integration like you're talking about.
+
+00:04:57.420 --> 00:04:57.500
+Yeah.
+
+00:04:57.730 --> 00:04:57.920
+Yeah.
+
+00:04:58.560 --> 00:04:59.540
+But I'm very excited for it.
+
+00:04:59.540 --> 00:05:03.200
+I think it opens up a lot of very interesting opportunities.
+
+00:05:03.390 --> 00:05:13.920
+Like right now, if I write Python code and I don't go do something explicit like multiprocessing, I can get 10% of my computing resources, which is pretty darn low.
+
+00:05:14.300 --> 00:05:23.860
+So the ability to just say run this in parallel and actually get it to run normal without the constraints of serializing over to multiple processes is really cool.
+
+00:05:24.100 --> 00:05:26.740
+And that's kind of where some of the documentation needs are there.
+
+00:05:26.840 --> 00:05:29.340
+And maybe those are already there, but I just don't know where they are.
+
+00:05:29.500 --> 00:05:32.940
+But the thoughts of, okay, I'd like to have my project.
+
+00:05:33.440 --> 00:05:37.760
+Like let's say I want my project to be supported on support to free threading.
+
+00:05:38.500 --> 00:05:39.100
+What does that mean?
+
+00:05:39.280 --> 00:05:40.540
+What do I need to look out for?
+
+00:05:41.600 --> 00:05:45.820
+I mean, I obviously need to check all of my dependencies to make sure that they're tested on that.
+
+00:05:46.040 --> 00:05:47.620
+But what do I need to test?
+
+00:05:48.240 --> 00:05:49.240
+And things like that.
+
+00:05:49.400 --> 00:05:51.080
+Those are good things to document.
+
+00:05:51.300 --> 00:05:51.920
+Yeah, yeah.
+
+00:05:52.200 --> 00:05:54.840
+I suspect if you're doing pure Python, it's pretty straightforward.
+
+00:05:55.800 --> 00:06:00.160
+There's always the concern that whatever you're doing needs to be thread safe, right?
+
+00:06:00.460 --> 00:06:03.680
+And I think people put Python aside in programming in general.
+
+00:06:04.000 --> 00:06:12.460
+they don't think enough about the thread safety aspects or even error handling sort of consistency type of stuff.
+
+00:06:12.720 --> 00:06:17.560
+Like I took three steps, there was an error, but the fourth step was required to put it back into a consistent state.
+
+00:06:17.920 --> 00:06:18.880
+I caught the error, it's fine.
+
+00:06:18.920 --> 00:06:20.540
+Like, no, it's not fine, it's really broken.
+
+00:06:20.880 --> 00:06:23.200
+So there's a lot of situations like that.
+
+00:06:23.390 --> 00:06:30.340
+I think you might need to consider, you know, if you're doing multi-line Python things, you might need a lock statement.
+
+00:06:31.060 --> 00:06:31.420
+We'll
+
+00:06:31.420 --> 00:06:32.400
+see, we'll see what shakes out.
+
+00:06:32.780 --> 00:06:36.920
+We also really like Python to be super easy for people to come on board.
+
+00:06:37.120 --> 00:06:40.820
+I mean, people are building web scrapers in 10 lines of code or something.
+
+00:06:41.440 --> 00:06:41.580
+Yeah.
+
+00:06:42.440 --> 00:06:45.200
+And we don't want to get rid of that easiness.
+
+00:06:45.720 --> 00:06:46.400
+So, yeah.
+
+00:06:47.320 --> 00:06:48.920
+Yeah, I totally 100% agree with that.
+
+00:06:49.100 --> 00:06:55.280
+I do think that the complexity lies down in the libraries less than in your application, right?
+
+00:06:55.400 --> 00:06:55.660
+Because in
+
+00:06:55.660 --> 00:06:59.120
+your application, you can decide, well, I'm not doing the writing, so problem solved.
+
+00:06:59.340 --> 00:07:08.900
+But as a library developer, you can't necessarily decide, not without just saying it doesn't work, you can't decide whether your library is being used in a multithread situation.
+
+00:07:09.220 --> 00:07:12.700
+So I think the simple use case of throwing together a script there.
+
+00:07:12.940 --> 00:07:14.780
+So Kishan
+
+00:07:14.780 --> 00:07:18.340
+out there says, do we need to use locks in Python now with the three-threaded version?
+
+00:07:18.800 --> 00:07:22.720
+I think yes, maybe, but only if you're doing a multithreaded code.
+
+00:07:23.440 --> 00:07:29.980
+But you might need that anyway before because of the multi-line consistencies, right?
+
+00:07:30.130 --> 00:07:31.420
+Even though every line might run
+
+00:07:31.420 --> 00:07:32.660
+on
+
+00:07:32.660 --> 00:07:36.320
+its own, like this block of five, you're not guaranteed that it's going to run as a block.
+
+00:07:36.420 --> 00:07:40.200
+Anyway, way more details than we necessarily need to go into, but it's going to be interesting.
+
+00:07:40.520 --> 00:07:44.220
+And I imagine these conversations are coming back with this being the default thing.
+
+00:07:44.400 --> 00:07:47.940
+And if you want to try it out, uv makes it super simple.
+
+00:07:48.420 --> 00:07:55.060
+UV, create a virtual environment with like Python, say VV, I think probably 3135T would do it.
+
+00:07:55.110 --> 00:07:56.360
+Although I haven't tried, I have not tried.
+
+00:07:56.440 --> 00:08:00.060
+Well, yeah, but basically, definitely 3.14T, hopefully.
+
+00:08:00.480 --> 00:08:02.700
+Yeah, clearly we should have tried this before.
+
+00:08:02.940 --> 00:08:04.780
+So we'll get back to you on that one.
+
+00:08:05.100 --> 00:08:05.800
+Yeah, exactly.
+
+00:08:05.920 --> 00:08:06.740
+We'll figure it out.
+
+00:08:06.880 --> 00:08:07.400
+We'll figure it out.
+
+00:08:08.240 --> 00:08:09.700
+Speaking of figuring it out, what am I going to figure out here?
+
+00:08:09.960 --> 00:08:16.540
+So let's talk about, actually, I have one other sort of async and threaded thing to talk about later.
+
+00:08:17.060 --> 00:08:17.980
+I mean, let's talk about that first.
+
+00:08:18.680 --> 00:08:19.680
+Let's change the order here.
+
+00:08:19.800 --> 00:08:20.000
+Look at that.
+
+00:08:20.040 --> 00:08:20.840
+Boom, we can do it live.
+
+00:08:21.220 --> 00:08:23.580
+So I want to talk about PyLeak, P
+
+00:08:23.580 --> 00:08:24.200
+-Y-L
+
+00:08:24.200 --> 00:08:24.920
+-E-A-K.
+
+00:08:25.380 --> 00:08:33.760
+For like a memory leak, but instead of checking for memory leaks, what it looks for is asyncio tasks, threads, and event loop leaks.
+
+00:08:34.200 --> 00:08:34.419
+Okay.
+
+00:08:34.539 --> 00:08:34.659
+Right?
+
+00:08:34.880 --> 00:08:53.200
+So if I run, if I call a function that's asynchronous, and I think it is synchronous, but I call it without assigning it to a variable or awaiting or anything like that, that just creates the coroutine and the unexecuted coroutine just chills there until it gets cleaned up and it doesn't actually run that operation, right?
+
+00:08:53.500 --> 00:08:54.220
+Not good.
+
+00:08:54.520 --> 00:08:55.780
+So that's what this library is about.
+
+00:08:56.020 --> 00:08:58.240
+It's about detecting those types of things.
+
+00:08:58.460 --> 00:09:00.380
+So let's go look at some examples.
+
+00:09:00.960 --> 00:09:04.060
+So you can do context managers.
+
+00:09:04.270 --> 00:09:07.240
+You can say async with no task leaks.
+
+00:09:07.730 --> 00:09:17.260
+And then if you somewhere within the execution of that context block, if you do that and you somehow call an async function, but you don't await it.
+
+00:09:17.540 --> 00:09:21.200
+Like, for example, here they say async io.createTask given a sleep.
+
+00:09:21.580 --> 00:09:22.780
+That will come up as an error.
+
+00:09:23.040 --> 00:09:24.620
+It can either be a warning or an exception.
+
+00:09:24.820 --> 00:09:28.240
+If you want it to break the build in a test, you can say treat as errors.
+
+00:09:28.720 --> 00:09:32.560
+And it'll say, look, you called this function and you didn't wait for it.
+
+00:09:32.880 --> 00:09:33.800
+And tying
+
+00:09:33.800 --> 00:09:37.900
+this back to what you were just talking about, Brian, you can say with no thread leaks.
+
+00:09:38.280 --> 00:09:48.100
+And if you create a thread and start it, but you don't hang on to it as a variable, then it'll tell you like, hey, you're no longer in control of this thread.
+
+00:09:48.640 --> 00:09:49.740
+This could be a problem, right?
+
+00:09:50.060 --> 00:09:55.500
+So basically, I imagine it's probably the thread kept running on the other side of that context manager.
+
+00:09:55.660 --> 00:09:56.360
+I'm not entirely sure.
+
+00:09:56.580 --> 00:09:58.840
+You can also do that for event loop blocking, right?
+
+00:10:00.080 --> 00:10:02.620
+And the event loop is the asyncio event loop, right?
+
+00:10:02.680 --> 00:10:03.520
+So this
+
+00:10:03.520 --> 00:10:04.740
+one's actually really interesting.
+
+00:10:05.040 --> 00:10:12.940
+It's if you're doing blocking work in an asyncio event loop, that itself should be asyncio aware, right?
+
+00:10:13.120 --> 00:10:23.280
+If I'm calling an HTTP endpoint for some kind of external service, I should probably be using HTTPX's async client, not request
+
+00:10:23.280 --> 00:10:25.000
+get, which means
+
+00:10:25.000 --> 00:10:32.740
+basically it says like I'm doing an IO thing, but it's blocking because I'm not using the AIO native version of it, right?
+
+00:10:32.860 --> 00:10:33.500
+And
+
+00:10:33.500 --> 00:10:42.960
+so the example here is like if you call time.sleep when you're checking for no blocking, that's an error because you should be using AIO.sleep, which you await.
+
+00:10:42.960 --> 00:10:45.720
+and allows other work to happen at the same time, right?
+
+00:10:46.140 --> 00:10:54.320
+So basically it clogs up the entire AIO processing across all of the multi-concurrent contexts.
+
+00:10:54.540 --> 00:10:58.720
+They're not threads, but like, right, the stuff that can run side by side, it blocks it.
+
+00:10:58.780 --> 00:10:59.840
+So this will detect that.
+
+00:11:00.040 --> 00:11:00.700
+That's really cool.
+
+00:11:01.040 --> 00:11:02.180
+Yeah, this is a really neat library.
+
+00:11:02.280 --> 00:11:03.000
+There's a bunch more stuff.
+
+00:11:03.040 --> 00:11:04.180
+You can do this as decorators.
+
+00:11:04.660 --> 00:11:06.320
+You can get detailed stack traces.
+
+00:11:06.720 --> 00:11:10.640
+It'll show you like details about what has happened here.
+
+00:11:10.940 --> 00:11:15.840
+Like there's a leak task called task two on line nine of this example.
+
+00:11:15.960 --> 00:11:19.520
+And it shows you the code of what happened and so on.
+
+00:11:19.820 --> 00:11:22.100
+Yeah, lots of different things going on here.
+
+00:11:22.100 --> 00:11:24.120
+I don't want to go into like too much detail.
+
+00:11:24.340 --> 00:11:26.040
+So I've kind of gone on and on about it.
+
+00:11:26.100 --> 00:11:28.300
+But it's not just a single thing.
+
+00:11:28.460 --> 00:11:29.900
+This is a pretty comprehensive library.
+
+00:11:30.080 --> 00:11:30.560
+And I like it.
+
+00:11:30.680 --> 00:11:31.260
+I like it a lot.
+
+00:11:32.140 --> 00:11:40.280
+I reached out to the rough folks and said it would be really great if you could detect when there's an async function that's called that wasn't awaited.
+
+00:11:40.480 --> 00:11:42.160
+And they said, that really sounds great.
+
+00:11:42.920 --> 00:11:45.880
+We have or are considering it, but it's really hard to do.
+
+00:11:46.180 --> 00:11:54.400
+And so, you know, maybe you could just throw this in here as like one more thing and set the error version and then run pytest and see what happens, you know?
+
+00:11:54.600 --> 00:11:54.780
+Yeah.
+
+00:11:55.040 --> 00:11:57.840
+So seeing, I'm just curious how you would use this.
+
+00:11:58.000 --> 00:12:10.840
+I would expect, especially as you're building up an application, especially if it's maybe all the time, but maybe your first time doing an async application just to make sure that you're doing things right, putting some of these around, decorators
+
+00:12:10.840 --> 00:12:11.480
+around some of
+
+00:12:11.480 --> 00:12:13.160
+your methods within your code.
+
+00:12:14.500 --> 00:12:19.520
+Would you, once you have things production ready, would you take this stuff out or would you leave it in place?
+
+00:12:19.820 --> 00:12:20.180
+Just to.
+
+00:12:21.340 --> 00:12:24.580
+I think I might put it in a unit test, but take it out of production.
+
+00:12:24.980 --> 00:12:25.340
+Okay.
+
+00:12:25.640 --> 00:12:26.380
+Probably what I would do.
+
+00:12:26.830 --> 00:12:39.960
+You know, the area where this really helps is, it's helpful when you're creating a new project, but when you're creating a new project, you're in the mindset of, I'm going to call a function, oh, it's async, and you're actively working on that code, unless you're vibe coding, then all bets are off.
+
+00:12:40.120 --> 00:12:48.100
+But if you're legitimately working on it, then you're like in the flow, and your editor ideally gives you a little warning about those kinds of things.
+
+00:12:48.500 --> 00:12:54.400
+However, what this really helps is if you're converting from a synchronous situation to an async one.
+
+00:12:54.800 --> 00:12:55.460
+Like, for example,
+
+00:12:55.580 --> 00:13:19.580
+when I converted the Talk Python code from synchronous pyramid to async court, which is basically async flask, there was a few places I messed up there's so much code and there's all these functions are called and you look at the code and it looks fine. But if you convert that function from sync to async, but you forget to find every place you're using it and add in a wait, then that's, that's when this happens.
+
+00:13:20.000 --> 00:13:26.680
+So does it, what happens in like the, so does it work anyway? It's just slower or what happens?
+
+00:13:28.220 --> 00:13:38.600
+So for the thread one, it may work anyway, but like the async one, the async task one, Maybe, maybe not, because if you don't await it, it doesn't actually execute.
+
+00:13:39.160 --> 00:13:39.420
+Yeah.
+
+00:13:39.780 --> 00:13:39.880
+Right.
+
+00:13:39.920 --> 00:13:44.240
+You create the co-routine, but then it's the awaiting of it that actually makes it go.
+
+00:13:45.020 --> 00:13:45.240
+And
+
+00:13:45.240 --> 00:13:51.020
+so if you said like, log this message asynchronously, but you don't await it, it's never going to log it.
+
+00:13:51.280 --> 00:13:51.540
+Right.
+
+00:13:51.960 --> 00:13:54.160
+Maybe if you call create task, it might start.
+
+00:13:54.160 --> 00:13:54.420
+I don't know.
+
+00:13:54.580 --> 00:13:56.320
+There's like some different ways in which it could be done.
+
+00:13:56.880 --> 00:14:04.700
+No, but this is, this is great to have some, I feel like this is like what scaffolding or training wheels or something to put on stuff just to make sure.
+
+00:14:04.740 --> 00:14:05.920
+that things are running right.
+
+00:14:06.200 --> 00:14:06.580
+This is good.
+
+00:14:06.820 --> 00:14:08.320
+Yeah, it's definitely, definitely good.
+
+00:14:08.720 --> 00:14:08.900
+Cool.
+
+00:14:09.140 --> 00:14:09.660
+What else is good?
+
+00:14:10.320 --> 00:14:11.760
+Authentication that you don't have to deal with is good.
+
+00:14:12.060 --> 00:14:13.000
+Yes, it is.
+
+00:14:13.500 --> 00:14:16.640
+So on that note, we want to thank PropelOth.
+
+00:14:16.960 --> 00:14:19.180
+So this episode is sponsored by PropelOth.
+
+00:14:19.460 --> 00:14:23.880
+PropelOth is the easiest way to turn authentication into your advantage.
+
+00:14:24.420 --> 00:14:29.740
+For B2B SaaS companies, great authentication is non-negotiable, but it can often be a hassle.
+
+00:14:30.020 --> 00:14:33.160
+With PropelOth, it's more than just functional, it's powerful.
+
+00:14:33.660 --> 00:14:41.140
+PropelAuth comes with tools like managed UIs, enterprise SSO, robust user management features, and actionable insights.
+
+00:14:41.560 --> 00:14:47.580
+As your product grows, PropelAuth adapts with it supporting more advanced authentication features.
+
+00:14:47.980 --> 00:14:54.640
+And the best part, PropelAuth has native support for major Python libraries like FastAPI, Flask, and Django.
+
+00:14:54.900 --> 00:14:57.120
+You can easily integrate them into your product.
+
+00:14:57.460 --> 00:15:01.460
+When auth is effortless, your team can focus on scaling, not troubleshooting.
+
+00:15:02.080 --> 00:15:05.920
+That means more releases, happier customers, and more growth for your business.
+
+00:15:06.320 --> 00:15:07.980
+Check them out to get started today.
+
+00:15:08.360 --> 00:15:10.340
+The link is in your podcast player's show notes.
+
+00:15:10.740 --> 00:15:18.060
+It's a clickable chapter URL as you're hearing this segment, and it's at the top of the episode page at pythonbytes.fm.
+
+00:15:18.280 --> 00:15:21.020
+Thank you to PropelAuth for supporting Python Bytes.
+
+00:15:21.260 --> 00:15:21.840
+Yes, indeed.
+
+00:15:21.960 --> 00:15:23.480
+Thanks, PropelAuth.
+
+00:15:23.780 --> 00:15:28.660
+And I would like to point out, Brian, that all of the chapters are clickable.
+
+00:15:29.120 --> 00:15:33.460
+So I don't know if everyone even knows that most of our episodes have chapters.
+
+00:15:33.950 --> 00:15:37.480
+If they don't, that's usually because I forgot somehow, which is not the case.
+
+00:15:37.900 --> 00:15:43.080
+But every item on there for the chapters is also a link to the main resource of whatever.
+
+00:15:43.260 --> 00:15:47.780
+Like, for example, the PyLeak one will link to the PyLeak GitHub repo if you click it.
+
+00:15:47.920 --> 00:15:57.120
+And I don't like people to skip on us, but I mean, I understand if we're talking about a topic that you really don't care about, that's one of the cool things about the chapter markers.
+
+00:15:57.320 --> 00:15:59.440
+You can just skip to the next topic or something.
+
+00:15:59.840 --> 00:16:03.300
+Yeah, or if you've heard it four times, you're like, yeah, this is the seventh time I've heard about this library.
+
+00:16:03.620 --> 00:16:04.120
+You can skip
+
+00:16:04.120 --> 00:16:04.580
+it if you want.
+
+00:16:04.800 --> 00:16:05.280
+I mean, the show is
+
+00:16:05.280 --> 00:16:06.980
+pretty short, but still.
+
+00:16:08.580 --> 00:16:09.600
+Nonetheless, nonetheless.
+
+00:16:09.840 --> 00:16:17.840
+All right, let's talk about the thing that I was going to talk about first, but kicked it down the line, which is typed FFmpeg.
+
+00:16:18.180 --> 00:16:18.360
+Okay.
+
+00:16:18.520 --> 00:16:25.820
+So I don't know if folks know, but FFmpeg is a command line CLI video processing masterpiece.
+
+00:16:26.180 --> 00:16:28.100
+It is a beast of a library.
+
+00:16:29.090 --> 00:16:38.840
+And it's actually what I use for the Talk Python training courses to generate all these different versions and resolutions and streaming styles and stuff.
+
+00:16:39.020 --> 00:16:42.200
+And we had, let's say, a five-hour course.
+
+00:16:42.300 --> 00:16:48.740
+Probably turn FFmpeg loose on the videos for, I don't know, 15, 20 hours, something like that, and just let it grind
+
+00:16:48.740 --> 00:16:50.260
+on my Apple Silicon.
+
+00:16:50.660 --> 00:16:53.160
+And I've got a whole bunch of automation to make that happen, which is cool.
+
+00:16:53.600 --> 00:16:56.020
+It would be easier if this existed, probably.
+
+00:16:56.840 --> 00:17:04.720
+So this typed FFmpeg is a Python wrapper that supports working with filters and typing for FFmpeg.
+
+00:17:05.199 --> 00:17:06.280
+So pretty neat.
+
+00:17:06.449 --> 00:17:08.240
+And it's kind of like PyLeak.
+
+00:17:08.240 --> 00:17:10.500
+It's more comprehensive than you would imagine.
+
+00:17:10.920 --> 00:17:18.640
+So this one offers a modern Pythonic interface to FFmpeg, providing extensive support for complex filters with pictures.
+
+00:17:19.120 --> 00:17:30.600
+It's inspired by FFmpeg-Python, But this one enhances that functionality with autocomplete, comprehensive type information, JSON serialization, and so on.
+
+00:17:30.760 --> 00:17:36.600
+So like if you look at the repo they show you, if you type ffmpeg.input.
+
+00:17:37.600 --> 00:17:43.300
+And then down comes a huge list of things with stunning documentation and type information.
+
+00:17:43.500 --> 00:17:44.260
+I mean, look at that, Brian.
+
+00:17:44.400 --> 00:17:46.080
+That's pretty nice there, right?
+
+00:17:46.440 --> 00:17:47.360
+Yeah, it really is.
+
+00:17:47.640 --> 00:17:48.800
+Yeah, I was really surprised.
+
+00:17:48.960 --> 00:17:54.180
+So it comes with zero dependencies, comprehensive filter support, robust typing.
+
+00:17:54.720 --> 00:17:56.040
+You know, that's the point of it, basically.
+
+00:17:56.740 --> 00:17:59.500
+Graph visualization, which I was talking about, hinting at.
+
+00:17:59.760 --> 00:18:03.760
+Partial evaluation, media file analysis, and a bunch of things.
+
+00:18:03.980 --> 00:18:05.240
+So easy to use.
+
+00:18:05.400 --> 00:18:14.680
+It shows you how you can, you know, if you wanted to flip a video horizontally and then output it, you can see a little graph of input, and then it applies all the operations.
+
+00:18:14.840 --> 00:18:18.500
+There's an H flip operation in the graph, and then there's an output to the file.
+
+00:18:18.840 --> 00:18:19.300
+You get it
+
+00:18:19.300 --> 00:18:20.020
+more
+
+00:18:20.020 --> 00:18:20.420
+and more.
+
+00:18:20.880 --> 00:18:26.140
+I know this is like, you get even that interactive playground where you can drag and drop the filter bits together.
+
+00:18:26.679 --> 00:18:27.080
+What?
+
+00:18:27.500 --> 00:18:28.000
+I know.
+
+00:18:28.180 --> 00:18:30.180
+I'm telling you, it's way more than you would expect.
+
+00:18:30.520 --> 00:18:33.500
+So yeah, really neat to visualize what's happening.
+
+00:18:33.820 --> 00:18:37.980
+And yeah, I don't do this kind of stuff where I'm like creating really complex graphs.
+
+00:18:38.240 --> 00:18:41.920
+It's more like format conversion, resolution conversion stuff that I use it for.
+
+00:18:42.120 --> 00:18:45.900
+But yeah, if you do a lot with FFMPEG and you do stuff with video, check this out.
+
+00:18:46.140 --> 00:18:49.620
+If you pay hundreds or thousands of dollars providers to
+
+00:18:49.620 --> 00:18:49.840
+like
+
+00:18:49.840 --> 00:19:05.280
+re-encode video for you you definitely want to check this out oh okay yeah it might be might be saving a lot of money i used to use aws they've got some video processing api sort of thing and eventually it was cecil phillip actually that convinced me i should just do ffmpeg
+
+00:19:05.280 --> 00:19:08.740
+yeah it was probably just calling ffmpeg in the background i'm
+
+00:19:08.740 --> 00:19:09.760
+sure that they are which is
+
+00:19:09.760 --> 00:19:13.220
+crazy right yeah i
+
+00:19:13.220 --> 00:19:17.460
+mean it's a little bit faster if they do it but you know what I only do it once per course.
+
+00:19:17.640 --> 00:19:18.280
+It's not very often.
+
+00:19:18.580 --> 00:19:25.160
+Well, I guess if you're doing all of your courses for like 15 hours, I get why you have to pay people to do that.
+
+00:19:25.420 --> 00:19:26.220
+But, you know, whatever.
+
+00:19:26.480 --> 00:19:26.660
+Yeah.
+
+00:19:27.020 --> 00:19:27.060
+Cool.
+
+00:19:27.340 --> 00:19:27.460
+Yep.
+
+00:19:28.140 --> 00:19:31.560
+If you use good caching, then life is much easier.
+
+00:19:31.700 --> 00:19:34.300
+You can just rerun it if you add a new video to re-encode the whole thing.
+
+00:19:34.380 --> 00:19:34.480
+I
+
+00:19:34.480 --> 00:19:34.960
+love cache.
+
+00:19:35.300 --> 00:19:35.860
+I do too.
+
+00:19:36.460 --> 00:19:36.960
+Over to you.
+
+00:19:37.840 --> 00:19:40.620
+I was going to talk about, what am I going to talk about?
+
+00:19:40.900 --> 00:19:43.140
+I'm going to talk about pytest.
+
+00:19:43.520 --> 00:19:45.040
+I kind of like pytest, actually.
+
+00:19:45.340 --> 00:19:46.320
+You don't say.
+
+00:19:47.220 --> 00:19:49.680
+It's a fun article by Tim Kaminen.
+
+00:19:50.160 --> 00:19:56.020
+And this is short, so I almost put it as a second, like an extra, but it's just really cool.
+
+00:19:56.760 --> 00:20:03.860
+So his article is optimizing test execution, and it's running live server tests last with pytest.
+
+00:20:04.120 --> 00:20:09.920
+Okay, so this is about testing websites, using the live server fixture.
+
+00:20:10.860 --> 00:20:17.120
+And so if you're using that, we're using Playwright or Selenium, that's definitely, this is definitely for you.
+
+00:20:17.390 --> 00:20:36.860
+But also really if you have, the techniques in this are really cool for, even if you're just having, if you have any other, like if you have a test suite that's, there's some slow parts and it's slow because of some fixture that you're using, like some external resource or whatever, any test that uses that is a little slower.
+
+00:20:37.280 --> 00:20:38.520
+You can use the same technique.
+
+00:20:38.840 --> 00:20:40.060
+So I just want to preface that.
+
+00:20:40.640 --> 00:20:44.100
+So why run slow tests last?
+
+00:20:44.400 --> 00:20:45.980
+Why does he want to run them last?
+
+00:20:46.360 --> 00:20:49.560
+Well, for efficiency, you get faster feedback for unit tests.
+
+00:20:50.520 --> 00:20:53.300
+That allows you to, faster feedback for the fast tests.
+
+00:20:53.780 --> 00:20:55.120
+I don't know why he puts unit tests.
+
+00:20:55.180 --> 00:20:56.160
+It could be any fast test.
+
+00:20:56.700 --> 00:20:59.480
+Allows you to catch and fix issues easier, faster.
+
+00:20:59.820 --> 00:21:00.560
+You're not waiting for them.
+
+00:21:00.800 --> 00:21:10.640
+Also, resource management keeps resources consumed by slow tests, like database connections, external services and stuff, not tied up through the whole test.
+
+00:21:10.680 --> 00:21:11.960
+So keeping those isolated
+
+00:21:11.960 --> 00:21:12.260
+at the
+
+00:21:12.260 --> 00:21:12.420
+end.
+
+00:21:12.640 --> 00:21:13.360
+Totally makes sense.
+
+00:21:13.940 --> 00:21:15.240
+So how do we do this?
+
+00:21:16.140 --> 00:21:23.980
+Well, he's talking about installing pytest Playwright, which also is a great plugin to drive web tests using pytest.
+
+00:21:25.240 --> 00:21:26.140
+And pytest Django.
+
+00:21:26.310 --> 00:21:29.620
+So this application is running a Django app.
+
+00:21:30.470 --> 00:21:34.120
+And then using, so his tests are using Live Server.
+
+00:21:34.210 --> 00:21:34.840
+So what does he do?
+
+00:21:35.440 --> 00:21:39.280
+He's adding a new marker, an E2E marker for end-to-end.
+
+00:21:39.580 --> 00:21:43.200
+But he's not actually marking anything with that manually.
+
+00:21:43.920 --> 00:21:47.480
+he comes by and uses one of the pytest's lovely hook functions.
+
+00:21:48.040 --> 00:21:50.020
+And this one is collect modify items.
+
+00:21:50.440 --> 00:21:51.720
+And it's sort of an oddball.
+
+00:21:51.820 --> 00:21:54.900
+So it's good to have like some easy examples like that.
+
+00:21:55.120 --> 00:22:01.260
+What this does is it goes through all your tests and looks for all of them that are using the live server fixture.
+
+00:22:01.660 --> 00:22:03.700
+And then it does a couple things.
+
+00:22:04.140 --> 00:22:06.040
+He's adding the marker E to E.
+
+00:22:06.280 --> 00:22:14.020
+So adding the end to end marker to all of the tests that use live server, It really, it was, you could do live server marker.
+
+00:22:14.050 --> 00:22:15.620
+You could do any marker name you want.
+
+00:22:15.920 --> 00:22:17.100
+But why do we do that?
+
+00:22:17.300 --> 00:22:18.060
+I'll get to that later.
+
+00:22:18.880 --> 00:22:20.820
+So he's adding the marker to the slower tests.
+
+00:22:21.300 --> 00:22:27.900
+And then he's splitting them up and running all the other tests first and then the live server test second.
+
+00:22:28.050 --> 00:22:38.160
+And that's really kind of the trick about pytest Collect Modify Items is the way to either you can bail on some tests or you can reorder them.
+
+00:22:38.860 --> 00:22:40.920
+and he's using the reorder.
+
+00:22:41.220 --> 00:22:45.720
+But since we're having to loop through all of them anyway, he's using that to add the marker.
+
+00:22:46.080 --> 00:22:48.600
+And then, so why do that?
+
+00:22:48.820 --> 00:22:52.900
+Well, he's got a little example with a slow one or fast one.
+
+00:22:53.220 --> 00:22:57.900
+But you can use that marker then and say, you know what, I'm debugging a unit test.
+
+00:22:57.970 --> 00:22:59.620
+I don't want the live servers ones to run.
+
+00:22:59.860 --> 00:23:02.500
+So you can say, hey, don't run the end-to-end ones.
+
+00:23:02.500 --> 00:23:08.460
+You can say pytest-sm, not ed, and that will run all of your tests that are not using a live server.
+
+00:23:08.800 --> 00:23:13.160
+And that's a cool use of markers, auto automatically applying markers.
+
+00:23:13.360 --> 00:23:13.920
+It's a cool thing.
+
+00:23:14.640 --> 00:23:22.460
+And then also, for example, you can if you just want to run the live server ones, you can, you know, say E dash M E as well.
+
+00:23:22.740 --> 00:23:30.680
+So a really fun little example of how to automate pushing your slow test to the end and being able to select them or not select them.
+
+00:23:30.980 --> 00:23:32.460
+I love I love this idea.
+
+00:23:32.980 --> 00:23:34.640
+Something I think I might adopt it.
+
+00:23:35.840 --> 00:23:36.180
+That's nice.
+
+00:23:36.440 --> 00:23:41.760
+Also, gentle introduction to hook functions, because hook functions can be a little scary.
+
+00:23:42.200 --> 00:23:50.260
+And something simple like reordering your tests doesn't seem like it'd be simple, but it's only, what, 13 lines of code, including a comment, some blank lines.
+
+00:23:50.420 --> 00:23:50.860
+It's not bad.
+
+00:23:51.280 --> 00:23:52.500
+Yeah, that's not too bad at all.
+
+00:23:52.760 --> 00:23:52.940
+Okay.
+
+00:23:53.260 --> 00:23:54.340
+Yeah, I'm definitely going to look at this,
+
+00:23:54.420 --> 00:24:00.560
+because I've got some tests that are blazing fast and some that are pretty slow for the various web apps I got.
+
+00:24:00.740 --> 00:24:00.840
+So,
+
+00:24:01.160 --> 00:24:01.400
+yeah, I'll check
+
+00:24:01.400 --> 00:24:01.600
+it out.
+
+00:24:01.680 --> 00:24:11.400
+I don't use live server or any of those things, but, you know, it's like I want to get the sitemap and then call a representative subset of things within there just to make sure it's all hanging together.
+
+00:24:11.640 --> 00:24:12.740
+That's definitely an E-to-E test.
+
+00:24:13.240 --> 00:24:27.920
+Well, and also like, so I see a lot of cases if somebody is using a database connection, they'll have like, or, you know, using a database to, even if it's just a mock database or a small one, but they've got a whole bunch of test data that they filled in.
+
+00:24:28.320 --> 00:24:31.680
+And maybe it's not really slow, but it's slower than their other stuff.
+
+00:24:32.400 --> 00:24:38.440
+It's often accessed via a fixture, and you can easily select the tests that use that fixture.
+
+00:24:38.720 --> 00:24:39.200
+It's pretty cool.
+
+00:24:40.040 --> 00:24:48.720
+The other thing I brought this up by because is I want to make sure everybody, I mean, yes, I write about pytest a lot, but I like other people to write about it too.
+
+00:24:49.000 --> 00:24:54.480
+So please, if you've written some cool pytest documentation, send them to me.
+
+00:24:55.660 --> 00:24:55.920
+Indeed.
+
+00:24:56.340 --> 00:24:56.720
+Looks good.
+
+00:24:57.080 --> 00:24:57.440
+All right.
+
+00:24:57.520 --> 00:24:58.840
+Let's jump over to some extras.
+
+00:24:59.400 --> 00:24:59.820
+All right.
+
+00:25:00.080 --> 00:25:05.260
+We have a new course at Talk Python Training, and this is the very first announcement for it.
+
+00:25:05.400 --> 00:25:06.120
+I haven't even got
+
+00:25:06.120 --> 00:25:16.100
+a chance to send out email about this, but Vincent Bormerdom, who's been on Python Bytes before, created a short LLM building blocks for Python course.
+
+00:25:16.540 --> 00:25:19.680
+And so this isn't like prompt engineering or anything like that.
+
+00:25:19.840 --> 00:25:26.300
+It's like, what are some good libraries you can use to build code that uses LLMs for various things?
+
+00:25:26.460 --> 00:25:27.540
+How do you get structured output?
+
+00:25:27.770 --> 00:25:35.620
+Like, for example, how can you use Pydantic to communicate to the LLM how it should speak to you in a JSON response instead of a text response?
+
+00:25:36.170 --> 00:25:36.280
+Stuff
+
+00:25:36.280 --> 00:25:36.700
+like that.
+
+00:25:37.000 --> 00:25:37.460
+Yeah, super
+
+00:25:37.460 --> 00:25:37.640
+neat.
+
+00:25:37.920 --> 00:25:39.160
+So check the course out.
+
+00:25:39.280 --> 00:25:41.720
+It's just 19 bucks over at Talk Python Training.
+
+00:25:41.900 --> 00:25:44.240
+Just go to Courses or go to talkpython.fm.
+
+00:25:44.400 --> 00:25:44.940
+Click on Courses.
+
+00:25:45.090 --> 00:25:47.180
+It'll be right there at the top of the new courses list.
+
+00:25:47.400 --> 00:25:47.920
+So check that out.
+
+00:25:48.100 --> 00:25:49.120
+That's super exciting.
+
+00:25:49.360 --> 00:25:58.380
+Also, over at Talk Python, I've done this thing called deep dives where it goes into a particular episode and you can look at it.
+
+00:25:58.480 --> 00:26:12.920
+It'll tell you like background on the guests, background on important concepts you might want to learn to like get a better sense of understanding what's going on or, you know, diving extra details into each of the things we've spoken about and so on.
+
+00:26:13.300 --> 00:26:21.900
+So the news is I have finished a long journey of getting one of those deep dive analysis for every Talk Python episode for the last 10 years.
+
+00:26:22.300 --> 00:26:25.760
+And the result is 600,000 words of analysis.
+
+00:26:26.060 --> 00:26:28.980
+If you were to go through and read them all, it's 4.5 million characters.
+
+00:26:29.840 --> 00:26:31.080
+That's a lot of content.
+
+00:26:31.460 --> 00:26:46.560
+But that makes the search over there better because if you search, that now includes basically the search engine considers the deep dive as part of the episode and looks for content within there, not just within what I put in the show notes and so on.
+
+00:26:46.800 --> 00:26:47.740
+So really, really cool.
+
+00:26:48.160 --> 00:26:48.860
+Super proud of that.
+
+00:26:49.000 --> 00:26:51.760
+That was a lot of work, but it is now done.
+
+00:26:52.220 --> 00:26:56.680
+So I wrote a little article about that and I'll link to it if you're more interested than what I just said.
+
+00:26:56.880 --> 00:26:57.020
+Nice.
+
+00:26:57.380 --> 00:26:59.060
+Also, remember I had a rant.
+
+00:26:59.080 --> 00:27:04.120
+I even named last week's episode, stop putting your dot folders in my tilde dash or tilde slash
+
+00:27:04.120 --> 00:27:04.680
+or
+
+00:27:04.680 --> 00:27:04.900
+whatever.
+
+00:27:05.620 --> 00:27:12.880
+Well, Eric Mesa said, hey, the places to store dot files is defined by the XDG standard on Linux.
+
+00:27:13.200 --> 00:27:17.820
+Because remember, it's like I was winging about doing this to my macOS setup.
+
+00:27:18.540 --> 00:27:22.960
+And, you know, Windows is even worse because the dot files and folders are not even hidden, right?
+
+00:27:23.240 --> 00:27:24.720
+But what about Linux?
+
+00:27:24.900 --> 00:27:28.420
+Well, this XDG standard speaks to that.
+
+00:27:29.140 --> 00:27:33.320
+And so I even did a little, put together a little cheat sheet on it or whatever.
+
+00:27:33.760 --> 00:27:36.820
+So put stuff in your, you know, where do the config files go?
+
+00:27:36.900 --> 00:27:41.740
+Well, they go in home slash, you know, like tilde, whatever your dollar home is, right?
+
+00:27:41.820 --> 00:27:43.620
+Basically tilde slash dot config.
+
+00:27:43.920 --> 00:27:46.180
+So maybe dot config slash my app, some settings.
+
+00:27:46.720 --> 00:27:51.880
+Or there's a cache folder and then you put it into the dot cache in there.
+
+00:27:52.140 --> 00:27:59.760
+There's still a few dot folders in your repo, but not one for every single application you happen to have run or something has run for you.
+
+00:28:00.120 --> 00:28:00.720
+So this is kind of cool.
+
+00:28:01.200 --> 00:28:01.940
+People can check it out.
+
+00:28:02.140 --> 00:28:02.320
+There's
+
+00:28:02.320 --> 00:28:04.140
+a lot of details I've put together here.
+
+00:28:04.220 --> 00:28:11.020
+And even a way to use this XDG library, which is right here somewhere, and Python, how to use it.
+
+00:28:11.320 --> 00:28:13.140
+So, or actually just a function you can use.
+
+00:28:13.260 --> 00:28:13.640
+But pretty cool.
+
+00:28:13.840 --> 00:28:14.500
+That's pretty cool.
+
+00:28:15.420 --> 00:28:17.580
+Any idea what XDG stands for?
+
+00:28:17.860 --> 00:28:18.140
+Zero.
+
+00:28:20.600 --> 00:28:21.300
+Yeah, I
+
+00:28:21.300 --> 00:28:22.300
+have zero idea.
+
+00:28:22.880 --> 00:28:23.820
+Okay, that's
+
+00:28:23.820 --> 00:28:23.960
+fine.
+
+00:28:24.640 --> 00:28:25.960
+we'll look it up for next time.
+
+00:28:25.960 --> 00:28:26.660
+I did look it up
+
+00:28:26.660 --> 00:28:29.120
+as part of like putting that little cheat sheet thing together.
+
+00:28:29.440 --> 00:28:31.160
+But then it was last week and I forgot.
+
+00:28:32.560 --> 00:28:33.160
+Yeah, that's me.
+
+00:28:35.020 --> 00:28:35.180
+Okay.
+
+00:28:35.580 --> 00:28:36.200
+Is that your extras?
+
+00:28:36.700 --> 00:28:37.380
+No, I got a couple more.
+
+00:28:37.620 --> 00:28:37.920
+I'll go quick.
+
+00:28:37.980 --> 00:28:38.180
+Okay.
+
+00:28:38.980 --> 00:28:40.820
+Every time I think, you know, are you a fan of Scarface?
+
+00:28:40.980 --> 00:28:41.860
+You watch that when you're younger?
+
+00:28:42.940 --> 00:28:43.780
+No, this is a godfather.
+
+00:28:43.900 --> 00:28:44.600
+Sorry, this is a godfather.
+
+00:28:44.640 --> 00:28:44.720
+This is a godfather.
+
+00:28:44.720 --> 00:28:44.740
+This is a godfather.
+
+00:28:46.360 --> 00:28:47.000
+This is a godfather.
+
+00:28:47.760 --> 00:28:48.380
+This is a godfather.
+
+00:28:54.040 --> 00:29:29.240
+that's me and open the pro version of open ai i thought like okay i'm just gonna go back to being a regular normal user this thing and then no they go and release o3 pro so i'm like i gotta have to pay the ridiculous money to try that out again because it it's really worth it although i will say i'll take one for the team here i will say o1 pro was incredible and it's starting to be phased out i don't know how much longer it'll last o3 pro does not seem nearly as good to me not not even close i don't know why o3 is pretty good but so maybe i'll i'm considering going back to a regular user again. But every time I'm out, Brian, pull me right back in. Okay.
+
+00:29:30.420 --> 00:29:41.940
+Another one, this is dynamic. When I wrote it down, it was 17. Right now it's 20. But Python Bytes is the 20th most popular tech news podcast in the world. According to good pods. Okay.
+
+00:29:42.400 --> 00:29:49.560
+According to good pods, which is decent. And number one, developer news show period. How about that?
+
+00:29:50.540 --> 00:30:47.100
+developer not like also covers just tech or ai or whatever that's pretty cool so thanks good pods for pointing that out i used to use chartable but then spotify bought them and shut them down thanks spotify i think it was spotify i'm pretty sure they were definitely bought and shut down okay i want you anyone out there listening do not take action on this item until you hear the second follow-up item in this extra because it's important important on june 3rd python 3 13 4 was released. Hey, right, this is cool. Covered some CVEs that had to be fixed. So we quickly got things like tarball security issues that could be really bad if you process tarballs from external input. So you might think, I want to go install that. No, no, no. Just a few days later, hey, 3.13.5 is out because we had to quickly release this to fix an issue that was in 3.13.4.
+
+00:30:47.840 --> 00:30:48.060
+Okay.
+
+00:30:48.420 --> 00:30:59.780
+So make sure you get 3.13.5 if you have either 3.13.3 or 4 because 4 doesn't actually, I don't know what the actual issue was, but this one is like, oh my gosh, we've got to fix it again.
+
+00:31:00.220 --> 00:31:00.440
+That's it.
+
+00:31:00.440 --> 00:31:00.940
+Those are my extras.
+
+00:31:01.680 --> 00:31:02.100
+All right.
+
+00:31:02.400 --> 00:31:04.800
+I only have a couple, but let's pop over.
+
+00:31:05.380 --> 00:31:15.140
+So along the free threading topic, this was mentioned by what John Hagen sent this in.
+
+00:31:15.380 --> 00:31:20.180
+And this is from the python.org discussion thread.
+
+00:31:20.420 --> 00:31:26.660
+There's a discussion thread called the is free threading our only option.
+
+00:31:27.020 --> 00:31:31.300
+This is from Eric Snow, whose opinion I at least want to listen to.
+
+00:31:31.600 --> 00:31:37.600
+So there's an interesting discussion about really about whether or not free threading is the only way to go.
+
+00:31:37.900 --> 00:31:43.720
+And he does mention he's not recommending to not support free threading, but there's other things to think.
+
+00:31:43.920 --> 00:31:45.440
+So I'm just going to drop this link.
+
+00:31:46.760 --> 00:31:47.960
+It's kind of a long
+
+00:31:47.960 --> 00:31:51.220
+discussion, but it's an interesting read.
+
+00:31:51.400 --> 00:31:56.220
+Yeah, it's also noteworthy that Eric Snow did a ton of the work on sub-interpreters.
+
+00:31:56.760 --> 00:32:01.000
+Yeah, and that's part of it is talking around sub-interpreters.
+
+00:32:01.340 --> 00:32:20.540
+And some of the interesting discussions here, like one of the things popped down that I thought from Antoine Petrou, and he's the maintainer py arrow, says, just as a data point, our library supports free-threaded Python, but I've not even looked at sub-interpreters.
+
+00:32:20.960 --> 00:32:32.000
+So, and I kind of, I know that it's going to be complicated to, or at least it might be complicated to think about free threading, but thinking about subinterpreters blows my brain up.
+
+00:32:32.360 --> 00:32:34.240
+So I'm not thinking about them at all.
+
+00:32:34.520 --> 00:32:35.440
+What if you could have
+
+00:32:35.440 --> 00:32:36.840
+each thread have its own subinterpreter?
+
+00:32:37.420 --> 00:32:37.940
+How about that?
+
+00:32:38.500 --> 00:32:39.880
+Or multiple subinterpreters.
+
+00:32:40.260 --> 00:32:40.660
+I don't know.
+
+00:32:41.840 --> 00:32:44.460
+Or each subinterpreters have its own multiple threads.
+
+00:32:45.040 --> 00:32:45.200
+Sure.
+
+00:32:45.740 --> 00:32:47.480
+Yeah, hence the brain blowing up.
+
+00:32:47.700 --> 00:32:48.120
+Yeah, anyway.
+
+00:32:49.780 --> 00:32:51.380
+And another free threading topic.
+
+00:32:52.580 --> 00:32:55.440
+This is from Hugo von Kamanad.
+
+00:32:55.660 --> 00:32:58.200
+Free threaded Python in GitHub Actions.
+
+00:32:58.820 --> 00:33:01.460
+This is just, he actually released this in March.
+
+00:33:01.860 --> 00:33:05.240
+But this is really how to make sure.
+
+00:33:05.600 --> 00:33:14.860
+So we're encouraging people now to make sure with 3.14, at the very least with 3.14, to test free threading for their project.
+
+00:33:14.980 --> 00:33:31.840
+So if you have a third part, if you are a maintainer of a third party, basically if I can get your stuff via pip and it's got a library that I can use in other code, please test it for free threading and then tell people whether or not you're supporting free threading.
+
+00:33:32.420 --> 00:33:36.180
+And this discussion is how to do that within GitHub Actions.
+
+00:33:36.500 --> 00:33:42.960
+So a really great write up on how, and it's basically just add a T to the, it's not bad.
+
+00:33:43.160 --> 00:33:44.780
+So this isn't a lot of extra work.
+
+00:33:45.300 --> 00:33:48.780
+Indeed, not too much. All right. Well, you're ready for a joke.
+
+00:33:49.440 --> 00:33:49.540
+Yes.
+
+00:33:49.610 --> 00:33:49.980
+Close it
+
+00:33:49.980 --> 00:34:01.640
+out with an idea. So naming things is hard, right? There's the famous joke, which will introduce this joke is that there's two things in computer science that are hard.
+
+00:34:02.060 --> 00:34:05.060
+Naming things, cache and validation and off by one errors, right?
+
+00:34:05.380 --> 00:34:05.440
+Yeah.
+
+00:34:05.780 --> 00:34:14.280
+So this one comes from programming humor and it's a bit of a meme. It has two senior devs just like fighting, like, you know, literally wrestling, fighting away.
+
+00:34:14.720 --> 00:34:15.879
+It says here's a code review meeting.
+
+00:34:16.260 --> 00:34:22.720
+The variable name should be number to be updated, says one of the senior devs while she's throwing down the other senior dev.
+
+00:34:22.889 --> 00:34:24.679
+The variable name should be updated number.
+
+00:34:25.500 --> 00:34:34.240
+Meanwhile, the junior dev is sitting there eating popcorn, watching it go down while working on a new file with variable names such as AA1 and XYZ.
+
+00:34:37.120 --> 00:34:37.280
+Yeah.
+
+00:34:37.740 --> 00:34:38.340
+And I'm over here.
+
+00:34:38.340 --> 00:34:38.960
+Do you guys have naming?
+
+00:34:39.370 --> 00:34:40.280
+Do you have naming debates?
+
+00:34:40.500 --> 00:34:41.060
+Sorry, go ahead.
+
+00:34:41.300 --> 00:34:41.580
+You're over there.
+
+00:34:41.780 --> 00:34:41.980
+No,
+
+00:34:42.090 --> 00:34:44.220
+we use linters to do that.
+
+00:34:44.460 --> 00:34:45.620
+to do the argument for us.
+
+00:34:46.399 --> 00:34:50.240
+But I'm looking at this going, it's a camel case.
+
+00:34:50.389 --> 00:34:50.620
+It needs
+
+00:34:50.620 --> 00:34:51.100
+to be
+
+00:34:51.100 --> 00:34:51.320
+a
+
+00:34:51.320 --> 00:34:51.720
+snake case.
+
+00:34:51.899 --> 00:34:52.540
+What's up with this?
+
+00:34:52.620 --> 00:34:55.100
+It's got to be like a JavaScript or a C-sharp argument.
+
+00:34:57.640 --> 00:34:58.060
+And I'm one of the worst.
+
+00:34:58.060 --> 00:34:59.560
+We've got to get in or take them both down.
+
+00:35:00.720 --> 00:35:07.980
+I'm one of the worst whenever I see style guides getting written, which I always cringe when there's a new style guide in a team.
+
+00:35:08.340 --> 00:35:12.640
+But I always make sure to make sure that it complies.
+
+00:35:13.320 --> 00:35:31.140
+it's at least adds to and doesn't distract from actual like common practice in the rest of the industry and the other thing is for the short variable names uh that you you have to allow things like xyz for uh for and i i and j for loop variables and stuff
+
+00:35:31.140 --> 00:35:32.120
+although i do agree
+
+00:35:32.120 --> 00:35:38.200
+that using both i and j is evil because some fonts you can't really tell much of a difference between the too so
+
+00:35:38.200 --> 00:35:41.700
+yeah yeah but like for n in int you
+
+00:35:41.700 --> 00:35:42.140
+know like
+
+00:35:42.140 --> 00:35:49.780
+that's that's like steeped in historical math style like you know outside of programming right like
+
+00:35:49.780 --> 00:35:50.180
+yeah
+
+00:35:50.180 --> 00:35:51.640
+yeah and i've had people like x and
+
+00:35:51.640 --> 00:35:53.340
+y for algebra absolutely and
+
+00:35:53.340 --> 00:36:06.500
+then i've had people like uh gripe about using i as a variable like variable for a loop and i'm like that's just so common is like for i in this especially if it's not a nested loop, why not?
+
+00:36:06.900 --> 00:36:07.060
+Yeah.
+
+00:36:07.350 --> 00:36:08.420
+Well, have you done
+
+00:36:08.420 --> 00:36:09.520
+any C++?
+
+00:36:09.860 --> 00:36:10.020
+Come on.
+
+00:36:10.200 --> 00:36:11.320
+That's like one of the first things you do.
+
+00:36:11.480 --> 00:36:12.580
+Four and I
+
+00:36:12.580 --> 00:36:14.340
+equals zero.
+
+00:36:14.640 --> 00:36:16.200
+I++, I less than N.
+
+00:36:16.550 --> 00:36:18.760
+You index into the array because that's how it goes.
+
+00:36:19.160 --> 00:36:19.300
+Yeah.
+
+00:36:20.180 --> 00:36:20.600
+Anyway, well.
+
+00:36:21.400 --> 00:36:22.040
+So you don't invite
+
+00:36:22.040 --> 00:36:26.640
+me to your code review meeting because I'll be the grump in the background.
+
+00:36:27.240 --> 00:36:29.780
+Well, maybe you should.
+
+00:36:31.960 --> 00:36:33.940
+I know you don't like what they wrote, but they have a point.
+
+00:36:34.300 --> 00:36:38.460
+Right. Let the I be. Let it be. Yeah. All right. Well, thanks.
+
+00:36:39.400 --> 00:36:42.360
+Yeah. Thank you as always. And thanks everyone. Bye y'all.
+
+00:36:42.700 --> 00:36:42.760
+Bye.
+
