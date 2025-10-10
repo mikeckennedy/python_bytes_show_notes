@@ -444,7 +444,7 @@
 
 00:10:25 These little instances.
 
-00:10:26 Like, for example, the one that Brian and I are on is Fostadon, the free and open source software instance.
+00:10:26 Like, for example, the one that Brian and I are on is Fosstodon, the free and open source software instance.
 
 00:10:33 It went from 2000 to 40 something thousand users in a week.
 
@@ -546,7 +546,7 @@
 
 00:13:13 And then finally, one thing that's really nice is if you have a Chrome-based browser like Vivaldi or one of those or Brave, you can right-click on the tab and say install.
 
-00:13:25 Mine says install Fostadon because I was on Fostadon.
+00:13:25 Mine says install Fosstodon because I was on Fosstodon.
 
 00:13:28 But if you were on, you know, Mastodon social or whatever it's called, it would say install that.
 
