@@ -1,0 +1,1333 @@
+WEBVTT
+
+00:00:00.000 --> 00:00:03.000
+Hello YouTube. Hello Brian.
+
+00:00:03.000 --> 00:00:04.000
+Hey.
+
+00:00:04.000 --> 00:00:05.000
+How you doing?
+
+00:00:05.000 --> 00:00:07.000
+I am great.
+
+00:00:07.000 --> 00:00:09.000
+Love to hear it. Love to hear it.
+
+00:00:09.000 --> 00:00:11.000
+Thanks everyone for being here today,
+
+00:00:11.000 --> 00:00:14.000
+either live or if you watch the replay,
+
+00:00:14.000 --> 00:00:15.000
+for watching the replay.
+
+00:00:15.000 --> 00:00:20.000
+So let's go ahead and just kick this thing off.
+
+00:00:20.000 --> 00:00:23.000
+Hello and welcome to Python Bytes,
+
+00:00:23.000 --> 00:00:27.000
+where we deliver Python news and headlines directly to your earbuds.
+
+00:00:27.000 --> 00:00:33.000
+This is episode 470.
+
+00:00:33.000 --> 00:00:34.000
+I know what we're doing.
+
+00:00:34.000 --> 00:00:38.000
+And it is Monday, February 23rd, 2026.
+
+00:00:38.000 --> 00:00:39.000
+I'm Michael Kennedy.
+
+00:00:39.000 --> 00:00:41.000
+And I'm Brian Okken.
+
+00:00:41.000 --> 00:00:43.000
+This episode is brought to you by us.
+
+00:00:43.000 --> 00:00:48.000
+We have many interesting things available or in the works that we're going to be announcing.
+
+00:00:48.000 --> 00:00:52.000
+I know, Brian, you're working on your lean TDD book.
+
+00:00:52.000 --> 00:00:56.000
+I just released Command Book, which ironically is not actually a book.
+
+00:00:56.000 --> 00:01:01.000
+But other things, obviously our courses and so on.
+
+00:01:01.000 --> 00:01:06.000
+So seriously, we put this stuff out here because we think it's a perfect complement to the podcast.
+
+00:01:06.000 --> 00:01:11.000
+And we'd really love if you'd consider just part of your learning, reading and so on.
+
+00:01:11.000 --> 00:01:14.000
+Also consider signing up to the newsletter.
+
+00:01:14.000 --> 00:01:16.000
+We've got a bunch of people enjoying the newsletter.
+
+00:01:16.000 --> 00:01:24.000
+We put a lot of effort into it to generate extra info, background info, more links, not just, hey, we're emailing our show notes out.
+
+00:01:24.000 --> 00:01:26.000
+Isn't that inventive?
+
+00:01:26.000 --> 00:01:27.000
+No, we're doing extra.
+
+00:01:27.000 --> 00:01:29.000
+And Brian is spearheading that.
+
+00:01:29.000 --> 00:01:31.000
+So thank you for doing that, Brian.
+
+00:01:31.000 --> 00:01:35.000
+And yeah, connect with us on the social.
+
+00:01:35.000 --> 00:01:40.000
+Subscribe here on YouTube if you're interested in catching the live show.
+
+00:01:40.000 --> 00:01:44.000
+Just go Python by Satafim slash live, click the link, crush the bell.
+
+00:01:44.000 --> 00:01:49.000
+You know, so that way you actually get a pop-up when we're streaming live like we are right now.
+
+00:01:49.000 --> 00:01:55.000
+And with that, I think I want to talk about inline snapshots.
+
+00:01:55.000 --> 00:01:56.000
+What do you think, Brian?
+
+00:01:56.000 --> 00:01:58.000
+Brian B.: Yeah, sure.
+
+00:01:58.000 --> 00:02:01.000
+Let's zoom in or in.
+
+00:02:01.000 --> 00:02:02.000
+I don't know.
+
+00:02:02.000 --> 00:02:03.000
+Sure.
+
+00:02:03.000 --> 00:02:04.000
+Brian B.: Somehow.
+
+00:02:04.000 --> 00:02:06.000
+Brian B.: Somehow, somehow.
+
+00:02:06.000 --> 00:02:15.000
+So I'm going to cover, and this is a fun article actually from the Pydantic blog from Alex Hall.
+
+00:02:15.000 --> 00:02:33.000
+Brian B.: And the article is better Python tests with inline snapshot and actually it's that but it's also kind of a peek at what how Pydantic is doing some of their testing and you know it would be it's not a bad idea to try to emulate Pydantic because they've been doing great.
+
+00:02:33.000 --> 00:02:38.000
+Brian B.: So anyway, the let's let's dive into what they're talking about here.
+
+00:02:38.000 --> 00:02:44.000
+Brian B.: The problem is the maintaining test data for for complex.
+
+00:02:44.000 --> 00:03:07.000
+Brian B.: Data structures and how you compare so their example is like create a user with an ID of 23 and or 120 anyway test a name and an ID and then checking to make sure that it's really is you know getting the data the object and validating that it's correct that some action happened.
+
+00:03:07.000 --> 00:03:19.000
+Brian B.: This is all cool and all but it's not really it's it's hard to fill that in and and if you have tests like that all over the place it's hard to to make sure that they're up to date and everything.
+
+00:03:19.000 --> 00:03:31.000
+Brian B.: So there there's a lot of ways that people have done attack this problem before like they they give a shout out to syrupy, which is a cool project also one of the and so one of the issues.
+
+00:03:31.000 --> 00:03:36.000
+Brian B.: Okay, so the one of the issues is let's say you've got a bunch of stuff you want it, you know these systems working right now.
+
+00:03:36.000 --> 00:03:40.000
+Brian B.: This is kind of how the workflow is, you know, it's working or because of other testing or manual testing or whatever.
+
+00:03:40.000 --> 00:03:53.000
+Brian B.: And you want to like just save a bunch of have some tests and save what the output is and then test against that like known known input.
+
+00:03:53.000 --> 00:04:07.000
+Brian B.: And then you know it's working so grab the output and compare the two and that's the sort of the model in with syrupy it saves that in an in an external file, but with inline snapshot it saves it right in your test.
+
+00:04:07.000 --> 00:04:08.000
+Brian B.: So i'm going to take a look.
+
+00:04:08.000 --> 00:04:20.000
+Brian B.: You start out with like an empty snapshot with an empty bracket and then you run the test with inline snapshot equals fix so it's like fixing the snapshot or fixing them in place.
+
+00:04:20.000 --> 00:04:32.000
+Brian B.: And then it actually goes out and changes your test and fills in that little template bracket with data that you can compare with with whatever you want.
+
+00:04:32.000 --> 00:04:35.000
+Brian B.: And that's actually pretty awesome.
+
+00:04:35.000 --> 00:04:44.000
+Brian B.: It just like turns a turns the user like some data structure into a dictionary or whatever take a data structure snapshot that and then you can run with it.
+
+00:04:44.000 --> 00:04:47.000
+Brian B.: There's a few reasons why I kind of really love this.
+
+00:04:47.000 --> 00:05:04.000
+Brian B.: One of the things is just maintain maintenance if you're like before and after a big change refactoring you can like set some of these up and and then like refactor and then go back and make sure everything's you didn't intend to change anything you want to make sure things change.
+
+00:05:04.000 --> 00:05:14.000
+Brian B.: And then sometimes you do want to change like lots of the data structure and and then you can like having the this right in line with your tests, you can.
+
+00:05:14.000 --> 00:05:24.000
+Brian B.: Have that like go through a code review and manually inspect the test and say yes, this is actually what I I want it to look like.
+
+00:05:24.000 --> 00:05:29.000
+Brian B.: The danger is, if you don't manually inspect, then you're not going to
+
+00:05:29.000 --> 00:05:38.000
+Brian B.: You just believing whatever's there it's then it's then your tests just become a change detector test and nothing else and there's you know sometimes there's a place for that.
+
+00:05:38.000 --> 00:05:42.000
+Brian B.: So anyway, I'm a great article about snapshot testing.
+
+00:05:42.000 --> 00:05:49.000
+Brian B.: But I also do want to shout out to a lot of the other tools that they bring up in this article. So I'm going to go through some of them. There's.
+
+00:05:49.000 --> 00:06:07.000
+Brian B.: There's the pie test examples, which is the plug in that they're talking about with this inline examples there is in lights. Wait, no, this is another tool. So pie test examples is another tool that they've got and that's pretty cool.
+
+00:06:07.000 --> 00:06:13.000
+Brian B.: The the inline snapshot is this tool that we're talking about.
+
+00:06:13.000 --> 00:06:18.000
+Brian B.: And then there's a syrupy, which isn't a bad tool. And if that's better for people, I'm going to go through some of them.
+
+00:06:18.000 --> 00:06:20.000
+Brian B.: And if that's better for your workflow.
+
+00:06:20.000 --> 00:06:23.000
+Brian B.: Take a look at that as well. And that's very popular.
+
+00:06:23.000 --> 00:06:38.000
+Brian B.: And then there's a dirty equals, which is a fun. I should probably cover this at some other point if I haven't already a fun almost equal sort of a thing. So you can do things like is the number positive and and there's a whole bunch of other
+
+00:06:38.000 --> 00:06:43.000
+Brian B.: Extra things around comparisons that are not exact comparisons that are kind of fun.
+
+00:06:43.000 --> 00:07:05.000
+Brian B.: And then and then a shout out to a thing called executing which is being able to says a mini package that lets you get information about what frame is what the frame is currently doing. So about their current execution frame in Python, which is I've never had a need for that, but it's kind of interesting. So anyway, shout out to that great article, lots of tools.
+
+00:07:05.000 --> 00:07:23.000
+Brian B.: That might be interesting for like low effort logging and stuff, you know, enhancing test output or just logging in general is like I got an error. I want to just say, well, what parameters were supplied to this function and who called it maybe something like that just an automatically add that to the test output or something like that.
+
+00:07:23.000 --> 00:07:30.000
+Brian B.: Yeah, there might be some cool fun things for logging the execution frame. Yeah, yeah, nice.
+
+00:07:30.000 --> 00:07:52.000
+Brian B.: That's a bunch of bunch of cool tools. I love the idea to I like this. Now, let's jump over here. I want to talk. I want to shock you Brian with this, but I want to talk about jolt. Okay. So jolt is a two, a pretty sweet
+
+00:07:52.000 --> 00:08:01.000
+two, actually, which is battery intelligence for your laptop. Okay, so this is not really a Python tool, but it's certainly a tool that Python people could love.
+
+00:08:01.000 --> 00:08:21.980
+Brian B.: All right, it's kind of a developer oriented thing, right? So it says battery intelligence for your laptop, real time power monitoring process, energy tracking, battery health insights, all in your terminal, and it works on macOS and Linux. Sorry, Windows folks, you may be able to do this in Windows Subsystem for Linux, though I have a
+
+00:08:22.000 --> 00:08:51.980
+Brian B.: wouldn't, wouldn't bet on it. I'm not sure. So it's easy. Just brew, install it or whatever, however you like. And it's, they've got kind of a picture here. But honestly, the picture is not as inspiring as maybe the reality. So before I tell you more, let me switch over to my laptop, which actually has it running here. And notice, it's got a huge green bar, which is how much battery I got left. But it also tells you I'm on battery. It's been on battery for three hours and 27 minutes. And it has three hours and
+
+00:08:52.000 --> 00:08:57.220
+Brian B.: 40 minutes left. Yes, it's a MacBook Air, it should last longer, but it's doing a lot of stuff, as you'll see.
+
+00:08:58.300 --> 00:09:19.900
+Brian B.: It gives you stuff about the health, like how many times has it been charged 176. What is the temperature? What is its current energy draw or how much energy actually contained in it? And its health. It shows you power of your machine. So right now my laptop is using 8.8 watts of power. The CPU is 1.5. The GPU is basically nothing. I bet you it's mostly screen if I had to guess.
+
+00:09:19.900 --> 00:09:32.800
+Brian B.: And then it gives you all your processes. So you can see the Vivaldi is the most significant impact here at like 57% CPU because I have it screen sharing back. That's why we can look at it, right?
+
+00:09:32.800 --> 00:09:49.880
+Brian B.: But it's got Claude, it's got Firefox, PortKiller, which I talked about. I had PortKiller open last night to do a CloudFlare tunnel for a project and just didn't shut it down. And it's like parsing the state of the system a lot to get its things, which is cool. And it's got this like moving graph at the bottom.
+
+00:09:49.900 --> 00:10:02.800
+Brian B.: And it's got this like a lot of time of your energy consumption temperature. You can like toggle through these things. How do I like it? I can like toggle to like battery percentage over time, watt over time. There's like all these things you can do. What do you think?
+
+00:10:02.800 --> 00:10:07.400
+Brian B.: I think this is great. I'm going to go install this on my laptop right, right away.
+
+00:10:07.400 --> 00:10:14.800
+Brian B.: Yeah, it's just brew install jolt ish. Let me actually read it. So it doesn't give you something terrible if you were to actually do that. You know what I mean?
+
+00:10:14.800 --> 00:10:33.700
+Brian B.: Yeah, it is. You got to do a get a tap. Whatever it is you tap, you got to do brew install Jordan D slash tap slash jolt, not just straight jolt. Anyway, I think it's pretty neat. So yeah, there it is.
+
+00:10:33.700 --> 00:10:41.000
+Brian B.: And apparently it can work in Windows. We've got somebody said,
+
+00:10:41.000 --> 00:10:48.800
+Brian B.: Oh, Pat. Brian B.: Pat Decker just installed it under WSL and Windows and it doesn't work. Pat, thank you for the real time follow up. That's, that's fantastic.
+
+00:10:48.800 --> 00:10:52.400
+Brian B.: And to get it installed, use curl install.
+
+00:10:52.400 --> 00:10:55.700
+Brian B.: Sure. Yeah, I probably would have done that on Linux as well.
+
+00:10:55.700 --> 00:10:59.900
+Brian B.: Yeah, so that this is, this looks great.
+
+00:10:59.900 --> 00:11:06.500
+Brian B.: It's really neat. Just as like a what is my process, my system doing, even though it's kind of centered around battery, it's pretty cool, actually.
+
+00:11:06.500 --> 00:11:15.900
+Brian B.: Yeah. And, and like, like with laptops, that's mostly what you care about is like, how's this impacting my, my battery?
+
+00:11:15.900 --> 00:11:24.000
+Brian B.: Yeah, exactly. Exactly. So anyway, people can check that out. I thought it's, it's a little bit of a, just a tool rather than a library, but I thought it was fun.
+
+00:11:24.000 --> 00:11:25.200
+Brian B.: Well, nice.
+
+00:11:25.200 --> 00:11:27.900
+Brian B.: It's not rough. It wasn't that rough anyway.
+
+00:11:27.900 --> 00:11:36.300
+Brian B.: It's not that rough. Yeah. So let's talk about rough. Nice, nice transition there. So we, we,
+
+00:11:36.300 --> 00:11:48.900
+Brian B.: Of course, have talked about rough several times and lots of other things around it, but we're going to talk about it a little bit more because Matthias and sorry, Matthias, I'm not going to try to pronounce your last name.
+
+00:11:48.900 --> 00:12:04.800
+Brian B.: So a listener sent us in a said, Hey, you should check this out because now you can format because we like, if you do rough, rough check for it's linting, but it does a lot of formatting as well.
+
+00:12:04.800 --> 00:12:17.400
+Brian B.: Or it can, but you can also do a rough, Ruff format. And so both of those things you can now point those at, I think it's for both of them can pointed at markdown files.
+
+00:12:17.400 --> 00:12:19.400
+Brian B.: So yes, yes.
+
+00:12:19.400 --> 00:12:33.400
+Brian B.: And so for, I mean, it's not just documentation because I'm like, we're writing books and stuff like that with markdown. So I'm definitely going to point this. It's some, some book, book types code.
+
+00:12:33.400 --> 00:12:54.400
+Brian B.: And blogs, of course, lots of blog, certain in markdown anyway. So some of the, some of the cool features of this is that you can, you can also turn it off for parts of it. So if there's like, if you want to show it, but an example of bad code, you probably don't want rough to reformat that for you. So there's, there's ways to turn it off.
+
+00:12:54.400 --> 00:12:57.400
+Brian B.: That's interesting. Don't do this. And it gets fixed. You're like, no.
+
+00:12:57.400 --> 00:13:10.400
+Brian B.: Yeah. So, so there's some tricks around it though. So the, the, you have, so the first turning it off, there's a format off and on, but, and apparently there's like some other, there's something else that you could turn it off and on.
+
+00:13:10.400 --> 00:13:27.540
+Brian B.: But like, if you're in the habit of just doing code blocks with just three ticks, it's not going to cut it because it's looking for what it's looking for the, those, what are those identifiers? I don't know what that you call that, the little thing after the three ticks to tell you what language.
+
+00:13:27.860 --> 00:13:29.760
+Brian B.: Yeah. Whatever the language designation is.
+
+00:13:29.840 --> 00:13:36.840
+Brian B.: Yes. But there's a few, they do PY, Python, Python three, PY three.
+
+00:13:36.840 --> 00:13:42.840
+Brian B.: Interesting. Interesting. It probably does that because it needs to know what language it is to decide how to format it.
+
+00:13:42.840 --> 00:13:50.000
+Brian B.: Yeah. I mean, it shouldn't, it shouldn't try to format like, you know, Rust as if it's Python, I guess.
+
+00:13:50.000 --> 00:13:54.100
+Brian B.: Yeah, exactly. Also, these, these semicolons are unnecessary. We took them away.
+
+00:13:54.100 --> 00:14:04.080
+Brian B.: And the way, the way rough works is, is through pulling it into the abstract syntax tree and outputting it again.
+
+00:14:04.080 --> 00:14:18.220
+Brian B.: So it has to actually be valid Python. If you have invalid Python that won't parse, it's not going to, it's not going to figure that out. So it won't, I don't think it errors. It just doesn't do those.
+
+00:14:18.220 --> 00:14:19.020
+Brian B.: Okay.
+
+00:14:19.020 --> 00:14:33.300
+Brian B.: Anyway, and there's a preview mode. That's kind of neat that you can, you can say, Hey, what would you do for, for this? But, you know, frankly, I would just have it in get and let it, let it go. And then you can do the diffs to see what it did.
+
+00:14:33.300 --> 00:14:47.440
+Brian B.: So, cool, cool thing there. And I'm pretty excited about that. One of the interesting bits is that it also does PYI files. So it will format. What are those type type files?
+
+00:14:47.440 --> 00:14:47.820
+Brian B.: The type files. Yeah.
+
+00:14:47.820 --> 00:15:02.860
+Brian B.: Yeah. So, so just a fun little tool. The caveat is this, this feature is only available in preview mode. And I didn't know what that meant. So I had to look it up. So preview mode means it doesn't mean you have to install anything different.
+
+00:15:02.860 --> 00:15:10.000
+Brian B.: But you have to enable preview mode by setting in one of your settings files, you have to say preview is true.
+
+00:15:10.000 --> 00:15:13.000
+Brian B.: Oh, interesting. Like your ruff.toml or pyproject.toml or.
+
+00:15:13.000 --> 00:15:18.000
+Brian B.: Yeah. Or, or you can pass --preview in the command line, apparently. So.
+
+00:15:18.000 --> 00:15:18.500
+Brian B.: Okay.
+
+00:15:18.500 --> 00:15:19.720
+Brian B.: To get that.
+
+00:15:19.720 --> 00:15:23.000
+Brian B.: Or you could download the source and recompile rough and then make that the default.
+
+00:15:23.000 --> 00:15:24.320
+Brian B.: Sure.
+
+00:15:24.320 --> 00:15:26.320
+Brian B.: Just kidding.
+
+00:15:26.320 --> 00:15:27.320
+Brian B.: Yeah.
+
+00:15:27.320 --> 00:15:31.000
+Brian B.: There's, there's a thousand ways to skim the cat as the ghost.
+
+00:15:31.000 --> 00:15:33.000
+Brian B.: Please don't skim the cat.
+
+00:15:33.000 --> 00:15:36.880
+Brian B.: As morbid as that statement, maybe there are many ways to do it.
+
+00:15:36.880 --> 00:15:37.780
+Brian B.: It's terrible.
+
+00:15:37.780 --> 00:15:57.000
+Brian B.: All right. So let's go to the cloud. To the cloud. So I want to talk about GitHub actions. So here's the deal. I have some GitHub actions. Maybe they format my markdown. Maybe they run my tests. Maybe they check against other things. Maybe they integrate with who knows what, right? There's a ton of GitHub actions.
+
+00:15:57.000 --> 00:16:13.000
+Brian B.: So how do you do that? Well, maybe you create a feature branch and you commit and then you wait for your project to not be busy and then GitHub runner to pick it up and run it. And then you pay your fee for the GitHub runner to run your thing while you're waiting. Your computer's idle.
+
+00:16:13.000 --> 00:16:13.000
+
+
+00:16:13.000 --> 00:16:26.000
+Brian B.: You could use jolt to see like that. It's not doing anything. So there's this thing I found called act neck neck toes slash act. So neck toes is the person create. It's a little bit popular.
+
+00:16:26.000 --> 00:16:32.000
+Brian B.: 69,000 GitHub source or 2,000 forks. So if I hadn't heard of it, have you heard of this?
+
+00:16:32.000 --> 00:16:36.000
+Brian B.: I think. It rings a bell.
+
+00:16:36.000 --> 00:16:55.000
+Brian B.: Okay. Well, maybe we even covered it like 10 years ago. Anyway. So the idea is you can run your GitHub actions locally on your computer using nearly the same infrastructure. So you don't have to pay for them. You don't have to wait on them. You don't have to. One of the problems is you've got to make a commit. Like maybe you're not ready to commit. You're like, I actually want to see what the GitHub action.
+
+00:16:55.000 --> 00:16:59.000
+Brian B.: result would be before I do commit it. You know what I mean?
+
+00:16:59.000 --> 00:17:00.000
+Brian B.: Yeah.
+
+00:17:00.000 --> 00:17:23.000
+Brian B.: Yeah. So what you do is it this thing reads your GitHub workflow and your environment variables and all that based on what you have set there. And then it uses a local task runner. So basically sets up a Docker thing to run. Right? So if I scroll down here a little bit, says reads those that are done. Then it uses the getter, the Docker
+
+00:17:23.000 --> 00:17:30.000
+API to pull the necessary image as defined workflow files and see the little thing running right down below.
+
+00:17:30.000 --> 00:17:47.000
+Brian B.: And then sets up the execution paths. Then it runs each container based on all the stuff that you have set in your action. Right? So it just basically runs here and off it goes. You can see like it gives you little reports on how that went and so on.
+
+00:17:47.000 --> 00:17:50.000
+Brian B.: Did they pass and so on. So I think this is pretty cool.
+
+00:17:50.000 --> 00:17:56.000
+Brian B.: Yeah, I think it's cool too. I wonder if there's something like this for GitLab.
+
+00:17:56.000 --> 00:17:56.000
+
+
+00:17:56.000 --> 00:17:57.000
+Brian B.: GitLab.
+
+00:17:57.000 --> 00:18:02.000
+Brian B.: I wonder how similar the actions are. Like I've not set up GitHub actions very much on GitHub and not at all on GitLab. And so maybe if they're basically file compatible, it's good enough. Because this doesn't actually use anything about GitHub either.
+
+00:18:02.000 --> 00:18:07.000
+Brian B.: It just says what are the Docker images and commands and stuff like that. So it may work.
+
+00:18:07.000 --> 00:18:09.640
+I've not set up GitHub Actions very much on GitHub
+
+00:18:09.640 --> 00:18:11.040
+and not at all on GitLab.
+
+00:18:11.280 --> 00:18:13.900
+And so maybe if they're basically file compatible,
+
+00:18:14.020 --> 00:18:14.460
+it's good enough.
+
+00:18:14.500 --> 00:18:16.520
+Because this doesn't actually use anything about GitHub either.
+
+00:18:16.920 --> 00:18:22.380
+It just says, what are the Docker images and commands
+
+00:18:22.380 --> 00:18:23.420
+and stuff like that, basically.
+
+00:18:24.000 --> 00:18:24.700
+So it may work.
+
+00:18:26.920 --> 00:18:27.360
+Yeah.
+
+00:18:27.500 --> 00:18:29.160
+So this is definitely cool.
+
+00:18:29.680 --> 00:18:33.160
+It is kind of a pain to try to debug GitHub Actions
+
+00:18:33.160 --> 00:18:34.860
+to figure out what's going on.
+
+00:18:35.120 --> 00:18:35.760
+So yeah.
+
+00:18:35.960 --> 00:18:36.200
+Yeah.
+
+00:18:36.200 --> 00:18:37.160
+Definitely check this out.
+
+00:18:38.020 --> 00:18:38.460
+Awesome.
+
+00:18:41.100 --> 00:18:44.400
+So what is the story on the extras?
+
+00:18:44.720 --> 00:18:45.600
+Do we have extras?
+
+00:18:46.580 --> 00:18:48.380
+I just have one.
+
+00:18:48.540 --> 00:18:50.500
+And I didn't before we started the show.
+
+00:18:50.900 --> 00:18:51.380
+I know.
+
+00:18:51.460 --> 00:18:52.280
+I thought you had no extras.
+
+00:18:52.400 --> 00:18:53.540
+But now I'm hearing you have extras.
+
+00:18:53.720 --> 00:18:54.100
+What's the name?
+
+00:18:54.780 --> 00:18:55.820
+There were none in the notes.
+
+00:18:56.360 --> 00:18:57.720
+So I'll just do a quick one.
+
+00:18:57.820 --> 00:18:59.920
+So you brought up the book, Lean TDD,
+
+00:19:00.140 --> 00:19:02.680
+at the beginning of one of the books.
+
+00:19:03.240 --> 00:19:03.380
+Yeah.
+
+00:19:03.520 --> 00:19:04.920
+The one that's actually a book.
+
+00:19:04.920 --> 00:19:06.640
+So I had started.
+
+00:19:07.040 --> 00:19:07.420
+Yeah.
+
+00:19:07.580 --> 00:19:10.500
+So Lean TDD, I just want to give a status update.
+
+00:19:10.740 --> 00:19:11.880
+Not much has happened.
+
+00:19:12.740 --> 00:19:14.640
+There's a lot happening, but it's all up here.
+
+00:19:15.020 --> 00:19:17.320
+So one of the reasons why I released it,
+
+00:19:17.580 --> 00:19:19.660
+so the first draft is done and it's out.
+
+00:19:19.740 --> 00:19:21.420
+And it's actually not really a first draft.
+
+00:19:21.420 --> 00:19:24.400
+It's probably second or third that's released.
+
+00:19:24.840 --> 00:19:27.220
+But I'm reading it now.
+
+00:19:27.480 --> 00:19:30.840
+And I definitely want to change the first couple chapters.
+
+00:19:31.780 --> 00:19:35.100
+And I know it's a dry subject.
+
+00:19:35.100 --> 00:19:38.520
+But if I'm having trouble reading it because it's a little dry,
+
+00:19:38.620 --> 00:19:40.000
+now I should be selling it more.
+
+00:19:40.320 --> 00:19:41.700
+I'm like, no, it's super exciting.
+
+00:19:42.200 --> 00:19:44.900
+No, it needs to be more exciting than it is.
+
+00:19:44.900 --> 00:19:46.400
+Because I am excited about the topic,
+
+00:19:46.600 --> 00:19:52.940
+but the initial start of it is a little rough to get started in the book.
+
+00:19:53.100 --> 00:19:56.440
+So I do want to make it a little more exciting.
+
+00:19:56.960 --> 00:20:00.320
+And so there's been a lot of notes, but it's all been on paper.
+
+00:20:00.580 --> 00:20:02.140
+So I am still working on it.
+
+00:20:02.140 --> 00:20:03.460
+It doesn't look like that.
+
+00:20:03.640 --> 00:20:07.220
+If you've grabbed a copy, thank you.
+
+00:20:07.420 --> 00:20:08.840
+It's helped motivate me.
+
+00:20:08.920 --> 00:20:10.840
+I've had quite a few people grab copies.
+
+00:20:11.900 --> 00:20:14.100
+And things are moving.
+
+00:20:14.300 --> 00:20:16.120
+It just doesn't look like it from the outside.
+
+00:20:16.540 --> 00:20:17.480
+So anyway.
+
+00:20:18.300 --> 00:20:20.580
+And Mike, the man says,
+
+00:20:20.800 --> 00:20:24.360
+you going to write lean BDD?
+
+00:20:24.900 --> 00:20:28.980
+Well, behavior-driven development
+
+00:20:28.980 --> 00:20:31.820
+and acceptance test-driven development are covered in the book.
+
+00:20:31.820 --> 00:20:34.400
+I kind of lump those together as well.
+
+00:20:35.200 --> 00:20:38.060
+And if you're, Mike, if you're a BDD kind of person,
+
+00:20:38.100 --> 00:20:39.880
+I'd love to talk with you more about it.
+
+00:20:40.520 --> 00:20:43.160
+That's my extra, is not much news.
+
+00:20:43.900 --> 00:20:44.160
+Okay.
+
+00:20:44.500 --> 00:20:45.320
+Yeah, very, very cool.
+
+00:20:45.900 --> 00:20:46.260
+Neat.
+
+00:20:46.360 --> 00:20:47.360
+I know how this goes.
+
+00:20:47.460 --> 00:20:48.520
+You're like, ah, it's good.
+
+00:20:48.620 --> 00:20:50.500
+They're like, no, no, no.
+
+00:20:50.540 --> 00:20:51.180
+I've got to do this again.
+
+00:20:51.240 --> 00:20:51.800
+I have this project.
+
+00:20:51.920 --> 00:20:53.200
+I rewrote it three times already.
+
+00:20:53.260 --> 00:20:53.920
+It's driving me crazy.
+
+00:20:54.080 --> 00:20:55.140
+But I think it's good now.
+
+00:20:55.260 --> 00:20:56.440
+It's finally the third time.
+
+00:20:56.440 --> 00:20:57.840
+All right.
+
+00:20:57.920 --> 00:20:59.980
+Savannah Ostrowski says,
+
+00:21:00.360 --> 00:21:05.780
+stoked to share that the steering council has accepted PEP 814.
+
+00:21:06.900 --> 00:21:09.600
+What is PEP 814, you might ask?
+
+00:21:09.600 --> 00:21:14.220
+Well, that means winter is coming.
+
+00:21:15.440 --> 00:21:16.300
+Winter is coming.
+
+00:21:16.400 --> 00:21:16.620
+Why?
+
+00:21:17.120 --> 00:21:20.140
+Well, because PEP 814 is frozen dict.
+
+00:21:22.680 --> 00:21:23.860
+That was a bad joke.
+
+00:21:24.360 --> 00:21:28.260
+No, it was, it was so bad it was good, I think.
+
+00:21:28.340 --> 00:21:28.680
+No, anyway.
+
+00:21:28.680 --> 00:21:33.580
+The idea is that we've got frozen set.
+
+00:21:33.740 --> 00:21:38.100
+We've got other types of frozen item, containers and data structures.
+
+00:21:38.260 --> 00:21:40.120
+But we didn't have frozen dictionary.
+
+00:21:40.420 --> 00:21:43.740
+So the idea is, it's a read only, right?
+
+00:21:43.800 --> 00:21:44.640
+So you create a thing.
+
+00:21:45.160 --> 00:21:52.760
+You want to be able to return it from a function or share it and have an absolute guarantee that people are not changing it, right?
+
+00:21:52.840 --> 00:21:55.220
+Adding or moving items, keys, and so on.
+
+00:21:55.220 --> 00:22:00.440
+And I don't think that really applies to stuff referenced in there.
+
+00:22:00.500 --> 00:22:05.920
+So if you put a list as a value and then you go and like get the point of the list, you probably can still change it.
+
+00:22:05.960 --> 00:22:07.800
+But, you know, like, I guess it depends.
+
+00:22:08.120 --> 00:22:11.280
+If you fill it with only other frozen stuff, it's frozen all the way down.
+
+00:22:12.480 --> 00:22:14.960
+But it's really cool because it allows better concurrency.
+
+00:22:15.300 --> 00:22:21.940
+This is something we're going to be paying more attention to in the future as Python T starts, you know, free thread of Python starts to become a thing.
+
+00:22:21.940 --> 00:22:25.460
+You're like, well, I hate all this locking we have to do in these race conditions.
+
+00:22:25.460 --> 00:22:28.440
+Like, well, if you can't change it, you don't need to lock on it.
+
+00:22:28.500 --> 00:22:28.980
+You know what I mean?
+
+00:22:29.480 --> 00:22:30.500
+So that's very cool.
+
+00:22:30.600 --> 00:22:34.800
+I don't want to add any more than that, but it will be in Python 3.15.
+
+00:22:37.400 --> 00:22:37.680
+Okay.
+
+00:22:37.680 --> 00:22:41.220
+In the audience, Kiva Birb says, oh, that is excellent.
+
+00:22:41.320 --> 00:22:43.300
+We'll definitely be using this all the time for default params.
+
+00:22:43.440 --> 00:22:44.080
+Oh, you know what?
+
+00:22:44.120 --> 00:22:46.340
+That is a really interesting idea for default params.
+
+00:22:46.340 --> 00:22:46.460
+Yes.
+
+00:22:46.660 --> 00:22:47.060
+Yes.
+
+00:22:47.480 --> 00:22:48.620
+I hadn't really considered it there.
+
+00:22:48.720 --> 00:22:48.880
+Yes.
+
+00:22:49.400 --> 00:22:49.680
+Yeah.
+
+00:22:49.780 --> 00:22:50.020
+Okay.
+
+00:22:50.320 --> 00:22:52.160
+And then a little bit of Django.
+
+00:22:52.720 --> 00:22:53.920
+Also, please wear pants.
+
+00:22:54.120 --> 00:22:54.680
+I guess.
+
+00:22:54.900 --> 00:22:57.900
+It's just, I don't know what that reference is, but.
+
+00:22:59.700 --> 00:23:00.440
+I don't either.
+
+00:23:00.980 --> 00:23:01.300
+Okay.
+
+00:23:01.300 --> 00:23:13.240
+So Jeff Triplett posted on Mastodon in response to Paolo Melichori saying, I just published the first article in a new series of my blog, Django ORM standalone.
+
+00:23:13.240 --> 00:23:19.120
+And Jeff and Mario and I were just talking about this, like that same week.
+
+00:23:19.500 --> 00:23:23.480
+And, and like, would it be cool if you could use the Django ORM without Django?
+
+00:23:24.060 --> 00:23:24.460
+Right.
+
+00:23:24.540 --> 00:23:27.900
+So maybe I've got a Django project, but I also have a little library.
+
+00:23:28.040 --> 00:23:28.880
+I just want to run.
+
+00:23:30.420 --> 00:23:33.720
+And also talk to the database and I don't want to have a separate data access layer.
+
+00:23:33.760 --> 00:23:37.120
+I just want to have my models and a script.
+
+00:23:37.240 --> 00:23:39.280
+And I don't care about the web side of things.
+
+00:23:39.900 --> 00:23:42.560
+So basically that's Django standalone, right?
+
+00:23:42.560 --> 00:23:49.560
+Because any large project is going to have to start to have like different flavors and utilities and aspects, maybe daemons.
+
+00:23:50.240 --> 00:23:54.680
+Like they don't all have to run the web app, you know, they all shouldn't run the web app.
+
+00:23:54.740 --> 00:23:57.440
+So anyway, give it a little shout out to this article here.
+
+00:23:58.740 --> 00:23:59.140
+Yeah.
+
+00:23:59.200 --> 00:24:04.560
+Or even like if you want to do a FastAPI plus using the Django ORM.
+
+00:24:05.100 --> 00:24:05.520
+Yeah, exactly.
+
+00:24:05.520 --> 00:24:10.820
+If you want to use the ORM on another web app, like maybe you really love the Django ORM, but you also love Flask.
+
+00:24:11.440 --> 00:24:12.660
+Well, here you go.
+
+00:24:12.780 --> 00:24:13.340
+Let's do it.
+
+00:24:14.500 --> 00:24:14.780
+Hmm.
+
+00:24:14.780 --> 00:24:14.960
+Hmm.
+
+00:24:15.600 --> 00:24:16.420
+That's exciting.
+
+00:24:17.220 --> 00:24:17.660
+Okay.
+
+00:24:20.280 --> 00:24:33.220
+I talked about command book, this sort of long running, this home for long running terminal commands, like commands I want to run for three hours, like start up the web server and the daemon and the tail and just leave it.
+
+00:24:33.220 --> 00:24:36.120
+And if I accidentally close my terminal, I don't want them to go away.
+
+00:24:36.260 --> 00:24:38.060
+I don't want cluttering up my terminal, right?
+
+00:24:38.500 --> 00:24:39.220
+Fun little app.
+
+00:24:39.360 --> 00:24:43.240
+There's a free version, free aspect and paid aspect, personal license and beyond.
+
+00:24:43.900 --> 00:24:47.960
+But I finally got around to writing up the motivation of like, why does this exist?
+
+00:24:48.400 --> 00:24:49.520
+Here's how it works.
+
+00:24:49.680 --> 00:24:51.040
+Here's why I created it and so on.
+
+00:24:51.080 --> 00:24:52.220
+So I linked to the blog posts.
+
+00:24:52.580 --> 00:24:55.160
+It says a five minute read according to my own website.
+
+00:24:55.160 --> 00:25:01.780
+Oh, you should do that plus like a little how-to guide and everything and make a book out of it.
+
+00:25:01.840 --> 00:25:03.300
+It could be a command book book.
+
+00:25:04.520 --> 00:25:05.580
+A command book book.
+
+00:25:05.940 --> 00:25:07.060
+Or command book squared.
+
+00:25:07.300 --> 00:25:07.920
+I mean, let's go.
+
+00:25:08.120 --> 00:25:09.140
+How do we want to do this?
+
+00:25:09.660 --> 00:25:09.860
+Yeah.
+
+00:25:09.960 --> 00:25:10.840
+How do we want to do this?
+
+00:25:12.340 --> 00:25:12.820
+All right.
+
+00:25:12.840 --> 00:25:14.320
+I think we're ready for our joke.
+
+00:25:15.000 --> 00:25:17.120
+And this joke is called plug and paste.
+
+00:25:17.460 --> 00:25:18.260
+Is it a plug and play?
+
+00:25:18.640 --> 00:25:20.380
+Do people still talk about plug and play anymore?
+
+00:25:21.800 --> 00:25:22.220
+I don't know.
+
+00:25:22.220 --> 00:25:23.680
+It was like Windows 95.
+
+00:25:23.860 --> 00:25:24.480
+It was such a thing.
+
+00:25:24.480 --> 00:25:25.160
+Yeah.
+
+00:25:25.240 --> 00:25:26.160
+That was like the big thing.
+
+00:25:26.240 --> 00:25:29.440
+Like now with plug and play, you can just plug in the USB thing.
+
+00:25:30.100 --> 00:25:31.620
+Anyway, sort of like that.
+
+00:25:31.700 --> 00:25:32.440
+So here's the joke.
+
+00:25:33.920 --> 00:25:35.140
+And let me set the stage.
+
+00:25:35.380 --> 00:25:42.000
+Like, you know how people say, oh, we only use 20% of our brain or 30% of our brain.
+
+00:25:42.000 --> 00:25:47.660
+And think how incredible humans could be if we could harness all of the power of the brain.
+
+00:25:47.660 --> 00:25:49.160
+And I'm not really sure I really buy into that.
+
+00:25:49.160 --> 00:25:53.280
+Like, do you really need to be using the running part of your brain?
+
+00:25:53.280 --> 00:25:58.340
+And the part that controls thinking and the part that controls language.
+
+00:25:58.340 --> 00:26:00.640
+Like that doesn't necessarily add capability.
+
+00:26:00.760 --> 00:26:02.700
+Anyway, so that's what it's based on.
+
+00:26:03.240 --> 00:26:05.700
+So there's this person sort of looking up like, whoa.
+
+00:26:05.700 --> 00:26:08.520
+What if we could use 100% of our brain?
+
+00:26:08.520 --> 00:26:20.540
+And I think it's Morgan Freeman says, at work, a customer just tried to copy a document, unplug the mouse, and plug it back into another computer and paste it.
+
+00:26:20.540 --> 00:26:28.540
+Maybe we got a little more foundational stuff to work on if we could use 100% of our brain.
+
+00:26:31.720 --> 00:26:32.160
+Yeah.
+
+00:26:33.320 --> 00:26:34.440
+What about 10%?
+
+00:26:34.560 --> 00:26:35.320
+Can we use 10%?
+
+00:26:36.180 --> 00:26:36.620
+Yeah.
+
+00:26:38.500 --> 00:26:42.720
+You know that whole like 100% of your brain thing is not real?
+
+00:26:42.720 --> 00:26:43.580
+Like that.
+
+00:26:43.800 --> 00:26:45.080
+I can totally see that.
+
+00:26:45.480 --> 00:26:50.680
+That like people were saying like, oh, on the average, people only use like a small percentage of your brain.
+
+00:26:50.760 --> 00:26:51.600
+That's not true.
+
+00:26:51.960 --> 00:26:53.380
+We use all of it.
+
+00:26:54.260 --> 00:26:54.400
+Yeah.
+
+00:26:55.360 --> 00:26:59.320
+It's too costly to feed our brain if we weren't using all of it.
+
+00:26:59.880 --> 00:27:03.540
+But I mean, not everybody uses all of it.
+
+00:27:03.540 --> 00:27:10.460
+I would say there's a range of engagement throughout society.
+
+00:27:10.460 --> 00:27:11.360
+I think they're using it all.
+
+00:27:11.480 --> 00:27:15.560
+They're just like, most of it's just doing reruns of The Simpsons, I think.
+
+00:27:16.240 --> 00:27:17.320
+Well, yeah, yeah.
+
+00:27:17.680 --> 00:27:18.600
+That's probably true.
+
+00:27:18.600 --> 00:27:30.300
+I find that like when somebody, if the photons from TikTok hit a person's face, it's just, it's like a beam that shuts down about half of the brain.
+
+00:27:30.300 --> 00:27:36.480
+Like as the photons just strike the skin, it's just, I was listening to, we're tangenting, yeah.
+
+00:27:36.580 --> 00:27:47.240
+But I was listening to a podcast and there was an ad for TikTok on the podcast advertising how safe it is for kids because of all the safety features they've got.
+
+00:27:47.360 --> 00:27:48.800
+And I'm like, that's insane.
+
+00:27:49.140 --> 00:27:49.860
+It is insane.
+
+00:27:51.120 --> 00:27:51.940
+So anyway.
+
+00:27:52.480 --> 00:27:52.660
+Yeah.
+
+00:27:53.900 --> 00:27:55.320
+That's a whole rant we can go on.
+
+00:27:55.320 --> 00:28:06.140
+But I think that, I think like TikTok and this short form stuff, it's like really hurting people's attention span and ability to engage for extended periods of time.
+
+00:28:06.500 --> 00:28:07.540
+Just watching my own kids.
+
+00:28:08.100 --> 00:28:08.320
+Yeah.
+
+00:28:08.700 --> 00:28:08.940
+Yeah.
+
+00:28:10.860 --> 00:28:11.260
+Yeah.
+
+00:28:11.320 --> 00:28:12.200
+I'll have to find the article.
+
+00:28:12.200 --> 00:28:23.140
+I just found out that, that my wife found an article about how Gen Z is the first generation that's got a lower IQ than their parents.
+
+00:28:23.780 --> 00:28:24.520
+Oh, no.
+
+00:28:24.520 --> 00:28:24.640
+Oh.
+
+00:28:25.640 --> 00:28:26.600
+But, you know.
+
+00:28:27.460 --> 00:28:27.760
+Well.
+
+00:28:27.860 --> 00:28:28.300
+On average.
+
+00:28:28.660 --> 00:28:30.600
+I would say maybe the tests are just given wrong.
+
+00:28:30.700 --> 00:28:37.560
+Could they be given, the IQ test, could it be given as a TikTok series instead of, and then it would be, it might actually, they might crush it.
+
+00:28:38.300 --> 00:28:38.680
+No, seriously.
+
+00:28:38.800 --> 00:28:40.740
+I think it's like, it might not be an intelligence.
+
+00:28:40.920 --> 00:28:42.080
+It might be a concentration thing.
+
+00:28:43.040 --> 00:28:43.700
+It could be.
+
+00:28:43.960 --> 00:28:44.140
+Yeah.
+
+00:28:44.400 --> 00:28:44.980
+I don't know.
+
+00:28:45.020 --> 00:28:46.460
+But it's not, it's not a great sign.
+
+00:28:46.700 --> 00:28:47.000
+Anyway.
+
+00:28:47.540 --> 00:28:47.760
+Anyway.
+
+00:28:47.900 --> 00:28:48.260
+I don't know.
+
+00:28:48.300 --> 00:28:49.060
+How do we get into this?
+
+00:28:49.200 --> 00:28:49.400
+I don't know.
+
+00:28:49.500 --> 00:28:49.900
+I don't know.
+
+00:28:50.060 --> 00:28:51.080
+100% of your brain.
+
+00:28:52.460 --> 00:28:53.220
+All right.
+
+00:28:53.220 --> 00:28:57.200
+We're going to go use 100% of the brain to get this podcast ready and shipped to the world.
+
+00:28:57.620 --> 00:28:58.460
+Everyone, thanks for being here.
+
+00:28:58.860 --> 00:28:59.220
+Thanks.
+
+00:28:59.380 --> 00:28:59.520
+Bye.
+
+00:29:00.100 --> 00:29:00.420
+Bye.
+
+00:29:00.420 --> 00:29:00.480
+Bye.
+
+00:29:05.200 --> 00:29:05.200
+
+
+00:29:05.200 --> 00:29:05.200
+
+
+00:29:05.200 --> 00:29:05.200
+
+
+00:29:05.200 --> 00:29:05.200
+
+
+00:29:05.200 --> 00:29:05.200
+
+
+00:29:05.200 --> 00:29:05.200
+
+
+00:29:05.200 --> 00:29:05.200
+
+
+00:29:05.200 --> 00:29:05.200
+
+
+00:29:05.200 --> 00:29:05.200
+
+
+00:29:05.200 --> 00:29:05.200
+
+
+00:29:05.200 --> 00:29:05.200
+
+
+00:29:05.200 --> 00:29:05.200
+
+
+00:29:05.200 --> 00:29:05.200
+
+
+00:29:05.200 --> 00:29:05.200
+
+
+00:29:05.200 --> 00:29:05.200
+
+
+00:29:05.200 --> 00:29:05.200
+
+
+00:29:05.200 --> 00:29:05.200
+
+
+00:29:05.200 --> 00:29:05.200
+
+
+00:29:05.200 --> 00:29:05.200
+
+
+00:29:05.200 --> 00:29:05.200
+
+
+00:29:05.200 --> 00:29:05.200
+
+
+00:29:05.200 --> 00:29:05.200
+
+
+00:29:05.200 --> 00:29:05.200
+
+
+00:29:05.200 --> 00:29:05.200
+
+
+00:29:05.200 --> 00:29:05.200
+
+
+00:29:05.200 --> 00:29:05.200
+
+
+00:29:05.200 --> 00:29:05.200
+
+
+00:29:05.200 --> 00:29:05.200
+
+
+00:29:05.200 --> 00:29:05.200
+
+
+00:29:05.200 --> 00:29:05.200
+
+
+00:29:05.200 --> 00:29:05.200
+
+
+00:29:05.200 --> 00:29:05.200
+
+
+00:29:05.200 --> 00:29:05.200
+
+
+00:29:05.200 --> 00:29:05.200
+
+
+00:29:05.200 --> 00:29:05.200
+
+
+00:29:05.200 --> 00:29:05.200
+
+
+00:29:05.200 --> 00:29:05.200
+
+
+00:29:05.200 --> 00:29:05.200
+
+
+00:29:05.200 --> 00:29:05.200
+
+
+00:29:05.200 --> 00:29:05.200
+
+
+00:29:05.200 --> 00:29:05.200
+
+
+00:29:05.200 --> 00:29:05.200
+
