@@ -1,0 +1,964 @@
+WEBVTT
+
+00:00:00.000 --> 00:00:04.100
+Hello and welcome to Python Bytes, where we deliver Python news and headlines directly
+
+00:00:04.100 --> 00:00:13.760
+to your earbuds. This is episode 472, recorded March 9th, 2026. Incredible. My name is Michael
+
+00:00:13.760 --> 00:00:18.940
+Kennedy. And I'm Brian Okken. And this episode is brought to you by us. We have a bunch of
+
+00:00:18.940 --> 00:00:23.740
+different courses, books, links are at the top of the show. I actually have some other things that
+
+00:00:23.740 --> 00:00:27.860
+I'm going to talk about at the end of this show, Brian. Yet another thing. I have two new things,
+
+00:00:27.860 --> 00:00:32.380
+but I only want to talk about one thing at a time. So this week gets, well, the one that I
+
+00:00:32.380 --> 00:00:37.720
+picked for this week. Yeah. Follow us on socials, Brian, me and the show. We all have different
+
+00:00:37.720 --> 00:00:41.760
+social media accounts you can follow and keep up with all the things that we're talking about,
+
+00:00:41.820 --> 00:00:46.200
+or, you know, send us recommendations. We appreciate that. We always enjoy getting cool
+
+00:00:46.200 --> 00:00:50.100
+ideas from other people. Helps a lot, right? We say, I didn't know. I don't think one of these
+
+00:00:50.100 --> 00:00:53.140
+exists and someone will send us a message. Yes, they exist. And here are four of them. Like,
+
+00:00:53.180 --> 00:00:57.080
+oh, thanks. We'll talk about those later. Sign up to the newsletter, get notified about
+
+00:00:57.080 --> 00:01:03.560
+all the stuff that we're up to, but mostly we're sending out detailed, extra enriched
+
+00:01:03.560 --> 00:01:08.180
+information about what we talked about in the show, not just show notes over email. So people
+
+00:01:08.180 --> 00:01:12.860
+are finding that really valuable and Brian's sending those out. So that's great. And with that,
+
+00:01:12.940 --> 00:01:18.900
+I guess, what's our first item, Brian? Oh yeah. So let's, actually, I've got a thing that I'm working
+
+00:01:18.900 --> 00:01:26.760
+on at work that involves a project that really should be set up as a monorepo.
+
+00:01:26.760 --> 00:01:32.460
+So, I mean, it's not, we're really, we don't really do monorepo things, but I guess it's a
+
+00:01:32.460 --> 00:01:38.760
+project that, that has one repository and a bunch of different, like Python projects inside of it.
+
+00:01:38.860 --> 00:01:44.780
+So I was looking for, for help with that. And I ran across this article called,
+
+00:01:44.780 --> 00:01:52.160
+three things I wish I knew before setting up a uv workspace. And it is really about setting up a
+
+00:01:52.160 --> 00:01:59.420
+UV workspace to deal with monorepos. And I actually don't really know. Anyway, so workspaces are a
+
+00:01:59.420 --> 00:02:05.040
+thing that, that uv can deal with. And, but there's some, some tricks that I guess weren't obvious.
+
+00:02:05.140 --> 00:02:10.280
+There weren't obvious to me. So there's just a few that I want to cover. One is to give the
+
+00:02:10.280 --> 00:02:16.420
+root a distinct name. So you've got a top level PI, you've got an application, you've got,
+
+00:02:16.600 --> 00:02:22.060
+or your repo, there's going to be a top level PI project.toml to handle all of the, to cover
+
+00:02:22.060 --> 00:02:30.140
+everything. And then each of your sub packages will have its own PI project.toml. And the trick is
+
+00:02:30.140 --> 00:02:38.460
+they've got to have the workspace names have to be different to make this all work. And so it might be
+
+00:02:38.460 --> 00:02:43.900
+obvious. It might like in the example, they've got my app as the core project, but then the workspace
+
+00:02:43.900 --> 00:02:52.560
+is my app also. It can't be that you run into a, a name conflict. So, and that's in the names show up
+
+00:02:52.560 --> 00:02:59.060
+in a thing you've got member. There's an example of what the workspace looks like and that you have to
+
+00:02:59.060 --> 00:03:06.820
+set up a different top level name. So project name has to be different. So maybe obvious, but I would
+
+00:03:06.820 --> 00:03:13.220
+not, it's wasn't obvious to me. So thanks for that help. The other part, which the, one of the other
+
+00:03:13.220 --> 00:03:21.720
+tricky bits is in order for uv to deal with this. Okay. The top level one, is it the top one? If
+
+00:03:21.720 --> 00:03:28.720
+workspace packages depend on each other, you got to do a couple of things. You have a normal dependency
+
+00:03:28.720 --> 00:03:36.660
+declaration and a tool.uv.sources entry telling uv to resolve it locally. So a project will have a
+
+00:03:36.660 --> 00:03:40.940
+dependency. It's going to have its own name. It's going to have a dependency and that dependency,
+
+00:03:41.220 --> 00:03:47.740
+if it's internal, you have to, in below say, you know, look, also look for uv sources in this workspace.
+
+00:03:47.740 --> 00:03:54.060
+So it doesn't go out to PyPI or whatever to try to find those dependencies. And yeah, I would not
+
+00:03:54.060 --> 00:04:00.660
+have even thought that that's built into uv. So that's cool. Didn't know that was there. The third bit
+
+00:04:00.660 --> 00:04:08.080
+that was to use import lib mode for pytest. And that's kind of one of the reasons why I wanted
+
+00:04:08.080 --> 00:04:14.000
+to pick this because I'm not sure what they're talking about here. Apparently there's an issue.
+
+00:04:14.100 --> 00:04:19.760
+The issue is if you've got like something like the same test name, like test helpers in multiple
+
+00:04:19.760 --> 00:04:26.120
+projects, that's if you, if you don't, if you have unique file names, it's fine. But if you might not,
+
+00:04:26.120 --> 00:04:30.700
+and, and, you know, as projects grow, you don't want to like restrict people's file name choice.
+
+00:04:31.700 --> 00:04:37.520
+We'll go ahead and do this, but I don't, the, there's like a couple of methods. There's the use,
+
+00:04:37.640 --> 00:04:44.440
+the import lib method, and then there's putting dunder and nets in your test directory. And the,
+
+00:04:44.440 --> 00:04:49.860
+the comment here is that this is, there's a silent bug with that. I wasn't familiar with this. So I'm,
+
+00:04:49.980 --> 00:04:53.540
+it's a homework for me for next week is to research this, to try to figure out
+
+00:04:53.540 --> 00:04:59.900
+what the deal is with this import lib versus dunder and net and how that behaves. So I'm going to,
+
+00:04:59.940 --> 00:05:04.260
+I'm going to work on that this week. So that's, that's my, my two cents there.
+
+00:05:04.740 --> 00:05:07.480
+What an interesting idea these monorepos are, huh?
+
+00:05:08.480 --> 00:05:13.380
+Yeah. Well, I mean, I'm, I was first resistant. I'm like, why not just split it up? But there's a
+
+00:05:13.380 --> 00:05:19.980
+lot of times where, I mean, for us, for me, that it's really that all the label can be one label for
+
+00:05:19.980 --> 00:05:24.780
+everything, for everything that's together. If you branch, it's all to branch together.
+
+00:05:25.160 --> 00:05:29.340
+Merges are all together, all of that. And that's hard to do without a monorepos.
+
+00:05:29.600 --> 00:05:33.700
+Yeah, it definitely is. Definitely is. I just want to throw in real quick that I
+
+00:05:33.700 --> 00:05:38.080
+interviewed Yarek and Mark from the Airflow team.
+
+00:05:38.320 --> 00:05:38.620
+Okay.
+
+00:05:38.980 --> 00:05:44.980
+About monorepos with uv and Prec. So that's episode 540. And I think that's a couple of weeks,
+
+00:05:44.980 --> 00:05:49.960
+a couple of weeks out on the official Talk Python channel, but it's on the live stream YouTube
+
+00:05:49.960 --> 00:05:52.820
+version, because that usually precedes things by a few weeks.
+
+00:05:52.920 --> 00:05:54.100
+Cool. I'll have to check it out.
+
+00:05:54.100 --> 00:05:58.860
+As we record them and then let them out. So Airflow has something insane, like over a hundred
+
+00:05:58.860 --> 00:06:04.540
+sub projects or packages and dependencies across them and stuff. And they actually worked with uv,
+
+00:06:04.700 --> 00:06:09.460
+I believe, to like help set up that workspace feature and functionality and so on. So pretty cool.
+
+00:06:09.680 --> 00:06:09.940
+Yeah.
+
+00:06:10.180 --> 00:06:14.400
+All right. I want to, I want to carry on from last week. So last week we talked about
+
+00:06:14.400 --> 00:06:20.720
+Data Class Wizard. So now I want to talk about C adders. So you probably know adders from Hennig,
+
+00:06:20.860 --> 00:06:28.180
+but what about C adders? So C adders is actually, it works with adders and data classes and its job
+
+00:06:28.180 --> 00:06:34.700
+is to take and do very similar serialization and validation that you would find in Pydantic,
+
+00:06:34.940 --> 00:06:42.080
+but have it as a separate library. And so one of the things that I'm realizing as I sort of go
+
+00:06:42.080 --> 00:06:49.040
+through these examples. And when I chose my raw queries plus data classes pattern that we talked
+
+00:06:49.040 --> 00:06:54.380
+about last week, I think it was last week, recently, that I really was valuing the fact that the data
+
+00:06:54.380 --> 00:07:00.020
+classes themselves were just that data classes. And maybe they got their own computed properties or
+
+00:07:00.020 --> 00:07:04.400
+something, but they don't, they were not in charge of serialization, deserialization, validation,
+
+00:07:04.400 --> 00:07:10.600
+but things like Data Class Wizards and C adders, or just your data access layer, all those can have
+
+00:07:10.600 --> 00:07:17.060
+really rich, you know, conversions, parsing, validation, et cetera, without actually being part
+
+00:07:17.060 --> 00:07:21.660
+of your object hierarchy and your class, right? So you can choose those things separately. And this is
+
+00:07:21.660 --> 00:07:28.440
+right along those lines. So it's super cool. I can import structure and unstructure, which is
+
+00:07:28.440 --> 00:07:34.780
+to and from different types, but maybe dictionaries is the best mental model. And so I can say just parse
+
+00:07:34.780 --> 00:07:41.220
+one of these things as a class C, which you defined as a data class or an adders class or something like
+
+00:07:41.220 --> 00:07:46.640
+that. And what you get out is one of those parsed and validated, right? Or you can unstructure it and
+
+00:07:46.640 --> 00:07:54.320
+becomes a dictionary. Okay. So that's pretty neat, but it's not just, it's not just adders. Also works
+
+00:07:54.320 --> 00:08:00.920
+on data classes and let's see, there's a bunch of different types of validation. Let me see if I can
+
+00:08:00.920 --> 00:08:09.240
+find it here in our example. So it does things like a message spec, message pack. It does YAML,
+
+00:08:10.240 --> 00:08:15.240
+JSON, obviously. So there's a bunch of these different serialization libraries that you might
+
+00:08:15.240 --> 00:08:20.400
+adopt, right? So it's really cool that you can do all different types of serialization and so on.
+
+00:08:20.400 --> 00:08:25.520
+And I think it's, yeah, I think it's really cool. You can set up hooks to help transform values and
+
+00:08:25.520 --> 00:08:32.200
+validate values through just basically decorators, which is kind of cool. Yeah. So more or less,
+
+00:08:32.320 --> 00:08:37.980
+like, do you want a really nice structured way to serialize classes without making it part of the
+
+00:08:37.980 --> 00:08:42.480
+object hierarchy and check out see adders. That's really cool. Yeah. Yeah. It's I really like see
+
+00:08:42.480 --> 00:08:48.560
+adders, especially for projects that like not reaching for a Pydantic seems like a natural thing to do
+
+00:08:48.560 --> 00:08:54.780
+with web stuff. But there's a lot of other times where you want similar sorts of data validation
+
+00:08:54.780 --> 00:09:00.560
+and other things that are like, like not web related. Yeah. This will work for web stuff too,
+
+00:09:00.640 --> 00:09:05.580
+of course. But yeah. Neat. Yeah. I think it's really cool to have that control. Like for example,
+
+00:09:05.820 --> 00:09:11.420
+the, what I talked about was if you use Pydantic, it's awesome that it serializes data before it gets
+
+00:09:11.420 --> 00:09:16.740
+into your database, but it re validates that data when it comes out of your database. Why are you
+
+00:09:16.740 --> 00:09:20.600
+validating data that's just stored in your database? You don't need to do that. It just happens to be,
+
+00:09:20.680 --> 00:09:24.340
+well, that's how Pydantic works. You load it with data. It validates it. Great. Right. So I,
+
+00:09:24.460 --> 00:09:30.520
+that's what I think is neat about this separation, the sort of orthogonality of your validation and
+
+00:09:30.520 --> 00:09:34.860
+conversion layer and your class structure. Cause you can validate on the way in, but not on the way
+
+00:09:34.860 --> 00:09:39.100
+out if that's how you like it. You know what I mean? Yeah. That makes sense. Definitely. Cool.
+
+00:09:39.340 --> 00:09:42.420
+Yeah. Cool. Well, if I were to learn about this, what would you suggest?
+
+00:09:42.420 --> 00:09:50.240
+well, probably not AI. I don't know. nice transition attempt though. Thanks.
+
+00:09:50.840 --> 00:09:57.660
+So, I want to cover a, listener suggestion. somebody, wrote in and said, Hey,
+
+00:09:57.920 --> 00:10:05.120
+um, we've been talking partially sometimes about, AI and LLMs and using agentic coding and stuff.
+
+00:10:05.120 --> 00:10:11.400
+this is from Jose Blanca. there's a few blog posts around, how do you utilize AI for
+
+00:10:11.400 --> 00:10:16.280
+learning to program? And, that's kind of an awesome topic. It's something I've been thinking
+
+00:10:16.280 --> 00:10:22.020
+about too, is, is for people like even, you know, people, my daughter's age and stuff want,
+
+00:10:22.120 --> 00:10:27.280
+wanting to learn how to code or really anybody wanting to learn how to code. A lot of things like
+
+00:10:27.280 --> 00:10:32.300
+why, why would you want to learn how to code if there's a powerful AI tools already? how,
+
+00:10:32.300 --> 00:10:36.480
+like if you, if you're convinced that you do want to learn how to code, how could you use AI as a
+
+00:10:36.480 --> 00:10:42.320
+tutor rather than a shortcut and, and keep practicing? It's, you know, one of those key
+
+00:10:42.320 --> 00:10:46.600
+points is practice remains a key to real understanding. And then, you know, what,
+
+00:10:46.740 --> 00:10:51.940
+what should you learn? and I kind of love how we broke this down. So I'll read like the
+
+00:10:51.940 --> 00:10:56.920
+summaries of like, you know, why, why, of course, how and what, going through,
+
+00:10:56.920 --> 00:11:02.900
+there's just a few blog posts altogether, and really formatted nicely and put up. So, 
+
+00:11:02.900 --> 00:11:07.860
+why would you learn for occasional programmer or a professional programmer or just for fun?
+
+00:11:07.860 --> 00:11:13.540
+There's lots of reasons, to want to learn how to program still. and one of them,
+
+00:11:13.840 --> 00:11:18.700
+one of the things he brought up as like an occasional programmer is somebody that's doing something else.
+
+00:11:18.700 --> 00:11:22.900
+Like they have a discipline such as biology, physics, whatever, something other than coding.
+
+00:11:22.900 --> 00:11:29.120
+And, but they need to, to code. One of the reasons to learn how to code is even if you want to drive
+
+00:11:29.120 --> 00:11:35.180
+it with AI is learning what kinds of problems that computers can solve easily or the right kinds of
+
+00:11:35.180 --> 00:11:40.500
+things. And, and with, with, with learning programming, you also learn how to break problems
+
+00:11:40.500 --> 00:11:44.900
+down into smaller pieces and stuff. There's a lot of stuff you learn with coding, that you,
+
+00:11:45.200 --> 00:11:50.000
+that it's one of the few places that is practical that to learn how to do those sorts of things,
+
+00:11:50.000 --> 00:11:55.540
+uh, breaking down problems. So lots of great reasons to, to do it for the why part. Um,
+
+00:11:55.580 --> 00:12:02.860
+how I love this is, not using AI to solve your exercise problems, because you know,
+
+00:12:02.860 --> 00:12:08.680
+you're not learning then, but, you could, you could do that and then look at what they're
+
+00:12:08.680 --> 00:12:15.040
+coming up with, but you can also use AI to, to, to ask you things to describe to an agent,
+
+00:12:15.040 --> 00:12:19.760
+like what, what level of coding you're at and could they come up with some programming problems
+
+00:12:19.760 --> 00:12:23.780
+for you? I never thought about that of like getting a coding, coding problems from them.
+
+00:12:23.780 --> 00:12:29.680
+and then, yeah. and then a caveat that there's limits to this and, and, to making
+
+00:12:29.680 --> 00:12:35.120
+people aware of, of, of the problem, some of the problems that we're aware of, like, hallucinations
+
+00:12:35.120 --> 00:12:42.140
+or dreaming up, dreaming up different things. so, but there X, I do think that,
+
+00:12:42.140 --> 00:12:48.140
+that you can use AI as a teacher, a side teacher to generate tasks, debug things that you're having
+
+00:12:48.140 --> 00:12:52.680
+trouble with that your code doesn't work. Why is it not working? way back when, when I was
+
+00:12:52.680 --> 00:12:57.900
+learning how to code, it was, you did just bang your head out against the table, I guess. Um,
+
+00:12:58.120 --> 00:13:04.080
+and, look at all the syntax, but having, having AI helps a lot, getting hints, reviewing your
+
+00:13:04.080 --> 00:13:08.920
+code, explaining what different things do. Lots of great stuff that LLMs can help you with. And then,
+
+00:13:08.920 --> 00:13:13.420
+um, the, what is really great. Don't skip this part. If you're going to look at these blog posts,
+
+00:13:13.420 --> 00:13:20.100
+uh, because, what you should do, you know, let's see, you know, what you should work on. What
+
+00:13:20.100 --> 00:13:24.680
+is the, what, what are the real learning objectives, mental models, managing complexity,
+
+00:13:24.680 --> 00:13:30.340
+and thinking like a software developer. these are all great things to, to focus on, depending
+
+00:13:30.340 --> 00:13:35.220
+on where you are in your career and how, where you, you know, where you were at. So anyway, this is,
+
+00:13:35.220 --> 00:13:40.300
+um, and also just what good code looks like. Somebody new to coding doesn't really know what
+
+00:13:40.300 --> 00:13:45.280
+good code looks like until they, you know, it's good to, good to learn that sort of stuff. So,
+
+00:13:45.540 --> 00:13:50.460
+um, anyway, good job, Jose. I like, I like this. Yeah. Very nice. It's going to be a challenge.
+
+00:13:50.460 --> 00:13:54.980
+I think it's so tempting to just press the easy button and go, okay, what's the answer or make it
+
+00:13:54.980 --> 00:14:01.260
+work. But those of us who are willing to say, this is not working, help me understand what's wrong.
+
+00:14:01.260 --> 00:14:06.420
+What are the other ways in which I could do it? I see you did it that way. Why did you do it that
+
+00:14:06.420 --> 00:14:10.420
+way? Was my way not right? Like AI is actually really good at having those conversations.
+
+00:14:10.980 --> 00:14:16.040
+Yeah. And I think there's, there's some real gems. There's some opportunity here. There's
+
+00:14:16.040 --> 00:14:21.760
+a lot of, a lot of people, a lot of our youth, are not choosing CS right now. And I think that's
+
+00:14:21.760 --> 00:14:27.380
+fair, but even if you use, I think there's still room for people to get CS degrees,
+
+00:14:27.380 --> 00:14:33.220
+but there's also a lot of room for people to, and with AI, a lot of, it's a lot easier for somebody
+
+00:14:33.220 --> 00:14:37.780
+in another field to add it. Like if, if you're in biology, you're probably going to learn some
+
+00:14:37.780 --> 00:14:44.820
+coding anyway. But if you're like a history major or a doctor, like medical research or something,
+
+00:14:45.100 --> 00:14:50.260
+maybe not, but with, with AI's help, you can probably learn how to code also,
+
+00:14:50.260 --> 00:14:54.620
+and you'll be unstoppable when you get out of college. Yeah, absolutely. All right. It's an
+
+00:14:54.620 --> 00:14:59.220
+incredible tool. It's an incredible tool. I a hundred percent agree. All right. Let's talk
+
+00:14:59.220 --> 00:15:05.500
+about other incredible tools, FastAPI. So Savannah Ostrowski points out, says, Hey, how are you? Are
+
+00:15:05.500 --> 00:15:10.680
+you using FastAPI? I'm reading from her LinkedIn post, of course. So good news. They have released
+
+00:15:10.680 --> 00:15:18.660
+an official FastAPI extension for VS Code on the marketplaces. So if you drop over there, there's the
+
+00:15:18.660 --> 00:15:24.100
+GitHub version and the marketplace version, I guess they kind of show you more or less the same thing,
+
+00:15:24.100 --> 00:15:28.280
+kind of like PyPI. Like the read me just shows up in both places. I was like, do I really need this?
+
+00:15:28.380 --> 00:15:32.640
+I'm not sure if I need this. Maybe I need this, but if you look at it, it's doing some really cool
+
+00:15:32.640 --> 00:15:40.260
+things. GitHub anyway, like for example, I can switch over to FastAPI and it shows all of
+
+00:15:40.260 --> 00:15:45.120
+the different, what is it grouped by here? Does it actually group by router? Like, you know,
+
+00:15:45.120 --> 00:15:50.340
+how you can break up your routes into organizations by router, or is it just by URL? Anyway, you can see
+
+00:15:50.340 --> 00:15:55.240
+like slash items and under slash items. It says there's a get items. There's a get items ID.
+
+00:15:55.240 --> 00:16:00.660
+There's a post items put to the ID. And it actually shows you the function name. You can jump from this.
+
+00:16:01.140 --> 00:16:07.640
+So really quickly you can navigate around basically by the URL structure of your site. What do you think
+
+00:16:07.640 --> 00:16:13.380
+of that? That's pretty cool. Yeah. I think it looks really handy. You can also search for routes so you
+
+00:16:13.380 --> 00:16:19.740
+can hit command shift command P I think, or maybe just command P pull up the command palette. And if
+
+00:16:19.740 --> 00:16:25.960
+you type sub strings of the URLs or the routes really more accurately, maybe type items, it'll show
+
+00:16:25.960 --> 00:16:31.360
+you all the things, all the URLs that involve items and you can select them out there and jump to like
+
+00:16:31.360 --> 00:16:38.640
+get slash items or whatever. That's pretty neat. it has code lens for test client calls. So if you
+
+00:16:38.640 --> 00:16:43.300
+have a test client calling that URL and you could hover over it, I think that's how it works. You
+
+00:16:43.300 --> 00:16:48.440
+can hover over it and it'll actually take you to the server side. So that's pretty wild. Kind of like
+
+00:16:48.440 --> 00:16:52.660
+the, the get lens. If you hover over, it'll say who it was committed by and click on it takes you to
+
+00:16:52.660 --> 00:16:57.040
+commit. And then you can also deploy to FastAPI cloud. You're not familiar with that. That's like
+
+00:16:57.040 --> 00:17:04.080
+the hosted super simple way to publish your code over to the internet somehow, wherever that goes,
+
+00:17:04.080 --> 00:17:11.360
+you just FastAPI deploy and then off it goes. And if it's a FastAPI app, it often can even figure
+
+00:17:11.360 --> 00:17:15.400
+out how to run it without you doing anything, which is really sweet. So that's great. So you can do that
+
+00:17:15.400 --> 00:17:20.940
+straight from the extension there as well. And you can also view the logs of your application running
+
+00:17:20.940 --> 00:17:29.020
+on FastAPI cloud in the terminal of your local VS Code. Yeah. Anyway. So if you are a FastAPI fan,
+
+00:17:29.020 --> 00:17:34.420
+especially for using FastAPI cloud also had those folks on talk Python, which is out in the main
+
+00:17:34.420 --> 00:17:40.260
+feed just a few weeks ago. So very fun to dig into that. But if you're a FastAPI person, regardless
+
+00:17:40.260 --> 00:17:46.580
+of how you cloud checking out the extension for VS Code and presumably cursor windsurf, et cetera,
+
+00:17:46.920 --> 00:17:51.340
+anti-gravity, you know, all the things. Nice. Yeah. I like it. Well, I think that is it for
+
+00:17:51.340 --> 00:17:55.980
+all of our, our things, right? Yeah. Just some extras left. You got any?
+
+00:17:55.980 --> 00:18:05.080
+Yeah. So just noticed this yesterday actually is was that Guido Van Rossum has has a homepage
+
+00:18:05.080 --> 00:18:11.760
+on github.io and he started some interviews. So if you, if you look down blog posts, there's
+
+00:18:11.760 --> 00:18:17.080
+interviews with key Python developers for the first 25 years. It's a new series that he's doing.
+
+00:18:17.080 --> 00:18:25.220
+he's got Thomas Witters and Brett Cannon so far. And, at the preface for Thomas's
+
+00:18:25.220 --> 00:18:30.940
+interview talks about what he wants, what he's doing here. apparently during the, the, 
+
+00:18:31.100 --> 00:18:36.800
+the recent, documentary that we had around Python, we talked about, there was some,
+
+00:18:37.080 --> 00:18:42.140
+some people talking about, like, there's a bunch of old timers that were not part of that. And also,
+
+00:18:42.140 --> 00:18:46.220
+um, you know, trying to, they weren't mentioned in the film, but probably are worth talking to.
+
+00:18:46.620 --> 00:18:52.520
+And so he decided to do some interviews himself, from his perspective of things that needed
+
+00:18:52.520 --> 00:18:58.240
+to be part of Python history, which is cool. And also that he likes, he likes, doing these
+
+00:18:58.240 --> 00:19:03.960
+interviews and just releasing a text form instead of, instead of as a, like a podcast or something.
+
+00:19:03.960 --> 00:19:09.920
+And actually, I think it's completely valid. It's, it's fine. It's good. but the format's
+
+00:19:09.920 --> 00:19:15.900
+nice. there's some interesting information. I kind of skimmed through both Thomas and Brett's
+
+00:19:15.900 --> 00:19:19.940
+interview and, I'm excited that he's doing this. So I'd like, keep it up.
+
+00:19:20.080 --> 00:19:24.980
+Yeah. That's pretty cool. I know a lot of people, I'm not amongst them, so I'm not going to rant it,
+
+00:19:25.160 --> 00:19:30.780
+but a lot of people are like, why, if I just want to learn how to do a thing, do I have to watch a 15
+
+00:19:30.780 --> 00:19:35.380
+minute video that is, should have been a five minute video in the first place. And I just want
+
+00:19:35.380 --> 00:19:41.220
+to skim the article and jump to it. I like to watch videos and listen to things, but I know a lot of
+
+00:19:41.220 --> 00:19:45.960
+people are just rather read it. There's room for both, right? That's right. But our listeners should
+
+00:19:45.960 --> 00:19:49.580
+not stop listening. They should definitely, definitely. They should definitely keep listening.
+
+00:19:50.100 --> 00:19:55.380
+All right. Carrying on here. I got a speak. You mentioned the documentary for the Python one,
+
+00:19:55.380 --> 00:20:02.260
+the really nice one that Cult Repo did. Well, they just released one on IntelliJ, the documentary,
+
+00:20:02.440 --> 00:20:10.440
+an origin story, which is a 40 minute documentary on IntelliJ, which is kind of the foundation of
+
+00:20:10.440 --> 00:20:15.420
+PyCharm as well. Right. So very relevant to PyCharm fans. So people should check that out. That's
+
+00:20:15.420 --> 00:20:19.600
+really nice. Cool. I'm looking forward to that. Yeah. It's so easy to go on YouTube and just get
+
+00:20:19.600 --> 00:20:25.340
+junk, but here's some really nice things. And keeping with the PyCharm theme, right, we did VS Code and
+
+00:20:25.340 --> 00:20:33.000
+Curse earlier. So PyCharm. Apparently in PyCharm, they have the agent client protocol. And I don't
+
+00:20:33.000 --> 00:20:37.960
+know all the different organizations involved in this, but this is just completely new to me. I
+
+00:20:37.960 --> 00:20:42.380
+didn't realize what this was, but this is actually really neat. I'll tell you why in just a second.
+
+00:20:42.660 --> 00:20:49.020
+So what it does is if you've got some kind of agentic programming tool, like QuadCode or something,
+
+00:20:49.020 --> 00:20:54.680
+you can then just go to this and say, I would like anything that supports agent client protocol
+
+00:20:54.680 --> 00:21:00.660
+allows that agent to do agentic coding in your editor. It's a little bit like the language server
+
+00:21:00.660 --> 00:21:07.140
+allows all these different things to basically integrate with ty and Pyrefly and other stuff.
+
+00:21:07.260 --> 00:21:14.340
+Right. Pretty cool. So if you scroll down here, the agents on ACP are Juni, Gemini, CLI, Google
+
+00:21:14.340 --> 00:21:23.080
+Copilot, GitHub Copilot, Codex, Cursor, Cursor, what? Cursor. I thought that was an editor. Kimi,
+
+00:21:23.420 --> 00:21:29.720
+Quinn, OpenCode, Klein, some of these I've mentioned before, but the noise, the announcement here is that
+
+00:21:29.720 --> 00:21:35.440
+Cursor joined the ACP registry and Cursor is now available in PyCharm. Cool. So that's interesting,
+
+00:21:35.440 --> 00:21:42.280
+right? Yeah. I mean, I don't even, I don't even know what to say, but luckily there's a video down
+
+00:21:42.280 --> 00:21:47.280
+here that says, Oh, you could just watch this and it'll actually show you if you go along,
+
+00:21:47.400 --> 00:21:53.020
+you just go in here and basically find and install Cursor and then your agentic coding section. One
+
+00:21:53.020 --> 00:21:57.100
+of the things you can pick is Cursor. If I go far enough, it'll show you like once it's set up,
+
+00:21:57.280 --> 00:22:02.680
+you can pick your agent source, like Cursor or Gemini wrote, and then you pick your agent mode and
+
+00:22:02.680 --> 00:22:06.120
+thinking or planning and your actual model and so on. Isn't that wild?
+
+00:22:06.440 --> 00:22:07.440
+Yeah. It's pretty cool.
+
+00:22:07.680 --> 00:22:11.940
+Yeah. So I'm pretty, pretty happy to see that. That looks really cool. Okay. One more thing.
+
+00:22:11.940 --> 00:22:12.980
+I wrote an R. Go ahead.
+
+00:22:12.980 --> 00:22:17.440
+So one of the things I'm hoping is like that might be a way for, so one of the cool things
+
+00:22:17.440 --> 00:22:24.160
+about Cursor that I've been trying out is the, one of the models is Composer, which is a cursor
+
+00:22:24.160 --> 00:22:31.880
+specific model. And, and it's like, for instance, it's one of the best models for doing pytest code.
+
+00:22:31.880 --> 00:22:37.980
+So that I've found, so it's possible that people, and you, you know, out for other people to be able
+
+00:22:37.980 --> 00:22:40.480
+to use it then if you're, even if you're not using Cursor. So.
+
+00:22:40.780 --> 00:22:46.680
+Yeah, exactly. So now you can run Composer 1.5 or whatever the latest one is at your time.
+
+00:22:46.900 --> 00:22:51.580
+Right. Excited by Charm. Yeah. Pretty sweet. Okay. One article for me really quick. I wrote an article
+
+00:22:51.580 --> 00:22:58.140
+called what hyper personal software looks like. So a lot of people say, well, if agenda coding is so
+
+00:22:58.140 --> 00:23:03.420
+good, why aren't we seeing a ton of different pieces of software just overwhelming us with different
+
+00:23:03.420 --> 00:23:08.320
+new apps? I think that's actually going to happen, but I think there's a lag, but I think what we have
+
+00:23:08.320 --> 00:23:13.800
+a lot of, and what's going to be interesting is this hyper personal software. That is like something
+
+00:23:13.800 --> 00:23:18.280
+that you make for yourself and you don't ever have an intention of sharing. You're just like, I just
+
+00:23:18.280 --> 00:23:22.920
+want this agent. You make this and then you have it. Right. So for me, the example I gave is I'm a big
+
+00:23:22.920 --> 00:23:26.960
+fan of start page. People probably know these days, that's what I've been using, but start page
+
+00:23:26.960 --> 00:23:33.260
+started putting ads on their search results. And if they had just been like little ads at the
+
+00:23:33.260 --> 00:23:38.220
+top, I would have actually looked to click them to support them and so on. But I have a 40 inch
+
+00:23:38.220 --> 00:23:45.820
+monitor on that. It's like 11 K it's, you know, 5,000 by 2000, something pixels on that screen.
+
+00:23:45.820 --> 00:23:52.660
+My browser still does not have a single organic search results on above the fold. There's so many
+
+00:23:52.660 --> 00:23:58.000
+ads and I'm like, that is just this, what is this? So I told Claude, Hey Claude, I need a browser
+
+00:23:58.000 --> 00:24:01.740
+extension. Here's what we're going to do. We're going to go here. Here's the HTML. I need to get
+
+00:24:01.740 --> 00:24:06.040
+rid of these sponsored links from search from start page. So I typed in the description. I gave
+
+00:24:06.040 --> 00:24:10.720
+it some example, HTML and I hit go and walked away to like make breakfast. Came back. It had
+
+00:24:10.720 --> 00:24:14.380
+something that almost worked. I had to give it a little like, ah, you remove too much. Tell it a
+
+00:24:14.380 --> 00:24:19.400
+few times. But now I have a browser extension that gives me just the organic results, nothing else.
+
+00:24:19.660 --> 00:24:22.940
+And I have no intention of sharing it. It's just my own browser extension that just runs on my
+
+00:24:22.940 --> 00:24:27.820
+computer and I'm happy with it. I'm not published in the store, nothing. And I think we're going to see
+
+00:24:27.820 --> 00:24:32.040
+a lot of like a lot of things like that. And I think also people should explore those ideas
+
+00:24:32.040 --> 00:24:36.060
+because they're really fun. They're super low stakes. Like if my search results get screwed
+
+00:24:36.060 --> 00:24:40.880
+up, I'll just turn off the extension. I don't care. Yeah. Yeah. So anyway, I think there's going to be
+
+00:24:40.880 --> 00:24:47.100
+this, this wave of hyper-personal software and here's an example. Yeah. I think that, that idea is
+
+00:24:47.100 --> 00:24:52.680
+going to show up in our joke later. It's absolutely going to show up on our joke and it's going to show up
+
+00:24:52.680 --> 00:24:57.220
+my next item in the very, very most tangential way. So I'm actually trying something new, Brian.
+
+00:24:57.300 --> 00:25:02.300
+And this is for people out there who have companies, I would really love them to pay attention to this
+
+00:25:02.300 --> 00:25:08.000
+part. So I'm, I've done a lot of training. I don't know if people know, I've taught over 100 week long
+
+00:25:08.000 --> 00:25:12.940
+courses around the world before I started doing the podcast and stuff. Like when I was doing training,
+
+00:25:13.020 --> 00:25:18.520
+which is a crazy amount of courses to give like professional development type stuff. So I am going to
+
+00:25:18.520 --> 00:25:25.020
+put my shingle back up for that just on very limited way to help people adopt agentic engineering
+
+00:25:25.020 --> 00:25:30.680
+practices for their software team. Cool. Not training in general, but if you're, if you've got a Python
+
+00:25:30.680 --> 00:25:36.980
+team, especially, and you're like, wow, we're just not really having a lot of success with using AI for
+
+00:25:36.980 --> 00:25:42.540
+coding or our team is afraid of it, or they don't know how to do it. Reach out to me, set up a discovery
+
+00:25:42.540 --> 00:25:47.060
+call and we'll have a quick chat and I'd love to come. It's been three or four days, one day teaching,
+
+00:25:47.060 --> 00:25:52.480
+one day like coding along with your engineers and then like some more follow-up stuff to help them
+
+00:25:52.480 --> 00:25:57.580
+really get this kind of stuff going. Oh, that's great. Cause yeah, a lot of people, a lot of teams
+
+00:25:57.580 --> 00:26:04.560
+are getting demands from above. Hey, you should be using coding agents, but how? But how, and then how
+
+00:26:04.560 --> 00:26:09.980
+do you not end up with a bunch of slop or a bunch of bugs or mouth, you know, like code not following
+
+00:26:09.980 --> 00:26:14.200
+your practices. I really dialed that in over the last year and I think I'd, I'd love to share that with
+
+00:26:14.200 --> 00:26:19.080
+people. So cool. Nice. Thanks. That's, that's out there. People can find it on my personal website.
+
+00:26:19.660 --> 00:26:24.940
+All right. And you're right. All of this leads in perfectly to our joke, doesn't it? So are you
+
+00:26:24.940 --> 00:26:29.960
+ready? Yeah. All right. So this comes to us, this is on Reddit. It looks like it actually came off of,
+
+00:26:30.220 --> 00:26:35.560
+I don't know, off of X or whatever. It doesn't matter. So there's been this crazy open claw.
+
+00:26:35.720 --> 00:26:41.200
+It was like molt, there was claw bot and then molt bot. There's like all these variations that it went
+
+00:26:41.200 --> 00:26:46.360
+through. But open claw is this thing that you can set up and you just give it access to your email,
+
+00:26:46.480 --> 00:26:50.840
+your calendar, your credit card, everything. And it can just, you could just send it jobs and it'll
+
+00:26:50.840 --> 00:26:55.640
+just go crazy sometimes in really, really bad ways. But it is kind of supposed to be this thing that
+
+00:26:55.640 --> 00:27:01.800
+just runs and does a bunch of agentic stuff without your work. Right. So you've heard that AI means that
+
+00:27:01.800 --> 00:27:07.640
+SaaS, like hosted software created by other people that you subscribe to, SaaS is dead. So here's,
+
+00:27:07.640 --> 00:27:14.020
+here's this quote or this message from Johan that says, SaaS is dead. Open claw replaced all my
+
+00:27:14.020 --> 00:27:22.240
+subscriptions. Went from $480 a month on tools to $1,245 a month on API costs plus 15 hours a week
+
+00:27:22.240 --> 00:27:31.320
+fixing my YAML files. Adapt or be left behind losers. That's so awesome. It's so much of the
+
+00:27:31.320 --> 00:27:36.940
+zeitgeist, isn't it? Yeah. It's got 2000 upvotes as well on Reddit, but the comments are good.
+
+00:27:36.940 --> 00:27:42.360
+Okay. Solid math, solid work. If I, if I were you, I would spend the next 200 hours crafting a
+
+00:27:42.360 --> 00:27:48.100
+premium info product that sells this magic method you've unearthed. Someone says, I must admit,
+
+00:27:48.140 --> 00:27:54.180
+it's kind of funny, but it doesn't say they misspelled. It says, I must admin. It's kind
+
+00:27:54.180 --> 00:27:58.600
+of funny. And it says, please update the YAML file. So you don't misspell, misspell admin again.
+
+00:27:58.600 --> 00:28:03.980
+Oh, that's good. And then there's a really good one. Let me see if I can find it.
+
+00:28:04.280 --> 00:28:10.080
+This person over here says, SaaS is hardly dead. Kind of foolish to think every business will try
+
+00:28:10.080 --> 00:28:14.600
+to roll their own suddenly to find out and find that you don't have the skill to fully conceptualize,
+
+00:28:14.680 --> 00:28:20.860
+blah, blah, blah, blah, blah, blah, blah. Then somebody's, somebody says nude irony, huh?
+
+00:28:20.860 --> 00:28:27.280
+Yeah. Cause they just took it literally like, Oh my God, I can't believe he's trying to adopt this.
+
+00:28:27.320 --> 00:28:28.220
+This is not going to work.
+
+00:28:30.240 --> 00:28:31.240
+Yeah. That's funny.
+
+00:28:31.540 --> 00:28:33.940
+All right. Let's leave it there. New to, new to irony, huh?
+
+00:28:34.180 --> 00:28:34.420
+Yeah.
+
+00:28:36.100 --> 00:28:37.220
+The opposites are frankly.
+
+00:28:37.560 --> 00:28:41.020
+Yeah. Anyway, that's really funny. I'm, I definitely think that's a good choice.
+
+00:28:41.020 --> 00:28:44.240
+Just spend all your time fixing the claw bot.
+
+00:28:45.340 --> 00:28:45.520
+All right.
+
+00:28:45.620 --> 00:28:51.520
+And I went from a 540 to like over a thousand API costs. That's hilarious.
+
+00:28:51.700 --> 00:28:55.460
+Exactly. Exactly. I don't know about you, but I've got three broken agents over there.
+
+00:28:55.460 --> 00:28:57.000
+So I got to get going. I'll talk to you later.
+
+00:28:57.240 --> 00:28:57.800
+All right. Bye.
+
+00:28:57.980 --> 00:28:58.580
+All right. Bye.
