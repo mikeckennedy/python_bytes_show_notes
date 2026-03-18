@@ -1,0 +1,1357 @@
+WEBVTT
+
+00:00:00.000 --> 00:00:06.980
+Hey everybody. Hi Michael. Welcome to another week. Well, let's, I'm excited.
+
+00:00:07.220 --> 00:00:09.060
+It's another week that starts with Monday. Can you believe it?
+
+00:00:09.560 --> 00:00:14.920
+It's just another, it's one of those, yeah, also one of those days that ends in Y.
+
+00:00:17.300 --> 00:00:24.120
+So let's, let's get going. Hello and welcome to Python Bytes, where we deliver Python news and
+
+00:00:24.120 --> 00:00:31.400
+headlines directly to your earbuds. This is episode 471 recorded March 2nd, 2026.
+
+00:00:32.540 --> 00:00:37.000
+It's just still sounds weird. And I am Brian Okken. I am Michael Kennedy.
+
+00:00:38.080 --> 00:00:44.940
+And this episode is sponsored by all of, all of you guys and us. So everybody that helps,
+
+00:00:45.060 --> 00:00:51.060
+helps send some money our way through taking a course at Talk Python Training or a pytest course
+
+00:00:51.060 --> 00:00:58.540
+at pythontest.com or reads one of our books or also Patreon supporters. Thank you, Patreon supporters.
+
+00:00:59.600 --> 00:01:04.780
+If you would like to send out, we get a lot of, we do a lot of research ourselves, but we also get a
+
+00:01:04.780 --> 00:01:09.560
+lot of tips from other people. So if you'd like to have feedback, if you disagree with something or
+
+00:01:09.560 --> 00:01:17.820
+want to add to the conversation, go ahead and connect with us on Bluesky, Mastodon. I think
+
+00:01:17.820 --> 00:01:24.880
+that's it. Or just at pythonbytes.fm. There's a contact form there. You can also subscribe to the,
+
+00:01:25.480 --> 00:01:31.700
+actually one of the best ways is you can go over to pythonbytes.fm and subscribe to the email list.
+
+00:01:32.060 --> 00:01:36.020
+And when, when you get an email, then you'll know our email address and then you can just
+
+00:01:36.020 --> 00:01:42.300
+send us stuff through there. That gets to us. Also, if you'd like to join the show live,
+
+00:01:42.300 --> 00:01:49.200
+that's fun. Go on, head over to pythonbytes.fm/live and you can find out how to get,
+
+00:01:49.620 --> 00:01:54.620
+watch the show live. With that, let's kick it off with the first topic, Michael.
+
+00:01:55.300 --> 00:02:03.340
+Let's do it. So this first topic is an article that I wrote, more of a design pattern that I would
+
+00:02:03.340 --> 00:02:12.460
+like to advocate for. Now, you see, Brian, I have this friend, his name is Claude. He's really good
+
+00:02:12.460 --> 00:02:21.860
+at writing code, but he gets super distracted. Claude code. So I've been thinking a lot about what does
+
+00:02:21.860 --> 00:02:29.180
+agentic programming and people leveraging these tools mean for like design patterns and architecture.
+
+00:02:29.180 --> 00:02:34.460
+I'm a big fan of thinking about architecture and so on. So I wrote this up. It got super popular
+
+00:02:34.460 --> 00:02:41.340
+in, on Reddit. And I thought I would share it here as well. You know, popular in the sense that
+
+00:02:41.340 --> 00:02:46.600
+like lots of comments, lots of upvotes, but also a lot of like mean comments because it's Reddit. So
+
+00:02:46.600 --> 00:02:54.620
+that's how it goes, but good comments too. So first of all, I want to put this out as a
+
+00:02:54.620 --> 00:03:04.380
+disclaimer. As you think about this, don't try to adjudicate whether or not people should be using AI
+
+00:03:04.380 --> 00:03:11.740
+for coding. Don't try to adjudicate whether AI coding should exist, whether it is bad or good.
+
+00:03:12.620 --> 00:03:20.300
+It exists. People are using it. If that's true, what should we do as an industry? How should we consider
+
+00:03:20.300 --> 00:03:23.100
+how should we move forward? How should we think about this? Right? Are there things that would make
+
+00:03:23.100 --> 00:03:27.420
+that better or worse? Right? You yourself can decide you're not using, but as an industry,
+
+00:03:27.420 --> 00:03:32.300
+I think it's pretty clear that it's being highly adopted. So that's kind of the goal that I had
+
+00:03:32.300 --> 00:03:42.860
+when I wrote this article. Yeah. And so the title is raw plus DC. So as in raw database queries,
+
+00:03:42.860 --> 00:03:51.180
+and DC is in data classes. And then subtitle is the ORM pattern of 2026 question mark. And I'm putting
+
+00:03:51.180 --> 00:03:56.540
+that out there is because I think this is a pattern that is much, much more aligned to way AI coding works.
+
+00:03:58.540 --> 00:04:05.740
+So why do people like ORMs? And technically I for this, I use what's called an ODM and object
+
+00:04:05.740 --> 00:04:11.020
+document mapper because I was using the example I extracted it from was written against MongoDB,
+
+00:04:11.020 --> 00:04:17.020
+but whatever, like it's immaterial, whether it's Mongo or Postgres, okay, or SQLite.
+
+00:04:18.540 --> 00:04:27.820
+Developers love ORMs and ODMs because they provide type safety, especially with like document databases,
+
+00:04:27.820 --> 00:04:34.060
+they constrain what can and cannot go into the database, right? You got to match the class and
+
+00:04:34.060 --> 00:04:38.620
+then the class goes in the database. You don't just stick dictionaries in there, which is otherwise the case.
+
+00:04:38.620 --> 00:04:46.860
+They prevent SQL injection or Mongo query injection because they, they always, by the way they work,
+
+00:04:46.860 --> 00:04:55.580
+use parameterized queries. They're a nice abstraction. Also for developers, they provide really good IDE
+
+00:04:55.580 --> 00:05:00.620
+auto completion. So I have a function, I give it a type or even the type is just discovered through
+
+00:05:00.620 --> 00:05:06.700
+type inference that it returns this class. So when I get one back and I say thing from the database dot,
+
+00:05:06.700 --> 00:05:10.220
+it gives me a list of all the stuff I can do in the database. All these things are awesome, right?
+
+00:05:10.780 --> 00:05:12.220
+Yeah. But here's the thing.
+
+00:05:14.700 --> 00:05:19.180
+I ran to this literally this morning working on this project that I've not yet released,
+
+00:05:19.180 --> 00:05:20.380
+but we'll talk about pretty soon.
+
+00:05:22.860 --> 00:05:32.460
+These, these AI tools are trained so much more on raw queries than they are on any particular ORM.
+
+00:05:32.460 --> 00:05:41.740
+So for example, I was using Beanie on this project. Beanie is downloaded 1.4 million times a month,
+
+00:05:41.740 --> 00:05:45.740
+which actually is really impressive. So Beanie is the ODM for talking to MongoDB.
+
+00:05:46.860 --> 00:05:53.180
+The underlying library that lets you talk in the native query syntax is downloaded 74 million times
+
+00:05:54.220 --> 00:05:59.900
+per month. That's 53 times more. And there's other libraries for talking directly to Mongo as well.
+
+00:05:59.900 --> 00:06:09.420
+Right? So there's like 50, 75 times more bits of code out there that are actually just talking directly
+
+00:06:09.420 --> 00:06:16.300
+to the database than using this particular ORM. Okay. And that's true for SQL as well. Like
+
+00:06:17.660 --> 00:06:23.980
+for just sticking with Mongo, right? PyMongo is the Python version of this, but there's also people doing
+
+00:06:23.980 --> 00:06:31.020
+the native query syntax in node, deno, bun, PHP, .net, whatever, right? Like all these other languages.
+
+00:06:31.020 --> 00:06:37.100
+So if you actually do that sort of cross product, it's probably a thousand times more that AIs see
+
+00:06:38.140 --> 00:06:44.140
+raw database queries than they see any particular ORM, even if that ORM is popular, right? Because it's
+
+00:06:44.140 --> 00:06:49.260
+for a technology and then it's sliced down into who uses that ORM rather than across all programming.
+
+00:06:49.260 --> 00:07:00.140
+The other thing is, I don't know. What about yeah. So these, these ORMs go in unmaintained,
+
+00:07:00.140 --> 00:07:07.820
+right? I mean, Django ORM probably won't go unmaintained, but they, they come and they go and sort of
+
+00:07:07.820 --> 00:07:14.140
+their popularity. So for example, Beanie, it had only like three releases in the entire year of 2025.
+
+00:07:15.100 --> 00:07:19.980
+It's last release was four months ago to close some minor issue. And it's got a bunch, like almost
+
+00:07:19.980 --> 00:07:25.260
+a hundred open issues, even though it's downloaded over a million times a month, it's kind of gone
+
+00:07:25.260 --> 00:07:29.740
+unmaintained. And before that I was using Mongo engine, which was way more unmaintained than Beanie.
+
+00:07:29.740 --> 00:07:35.500
+Like Beanie was the exciting new one, right? And so what do I have to do if this changes? If I decide
+
+00:07:35.500 --> 00:07:41.020
+that it's too unmaintained, I have to completely rewrite it in a different ORM. But if it was written in
+
+00:07:41.020 --> 00:07:45.580
+a regular, just straight query syntax, that doesn't change, right? That's, that's been identical
+
+00:07:46.140 --> 00:07:51.420
+for SQL since the databases came out identical sent for Mongo since Mongo came out. I mean,
+
+00:07:51.420 --> 00:07:55.740
+they add to it a little bit, right? Like if they add a feature or something, but generally it's going
+
+00:07:55.740 --> 00:08:00.620
+to be the same. So I don't have to worry about it. These things going on the same. Go ahead.
+
+00:08:00.620 --> 00:08:06.540
+I want to interject a little bit. You threw out Django. I was going to comment that Django might be
+
+00:08:06.540 --> 00:08:15.820
+an outlier there in that a lot of, I know there are people that use other, other ORMs or raw SQL with
+
+00:08:15.820 --> 00:08:22.380
+Django, but I think it's probably a lion's share of the Django users that use the Django ORM. And I don't
+
+00:08:22.380 --> 00:08:27.820
+think that's going away anytime soon. So I totally, a hundred percent agree with you, but what if you
+
+00:08:27.820 --> 00:08:32.140
+decide you're probably, you want to change your project to a different web framework?
+
+00:08:32.140 --> 00:08:38.860
+Well, I would, I would probably say the same argument is that you could probably switch to this,
+
+00:08:38.860 --> 00:08:49.580
+this raw SQL plus data classes from Django, the Django ORM because I, there's a ton of Django stuff
+
+00:08:49.580 --> 00:08:52.540
+out there. I'm pretty sure that the models are trained on lots of Django.
+
+00:08:52.540 --> 00:08:57.180
+Yeah. They were pretty well trained. So this, this maintained argument is not go for everything,
+
+00:08:57.180 --> 00:09:00.300
+but it definitely, it's definitely another angle, right?
+
+00:09:00.300 --> 00:09:06.540
+Yeah. And also I think that you probably touched on this already, but just one less
+
+00:09:07.900 --> 00:09:11.260
+dependency is one less thing you have to keep up on.
+
+00:09:12.300 --> 00:09:16.940
+Yes, absolutely. It's one, one fear. And it's not usually just one dependency, right? It's like,
+
+00:09:16.940 --> 00:09:20.940
+this thing depends on four others, which depend on three. And now there's a CVE and one of them,
+
+00:09:20.940 --> 00:09:28.380
+you're like, ah, man. Okay. So let's, but, but there's reasons people who like these ORMs. I am a
+
+00:09:28.380 --> 00:09:35.500
+huge fan of ORMs because they give you back classes that are great. So my proposed way of working
+
+00:09:37.340 --> 00:09:43.580
+is create a nice data access layer, put functions in there that are very clear, like create user,
+
+00:09:43.580 --> 00:09:52.700
+update password, whatever. And then inside, let, let it be raw queries. Let Claude write however Claude wants.
+
+00:09:52.700 --> 00:09:57.260
+But when stuff comes out of there, it has to return some kind of class. So I proposed data classes.
+
+00:09:58.220 --> 00:10:04.700
+Okay. And I think data classes are, are pretty interesting here for a couple of reasons. One,
+
+00:10:04.700 --> 00:10:09.260
+they're typed, right? They look like you can tell them use slots. That's as good for memory and
+
+00:10:09.260 --> 00:10:15.340
+performance. They're typed just like if you use Pydantic or if you use any ORM generally.
+
+00:10:15.340 --> 00:10:21.500
+so that's really good. They're also built in. So no dependencies, as you point out, and they're
+
+00:10:21.500 --> 00:10:28.380
+very, very lightweight, which is great. Now they have type safety in the terms of like
+
+00:10:30.380 --> 00:10:36.540
+type checking type safety, but they don't have runtime type safety, like say Pydantic, right?
+
+00:10:36.540 --> 00:10:37.100
+Yeah.
+
+00:10:37.100 --> 00:10:37.740
+Yeah.
+
+00:10:37.740 --> 00:10:43.500
+So if you want another very reasonable option would be to do a Pydantic plus raw data, raw queries.
+
+00:10:44.380 --> 00:10:49.580
+I didn't use Pydantic because this means every query that comes back from the database gets
+
+00:10:49.580 --> 00:10:55.660
+validated and there's a whole bunch of machinery that runs when, when you're reading from the
+
+00:10:55.660 --> 00:10:59.900
+database. But if the data in the database is wrong, you're, it's already too late. It doesn't
+
+00:10:59.900 --> 00:11:03.500
+matter if your class says it's too bad. It's like, no, it's saved. It's too bad. It's too late.
+
+00:11:04.220 --> 00:11:07.820
+And so maybe on the outside layer, you could use Pydantic, but in the data access layer,
+
+00:11:07.820 --> 00:11:12.780
+you could use something lighter. That was my, that's my take. when I posted this on Reddit,
+
+00:11:12.780 --> 00:11:16.300
+people probably like 50 times, like, well, why aren't you just using Pydantic? It's like, well,
+
+00:11:16.940 --> 00:11:20.940
+Pydantic is great. It doesn't have to be used for everything. So anyway, I'm going to follow up
+
+00:11:20.940 --> 00:11:28.060
+with one more thing. That's pretty cool around that. But, yeah. So if you look at the performance
+
+00:11:28.060 --> 00:11:33.260
+really quick here as well, I did a nice graph of a bunch of different things. It was like
+
+00:11:33.260 --> 00:11:40.140
+a thousand reads look like what does a thousand writes and so on. And this graph is based on doing
+
+00:11:40.140 --> 00:11:46.700
+just raw queries without any class component. Cause that's really the foundational,
+
+00:11:46.700 --> 00:11:50.220
+like they all have to do that. Right. So how much overhead does each style add?
+
+00:11:51.260 --> 00:11:58.780
+And it's not exactly perfect because, this, this raw data class style can't be faster
+
+00:11:58.780 --> 00:12:03.260
+than writing itself in a lot of places. It's literally the same code. So it's just like
+
+00:12:03.260 --> 00:12:09.820
+fluctuations in the machine. But if you look at say Beanie, which is based on Pydantic. So this is
+
+00:12:09.820 --> 00:12:17.740
+more or less just Pydantic. What would Pydantic look like in this model? it's a lot of times
+
+00:12:17.740 --> 00:12:22.780
+pretty close, but sometimes it's like five times slower. If you look at Mongo engine, which is another one,
+
+00:12:22.780 --> 00:12:30.860
+15 times slower, 10 times slower, right? It's, it's a big difference. It's, it's quite a big difference.
+
+00:12:30.860 --> 00:12:38.140
+So this style is actually almost native speed. There's just a few times where like the serialization
+
+00:12:38.140 --> 00:12:43.340
+maybe doubles the time to read say a thousand or a hundred orders or something like that, but
+
+00:12:43.340 --> 00:12:46.100
+barely. Anyway, I think it's pretty interesting. What do you think?
+
+00:12:46.100 --> 00:12:53.300
+Yeah. I think that one of the things used, one of the reasons to go with a, an ORM was
+
+00:12:53.300 --> 00:13:00.860
+speed of development because a lot of people don't know SQL queries that well, but their SQL queries
+
+00:13:00.860 --> 00:13:07.540
+is a good SQL query is not that hard to, well, they can be, but generally they can be easier. They can be
+
+00:13:07.540 --> 00:13:14.200
+decent to read, trying to figure out what, how to write it might be tricky. So that's where I think
+
+00:13:14.200 --> 00:13:20.880
+your, your argument of around using agents and stuff to help with this, they're going to know
+
+00:13:20.880 --> 00:13:25.100
+how to write a decent one. And you can probably, even if it's ugly, you might be able to say,
+
+00:13:25.180 --> 00:13:32.160
+can you like clean that up? So it's easier to read. or explain it to me. Yeah. 
+
+00:13:32.500 --> 00:13:39.020
+but anyway, I think it's a valid, like it's definitely valid. I think it's more valid now than it has
+
+00:13:39.020 --> 00:13:43.740
+been in the last couple of decades. So, yeah. Yeah. Just this morning, I was, I asked Claude
+
+00:13:43.740 --> 00:13:48.200
+to do this thing with Beanie and I said, Oh, it would be way better if I just used a project projection
+
+00:13:48.200 --> 00:13:54.720
+and for projections and Beanie, you have to create a subclass and use our different class and then use
+
+00:13:54.720 --> 00:13:57.500
+that. And it's like, Oh, I could just use dictionaries. Then it crashed. Oh, I don't think
+
+00:13:57.500 --> 00:14:01.420
+I can do that. Let me try the aggregation pipeline through Beanie. And that didn't work. I'm just like,
+
+00:14:01.480 --> 00:14:05.740
+could you just do it directly? And it's like, Oh yeah, that works. It's just, you know,
+
+00:14:05.740 --> 00:14:09.780
+it's, it's kind of a little bit clunky. one other thing that was really popular in the,
+
+00:14:09.780 --> 00:14:15.600
+the conversation about this article was what Kiva Burb is asking is what about migrations,
+
+00:14:15.600 --> 00:14:20.660
+not relevant to ODMs, but certainly relevant to ORMs. You do what everyone else does. If you write
+
+00:14:20.660 --> 00:14:27.200
+straight SQL, you write your migrations yourself. But the thing is like, my assumption is this pattern
+
+00:14:27.200 --> 00:14:33.040
+is most adapted to agent to coding. If you're just doing raw straight coding yourself, stick with ORMs
+
+00:14:33.040 --> 00:14:39.260
+that'll handle it. But if you're doing a genetic, like cloud code can write a heck of a migration.
+
+00:14:39.420 --> 00:14:41.520
+It doesn't care. It's going to be great at that.
+
+00:14:44.700 --> 00:14:51.200
+Yeah. I guess I've just sort of leaned on migrations, a lot. And I actually don't
+
+00:14:51.200 --> 00:14:53.200
+really know what they do under the hood.
+
+00:14:53.540 --> 00:14:57.440
+Yeah. I mean, what are migrations? They are basically, they are a, they are a statically
+
+00:14:57.440 --> 00:15:03.580
+generated, like pre-generated SQL script that says, add this field, change this field, change
+
+00:15:03.580 --> 00:15:10.200
+this type, copy these things. It's a set of SQL steps for transforming the scheme of the
+
+00:15:10.200 --> 00:15:15.700
+database. And the, typically the way migrations work is it looks at the old version of the
+
+00:15:15.700 --> 00:15:18.720
+class and the new version of the class and goes, well, what do I got to do to write the
+
+00:15:18.720 --> 00:15:22.080
+SQL to make one go from one to the other? You can just ask Claude to do that.
+
+00:15:22.080 --> 00:15:28.420
+I also really liked that you're, the comment about have a data access layer, because
+
+00:15:28.420 --> 00:15:32.860
+I think that that's a, that's a good idea, even if you are using an ORM. So.
+
+00:15:33.480 --> 00:15:38.540
+Yeah. Thanks. All right. Well, that is plenty on that. I mean, you should definitely test your
+
+00:15:38.540 --> 00:15:40.740
+code if you're going to take on this, this way of programming.
+
+00:15:41.420 --> 00:15:47.580
+Yeah. Nice transition. I've been, I've been spending some time in the last week cleaning
+
+00:15:47.580 --> 00:15:53.620
+up, spending, giving some love to pytestCheck. So pytestCheck is a, is a little plugin I wrote
+
+00:15:53.620 --> 00:16:01.240
+a really long time ago. many, many years ago, but, but I had the last, what the
+
+00:16:01.240 --> 00:16:08.460
+last release before recently was in November, I think. So, yeah, October, November, something
+
+00:16:08.460 --> 00:16:13.160
+like that. so I've decided to, I decided to spend some time, getting it back up to
+
+00:16:13.160 --> 00:16:19.600
+date. And, I did, I like the, all that, the stuff on GitHub, the, the, 
+
+00:16:19.600 --> 00:16:24.580
+activity pulse activities thing. So there's been three, three merged pull requests. Sorry
+
+00:16:24.580 --> 00:16:28.500
+to everybody for taking so long, but it was only, I guess I only annoyed three people.
+
+00:16:29.100 --> 00:16:34.840
+and, there is, yeah, I closed a bunch of issues, eight closed issues. Now I
+
+00:16:34.840 --> 00:16:41.960
+did get to the point where I had only one enhancement request and, and no actual issues and no pull
+
+00:16:41.960 --> 00:16:47.320
+requests that, you know, that doesn't, that doesn't last very long for projects that are
+
+00:16:47.320 --> 00:16:52.540
+being used. And I hadn't checked the little, little stats thing recently.
+
+00:16:53.220 --> 00:17:00.880
+And, it's used by almost one point or 1.3 ish thousand projects. That's, that's fun.
+
+00:17:01.240 --> 00:17:07.440
+anyway, the, I just wanted to bring it up that that's, that's, that's a little,
+
+00:17:07.440 --> 00:17:12.460
+it's still in the live project and, and I'm going to keep it up. I'm still
+
+00:17:12.460 --> 00:17:16.520
+having fun with it. I still use it every day. So, that's one of the reasons the
+
+00:17:16.520 --> 00:17:21.220
+changes there's been, there's a, there's not a lot of extra features. There was a, 
+
+00:17:21.560 --> 00:17:29.240
+uh, support for raises parameter, in the, when, when you're doing X fail, that's,
+
+00:17:29.340 --> 00:17:33.800
+that works now, which, that's really kind of a bug fix, but it was extra feature.
+
+00:17:33.800 --> 00:17:39.000
+Sure. So, that was a pull request. So thank you. but a lot of, some documentation
+
+00:17:39.000 --> 00:17:43.740
+things that, and I've been noticing this at work too. If you have a new feature and you
+
+00:17:43.740 --> 00:17:48.820
+don't document it, it's like invisible work. Why did you do that work? So, I added some
+
+00:17:48.820 --> 00:17:54.900
+documentation to do things. but, the, a lot of it was around my PI cause a lot of
+
+00:17:54.900 --> 00:18:01.660
+people are using my, type checkers and using PI test check. So I, so I updated a
+
+00:18:01.660 --> 00:18:09.180
+lot of stuff, but I have a, I guess I have got a, a question or kind of an open
+
+00:18:09.180 --> 00:18:15.040
+thing. I was going to try to make it like strict compatible, but I don't think I like it. So,
+
+00:18:15.040 --> 00:18:22.440
+um, with strict compatible, you have to do things like, return none and make, have a lot of
+
+00:18:22.440 --> 00:18:27.320
+extra decorations. It's a test. We always, we know that PI test tests return on that. They
+
+00:18:27.320 --> 00:18:33.600
+have to, I think this is overkill most of the time. So, so for most of, I think it's
+
+00:18:33.600 --> 00:18:39.140
+cleaner just to not, not show that these are supposed to be examples of how, how to use it,
+
+00:18:39.280 --> 00:18:45.500
+how to use a tool. I think it's fine to not have a lot of that stuff. So I turned out, I did, I still
+
+00:18:45.500 --> 00:18:51.760
+do type checking on the examples, but I'm not doing strict. So anyway, that was my, my, two cents
+
+00:18:51.760 --> 00:18:59.180
+on, on that, I guess. I think, I think it's fine to not have a type safe or type clean
+
+00:18:59.180 --> 00:19:06.000
+types, clean, strict type checking results on example code. I think it can be too much. I think
+
+00:19:06.000 --> 00:19:10.140
+it has certainly a value, but there's, there's plenty of times where it's just too much. And
+
+00:19:10.140 --> 00:19:15.680
+these type checkers can definitely get out of control. Like I had something similar with flask
+
+00:19:15.680 --> 00:19:21.500
+or I had a flask view method and the, I had a custom decorator and the custom decorator didn't
+
+00:19:21.500 --> 00:19:28.580
+declare its types in a way that it was identical to this really complicated, you know, app at app.get
+
+00:19:28.580 --> 00:19:35.440
+sort of, signature. And I got these huge, crazy warnings saying this function has a mismatch on the
+
+00:19:35.440 --> 00:19:40.560
+signature. I'm like, it's called by flask. No one calls this function. I don't care about expressing
+
+00:19:40.560 --> 00:19:44.780
+what its signature, it works fine. Just leave it alone. You know what I mean?
+
+00:19:44.780 --> 00:19:51.760
+Yeah. It can go way too far. The, the, there's some things that I need to also things I need to
+
+00:19:51.760 --> 00:19:58.020
+look at, because like for an example, for a test doing something like assert one equals two
+
+00:19:58.020 --> 00:20:03.840
+makes sense. You know, that's going to fail. That's a great example, I think, but like the,
+
+00:20:03.840 --> 00:20:12.700
+my pipe says that that's an error. And, because what in, in constants aren't comparable. I can't
+
+00:20:12.700 --> 00:20:19.680
+remember the error, but it's, it's weird. interesting. Yeah. It can be over that last one
+
+00:20:19.680 --> 00:20:28.820
+or 2% is just, it's folly. So anyway, thanks to everybody. And, yeah, if you don't,
+
+00:20:28.820 --> 00:20:35.200
+this isn't a dead project, so yeah, cool. Yeah. Yeah. It looks awesome. And, over a thousand
+
+00:20:35.200 --> 00:20:40.160
+projects using that's pretty good. Yeah. It's, it's some of those have lots of stars. So
+
+00:20:40.160 --> 00:20:48.160
+nice. Transitive stars are piling up. I feel it. anyway. Okay. What you got next?
+
+00:20:48.380 --> 00:20:55.980
+What I got next is I want to talk about what something I learned through that whole discussion
+
+00:20:55.980 --> 00:21:02.320
+around that raw plus DC design pattern that I talked about. Somebody, somebody said, look,
+
+00:21:02.320 --> 00:21:08.360
+you are so close, but where's your validation? I'm like, you know what? I'm not really sure I need
+
+00:21:08.360 --> 00:21:14.000
+runtime validation when I'm reading from the database, maybe writing to it maybe, but anyway,
+
+00:21:14.000 --> 00:21:19.760
+I learned about a couple of really cool tools that you can use. So for data classes, there's this thing
+
+00:21:19.760 --> 00:21:26.020
+called the data class wizard. Ooh, a wizard has a cool wizard hat. It's simple, elegant wizarding
+
+00:21:26.020 --> 00:21:32.480
+tools for Python's data classes. So this is actually a super neat project here. So, and fun docs,
+
+00:21:32.580 --> 00:21:37.860
+behold the power of data class wizard. So what you can do, there's different ways you can use it.
+
+00:21:37.860 --> 00:21:42.860
+You can use it through what are called mix ins, which are like, they add some functionality,
+
+00:21:42.860 --> 00:21:50.740
+you know, through inheritance, some, you know, maybe like a from Jason function, something
+
+00:21:50.740 --> 00:21:59.580
+like that, but also, lets you specify other interesting things. Like I didn't even know you
+
+00:21:59.580 --> 00:22:06.660
+could do this in the class definition, but basically pass configuration values to a class,
+
+00:22:06.660 --> 00:22:14.180
+the class constructor for the type, I guess. Anyway, you can say, Hey, I have a regular
+
+00:22:14.180 --> 00:22:21.580
+data class, but in fact, I would like it to be unconcerned with the case of the
+
+00:22:21.580 --> 00:22:29.620
+inbound data. So if somebody doesn't say C# and they write Pascal case things, right? Like
+
+00:22:29.620 --> 00:22:35.380
+lowercase and then uppercase second bit, or, you know, camel case type of things like we do for
+
+00:22:35.380 --> 00:22:42.800
+classes for their fields. But I want to express them as, you know, snake case is active Tupa with
+
+00:22:42.800 --> 00:22:47.520
+underscores and not capital A capital T sort of thing. You can just say, Oh, that doesn't matter.
+
+00:22:48.560 --> 00:22:53.040
+And if I ever dump it out, put it back out in camel case, cause that's what the people who are
+
+00:22:53.040 --> 00:22:59.560
+working with this API want. So this data class wizard is like a, it's like data classes,
+
+00:22:59.560 --> 00:23:03.080
+but it has that type of functionality to it. Right.
+
+00:23:03.080 --> 00:23:07.280
+Cool. Which is super cool because my example, I said, Oh, well, you just got to write a from
+
+00:23:07.280 --> 00:23:10.760
+JSON function that like turns it into, they're like, why would you write that? You could use
+
+00:23:10.760 --> 00:23:14.120
+the wizard. Like, cause I didn't know about the wizard. Tell me about this thing,
+
+00:23:15.240 --> 00:23:19.880
+but there's other ways to use it as well. You can have just a regular data class and mix in the
+
+00:23:19.880 --> 00:23:26.560
+JSON wizard mix in. So then you get to and from JSON, kind of like I just described. This is super cool.
+
+00:23:26.560 --> 00:23:32.960
+You can have a, an ENV wizard. So I can then have a data class that derives from ENV wizard.
+
+00:23:33.520 --> 00:23:38.080
+And then it reads as you just instantiated, it reads from the environment variables.
+
+00:23:40.240 --> 00:23:42.320
+That's neat, right? Yeah.
+
+00:23:42.320 --> 00:23:46.240
+So you just have a config file and has all these variables and you just say, guess what? Those
+
+00:23:46.240 --> 00:23:54.320
+come out of my environment or doctor variables or whatever. And yeah, pretty neat. They've got the,
+
+00:23:54.320 --> 00:24:01.280
+the JSON wizard, the list wizard. Cause sometimes you get a set of JSON and it starts as a list
+
+00:24:01.280 --> 00:24:08.880
+instead of curly braces. And then it's hard to parse. So, files, Toml, Toml and YAML. You can
+
+00:24:08.880 --> 00:24:14.160
+also get ones that'll read and write Toml and YAML data classes that basically naturally know that type.
+
+00:24:15.120 --> 00:24:19.680
+And if you just keep going, it says you don't have to use inheritance either. You can just create
+
+00:24:19.680 --> 00:24:26.080
+standard data classes, even hierarchical data classes like here as an A class, which has a list of B
+
+00:24:26.640 --> 00:24:34.800
+types. And those are also data classes. And then you can just use the from dict from data class
+
+00:24:35.360 --> 00:24:39.920
+wizard, say it's this type and here's the dictionary and then boom, it's like a little factory
+
+00:24:40.480 --> 00:24:44.800
+method sort of thing. Oh, that's especially great if the classes come from somebody else.
+
+00:24:44.800 --> 00:24:48.960
+Exactly. And it also does really interesting, 
+
+00:24:51.440 --> 00:24:57.520
+parsing. I can't remember where it is in their documentation, but it does, coercion or
+
+00:24:58.800 --> 00:25:05.440
+of types. I don't know exactly how they refer to it there, but if I've got, say I have a list of integers
+
+00:25:05.440 --> 00:25:12.080
+like Pydantic either does, or at least used to do like one. And then the quote two is the second entry
+
+00:25:12.080 --> 00:25:15.200
+it'll, and it knows it's supposed to be an end. It'll turn that into an end and stuff. So it kind
+
+00:25:15.200 --> 00:25:19.600
+of brings a lot of what Pydantic offers to data classes, but only when you want them.
+
+00:25:21.760 --> 00:25:26.560
+Right. Cool. You're like in this place, I want to parse it and validate it, but not other times,
+
+00:25:26.560 --> 00:25:33.920
+you know what I mean? Stuff like that. So anyway, I present to you the data class wizard. It's pretty cool.
+
+00:25:33.920 --> 00:25:42.080
+Yeah. And hopefully it stays maintained. Okay. That's a good question. Let's go. Let's,
+
+00:25:42.080 --> 00:25:50.320
+let's go to the GitHub. It says 3.14, I think tested at least. So yeah. Okay. Two months ago,
+
+00:25:50.320 --> 00:25:57.600
+it had an update. It only has two open pull requests. So that's pretty good. It doesn't have 200.
+
+00:25:57.600 --> 00:26:03.520
+Yeah. Anyway. Yeah. Pretty neat. I'm liking it. I haven't really had a chance to use it because
+
+00:26:03.520 --> 00:26:11.520
+I just learned about it, but I like the idea of it a lot. Yeah. That looks fun. I have got a,
+
+00:26:11.520 --> 00:26:17.440
+another project that is in a similar boat that I haven't, I haven't really tried it that much. I
+
+00:26:17.440 --> 00:26:26.000
+downloaded it and installed it. And what it is, is SQLite O SQLite O SQLite O SQLite O.
+
+00:26:26.000 --> 00:26:29.920
+SQLite O. SQLite O. SQLite O. I think it's gotta be SQLite O. That's the fun pronunciation.
+
+00:26:29.920 --> 00:26:40.000
+SQLite O. So this is, this is a new little toy from Adam Hill. And I noticed, I can't remember,
+
+00:26:40.000 --> 00:26:49.120
+I think I saw a social media post on it or something. Anyway, it's a macOS SQLite browser built for
+
+00:26:49.120 --> 00:26:56.960
+normal people apparently. So, but it looks good. It looks in with the little, all the emojis, I'm
+
+00:26:56.960 --> 00:27:02.320
+thinking, wow, I think he used maybe some agents to help build it. And that's kind of what I want to
+
+00:27:02.320 --> 00:27:10.160
+talk about. But, but I do like, it does look good. The, the oops, error loading page. I don't know.
+
+00:27:10.160 --> 00:27:15.920
+Yeah. I can't look at the over the overview pictures that much more, but it looks like a very
+
+00:27:15.920 --> 00:27:24.720
+nice interface to, you know, look at your SQLite databases on Mac. So that's cool. So why am I
+
+00:27:24.720 --> 00:27:30.960
+bringing this up? I'm bringing it up kind of because there was a caveat with installing it.
+
+00:27:30.960 --> 00:27:39.840
+And it said, it's a, it's a, it's a, you could download the DMG and then you drag that to your
+
+00:27:39.840 --> 00:27:46.640
+app folder or just double click it. And then you start querying, but there is, it's not verified.
+
+00:27:46.640 --> 00:27:53.760
+So it's not through the app store. It's, it doesn't have a developer certificate yet. So why,
+
+00:27:53.760 --> 00:28:00.240
+why am I okay with like trying this out? Well, I think it trust is a big thing. I trust Adam Hill.
+
+00:28:00.240 --> 00:28:04.240
+I've seen a lot of his work. I've seen him comment on stuff. He works on open source projects.
+
+00:28:05.200 --> 00:28:10.160
+And so there's some inherent trust there. If you don't know who Adam Hill is, you don't have that,
+
+00:28:10.160 --> 00:28:16.000
+of course. But there's, there's other things I was looking at. So I was looking at the source code
+
+00:28:16.480 --> 00:28:24.560
+a little bit and he's openly saying there's agents there. There's an eight. Well, because there's an
+
+00:28:24.560 --> 00:28:28.960
+agents file or something talking about. Yeah. Interesting. It looks like it was built with Gemini.
+
+00:28:28.960 --> 00:28:32.400
+Okay. Because there's not a clod.md, but there's a Gemini.md.
+
+00:28:33.040 --> 00:28:38.560
+Yeah. And that's just pointing to the agent, his agent at MD file. And then there's,
+
+00:28:39.520 --> 00:28:44.640
+there's like some other stuff on, like there's a directory with some to-do list ideas and stuff.
+
+00:28:44.640 --> 00:28:52.320
+And I think, I think just being like not hiding it, I think is good. And also another thing I checked
+
+00:28:52.320 --> 00:29:01.120
+out is the contributor because there's, I don't, so all the contributors are him. So I, I, I'm thinking
+
+00:29:01.120 --> 00:29:09.200
+that even if like, there's a bunch of code written by agents, he's at least looking at it enough. And I,
+
+00:29:09.200 --> 00:29:14.800
+I, I don't know. I'm still on the fence. I don't know how I feel about people giving agents control
+
+00:29:14.800 --> 00:29:21.360
+of commits on a project or not. I'm not here for it. I'm not here for it. You're not?
+
+00:29:21.360 --> 00:29:29.600
+No. So, but like what I would, if I would, was what, what would I be okay with? Having somebody
+
+00:29:30.720 --> 00:29:36.800
+do this stuff and then commit themselves because you would assume that they're looking at it. But
+
+00:29:36.800 --> 00:29:41.120
+what if you just do that on a branch? If you had, if you had the agent working on a branch committing
+
+00:29:41.120 --> 00:29:44.400
+stuff, you could always just throw it away. And if you're happy with it, you could merge it.
+
+00:29:45.440 --> 00:29:46.640
+I don't know how it's different.
+
+00:29:46.640 --> 00:29:52.080
+Yeah. So I hear you. I hear you. I certainly, the branch makes it better. A feature branch,
+
+00:29:52.080 --> 00:29:57.200
+some exploration branch. But it would still show up as a contributor in the history. So that's,
+
+00:29:57.200 --> 00:30:01.520
+I guess that's where I'm going with that. Yeah. But by default, if you ask Claude to create a GitHub,
+
+00:30:01.520 --> 00:30:09.760
+a get message, it'll put, or PR, it'll put co-contributor at Claude. Yeah.
+
+00:30:09.760 --> 00:30:17.440
+Yeah. So I still, I'm not, I'm still not sure how I feel about all that, but, but I do,
+
+00:30:17.680 --> 00:30:23.200
+there's, there's just, there's other things. So I'm thinking, I trust the developer. I trust that I
+
+00:30:23.200 --> 00:30:27.960
+look, I look at the contributor list and I look at some of the commits. what else am I looking at?
+
+00:30:27.960 --> 00:30:32.960
+I'm looking to make sure that there's tests, even though, I can't read a Swift test very well. I
+
+00:30:32.960 --> 00:30:41.360
+don't know. I mean, there's at least some testing going on. so, so that, I guess that's,
+
+00:30:41.360 --> 00:30:46.640
+that's where I'm, I'm at with, some of these things. I, and I bring this up partly because I
+
+00:30:46.640 --> 00:30:53.200
+review a lot of projects, you know, for this, for this, podcast looking at projects. And if it
+
+00:30:53.200 --> 00:30:58.760
+looks like there are signs like a bunch of emojis, that's not necessarily bad, but it's a sign that
+
+00:30:58.760 --> 00:31:03.280
+somebody had agents help them with it. And actually a lot of people are really bad at writing read
+
+00:31:03.280 --> 00:31:08.840
+me. So I'm okay with people having help writing read me. but I'm looking for tests. I'm looking
+
+00:31:08.840 --> 00:31:15.440
+for what the contributor things I'm looking for a lot of stuff. and trusting the developers
+
+00:31:15.440 --> 00:31:22.200
+and big things still, I think so. Yeah. A hundred percent. Well, you know, with a command book,
+
+00:31:22.360 --> 00:31:27.360
+my app for managing like long running terminal like commands. Yeah. I had to go through the same
+
+00:31:27.360 --> 00:31:33.560
+thing, had to get it digitally signed, both the app bundle itself is digitally signed. And then you
+
+00:31:33.560 --> 00:31:39.960
+have to go through a separate process to sign digitally sign the DMG as well, which is an utter pain
+
+00:31:39.960 --> 00:31:48.740
+for sure. So it is a hassle, but if you have an Apple developer account, it's not too bad. It's way
+
+00:31:48.740 --> 00:31:53.460
+less bad than iOS and app store review and those kinds of things. It's just running it through like
+
+00:31:53.460 --> 00:31:58.640
+a series of tools. So if Adam Hill, if you're out there listening and you want, a quick bit of
+
+00:31:58.640 --> 00:32:05.900
+help, I'm happy to help you get over that last hunt there. Okay, cool. it doesn't say yet. So
+
+00:32:05.900 --> 00:32:10.460
+I think he's planning on it. So I know it's just, it's brutal, but like, here's another thing. I like,
+
+00:32:10.500 --> 00:32:16.620
+I ask, I asked Claude, I'm like, all right, Claude, you got to help me. I I'm lost here. I do not know
+
+00:32:16.620 --> 00:32:20.380
+how to notarize this thing. It's which is what it's called. And then like, do I have to notarize
+
+00:32:20.380 --> 00:32:26.000
+the DMG as well? And how do I pack it? And I'm like, okay, here's a big long list of steps I got
+
+00:32:26.000 --> 00:32:32.040
+to set up. And I got like, it was pretty helpful actually. And that another thing, I guess a little
+
+00:32:32.040 --> 00:32:37.760
+bit of a tangent, right away from the trust thing. I think this seems like a tool that Adam wanted.
+
+00:32:37.760 --> 00:32:45.880
+And because of agents, he found time in his schedule to build it. and we wouldn't without
+
+00:32:45.880 --> 00:32:52.100
+it, we probably wouldn't have this tool as something we can look at. now trying to get people to
+
+00:32:52.100 --> 00:32:59.780
+stay maintaining projects that they can open source in a few hours, over the time is a different
+
+00:32:59.780 --> 00:33:05.760
+story. But anyway, I guess enough on that. I guess I do think we're entering an entirely
+
+00:33:05.760 --> 00:33:11.860
+different era of highly personalized software. Like I made this for me cause I could do it in an hour
+
+00:33:11.860 --> 00:33:16.020
+and exactly it solves my problem. Maybe it's interested in you, but it's not built to be
+
+00:33:16.020 --> 00:33:23.340
+general. It's built for me. Yeah. Yeah. There's going to be some of that, but why open source it
+
+00:33:23.340 --> 00:33:31.020
+at that point? yeah, fair. Anyway, well, that would be extra work, wouldn't it? Yeah. Do we have
+
+00:33:31.020 --> 00:33:35.700
+any extras? I do. Do you got any while your screen's up? Yeah, sure. I'll do. and
+
+00:33:35.700 --> 00:33:44.540
+it's all in the same sort of topic. So, an article on, htmx.org blog, called
+
+00:33:44.540 --> 00:33:50.680
+yes. And from Carson Gross, this says, I teach computer science at Montana university,
+
+00:33:50.820 --> 00:33:56.960
+Montana state university, and father of three sons. And he gets the question given AI,
+
+00:33:57.220 --> 00:34:02.480
+should I still consider being a computer programmer? Or I would translate that is into,
+
+00:34:02.480 --> 00:34:10.040
+is a CS degree still worth it? and his response is yes. And, and I do, I, 
+
+00:34:10.040 --> 00:34:16.280
+it's a great article. enjoy reading it. the top level thing is, programming
+
+00:34:16.280 --> 00:34:22.200
+is fundamentally problem solving using computers and learning to control complexity while solving
+
+00:34:22.200 --> 00:34:29.280
+his problems. I would say that that's, that's computer science. but that's, and
+
+00:34:29.280 --> 00:34:34.700
+then a bunch of other stuff. I think it's experience helps even, and, and background knowledge
+
+00:34:34.700 --> 00:34:40.740
+helps even if you're using AI to help. then that's the same kind of a similar sentiment
+
+00:34:40.740 --> 00:34:47.000
+over on, Simon Willison's blog, hoard the things, you know, how to do. one of
+
+00:34:47.000 --> 00:34:52.980
+his recommendations here is, a big part of a big part of the skill building softwares,
+
+00:34:53.060 --> 00:34:58.320
+understanding what is possible and what isn't, and having at least a rough idea of how those
+
+00:34:58.320 --> 00:35:02.900
+things can be accomplished. And this helps with directing agents. You wouldn't ask it to do
+
+00:35:02.900 --> 00:35:10.140
+things that, you know, is going to be a completely ridiculous. I mean, an agent might go
+
+00:35:10.140 --> 00:35:15.180
+off and do something dumb, but if you ask it to, you just, you do have to have experience
+
+00:35:15.180 --> 00:35:21.920
+to know what dumb is and what it possible is, I guess. So, yeah, I agree with Carson that
+
+00:35:21.920 --> 00:35:29.520
+yes. And, I think I basically the short version is I believe Jevin's paradox is real
+
+00:35:29.520 --> 00:35:37.360
+and that we're going to have more software rather than no software developers. And we need people to
+
+00:35:37.360 --> 00:35:44.300
+oversee and guide and make decisions and trade-offs about that, right? It's very hard for AI to make
+
+00:35:44.300 --> 00:35:48.380
+proper trade-offs. Like, yes, I know I could, yes, I know I could make this an app,
+
+00:35:48.380 --> 00:35:55.820
+but my company doesn't have a culture of putting apps out. And we actually have this other backend
+
+00:35:55.820 --> 00:35:59.980
+system. We want to, you know what I mean? There's just like all this information that it doesn't know
+
+00:35:59.980 --> 00:36:06.440
+or like in our industry, here's how we do this. And I don't know, there's just a bunch of stuff that
+
+00:36:06.440 --> 00:36:11.840
+humans can bring plus the ability to break it down into smaller problems and then give that to an AI.
+
+00:36:11.980 --> 00:36:16.660
+You're way more likely to be successful than just like, Hey, guess what? I need a CRM build that.
+
+00:36:16.660 --> 00:36:20.920
+I'll be back by lunch. Like you're going to get some form of something, but it's, again,
+
+00:36:20.920 --> 00:36:24.740
+it's not highly personalized. It's just super generic. And if that's all you want, just go get
+
+00:36:24.740 --> 00:36:31.200
+a CMS from like some SAS and you're done. Yeah. I think one of the really interesting things is like,
+
+00:36:31.260 --> 00:36:36.280
+why do we build software at all? You know, there's this term software engineer, right?
+
+00:36:37.060 --> 00:36:42.520
+How well it applies. I don't know, but a lot of times, especially in the early days of like talking
+
+00:36:42.520 --> 00:36:46.760
+about architecture and engineering, it was all tied back to like, well, how do civil engineers do it?
+
+00:36:47.100 --> 00:36:51.800
+And they have all these, these formalities of how they work. And maybe that should be brought into
+
+00:36:51.800 --> 00:36:55.480
+computer engineering and programming and software engineering and so on.
+
+00:36:56.060 --> 00:37:03.900
+And like, there's a really big difference. Civil engineers built a bridge 50 times because there
+
+00:37:03.900 --> 00:37:08.980
+are 50 places the bridge need to be built. If you build a piece of software that solves the same
+
+00:37:08.980 --> 00:37:14.880
+problem once, like you just run it again, you copy it and run it. You build new software because
+
+00:37:14.880 --> 00:37:20.700
+you're solving a problem that in some way has never been solved before. So there's a difference.
+
+00:37:21.400 --> 00:37:25.740
+There's like this, this, the part where it's never been solved before. That's where the human brings in
+
+00:37:25.740 --> 00:37:29.740
+the stuff to the AI and the AI goes, well, there's all these Lego blocks that we already know,
+
+00:37:29.780 --> 00:37:33.420
+like, all right, put those together. But for this, I think that's what software engineering is going to
+
+00:37:33.420 --> 00:37:40.480
+become. Yeah. I mean, I think it has become that already. And electrical engineering has been that
+
+00:37:40.480 --> 00:37:47.140
+way for a long time. So. Yeah. I mean, already with like packages on PyPI and things like that,
+
+00:37:47.140 --> 00:37:51.700
+it's kind of like that, but like with AI, it's instead of, I need an auth library so I can build
+
+00:37:51.700 --> 00:37:56.020
+a login page. It's like, I make a login page. Now click that together with it. You know, it's just
+
+00:37:56.020 --> 00:37:59.500
+like another level up, but that doesn't mean that people necessarily go away.
+
+00:37:59.500 --> 00:38:04.260
+I hope not. At least for another 20 years.
+
+00:38:04.580 --> 00:38:06.980
+Yeah. Give it, give it till, till Brian and I retire then.
+
+00:38:07.220 --> 00:38:13.480
+All right. I got some fun extras as well. Okay. So first of all, how would you like to unplug
+
+00:38:13.480 --> 00:38:21.700
+your Python and get a bit of an MTV vibe, but it's PyTV. Yeah. It's so fun. So our friends at JetBrains
+
+00:38:21.700 --> 00:38:27.420
+and a bunch of our friends who are speaking at this conference, but are not necessarily at JetBrains
+
+00:38:27.420 --> 00:38:32.240
+are putting on a free online Python conference, the best Python straight to your living room.
+
+00:38:32.560 --> 00:38:35.480
+I feel like Max Headroom should kick off the keynote, honestly, don't you?
+
+00:38:36.480 --> 00:38:37.980
+I love Max Headroom. Yeah.
+
+00:38:38.020 --> 00:38:43.540
+I know I did too. But there's a bunch of great people speaking here. Carol Willing, Sarah Boyce,
+
+00:38:44.820 --> 00:38:51.820
+Marlene, Gina, Carlton, a lot of folks we know. And so, yeah, check this out. It's a free online
+
+00:38:51.820 --> 00:39:00.840
+conference. And is it this week? When is it? Let me look. It must have a date. Surely. I know. I
+
+00:39:00.840 --> 00:39:04.520
+think it is this week. Yeah. March 4th. So we're recording on March 2nd. That would be Wednesday.
+
+00:39:05.240 --> 00:39:12.240
+So everybody be on top of your listening to the show or miss out. Okay. So that's one quick shout
+
+00:39:12.240 --> 00:39:20.880
+out to that. Next is, is AI a fad and a bubble or is it an actual thing with real value that's going
+
+00:39:20.880 --> 00:39:30.120
+to change the world? Yes. So remember we talked about the Sasspocalypse where like some of the
+
+00:39:30.120 --> 00:39:35.820
+legal companies and other stuff where like their stock went way down because Anthropic published
+
+00:39:35.820 --> 00:39:43.920
+13 markdown files. Well, IBM, IBM, big blue stock crashes 11% because Anthropic released some kind of
+
+00:39:43.920 --> 00:39:50.340
+markdown file that helps convert Cobalt because Anthropic threatens the Cobalt empire. I think
+
+00:39:50.340 --> 00:39:55.360
+there's a lot of interesting stuff here. I think Cobalt is a very interesting analogy for like pre and
+
+00:39:55.360 --> 00:40:01.620
+post agentic written code. I can see in 20 years or like that's some pre AI code. We need some humans
+
+00:40:01.620 --> 00:40:05.580
+that know how to type still to come in here and look at this. Right. I think there's going to be that
+
+00:40:05.580 --> 00:40:10.640
+kind of like difference as we go on. And so I don't know, I just wanted to throw that out there. It's an
+
+00:40:10.640 --> 00:40:17.960
+interesting read for folks. Yeah. The language stuff is, is an interesting thing with, with, with things
+
+00:40:17.960 --> 00:40:26.000
+like Anthropic around, I am less scared of looking at code base, code bases like Swift or Cobalt. I haven't
+
+00:40:26.000 --> 00:40:31.500
+looked at Cobalt, but, but I wouldn't be afraid now. I might be a hundred percent. Yeah. So you need
+
+00:40:31.500 --> 00:40:38.340
+like 20% the capability you used to need to, to get something done or to get like, I don't understand
+
+00:40:38.340 --> 00:40:42.160
+this. Explain it to me. Like, okay, now it makes sense. Whereas before it was just like, I don't
+
+00:40:42.160 --> 00:40:45.880
+understand it. Well, especially if you're ready to test for it. So you write it like maybe there's a
+
+00:40:45.880 --> 00:40:51.760
+bug in some Cobalt code and you say, and you write a test for it and you, and now the agent, you can
+
+00:40:51.760 --> 00:40:57.900
+kind of trust the agent to fix it. It'll do, do good review of course, but yeah. Yeah. Okay.
+
+00:40:57.900 --> 00:41:06.160
+A quick update. I'm absolutely in love with my 40 inch curved monitor that I told people about for
+
+00:41:06.160 --> 00:41:11.140
+when I first got it, I was a little wigged out by how big and rappy around it is. It took some
+
+00:41:11.140 --> 00:41:19.240
+getting used to, but this like 5k monitor that is so giant is absolutely perfect for all the type of
+
+00:41:19.240 --> 00:41:28.560
+work we do these days. Next up update est update est not est. I tried to search for update est I S T.
+
+00:41:28.620 --> 00:41:36.060
+No, it's E S T. So here's a really cool macOS bit of software. And what you do is you just install it
+
+00:41:36.060 --> 00:41:43.000
+and it looks for all different kinds of apps that are out of date on your system. It looks for auto
+
+00:41:43.000 --> 00:41:48.060
+updating apps. It looks for stuff from the app store. It looks at homebrew. It looks at CLI tools
+
+00:41:48.060 --> 00:41:53.000
+and it manages all of them. So you go, Oh look, this thing's actually, that was been depending on
+
+00:41:53.000 --> 00:41:58.440
+is actually out of date. Let me push the button and super cool. It's got a really nice UI. It costs,
+
+00:41:58.560 --> 00:42:04.480
+it has money, but very little. It costs $13 once for your entire life. So anyway, it's pretty,
+
+00:42:04.640 --> 00:42:10.780
+seems pretty fair to me. So very cool app. Also swift UI app, I believe like Adam Hills.
+
+00:42:11.460 --> 00:42:12.840
+Wait, how do you update it though?
+
+00:42:13.100 --> 00:42:15.300
+Oh my God. I believe it does auto update it.
+
+00:42:15.300 --> 00:42:19.560
+If it doesn't, that would be deeply bad. I think it uses the same thing that
+
+00:42:19.560 --> 00:42:24.220
+command book uses, which is called sparkle, which is one of the most common ways to do it. And
+
+00:42:24.220 --> 00:42:28.140
+actually it looks at all the sparkle update feeds of all the apps installed on your system too,
+
+00:42:28.200 --> 00:42:34.680
+which is cool. Okay. People may have heard of bartender, which is another Mac app. That's cool.
+
+00:42:34.780 --> 00:42:39.740
+Like compresses all the little widget thingies you got at the top on the right by the clock. I love all
+
+00:42:39.740 --> 00:42:43.300
+those things. So I go way overboard and I needed something to manage it, especially on small,
+
+00:42:43.300 --> 00:42:49.560
+like recording screens. So I had bartender, they got bought in like a sort of underhanded way. Like
+
+00:42:49.560 --> 00:42:54.760
+they got sold, but then nobody said they were sold for like months. It was like, they wouldn't announce
+
+00:42:54.760 --> 00:42:59.140
+anyway, it was weird. So a lot of people moved to open source stuff. So there's a one called ice
+
+00:42:59.140 --> 00:43:06.180
+for the Mac menu bar, but it had its last updates like six months ago and it's clearly abandoned.
+
+00:43:06.180 --> 00:43:11.540
+So you've got ice. Well, what if it gets stuck and frozen? You got to thaw it out. So now there's a
+
+00:43:11.540 --> 00:43:17.320
+popular one called thaw, a fork of ice, the menu bar manager. So anyway, here's a free open source
+
+00:43:17.320 --> 00:43:21.700
+menu bar manager for Mac. That's pretty cool. Following that weird chain of events over the last
+
+00:43:21.700 --> 00:43:29.500
+couple of years. I don't even remember what I have. I on this computer, I still have ice running
+
+00:43:29.500 --> 00:43:33.420
+cause I haven't had a chance to update it. I just learned about this week, but it's getting thaw.
+
+00:43:33.420 --> 00:43:35.660
+It's getting thawed out when I get done with this recording.
+
+00:43:35.880 --> 00:43:42.620
+Getting thawed. Yeah. I have something that minimizes it, but I can't remember what it is.
+
+00:43:45.800 --> 00:43:50.560
+Yeah. Okay. Well, shall we make a joke?
+
+00:43:51.520 --> 00:43:52.740
+Yeah. Something funny.
+
+00:43:52.740 --> 00:43:59.560
+I know you got kids. I have kids. Anyone out there who has kids, well, maybe roommates as well,
+
+00:43:59.560 --> 00:44:04.240
+but especially kids like they're so messy. This joke will appreciate this is, this is like a
+
+00:44:04.240 --> 00:44:12.680
+programmer take on, on that situation. And the title of the joke is the house is read only.
+
+00:44:15.020 --> 00:44:21.540
+Okay. The house is read only. So here's a, a woman named Kelly on X that posted, it says,
+
+00:44:21.540 --> 00:44:26.520
+I have cleaned the house. The house is now read only. Please do not edit the house.
+
+00:44:28.540 --> 00:44:36.720
+Yes. Yes. Kids. I just put the dishes in the dishwasher. Why is the dish, the sink full of
+
+00:44:36.720 --> 00:44:40.340
+dishes again? I just went up to the back to clean up the other stuff. I came back in and now it's
+
+00:44:40.340 --> 00:44:43.680
+messy again. I can't take it anymore. The house is read only. It's so good.
+
+00:44:44.000 --> 00:44:49.580
+I need this for my mother-in-law. Yeah. if you don't pay the mortgage, you don't get to put
+
+00:44:49.580 --> 00:44:54.000
+holes in the walls. Just saying. Yeah. Houses read only. Please do not edit the house.
+
+00:44:59.180 --> 00:45:07.960
+Nice. That's funny. yeah, it's a, it's been a crazy week outside of programming. So I'm trying
+
+00:45:07.960 --> 00:45:15.000
+to concentrate on programming. Escape to the well-known world of structured text. Let's go.
+
+00:45:15.000 --> 00:45:20.260
+Anyway, it was a fun episode. Thanks everybody for showing up and we'll see y'all next week.
+
+00:45:20.720 --> 00:45:22.080
+Yeah. Thank you. Bye.
+
+00:45:22.080 --> 00:45:22.140
+Bye.
