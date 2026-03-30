@@ -1,0 +1,1592 @@
+00:00:00 Hello and welcome to Python Bytes, where we deliver Python news and headlines directly to your earbuds.
+
+00:00:05 This is episode 475, recorded March 30th, 2026.
+
+00:00:10 And I'm Brian Okken.
+
+00:00:11 And I'm Michael Kennedy.
+
+00:00:12 And this episode, as is regular lately, is brought to you by us.
+
+00:00:16 All of the stuff, the books, courses, head on over to Python Bytes.
+
+00:00:21 Wait, yeah, Python Bytes.fm.
+
+00:00:23 We have links to everything, but there's also talkpython.com.
+
+00:00:27 That's right.
+
+00:00:28 Talk.com will get you there.
+
+00:00:30 You'll just redirect to .fm.
+
+00:00:31 It's all good.
+
+00:00:31 Okay.
+
+00:00:32 Talkpython.fm.
+
+00:00:33 Right.
+
+00:00:33 Okay.
+
+00:00:34 And talkpython training, of course.
+
+00:00:37 I've watched and done so many courses on there.
+
+00:00:40 It's a great resource.
+
+00:00:42 And if you'd like to learn pytest, there's a course there.
+
+00:00:45 But there's also pythontest.com.
+
+00:00:47 And thank you to our Patreon supporters, as usual.
+
+00:00:50 And also, thanks to everybody to subscribe to the newsletter, because it's fun to put together.
+
+00:00:55 And we got a lot of background information.
+
+00:00:57 So we'd like to send out all of the links to everything we talk about on there.
+
+00:01:02 And you can reach us to send us topics that you'd like us to talk about or topics you'd like us to stop talking about.
+
+00:01:08 Whatever.
+
+00:01:08 Whatever.
+
+00:01:10 The contact stuff is on pythombytes.fm.
+
+00:01:13 But we're on Mastodon and Bluesky.
+
+00:01:17 And yeah.
+
+00:01:18 And there's also a contact form there that you can get.
+
+00:01:21 And if you're listening to this, thank you.
+
+00:01:23 And also, if you'd like to watch the show live or at least watch it, the recording later, you can go on to pythombytes.fm slash live and either be part of the audience or like a ghost.
+
+00:01:37 Like a ghost.
+
+00:01:38 Let's lock the ghost.
+
+00:01:40 How about that?
+
+00:01:40 So there's this interesting article at CERT.at.
+
+00:01:45 I'm guessing that is the way.
+
+00:01:46 And this one is super relevant to us.
+
+00:01:48 This is a security place, security website.
+
+00:01:52 Lock the ghost.
+
+00:01:52 In the software world, remove is not always equal to gone.
+
+00:01:57 Completely gone.
+
+00:01:59 This is crystal clear.
+
+00:02:00 There's always a good reason for that.
+
+00:02:01 But even the best reasons do not have to be intuitive or expected by the users.
+
+00:02:06 Let's take a short trip through how Python package index handles removals and how we can lock the ghost in a uv lock file.
+
+00:02:13 Forever.
+
+00:02:14 Forever.
+
+00:02:14 So this is a security thing, and it's specifically, uniquely an issue for uv and the uv lock file in particular.
+
+00:02:25 So if you're using uv like I do with like uv pip compile, uv and then requirements.txt, that kind of thing, doesn't apply.
+
+00:02:33 uv.lock file.
+
+00:02:35 We're both huge fans of uv, but this, and one of the reasons we are fans is because of the performance, right?
+
+00:02:40 It's so fast and it bundles so many tools together.
+
+00:02:43 Some of these are making really interesting tradeoffs.
+
+00:02:47 Often those tradeoffs are certainly fine, you know, like a short caching period.
+
+00:02:52 So if you ask it to install something and it did it 10 seconds ago, it's not going to go and ask the APIs for it again and that sort of thing.
+
+00:02:59 Or uv Python install, which is awesome.
+
+00:03:03 It gets you Python in a couple of seconds instead of forever with a bunch of buttons.
+
+00:03:07 You know, next, next, next, confirm, agree, confirm, next, next, yes.
+
+00:03:10 You know, like that installer experience.
+
+00:03:12 So those are all good, but I guess this is a bit of a negative consequence of having some of these optimizations.
+
+00:03:19 So I pulled out some, I'll read my notes here.
+
+00:03:21 So the essence is in the uv lock file, it points directly to the final file on the CDN, I'm guessing.
+
+00:03:29 Or even the storage.
+
+00:03:30 But, you know, even if you remove something from the storage, it doesn't necessarily remove it from the CDN fastly and so on, right?
+
+00:03:35 So, however it is, it points to the very final file.
+
+00:03:40 In, when something is yanked or removed from PyPI, it goes out of the listing.
+
+00:03:44 You can't find it.
+
+00:03:45 You ask pip to install it.
+
+00:03:46 It's not there.
+
+00:03:47 But the underlying file is still hanging around.
+
+00:03:50 So if you have a direct URL to the result file, instead of following the redirects or whatever, that file doesn't necessarily get removed.
+
+00:03:57 That's what that opening was about, right?
+
+00:03:59 So that's basically the problem.
+
+00:04:01 If the file is still there, the file is still there, even if it gets yanked, right?
+
+00:04:05 So there's a couple of interesting knock-on effects.
+
+00:04:08 So uv lock uniquely preserves this, these ghost packages, they call them in this file.
+
+00:04:13 So instead of removing them, they just link directly to them as an optimization, I presume.
+
+00:04:17 However, no other thing like hatch or PDM or whatever links to them, right?
+
+00:04:24 So they don't do that, right?
+
+00:04:25 This is specifically about uv.
+
+00:04:27 So it creates an interesting supply chain problem.
+
+00:04:30 I mean, that's just like the security problem du jour or de year, right?
+
+00:04:35 Whatever, year and fridges.
+
+00:04:37 The problem, all these things are getting some level of takeover.
+
+00:04:42 And then, you know, that's flowing into packages and other libraries that are built into code.
+
+00:04:48 And then obviously that amplifies them massively.
+
+00:04:50 So in this case, an attacker could upload a malicious package and then immediately remove it.
+
+00:04:56 But still have the uv lock file point at it.
+
+00:05:00 Okay?
+
+00:05:00 Yeah.
+
+00:05:00 So if you immediately remove it, you might outrun the scanners.
+
+00:05:05 The automated scanners that go, let me scan the new inbound PyPI packages.
+
+00:05:11 Because that package doesn't exist anymore.
+
+00:05:12 We don't need to scan it.
+
+00:05:13 But you could craft a specific uv lock file that still points to the ghosted remnant.
+
+00:05:20 You know what I mean?
+
+00:05:21 Yeah.
+
+00:05:21 But aren't the lock files on the client side?
+
+00:05:24 So it would be just people that created the client lock files during the...
+
+00:05:27 Yes, that seems possible.
+
+00:05:29 But imagine this.
+
+00:05:30 I create Molting Claw or whatever, like the world's third most popular GitHub project out there.
+
+00:05:37 Put it up.
+
+00:05:38 Get it working normally.
+
+00:05:39 And then after it gets really popular, I update a lock file.
+
+00:05:44 Not even the input.
+
+00:05:45 Not the PyProject.tom or nothing.
+
+00:05:46 I just update the lock file itself to point at this ghosted malicious file.
+
+00:05:54 So anybody who installs it, well, they uv sync.
+
+00:05:58 That installs everything in the lock file and off it goes.
+
+00:06:00 So it's not that you ran and installed the thing.
+
+00:06:05 It's that somebody could craft a lock file such that if you sync that project, then it's installed onto your machine and off to its regular badness, you know, with it set up.py or whatever.
+
+00:06:15 So beware, folks.
+
+00:06:17 Beware.
+
+00:06:17 I'm not sure exactly what the solution here is, but it's something that could happen.
+
+00:06:21 And maybe the Astral team, I'm sure the Astral team has already heard about this.
+
+00:06:26 This was from last week.
+
+00:06:27 Okay.
+
+00:06:27 Interesting.
+
+00:06:28 Well, we'll wait to hear back.
+
+00:06:31 Yeah.
+
+00:06:31 I haven't heard anything.
+
+00:06:32 I mean, I guess if I go to the end, there's not like an update.
+
+00:06:35 How should I live?
+
+00:06:36 This is funny.
+
+00:06:39 How should I live?
+
+00:06:41 To sum it up.
+
+00:06:41 I presented that removed packages could still be...
+
+00:06:45 I don't know.
+
+00:06:46 Yeah.
+
+00:06:46 Well, I mean, there's a lot.
+
+00:06:48 Security is a big thing.
+
+00:06:51 Anyway.
+
+00:06:52 Yeah.
+
+00:06:52 Supply chain security is extra bad because it's not even necessarily the things that you're using.
+
+00:06:56 It could be the things that you're using, what they're using, you know?
+
+00:06:59 Right.
+
+00:07:00 And something could change there.
+
+00:07:01 Like, I'm not checking on, I don't know, care debt, for example.
+
+00:07:04 Just pick something out of thin air because I'm not using it directly.
+
+00:07:06 I'm not tracking its releases.
+
+00:07:08 I happen to maybe be using something that uses care debt that then, you know, if something happened to that package, I'm not saying it has.
+
+00:07:14 Right.
+
+00:07:14 Just like thinking of like really popular third party, third level dependencies.
+
+00:07:18 Yeah.
+
+00:07:19 Yeah.
+
+00:07:20 And yeah, there's...
+
+00:07:22 Anyway, we'll get into...
+
+00:07:23 We've got more security topics coming up.
+
+00:07:25 So let's move forward.
+
+00:07:27 We're not going to run out, are we?
+
+00:07:28 No.
+
+00:07:29 So the next step, I want to talk about a little bit more security.
+
+00:07:34 But this is how to rein in your AI a little bit.
+
+00:07:39 So this really...
+
+00:07:41 What am I going to talk about?
+
+00:07:42 This is suggested by Martin Hecker.
+
+00:07:45 I think it's Hecker.
+
+00:07:47 It's a German name.
+
+00:07:48 H-A-E-C-K-E-R.
+
+00:07:50 Anyway.
+
+00:07:51 Thanks, Martin.
+
+00:07:53 Anyway, for context, this seems so long ago.
+
+00:07:58 June of 2025.
+
+00:07:59 It was less than a year ago.
+
+00:08:01 Simon Wilson wrote a blog post about the trifecta of AI agents of lethal, the lethal trifecta, which is giving them access to private data, exposure to untrusted content, and ability to externally communicate.
+
+00:08:15 That's pretty much what coding agents are like now, especially if you run it in YOLO mode or dangerous mode.
+
+00:08:21 Because...
+
+00:08:22 And it seems like people wouldn't do that, right?
+
+00:08:25 But it's so much faster.
+
+00:08:27 So if you don't...
+
+00:08:29 If you have your agents on like ask mode, it's just like, hey, can I run this command?
+
+00:08:34 Yes.
+
+00:08:34 Can I run this other command?
+
+00:08:35 Yes.
+
+00:08:36 And so you can say, just stop asking right now.
+
+00:08:40 I trust you.
+
+00:08:41 But should you?
+
+00:08:43 I don't know.
+
+00:08:44 So if you've got private data on your device, so there's something to be concerned about.
+
+00:08:50 So one of these solutions is sandboxing.
+
+00:08:54 And you can...
+
+00:08:55 Or one of the solutions is create a VM and just don't put the stuff on the VM that you only want the AI to use.
+
+00:09:03 That's a lot.
+
+00:09:04 That's a little...
+
+00:09:04 That's extra.
+
+00:09:05 That's a little extra.
+
+00:09:07 And it's for people that are normally using VMs might be fine.
+
+00:09:12 Or either virtual machines or those other things.
+
+00:09:18 Containers, right?
+
+00:09:18 If they're normally using containers, great.
+
+00:09:21 But if that's not your normal workflow, that's a little...
+
+00:09:24 It's a tough ask.
+
+00:09:25 So Claude Code has sandboxing.
+
+00:09:28 I haven't tried it out to see how clear it is.
+
+00:09:31 It's a little...
+
+00:09:32 It apparently works great on macOS, Linux, and WSL2 uses bubble wrap.
+
+00:09:39 So if you're using WSL2 for Cloud Cursor or Claude Code, that might be okay.
+
+00:09:46 But what about other agents and stuff?
+
+00:09:48 So what we got a suggestion was that Claude Code has this built in.
+
+00:09:54 We're not...
+
+00:09:55 I'm not sure how well if it's really restricted or if it's suggestions.
+
+00:10:00 Anyway.
+
+00:10:01 I haven't tried it out.
+
+00:10:02 So I'd love to hear what other people think about the sandboxing stuff.
+
+00:10:06 Anyway, the same kind of idea that Claude Code uses is pulled out as something else you can use with different AI agents if you want.
+
+00:10:14 So this is a project called Fence.
+
+00:10:17 It's lightweight sandboxes for terminal agents.
+
+00:10:20 And it uses this similar sort of stuff that Claude Code does.
+
+00:10:24 And this is pretty exciting to be able to restrict what it has access to, like file permissions.
+
+00:10:32 You can restrict how much your file system it has access to.
+
+00:10:35 You can restrict the network access, which websites and stuff it can access.
+
+00:10:42 And even GitHub repos, restrict which repos.
+
+00:10:48 That's all cool.
+
+00:10:49 And it's also really cool that this is open source.
+
+00:10:51 So this is Go code, but it's a fence project that people can contribute to.
+
+00:10:58 And it's very active right now.
+
+00:11:00 So I'd be excited to hear what other people think of fencing, if you think it's safe enough.
+
+00:11:07 Anyway.
+
+00:11:07 Okay.
+
+00:11:09 I'm definitely going to try it out because I was actually considering buying an extra computer so that I could run it isolated.
+
+00:11:16 I mean, I know that a container is way cheaper than an extra computer, but also an extra computer is not that much either.
+
+00:11:23 So anyway.
+
+00:11:24 What do you all think about this?
+
+00:11:25 What do you think, Michael?
+
+00:11:26 Yeah, it's interesting.
+
+00:11:27 I mean, a Mac mini is very cheap, right?
+
+00:11:30 If you 400 bucks or something like that, it's a pretty cheap computer if you want to have a separate machine.
+
+00:11:35 But also a VM potentially would work if you wanted to have some isolation.
+
+00:11:39 I think this is a neat idea.
+
+00:11:41 I like that it's open source.
+
+00:11:42 The one thing I don't like, and I don't know that there's necessarily a great fix for that, just given the way that it works, is it seems like you can have it work on any terminal command, right?
+
+00:11:54 So like Claude Code or Codex, CLI or Gemini CLI, whatever.
+
+00:11:59 But say VS Code, Cursor, PyCharm, you want to run one of those, but have the agents that run in those more proper editors limited?
+
+00:12:10 That seems harder, you know?
+
+00:12:11 It doesn't seem like it supports that.
+
+00:12:12 Yeah.
+
+00:12:13 So that's the way I like to work.
+
+00:12:15 Honestly, this might be a minority opinion, but I think Claude Code and Friends, the way that they work are an anti-pattern for how real software developers should be coding.
+
+00:12:27 And what I mean by that is Claude Code and other CLI ones encourage you to just have the code just like rip by, like do this and it's just like, you see the code screaming by and it's like, okay, I'm done.
+
+00:12:37 And then your job is to like, accept that or whatever, or you wait 10 minutes for it to do a thing.
+
+00:12:43 I was doing a project a few days ago.
+
+00:12:45 Claude Code spun up five agents that all ran for 15 minutes in parallel.
+
+00:12:50 And then it gave me the result.
+
+00:12:52 So that's a lot of code changes.
+
+00:12:54 And that's a lot of my credits in addition to just time to wait 15 minutes and see how it came out.
+
+00:13:01 So what I much prefer is to have some kind of editor, VS Code, PyCharm, whatever, where the work is happening.
+
+00:13:07 And as it's making changes, I can roll up, okay, made this change.
+
+00:13:11 Let me look.
+
+00:13:12 Actually, it's going down the wrong path.
+
+00:13:13 Hey, stop, stop, stop.
+
+00:13:14 No, don't look.
+
+00:13:14 You did this wrong.
+
+00:13:15 Go that way.
+
+00:13:16 You know, you're not following the patterns of this.
+
+00:13:18 So with the just like streaming by like a social media feed, it encourages you not to review it while it's working.
+
+00:13:25 And I think that that is not right.
+
+00:13:27 I know the trend is to like not review code at all, but there's the trend is also to get a bunch of like unstable software.
+
+00:13:32 So thank you.
+
+00:13:33 Anyway, I don't like the CLI ones because of that.
+
+00:13:36 Therefore, I probably won't be using this, but I would like to.
+
+00:13:40 That's my take.
+
+00:13:40 Yeah.
+
+00:13:41 It's interesting because like this is similar to, you know, hiring, hiring somebody to do work for you or, or having a, an intern or a new hire or something that you don't quite
+
+00:13:53 trust yet of, of saying, Hey, I want you to do this, this job, but I'd like you to like, you know, work for like four hours at most and then check in.
+
+00:14:03 Right.
+
+00:14:03 Right.
+
+00:14:03 Like work on it this morning and then check in with me after lunch.
+
+00:14:06 Something like that.
+
+00:14:07 Yeah.
+
+00:14:07 Yeah.
+
+00:14:07 So with, you wouldn't want like four hours of, of a cursor or cloud code to run, but you might go, you know, use this many tokens or something and, and then check in to make sure that you're in the right track.
+
+00:14:22 Yeah.
+
+00:14:23 Also testing helps.
+
+00:14:25 Testing absolutely helps.
+
+00:14:26 It does.
+
+00:14:27 It does.
+
+00:14:27 But the problem is sometimes the agents are like that test doesn't seem relevant.
+
+00:14:31 It was also hard to make it fixed.
+
+00:14:32 So we took it out.
+
+00:14:34 You know, that's happened to me.
+
+00:14:36 And if you got enough, enough tests, it's like, Oh, there's some thousand, 100 something number of tests.
+
+00:14:42 You don't notice that the one that you really needed is gone.
+
+00:14:44 You know?
+
+00:14:45 Yeah.
+
+00:14:45 Yeah.
+
+00:14:45 I was just, we're getting on a tangent, but I was listening to a podcast this morning or interview with somebody that had used a like clause, which I haven't, I haven't done any clause yet or anything, but having a thing that controls lots of agents to do things
+
+00:15:00 like control his house, with his pool temperature and lights and everything.
+
+00:15:06 And I'm like, if I want my lights on in my room, I turn the light switch on.
+
+00:15:11 It's I haven't coded anything.
+
+00:15:14 In theory, I want a smart home and practice.
+
+00:15:16 I'm like, boy, that's not really that helpful.
+
+00:15:18 Buttons are really easy though.
+
+00:15:20 anyway.
+
+00:15:21 Okay.
+
+00:15:21 well, let's go on to the next thing.
+
+00:15:23 What do you got?
+
+00:15:24 Indeed.
+
+00:15:25 Let's go on to the next thing.
+
+00:15:27 And this one is, this one is a, it's called malicious and it, it has to do with, it's also an AI one.
+
+00:15:36 So I know some people are overwhelmed or uninterested in the AI stuff, but I don't think this is the AI in the sense that you're thinking about.
+
+00:15:42 This is, this is crazy.
+
+00:15:43 So this is a, an open source copyright concept and it doesn't necessarily have to do with AI.
+
+00:15:49 It just happens to be that AI is the workhorse of it.
+
+00:15:51 So check this out.
+
+00:15:52 and I don't know if this is a, a real project that people are making real money.
+
+00:15:57 You can, there's like real pricing here.
+
+00:16:00 So what is the idea?
+
+00:16:01 The idea is, so I don't know if this is a real project because it could be put out here to cause such a backlash that it causes a lawsuit.
+
+00:16:08 That's what, that's what I'm saying.
+
+00:16:10 But there is real pricing.
+
+00:16:11 So here's the thing.
+
+00:16:12 Remember how we had that, there was like this big debate just, I think last week about Chardette, right?
+
+00:16:17 Yeah.
+
+00:16:17 Chardette, Chardette.
+
+00:16:18 That the current maintainer who is not the original copyright holder had AI recreate one, create the library based like one generate the description and the specifications.
+
+00:16:30 And then another one that has never seen any of the code, take that and then turn that into the new project seven O and then change the license because this new bit of code is no longer the same thing.
+
+00:16:41 Right.
+
+00:16:41 Basically this is that as a service.
+
+00:16:46 Yeah.
+
+00:16:46 So it calls a clean room as a service.
+
+00:16:49 Finally, liberation from open source obligations.
+
+00:16:51 It's pretty shady.
+
+00:16:52 You guys, this is, this is bad news.
+
+00:16:54 Our proprietary AI robots independently recreate open source projects from scratch.
+
+00:16:59 The receipt, the result legally distinct code with corporate friendly licensing, no attribution, no copy left, no problem.
+
+00:17:08 And there's pricing for this.
+
+00:17:09 I know it's really crazy.
+
+00:17:11 So the pricing is transparent paper kilobyte pricing.
+
+00:17:15 So it's focused on JavaScript at the moment.
+
+00:17:17 Every package is priced by its unpacked size on npm.
+
+00:17:21 How about that?
+
+00:17:22 So for example, left pad, left pad, if you wanted a copyright, not copy left, left pad, it would cost 50 cents.
+
+00:17:31 If you want to express the node JS powered web framework, 73 cents.
+
+00:17:37 You want a moment.
+
+00:17:40 I don't know what moment is.
+
+00:17:41 Apparently it's pretty big.
+
+00:17:42 It costs $42.
+
+00:17:43 What do you think about this, Brian?
+
+00:17:44 This is nuts, huh?
+
+00:17:46 This is real.
+
+00:17:49 I mean, like it could be.
+
+00:17:51 That's like, like I said, I don't know if this is real or not, but I think it is.
+
+00:17:54 It is a real copyright conversation.
+
+00:17:57 It's called malice.
+
+00:17:59 I know.
+
+00:18:00 M-A-L-U-S.
+
+00:18:01 Yeah.
+
+00:18:02 I think we need, we need to create a competing one that's called spite.
+
+00:18:08 Spite and malice.
+
+00:18:09 Anyway.
+
+00:18:10 Amazing.
+
+00:18:10 Liberate open sources, the H2.
+
+00:18:12 Like how, how nutso is this?
+
+00:18:14 Like I said, I think it could be something that's just trying to get attention to this problem and like cause some kind of final legal decision to come down about it.
+
+00:18:23 Or it could be something people are just paying money.
+
+00:18:24 Well, yeah, we'll take it.
+
+00:18:25 Yeah.
+
+00:18:26 I honestly don't know.
+
+00:18:27 You know what, what, what's creepy is like a decent, like an evil, but decent business model might be to do something like this and just keep track of all the companies that have paid you to steal from open source.
+
+00:18:40 And then, you know, and then like, you know, sue them or, or like, you know, anyway.
+
+00:18:48 Yeah.
+
+00:18:49 Well, I leave this here for people to riminate about, but I do think it's pretty wild.
+
+00:18:55 I think it's pretty wild.
+
+00:18:57 Also, I guess it's good to talk about it because people are going to do this anyway, right?
+
+00:19:01 People are going to try to do clean room solutions and around stuff.
+
+00:19:06 So clean room solutions have worked.
+
+00:19:08 I mean, there was Miguel de Caza.
+
+00:19:12 I don't know how that, I'm not sure how to spell it.
+
+00:19:14 The guy created Mono, the, which was the open, open source version of .NET when .NET was, or yeah, of .NET and C# when it was still completely commercial and just made sure that
+
+00:19:27 whoever they hired to work on it had never looked at the source code or work, you know, and they rebuilt it.
+
+00:19:32 And ultimately the outcome was that Microsoft bought them because they thought that open source was better later instead of a virus or whatever they called it at the time.
+
+00:19:41 So, I mean, that's a, that's a historical precedent for this clean room concept.
+
+00:19:45 But if you just, the difference is that took multiple people six months to a year, whereas this is like an afternoon.
+
+00:19:52 You know what I mean?
+
+00:19:52 If you turn cloud code loose on it.
+
+00:19:54 Such as the world right now.
+
+00:19:56 Yeah.
+
+00:19:56 Yeah.
+
+00:19:56 Such as the world right now.
+
+00:19:57 But anyway, I honestly don't know how I feel about this.
+
+00:20:00 I mean, it seems like a really crappy thing to do.
+
+00:20:03 At the same time, it seems like you should be able to, you know, in the Google, Google versus, I think Oracle case.
+
+00:20:10 So the case about Java and I think it was Java and Android, the Supreme Court, whatever the highest court it went to ruled that APIs, the signature of the APIs are not copyrightable.
+
+00:20:21 Right.
+
+00:20:22 So that's, that's part of the precedence, but this is, this is the internals.
+
+00:20:27 But if you take something and scrape out, these are all the APIs and here's a description of what it does, you know, and you feed that to an AI, that's pretty close to doing what Google did, but they had a team of hundreds of people or something.
+
+00:20:37 You know what I mean?
+
+00:20:37 Like, I don't know.
+
+00:20:39 I, like I said, I don't know how to feel about this.
+
+00:20:40 I'm just going to put this out there for people's awareness and move on to your next topic, Brian.
+
+00:20:45 Well, I want to talk about, just change it up a little bit and talk about security.
+
+00:20:50 Okay.
+
+00:20:51 So, so this one comes from us, from Matthias Schottel, I think.
+
+00:20:59 Anyway, thanks Matthias.
+
+00:21:01 Yeah.
+
+00:21:01 I sent us, sent it in through email, which yeah, we've very easy to find email.
+
+00:21:06 So the article, this is kind of fun because in the email he said, you know what?
+
+00:21:11 I've been, I wanted to suggest this, but also this topic, but also I'm trying to get better about writing blog posts.
+
+00:21:20 And, and I appreciate that because we, we like blog posts.
+
+00:21:23 I like to read blogs.
+
+00:21:24 So there's a, he's got an article called harden your GitHub action workflows with Zizmor dependency pinning and dependency cooldown.
+
+00:21:33 So there's three topics to, so you've got, and actually this came up because he was looking at an article like, please let me get this.
+
+00:21:41 Okay.
+
+00:21:41 Like from step security saying an AI powered bot actively exploited GitHub actions, micro involving Microsoft data dog, CNF projections, lots of things.
+
+00:21:54 So this sort of, you have to basically making sure you get, have actions are secure also, not just your, whatever thing you're building, but your, your actions might have a problem.
+
+00:22:06 So we had actually covered Zizmor, but I went, I went and looked and see to see when it was.
+
+00:22:13 So it was episode 408, November, 2024.
+
+00:22:17 We covered Zizmor and, and then look at the, look at the repo.
+
+00:22:22 So Zizmor repo, it's Zizmor is a static analysis tool for GitHub actions.
+
+00:22:28 I thought it was pretty cool.
+
+00:22:29 So we covered it and it's got a bunch of sponsors now and look at the star count.
+
+00:22:34 Hmm.
+
+00:22:34 We covered it in, in November, 2024.
+
+00:22:36 And right after that, it kind of took off.
+
+00:22:39 That thing totally hockey stick.
+
+00:22:41 How about that?
+
+00:22:41 Maybe it's because of us.
+
+00:22:43 Who knows?
+
+00:22:44 Probably not.
+
+00:22:45 But anyway, so that's pretty cool.
+
+00:22:47 I'm sure at least one of those stars is from us.
+
+00:22:50 At least one of the stars.
+
+00:22:51 Yeah.
+
+00:22:51 Like the one I put on there, maybe.
+
+00:22:54 Anyway, so the, so what, what can you do?
+
+00:22:58 So there's a supply chain issues.
+
+00:23:01 Doing static analysis of your GitHub actions, definitely something to do.
+
+00:23:06 And this is not, what I'd like to put out is this is not just, if it's business critical stuff, it's really anything that you're putting out on, on GitHub and especially things that you're releasing through PyPI,
+
+00:23:19 because even your little like left pad thing might get exploited, whatever.
+
+00:23:24 You might not think about it, but somebody else could take advantage of it.
+
+00:23:26 So to lock stuff down.
+
+00:23:28 So we've got, so we've got the static analysis.
+
+00:23:32 The other, the other thing he brought up is dependency pinning.
+
+00:23:36 So, and this is related to the light LLM exploit from last week, which I don't think we covered, but hopefully everybody heard about this.
+
+00:23:44 So there's one of the, and this, this one is creepy because apparently the, the, even if you pinned the dependency in it with version numbers,
+
+00:23:55 that wasn't enough because a malicious, a malicious package got over, overrode the binary with the same version number.
+
+00:24:05 So you really should be checking the SHA key.
+
+00:24:09 Is that SHA or S-H-A?
+
+00:24:11 I don't know how to pronounce that.
+
+00:24:13 I think typically said SHA, but if you call, you talk about the hashing algorithm, I think people say S-H-A, so it could go either way, right?
+
+00:24:21 So, but some of those, some of those are a little bit, a little bit hard to, I mean, it's hard to do, deal with.
+
+00:24:28 It's not really hard, but it's, it's less of a, it's more of a pain than just typing out the version.
+
+00:24:33 So there's a, there's a tool apparently called renovate that helps for, helps for that, that part of it.
+
+00:24:41 And, you know, uv pins, you like, I was going to say uv locks, but now we have a problem with uv locks on.
+
+00:24:48 So, it's like whack-a-mole.
+
+00:24:51 It's definitely whack-a-mole.
+
+00:24:52 So, so using things to, to check, to check, check those SHAs also.
+
+00:24:59 And then dependency cooldowns.
+
+00:25:00 I think you brought this up either last week or recently.
+
+00:25:03 Yeah.
+
+00:25:04 To be able to say, hey, I'm going to update everything, but don't update if, if, if anything's like newer than seven days or something like that.
+
+00:25:12 Yeah.
+
+00:25:13 I would like to point out that I do not do this.
+
+00:25:15 I do not.
+
+00:25:16 When I say it, I say one week.
+
+00:25:17 Oh, you do, you just.
+
+00:25:18 That's an improper fraction right there is what that is.
+
+00:25:21 No, I'm just kidding.
+
+00:25:21 I literally have mine says one week.
+
+00:25:23 That says seven days, but whatever.
+
+00:25:24 Same idea.
+
+00:25:25 It's, I think it's a very, it solves the problem that I talked about and it solves the problem.
+
+00:25:29 cause after seven days that thing's not going to exist on the package manifest.
+
+00:25:33 Right.
+
+00:25:33 And it solves the problem here.
+
+00:25:34 It's a, it's a super simple thing and it's not perfect, but it's a layer of defense.
+
+00:25:39 Yeah.
+
+00:25:39 So I, this is a, I don't think this is too much.
+
+00:25:42 So I think that I'm going to, I'm going to, I've got a project that I'm a little, yeah.
+
+00:25:46 I'm going to try this out.
+
+00:25:47 I'm going to try these things.
+
+00:25:48 And it's my guess is it's going to take me longer to figure out what to do than to actually implement everything.
+
+00:25:53 So.
+
+00:25:54 Yeah.
+
+00:25:55 That's how a lot of stuff ends.
+
+00:25:56 Like I changed, I had to change one line, but it took me two days of research to figure out what the right choice of that one line was.
+
+00:26:02 I mean, and let's, let's get real.
+
+00:26:04 I'm just going to point an agent at this article and say, could you do all this stuff for my project?
+
+00:26:09 This seems like a problem.
+
+00:26:10 Read it, fix it, research it, fix it.
+
+00:26:12 Yep.
+
+00:26:12 Exactly.
+
+00:26:14 Maybe get a, you can get a non GPL version.
+
+00:26:17 If you put, pay a few cents and send it to malicious.
+
+00:26:19 All right.
+
+00:26:20 So a real time follow-up.
+
+00:26:21 I just want to, I forgot to credit Paul Bauer who sent in the thing about malicious.
+
+00:26:25 So thanks for that.
+
+00:26:26 And you mentioned left pad.
+
+00:26:27 I was curious, is there a Python left pad?
+
+00:26:29 Yes.
+
+00:26:29 In fact, there is a Python left pad.
+
+00:26:31 Really?
+
+00:26:32 Yes.
+
+00:26:33 Inspired by the famous left pad package on npm that broke the internet.
+
+00:26:37 It's a joke.
+
+00:26:38 I mean, but it works.
+
+00:26:39 You can pip install it.
+
+00:26:40 It's called a port of the infamous left pad npm package.
+
+00:26:45 Interesting.
+
+00:26:45 Okay.
+
+00:26:46 Yeah.
+
+00:26:47 Okay.
+
+00:26:49 I think we're on to extras.
+
+00:26:52 I just said, I have one.
+
+00:26:53 Do you have, do you have some extras?
+
+00:26:55 Yeah.
+
+00:26:55 I'll go ahead and go first since I'm on my screen.
+
+00:26:57 Yeah.
+
+00:26:58 All right.
+
+00:26:58 So I want to talk about a new SAS that I released, Brian, that people have seen me, see me using, but they don't know that necessarily had anything to do with me called interview queue.
+
+00:27:07 So this is a Python built platform for doing podcasts.
+
+00:27:11 So if people are out there, they're content creators that are podcasters that are, they do interviews, whatever.
+
+00:27:16 Give this thing a look.
+
+00:27:17 The whole idea is from starting out with like bracelet about an idea all the way until you push something out as a final bit of audio file or video or whatever.
+
+00:27:26 It's there to like make every step a little bit easier and guide that.
+
+00:27:30 So I knew I was going to talk about that this week.
+
+00:27:32 So last week I pressed a stopwatch, start, stop.
+
+00:27:35 When I, from the time I had downloaded the audio files from our interview last week until I had shipped it with chapters, with album art, all that kind of stuff, edited final, like raw video down, raw audio downloaded to final audio and the podcast feed, 18 seconds, 51,
+
+00:27:50 18 minutes, 51 seconds.
+
+00:27:51 Oh, wow.
+
+00:27:52 So super excited about this.
+
+00:27:54 Mostly I built it for myself, but I thought, you know, I'll put in some extra effort.
+
+00:27:57 Keep fine.
+
+00:27:58 I actually had to rewrite it three times because I'm like, yeah, this is the right UI metaphor for how this works.
+
+00:28:03 And I tried it on a few podcast episodes.
+
+00:28:05 I'm like, nope, no, it's not.
+
+00:28:06 This is horrible.
+
+00:28:07 I can't be, it's just so disorienting.
+
+00:28:09 Do it again.
+
+00:28:10 I think it's really nailed now.
+
+00:28:11 So people are doing podcasts or interviews.
+
+00:28:13 I know that's not most people listening, but it's a really cool Python app.
+
+00:28:16 It's, it's a mega app.
+
+00:28:17 It's like 75,000 lines of Python or something.
+
+00:28:19 It does a bunch of stuff.
+
+00:28:20 Okay.
+
+00:28:21 Nice.
+
+00:28:21 Yeah.
+
+00:28:22 Thanks.
+
+00:28:22 Good dog fooding.
+
+00:28:23 Yes.
+
+00:28:24 Dog fooding.
+
+00:28:24 And I built for myself.
+
+00:28:25 One of the things that I learned as part of that is so that gives people 250 megs of free storage unlimited.
+
+00:28:33 It does free transcripts.
+
+00:28:34 It does all that kind of stuff.
+
+00:28:35 One of the things that makes that work is you need to be able to store stuff.
+
+00:28:40 That's not too expensive.
+
+00:28:42 So if you store something on S3 or something like that, Azure Blob Storage, probably the same price.
+
+00:28:48 They all seem to copy each other.
+
+00:28:50 They all seem to copy each other except for digitalization, which is a little bit cheaper at seven.
+
+00:28:54 I don't know.
+
+00:28:54 It's, it's at one cent per gigabyte per month for a regular S3 storage.
+
+00:29:01 But they just came out with a thing called Spaces, which is their S3 cold storage.
+
+00:29:06 So you can put something up and say, I'm not going to access it very much.
+
+00:29:09 And if I do access it, it costs a little tiny bit more.
+
+00:29:13 Like instead of it costs a cent per gigabyte when you access it.
+
+00:29:17 So, which is, you know, more than their, their default pricing or whatever.
+
+00:29:20 But if you don't access it, it's 0.007 cents per gigabyte per month.
+
+00:29:28 Think how cheap that is.
+
+00:29:29 That is awesome.
+
+00:29:30 And you don't have to have like, oh, we have Glacier, which is its own storage system.
+
+00:29:34 And then if we want to, we can move it back into S3 and out of us.
+
+00:29:37 Like it's literally the same API as S3.
+
+00:29:39 You just use Bodo to talk to it.
+
+00:29:41 But if you, your access pattern is very infrequently, which, you know, it is, you record a podcast, maybe you touch it once or twice.
+
+00:29:47 There's like a little cool trick with disk cache.
+
+00:29:49 So most of the time when it's sort of in an active mode, it doesn't even go to the internet.
+
+00:29:53 It just works with like a local volume at Hetzner.
+
+00:29:56 And then if it needs to go back, it's, it's still pretty cheap.
+
+00:29:59 Isn't that cool?
+
+00:30:01 What, so what would you put in the cloud that you don't access very often?
+
+00:30:05 Backup files.
+
+00:30:06 Like, so for example, let's say you want to store the, for, let's go back to interview queue as something concrete.
+
+00:30:11 Right.
+
+00:30:11 Just so it's concrete.
+
+00:30:12 One of the things that we'll do is that we'll generate transcripts for you.
+
+00:30:15 So it could take that, that VTT or SRT file or whatever, like a text file, put it into this cold storage.
+
+00:30:22 Also put like a 30 day local cache where it works with it.
+
+00:30:25 But after that, it just, you know, it runs out of space.
+
+00:30:27 It throws it away.
+
+00:30:28 So maybe it's in this little local cache for like the two days that you're editing the podcast.
+
+00:30:32 But how often do you go back to a podcast you did last year and then pull up the transcript segment and want to look at it?
+
+00:30:38 Like most people who would use a service like this would just go like, well, once I've produced it and downloaded the final transcript, like they don't go back and mess with it again.
+
+00:30:46 Right.
+
+00:30:46 So it's that kind of thing.
+
+00:30:47 It's like when you're creating something or you're actively editing it, then you want those files there.
+
+00:30:51 You want that access.
+
+00:30:52 But then pretty soon it's going to fall into like, I just want it historically kept for me.
+
+00:30:56 Okay.
+
+00:30:57 I think there's a lot of access patterns for that.
+
+00:30:58 All right.
+
+00:30:59 Back to fire and forget.
+
+00:31:00 So I talked about this last week, this fire and forget pattern and how this was pretty sketchy that I thought I still believe that to be true.
+
+00:31:07 I have two things on it.
+
+00:31:08 One, I'm sorry.
+
+00:31:10 I don't remember who sent me this message.
+
+00:31:12 I can't, I'm sorry.
+
+00:31:13 I can't remember who sent me this, but thank you for sending me.
+
+00:31:15 They said, actually, I said, starting in Python 312, this has been a problem.
+
+00:31:19 What they said is starting in Python 312, what happened is the documentation pointed out that this was a problem.
+
+00:31:25 Whereas previously it was a silent sort of unknown issue.
+
+00:31:29 So they think that it has been there since 3, 4, 3, whenever, whenever create task got defined and asyncio got defined, you know, the year before async and await, which I think that's 3, 5.
+
+00:31:39 Anyway, for a long, long time that it has been there, but in 312, the documents were, documentation was updated.
+
+00:31:44 So, hey, this is a problem.
+
+00:31:45 Be aware of it.
+
+00:31:46 So it could be that this has always been a problem.
+
+00:31:48 And it's just that, you know, for people who don't know, if you just go and say, hey, I want to fire something off in the background to let it run on the event loop, asyncio dot create task, and you give it the async function.
+
+00:32:01 That's not enough.
+
+00:32:03 That is not enough to keep it from getting garbage collected potentially because the loop itself doesn't hang on to it.
+
+00:32:09 Okay.
+
+00:32:09 So that's the, that's the issue, right?
+
+00:32:11 They think that that's been the case forever and they just document it in 312.
+
+00:32:14 So thanks for pointing that out.
+
+00:32:15 I don't know that should be true.
+
+00:32:16 I looked into it and didn't find a great answer.
+
+00:32:18 The next thing though, is another person pointed out, Richard pointed out that Will McGugan wrote an article called the Heisen bug lurking in your async code.
+
+00:32:28 What does it talk about?
+
+00:32:29 Well, if you do create task, guess what?
+
+00:32:32 It could be garbage collected.
+
+00:32:33 It may disappear without warning during garbage collection.
+
+00:32:35 And so that's all well and good.
+
+00:32:38 Thanks Will for writing that.
+
+00:32:39 So I did another post that sort of talked about that.
+
+00:32:41 But what's interesting is luckily we'll added numbers and concrete search values.
+
+00:32:47 So if I go here, there are wait for it.
+
+00:32:49 586,000 separate code files that have this pattern.
+
+00:32:53 Cause people would tell me it's not a problem.
+
+00:32:55 Michael, you, this is some weird edge case that only you care about me and the 586,000 other people.
+
+00:33:00 Right?
+
+00:33:00 Look at this.
+
+00:33:00 The very first hit is like, boom, they're not putting it into like, so not every one of these 586,000 actually, like this is actually a documentation line here.
+
+00:33:09 This one, they are holding the task, but even on the first page, which is like a very small amount of those half a million, there's five instances where they're doing the thing that you said you're not supposed to do.
+
+00:33:20 So, all right.
+
+00:33:21 That's it for my extras.
+
+00:33:22 But I thought that would be a fun follow up on two accounts.
+
+00:33:25 Yeah.
+
+00:33:26 I just have one extra and that is that GitHub is, I went to GitHub this morning and noticed that on April 24th, they're going to, GitHub Copilot is going to start recording interaction data for their AI.
+
+00:33:39 You don't have a model training unless you opt out.
+
+00:33:41 So, a company is actually asking before they spy on you.
+
+00:33:44 So, that's nice.
+
+00:33:45 But they're going to spy on you.
+
+00:33:48 Yeah.
+
+00:33:49 Well, you can, apparently you can opt out.
+
+00:33:51 Yes.
+
+00:33:51 I've already opted out.
+
+00:33:52 Have you?
+
+00:33:53 Yeah.
+
+00:33:53 I was going to, and I'm like, do I really care how, how they, my GitHub interactions or.
+
+00:34:00 And honestly, it's kind of a no op for me or, you know, tree falls in the forest.
+
+00:34:05 No one learns to hear it.
+
+00:34:06 Like actually the tree does still fall.
+
+00:34:07 That's a pretty human centric perspective of the world, but this is GitHub Copilot interaction, not your repository data.
+
+00:34:15 Right.
+
+00:34:15 That's what it says on April 24th, we'll start using GitHub Copilot interaction data for AI model training.
+
+00:34:21 Unless you say no.
+
+00:34:22 I don't use GitHub Copilot.
+
+00:34:24 So, maybe they can have all my interactions or none of them.
+
+00:34:27 They'll be the same.
+
+00:34:28 When I first saw that, I thought, oh, they're going to start.
+
+00:34:30 They're asking for permission to use my code in my repository and my issues and stuff for training.
+
+00:34:35 But that doesn't sound like what it is.
+
+00:34:37 What are they?
+
+00:34:39 Okay.
+
+00:34:39 The GitHub Copilot interactions with.
+
+00:34:42 Yeah.
+
+00:34:42 So, the ones, probably the ones I'm responsible for, like when am I using GitHub Copilot.
+
+00:34:47 Okay.
+
+00:34:47 Yeah.
+
+00:34:48 Yeah.
+
+00:34:48 And like if you go to the GitHub homepage, there's a ask Copilot sort of thing.
+
+00:34:53 And there's other, you know, there's other areas where if you do a search, I think some Copilot stuff in the PR, you might be, especially if you're a paid user of Copilot, that's a very, that's a much bigger thing.
+
+00:35:04 Yeah.
+
+00:35:04 One of the interesting things is you can ask, where'd it go?
+
+00:35:08 I think you can ask, you can ask an agent to like, oh yeah, here, here we go.
+
+00:35:12 If I'm looking at an issue, you can assign it to an agent to have them fix it.
+
+00:35:16 Yeah.
+
+00:35:17 I haven't tried this.
+
+00:35:18 I might try this on this one.
+
+00:35:19 I've already been having mine do that, but not through Copilot.
+
+00:35:24 In Cloud code, I just say, hey, Cloud, issue 199 of this repository.
+
+00:35:29 I would like to work on that.
+
+00:35:30 Can you plan that out with me and have a conversation?
+
+00:35:34 Interesting.
+
+00:35:35 It just goes, logs into GitHub, using the GH CLI, pulls it down, understands it, and then keeps working with it.
+
+00:35:41 So, it's not exclusive to GitHub and Copilot if you have the GH CLI installed, which is very cool.
+
+00:35:49 Okay.
+
+00:35:50 Yeah, that looks more scary to me before, and now I'm like, actually, I don't care.
+
+00:35:54 I don't care.
+
+00:35:55 Should we talk about something funny?
+
+00:35:57 We shall make a joke.
+
+00:35:59 So, for an interview queue, my press mark is asked.
+
+00:36:01 There we go.
+
+00:36:01 So, I can't tell for sure if we did this before, but if so, it's been long enough that I think it'll be fun.
+
+00:36:07 Okay.
+
+00:36:08 All right.
+
+00:36:09 So, Will Smith and iRobot.
+
+00:36:11 I think that's a good sort of future, but looking back to like now type of thing, right?
+
+00:36:16 So, Will Smith talking to one of these robots.
+
+00:36:19 Can an LLM write maintainable code?
+
+00:36:22 The robot stares back with its like mechanical eyes.
+
+00:36:26 Can you?
+
+00:36:27 Oh, snap.
+
+00:36:30 Oh, snap.
+
+00:36:34 Yeah.
+
+00:36:35 I mean, it's a funny joke.
+
+00:36:36 I think it's a funny joke just because of the time and so on.
+
+00:36:38 And there's a lot of variations that you could have on it.
+
+00:36:40 I haven't read the comments.
+
+00:36:41 We have to read the comments.
+
+00:36:42 But there are certainly co-workers I've had in the past who I would take cloud code over that co-worker for working on my code together.
+
+00:36:50 Yeah, definitely.
+
+00:36:52 Yeah.
+
+00:36:52 Yeah.
+
+00:36:52 Not saying the cloud code is perfect.
+
+00:36:54 I just want to let it run loose.
+
+00:36:55 But I've had some people are like pretty bad, especially people taking some of my training classes.
+
+00:37:00 And how did you get into this?
+
+00:37:01 I mean, this company?
+
+00:37:03 I had some, I'll tell you, I don't want people to feel like I'm making fun of people over like being too picky or elitist.
+
+00:37:09 This is a person who worked at a, either a bank, let's say a bank, like something like a bank, like a big enterprise company.
+
+00:37:16 And this was when I was teaching C-sharp way back in the day.
+
+00:37:20 And we would do like an hour's worth of presentation and demos.
+
+00:37:24 And then it was okay, now you guys for the next hour work on this thing.
+
+00:37:27 That's like a derivative version of what we've been talking about.
+
+00:37:29 Right.
+
+00:37:30 And this person who has been employed at this company for six months as a software developer, professionally at a bank.
+
+00:37:36 Read the instructions.
+
+00:37:37 So Michael, I need help.
+
+00:37:38 I said, no, no problem.
+
+00:37:39 What's going on here?
+
+00:37:40 Like, well, I can't get this to work.
+
+00:37:42 And they had variable name equals some sentence, no quotes around it.
+
+00:37:46 I said, oh, you got a couple of problems here.
+
+00:37:48 That's a string.
+
+00:37:49 So you need to put quotes around the string.
+
+00:37:51 What are you talking about?
+
+00:37:52 Like, I don't know what to tell you.
+
+00:37:53 Like, you need to put the quote character at the beginning and end.
+
+00:37:55 So like the compiler knows that this is actually a string bit, not just other keywords and stuff.
+
+00:38:01 Like see the thing left of the enter shift, press that and put it at the beginning.
+
+00:38:05 And it was like a challenge to get those quotes in there.
+
+00:38:08 And then it still wouldn't work.
+
+00:38:09 I'm like, oh, you could, you have to declare the variable as a string.
+
+00:38:12 Like, so you have to say string space email equals whatever, or whatever it was.
+
+00:38:16 Right.
+
+00:38:17 What do you mean?
+
+00:38:18 Six months as a professional developer in this language, this was not like where they're starting this language.
+
+00:38:23 I'm like, okay, I will take clog code all day.
+
+00:38:26 I will take this robot thing all day over that as a coworker.
+
+00:38:29 Seriously.
+
+00:38:30 So I don't think I'm being harsh to say that that's, that's out of bounds of like, you shouldn't be, you should have gotten past that step after six months, eight hours a day.
+
+00:38:37 So lesson out there.
+
+00:38:40 If you know what quotes are, you might be able to get a job.
+
+00:38:44 Yes.
+
+00:38:45 If you know how to make a string in a programming language.
+
+00:38:48 Okay.
+
+00:38:49 While we're on the tangent, I'll just get one more tangent.
+
+00:38:52 So I had an interview once somebody came in and it was, it was a contract position, but, but still, I usually start with a real low ball question just to, just to make sure.
+
+00:39:08 so, and I usually say something like, okay, I just want to write a function that, in Python, write a function in Python that, that takes, takes a user input, string or takes a string and, or actually, what is it?
+
+00:39:22 Write a function that takes two numbers and adds them and returns to the answer.
+
+00:39:25 this was a long, I, it took a while to get to the point where I could say, let's actually, let's stop.
+
+00:39:33 And I, and I don't want to try to be cold.
+
+00:39:35 So I usually like ask about their background and whatever, and, and fill out the hour.
+
+00:39:39 But it was clear that this wasn't going to work because they, this first, they started out with like print statements to the standard out and, and, using the input command to get user data.
+
+00:39:53 And I'm like, no, it's a function.
+
+00:39:55 It just has parameters.
+
+00:39:56 That's it.
+
+00:39:57 oops.
+
+00:39:59 so yeah, anyway, lots, lots of different backgrounds that get into software.
+
+00:40:04 So yeah, definitely some that I would, I would take an agent over.
+
+00:40:09 So, but that's funny.
+
+00:40:12 Can you, let's look at the comments real quick.
+
+00:40:14 Okay.
+
+00:40:15 John says, man, this is going to slay on LinkedIn.
+
+00:40:21 Oh my gosh.
+
+00:40:22 Yeah.
+
+00:40:23 Right.
+
+00:40:23 Everyone acting like they're Linus Torval's.
+
+00:40:29 Yeah.
+
+00:40:30 So, would you, LinkedIn's weird.
+
+00:40:33 I, I, every time I pick my head into LinkedIn, I like try to back out because I think it's all just full of bots.
+
+00:40:38 I don't think there's any people there left.
+
+00:40:40 So, yeah, well you haven't embraced your a hundred day ones attitude.
+
+00:40:45 Guess not.
+
+00:40:46 Anyway, good episode.
+
+00:40:48 fun talking with you.
+
+00:40:49 Thanks to everybody that showed up to listen and, we'll see you all next week.
+
+00:40:53 Bye everyone.
+
+00:40:54 Bye.
+
+00:40:54 Bye.
+
