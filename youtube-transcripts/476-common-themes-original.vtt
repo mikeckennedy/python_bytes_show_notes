@@ -1,0 +1,1759 @@
+WEBVTT
+
+00:00:00.000 --> 00:00:02.640
+Hey Brian, hey YouTube.
+
+00:00:02.640 --> 00:00:03.640
+Hey.
+
+00:00:03.640 --> 00:00:04.640
+Hey.
+
+00:00:04.640 --> 00:00:06.640
+Time for another episode.
+
+00:00:06.640 --> 00:00:07.960
+You ready to kick it off?
+
+00:00:07.960 --> 00:00:08.960
+Yeah.
+
+00:00:08.960 --> 00:00:09.960
+Yep.
+
+00:00:09.960 --> 00:00:10.960
+All right.
+
+00:00:10.960 --> 00:00:17.320
+Hello and welcome to Python Bytes where we deliver Python news and headlines directly to your earbuds.
+
+00:00:17.320 --> 00:00:24.800
+This is episode 476, recorded April 6th, 2026.
+
+00:00:24.800 --> 00:00:26.760
+So many sixes, Brian.
+
+00:00:26.760 --> 00:00:27.760
+I'm Michael Kennedy.
+
+00:00:27.760 --> 00:00:29.760
+And I'm Brian Okken.
+
+00:00:29.760 --> 00:00:32.780
+And this episode is brought to you by us.
+
+00:00:32.780 --> 00:00:38.640
+We have all sorts of awesome things to help you get better at Python, testing and so on.
+
+00:00:38.640 --> 00:00:39.640
+Check the show notes.
+
+00:00:39.640 --> 00:00:40.920
+Subscribe to the newsletter.
+
+00:00:40.920 --> 00:00:44.180
+We've got a bunch of cool things we're sending out there.
+
+00:00:44.180 --> 00:00:58.280
+And every week, one of them, every week is a nice extra rich summary of what we talked about, what we're covering, but also additional places to find more materials so you can get a little
+
+00:00:58.280 --> 00:00:59.280
+bit of the background information.
+
+00:00:59.280 --> 00:01:07.160
+Like we might talk about, oh, here's how you do this thing in CI, but maybe the newsletter also includes details of getting started with CI and other things like that.
+
+00:01:07.160 --> 00:01:09.040
+And that's all thanks to Brian.
+
+00:01:09.040 --> 00:01:11.040
+So thank you for that.
+
+00:01:11.040 --> 00:01:20.040
+And with that, you know, let's migrate it over to Brian's topic.
+
+00:01:20.040 --> 00:01:21.040
+What's up?
+
+00:01:21.040 --> 00:01:23.180
+I am talking about Ty migration.
+
+00:01:23.180 --> 00:01:27.360
+Ty, T-Y, the Astro Project for type checking.
+
+00:01:28.200 --> 00:01:31.740
+I, I, have you, have you used it?
+
+00:01:32.700 --> 00:01:34.260
+I am using it actively.
+
+00:01:34.260 --> 00:01:34.900
+Yes.
+
+00:01:35.120 --> 00:01:35.580
+I love it.
+
+00:01:35.580 --> 00:01:36.540
+Okay.
+
+00:01:36.540 --> 00:01:39.120
+So I, I, it's the speed thing.
+
+00:01:39.120 --> 00:01:41.780
+so, Ty's all rust.
+
+00:01:41.780 --> 00:01:44.300
+So it's way faster than a lot of other stuff.
+
+00:01:44.780 --> 00:01:47.320
+Pyrefly is rust also, but Ty's still faster.
+
+00:01:47.440 --> 00:01:48.440
+I think Pyrefly is rust.
+
+00:01:48.900 --> 00:01:49.260
+Um.
+
+00:01:49.260 --> 00:01:49.940
+It is, I believe.
+
+00:01:50.060 --> 00:01:50.340
+Yes.
+
+00:01:50.580 --> 00:01:50.840
+Okay.
+
+00:01:51.380 --> 00:02:03.560
+But, and, but it's not, Pyrefly is not noticeably laggy, but, but my pie is, and it's, my pie is definitely something I use, use in CI.
+
+00:02:03.560 --> 00:02:16.660
+But, anyway, well, I'm bringing this up because there was a post by, Sebastian Ramirez and I just went away from it, that all of his Python projects like FastAPI,
+
+00:02:16.920 --> 00:02:19.960
+typer, SQL model, asyncr, all of that stuff.
+
+00:02:20.280 --> 00:02:25.020
+It's all just using, it's all using Ty now, for the primary type checker.
+
+00:02:25.300 --> 00:02:33.680
+And so I'm thinking, and I had tried on, for a couple of projects and it, like, it was a little bit pickier than I expected.
+
+00:02:34.000 --> 00:02:35.840
+So I tried it again.
+
+00:02:35.960 --> 00:02:45.020
+So I went ahead and migrated pytestCheck to, to use Ty and I'm kind of doing a similar model and it's going well.
+
+00:02:45.140 --> 00:02:49.460
+So anyway, I, there was a, he, he migrated that stuff.
+
+00:02:49.460 --> 00:03:02.720
+And then, Tim Hopper wrote a blog post called, migrating from my pie to Ty lessons from FastAPI and, it's pretty fun, walkthrough of, of some of the, some
+
+00:03:03.480 --> 00:03:05.960
+of the things, cause it's really, it's really pretty easy to migrate.
+
+00:03:05.960 --> 00:03:13.800
+So you're, the idea, around it, I'm going to skip down to the end cause he's like, well, if you want to do this yourself, what, what should you do?
+
+00:03:14.440 --> 00:03:17.200
+add Ty alongside of my pie.
+
+00:03:17.200 --> 00:03:19.060
+So that, and that's what I'm doing with pytestCheck.
+
+00:03:19.500 --> 00:03:22.920
+doing both my pie and Ty.
+
+00:03:22.920 --> 00:03:33.880
+I actually, I've got them as two different, two different talks, runs, sections to run separately, but, locally, I'm just running Ty because it's so fast.
+
+00:03:33.880 --> 00:03:35.820
+It's like it runs and it's done.
+
+00:03:35.880 --> 00:03:41.900
+Whereas my pie, I have to wait a few seconds, a few seconds, not a big deal, but it makes it so that I don't run it as much.
+
+00:03:42.080 --> 00:03:46.220
+So, anyway, add Ty alongside my pie.
+
+00:03:46.400 --> 00:03:53.480
+there's one setting that, that, that I turned on because of this article of errors on warning.
+
+00:03:53.480 --> 00:04:03.020
+So there's some, some tie warnings that show up and they don't stop a Sierra run, but,  but I want it to, I don't want, I want to have it completely clean with no warnings.
+
+00:04:03.760 --> 00:04:05.840
+So you can set error on warning is true.
+
+00:04:06.300 --> 00:04:18.240
+there are, if, if there's parts where you have to comment out, like you have to ignore certain lines for some reason, the annoying part right now is that you have, and I'll
+
+00:04:18.240 --> 00:04:23.520
+go back up to this discussion up here is that you have to do, two.
+
+00:04:23.760 --> 00:04:29.480
+So, the ignore line for my pie is different than Ty in some of these.
+
+00:04:29.940 --> 00:04:39.720
+So that's, that is a bit annoying if you're, if you're supporting both, but, apparently it got better in, in, Ty 0.0.25.
+
+00:04:40.020 --> 00:04:40.920
+Oh, come on guys.
+
+00:04:40.920 --> 00:04:44.540
+You gotta like, anyway, those zero verse just killing me.
+
+00:04:44.540 --> 00:04:50.140
+That's, that's a very, very, very zero for 0.0 is the version.
+
+00:04:51.140 --> 00:04:55.840
+but, supports a better way to say, ignore these sets of things.
+
+00:04:55.840 --> 00:04:56.860
+Apparently that works.
+
+00:04:56.860 --> 00:05:01.240
+So anyway, check out the model if you want to, have ignores.
+
+00:05:01.400 --> 00:05:05.460
+I don't actually have, I think I have a few ignores, but, not too many.
+
+00:05:05.460 --> 00:05:11.360
+And a lot of them are because I intentionally try to do something bad, to, to simulate an error.
+
+00:05:11.360 --> 00:05:12.680
+okay.
+
+00:05:13.100 --> 00:05:18.920
+So, how it fits in the workflow also, it's really easy to run and all that stuff.
+
+00:05:19.000 --> 00:05:19.480
+It's great.
+
+00:05:19.720 --> 00:05:19.980
+Okay.
+
+00:05:20.180 --> 00:05:20.820
+Let's get him back.
+
+00:05:20.880 --> 00:05:24.320
+So you accept the double comments and then pick a smaller project.
+
+00:05:24.420 --> 00:05:33.280
+And, whereas like on the FastAPI world, SQL model is now completely tie only and doesn't have use my pie apparently.
+
+00:05:33.280 --> 00:05:38.600
+So, drop, drop my pie when the noise exceeds the signal.
+
+00:05:38.600 --> 00:05:39.980
+So, right.
+
+00:05:39.980 --> 00:05:47.840
+So the SQL model had too many, like it wasn't worth having supporting both because of all the different ignores and all that stuff.
+
+00:05:48.240 --> 00:05:54.280
+I'm currently, I'm, I've had so many people request my pie support for pie test check.
+
+00:05:54.280 --> 00:05:57.000
+So I'm not planning on dropping it anytime soon.
+
+00:05:57.080 --> 00:06:04.540
+And for a lot of packages, I believe that's probably going to be the case of people just,  supporting both for a long time.
+
+00:06:04.540 --> 00:06:04.840
+Yeah.
+
+00:06:04.840 --> 00:06:10.360
+One of the really unfortunate things about how Python typing works, there's a lot of good things about it.
+
+00:06:10.360 --> 00:06:25.200
+So don't, don't call me a hater, but one of the really unfortunate things is even amongst ty and Pyrefly, there are different conventions and warnings and things that count as errors and things that don't count as errors, things that are checked and things that are not checked.
+
+00:06:25.200 --> 00:06:34.520
+And so if you have a project that needs to support two, both or more, you've got to put all of them in there.
+
+00:06:34.520 --> 00:06:43.360
+You've got to deal with cases where your type checker says everything's fine, but someone else type checker doesn't think it's fine.
+
+00:06:43.360 --> 00:06:44.700
+You're like, are you serious?
+
+00:06:45.280 --> 00:06:51.560
+Like the most ridiculous version of this is for one of my templating packages.
+
+00:06:51.560 --> 00:07:04.940
+I can't remember which one, like chameleon part, chameleon partials or, flask chameleon and one of those where it like lets you do something with the, or maybe Jinja partials.
+
+00:07:04.940 --> 00:07:08.100
+I can't remember, but somebody was doing something with flask.
+
+00:07:08.100 --> 00:07:19.580
+And when you put the decorator onto a view that the web framework calls, it changed the signature in a very subtle way.
+
+00:07:19.580 --> 00:07:23.420
+And the signature is extremely complicated at the definition level.
+
+00:07:23.420 --> 00:07:34.600
+I mean, it's like multiple lines of what the warrant of the signature problem was, you know, not just like expected it, but it was really a lot of like stuff going on there.
+
+00:07:34.600 --> 00:07:36.040
+And it said that that was wrong.
+
+00:07:36.040 --> 00:07:37.300
+I'm like, who cares?
+
+00:07:37.300 --> 00:07:38.340
+No one's ever calling it.
+
+00:07:38.340 --> 00:07:40.020
+Like no one calls a view function.
+
+00:07:40.860 --> 00:07:51.760
+It didn't, nobody gave it a definition that it's this big complicated thing, but somehow the framework, you know, like there's just, I think the something about the app.get
+
+00:07:51.760 --> 00:08:00.860
+decorator expressed a type and then it changed that type, but who cares?
+
+00:08:00.860 --> 00:08:02.000
+Cause it's still ran just fine.
+
+00:08:02.000 --> 00:08:09.000
+So it was like, I had to go and spend hours reworking the signature, that thing to get it just right.
+
+00:08:09.000 --> 00:08:13.500
+So, so pyrite would stop giving me a warning where I never even use pirate.
+
+00:08:13.500 --> 00:08:15.940
+I'm like, why am I spending my Saturday morning doing this?
+
+00:08:15.940 --> 00:08:16.680
+That's dumb.
+
+00:08:17.080 --> 00:08:18.520
+But people were using it.
+
+00:08:18.520 --> 00:08:23.460
+They would just get like loads of air, like every viewpoint in their flash function would have an error in pyrite.
+
+00:08:23.460 --> 00:08:30.620
+Right now I have stuff in my code where it's got ignore statements for pyrefly.
+
+00:08:30.620 --> 00:08:37.140
+But if I load it up in ty, ty gives me a warning that the ignore statement is unneeded.
+
+00:08:37.140 --> 00:08:39.680
+I'm like, it's not unneeded for you, but it's unneeded for that.
+
+00:08:39.680 --> 00:08:40.260
+Like, are you?
+
+00:08:43.580 --> 00:08:45.360
+Anyway, this is why I say that.
+
+00:08:45.360 --> 00:08:47.380
+Like, it's just, it's a, it's a struggle.
+
+00:08:47.380 --> 00:08:55.740
+And if you create a library to your point, then you've got to put yourself in the situation where like, you don't have to work for a type checker that you choose.
+
+00:08:55.740 --> 00:09:03.040
+You work for everyone's types, all the type checkers, because whatever anyone may choose will become applied to your usage, right?
+
+00:09:03.100 --> 00:09:05.940
+In their project, which is, anyway, rant over.
+
+00:09:05.940 --> 00:09:06.120
+Yeah.
+
+00:09:06.460 --> 00:09:12.100
+Luckily, I haven't had too many issues with, after, after supporting mypy, that was the big one.
+
+00:09:12.160 --> 00:09:14.340
+I think more people are using mypy than anything else.
+
+00:09:14.840 --> 00:09:16.940
+But I think we'll see a shift.
+
+00:09:16.940 --> 00:09:25.680
+One of the things that I did want to call out, also, related to this, is ty, ty, or whatever you call it.
+
+00:09:26.200 --> 00:09:27.460
+Charlie says it's pronounced ty.
+
+00:09:28.000 --> 00:09:28.360
+Ty.
+
+00:09:28.700 --> 00:09:29.140
+Ty.
+
+00:09:29.140 --> 00:09:37.860
+Ty did catch one problem in pytestCheck that I was like, oh, this, this, well, it's a hidden possible problem.
+
+00:09:38.020 --> 00:09:39.260
+And I just, this was quick.
+
+00:09:39.260 --> 00:09:51.560
+But I have support for pytest versions, and, but I have runtime behavior that changes based on version because of, because of when pytest added features.
+
+00:09:52.240 --> 00:10:03.960
+So I was expecting this version tuple to be integers and just comparing like, you know, is 7.0 through, 7.0 less than or equal 7.0 sort of a thing.
+
+00:10:03.960 --> 00:10:08.780
+But the version tuple can be a string, and ty caught that.
+
+00:10:09.440 --> 00:10:15.300
+And so I have some code that I've converted to using a thing called packaging.
+
+00:10:15.680 --> 00:10:16.780
+It's a packaging project.
+
+00:10:17.080 --> 00:10:19.540
+Packaging.version has a parse function.
+
+00:10:20.200 --> 00:10:29.620
+And parse just creates an object that's comparable so that you can do this whole version 1 equals less than or equal version 2.
+
+00:10:29.620 --> 00:10:34.040
+So, and you, yes, you can probably write this function yourself, but why bother?
+
+00:10:34.180 --> 00:10:34.960
+It's right here.
+
+00:10:35.060 --> 00:10:35.740
+It's supported.
+
+00:10:36.180 --> 00:10:36.840
+Use it.
+
+00:10:37.240 --> 00:10:38.000
+So, yeah.
+
+00:10:38.240 --> 00:10:38.680
+Very nice.
+
+00:10:40.160 --> 00:10:40.720
+Okay.
+
+00:10:40.860 --> 00:10:41.440
+Next topic.
+
+00:10:42.020 --> 00:10:43.440
+Next topic.
+
+00:10:46.500 --> 00:10:51.220
+I want to talk about an ORM built in Rust.
+
+00:10:51.360 --> 00:10:52.120
+Very interesting.
+
+00:10:52.120 --> 00:11:00.240
+So this is basically an instead of Django ORM, which I think is really interesting.
+
+00:11:00.660 --> 00:11:04.120
+There's a lot of ORMs out there that are like, this is a great ORM.
+
+00:11:04.180 --> 00:11:06.420
+You can use it for anything except for you can't use it for Django.
+
+00:11:06.580 --> 00:11:06.880
+Sorry.
+
+00:11:07.240 --> 00:11:07.700
+Bye now.
+
+00:11:08.120 --> 00:11:09.580
+Why can't you use it for Django?
+
+00:11:10.120 --> 00:11:16.140
+Because Django so deeply cares about the models, using the models to drive other things.
+
+00:11:16.140 --> 00:11:17.440
+The models generate forms.
+
+00:11:17.600 --> 00:11:18.840
+The models generate the admin.
+
+00:11:18.840 --> 00:11:25.940
+The models and the way the ORM works in Django is kind of like what makes Django Django.
+
+00:11:26.200 --> 00:11:31.380
+Like, if you don't care about any of that stuff, pick a micro framework, you know?
+
+00:11:31.500 --> 00:11:32.300
+Whatever, right?
+
+00:11:32.940 --> 00:11:37.180
+The reason you choose Django is because it has all these Lego blocks that you can use, right?
+
+00:11:38.460 --> 00:11:38.780
+Okay.
+
+00:11:38.780 --> 00:11:46.980
+So this one called Oxide ORM, I believe it's got to be written in Rust, given that name.
+
+00:11:48.480 --> 00:11:58.420
+But what it is, it is a type-safe, pydantic-centric, async ORM with a high-performance Rust core.
+
+00:11:58.420 --> 00:12:02.200
+And it's inspired by Django.
+
+00:12:02.380 --> 00:12:06.480
+It's not necessarily, it doesn't necessarily sell itself about explicitly replacing Django.
+
+00:12:06.700 --> 00:12:09.400
+But I will tell you why I made this callback in a second.
+
+00:12:10.500 --> 00:12:11.900
+So, hey, this is a young project.
+
+00:12:12.080 --> 00:12:12.640
+Just heads up.
+
+00:12:12.780 --> 00:12:14.680
+So, you know, heads up, this is a young project.
+
+00:12:14.800 --> 00:12:16.600
+I bet it has a higher version than ty.
+
+00:12:16.600 --> 00:12:29.760
+But nonetheless, it's got basically the same syntax as Django, model.objects.filter, etc. It has full pydantic V2 validation.
+
+00:12:29.960 --> 00:12:34.640
+So in this world, you create your models using pydantic, right?
+
+00:12:34.720 --> 00:12:36.680
+Which has all the pydantic goodness.
+
+00:12:36.880 --> 00:12:39.060
+We're going to come back to talking about this kind of stuff as well.
+
+00:12:39.940 --> 00:12:40.120
+Okay.
+
+00:12:40.120 --> 00:12:47.840
+But very cool to be using pydantic for the data access classes.
+
+00:12:48.720 --> 00:12:53.460
+Also, async first, built on modern Python asyncio.
+
+00:12:54.580 --> 00:12:55.600
+Rust performance.
+
+00:12:55.740 --> 00:12:59.020
+SQL generation and execution is native in Rust.
+
+00:12:59.160 --> 00:13:04.420
+So one of the things you've got to do is, okay, you gave me a model called customers, which is a pydantic class.
+
+00:13:04.420 --> 00:13:12.080
+What does that mean in terms of a SQL query when you say dot city equal, equal, whatever, right?
+
+00:13:12.160 --> 00:13:12.980
+That kind of stuff.
+
+00:13:13.680 --> 00:13:19.420
+Multi-database support, of course, transactions, migrations, Django-style migrations, and a migrate CLI.
+
+00:13:19.660 --> 00:13:25.320
+So you can see it's like trying to be the ORM for Django without explicitly saying not quite.
+
+00:13:25.420 --> 00:13:28.120
+If you look at performance, there's a couple of things.
+
+00:13:28.700 --> 00:13:30.120
+Higher is better here.
+
+00:13:30.120 --> 00:13:33.220
+So let's just take the Postgres.
+
+00:13:33.360 --> 00:13:42.180
+With Oxide, it's 1,475 requests per ops per second versus Tortoise, which is 888.
+
+00:13:42.800 --> 00:13:45.680
+Piccolo, 930.
+
+00:13:46.020 --> 00:13:47.480
+Django, 730.
+
+00:13:47.680 --> 00:13:54.880
+So just almost exactly 2x of Django and 4x of SQLAlchemy, 4x of SQL Model.
+
+00:13:55.120 --> 00:13:56.440
+Mention, you know, tie back there.
+
+00:13:56.440 --> 00:14:00.420
+And holy moly, PeeWee is at 80 versus 1,400.
+
+00:14:01.060 --> 00:14:02.400
+So that's pretty wild.
+
+00:14:03.260 --> 00:14:13.580
+And then obviously all the type checking, you know, they've got this query of like, hey, here's how you would do a really long, complicated query in both Django and Oxide.
+
+00:14:13.640 --> 00:14:26.440
+The only difference, literally the only difference in these, you know, probably a 90 line, 90 character, 90 column rather, same thing, 90 column query on the ORM.
+
+00:14:26.520 --> 00:14:29.940
+The only difference is the await keyword because it's async, which is pretty sweet.
+
+00:14:30.700 --> 00:14:33.260
+So, yeah, good stuff.
+
+00:14:33.560 --> 00:14:37.820
+Now, back to Django a little bit more.
+
+00:14:38.360 --> 00:14:41.820
+It has Oxide Admin.
+
+00:14:41.820 --> 00:14:48.520
+So Oxide Admin is auto-generated admin panel for Oxide ORM with zero boilerplate.
+
+00:14:48.800 --> 00:14:52.060
+So it's got all the Django type of things here.
+
+00:14:52.460 --> 00:14:58.060
+And what's interesting is it's for FastAPI, Litestar, Santa, Court, and Falcon adapters.
+
+00:14:58.460 --> 00:14:59.640
+Does it not have Django support?
+
+00:14:59.720 --> 00:15:00.720
+It's just Django-like.
+
+00:15:01.000 --> 00:15:03.820
+I think it might not actually even integrate with Django.
+
+00:15:03.820 --> 00:15:06.300
+But it gives you the Django style, right?
+
+00:15:06.580 --> 00:15:08.440
+It gives you the admin.
+
+00:15:08.880 --> 00:15:10.400
+It gives you the migrations.
+
+00:15:10.780 --> 00:15:13.960
+It gives you the query syntax that's identical.
+
+00:15:15.620 --> 00:15:18.140
+I bet you could use it with Django somehow.
+
+00:15:19.400 --> 00:15:21.120
+Anyway, here it is.
+
+00:15:21.840 --> 00:15:22.280
+Pretty cool, huh?
+
+00:15:22.280 --> 00:15:22.460
+That's pretty cool.
+
+00:15:22.760 --> 00:15:22.940
+Yeah.
+
+00:15:23.060 --> 00:15:23.820
+Yeah, yeah, pretty cool.
+
+00:15:23.940 --> 00:15:35.460
+It's always on the lookout for these interesting data access libraries that are creative, bring something new without being too weird, I guess.
+
+00:15:37.100 --> 00:15:37.540
+Yeah.
+
+00:15:37.880 --> 00:15:40.420
+So anyway, Django Oxide.
+
+00:15:40.640 --> 00:15:42.700
+Or sorry, Oxide ORM, not Django Oxide.
+
+00:15:43.060 --> 00:15:44.140
+Oxide ORM, check it out.
+
+00:15:45.120 --> 00:15:45.680
+All righty.
+
+00:15:49.420 --> 00:15:51.160
+Actually, I've been thinking about types.
+
+00:15:51.160 --> 00:15:52.540
+So I'm going to go back to types.
+
+00:15:53.260 --> 00:15:56.400
+We have this theme, but we're just going to talk about the same thing for whatever our theme is.
+
+00:15:57.740 --> 00:15:58.800
+Yours is types, go.
+
+00:15:59.060 --> 00:15:59.700
+Types today.
+
+00:15:59.700 --> 00:15:59.740
+Okay.
+
+00:16:00.200 --> 00:16:03.840
+So this suggestion comes to us from Emma Typing.
+
+00:16:04.220 --> 00:16:06.780
+So I think Emma cares about typing also.
+
+00:16:07.980 --> 00:16:08.460
+Very cool.
+
+00:16:08.680 --> 00:16:17.260
+She says, very cool project, which realizes something I've wanted for a long time, documentation for Python with type shed types.
+
+00:16:18.300 --> 00:16:20.220
+So what are we talking about?
+
+00:16:20.300 --> 00:16:22.140
+I did a comparison of side by side.
+
+00:16:22.140 --> 00:16:33.940
+So if we take a look at the function, the docs.python.org, at the built-in functions, you get like ABS, like absolute for absolute.
+
+00:16:33.940 --> 00:16:35.780
+And it takes a number.
+
+00:16:35.780 --> 00:16:37.280
+But what type is number?
+
+00:16:37.280 --> 00:16:43.700
+Well, this new project has basically the Python docs, but with types.
+
+00:16:43.700 --> 00:16:49.360
+So how that function signature would look with types.
+
+00:16:49.360 --> 00:16:50.940
+And this is all from type shed.
+
+00:16:50.940 --> 00:17:03.940
+So the project that we're shouting out to is, well, it's a GitHub.io thing, but it's an open source called type shedding CPython docs.
+
+00:17:03.940 --> 00:17:11.040
+A tool to find missing type shed stubs and generate type annotated CPython docs.
+
+00:17:11.180 --> 00:17:14.520
+So it takes the CPython docs and annotates them with types.
+
+00:17:14.760 --> 00:17:15.320
+It's pretty cool.
+
+00:17:16.300 --> 00:17:26.620
+If you're looking at some of the internal stuff, and it's all doing it, it looks like it's using Pyrefly to generate some of these things.
+
+00:17:27.060 --> 00:17:27.240
+Maybe?
+
+00:17:27.540 --> 00:17:27.960
+I don't know.
+
+00:17:27.960 --> 00:17:28.360
+Interesting.
+
+00:17:30.760 --> 00:17:32.340
+That's pretty much it.
+
+00:17:32.760 --> 00:17:36.480
+Just as if you want to look at anything in the docs, but with types.
+
+00:17:37.060 --> 00:17:37.560
+There you go.
+
+00:17:38.300 --> 00:17:40.600
+Like what does a slice take?
+
+00:17:41.380 --> 00:17:44.960
+Oh, slice takes a, you know, well, it's going to be like.
+
+00:17:45.620 --> 00:17:46.520
+It's an any, any.
+
+00:17:46.740 --> 00:17:47.220
+Not too much.
+
+00:17:47.380 --> 00:17:47.600
+Any, any.
+
+00:17:49.780 --> 00:17:52.820
+But there's somewhere probably an interval of or something.
+
+00:17:53.500 --> 00:17:53.720
+Who knows?
+
+00:17:54.960 --> 00:17:55.160
+Yeah.
+
+00:17:56.280 --> 00:17:56.820
+Pretty cool.
+
+00:17:56.880 --> 00:17:57.540
+I like this idea.
+
+00:17:57.540 --> 00:17:58.160
+That's great.
+
+00:17:58.760 --> 00:18:07.740
+I think these, these kinds of things are powerful too, because especially if you're doing any sort of AI thing, you would say, you know, you ask, is it something that's like, what are you doing?
+
+00:18:07.780 --> 00:18:08.340
+You have no idea.
+
+00:18:08.920 --> 00:18:09.160
+Thing.
+
+00:18:09.420 --> 00:18:11.020
+Read the docs or check this out.
+
+00:18:11.100 --> 00:18:15.080
+Or I'm going to, you know, and if it has type information, that really gives it a lot more to work with.
+
+00:18:16.340 --> 00:18:16.740
+Yeah.
+
+00:18:16.740 --> 00:18:26.300
+And also because like, that, that the docs, the Python docs are really for us, but type shed is really not for us.
+
+00:18:26.300 --> 00:18:32.880
+So the kind of the idea to combine the information in type shed and present it as the docs.
+
+00:18:32.880 --> 00:18:35.560
+It's pretty kind of, it's kind of a clever thing.
+
+00:18:36.100 --> 00:18:36.280
+Yeah.
+
+00:18:36.360 --> 00:18:36.920
+It's very clever.
+
+00:18:36.920 --> 00:18:45.180
+And also if you're doing something kind of like something built in, you can look at, you know, look at what the types are with that and try to match it.
+
+00:18:45.540 --> 00:18:46.300
+Yeah, definitely.
+
+00:18:46.680 --> 00:18:46.920
+Definitely.
+
+00:18:46.920 --> 00:18:49.000
+All right.
+
+00:18:49.120 --> 00:18:50.160
+Shall we keep with our theme?
+
+00:18:51.120 --> 00:18:52.920
+Or yeah, of, of theme swapping.
+
+00:18:53.920 --> 00:18:54.040
+So.
+
+00:18:54.160 --> 00:18:54.260
+Yeah.
+
+00:18:54.300 --> 00:18:56.240
+Like to just keeping the theme going.
+
+00:18:56.320 --> 00:18:58.300
+So I want to talk about databases some more.
+
+00:18:59.660 --> 00:19:00.020
+Okay.
+
+00:19:00.020 --> 00:19:07.460
+And, and ORMs, but from a different perspective this time a little bit in the sense that I wrote an article.
+
+00:19:07.740 --> 00:19:13.480
+The article I want to talk about is raw plus DC database pattern, a retrospective.
+
+00:19:13.620 --> 00:19:15.240
+This is, this is pretty interesting.
+
+00:19:15.920 --> 00:19:21.340
+But in order to talk about, let me just talk about the design pattern that I publish real quick.
+
+00:19:21.340 --> 00:19:25.860
+So people maybe didn't read that article or they didn't listen a couple episodes ago or something.
+
+00:19:27.280 --> 00:19:27.440
+Right.
+
+00:19:27.680 --> 00:19:41.380
+So my thesis is there's a couple of reasons why depending on maybe smaller ORM libraries, it's not that great of an idea necessarily.
+
+00:19:41.380 --> 00:19:55.860
+One is if that thing goes unsupported, you've got a good chunk of your application and a foundational portion of it that is tied to this potentially unsupported thing.
+
+00:19:56.240 --> 00:19:57.260
+So make that concrete.
+
+00:19:57.440 --> 00:20:00.680
+Talk Python training, when I created it, was based on Mongo Engine.
+
+00:20:01.460 --> 00:20:06.500
+And that was a up and coming super nice query syntax.
+
+00:20:06.500 --> 00:20:12.240
+Also models exactly the Django ORM, by the way, by Oxide, like Oxide ORM.
+
+00:20:12.600 --> 00:20:21.220
+So a lot of the queries in there looked very much like they were Django, but they were object-based going to MongoDB, right?
+
+00:20:21.920 --> 00:20:23.280
+So that's great.
+
+00:20:23.360 --> 00:20:31.160
+But fast forward 10 years and that thing's had a couple of releases that like changed the readme in five years.
+
+00:20:31.160 --> 00:20:40.660
+And for reasons maybe I'll get to later, like another episode is I wanted to switch this to async.
+
+00:20:41.080 --> 00:20:52.320
+I wanted to switch Talk Python training to async, but this older ORM library was not ever, ever going to move to adopt an async model.
+
+00:20:53.060 --> 00:20:53.140
+Right.
+
+00:20:53.140 --> 00:20:56.860
+Even if it doesn't throw away its synchronous model, like have an async option.
+
+00:20:57.060 --> 00:21:04.420
+Like, no, I mean, if it's all that's happening is like a couple of readmes are getting updated, there's no way they're rewriting the whole thing to be async.
+
+00:21:04.500 --> 00:21:05.020
+You know what I mean?
+
+00:21:06.000 --> 00:21:06.360
+Yeah.
+
+00:21:06.440 --> 00:21:09.020
+And it's also probably a scratch your own itch sort of thing.
+
+00:21:09.160 --> 00:21:13.000
+If the current project does what they need it to do, why update it?
+
+00:21:13.260 --> 00:21:13.500
+Yeah.
+
+00:21:13.520 --> 00:21:17.120
+And they're not obligated to, but I'm also not obligated to keep using it.
+
+00:21:17.180 --> 00:21:17.320
+Right.
+
+00:21:17.320 --> 00:21:25.500
+So that's number one is like, is there a more stable base?
+
+00:21:25.740 --> 00:21:31.080
+And the stable base is whatever the core database driver package is.
+
+00:21:31.100 --> 00:21:39.500
+In this case, it's PyMongo, but, you know, could be just the core one from the Postgres team talking to Postgres with Python.
+
+00:21:39.860 --> 00:21:40.040
+Right.
+
+00:21:40.100 --> 00:21:43.000
+Like that's what all these ORMs are based on often anyway.
+
+00:21:43.000 --> 00:21:48.840
+I mean, oxide ORM is not quite probably based on the Rust version that the Postgres team provides or whatever.
+
+00:21:48.980 --> 00:21:49.120
+Right.
+
+00:21:49.740 --> 00:21:50.800
+So something like that.
+
+00:21:50.880 --> 00:21:52.520
+So that's one.
+
+00:21:52.580 --> 00:21:58.160
+The other one, the raw part has to do with this theory that I have that.
+
+00:22:00.660 --> 00:22:08.820
+Talking to when you're working with agentic AI, they know frameworks, but what they really know super well is the foundational stuff.
+
+00:22:08.820 --> 00:22:14.100
+Like they probably know SQL model, but they really know SQL, you know?
+
+00:22:14.360 --> 00:22:14.560
+Yeah.
+
+00:22:14.560 --> 00:22:21.440
+They probably know Mongo Engine a little bit, but they really know just queer, like raw MongoDB queries.
+
+00:22:21.780 --> 00:22:32.640
+And so that's the idea is like, like what if we just had a data access layer that was just raw queries and it returned some kind of rich classes like data classes?
+
+00:22:32.640 --> 00:22:33.140
+Yeah.
+
+00:22:33.140 --> 00:22:39.460
+Now, before people email me, because I talked about this on Reddit and like three fourths of the comments were, why aren't you using Pydantic?
+
+00:22:39.600 --> 00:22:40.760
+You could use Pydantic here.
+
+00:22:40.880 --> 00:22:43.320
+Do you know that you're using data classes when you could use Pydantic?
+
+00:22:43.660 --> 00:22:44.420
+You have no type.
+
+00:22:44.520 --> 00:22:47.040
+Like, yes, sure.
+
+00:22:47.120 --> 00:22:49.980
+You want to call it raw plus Pydantic and use Pydantic instead?
+
+00:22:50.080 --> 00:22:52.440
+It's literally the same thing.
+
+00:22:52.480 --> 00:22:54.140
+You're totally welcome to do that, right?
+
+00:22:54.140 --> 00:22:56.500
+I just wanted something simple.
+
+00:22:56.980 --> 00:23:07.880
+I found like my dream of Pydantic, like in Beanie and other, these ORMs or SQL model is you've got this ORM and it returns Pydantic models.
+
+00:23:07.960 --> 00:23:13.280
+And maybe you've got FastAPI and you could just like take the thing straight from the database and send it out over the API.
+
+00:23:13.400 --> 00:23:14.580
+And how amazing would that be?
+
+00:23:14.580 --> 00:23:24.000
+I almost never was able to take the database model and return it directly as an API response.
+
+00:23:24.200 --> 00:23:26.860
+And so you're always like transforming them anyway.
+
+00:23:27.620 --> 00:23:32.200
+And so I ended up showing like I just don't need, I don't need a Pydantic all the way down.
+
+00:23:32.320 --> 00:23:34.320
+Like Pydantic at the boundaries was good for me.
+
+00:23:34.820 --> 00:23:35.040
+Okay.
+
+00:23:35.180 --> 00:23:39.620
+So all that's so I can tell you about my retrospective.
+
+00:23:39.620 --> 00:23:46.800
+So I wrote up this thing where I rewrote Talk Python training.
+
+00:23:47.020 --> 00:23:50.840
+Now Python Bytes is already using this, so it already gets this benefit.
+
+00:23:50.960 --> 00:23:54.240
+But I did this for Talk Python training, the courses.
+
+00:23:55.240 --> 00:23:59.520
+I said, well, let me just put it into practice and see how it goes and if it's any better.
+
+00:24:00.060 --> 00:24:01.640
+So I came with pictures, Brian.
+
+00:24:01.740 --> 00:24:02.540
+Look at these pictures.
+
+00:24:04.520 --> 00:24:07.320
+Mongo Engine, the raw plus DC pattern.
+
+00:24:07.600 --> 00:24:09.260
+It's almost 2x.
+
+00:24:09.620 --> 00:24:13.620
+More requests per second for the same hardware, the same everything else.
+
+00:24:14.040 --> 00:24:16.160
+Just switching this out.
+
+00:24:16.820 --> 00:24:21.640
+And the bonuses, you get a much more stable library to program against.
+
+00:24:22.140 --> 00:24:23.480
+And AI is really good.
+
+00:24:23.540 --> 00:24:29.020
+If you say, hey, AI, hey, Claude, create me an update function to do this thing.
+
+00:24:29.260 --> 00:24:31.080
+And it can do that better, right?
+
+00:24:31.140 --> 00:24:35.920
+It has a more, much, much, much, much more training information to do that with.
+
+00:24:36.080 --> 00:24:37.780
+And you get 2x performance.
+
+00:24:37.780 --> 00:24:44.760
+And even when you're doing 2x the number of requests, you still get quite a bit faster response time.
+
+00:24:45.760 --> 00:24:46.620
+That's pretty cool.
+
+00:24:47.160 --> 00:24:47.320
+Yeah.
+
+00:24:47.400 --> 00:24:48.020
+Pretty neat, right?
+
+00:24:48.400 --> 00:24:48.580
+Yeah.
+
+00:24:48.700 --> 00:24:49.460
+And you scroll down.
+
+00:24:49.660 --> 00:24:55.840
+Another bonus is actually about 10% less memory usage as well.
+
+00:24:55.840 --> 00:24:58.940
+That's good.
+
+00:24:59.220 --> 00:25:05.760
+Because apparently the ORM and the classes that it uses and the tracking and whatever just hangs on to junk more.
+
+00:25:06.140 --> 00:25:06.600
+I don't know.
+
+00:25:07.100 --> 00:25:08.760
+I mean, I'm still using classes, right?
+
+00:25:08.880 --> 00:25:13.000
+But for whatever reason, it's just quite a bit less memory usage.
+
+00:25:13.000 --> 00:25:18.080
+So I think that's turning out to be a pretty promising way to go.
+
+00:25:19.280 --> 00:25:19.740
+Yeah.
+
+00:25:19.980 --> 00:25:20.380
+Yeah.
+
+00:25:20.420 --> 00:25:21.780
+I expect more about this stuff later.
+
+00:25:22.140 --> 00:25:23.820
+So I can't resist.
+
+00:25:24.820 --> 00:25:28.940
+If you've already considered data classes, have you considered adders instead?
+
+00:25:30.400 --> 00:25:31.000
+Thank you.
+
+00:25:31.000 --> 00:25:34.440
+I want something built in.
+
+00:25:34.920 --> 00:25:36.760
+I want something with fewer dependencies.
+
+00:25:37.640 --> 00:25:38.740
+Data classes are built in.
+
+00:25:38.860 --> 00:25:44.480
+Pydantic and adders are both separate packages, right?
+
+00:25:44.820 --> 00:25:45.020
+Yeah.
+
+00:25:45.020 --> 00:25:52.320
+The benefit for choosing adders has to be big enough that it justifies taking on another dependency.
+
+00:25:53.340 --> 00:25:55.280
+So I talked about data class of wizards.
+
+00:25:55.440 --> 00:26:02.340
+So for this kind of stuff, I'm like, if I need to read and parse and validate data, I'm doing data class of wizards along with data classes.
+
+00:26:02.480 --> 00:26:04.480
+But people are certainly welcome to choose adders.
+
+00:26:04.540 --> 00:26:05.860
+They're welcome to choose Pydantic.
+
+00:26:05.940 --> 00:26:06.280
+Pydantic, yeah.
+
+00:26:06.280 --> 00:26:07.520
+They all work good in this model.
+
+00:26:08.260 --> 00:26:08.380
+Yeah.
+
+00:26:08.380 --> 00:26:21.020
+Well, and especially to give other people for projects that already have Pydantic for other reasons, that makes sense also.
+
+00:26:21.100 --> 00:26:21.540
+Yeah, yeah.
+
+00:26:21.580 --> 00:26:22.020
+Absolutely.
+
+00:26:22.700 --> 00:26:23.040
+Absolutely.
+
+00:26:24.020 --> 00:26:25.300
+All right.
+
+00:26:26.120 --> 00:26:26.700
+All right.
+
+00:26:28.220 --> 00:26:29.040
+How are you feeling?
+
+00:26:30.120 --> 00:26:31.620
+I've got one extra.
+
+00:26:32.340 --> 00:26:33.200
+Tell us.
+
+00:26:33.200 --> 00:26:49.260
+Just this weekend, I released a 0.5 release of the, I know I haven't talked about this much lately, the Lean TDD book that I was working over the fall and over, I guess, over Christmas.
+
+00:26:50.180 --> 00:26:54.100
+But it's, I went through, I'm preparing to read it.
+
+00:26:54.140 --> 00:26:55.800
+So I want to release it as an audio book.
+
+00:26:55.800 --> 00:27:01.160
+And so in preparing for that, I have almost completely rewritten it.
+
+00:27:01.160 --> 00:27:03.600
+It's, it's, it's restructured.
+
+00:27:04.160 --> 00:27:05.800
+And I think it's a lot nicer.
+
+00:27:06.200 --> 00:27:09.660
+Now, that said, I'm still working on it.
+
+00:27:09.720 --> 00:27:12.000
+So it's, I think it's really solid now.
+
+00:27:12.060 --> 00:27:15.420
+I think it's a good, it's a good resource to go ahead and run with.
+
+00:27:16.500 --> 00:27:19.880
+But, but I'm doing a third pass through right now.
+
+00:27:20.780 --> 00:27:25.020
+And with some, some comments from some trusted, trusted readers.
+
+00:27:25.020 --> 00:27:32.220
+And, yeah, anyway, there'll be some expansion, but not, I don't think a huge direction shift in the future.
+
+00:27:33.040 --> 00:27:35.100
+Because I really want to get this done and wrapped up.
+
+00:27:35.200 --> 00:27:37.400
+But anyway, I'm pretty happy with this state right now.
+
+00:27:37.740 --> 00:27:38.180
+Lean TDD.
+
+00:27:39.460 --> 00:27:43.600
+And, yeah, if you're, if you're interested, let me know.
+
+00:27:43.960 --> 00:27:45.200
+So that's it.
+
+00:27:45.940 --> 00:27:46.340
+Awesome.
+
+00:27:46.740 --> 00:27:47.140
+Congrats.
+
+00:27:47.360 --> 00:27:48.060
+Getting there, huh?
+
+00:27:48.640 --> 00:27:48.980
+Yeah.
+
+00:27:49.340 --> 00:27:50.260
+I want to get this done.
+
+00:27:50.980 --> 00:27:51.540
+Yeah, indeed.
+
+00:27:51.540 --> 00:27:59.600
+All right, let's see if I can not be jumped on by the un-auto-hiding of Vivaldi.
+
+00:27:59.860 --> 00:28:04.380
+So I want to talk about pytest Just from Michael Booth.
+
+00:28:04.440 --> 00:28:06.660
+This is a really quick extra thing I want to give a shout out to.
+
+00:28:06.980 --> 00:28:07.140
+Cool.
+
+00:28:07.460 --> 00:28:09.060
+And Just, you covered this a while ago.
+
+00:28:09.140 --> 00:28:10.640
+It's just a command runner.
+
+00:28:11.060 --> 00:28:13.860
+It's one of those sort of circular references type of thing.
+
+00:28:14.920 --> 00:28:16.800
+It's kind of like Make.
+
+00:28:17.320 --> 00:28:18.420
+It's kind of how I see it.
+
+00:28:18.580 --> 00:28:20.340
+You know, it's, you've got some files.
+
+00:28:20.340 --> 00:28:23.980
+It tells you how to build things or test things or whatever, right?
+
+00:28:24.060 --> 00:28:25.820
+Like, was syntax inspired by Make?
+
+00:28:25.860 --> 00:28:26.280
+There you go.
+
+00:28:27.360 --> 00:28:33.720
+So Make is kind of long and gnarly and Just is more YAML-ish and cleaner, I think.
+
+00:28:34.280 --> 00:28:35.020
+I don't know.
+
+00:28:36.520 --> 00:28:42.960
+Anyway, it's a cool way to sort of structure automation for your projects, right?
+
+00:28:43.780 --> 00:28:44.020
+Yeah.
+
+00:28:44.300 --> 00:28:45.880
+So, a shout out is.
+
+00:28:45.880 --> 00:28:48.840
+Just lovely to work with if you haven't tried it yet.
+
+00:28:49.140 --> 00:28:49.320
+Yeah.
+
+00:28:49.800 --> 00:28:50.240
+Awesome.
+
+00:28:50.240 --> 00:28:50.640
+I like it.
+
+00:28:51.060 --> 00:28:57.660
+So, Michael Booth created a pytest-Just plugin.
+
+00:28:57.660 --> 00:29:08.880
+And it's a plugin that adds session-scoped Just fixtures to pytest so that you can test a Just file contracts directly in your test suite.
+
+00:29:09.620 --> 00:29:18.700
+So, it lets you test, like, really nice things like Just assert there exists a CI, a CI section,
+
+00:29:18.700 --> 00:29:26.720
+and that CI has a test, or it depends on test, a test following the transitive dependencies of it and so on.
+
+00:29:26.840 --> 00:29:28.620
+So, anyway, I thought that was kind of cool.
+
+00:29:28.740 --> 00:29:34.420
+So, if you do stuff with Just and pytest, check out pytest-Just.
+
+00:29:35.140 --> 00:29:35.440
+Cool.
+
+00:29:36.780 --> 00:29:37.000
+All right.
+
+00:29:37.000 --> 00:29:40.980
+This next one needs a disclaimer before I go into it.
+
+00:29:41.180 --> 00:29:48.640
+I was not going to put, I was not going to talk about this, Brian, because I don't want to, you know, this is not like TMZ bites.
+
+00:29:49.520 --> 00:29:50.340
+Bite on bites.
+
+00:29:50.820 --> 00:29:55.700
+There's a lot of drama here, but I think it's pervasive enough that I think we should put it on people's radar.
+
+00:29:55.700 --> 00:30:03.860
+So, I'm not here, what I'm about to describe, I'm not here to take sides in, I'm not here to, like, put bad light on anybody,
+
+00:30:04.040 --> 00:30:11.300
+but there's a mad level of turmoil around the encode projects.
+
+00:30:12.920 --> 00:30:24.580
+HTTPX, Django REST Framework, UVicorn, Starlette, which, Starlette, which is the foundation of FastAPI, MKDoc.
+
+00:30:24.580 --> 00:30:29.000
+I mean, that is a mega set of dependencies that people depend upon.
+
+00:30:29.080 --> 00:30:37.300
+So, I'm just going to link to four articles, five articles, and you all can read them and think about those however you want.
+
+00:30:37.360 --> 00:30:40.740
+But if you're using some of those libraries, you should probably have a look at this.
+
+00:30:40.740 --> 00:30:45.860
+So, 320 upvotes on Reddit says, anyone know what's going on with HTTPX?
+
+00:30:47.000 --> 00:30:51.140
+The maintainer of HTTPX closed off access to issues and discussions last week.
+
+00:30:51.140 --> 00:30:54.140
+Hasn't had a release in a year.
+
+00:30:54.340 --> 00:30:55.140
+I wonder what's going on.
+
+00:30:57.220 --> 00:31:03.180
+Michael says, I forked HTTPX to HTTPXXY.
+
+00:31:03.400 --> 00:31:04.420
+Talks about why.
+
+00:31:05.480 --> 00:31:10.880
+Transfer of UVicorn and Starlette causes a great bunch of stirs.
+
+00:31:11.500 --> 00:31:14.460
+There's an article called The Slow Collapse of MKDocs.
+
+00:31:14.460 --> 00:31:14.960
+Yeah.
+
+00:31:14.960 --> 00:31:19.720
+And that ties into Zensical, right?
+
+00:31:20.320 --> 00:31:20.860
+Yeah, exactly.
+
+00:31:21.100 --> 00:31:34.360
+And so, basically, this documents, over time, all the stuff that is going on that has led to Martin and his co-founder creating Zensical, which was material for MKDocs.
+
+00:31:34.360 --> 00:31:41.740
+But they found, like, yeah, basically that this was becoming something they couldn't continue to work with, so they had to go to something else.
+
+00:31:41.740 --> 00:31:52.020
+And Django REST framework is there's an inspiration to somebody's proposed that it gets taken into Django Commons.
+
+00:31:52.660 --> 00:32:01.880
+And Django Commons is this project to basically find and maintain packages that are important to Django that are kind of going unmaintained, in a sense.
+
+00:32:01.880 --> 00:32:07.860
+And so, in this conversation I'm linking to, there's a bunch of people like, this is kind of a good idea.
+
+00:32:07.920 --> 00:32:13.040
+But the people who are actually maintaining are like, but I'm not really sure I'm going to come over and become the main maintainer.
+
+00:32:14.500 --> 00:32:16.220
+So, it's sort of stalled out.
+
+00:32:16.640 --> 00:32:27.300
+Anyway, again, not trying to throw shade or call anyone out, but there's enough going on there with enough important projects that it's worth being at least awareness.
+
+00:32:28.700 --> 00:32:28.920
+Yeah.
+
+00:32:29.380 --> 00:32:29.780
+Yeah.
+
+00:32:29.900 --> 00:32:30.280
+Good try.
+
+00:32:30.280 --> 00:32:30.380
+Good.
+
+00:32:31.140 --> 00:32:31.480
+Okay.
+
+00:32:32.740 --> 00:32:33.360
+Not sad.
+
+00:32:33.440 --> 00:32:34.020
+Something awesome.
+
+00:32:34.140 --> 00:32:34.980
+This is very awesome.
+
+00:32:35.680 --> 00:32:41.760
+This one I like quite a bit is announcing course completion certificates over at Talk Python.
+
+00:32:42.200 --> 00:32:45.740
+So, I don't work in a big company, so this is not super relevant to me.
+
+00:32:45.800 --> 00:32:51.600
+So, I have not really maybe given as much love and attention as people want me to.
+
+00:32:51.840 --> 00:32:53.000
+So, now I have.
+
+00:32:53.000 --> 00:33:09.080
+So, what I've done is I have a nice dashboard that I released maybe a month ago and talked about that, I think, that shows you what courses you're working on, how far you are through them, which ones you recently have most recently taken at Talk Python and so on.
+
+00:33:09.080 --> 00:33:15.980
+But also, if you have a bundle of 50 courses, which a lot of people do, then it's like, well, here's a huge long list.
+
+00:33:16.040 --> 00:33:17.060
+Which one was I doing again?
+
+00:33:17.200 --> 00:33:18.900
+You know, it really helps solve that problem.
+
+00:33:18.900 --> 00:33:22.880
+But now for the completed courses, it has a certificate section.
+
+00:33:23.820 --> 00:33:37.500
+And you click that, it gives you a standard old PDF certificate that you can use if you have like continuing education requirements or something like that where you need to submit an official certificate to your company or whatever.
+
+00:33:37.620 --> 00:33:38.280
+So, that's kind of fun.
+
+00:33:38.280 --> 00:33:46.520
+But more importantly, more fun, I think, is there's an option to say, publish this as an official certificate on LinkedIn to my profile.
+
+00:33:47.040 --> 00:34:03.480
+So, one button click from Talk Python in your account, boom, takes you over, populates and fills an official certificate, even with a show your credential, which takes you back to an official, yes, this credential is verified for you page on LinkedIn.
+
+00:34:03.480 --> 00:34:03.720
+Great.
+
+00:34:04.380 --> 00:34:05.180
+That's pretty cool.
+
+00:34:05.180 --> 00:34:05.620
+Yeah.
+
+00:34:05.620 --> 00:34:05.800
+Yeah.
+
+00:34:05.900 --> 00:34:12.760
+So, if you've taken a bunch of courses, you know, and you want to have those there, so people go, oh, yeah, they did actually take that flask class.
+
+00:34:12.800 --> 00:34:13.260
+That's right.
+
+00:34:13.440 --> 00:34:18.920
+They know a little bit more than, you know, maybe just flask is like a skill or something.
+
+00:34:19.600 --> 00:34:22.360
+Can I print it out and like pin it to my cubicle wall?
+
+00:34:22.660 --> 00:34:23.220
+You know what?
+
+00:34:23.240 --> 00:34:25.980
+You could print it out and get that on like a matte finish.
+
+00:34:26.120 --> 00:34:26.340
+Yes.
+
+00:34:27.780 --> 00:34:28.140
+Yeah.
+
+00:34:28.220 --> 00:34:28.560
+You can.
+
+00:34:28.620 --> 00:34:29.280
+I mean, get the PDF.
+
+00:34:29.400 --> 00:34:30.000
+You could print it out.
+
+00:34:30.000 --> 00:34:35.040
+It's actually like letter, US letter size.
+
+00:34:35.960 --> 00:34:36.760
+That's awesome.
+
+00:34:37.140 --> 00:34:37.820
+If it prints.
+
+00:34:37.980 --> 00:34:41.200
+Like I had to get the DPIs of the image exactly right to fit for that.
+
+00:34:41.440 --> 00:34:43.700
+So, anyway, that's fun.
+
+00:34:43.800 --> 00:34:47.000
+I thought not everyone's going to care about that, but people do.
+
+00:34:47.080 --> 00:34:48.140
+I think it's kind of neat to do.
+
+00:34:48.880 --> 00:34:49.940
+That's pretty cool.
+
+00:34:50.360 --> 00:34:50.540
+Yeah.
+
+00:34:50.540 --> 00:34:55.080
+I had a couple of those requests, and I can't remember if I turned them on or not.
+
+00:34:55.680 --> 00:34:58.360
+I think Podia, the platform I use, I had them.
+
+00:34:59.620 --> 00:34:59.980
+Nice.
+
+00:35:01.580 --> 00:35:07.080
+I had a joke also, but I think let's save mine for next week, and let's just use yours.
+
+00:35:07.960 --> 00:35:08.260
+Okay.
+
+00:35:08.940 --> 00:35:09.880
+Here's the funny things.
+
+00:35:09.940 --> 00:35:12.740
+I don't even remember what the joke is, but I'm going to look, and then we're going to find out together.
+
+00:35:13.600 --> 00:35:13.900
+Oh, yeah.
+
+00:35:13.920 --> 00:35:14.260
+Here we go.
+
+00:35:14.300 --> 00:35:14.980
+It's about AI.
+
+00:35:14.980 --> 00:35:15.020
+Okay.
+
+00:35:15.360 --> 00:35:19.660
+So, I entitled this Noia Rich, the new Rich.
+
+00:35:21.120 --> 00:35:31.600
+In the 80s, think Don Johnson, think standing by a big mansion in Florida, in Miami, Ferrari Testarossa in the back.
+
+00:35:31.800 --> 00:35:33.520
+Like, this is rich in the 80s.
+
+00:35:34.080 --> 00:35:35.760
+Rich in 2026.
+
+00:35:36.680 --> 00:35:42.740
+In modal, change the button color to green, opus 6, 4.6.
+
+00:35:42.740 --> 00:35:43.140
+Yeah.
+
+00:35:43.280 --> 00:35:44.920
+It's which model are you using there?
+
+00:35:45.500 --> 00:35:54.040
+Yeah, and just do the completely most simple, a find and replace, or just a find and a type, the word green would take care of it.
+
+00:35:54.080 --> 00:36:00.460
+But nope, opus 4.6, extra effort mode, change the button color to green.
+
+00:36:03.640 --> 00:36:04.400
+That's funny.
+
+00:36:04.900 --> 00:36:05.220
+Yeah.
+
+00:36:05.900 --> 00:36:09.980
+It doesn't have a whole bunch of great comments, but it's pretty funny.
+
+00:36:11.280 --> 00:36:12.400
+So, that's my joke.
+
+00:36:12.980 --> 00:36:13.800
+That is pretty funny.
+
+00:36:13.800 --> 00:36:21.940
+We, so, April, we had, like, a changeover of our licensing stuff, March to April.
+
+00:36:22.640 --> 00:36:29.300
+And on March 31st, a lot of people were, like, got their tokens removed or something.
+
+00:36:29.520 --> 00:36:30.640
+And it's one day.
+
+00:36:30.800 --> 00:36:35.460
+But there was so many people complaining of, like, I'm reported as out of tokens.
+
+00:36:35.460 --> 00:36:36.160
+How do I work?
+
+00:36:36.160 --> 00:36:39.220
+Hopefully, you can still work without tokens, but.
+
+00:36:39.300 --> 00:36:39.720
+I know.
+
+00:36:39.840 --> 00:36:40.780
+It's so bad.
+
+00:36:40.900 --> 00:36:41.860
+It is so bad.
+
+00:36:42.880 --> 00:36:43.880
+It's so bad.
+
+00:36:44.820 --> 00:36:49.980
+It's like pre-smartphone, post-smartphone, you know?
+
+00:36:49.980 --> 00:36:53.280
+Well, I was just thinking that the other day.
+
+00:36:53.280 --> 00:36:56.320
+I was driving somewhere, and I'm, like, how?
+
+00:36:56.740 --> 00:37:00.760
+I'm in Portland, and I've had GPS ever since I've lived in Portland.
+
+00:37:01.260 --> 00:37:03.920
+There's a lot of places I don't think I could find without a GPS.
+
+00:37:04.520 --> 00:37:05.620
+But you've been there before.
+
+00:37:05.620 --> 00:37:14.240
+Well, yeah, I've lived here for 15 years now, but still, I can't, I don't carry a plastic map or anything like that with me, so.
+
+00:37:14.640 --> 00:37:16.940
+Yeah, I don't know if I even have an atlas in the car anymore.
+
+00:37:17.160 --> 00:37:20.620
+Like, if for some reason my device broke and I was on a trip, I might just be there.
+
+00:37:21.240 --> 00:37:21.440
+I'm like, what?
+
+00:37:21.980 --> 00:37:23.860
+I'm going to live here now.
+
+00:37:24.000 --> 00:37:25.760
+I guess we live here now.
+
+00:37:28.060 --> 00:37:28.420
+Yeah.
+
+00:37:29.480 --> 00:37:30.320
+This is funny.
+
+00:37:30.660 --> 00:37:31.280
+This is great.
+
+00:37:31.860 --> 00:37:31.960
+Yeah.
+
+00:37:31.960 --> 00:37:32.020
+Yeah.
+
+00:37:33.220 --> 00:37:34.460
+All right.
+
+00:37:34.460 --> 00:37:36.820
+Well, thank you, Brian, as always.
+
+00:37:36.940 --> 00:37:40.060
+Thanks, everyone, for listening, and catch you all next week, everyone.
