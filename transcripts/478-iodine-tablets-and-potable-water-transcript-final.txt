@@ -1,0 +1,1406 @@
+00:00:00 Hello and welcome to Python Bytes, where we deliver Python news and headlines directly to your earbuds.
+
+00:00:05 This is episode 478.
+
+00:00:08 I am Michael Kennedy.
+
+00:00:09 And I'm Brian Okken.
+
+00:00:10 This episode is recorded on May 4th, 2026, brought to you by us and all the things we're doing.
+
+00:00:18 I'm sure we'll mention something during the show somehow.
+
+00:00:21 I've got a few cool updates to discuss.
+
+00:00:23 If you want to connect with us on social media, maybe submit a topic that you think we should pay attention to.
+
+00:00:28 Check us out on all the social medias.
+
+00:00:30 You can find us on the show page, episode page.
+
+00:00:34 Pretty much everyone has a link to all the things there.
+
+00:00:36 Sign up for the newsletter.
+
+00:00:38 It adds way more than just show notes or, hey, we published an episode.
+
+00:00:42 It's got a bunch of cool extra information that we put in there.
+
+00:00:45 So check that out.
+
+00:00:46 And with that, Brian, I think we should get started.
+
+00:00:51 What's your first topic?
+
+00:00:52 I'm going to talk about profiling explorer.
+
+00:00:54 So this is a profiling explorer is a tool from Adam Johnson of lots of things Django and Git related fame.
+
+00:01:03 So Adam, so how did I see this?
+
+00:01:07 I don't know.
+
+00:01:08 Oh, yeah.
+
+00:01:08 He had a blog article that he released last month that somehow I just found out.
+
+00:01:14 I read today.
+
+00:01:15 Introducing profiling explorer.
+
+00:01:19 Actually, I picked it up yesterday.
+
+00:01:21 But anyway, so this is kind of fun.
+
+00:01:24 This is a says I've made it another package.
+
+00:01:26 Wait.
+
+00:01:27 Anyway.
+
+00:01:27 So what do we have here?
+
+00:01:30 We have a way to profile.
+
+00:01:33 We have lots of ways to profile Python code.
+
+00:01:36 But this takes the output of the profiler, the C profiler, and pops it into a table that you can interact with.
+
+00:01:46 So this lovely table that also has dark mode.
+
+00:01:51 He shows it in light mode, but it also has dark mode.
+
+00:01:53 And it's got all the normal stuff you'd think of for profiling.
+
+00:01:59 You've got the cumulative time, the percentage of your time in a certain place, and the number of calls that go to this place or this thing.
+
+00:02:09 So but you can filter on the filters kind of cool.
+
+00:02:12 So you can click on the calls or the internal time or cumulative time column headers to sort by that, which that's where I usually start is certain by the percentage of the time spent somewhere.
+
+00:02:26 Anyway, then you can also do there's a search box.
+
+00:02:29 So you can filter on like if you like even if you grab all of the time, but you're really looking at a subcomponent that you're working on, you can just look at that and see where it's small.
+
+00:02:41 So like that's often the time where I'm often grabbing, looking at the profiling documentation is how do I filter down to just the thing I want to care about?
+
+00:02:53 And sometimes it's easier just to grab it all.
+
+00:02:55 And then and then just using this, you could filter in exactly what you want.
+
+00:02:59 So yeah.
+
+00:03:01 And there's a hover features and caller and colleagues.
+
+00:03:04 And I guess look through the article to figure out what what this is all about.
+
+00:03:08 But it looks really slick.
+
+00:03:09 I haven't tried it yet, but I'm going to probably this week.
+
+00:03:12 So it looks fun.
+
+00:03:13 And profiling is certainly finding a needle in a haystack.
+
+00:03:16 So all the UI, all the search you can get is very good.
+
+00:03:19 Yeah.
+
+00:03:20 And there's like profiling often has like there's some people that like the flame graphs.
+
+00:03:26 I've never gotten the flame graphs to work in my brain.
+
+00:03:29 I just don't get them.
+
+00:03:31 So so something like a table works for me.
+
+00:03:34 I like this.
+
+00:03:35 Yeah.
+
+00:03:35 I really like the call call hierarchy type of thing.
+
+00:03:39 It's almost the call call stack, but it's split if it takes different branches that you see in like PyCharm and stuff.
+
+00:03:45 Yeah.
+
+00:03:45 That works for me.
+
+00:03:45 But still, those things can be too noisy.
+
+00:03:47 So very cool.
+
+00:03:48 Yeah.
+
+00:03:49 Nice.
+
+00:03:49 Nice.
+
+00:03:50 Now let's bump over and talk about reverting the incremental GC in Python.
+
+00:03:55 Like what?
+
+00:03:56 So this is a, I don't know who just, I think just the core developers and steering council as a group decided on this.
+
+00:04:04 But the post is by Hugo Van Commande.
+
+00:04:07 And it's just entitled reverting the incremental GC in Python 3.14 and 3.15, which is pretty wild.
+
+00:04:14 And there's, this is on discuss.python.org.
+
+00:04:17 And so there's a bunch of back and forth here.
+
+00:04:20 So let me give you some of the highlights.
+
+00:04:21 Okay.
+
+00:04:22 So Python 3.14 shipped with a new incremental garbage collector.
+
+00:04:26 So I believe the way it worked previously is when a garbage collection happened.
+
+00:04:31 And maybe I should point out why garbage collections happen.
+
+00:04:34 So Python is a little weird in that it has two types of memory management.
+
+00:04:39 Both of them automatic.
+
+00:04:40 You don't worry about them.
+
+00:04:42 But they're two ways of managing memory.
+
+00:04:44 And they happen in different scenarios.
+
+00:04:46 Okay.
+
+00:04:46 So the primary, by far, way that memory management happens is by reference counting.
+
+00:04:51 You get a variable.
+
+00:04:52 It has one reference.
+
+00:04:53 You pass it to a function.
+
+00:04:54 Now it has two references.
+
+00:04:55 That function puts it into a list, but then returns.
+
+00:04:58 It goes up to three and then back to two.
+
+00:05:00 You throw away the list.
+
+00:05:01 And then the variable goes away.
+
+00:05:03 Okay.
+
+00:05:03 Reference count hits zero.
+
+00:05:04 Delete.
+
+00:05:05 Right?
+
+00:05:05 Reference counting works great.
+
+00:05:07 It's super fast.
+
+00:05:08 It's immediate.
+
+00:05:08 Except it does not work great when you have a cycle.
+
+00:05:13 Right?
+
+00:05:13 I've got something, two objects that point to each other for some reason.
+
+00:05:18 All of a sudden, their reference counts never hit zero.
+
+00:05:20 Memory goes through the roof.
+
+00:05:21 You're toast.
+
+00:05:22 So what we're talking about is the thing, the garbage collector that doesn't use reference counting, but actually traverses all of the references and then looks for those cycles that are abandoned, but themselves never went to zero and collects it.
+
+00:05:36 Okay.
+
+00:05:36 So there was a new incremental garbage collector added that the way it worked now is you would have different generations.
+
+00:05:42 Those generations would run.
+
+00:05:44 When it was time for a collection, the entire app stopped.
+
+00:05:47 Garbage collection was checked.
+
+00:05:49 These cycles were checked.
+
+00:05:51 And then the app carried on.
+
+00:05:52 So the incremental one tries to improve latency.
+
+00:05:55 Say like, look, we don't have to stop the program entirely.
+
+00:05:58 We're going to do a little bit of garbage collection, a little bit more running, a little bit more garbage collection and so on.
+
+00:06:04 Of course, the picture of garbage could change over that period.
+
+00:06:06 Right?
+
+00:06:07 Anyway, that was added.
+
+00:06:08 But it turns out production reports started to come in for severe memory pressure.
+
+00:06:14 Neil measured up to five times peak memory on pathological cyclic workloads.
+
+00:06:20 And cyclic is the important part because that's actually where GC actually does anything.
+
+00:06:24 It actually makes, you know, actually does the cleanup.
+
+00:06:26 And that pushed the core team and steering council to revert it.
+
+00:06:30 It's in 314, but it's going to be taken out of 314.
+
+00:06:33 And it's going to not actually make it to 350, which is pretty extreme, I think.
+
+00:06:37 Right?
+
+00:06:37 It takes a lot to get something into Python, but once it's in, it's rarely taken out.
+
+00:06:42 All right.
+
+00:06:42 So this is actually the second time the incremental GC has been pulled back.
+
+00:06:45 It was reverted right before 313 first came out.
+
+00:06:48 As they were like, oh, is that quite ready?
+
+00:06:49 And then it got into 314 without going through the PEP process.
+
+00:06:53 So this is a bit of the tricky stuff.
+
+00:06:55 However, the benefit was real.
+
+00:06:57 So like they were trying to reduce latency.
+
+00:06:59 So with the incremental one, the max GC pause times for one example was one millisecond versus 26 milliseconds with the old one.
+
+00:07:07 So that's great.
+
+00:07:08 Except for it was just blowing up the memory usage of things that cared more about memory and less about latency.
+
+00:07:14 And a lot of places we run Python care more about memory than they care about very, very small pauses.
+
+00:07:20 You know, think like APIs and web apps and anything that runs on a server or in the cloud.
+
+00:07:25 Memory is probably the most expensive resource.
+
+00:07:28 Right?
+
+00:07:28 So that's not great.
+
+00:07:29 So Hugo decided we're going to ship 314.5 early with the revert.
+
+00:07:33 And Gregory Smith floated the idea of a 314.5 RC1, a release candidate for a shipping version of Python, which would be interesting.
+
+00:07:43 Okay.
+
+00:07:43 And then Tim Peters jumped into thread, doing a bunch of live forensics on Windows, running a toy DQ program that should cap at one gigabyte.
+
+00:07:51 And it used up to 15.6 gigs on a 16 gig machine.
+
+00:07:56 So that's not great.
+
+00:07:57 And this is really bad.
+
+00:07:59 He discovered that Gen Zero collections effectively never fired under this new collector.
+
+00:08:04 That's the one that gets most of them and it's the cheapest to run.
+
+00:08:08 So that's a big problem.
+
+00:08:09 Anyway, this might sound bad, but Tim points out that CPython has had a chronic shortage of real world GC benchmarks.
+
+00:08:19 High performance, the test suite that they run Python on for performance considerations, says it has basically no interesting cyclic workloads and users almost never share real data.
+
+00:08:29 So core devs keep flying blind.
+
+00:08:31 And circling back to your previous topic, right?
+
+00:08:34 Is Adam Johnson published a blog post along the thread of a real memory leak in Django migration systems caused by the incremental GC with where you have to call GC collect manually to fix it.
+
+00:08:46 All right.
+
+00:08:46 So it may or may not come back for 3.16.
+
+00:08:49 If it does, it was going to be restarted through the PEP process.
+
+00:08:53 So a lot going on here.
+
+00:08:54 That's crazy, right?
+
+00:08:55 Well, yeah.
+
+00:08:56 But I also hope that, I mean, Tim's comment is like, we kind of flew past it, but it's really, it's really important that the cyclic workload, having some of those in a benchmark is important.
+
+00:09:11 But if you can come up with a pathological way where it doesn't work as well, it shouldn't crash.
+
+00:09:18 It shouldn't be like, even an incremental should eventually go, you know what, we need to shut down and clean things up if necessary, I think.
+
+00:09:27 but, but we also need to have a benchmark that's more realistic and it's hard to tell what realistic is because we're doing, Python's being used for everything from, you know, from, from particle physics to web pages.
+
+00:09:41 so who knows?
+
+00:09:43 I have a suggestion for them.
+
+00:09:44 I agree with you.
+
+00:09:45 I have a suggestion.
+
+00:09:47 One of the areas this shows up very often is in ORMs.
+
+00:09:50 Oh yeah.
+
+00:09:51 Right.
+
+00:09:51 So imagine I've got a user and, maybe a course and then a user activity, right?
+
+00:10:00 So if I go run a query, you can send a database for all those things that are in, maybe the user activity has a user ID, but it also has a like reverse lazy loaded back to the user itself and back to the course itself.
+
+00:10:13 But the user's holding onto their activity.
+
+00:10:15 Cause they've got like a list of activities, which was also a lazy loaded and you like tell SQLAlchemy or something like we're going to do eager loading and all these things does creates tons of cycles just by doing database queries.
+
+00:10:26 Like I've seen that kind of stuff where the GC makes a difference on my web apps that actually do a lot of database things.
+
+00:10:32 So maybe they could come up with like a real interesting web app database query sort of example, and just use put SQL, a static SQLite database that's in there and integrate that.
+
+00:10:42 I mean, I'm sure there's a hesitancy to say, well, the way you run PI performance is you're going to fire up this database and this Redis queue.
+
+00:10:50 And then you're going to like, you know, like the infrastructure doesn't make any sense, but you could do it with SQLite.
+
+00:10:55 And I think you could, you could come up with some interesting, useful examples that have tons of data.
+
+00:10:59 Cause just fill the database, you know?
+
+00:11:01 Yeah.
+
+00:11:01 Anyway.
+
+00:11:02 Interesting.
+
+00:11:02 I think it's worth considering.
+
+00:11:04 It is worth considering.
+
+00:11:06 Oh, I got to hop over to my next topic.
+
+00:11:08 Nick's this, speaking of discussion.
+
+00:11:11 So this is just, I guess, I guess I'm just like passing along a discussion.
+
+00:11:15 I was amused to, to read about.
+
+00:11:18 so this is, few, I, it changed today, yesterday that the topic changed.
+
+00:11:25 So I was surprised to find out that Microsoft, and VS Code enabled AI coauthor by default.
+
+00:11:34 So, and I'm, I'm like, what really?
+
+00:11:37 So I read a little bit more about this and really it's, so you can, you can do get commits and stuff to that have, whether or not you've, you know, whether or not AI contributed to the code.
+
+00:11:52 And instead you used to be able to just like say, it used to be only of like get or your AI is actually committing.
+
+00:12:00 but, but, you know, copilot wants to get credit if they're doing a lot of work, I guess.
+
+00:12:07 I don't know.
+
+00:12:07 But, so, there's a flag that you can set.
+
+00:12:11 That's the get dot add, add AI coauthor configuration.
+
+00:12:16 And there, it was started with off and they defaulted.
+
+00:12:21 They won't change it to default of all.
+
+00:12:23 and, it isn't all the time, but if there's something in here that tries to detect whether or not you used any, any of the code was, contributed by an AI workflow or anything.
+
+00:12:36 And I'm not sure about all the details, but people freaked out basically because like, I was like, even if I, even if I run a, like a copilot to try to figure out something, I may
+
+00:12:49 have rejected everything or, or something and, and, or maybe my code looks like something that the, I don't know, how does it detect it?
+
+00:12:56 I'm not sure.
+
+00:12:57 and, and I don't think that's right.
+
+00:13:00 And basically I just don't think it's right.
+
+00:13:02 Well, I was about to talk about that.
+
+00:13:04 And then I noticed that I was reading the comments this morning and found out that there was a follow-up and the follow-up was just yesterday, changed the default back to off.
+
+00:13:13 so, and then, and then it devolved.
+
+00:13:18 They closed the comments, even in one day, they closed the comments because basically the comments turned into, why are you even using VS Code?
+
+00:13:25 You should use VI or, you know, Emacs or, or what are the other, some of the others and stuff.
+
+00:13:32 So anyway, I use, I use, I use a lot of editors, not a lot, a couple, but VS Code is one of them.
+
+00:13:39 and I was the, I think the main takeaway from this is I don't trust them.
+
+00:13:44 I'm going to go in my settings and, go ahead and whatever this, no, I can't find it.
+
+00:13:49 The setting was, was like, whatever.
+
+00:13:52 Oh, here it is.
+
+00:13:53 The, the ad AI coauthor.
+
+00:13:55 I'm going to just go ahead and set that to off in, in my, in my settings file, because I don't trust them to turn it back on later.
+
+00:14:03 anyway, I think this is crazy.
+
+00:14:06 First of all, let me defend the people who say VS Code.
+
+00:14:09 Where, where folks are saying you should use them or Emacs.
+
+00:14:13 I'm not, I feel like a lot of those editors encourage bad, bad design practices, right?
+
+00:14:20 Whereas proper IDE like things are a little bit better.
+
+00:14:23 So I think that that's fair.
+
+00:14:25 I don't think they should take that personally, but this AI coauthor stuff is just a, so that was kind of put the defense up before we started hacking on them.
+
+00:14:33 So I think I, this is the first time hearing this, Brian, this is, this is garbage.
+
+00:14:36 Now I haven't noticed this because I don't use copilot.
+
+00:14:39 Cause I have more respect for my work time and just use cloud code, in some kind of VS environment with the extension to be clear.
+
+00:14:50 And I also hate it if cloud does it, but every now and then cloud does it.
+
+00:14:53 And it drives me crazy.
+
+00:14:55 If I ask it for a commit message, it'll sometimes give me a bunch of stuff and then coauthored by cloud code.
+
+00:15:01 And it'll like at mention their GitHub username or whatever.
+
+00:15:05 And like delete, delete, delete, delete, delete.
+
+00:15:07 So I've never seen this.
+
+00:15:09 So where does it show up?
+
+00:15:11 Does it, is it like behind the scenes or does it show up?
+
+00:15:14 The most common place I've seen it is in pull requests, but I've also seen it in commit messages.
+
+00:15:18 So let's just say it's a pull request.
+
+00:15:20 Okay.
+
+00:15:20 So you might go, I've not, is it in the message though?
+
+00:15:23 Yes.
+
+00:15:24 Yes.
+
+00:15:24 So I've, I've not used it coauthor, like I copilot, like I just said, but I've gone to cloud and I've said, Hey, you know, there's a bunch of stuff going on here.
+
+00:15:33 And I kind of forgot all the details that changed.
+
+00:15:35 Like, wouldn't it be a little more thorough if I said, Hey, Claude, look at all the pending changes on this branch since I've branched it and give me a nice summary and overview of actually what's changed instead of the stuff that I just intended to change.
+
+00:15:49 Maybe something else, you know, like maybe I ran the linter and it changed a bunch of stuff, but when I really only changed one line, but I would like to talk about, you know, whatever, something like that.
+
+00:15:57 It will say, here's the title, here's the description that you put, and it'll say all of it's describing and the bottom, it'll have a last single sentence paragraph that says coauthored by Claude code at anthropic or at Claude or something like that.
+
+00:16:12 That's lame.
+
+00:16:13 I'm like, screw this.
+
+00:16:14 So then I'll delete that, which is fine.
+
+00:16:16 But you can also just say, Claude, create a pull request on GitHub for me.
+
+00:16:20 And it'll do that beautifully.
+
+00:16:22 But you know what shows up at the bottom of that pull request description?
+
+00:16:25 Coauthored by Claude.
+
+00:16:26 So Claude doesn't do as often, but it sounds like, you know, Microsoft has gone absolutely bonkers over AI-ing everything.
+
+00:16:35 And I think that is a huge mistake.
+
+00:16:36 I think they have 40 different products named CoPilot that are actually different things like in Office 365 CoPilot, Windows CoPilot, CoPilot on GitHub, CoPilot and VS Code.
+
+00:16:48 You know what I mean?
+
+00:16:48 There's just like, there was a mandate that everybody, you know, a few years ago, 2023 or something like that, like every team that builds something at Microsoft needs to have some form of AI in it.
+
+00:16:59 And those were all independent projects and initiatives.
+
+00:17:02 And the adoption isn't that great.
+
+00:17:04 So this to me feels like a poor attempt, a bad attempt at kind of trying to growth hacking CoPilot back into the conversation, right?
+
+00:17:14 Yeah, maybe.
+
+00:17:15 Yeah.
+
+00:17:15 Think of like early days of Hotmail, which is completely forgotten.
+
+00:17:19 But one of it's really the things that was kind of a secret to a success, this is common now, but it wasn't then, is every email you sent was sent by Hotmail.
+
+00:17:27 Get your own one gigabyte free web email.
+
+00:17:30 And every single email had a link back to it.
+
+00:17:33 And people go, oh, you can have web email.
+
+00:17:35 That's cool.
+
+00:17:35 And like, like that was, and I feel like it's that.
+
+00:17:38 Social media stuff too.
+
+00:17:39 People would be like, you know, this post written on Mona on iPhone or something like that.
+
+00:17:44 Yes, yes, exactly.
+
+00:17:45 Yeah.
+
+00:17:45 There's a lot of that.
+
+00:17:46 So I think it's, it's got a strong ick factor.
+
+00:17:49 I just checked my default VS Code, which I don't know whatever it was, but it had this on.
+
+00:17:54 And so I just turned it off and I'm going to go do a thorough cleansing.
+
+00:17:58 But I think it's a tree falls in the forest, but no one, there's a here sort of example for me.
+
+00:18:02 Cause like, I don't use CoPilot.
+
+00:18:04 So if I did, it would put the marking on the co, the co, attribution on it, but I'm not going to use it.
+
+00:18:11 So it's not a problem.
+
+00:18:12 I actually don't get the CoPilot hate because I I'm using it, but I've been using it
+
+00:18:19 from the start and it's just like mostly code completion and, and a, you can open a window to, to open AI chat if you want.
+
+00:18:29 But, the, the, whatever settings I have are not intrusive.
+
+00:18:34 They were, they were intrusive for a while and I did something and they're not that bad anymore.
+
+00:18:38 And the comments, the suggested comments don't get in the way.
+
+00:18:42 And, and I'm, I'm, I appreciate it.
+
+00:18:45 And the, and I do use VS Code, but I also use Vim mode.
+
+00:18:49 so I, it's basically a, a big wrapper around Vim as far as like I'm using it.
+
+00:18:56 I do like the other thing I really like about it is, the integration with get so that I can, I can find out all the stuff I've changed and use do diffs easy and stuff.
+
+00:19:05 So I do like it.
+
+00:19:06 And also there's a lot of people using cursor and you can't hate on VS Code and like cursor because they're the same thing.
+
+00:19:14 so they're not exactly the same thing, but it's a fork.
+
+00:19:18 So anyway, a hundred percent, I turn off the autocomplete for all those tools.
+
+00:19:23 I don't like them, but so my, my view into this world is just the agents, you know, it's been, let's, let's move on to the next topic, Brian.
+
+00:19:30 It's been, Ooh, you wouldn't know it.
+
+00:19:32 We had literally a heat advisory.
+
+00:19:34 It was almost 90 degrees yesterday.
+
+00:19:36 It was terrible.
+
+00:19:37 Boy, was it freezing in Django land.
+
+00:19:39 Let me tell you.
+
+00:19:40 So I want to talk about something called Django freeze.
+
+00:19:43 And I think this is a super cool project.
+
+00:19:44 It doesn't have very much attention.
+
+00:19:48 It's only got 117 stars and 16 forks.
+
+00:19:51 It's the kind of project that's really low risk, like really low risk, but has a ton of benefits.
+
+00:19:56 So the idea with Django freeze is I've written a Django app and I'm thinking about how do I deploy it?
+
+00:20:01 Maybe it's driving its content from the database.
+
+00:20:05 Like it's got a, it's like an e-commerce store and it's got, here's all your categories and here's the products you're selling and so on.
+
+00:20:11 Those come out of the database, but maybe they change infrequently or whatever.
+
+00:20:15 So you could use Django freeze to just convert a static HTML version of your site and deploy that somewhere.
+
+00:20:22 Have all the categories, have all the products, have all the little backlinks and all that kind of things that you might have, whatever your app does.
+
+00:20:28 But the deployment and operation, the DevOps side is static files, which is incredible.
+
+00:20:34 Oh, cool.
+
+00:20:35 It's good for operational.
+
+00:20:36 Like your static files can't go down unless just your server doesn't work anymore.
+
+00:20:40 You know, like there's very few things that can go wrong.
+
+00:20:43 You know, it's not like you're going to, well, I ran out of memory or there is, I don't know, like some kind of issue between the caching and like just all the issues you have running real websites.
+
+00:20:52 Like with static sites are so delightful.
+
+00:20:54 Put them up, log as the server's online, things are good, you know, and you can host them for free in many places.
+
+00:20:59 So if you've got a Django site and you think really it kind of could be static site, but I like to work in Django.
+
+00:21:04 I don't want to work in Hugo or something like that where it's foreign or weird.
+
+00:21:07 Hugo is a really weird, even though it is good.
+
+00:21:09 You could just write in one, write in Python, write in your favorite web framework, but then turn it into a static site.
+
+00:21:16 And I really think this is a cool idea.
+
+00:21:17 It's, you know, sort of a peer of Flask Freeze, I think is the name.
+
+00:21:22 Yeah, I think it's Flask Freeze.
+
+00:21:23 What do you think?
+
+00:21:23 Cool, right?
+
+00:21:24 Yeah.
+
+00:21:25 And one of the things I think one of the places where I'd probably, that I'm actually thinking of using this, I'll try it out, is like a SAS, for instance.
+
+00:21:34 You've got the actual application that needs to be Django or whatever, you know, let's say you've written it in Django and you want your sales site, you know, you've got two
+
+00:21:47 sites, you've got the actual application and then you have your like sales site.
+
+00:21:51 If they look really close, then there's no, the transition's really easy.
+
+00:21:55 So you could have a lot of your blog content or whatever on the static side.
+
+00:22:01 You're trying to hit lots of random traffic and then, and then flip over to your application and, and the user won't notice that much of a difference because the, it's the same look and stuff.
+
+00:22:13 So that's, yeah, that's a perfect use case or like the docs for your SAS, you know, like user manual, all that stuff could just all be static, static, static.
+
+00:22:22 Yeah.
+
+00:22:22 That's pretty cool.
+
+00:22:22 I'll give you one more example.
+
+00:22:23 I talked to, to David Flood from the Harvard sort of humanities enablement team, I guess is a simple way to put it.
+
+00:22:33 And he and his team go around sort of like on internal consultants or whatever for different researchers who are not really programmers or web people and help them set up websites,
+
+00:22:44 portals, data management, data exploration, et cetera.
+
+00:22:48 And one of the areas that he talked to a lot about is like, what happens if you create something like a Django site or anything else as part of a grant, a three-year research project, but then the grant is over.
+
+00:22:59 You're paying a hundred dollars a month to host the Django site, but now who's going to pay for that, right?
+
+00:23:05 You're, you don't want to pay for it because you don't have any grant money left, but if you don't, it's going to go away, which is a big hassle.
+
+00:23:11 Yeah.
+
+00:23:12 That'd be cool to just be able to convert it to a static.
+
+00:23:15 It's not going to update anymore and it can be something you can reference and stuff.
+
+00:23:19 So.
+
+00:23:19 Yeah, exactly.
+
+00:23:20 So you've got this project that needed a dynamic site for a long time, but then all of a sudden it no longer is supported or whatever, but you don't want it to vanish from the internet.
+
+00:23:28 So hit it with one of these, you know, convert to static sites.
+
+00:23:32 I think it's a really cool idea.
+
+00:23:33 Yeah.
+
+00:23:34 It is cool.
+
+00:23:34 Yeah.
+
+00:23:35 Indeed.
+
+00:23:35 You know what else is cool?
+
+00:23:37 Extras are cool.
+
+00:23:38 Yeah.
+
+00:23:40 I'll let you go, go next on the extras.
+
+00:23:42 Okay.
+
+00:23:43 I need, I like accidentally unshared.
+
+00:23:46 So I'll, I'll share it just in, I'll be just a second and here we go.
+
+00:23:51 All right.
+
+00:23:51 So this is, is we were talking about, thinking about AI a lot.
+
+00:23:55 I know a lot of you have kids out there, or maybe you are, going to college or high school or something like that.
+
+00:24:02 and if you are, thanks for listening.
+
+00:24:04 That's awesome.
+
+00:24:05 Anyway, I ran across this article this morning.
+
+00:24:07 It's called thinking less, trusting more gen AI's impact on students, cognitive habits.
+
+00:24:14 And actually this isn't an article.
+
+00:24:15 This is a, an abstract from a study from Oregon state university.
+
+00:24:19 and like actually the top, there's like a objective and a method and result at the top, but it's rather, it's rather it's, it's not too hard to decipher the results
+
+00:24:31 looking at this, but it's still in like, you know, it's, it's a, scientific paper speak.
+
+00:24:36 So, if you pardon the flyby, the best way to read this is to go all the way down to the bottom.
+
+00:24:43 Oh, not all the way to the, to the references, but there's a conclusion.
+
+00:24:47 And this is, this is actually interesting.
+
+00:24:50 I think it's really interesting about students using AI and stuff.
+
+00:24:54 So I'll just read out the little bit here.
+
+00:24:57 If routine reliance on gen AI during formative years, and I don't remember what formative years are, but whatever, changes students' willingness to engage in effortful thinking.
+
+00:25:07 Many may enter professional life without having developed the intellectual habits that earlier generations developed through practice that yet this, this need, this need not be inevitable.
+
+00:25:19 cognitive, the cognitive debts.
+
+00:25:21 Anyway, basically, the use of AI and the way AI is designed, like things like chat, GPT and stuff need to be modified so that, learn both learning environments and gen
+
+00:25:35 AI systems are modified to preserve human agency and support genuine complimentary, complimentarity.
+
+00:25:42 I didn't know that was a word.
+
+00:25:44 generally division of cognitive labor between both human and AI contributions should be meaningful, meaningful setup.
+
+00:25:53 And so that neither is displaced.
+
+00:25:55 Basically you need to, and I kind of agree.
+
+00:25:58 I think even when using, like Claude and stuff like that, I think that you can get them to ask you, you can say, Hey, do this task.
+
+00:26:09 And if you run into issues, ask me about it.
+
+00:26:11 I think that should be the default.
+
+00:26:12 I think it should, it should default to, even if, even if you don't want to get interrupted, just like, you know, you want it to have like flow mode and just like get stuff done.
+
+00:26:22 It should pull out points and say, Hey, these are some of the decisions I made.
+
+00:26:26 could you review this spot, this pot, this spot?
+
+00:26:29 and what do you think of that?
+
+00:26:30 And we could change it, change it if necessary.
+
+00:26:32 And I think there's minor tweaks that could be done with a lot of these interfaces to keep, people thinking.
+
+00:26:38 And this is about high school students or about students.
+
+00:26:41 I don't know what age of students it is, but I think it's relevant for coders also, because it's really easier for coders to slip into trusting, trusting the bots to let it happen.
+
+00:26:51 And I, we, I am all for getting things done faster, but we need to keep people thinking about the problems and thinking about stuff.
+
+00:26:59 So anyway, I have a couple of thoughts.
+
+00:27:02 So I totally agree that this is a very, very, very serious danger.
+
+00:27:06 I mean, I just think back to myself, if I had a magic box when I was working on a history paper and I could just say, help me with this.
+
+00:27:12 I really don't remember.
+
+00:27:13 I don't want to read the 30 page paper.
+
+00:27:16 And if I, you know, I just, I think it can seriously stunt your, your growth as a student.
+
+00:27:21 And I honestly think one of the important skills in life is just to learn, to keep going, go, you find a problem, you're like, oh, that's hard.
+
+00:27:29 Or I can't figure this out.
+
+00:27:31 Like a huge skill is just learning to keep trying until you do figure it out.
+
+00:27:35 And if you have a magic box that gives you the answer and you're, especially if you're young, like, I mean, that's really, really rough.
+
+00:27:41 Yeah.
+
+00:27:41 You can use these things as really amazing tutors though.
+
+00:27:45 You can say, I saw you did this.
+
+00:27:48 I, that's new to me.
+
+00:27:49 Why did you do this?
+
+00:27:49 Let's explore this idea.
+
+00:27:51 But I really doubt many students are using that.
+
+00:27:55 Like once they get an answer, probably good.
+
+00:27:56 Yeah.
+
+00:27:57 Well, and, and like, there's ways to, you can, like I said, also, you, there's ways to use AI tools now to, that work the way they should.
+
+00:28:07 Like one of like in education, you could say, here's my rubric.
+
+00:28:11 here's in, it's on this, here's my ideas about what I think I should put, but I, I'm just not sure which part of the paper I should put this information.
+
+00:28:21 Like the, basically using it to be, I'm stuck.
+
+00:28:25 Just get me unstuck.
+
+00:28:26 Don't do everything for me, but just get me unstuck.
+
+00:28:29 and those are great ways to use this.
+
+00:28:32 So anyway.
+
+00:28:33 Indeed.
+
+00:28:34 Indeed.
+
+00:28:34 Now, final, final thought before we move off this really quick.
+
+00:28:37 There's a lot of EM dashes in this.
+
+00:28:40 I'm pretty sure that this entire abstract was written with AI or at least rewritten with AI.
+
+00:28:46 Like just on that page, there's three or four EM dashes.
+
+00:28:48 But I'm not against EM dash, but that is such a new thing that AI seemed to have brought into the mix.
+
+00:28:54 Right.
+
+00:28:55 But, but there's what the, what the grammarly has been used commonly forever for a long time then.
+
+00:29:01 And I don't think that like that grammarly counts as an evil thing.
+
+00:29:05 yeah, I don't either.
+
+00:29:06 So, but, also there's way more EM dashes in, in it's like research papers than there are normal papers.
+
+00:29:15 That is true.
+
+00:29:15 And honestly, that's probably how they got into AI, but still.
+
+00:29:18 Probably.
+
+00:29:19 I'm still thinking, I'm still thinking perhaps that I got a couple of things.
+
+00:29:23 some of these are a little, this is a little bit older.
+
+00:29:26 It's 14 days ago.
+
+00:29:26 Cause it came out right after we recorded our last episode and then we skipped a week.
+
+00:29:30 So it's not that new, but it's already, this bothers me.
+
+00:29:33 Just the first four, four words of this announcement.
+
+00:29:36 Bother me.
+
+00:29:37 AI cloud company Vercel.
+
+00:29:39 Wait, no, this is a cloud company that hosts infrastructure, but they probably wanted to raise more money.
+
+00:29:43 So now they're an AI cloud company, not just a cloud company, but whatever.
+
+00:29:47 Let's just start from after that.
+
+00:29:48 Vercel.
+
+00:29:49 Vercel is breached after an employee grants an AI tool unrestricted to Google works, unrestricted access to Google workspace.
+
+00:29:57 Hacker seeks $2 million for stolen data.
+
+00:29:59 So some, I got to go through a little bit more, but, basically someone was using agentic AI and gave it access to the production Google workspace, which stored a bunch of data and probably wikis and stuff like that.
+
+00:30:12 And then somehow they installed something bad that then used the AI, which used that access.
+
+00:30:18 I don't know exactly the details, but why do I bring it up?
+
+00:30:21 If you're using Vercel, you might want to rotate your keys, change your password, stuff like that.
+
+00:30:26 I don't think it's a mispronation.
+
+00:30:27 Vercel is seeking the money though.
+
+00:30:29 Yes.
+
+00:30:29 Cause they stole the data from them and they'll say, I'm going to release it to the world.
+
+00:30:32 If you don't pay me, it's like a ransomware sort of thing.
+
+00:30:35 Okay.
+
+00:30:35 Yeah.
+
+00:30:35 Yeah.
+
+00:30:36 Yeah.
+
+00:30:36 Okay.
+
+00:30:36 Got it.
+
+00:30:37 No, the M dash.
+
+00:30:38 Okay.
+
+00:30:40 I mean, this is the reason there's just another warning for everyone.
+
+00:30:43 Like you got to be really careful with your dev machines, which are often for a lot of us also our personal computers, you know, like the whole, what was the password manager?
+
+00:30:53 Not one password, not pit warden last pass last pass got hacked, not because of an AI thing, but because one of the devs had a home network, which had, a Plex server.
+
+00:31:04 So they could stream their pirated stuff to their, just to watch.
+
+00:31:08 Right.
+
+00:31:09 But then they want to do that while they were out, while they're traveling.
+
+00:31:11 So they put it on the internet.
+
+00:31:13 It got hacked and then it laterally moved through their home network to get to their computer, which then got all the API keys and on and on it goes.
+
+00:31:20 So anyway, just another little warning.
+
+00:31:22 And if you use Vercel, maybe a double warning.
+
+00:31:24 All right.
+
+00:31:25 That was kind of sad.
+
+00:31:25 I'll give you a good one, Brian.
+
+00:31:26 Check this out.
+
+00:31:27 This is very relevant.
+
+00:31:28 So I want to, I went and I was just thinking like, I really want a better experience for people over at talk Python.
+
+00:31:34 And I'm doing a crazy amount of stuff with transcripts.
+
+00:31:38 Like I'll talk about it next week, probably.
+
+00:31:41 But for weeks I've been working on making transcripts better, more with the courses than with the podcast.
+
+00:31:47 But still it applies to both.
+
+00:31:49 And like, it would be really nice if there was a better playback experience on the web.
+
+00:31:53 Like imagine this, you come to the website, Python Bytes or talk Python, whatever.
+
+00:31:57 We've got really nice search.
+
+00:31:59 And I've talked about the work I've done on the Python Bytes search, which I think is really cool.
+
+00:32:03 Some of the ways you can search and jump around, but maybe you find something interesting from 200 episodes ago.
+
+00:32:09 Maybe you could get that on your podcast player, but you've got to like scroll back and like, how, you know, does your player cut off episodes older?
+
+00:32:16 And like, it's just not great.
+
+00:32:18 You might just want to watch it on the, listen to it on the web, right?
+
+00:32:20 Yeah.
+
+00:32:21 So you search for it, you click, you start going.
+
+00:32:22 And maybe you could have a better experience than just the default playback, you know, audio tag that for some reason browsers think doesn't deserve much love or interest.
+
+00:32:31 They're like, they're crappy.
+
+00:32:32 They look like they're from, you know, real player in 95, but whatever.
+
+00:32:35 So I went and I created a really nice playback experience where, let me just jump over.
+
+00:32:43 I'll link to the blog post here, but come in here.
+
+00:32:45 It's got nice little access to all the pieces, but it's got a player.
+
+00:32:48 If you click it, it expands out with like little seek stuff around.
+
+00:32:52 It shows the transcripts as it's playing, like right alongside the player.
+
+00:32:58 You can like change the speed.
+
+00:32:59 It's got hotkeys, all sorts.
+
+00:33:01 And that's slick.
+
+00:33:02 Oh yeah.
+
+00:33:03 And thanks for doing the speed thing too, because I'd never listened at 1x.
+
+00:33:07 Yeah.
+
+00:33:07 Yeah.
+
+00:33:07 So Python bytes go over here.
+
+00:33:10 I've got the same deal.
+
+00:33:11 I just didn't write a blog post about it because I did talk Python first, but look at that.
+
+00:33:14 Oh, very cool.
+
+00:33:16 Isn't that nice?
+
+00:33:17 So people out there listening, if you're like, I'm just kind of exploring our content.
+
+00:33:22 I mean, we've got a lot of years.
+
+00:33:24 How many years, what was our first episode?
+
+00:33:25 Let me just look really quick, Brian.
+
+00:33:26 What was our very first episode?
+
+00:33:27 It was 2016.
+
+00:33:30 That's 10 years of content.
+
+00:33:33 Yeah.
+
+00:33:33 We've got a great search engine and transcripts on top of that.
+
+00:33:36 And so if you're exploring that, you know, just use the player.
+
+00:33:38 I think it's really, really cool.
+
+00:33:39 We've been doing this for 10 years almost.
+
+00:33:41 I know.
+
+00:33:42 Damn, you're old.
+
+00:33:43 Dude, weird how like some people can get old and others in the same time frame just don't, right, Brian?
+
+00:33:49 Yeah.
+
+00:33:50 Yeah.
+
+00:33:50 Well, I guess.
+
+00:33:52 So you'll, this is funny because if you're watching this, you'll know it, that I'm the one with gray hair, not Michael.
+
+00:33:59 But you got more hair.
+
+00:34:00 So I think it evens out.
+
+00:34:01 So thank you.
+
+00:34:03 Pat says last pass reminds me of as I was stumbled on.
+
+00:34:06 Okay.
+
+00:34:06 A couple more things real quick.
+
+00:34:08 A combination of stuff in this last item.
+
+00:34:10 I both want to give a little bit, a little bit of sympathy to GitHub and then also kind of bash on him a little bit.
+
+00:34:18 So GitHub has been having.
+
+00:34:20 As we do, you know.
+
+00:34:21 As I think it's fair.
+
+00:34:23 Like, isn't that balanced?
+
+00:34:24 Yeah.
+
+00:34:24 I think you just got to say if there's two sides, you got to present them both equally.
+
+00:34:27 But there's, there's a little bit of nuance here.
+
+00:34:30 So I don't know if you've noticed, but GitHub has been a little janky lately and not in just the GitHub actions, which have been taking a lot of heat, but just uptime at all.
+
+00:34:37 Like I couldn't, I couldn't search the other day a little while before then, like issues were not accessible.
+
+00:34:43 I didn't experience this, but people had their pull requests just disappear.
+
+00:34:47 How frustrating would that be to do some work, submit a pull request and it just goes into the ether.
+
+00:34:51 You're like, are you serious?
+
+00:34:52 So here's the supportive angle.
+
+00:34:55 They, they did this, this post over on the GitHub blog called an update on GitHub availability.
+
+00:35:01 They have a graph that says things are hard for us.
+
+00:35:04 We're trying.
+
+00:35:05 They're doing a couple of things.
+
+00:35:07 I believe they're reworking GitHub from being a monolith into being a bunch of microservices.
+
+00:35:11 And I usually hate on microservices, but something like GitHub with all these different moving parts and different levels of traffic and load on them seems like you might want to, well,
+
+00:35:21 maybe we should just scale up the issues a bit, like a ton, but not so much just listing the repos or whatever.
+
+00:35:30 So apparently they're going through, they're like, oh, we need something like 10 X more capacity than we had a couple of years ago.
+
+00:35:36 And during that time, they're like, actually, no, maybe 30 X more.
+
+00:35:39 So it's a lot.
+
+00:35:40 And if you look at the graphs, if you look at the graphs, they are nothing but like nearly vertical in the amount of traffic and new repos and commits.
+
+00:35:47 And one of the main drivers of this is people, especially a lot of new people to programming who were not programmers are like, hey, Claude, create me a project.
+
+00:35:55 Where do I save my project?
+
+00:35:57 Oh, you put it on GitHub.
+
+00:35:58 You know what I mean?
+
+00:35:58 And so just the amount of traffic amplified by AI to GitHub is over the top.
+
+00:36:04 All right.
+
+00:36:04 So that explains- You know, maybe if we could charge like 50, if they charge like 50 cents a month, just something small, just, but anything like a dime a month, a lot of that would go away.
+
+00:36:14 That's really interesting.
+
+00:36:15 I would totally pay a dime a month.
+
+00:36:17 I think I pay $30 a month to get up.
+
+00:36:19 I wouldn't mind paying 30 and 10, 30 point, $30, 10 cents.
+
+00:36:22 Wouldn't make a difference.
+
+00:36:24 Anyway, no, I think that's a very interesting point, actually.
+
+00:36:27 Okay.
+
+00:36:27 So there's that.
+
+00:36:28 This is GitHub's response.
+
+00:36:30 Did you know that there's a missing GitHub status page?
+
+00:36:33 Yes, there is.
+
+00:36:34 If you go back to the previous one, somewhere did they talk about their uptime?
+
+00:36:38 How could it exist if it's missing?
+
+00:36:40 So is there a status?
+
+00:36:42 Yeah.
+
+00:36:43 So if you go to GitHub status page, it says, oh, Git operations are up, up, up.
+
+00:36:47 Web hooks are up, up, up.
+
+00:36:48 And it talks about like, it doesn't aggregate it, but it's like 99.5 sort of uptime.
+
+00:36:54 But then there's another page, which ironically is hosted on GitHub.io.
+
+00:36:58 I love it.
+
+00:36:59 It's like its own thing.
+
+00:37:01 And it basically does other types of checks.
+
+00:37:04 And it's like, you know, 84% uptime.
+
+00:37:07 That is actually pretty abysmal.
+
+00:37:09 Yeah.
+
+00:37:10 And it just has graphs.
+
+00:37:11 And it actually breaks out pull requests and all these things.
+
+00:37:14 And here you look and you see kind of similar numbers.
+
+00:37:16 It's like the Git operations are this.
+
+00:37:17 Web hooks are this.
+
+00:37:18 But I think it says, if any of these are down, then you don't call it up.
+
+00:37:23 You know what I mean?
+
+00:37:24 Whereas the other one goes, if some of it is up, it's up.
+
+00:37:27 Not all of it.
+
+00:37:28 I mean, you don't like issues right now, do you?
+
+00:37:30 I don't know exactly the breakdown there.
+
+00:37:33 But I just thought this missing GitHub status page was really interesting.
+
+00:37:36 Yeah.
+
+00:37:37 They should do better.
+
+00:37:38 I mean, I know that a lot of us are using it for free.
+
+00:37:42 But also, we've paid for it with all of our intellectual property.
+
+00:37:46 Yeah, exactly.
+
+00:37:49 I mean, that's...
+
+00:37:50 And attention, right?
+
+00:37:51 The reason that there's not a mass exodus to something new or shinier is because this is where most of the people are.
+
+00:37:58 I know there is something of an exodus, but not a mass exodus, right?
+
+00:38:01 Yeah.
+
+00:38:02 You get benefits from being on GitHub.
+
+00:38:04 Okay.
+
+00:38:05 I think all of these conversations about these AI things and stuff and others perfectly lead into this joke.
+
+00:38:11 And this is probably one of my favorite jokes.
+
+00:38:14 Okay.
+
+00:38:15 At least of the year.
+
+00:38:17 Have you looked at it yet?
+
+00:38:18 No.
+
+00:38:19 Okay.
+
+00:38:19 Perfect.
+
+00:38:19 Okay.
+
+00:38:20 So I found this on X.
+
+00:38:21 And I'm programming humor.
+
+00:38:23 I guess it could also be on Reddit.
+
+00:38:24 Like they broadcast that in multiple places.
+
+00:38:26 So this is like two different perspectives from society.
+
+00:38:31 And it's talking about Copilot, but it could be ChatGPT.
+
+00:38:33 It could be Claude, whatever.
+
+00:38:34 Friends outside of tech.
+
+00:38:35 Lol, Copilot is dumb.
+
+00:38:37 Friends in tech.
+
+00:38:38 I just bought iodine tablets.
+
+00:38:39 I have made an offer on land upstate.
+
+00:38:41 My supplies of antibiotics and potable water are sufficient, but I need to set up hydroponics to make it through the first few years.
+
+00:38:49 Did that just perfectly sum it up?
+
+00:38:53 Yeah.
+
+00:38:53 It's like, this is a dumb thing.
+
+00:38:55 Look, it made this thing longer.
+
+00:38:56 We're like, I'm almost done stockpiling.
+
+00:38:58 We're ready to build the bunker.
+
+00:39:00 I know what is coming.
+
+00:39:01 I can see it.
+
+00:39:02 It's so bad.
+
+00:39:04 Yeah.
+
+00:39:04 I'm, I've just like, I've just, I know that I'm dependent on society.
+
+00:39:09 If society collapses, just, I hope I'm one of the first to get hit because I don't want to live through an apocalypse.
+
+00:39:16 I really don't either.
+
+00:39:17 I'm not a survivalist.
+
+00:39:18 So, well, stock up on your, iodine tablets and your potable water.
+
+00:39:25 Oh my God.
+
+00:39:26 It's so bad.
+
+00:39:29 Well, so I've got, I've got a friend that like, they've got like a group of friends that have a place like in Southern Oregon that they, they know they can hole up in and stuff.
+
+00:39:39 If anything happens.
+
+00:39:40 And I said, oh, okay.
+
+00:39:41 So, so do you make sure that you always have a full tank of gas?
+
+00:39:45 So if anything happens, you can make it there.
+
+00:39:47 Oh no.
+
+00:39:48 Well, how are you going to get there?
+
+00:39:51 Are you going to walk to Southern Oregon?
+
+00:39:53 Anyway.
+
+00:39:55 So.
+
+00:39:56 Yeah.
+
+00:39:56 Good point.
+
+00:39:57 There's a lot of moving pieces and the one you didn't see coming might be the one that takes you.
+
+00:40:01 I hope he doesn't listen to this, this podcast, but I hope everybody else does.
+
+00:40:05 Yes, exactly.
+
+00:40:06 Well, everyone, hope your supplies are ready and thank you for listening.
+
+00:40:10 Thank you.
+
+00:40:11 Bye.
+
+00:40:11 Thanks everybody.
+
+00:40:12 Bye.
+
