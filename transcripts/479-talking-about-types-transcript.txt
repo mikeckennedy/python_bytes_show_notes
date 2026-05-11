@@ -1,0 +1,1340 @@
+00:00:00 Hello and welcome to Python Bytes, where we deliver Python news and headlines directly to earbuds.
+
+00:00:05 This is episode 479, recorded May 11th, 2026.
+
+00:00:10 And I'm Brian Aachen.
+
+00:00:11 And I'm Michael Kennedy.
+
+00:00:12 This episode is sponsored by all of our stuff, like the pytest book and pytest courses and Talk Python training and so much else.
+
+00:00:22 And also Patreon supporters.
+
+00:00:23 Thank you, Patreon supporters.
+
+00:00:24 If you'd like to get a topic, if you've got a topic that you think we ought to talk about or just are interested in, don't worry about whether or not we've heard it or not.
+
+00:00:34 Just send it on over anyway.
+
+00:00:36 You can reach us on Mastodon and Bluesky.
+
+00:00:39 And there's a contact form right on the show notes, but right there on pythonbytes.fm as well.
+
+00:00:47 So you can check that out.
+
+00:00:48 Thanks to everybody that watches us live on YouTube.
+
+00:00:51 If you'd like to be a part of the audience and submit comments and stuff, you can head on over to pythonbytes.fm/live and be part of that.
+
+00:00:59 And you don't need to take notes because you can just get our newsletter.
+
+00:01:03 So go to the pythonbytes.fm also and subscribe to the newsletter and we'll send you.
+
+00:01:09 We don't send much other than just the links and all the information.
+
+00:01:14 Well, there's a lot of content in the weekly email that we send out.
+
+00:01:17 So it's not just the links to everything we talked about, but it's also some background information.
+
+00:01:23 And you'll especially want this time because we got some cool stuff.
+
+00:01:27 So speaking of cool stuff, Michael, want to kick us off?
+
+00:01:32 Yeah, let's kick it.
+
+00:01:33 Let's kick it off.
+
+00:01:34 Let's talk about HTTPX YZ.
+
+00:01:37 So recall, this is Mikhail had created a fork and we covered why I forked HTTPX and it was part of the larger churn around in code, I believe, and so on and all of that.
+
+00:01:52 So this is the one month check-in and it's pretty interesting.
+
+00:01:56 I think it's got some ideas worth paying attention to here.
+
+00:01:59 So basically a couple of things worth talking about is they got the first version out.
+
+00:02:05 It contains some fixes to get ZSTD working, get the test running, housekeeping, and so on.
+
+00:02:11 But then more importantly, end of March, some fixes came out.
+
+00:02:15 Compatibility shim that allows you to use HTTPX.
+
+00:02:18 This is, okay, this is the thing that really made me want to cover this because they released a compatibility shim that allows you to use HTTPX YZ even when third-party packages use HTTPX themselves.
+
+00:02:31 So this is my dilemma.
+
+00:02:32 I look at my project and I see that I'm using HTTPX and I'm like, huh, it'd be really cool to switch to HTTPX YZ.
+
+00:02:38 Seems like the right thing to do.
+
+00:02:39 And then I go look at my pip compiled output and it says HTTPX because these seven packages are using HTTPX.
+
+00:02:47 I'm like, huh, well, that's kind of useless.
+
+00:02:49 Like why would I use one when I have to effectively use these others all the time when I interact with those libraries, right?
+
+00:02:55 I'm still in the same boat and I don't see a life raft or any way to get out of that boat.
+
+00:02:59 But here's that thing.
+
+00:03:01 And it's pretty interesting.
+
+00:03:02 If all you got to do is if you import at the startup of your app HTTPX YZ, it also tells it the world that it is HTTPX.
+
+00:03:13 Okay.
+
+00:03:13 So for example, you can assert that HTTPX is in system modules of HTTPX YZ, right?
+
+00:03:20 That kind of thing.
+
+00:03:20 So if you import HTTPX somewhere along the way, some other app does, other part of your app does, it will still, it'll still return basically a compatible layer, even at a type instance.
+
+00:03:32 So if you ask, is this thing that I got from HTTPX YZ.response of some type of, is that actually an HTTPX.response?
+
+00:03:40 Yes.
+
+00:03:41 So really interesting compatibility.
+
+00:03:43 And honestly, I don't know how it does that.
+
+00:03:44 That's pretty interesting.
+
+00:03:45 Yeah.
+
+00:03:46 How do you say you are, I derive from this class in another library without having the other library present?
+
+00:03:53 You know what I mean?
+
+00:03:54 Well, as long as the endpoints are there, you're going to fulfill it.
+
+00:03:58 But it is a...
+
+00:03:59 Yeah, but it's not duck typing.
+
+00:04:01 This is strong typing.
+
+00:04:01 It's asking is instance, right?
+
+00:04:03 That's what I think is interesting.
+
+00:04:04 Yeah.
+
+00:04:04 Well, yeah.
+
+00:04:05 Interesting.
+
+00:04:06 I don't know.
+
+00:04:06 I feel like I'm going to go on a typing rant this episode.
+
+00:04:10 So prepare yourself, people.
+
+00:04:12 Prepare yourself.
+
+00:04:12 So this is not uncommon, like Pillow has done this, OpenCV has done this, YAML, PyYAML have done this, and so on.
+
+00:04:18 Well, but done this being, they've got a different name that you use, you import from the library.
+
+00:04:26 But the hijacking some other project's name, that's, I don't know what I feel about that.
+
+00:04:33 I don't know a way around it other than this.
+
+00:04:36 No, in this case, I think it's a good thing.
+
+00:04:39 It seems like this could be abused.
+
+00:04:42 Yes.
+
+00:04:43 Agreed.
+
+00:04:43 Agreed.
+
+00:04:44 Okay.
+
+00:04:44 Well, welcome to Python imports, I guess, huh?
+
+00:04:47 Yeah.
+
+00:04:47 So I think this is actually pretty interesting.
+
+00:04:50 And also, this is kind of the flow of this project.
+
+00:04:53 It's like, oh, we noticed that HTTP core is actually the root of many of the problems, which is also a similar project.
+
+00:04:59 So we have to create HTTP core XYZ, and fix a whole bunch of issues, some serious, and so on.
+
+00:05:06 So there you go.
+
+00:05:07 Got some nice quotes here.
+
+00:05:08 And then finally, it's on Codeberg, which I think is not the right choice.
+
+00:05:14 I understand the desire, but in practice, I don't think it's the right.
+
+00:05:20 I think it should be on GitHub, even with all the GitHub issues.
+
+00:05:23 Because, you know, you look at it, it's got 39 stars.
+
+00:05:26 Like, HTTPX has 15,000.
+
+00:05:29 Right.
+
+00:05:29 So on GitHub.
+
+00:05:31 I don't know.
+
+00:05:31 I think that that's, you know, Mikhail says, look, I'd love to make GitHub a little bit less dominant.
+
+00:05:36 Yes, I agree.
+
+00:05:38 But, you know, I don't necessarily know that I would try to fight two battles in one.
+
+00:05:42 You're already trying to make HTTPX not less dominant.
+
+00:05:44 I see it.
+
+00:05:45 I have sympathy.
+
+00:05:48 You can get rid of a lot of junk if you're not on GitHub.
+
+00:05:52 Yeah.
+
+00:05:53 I know.
+
+00:05:53 It's like, what are you optimizing for?
+
+00:05:55 Are you optimizing for the developers, the project's benefit?
+
+00:05:58 Or are you optimizing for exposure?
+
+00:05:59 I don't think so.
+
+00:06:00 I think it's whether or not you want contributors.
+
+00:06:03 Because the exposure's through, like, PyPI, not really GitHub.
+
+00:06:08 And maybe podcasts, people talk about it.
+
+00:06:10 Yeah.
+
+00:06:11 Anyway, I think it's a cool project.
+
+00:06:12 I'm going to look into maybe use it more now that that shim thing exists.
+
+00:06:17 Yeah.
+
+00:06:17 Cool.
+
+00:06:18 And while I'm doing that, Brian, maybe you want to talk to us about concurrency?
+
+00:06:22 I'll get back to you on what I've learned.
+
+00:06:23 I do.
+
+00:06:25 Yeah.
+
+00:06:25 While I'm doing that.
+
+00:06:27 Yeah.
+
+00:06:28 So concurrency.
+
+00:06:30 So I ran across this article.
+
+00:06:33 It's on GeekUni.
+
+00:06:34 I don't know what that is.
+
+00:06:35 But it looks like there's some interesting stuff way back to 2013.
+
+00:06:39 But anyway, Lean Concurrency, a deep dive into multithreading with Python.
+
+00:06:45 And this is the author, Nikos.
+
+00:06:48 And I actually really like this article.
+
+00:06:51 So I do.
+
+00:06:53 I'm familiar with multithreading in multiple languages.
+
+00:06:56 And I don't use it a lot in Python.
+
+00:06:59 And I do have a lot of projects or at least a couple of projects coming up that I want to use some concurrency.
+
+00:07:05 And so a refresher is a good idea.
+
+00:07:08 And the world has changed a little bit recently.
+
+00:07:12 I mean, the big recently in Python because we've got Gilders Python.
+
+00:07:18 We have free-threaded.
+
+00:07:19 And it changes the dynamics a little bit.
+
+00:07:22 So it's a good time to have a refresher on concurrency with Python.
+
+00:07:25 And this is...
+
+00:07:26 So we are going to talk about multithreading in this article.
+
+00:07:31 But one of the great things that I like about this is it doesn't assume anything.
+
+00:07:36 So it's talking about like in data science or cryptography or data processing, some of the places where you might want concurrency.
+
+00:07:44 But there is really lots of places where you want it.
+
+00:07:47 And then filling in some of the terms that you may not be familiar with, like concurrency versus sequential.
+
+00:07:54 We probably should know that.
+
+00:07:55 But things like global interpreter lock.
+
+00:07:59 And, you know, I guess we already know those things.
+
+00:08:02 But there's a...
+
+00:08:03 One of the terms is like embarrassingly concurrent.
+
+00:08:07 And I kind of forgot what that meant.
+
+00:08:09 So it's good there.
+
+00:08:11 And that just means...
+
+00:08:12 Well, it means that you can separate the work into things that can work without any interactions.
+
+00:08:20 Those are embarrassingly concurrent.
+
+00:08:23 Anyway.
+
+00:08:23 Yeah.
+
+00:08:23 One super, super common example of that is like video game graphics.
+
+00:08:27 Each pixel is computed independent of each other pixel.
+
+00:08:31 So if you've got a million pixels, like as much parallelism as you can just compute each pixel at the same time, they're not going to interfere with each other, right?
+
+00:08:39 Yeah.
+
+00:08:39 It is funny that it's embarrassingly.
+
+00:08:41 It's not really embarrassingly.
+
+00:08:43 It's just ideal.
+
+00:08:45 Exactly.
+
+00:08:46 What a glass half empty perspective that is.
+
+00:08:49 So I just encourage people to look through this.
+
+00:08:53 There's some great walkthroughs about different things.
+
+00:08:57 And also, it talks about free-threaded concurrency as well.
+
+00:09:02 If you want to catch up with the GIL and getting rid of the GIL and stuff.
+
+00:09:08 And it even talks about how to install the free-threaded Python, which is nice.
+
+00:09:13 Which, of course, you're going to just use uv.
+
+00:09:15 But even with uv, you have to do the 3.14T.
+
+00:09:20 You have to add the T to the end to get it to work.
+
+00:09:22 One of the cool things, I think, is that it's not a magic bullet.
+
+00:09:27 You can't just use free-threaded Python with threads and have it be magically fast.
+
+00:09:32 And that's one of the cool...
+
+00:09:34 Like, Fibonacci is a hard one because you're sort of...
+
+00:09:37 To really do it faster, you depend on previous ones.
+
+00:09:41 So it's slightly interesting with a Fibonacci.
+
+00:09:45 But how many times do you really calculate Fibonacci?
+
+00:09:48 So the better examples below that.
+
+00:09:51 And it's a very simple example of just having a bunch of threads update a counter.
+
+00:09:56 But it's...
+
+00:09:57 And you won't do this.
+
+00:09:58 But it'll be...
+
+00:09:59 It's a cool example because it's an obvious one where you've got shared data.
+
+00:10:04 There are a bunch of threads all accessing the counter.
+
+00:10:07 So it's a very simple toy example.
+
+00:10:09 But you could see how that relates to a lot of other work.
+
+00:10:11 The cool thing...
+
+00:10:13 One of the interesting things about this is it talks about some of the problems with concurrency, how to get around it, problems with concurrency and shared data.
+
+00:10:23 And one of the first things I reached for because I came from C and C++ is locks when I want to have shared data.
+
+00:10:32 And within this example, locks turns out to be the wrong solution because it actually slows everything down.
+
+00:10:40 And I'm familiar with that with other languages as well.
+
+00:10:44 But the cool thing that I've never really understood before that I'm grateful for this article to talk about is the thread pool executor.
+
+00:10:54 Or executor?
+
+00:10:55 Thread pool?
+
+00:10:55 I don't know.
+
+00:10:56 Thread pool executor.
+
+00:10:57 Of how to launch a bunch of threads, have them come up with their own answer without talking to each other at all, no shared data, and then collect the return values.
+
+00:11:08 And that's the really good way.
+
+00:11:10 So with concurrency, not surprising.
+
+00:11:14 Best way to do it is to re-architect your algorithms so that they can take advantage of it.
+
+00:11:19 And what I'm excited about is that now we don't have to rely on async.io.
+
+00:11:26 You can still.
+
+00:11:27 But for a lot of parallel processing, we can just use threads now, finally, in Python.
+
+00:11:32 Threads are okay.
+
+00:11:33 So anyway, good article.
+
+00:11:35 It's very exciting.
+
+00:11:36 Good introduction.
+
+00:11:37 Yeah, cool.
+
+00:11:37 And it's very exciting.
+
+00:11:38 I think it's going to give us a chance to talk about all sorts of fun things.
+
+00:11:42 You know, we in Python land have not obsessed about all these design patterns, race conditions, making sure you lock all of your activity.
+
+00:11:51 Yeah.
+
+00:11:52 But we're going to have to start.
+
+00:11:53 Have to start.
+
+00:11:53 And I'm not sure that we necessarily should not have.
+
+00:11:56 The guild does not protect you against corrupt multi-step race conditions.
+
+00:12:01 Well, we've, I mean, we've kind of benefited that threads don't really run at the same time up until now.
+
+00:12:07 So.
+
+00:12:07 Yeah, yeah, I know.
+
+00:12:08 But like, that's totally fine for one operation.
+
+00:12:11 But let's suppose that I like, you know, the classic bank example.
+
+00:12:15 I take, I debit somebody out of this account.
+
+00:12:16 I do 10 lines of work.
+
+00:12:18 And then I credit the other account.
+
+00:12:20 Yeah.
+
+00:12:20 Nothing, nothing says that the guild will not stop halfway through.
+
+00:12:24 It's just, it's not very likely.
+
+00:12:26 So the, you know, those problems are there in the code, which I think is going to be a double whammy.
+
+00:12:30 But it also lets us start to think about the fun things like double checked locking, which is such a cool idea.
+
+00:12:35 You know, like, there's, there's, I think it's going to be really fun.
+
+00:12:39 I think it's going to be fun.
+
+00:12:39 So for example.
+
+00:12:40 Checked locking.
+
+00:12:41 Yeah.
+
+00:12:41 So check this out.
+
+00:12:42 So I, I'll put this in the show notes.
+
+00:12:44 It's just off of, or put it, look it up on Wikipedia.
+
+00:12:46 So what you can do is you can say, if you have a single threaded thing, you can check, like, if this, this object is null.
+
+00:12:52 Let's say it's a singleton.
+
+00:12:53 If this object is null, create a new one.
+
+00:12:54 So you only create it once and then return it.
+
+00:12:56 But it's like a lazy crate.
+
+00:12:57 But if like the default multi-threaded version would be every time you call this function, take a lock, check if it's null.
+
+00:13:05 If it is created, return it.
+
+00:13:07 But you can do things like check outside the lock if it's null and then take a lock and then check again if it's null.
+
+00:13:13 Because maybe two things hit, one of them locked, one of them created it.
+
+00:13:16 You still want the same one.
+
+00:13:17 But you can like skip the locking ever, except for like during the once, one and only creation.
+
+00:13:24 Like there's really fun patterns like that.
+
+00:13:25 So I'm kind of actually looking forward to it, you know?
+
+00:13:28 I'm not looking forward to the race conditions.
+
+00:13:30 Yeah, yeah, yeah, yeah.
+
+00:13:32 Speaking of locks, let's lock files instead of memory and execution.
+
+00:13:36 So it turns out that pip 26.1 is out.
+
+00:13:40 And it comes with features that I've been very excited about.
+
+00:13:43 Most importantly, dependency cooldowns.
+
+00:13:47 Don't remember, I don't remember when I wrote about this.
+
+00:13:49 It was December last year.
+
+00:13:51 I wrote about Python supply chains made easy.
+
+00:13:54 And I wrote a follow-up one for like doing that production.
+
+00:13:57 One of the really most important significant bits of this was, you know, instead of you finding out, let's let others find out that something's bad.
+
+00:14:05 And the way you do that is you simply just go over and you just say uv pip, whatever, install, compile, whatever.
+
+00:14:12 Or exclude newer one week.
+
+00:14:14 And this was a thing that uv had that pip did not have, right?
+
+00:14:18 So chalk one more thing for uv over pip.
+
+00:14:22 But now pip itself actually has the same concept.
+
+00:14:25 They have different CLI flags, which I don't know.
+
+00:14:28 I feel like they should have just said, well, what are people using now?
+
+00:14:31 Let's use that same CLI flag.
+
+00:14:32 But so it is.
+
+00:14:33 So it has this.
+
+00:14:35 Let's go down to the cooldowns.
+
+00:14:38 Here we go.
+
+00:14:38 So you can say --uploaded prior to.
+
+00:14:43 And you can put some kind of time in there, a duration.
+
+00:14:48 So PND, where N is the number of days, kind of.
+
+00:14:53 Okay.
+
+00:14:53 Anyway, so you say P3D is like prior to three days is the value.
+
+00:14:57 And then you can install something.
+
+00:14:58 And that says it will only install the older, you know, stuff older than three days.
+
+00:15:02 And this is super valuable.
+
+00:15:04 It sounds like, oh, Michael, this is like security through obscurity.
+
+00:15:07 And it's not going to make a difference.
+
+00:15:08 Like almost all of these major takeovers are like three hours later, it was found.
+
+00:15:11 Five hours later, it was found.
+
+00:15:13 Yeah.
+
+00:15:13 Rarely do these things sit around for a week unless they're extremely rare.
+
+00:15:17 But the major projects take over like the, oh my gosh.
+
+00:15:21 You remember which, that LLM library that you use for like a facade over all the different LLMs.
+
+00:15:26 That one was taken down two hours after it was gotten in there.
+
+00:15:30 You know what I mean?
+
+00:15:30 So these, I think these are meaningful differences.
+
+00:15:33 Why the actual difference in CLI?
+
+00:15:36 I don't know.
+
+00:15:37 Maybe there's a good reason, but I don't know.
+
+00:15:38 Anyway, I'm really glad to see pip having this.
+
+00:15:41 Also, Python 3.9 is not supported.
+
+00:15:43 It's end of life over six, seven months ago.
+
+00:15:48 So it seems fine that it shouldn't be here anymore.
+
+00:15:51 I mean, I don't even remember 3.9.
+
+00:15:52 Yeah, I don't.
+
+00:15:53 What was 3.9?
+
+00:15:54 We don't even know.
+
+00:15:54 So honestly, I don't know why you would have any support for any older version.
+
+00:16:00 You might say, well, Michael, somebody might be on Python 3.9 and they got to install stuff.
+
+00:16:04 Like just pin pip to 25, right?
+
+00:16:06 Like pip 25 is what they were using when they had Python 3.9 anyway.
+
+00:16:10 Just install a different version of Pip.
+
+00:16:12 I think that's like a no-brainer and should just be like a default.
+
+00:16:15 New features.
+
+00:16:16 This is interesting.
+
+00:16:18 Like, first of all, I am very positive about this.
+
+00:16:19 I think this is a great move and I'm really happy to see it.
+
+00:16:22 Even if I have some criticisms like PND, which is just weird.
+
+00:16:27 And there's already existing ones.
+
+00:16:28 So this is also a little like that.
+
+00:16:30 So Brett Cannon.
+
+00:16:31 Go ahead.
+
+00:16:32 No, what are PND files?
+
+00:16:34 I don't know.
+
+00:16:34 No, no.
+
+00:16:34 That's how you specify the three days ago.
+
+00:16:38 You say uploaded prior to equals P3D instead of just three days.
+
+00:16:42 Who's going to remember that?
+
+00:16:43 Okay.
+
+00:16:44 Yeah.
+
+00:16:44 Like the uv one you just put in quotes, one week, seven days.
+
+00:16:48 Well, I mean, it's easier.
+
+00:16:49 Yeah, whatever.
+
+00:16:49 The parsing is probably easier or something.
+
+00:16:51 I don't know.
+
+00:16:51 I know, but it's used by millions of people, written by ones.
+
+00:16:54 You could ask AI, help me parse this.
+
+00:16:56 Anyway.
+
+00:16:57 Yeah, I got it.
+
+00:16:58 So there's this PEP 751, which was created 2024.
+
+00:17:03 And it was, I believe it was accepted 14 months ago.
+
+00:17:07 I'm not entirely sure.
+
+00:17:08 It's not super obvious, but the resolution is March 2025.
+
+00:17:12 So it's been around for a long time, about a year plus.
+
+00:17:15 Okay.
+
+00:17:15 And this is the file format to record Python dependencies for installation reproducibility by Brett Cannon.
+
+00:17:21 He's been working on this forever.
+
+00:17:22 And the idea is this is basically the pylock.toml.
+
+00:17:26 And that's, if you go over here, it's actually in the Python packaging user guide on how to do it.
+
+00:17:31 This is great.
+
+00:17:32 So why am I talking about this?
+
+00:17:33 Because the deal is pip now supports installing these.
+
+00:17:37 Oh.
+
+00:17:38 Oh.
+
+00:17:38 Somewhat as an experimental feature.
+
+00:17:40 So a year after its acceptance, which standardized pylock.toml, pip 26.1 gains experimental support for such files, for reading and installing from them.
+
+00:17:50 Okay.
+
+00:17:50 So this is great.
+
+00:17:51 I think it's just, you know, pip is the most common way to install stuff in Python still, even if it's not the most hyped or most Rust implemented way to do it.
+
+00:18:01 It's still the most common way.
+
+00:18:02 Right.
+
+00:18:03 And so having this support is kind of like table stakes.
+
+00:18:05 Right.
+
+00:18:05 So I think this is really cool.
+
+00:18:06 There's a bunch of caveats and limitations and so on and so on.
+
+00:18:09 But the criticism is like, if this is officially accepted by the core developers and Python and the steering council, why did it take a year for pip to support it?
+
+00:18:20 You know, that seems pretty out of sync.
+
+00:18:22 That's a long time from, yeah, we have this official feature and our official installer can't use it.
+
+00:18:27 Yeah.
+
+00:18:27 But I'm glad that it has it.
+
+00:18:28 So that's good.
+
+00:18:29 Maybe there's more to it than I know again, but who knows.
+
+00:18:32 Some stuff about the older, like newer and older resolvers.
+
+00:18:35 The new resolver now does many of the things that the older resolvers were being kept around for.
+
+00:18:40 So I believe there's now a plan to remove the older legacy resolvers.
+
+00:18:45 Like if you've got this version less than or equal to, and you've got that other version and so on, like how do you resolve that?
+
+00:18:50 Then a few security fixes, not necessarily going to go into it too much, but there you go.
+
+00:18:55 A brand new pip 26.1.
+
+00:18:56 I feel like this is a big release, which is why I brought it up.
+
+00:18:59 It's got the dependencies cooldowns, which I think is critical these days.
+
+00:19:03 And it's got lock file support.
+
+00:19:05 Yeah.
+
+00:19:05 Yeah, no, it's really cool.
+
+00:19:06 And it's definitely moving in the right direction.
+
+00:19:09 Yeah.
+
+00:19:10 Also, shout out.
+
+00:19:10 This is, yeah, go ahead.
+
+00:19:12 With wacky CLI names, but okay.
+
+00:19:15 Yeah, yeah.
+
+00:19:15 Also just shout out.
+
+00:19:16 This is by Richard C.
+
+00:19:17 So thanks, Richard.
+
+00:19:18 Cool.
+
+00:19:19 I actually am excited about another PEP as well.
+
+00:19:22 So, we're going to stick with the PEP thing for a little bit.
+
+00:19:25 this time Sentinel Values and also a blast from the past because, my search still up.
+
+00:19:32 Anyway, this, Sentinel Values is PEP 661 and it was created in 2021 and it's five years later.
+
+00:19:41 so it's taken a while.
+
+00:19:43 However, it is, resolved as of, and, and final as of, for, for five, on 315.
+
+00:19:49 So we'll get, we'll get Sentinels finally.
+
+00:19:52 there's a, there's, the, the, PEP 661 has a bunch of information, but it's also, it says important.
+
+00:20:01 This is a historical document, even though it's just finally here, but it's been working, being worked on for five years.
+
+00:20:07 The, the actual information then is in, in, the Sentinel information now in the documentation.
+
+00:20:14 So we can, we can click over and look at, I already had it up, look at Sentinel Values and they're kind of neat.
+
+00:20:21 So I, I'm excited about this.
+
+00:20:23 I don't, I don't quite understand some of the information, the decisions, but that's okay.
+
+00:20:28 So, we often use like none for Sentinel value or some, or Nan, if you're doing, like floating point stuff.
+
+00:20:36 but this, you just, Sentinel is a built-in that you just have to, you don't have to import anything.
+
+00:20:42 You just say Sentinel and then give it a quote, a name, like in the example, in the docs, it's missing.
+
+00:20:48 So Sentinel parentheses, and then the quote missing, you can name it, whatever.
+
+00:20:52 But the object, one of the interesting things is it acts kind of like none you use is like if, if you want to check a variable or, an element, if it is the Sentinel, you can say is, is missing.
+
+00:21:05 and, and then in the types, the type is handled interestingly.
+
+00:21:09 The, the object is both the value and the type.
+
+00:21:12 So you can say like a default, like some variable is, is of a, of type int or the pipe operator or missing.
+
+00:21:22 So you can, you can have that together and it isn't missing altogether.
+
+00:21:26 Missing isn't the magical, magical Sentinel value.
+
+00:21:30 You can have anything like, not available or whatever you want to call it.
+
+00:21:34 so about, I guess, you know, I think that it's, very much about time that we have a, Sentinel value built into the language.
+
+00:21:43 interesting that the, okay.
+
+00:21:45 So everything so far is, sounds great.
+
+00:21:48 The part that I don't quite get is the, is that it's, it's not truthy or it is truthy.
+
+00:21:53 That's it.
+
+00:21:54 so if you're going through a list, like an array, and, and you want to check to see if it's Sentinel, you have to say is your Sentinel, you know, if you use the is operator
+
+00:22:05 to make sure it's there, you can't like none, you could just say if like, you know, if the value in, if that's true, that means it's not none because none is evaluates to false.
+
+00:22:16 All the Sentinels evaluate to true.
+
+00:22:19 so you have to treat it differently.
+
+00:22:21 All right.
+
+00:22:22 I'm already feeling a PEP to enhance the Sentinel coming on.
+
+00:22:25 to, to make it, to flip the values.
+
+00:22:27 but what do you mean?
+
+00:22:29 You know what?
+
+00:22:29 I love the idea of a Sentinel.
+
+00:22:31 I love it because it lets you check, you know, it's like if you're doing a, you know, find me the index of this thing, this item in a string and it's negative one, which is also an integer, but like, that's the, that's means it's not there.
+
+00:22:44 Right.
+
+00:22:44 Like it's all those kinds of checks are just odd.
+
+00:22:47 And I love having the idea of a Sentinel, a thing where you say, I can check this and it's the same type, but if it's, but if it is this, that means actually we weren't able to process it.
+
+00:22:56 Right.
+
+00:22:56 Cause yeah.
+
+00:22:58 Something weird came back.
+
+00:22:59 What I mean is, so the way you create the Sentinel value, like the, the, it's a singleton or one off type of thing.
+
+00:23:06 Like that's why you use is right.
+
+00:23:07 And so you say Sentinel and you give it a string, which I guess is the, what it prints when you try to like string or rep the value.
+
+00:23:16 Right.
+
+00:23:17 Yeah.
+
+00:23:17 And that's cool.
+
+00:23:18 Why not give it a default?
+
+00:23:21 I'm even in true, I guess, for compatibility at this point you would have to do, but why not give it a second variable?
+
+00:23:26 You could pass like a falseness, like, is it true or false?
+
+00:23:29 Like comma false.
+
+00:23:31 And then boom.
+
+00:23:31 Okay.
+
+00:23:31 If this Sentinel comes up and I say, if value, no, this is not a value because it indicates the absence of a value.
+
+00:23:38 You know what I mean?
+
+00:23:38 Yeah.
+
+00:23:39 Can I continue to rant?
+
+00:23:41 Yeah.
+
+00:23:41 I like that.
+
+00:23:42 It wouldn't break the current, current implementation, but you could make it more usable.
+
+00:23:47 I think so.
+
+00:23:48 Yeah, exactly.
+
+00:23:48 Just default the value to true on that, yeah.
+
+00:23:51 Second parameter.
+
+00:23:52 So you don't have to set it.
+
+00:23:54 It doesn't break anything, but allow you to pass false.
+
+00:23:56 So if you, if it or anything like where it's truthness, truthiness has to be checked.
+
+00:24:01 Then it can be what it says it is because you might have a Sentinel for two different outcomes, right?
+
+00:24:06 That's plausible, I guess.
+
+00:24:07 Although it's not usually the way it's used.
+
+00:24:10 Yeah.
+
+00:24:10 But like a lot of, I mean, for Sentinels for, to mean I've like, I've got a big vector of stuff.
+
+00:24:17 I want to know if there's, if it's not filled out.
+
+00:24:20 yeah, I think the default should be false.
+
+00:24:24 Primarily Sentinels are used in the case where something didn't work out right.
+
+00:24:28 Normally you get a value, but sometimes you get a special value.
+
+00:24:30 That means you couldn't get a value.
+
+00:24:32 That should be false.
+
+00:24:33 I agree.
+
+00:24:34 Yeah.
+
+00:24:34 The, I guess the one part where I say, you know, maybe it's, maybe it's, it's going to be more readable because it's going to force you to say is missing or is, you know, not there or whatever your value is.
+
+00:24:46 But, I don't know.
+
+00:24:49 I do like that.
+
+00:24:50 You don't have to do that with none.
+
+00:24:52 You can just say that it's just values false.
+
+00:24:54 I do like the, I like the idea.
+
+00:24:56 I think that maybe you should get on that whole PEP thing for, for extending that Michael won't you?
+
+00:25:00 Yeah.
+
+00:25:00 Before you scroll that screen, let me work on my second version of the pep.
+
+00:25:05 I somewhat dislike the truthiness, although I get it.
+
+00:25:08 And like, I'll just give a shout out to, the quirky out in the audience that I guess even the Sentinel is an object, which kind of makes it hard to be false, but like you can implement dunderbool, right?
+
+00:25:18 So then you could do it.
+
+00:25:19 Empty strings are objects and they evaluate the false.
+
+00:25:23 Yeah, yeah, yeah, exactly.
+
+00:25:24 Like you can, there's a magic method to say false.
+
+00:25:27 They just return the value of the parameter that goes in when you created it, right?
+
+00:25:30 I think it's, it's like a five minute implementation and 47 hour, like documentation and negotiation afterwards.
+
+00:25:38 But here's the other one.
+
+00:25:39 I think this is more subtle.
+
+00:25:40 There's an example saying like, how do I express in the type system that something might be of the value expect or the value that is the Sentinel.
+
+00:25:50 And this was much, I think this is a much more significant, probably not going to use this after all sort of thing in my mind.
+
+00:25:57 Let me set the stage.
+
+00:25:58 If I have a function that returns none or integer, and I say X plus Y where X came from that function, my type checker will say, oh, you cannot plus that with another integer because none does
+
+00:26:12 not allow addition with integer.
+
+00:26:14 So you can say, if is not none, X plus Y will work without the type checker failing.
+
+00:26:19 But if you just say X plus Y types fall apart, it gets all upset.
+
+00:26:23 I'm pretty sure that's what's going to happen here with Sentinels.
+
+00:26:26 Your type has to be, I return an int or missing or an int or the Sentinel.
+
+00:26:32 The Sentinel does not have type information based on an integer.
+
+00:26:36 And so any int operation on it will fail.
+
+00:26:39 And the type checker is going to warn.
+
+00:26:40 So you're going to have to add all of these, like, I know it said it was an int or a Sentinel, but it's not any longer.
+
+00:26:47 Now it's just an int.
+
+00:26:48 And I feel like there's a lot of clumsiness that's going to go, go along with like trying to work with things that express themselves as int or Sentinel.
+
+00:26:57 So can we just add another, another type, another parameter to the creation?
+
+00:27:02 Like it's a Sentinel of int.
+
+00:27:04 It's a Sentinel of...
+
+00:27:05 Yeah, but we're not going to get it for 3.15, but maybe we can get it later.
+
+00:27:09 No, no.
+
+00:27:09 I'm just saying like, wouldn't it be nice if you could have it also be the type so you don't have to express in the type system that it is something else?
+
+00:27:19 You know, I don't know.
+
+00:27:20 To me, I think that's going to be, I think it's going to be rugged.
+
+00:27:22 I think it's going to be rugged.
+
+00:27:24 So.
+
+00:27:25 Yeah.
+
+00:27:25 I think we're, I think we're getting into like old man yells at cloud territory.
+
+00:27:29 So, we may have to move on.
+
+00:27:33 Cut me off, Ryan.
+
+00:27:34 I'm telling you.
+
+00:27:34 Yeah.
+
+00:27:34 I told you I was going to be on like a type, a type, run this time, but no, I'm glad you covered it.
+
+00:27:40 Cause this is interesting.
+
+00:27:41 I love the idea of Sentinels.
+
+00:27:42 I've used them.
+
+00:27:43 I haven't used them very much in Python, but I used them back in my C++ and C# days and I really liked them.
+
+00:27:48 I think they provide a really interesting goal.
+
+00:27:51 Yeah.
+
+00:27:52 Yep.
+
+00:27:52 do you have any extras?
+
+00:27:54 Of course.
+
+00:27:54 Yeah.
+
+00:27:55 You know what?
+
+00:27:55 I got some stuff to talk about.
+
+00:27:57 Let me swap it over.
+
+00:27:58 I didn't have any extras written down, but then I decided I have extras.
+
+00:28:02 So I haven't talked about this yet, but, if I go over at Talk Python training, I've done some cool stuff.
+
+00:28:09 So no, there's so many, you, you warned me of this, pop out thing, Brian.
+
+00:28:15 I'm now starting to feel it.
+
+00:28:16 So over at, Talk Python training, we now have German subtitles for every single course for all 280 hours of courses.
+
+00:28:24 So like I'll, I pull up, Vincent Wormerdam's, LLM building blocks course.
+
+00:28:31 And now if I click on the CC, I get English, German, and this one even has Spanish.
+
+00:28:36 How about that?
+
+00:28:37 Nice.
+
+00:28:38 Yeah.
+
+00:28:38 So I could turn on like German transcripts and, you know, they're on the screen.
+
+00:28:42 Maybe those are too big.
+
+00:28:43 So I can make them a little smaller, put them up at the top.
+
+00:28:45 So they're not in the way.
+
+00:28:46 So I've done a ton of work on the transcripts over here.
+
+00:28:49 And now guess what Vincent's speaking German now, right?
+
+00:28:55 Let's go.
+
+00:28:56 So anyway, if, if you were a German speaker, check out the courses, and turn on the subtitles for German, if you like.
+
+00:29:03 I'm wondering how, like when we're going to have AI tools that can not just do different translations for subtitles, but can we get like dubbing in the original speaker's voice?
+
+00:29:16 That'd be cool.
+
+00:29:17 Hold that thought.
+
+00:29:17 All right.
+
+00:29:18 That's my extra.
+
+00:29:19 We have a German subtitles for all the courses that talk Python, all 280 hours.
+
+00:29:24 And I would just like to point, I said this in the blog post, but just to listen to 280 hours of audio is seven weeks, almost two months of work, not the translating, not the double
+
+00:29:34 checking just to listen to is seven weeks worth of work, 40 hours, you know, eight hours a day, five days a week sort of thing.
+
+00:29:42 so that is a mega, mega project I've been working on.
+
+00:29:46 And you got a lot of courses up.
+
+00:29:48 I know it's crazy.
+
+00:29:49 So I'm working through the Spanish ones.
+
+00:29:51 Now I've got maybe four courses converted over Spanish, but Spanish is going to be the next language.
+
+00:29:56 So don't feel left out Spanish speaking folks.
+
+00:29:58 It's coming soon.
+
+00:30:01 Yeah.
+
+00:30:01 That's my extra.
+
+00:30:02 All right.
+
+00:30:03 Well, I'm going to roll back to, we were talking about, what was it?
+
+00:30:08 It's not, the place, the non GitHub place that we had somebody at, anyway.
+
+00:30:14 Kudberg.
+
+00:30:14 Kudberg.
+
+00:30:15 Yeah.
+
+00:30:15 So, on that topic, Armin Ronecker, wrote an article about GitHub.
+
+00:30:21 So before, before GitHub, basically the, like it's talking about this, like we're at, we're at an inflection point, not sure where we're going to go forward.
+
+00:30:30 But before GitHub, it was a weird place.
+
+00:30:33 We had basically, source controls roll your own or do something wacky or, it was, it was a very different experience.
+
+00:30:41 So we're, and I have to agree.
+
+00:30:44 I am even at the state of GitHub right now, I'm still using it a lot and other things, but I also understand some of the gripes people have, there's political stuff and with AI and everything.
+
+00:30:57 But aside from that and whether or not they should have been able to just steal everybody's content, or intellectual property, because open source does not mean please just, you know, train your AIs on it.
+
+00:31:10 But anyway, regardless of that, the, there's a, there's another, there's another aspect of it that the GitHub is really built around community building and collab getting as many collaborators as possible.
+
+00:31:23 And it doesn't often work that way.
+
+00:31:26 I mean, we often get a lot of people submitting issues and griping about things, but not a lot of people contributing actual good code contribute contributions.
+
+00:31:35 And it's even different.
+
+00:31:36 It's even worse now with a lot of people just submitting AI slop, as, as stuff.
+
+00:31:42 So I totally get projects getting, moving away.
+
+00:31:46 So there's a interesting discussion about like, you know, GitHub is slow.
+
+00:31:50 GitHub is slowly dying.
+
+00:31:51 I don't think it's going to die.
+
+00:31:53 I think it'll stick around for a long time.
+
+00:31:54 And I think, for many years, it'll be still the dominant one, but there is some interesting shifts.
+
+00:32:00 at first there were like just a few people moving over or not a few, a lot of people moving over to Codeberg, but it was a smaller projects.
+
+00:32:09 But now there's some bigger ones.
+
+00:32:10 And, and one of the things that I'm grateful for is he brought up tenacity and I'm like, what's tenacity?
+
+00:32:16 I don't know what that is.
+
+00:32:17 And it's a, it's a total tangent for the topic, but it's a, cross platform, multi-track audio editor and recorder that I'd never heard of.
+
+00:32:26 And it looks pretty cool.
+
+00:32:28 So I might check that out.
+
+00:32:29 It's an open source thing.
+
+00:32:30 Anyway.
+
+00:32:31 Oh, that's very cool.
+
+00:32:32 I've used audacity and I bet it is a, a riff on audacity, right?
+
+00:32:37 But yeah, yeah, yeah.
+
+00:32:38 Now I'm definitely checking this out.
+
+00:32:39 This is cool.
+
+00:32:40 Yeah.
+
+00:32:40 So I definitely want to check that out, even though I, I, I'm happy with my audio situation right now.
+
+00:32:46 But anyway, the interesting thing around this that I, I, it's a, it's an interesting topic and it's not a really long article.
+
+00:32:56 One of the things he talks about really is when, if we go to Codeberg or other roll your own stuff and have source code, like all over the place, we do lose some things because even, even though you can clone, you can do things that conversations are less, we have less
+
+00:33:09 conversations around, around issues around the direction of some projects.
+
+00:33:14 And if it goes away, if somebody deletes their repo, we lose all of that.
+
+00:33:18 so there's some archive possibly needed some history that would be helpful.
+
+00:33:23 anyway, interesting discussion around, around that here.
+
+00:33:27 So thanks, Armin.
+
+00:33:28 Yeah.
+
+00:33:29 Very nice article, Armin.
+
+00:33:30 And I've really appreciated his, his thought pieces and his writing over the last year or two.
+
+00:33:35 So good job.
+
+00:33:36 Yeah.
+
+00:33:36 Yeah.
+
+00:33:36 Also Hugo out in the audience said, Hey, don't forget Python 314.5 is now out with the new, which is actually the old GC and 315 beta one, the feature freezes out.
+
+00:33:50 So yes.
+
+00:33:51 Thank you so much for that.
+
+00:33:51 Like most notably the garbage collector GC has changed back to the full pausing one, not the incremental one.
+
+00:33:59 Everything old is new again.
+
+00:34:00 Yeah, exactly.
+
+00:34:01 Here we go.
+
+00:34:02 Back around.
+
+00:34:03 All right.
+
+00:34:04 tell us a joke.
+
+00:34:05 Ready for a joke.
+
+00:34:06 So, I've been thinking about like everybody's saying, Oh, like now that with AI and everything, I can write my own software.
+
+00:34:13 I don't need software engineers.
+
+00:34:14 So it reminded me of this XKCD.
+
+00:34:17 So I'm bringing this up.
+
+00:34:18 So it's a make it yourself, make it, make it, make it myself, XKCD.
+
+00:34:23 And there's two people looking at a couple boxes and I'll just read it out to you.
+
+00:34:28 It's mostly text.
+
+00:34:29 They want $80 for this.
+
+00:34:30 I could make one myself for $10 in parts, an hour of work, a trip to the hardware store, another $30 for parts, another few hours of work, two more trips to the store for $20 more in parts, another hour to redo the first hour of work because I messed
+
+00:34:45 it up and $80 to buy this when the one I made breaks.
+
+00:34:49 So that is so true.
+
+00:34:52 It's a hundred percent true.
+
+00:34:54 Yeah.
+
+00:34:55 Yeah, exactly.
+
+00:34:56 And I don't, that's why I think this whole vibe coding thing, you know, there was the SaaS apocalypse.
+
+00:35:01 And I think that's going to be a very focused and very narrow impact because it's like, yeah, you can make it and you got to back it up and maintain it and run it and operationally and secure it.
+
+00:35:11 And you know what?
+
+00:35:12 Let's just let them run it for 10 bucks.
+
+00:35:13 Yeah.
+
+00:35:14 I think I'm, I'm hoping that it will drive.
+
+00:35:16 I mean, not the, I think it'll change the dynamics of how people make money about software, but I do think that I'm hoping we get more good SaaS out there and some of
+
+00:35:28 the, the, even if it's helped being made by AI, but the good ones will stick around even if they get, have to get really recoded.
+
+00:35:37 So yeah, indeed.
+
+00:35:38 All right.
+
+00:35:38 Well, thanks a lot for a great episode.
+
+00:35:40 Thanks everybody for listening.
+
+00:35:42 Yeah.
+
+00:35:42 Thanks.
+
+00:35:42 Bye.
+
+00:35:43 Bye.
+

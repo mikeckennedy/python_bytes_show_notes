@@ -1,0 +1,2330 @@
+WEBVTT
+
+00:00:02.560 --> 00:00:02.900
+<v Brian Okken>Hey, everyone.
+
+00:00:04.700 --> 00:00:06.440
+<v Brian Okken>Excited to record another episode.
+
+00:00:07.970 --> 00:00:09.660
+<v Brian Okken>Thanks, everybody, for jumping in.
+
+00:00:11.700 --> 00:00:11.980
+<v Brian Okken>You ready?
+
+00:00:12.520 --> 00:00:13.000
+<v Brian Okken>Let's do it.
+
+00:00:13.800 --> 00:00:14.200
+<v Brian Okken>All right.
+
+00:00:16.360 --> 00:00:21.040
+<v Brian Okken>Hello, and welcome to Python Bytes, where we deliver Python news and headlines directly to your earbuds.
+
+00:00:21.420 --> 00:00:26.220
+<v Brian Okken>This is episode 479, recorded May 11, 2026.
+
+00:00:26.770 --> 00:00:27.560
+<v Brian Okken>And I'm Brian Aachen.
+
+00:00:28.050 --> 00:00:28.800
+<v Brian Okken>And I'm Michael Kennedy.
+
+00:00:29.780 --> 00:00:34.420
+<v Brian Okken>And this episode is sponsored by all of our stuff,
+
+00:00:34.720 --> 00:00:41.620
+<v Brian Okken>like the pytest book and pytest courses and Talk Python training and so much else.
+
+00:00:41.920 --> 00:00:44.080
+<v Brian Okken>And also Patreon supporters. Thank you, Patreon supporters.
+
+00:00:45.020 --> 00:00:48.880
+<v Brian Okken>If you'd like to get a topic, if you've got a topic that you think we ought to talk about
+
+00:00:49.180 --> 00:00:55.040
+<v Brian Okken>or just are interested in, don't worry about whether or not we've heard it or not.
+
+00:00:55.100 --> 00:00:56.380
+<v Brian Okken>Just send it on over anyway.
+
+00:00:56.960 --> 00:01:00.260
+<v Brian Okken>You can reach us on Mastodon and Bluesky.
+
+00:01:01.240 --> 00:01:06.000
+<v Brian Okken>And there's a contact form right on the show notes,
+
+00:01:06.160 --> 00:01:08.340
+<v Brian Okken>but right there on pythonbytes.fm as well.
+
+00:01:08.420 --> 00:01:09.440
+<v Brian Okken>So you can check that out.
+
+00:01:10.580 --> 00:01:13.040
+<v Brian Okken>Thanks to everybody that watches us live on YouTube.
+
+00:01:13.280 --> 00:01:14.880
+<v Brian Okken>If you'd like to be a part of the audience
+
+00:01:15.100 --> 00:01:16.640
+<v Brian Okken>and submit comments and stuff,
+
+00:01:16.680 --> 00:01:20.260
+<v Brian Okken>you can head on over to pythonbytes.fm/live
+
+00:01:20.920 --> 00:01:21.740
+<v Brian Okken>and be part of that.
+
+00:01:22.000 --> 00:01:23.760
+<v Brian Okken>And you don't need to take notes
+
+00:01:23.940 --> 00:01:25.500
+<v Brian Okken>because you can just get our newsletter.
+
+00:01:25.660 --> 00:01:31.660
+<v Brian Okken>So go to the pythonbytes.fm also and subscribe to the newsletter,
+
+00:01:31.670 --> 00:01:32.660
+<v Brian Okken>and we'll send you...
+
+00:01:32.890 --> 00:01:37.340
+<v Brian Okken>We don't send much other than just the links and all the information.
+
+00:01:37.940 --> 00:01:40.740
+<v Brian Okken>Well, there's a lot of content in the weekly email that we send out.
+
+00:01:41.660 --> 00:01:44.220
+<v Brian Okken>It's not just the links to everything we talked about,
+
+00:01:44.270 --> 00:01:45.980
+<v Brian Okken>but it's also some background information.
+
+00:01:47.759 --> 00:01:51.300
+<v Brian Okken>And you'll especially want this time because we've got some cool stuff.
+
+00:01:53.580 --> 00:01:56.700
+<v Brian Okken>Speaking of cool stuff, Michael, want to kick us off?
+
+00:01:57.740 --> 00:01:58.500
+<v Michael Kennedy>Yeah, let's kick it.
+
+00:01:59.160 --> 00:01:59.740
+<v Michael Kennedy>Let's kick it off.
+
+00:01:59.940 --> 00:02:03.400
+<v Michael Kennedy>Let's talk about HTTPX YZ.
+
+00:02:05.780 --> 00:02:10.160
+<v Michael Kennedy>So recall, this is Mikhail had created a fork,
+
+00:02:10.289 --> 00:02:12.920
+<v Michael Kennedy>and we covered why I forked HTTPX,
+
+00:02:12.920 --> 00:02:19.840
+<v Michael Kennedy>and it was part of the larger churn around in code, I believe,
+
+00:02:20.010 --> 00:02:21.640
+<v Michael Kennedy>and so on and all of that.
+
+00:02:23.100 --> 00:02:26.780
+<v Michael Kennedy>And so this is the one-month check-in, and it's pretty interesting.
+
+00:02:26.860 --> 00:02:30.920
+<v Michael Kennedy>I think it's got some ideas worth paying attention to here.
+
+00:02:31.060 --> 00:02:38.260
+<v Michael Kennedy>So basically, a couple things worth talking about is they got the first version out.
+
+00:02:38.260 --> 00:02:44.140
+<v Michael Kennedy>It contains some fixes to get ZSTD working, get the test running, housekeeping, and so on.
+
+00:02:44.140 --> 00:02:48.100
+<v Michael Kennedy>But then more importantly, end of March, some fixes came out.
+
+00:02:50.000 --> 00:02:55.340
+<v Michael Kennedy>compatibility shim that allows you to use HTTPX. This is okay, this is the thing that really made
+
+00:02:55.340 --> 00:03:00.920
+<v Michael Kennedy>me want to cover this because they released a compatibility shim that allows you to use HTTPXYZ,
+
+00:03:01.620 --> 00:03:08.020
+<v Michael Kennedy>even when third party packages use HTTPX themselves. So this is my
+
+00:03:10.020 --> 00:03:14.620
+<v Michael Kennedy>dilemma. I look at my project, and I see that I'm using HTTPX. I'm like,
+
+00:03:14.700 --> 00:03:16.780
+<v Michael Kennedy>huh, it'd be really cool to switch to HTTPXYZ.
+
+00:03:17.580 --> 00:03:18.740
+<v Michael Kennedy>Seems like the right thing to do.
+
+00:03:19.780 --> 00:03:22.360
+<v Michael Kennedy>And then I go look at my pip compiled output,
+
+00:03:22.520 --> 00:03:27.140
+<v Michael Kennedy>and it says HTTPX because these seven packages are using HTTPX.
+
+00:03:27.280 --> 00:03:29.780
+<v Michael Kennedy>I'm like, huh, well, that's kind of useless.
+
+00:03:29.960 --> 00:03:34.340
+<v Michael Kennedy>Like, why would I use one when I have to effectively use these others all the time
+
+00:03:34.820 --> 00:03:36.140
+<v Michael Kennedy>when I interact with those libraries, right?
+
+00:03:36.380 --> 00:03:41.600
+<v Michael Kennedy>I'm still in the same boat, and I don't see a life raft or any way to get out of that boat.
+
+00:03:42.820 --> 00:03:44.720
+<v Michael Kennedy>So here's that thing, and it's pretty interesting.
+
+00:03:47.420 --> 00:03:52.220
+<v Michael Kennedy>If all you've got to do is if you import at the startup of your app,
+
+00:03:53.720 --> 00:03:59.100
+<v Michael Kennedy>HTTPXYZ, it also tells it the world that it is HTTPX.
+
+00:04:00.380 --> 00:04:00.500
+<v Michael Kennedy>Okay.
+
+00:04:01.060 --> 00:04:07.099
+<v Michael Kennedy>So for example, you can assert that HTTPX is in system modules of HTTPXYZ,
+
+00:04:07.980 --> 00:04:08.540
+<v Michael Kennedy>right, that kind of thing.
+
+00:04:11.560 --> 00:04:16.380
+<v Michael Kennedy>So if you import HTTPX somewhere along the way,
+
+00:04:16.510 --> 00:04:18.600
+<v Michael Kennedy>some other app does, or other part of your app does,
+
+00:04:19.540 --> 00:04:24.840
+<v Michael Kennedy>it will still return basically a compatible layer,
+
+00:04:24.930 --> 00:04:26.520
+<v Michael Kennedy>even at a type instance.
+
+00:04:26.700 --> 00:04:32.720
+<v Michael Kennedy>So if you ask, is this thing that I got from HTTPXYZ.response of some type,
+
+00:04:33.000 --> 00:04:35.880
+<v Michael Kennedy>is that actually an HTTPX.response?
+
+00:04:36.340 --> 00:04:36.500
+<v Michael Kennedy>Yes.
+
+00:04:37.530 --> 00:04:39.120
+<v Michael Kennedy>So really interesting compatibility.
+
+00:04:39.380 --> 00:04:40.640
+<v Michael Kennedy>And honestly, I don't know how it does that.
+
+00:04:40.920 --> 00:04:41.720
+<v Michael Kennedy>That's pretty interesting.
+
+00:04:43.660 --> 00:04:44.060
+<v Brian Okken>Yeah.
+
+00:04:44.440 --> 00:04:48.720
+<v Michael Kennedy>How do you say you are, I derive from this class in another library
+
+00:04:49.580 --> 00:04:51.400
+<v Michael Kennedy>without having the other library present?
+
+00:04:51.940 --> 00:04:52.360
+<v Michael Kennedy>You know what I mean?
+
+00:04:54.560 --> 00:04:58.540
+<v Brian Okken>Well, as long as the endpoints are there, you're going to fulfill it.
+
+00:04:58.820 --> 00:05:00.440
+<v Brian Okken>But it is a...
+
+00:05:00.580 --> 00:05:01.840
+<v Michael Kennedy>Yeah, but it's not duck typing.
+
+00:05:01.920 --> 00:05:02.720
+<v Michael Kennedy>This is strong typing.
+
+00:05:02.840 --> 00:05:04.040
+<v Michael Kennedy>It's asking is instance, right?
+
+00:05:04.220 --> 00:05:05.100
+<v Michael Kennedy>That's what I think is interesting.
+
+00:05:06.100 --> 00:05:06.300
+<v Brian Okken>Yeah.
+
+00:05:07.180 --> 00:05:08.540
+<v Brian Okken>Well, yeah.
+
+00:05:09.500 --> 00:05:09.720
+<v Brian Okken>Interesting.
+
+00:05:09.720 --> 00:05:09.940
+<v Michael Kennedy>I don't know.
+
+00:05:10.500 --> 00:05:14.720
+<v Michael Kennedy>I feel like I'm going to go on a typing rant this episode.
+
+00:05:14.870 --> 00:05:16.040
+<v Michael Kennedy>So prepare yourself, people.
+
+00:05:16.340 --> 00:05:16.680
+<v Michael Kennedy>Prepare yourself.
+
+00:05:16.770 --> 00:05:17.920
+<v Michael Kennedy>So this is not uncommon.
+
+00:05:18.030 --> 00:05:19.120
+<v Michael Kennedy>Like Pillow has done this.
+
+00:05:19.820 --> 00:05:20.700
+<v Michael Kennedy>OpenCV has done this.
+
+00:05:21.140 --> 00:05:22.400
+<v Michael Kennedy>YAML, PyYAML have done this.
+
+00:05:22.570 --> 00:05:23.120
+<v Michael Kennedy>And so on.
+
+00:05:23.120 --> 00:05:28.600
+<v Brian Okken>Well, but done this being they've got a different name that you use.
+
+00:05:29.080 --> 00:05:29.260
+<v Brian Okken>Yes.
+
+00:05:29.260 --> 00:05:30.520
+<v Brian Okken>You import from the library.
+
+00:05:30.760 --> 00:05:38.360
+<v Brian Okken>But the hijacking some other project's name, that's, I don't know what I feel about that.
+
+00:05:39.900 --> 00:05:43.120
+<v Michael Kennedy>So I don't know a way around it other than this.
+
+00:05:45.340 --> 00:05:47.720
+<v Brian Okken>No, in this case, I think it's a good thing.
+
+00:05:48.220 --> 00:05:50.540
+<v Brian Okken>It seems like this could be abused.
+
+00:05:51.220 --> 00:05:51.840
+<v Brian Okken>Yes, agreed.
+
+00:05:52.380 --> 00:05:52.560
+<v Michael Kennedy>Agreed.
+
+00:05:52.780 --> 00:05:52.960
+<v Michael Kennedy>Okay.
+
+00:05:53.280 --> 00:05:54.980
+<v Michael Kennedy>Well, welcome to Python imports, I guess.
+
+00:05:55.840 --> 00:05:56.080
+<v Michael Kennedy>Yeah.
+
+00:05:57.340 --> 00:05:59.120
+<v Michael Kennedy>So I think this is actually pretty interesting.
+
+00:05:59.700 --> 00:06:02.820
+<v Michael Kennedy>And also, this is kind of the flow of this project.
+
+00:06:03.080 --> 00:06:05.220
+<v Michael Kennedy>It's like, oh, we noticed that HTTP core
+
+00:06:05.360 --> 00:06:07.020
+<v Michael Kennedy>is actually the root of many of the problems,
+
+00:06:07.800 --> 00:06:09.200
+<v Michael Kennedy>which is also a similar project.
+
+00:06:09.300 --> 00:06:13.240
+<v Michael Kennedy>So we have to create XDP core XYZ and fix a whole bunch of issues,
+
+00:06:14.320 --> 00:06:16.800
+<v Michael Kennedy>some serious and so on.
+
+00:06:17.130 --> 00:06:18.120
+<v Michael Kennedy>So there you go.
+
+00:06:19.560 --> 00:06:20.980
+<v Michael Kennedy>Got some nice quotes here.
+
+00:06:21.090 --> 00:06:27.580
+<v Michael Kennedy>And then finally, it's on Codeberg, which I think is not the right choice.
+
+00:06:27.770 --> 00:06:35.940
+<v Michael Kennedy>I understand the desire, but in practice, I don't think it's the right.
+
+00:06:36.480 --> 00:06:37.380
+<v Michael Kennedy>I think it should be on GitHub.
+
+00:06:38.260 --> 00:06:39.500
+<v Michael Kennedy>Even with all the GitHub issues.
+
+00:06:40.860 --> 00:06:43.000
+<v Michael Kennedy>Because, you know, you look at it, it's got 39 stars.
+
+00:06:47.940 --> 00:06:52.220
+<v Michael Kennedy>HGPX has 15,000.
+
+00:06:53.240 --> 00:06:53.440
+<v Michael Kennedy>Right.
+
+00:06:53.820 --> 00:06:55.520
+<v Michael Kennedy>So, on GitHub.
+
+00:06:56.440 --> 00:06:56.700
+<v Michael Kennedy>I don't know.
+
+00:06:57.200 --> 00:06:59.340
+<v Michael Kennedy>I think that that's, you know.
+
+00:07:00.320 --> 00:07:02.840
+<v Michael Kennedy>Mikhail says, look, I'd love to make GitHub a little bit less dominant.
+
+00:07:03.300 --> 00:07:03.980
+<v Michael Kennedy>Yes, I agree.
+
+00:07:04.500 --> 00:07:09.300
+<v Michael Kennedy>but I don't necessarily know that I would try to fight two battles in one.
+
+00:07:09.370 --> 00:07:11.440
+<v Michael Kennedy>You're already trying to make HTTPX not less dominant.
+
+00:07:14.300 --> 00:07:14.900
+<v Brian Okken>I see it.
+
+00:07:17.050 --> 00:07:17.600
+<v Brian Okken>I have sympathy.
+
+00:07:19.300 --> 00:07:22.480
+<v Brian Okken>You can get rid of a lot of junk if you're not on GitHub.
+
+00:07:24.400 --> 00:07:24.520
+<v Brian Okken>Yeah.
+
+00:07:25.190 --> 00:07:25.500
+<v Michael Kennedy>I know.
+
+00:07:25.820 --> 00:07:26.980
+<v Michael Kennedy>It's like, what are you optimizing for?
+
+00:07:27.010 --> 00:07:29.960
+<v Michael Kennedy>Are you optimizing for the developers, the project's benefit,
+
+00:07:30.070 --> 00:07:31.480
+<v Michael Kennedy>or are you optimizing for exposure?
+
+00:07:32.900 --> 00:07:33.920
+<v Michael Kennedy>I don't think so.
+
+00:07:34.040 --> 00:07:36.040
+<v Brian Okken>I think it's whether or not you want contributors
+
+00:07:37.900 --> 00:07:40.620
+<v Brian Okken>because the exposure is through PyPI,
+
+00:07:40.920 --> 00:07:42.040
+<v Brian Okken>not really GitHub.
+
+00:07:42.520 --> 00:07:45.120
+<v Brian Okken>And maybe podcasts, people talk about it.
+
+00:07:45.400 --> 00:07:45.720
+<v Michael Kennedy>Yeah.
+
+00:07:46.220 --> 00:07:47.180
+<v Michael Kennedy>I think it's a cool project.
+
+00:07:47.560 --> 00:07:49.880
+<v Michael Kennedy>I'm going to look into maybe use it more
+
+00:07:49.900 --> 00:07:51.580
+<v Michael Kennedy>now that that shim thing exists.
+
+00:07:52.340 --> 00:07:53.040
+<v Brian Okken>Yeah, cool.
+
+00:07:53.300 --> 00:07:54.940
+<v Michael Kennedy>And while I'm doing that, Brian,
+
+00:07:55.940 --> 00:07:57.960
+<v Michael Kennedy>maybe you want to talk to us about concurrency?
+
+00:07:58.440 --> 00:07:59.480
+<v Michael Kennedy>I'll get back to you on what I've learned.
+
+00:08:00.400 --> 00:08:00.800
+<v Brian Okken>I do.
+
+00:08:01.780 --> 00:08:01.880
+<v Brian Okken>Yeah.
+
+00:08:02.400 --> 00:08:04.140
+<v Brian Okken>While I'm doing that, yeah.
+
+00:08:05.640 --> 00:08:06.820
+<v Brian Okken>So concurrency.
+
+00:08:07.070 --> 00:08:09.800
+<v Brian Okken>So I ran across this article.
+
+00:08:10.120 --> 00:08:11.040
+<v Brian Okken>It's on GeekUni.
+
+00:08:11.250 --> 00:08:16.840
+<v Brian Okken>I don't know what that is, but it looks like there's some interesting stuff way back to 2013.
+
+00:08:17.250 --> 00:08:22.740
+<v Brian Okken>But anyway, Lean Concurrency, a deep dive into multithreading with Python.
+
+00:08:23.560 --> 00:08:26.120
+<v Brian Okken>And this is the author, Nico's.
+
+00:08:27.380 --> 00:08:29.740
+<v Brian Okken>And I actually really like this article.
+
+00:08:30.080 --> 00:08:38.460
+<v Brian Okken>So I do, I'm familiar with multi-threading in multiple languages, and I don't use it a lot in Python.
+
+00:08:38.590 --> 00:08:44.300
+<v Brian Okken>And I do have a lot of projects or at least a couple of projects coming up that I want to use some concurrency.
+
+00:08:45.260 --> 00:08:47.600
+<v Brian Okken>And so a refresher is a good idea.
+
+00:08:48.240 --> 00:08:58.280
+<v Brian Okken>And like the world has changed a little bit recently in the, I mean, the big recently in Python, because we've got Gilders Python.
+
+00:08:58.450 --> 00:08:59.300
+<v Brian Okken>We have free threaded.
+
+00:08:59.860 --> 00:09:02.280
+<v Brian Okken>and it changes the dynamics a little bit.
+
+00:09:02.520 --> 00:09:06.040
+<v Brian Okken>So it's a good time to have a refresher on concurrency with Python.
+
+00:09:06.680 --> 00:09:11.840
+<v Brian Okken>And this is, so we are going to talk about multithreading in this article,
+
+00:09:12.420 --> 00:09:17.380
+<v Brian Okken>but one of the great things that I like about this is it doesn't assume anything.
+
+00:09:17.580 --> 00:09:23.320
+<v Brian Okken>So it's talking about like in data science or cryptography or data processing,
+
+00:09:23.860 --> 00:09:25.920
+<v Brian Okken>some of the places where you might want concurrency,
+
+00:09:26.300 --> 00:09:28.660
+<v Brian Okken>but there is really lots of places where you want it.
+
+00:09:29.380 --> 00:09:36.020
+<v Brian Okken>And then filling in some of the terms that you may not be familiar with, like concurrency versus sequential.
+
+00:09:36.490 --> 00:09:37.560
+<v Brian Okken>We probably should know that.
+
+00:09:40.180 --> 00:09:46.760
+<v Brian Okken>But things like global interpreter lock, and I guess we already know those things.
+
+00:09:47.320 --> 00:09:55.000
+<v Brian Okken>But one of the terms is embarrassingly concurrent, and I kind of forgot what that meant.
+
+00:09:55.320 --> 00:09:56.600
+<v Brian Okken>So it's good there.
+
+00:09:56.920 --> 00:10:02.840
+<v Brian Okken>And that just means, well, it means that you can separate the work
+
+00:10:03.100 --> 00:10:06.500
+<v Brian Okken>into things that can work without any interactions.
+
+00:10:07.020 --> 00:10:09.660
+<v Brian Okken>Those are embarrassingly concurrent.
+
+00:10:09.940 --> 00:10:10.060
+<v Michael Kennedy>Anyway.
+
+00:10:10.180 --> 00:10:14.600
+<v Michael Kennedy>Yeah, one super, super common example of that is video game graphics.
+
+00:10:15.340 --> 00:10:18.580
+<v Michael Kennedy>Each pixel is computed independent of each other pixel.
+
+00:10:18.740 --> 00:10:19.920
+<v Michael Kennedy>So if you've got a million pixels,
+
+00:10:20.960 --> 00:10:24.840
+<v Michael Kennedy>as much parallelism as you can just compute each pixel at the same time,
+
+00:10:25.000 --> 00:10:26.940
+<v Michael Kennedy>They're not going to interfere with each other, right?
+
+00:10:27.340 --> 00:10:27.620
+<v Brian Okken>Yeah.
+
+00:10:28.020 --> 00:10:29.800
+<v Brian Okken>It is funny that it's embarrassingly.
+
+00:10:30.120 --> 00:10:31.340
+<v Brian Okken>It's not really embarrassingly.
+
+00:10:31.460 --> 00:10:32.760
+<v Brian Okken>It's just ideal.
+
+00:10:33.520 --> 00:10:33.620
+<v Brian Okken>Anyway.
+
+00:10:34.560 --> 00:10:34.920
+<v Michael Kennedy>Exactly.
+
+00:10:35.020 --> 00:10:37.580
+<v Michael Kennedy>What a glass half empty perspective that is.
+
+00:10:39.440 --> 00:10:42.520
+<v Brian Okken>So I just encourage people to look through this.
+
+00:10:42.780 --> 00:10:46.480
+<v Brian Okken>There's some great walkthroughs about different things.
+
+00:10:46.560 --> 00:10:52.060
+<v Brian Okken>And also one of the, it talks about free threaded concurrency as well.
+
+00:10:52.360 --> 00:10:56.560
+<v Brian Okken>if you want to catch up with the GIL and getting rid of the GIL and stuff.
+
+00:10:59.340 --> 00:11:03.300
+<v Brian Okken>And it even talks about how to install the free-threaded Python, which is nice.
+
+00:11:04.400 --> 00:11:06.240
+<v Brian Okken>Which, of course, you're going to just use uv.
+
+00:11:06.780 --> 00:11:11.400
+<v Brian Okken>But even with uv, you have to do the 3.14T.
+
+00:11:11.550 --> 00:11:13.960
+<v Brian Okken>You have to add the T to the end to get it to work.
+
+00:11:16.540 --> 00:11:19.960
+<v Brian Okken>One of the cool things, I think, is that it's not a magic bullet.
+
+00:11:20.140 --> 00:11:25.500
+<v Brian Okken>You can't just use free-threaded Python with threads and have it be magically fast.
+
+00:11:25.980 --> 00:11:33.100
+<v Brian Okken>And that's one of the cool, like Fibonacci is a hard one because you're sort of, you could really do it faster.
+
+00:11:33.180 --> 00:11:35.180
+<v Brian Okken>You depend on previous ones.
+
+00:11:35.440 --> 00:11:42.760
+<v Brian Okken>So it's slightly interesting with a Fibonacci, but how many times do you really calculate Fibonacci?
+
+00:11:43.020 --> 00:11:45.660
+<v Brian Okken>So the better examples below that.
+
+00:11:46.280 --> 00:11:50.520
+<v Brian Okken>And it's a very simple example of just having a bunch of threads update a counter.
+
+00:11:52.060 --> 00:11:59.500
+<v Brian Okken>And you won't do this, but it's a cool example because it's an obvious one where you've got shared data.
+
+00:11:59.780 --> 00:12:02.600
+<v Brian Okken>There are a bunch of threads all accessing the counter.
+
+00:12:03.020 --> 00:12:08.060
+<v Brian Okken>So it's a very simple toy example, but you could see how that relates to a lot of other work.
+
+00:12:09.080 --> 00:12:20.260
+<v Brian Okken>The cool thing, one of the interesting things about this is it talks about some of the problems with concurrency, how to get around it, problems with concurrency and shared data.
+
+00:12:20.960 --> 00:12:29.460
+<v Brian Okken>And one of the first things I reached for because I came from C and C++ is locks when I want to have shared data.
+
+00:12:30.140 --> 00:12:37.740
+<v Brian Okken>And within this example, locks turns out to be the wrong solution because it actually slows everything down.
+
+00:12:38.440 --> 00:12:41.580
+<v Brian Okken>And I'm familiar with that with other languages as well.
+
+00:12:43.500 --> 00:12:47.500
+<v Brian Okken>But the cool thing that I've never really understood before
+
+00:12:47.900 --> 00:12:50.960
+<v Brian Okken>that I'm grateful for this article to talk about
+
+00:12:51.200 --> 00:12:54.720
+<v Brian Okken>is the Threadpool executor or executor?
+
+00:12:54.860 --> 00:12:55.700
+<v Brian Okken>Threadpool? I don't know.
+
+00:12:55.960 --> 00:12:56.800
+<v Brian Okken>Threadpool executor.
+
+00:12:57.920 --> 00:13:01.400
+<v Brian Okken>Of how to launch a bunch of threads,
+
+00:13:01.920 --> 00:13:03.700
+<v Brian Okken>have them come up with their own answer
+
+00:13:04.350 --> 00:13:06.800
+<v Brian Okken>without talking to each other at all, no shared data,
+
+00:13:07.060 --> 00:13:08.840
+<v Brian Okken>and then collect the return values.
+
+00:13:09.460 --> 00:13:11.500
+<v Brian Okken>And that's the really good way.
+
+00:13:11.720 --> 00:13:15.040
+<v Brian Okken>So with concurrency, not surprising.
+
+00:13:15.460 --> 00:13:18.380
+<v Brian Okken>The best way to do it is to re-architect your algorithms
+
+00:13:19.020 --> 00:13:20.600
+<v Brian Okken>so that they can take advantage of it.
+
+00:13:21.140 --> 00:13:24.740
+<v Brian Okken>And what I'm excited about is that now we don't have to do,
+
+00:13:25.100 --> 00:13:27.340
+<v Brian Okken>like, we don't have to rely on async.io.
+
+00:13:27.520 --> 00:13:28.340
+<v Brian Okken>You can still.
+
+00:13:28.960 --> 00:13:30.940
+<v Brian Okken>But for a lot of parallel processing,
+
+00:13:31.380 --> 00:13:33.800
+<v Brian Okken>we can just use threads now, finally, in Python.
+
+00:13:34.140 --> 00:13:34.620
+<v Brian Okken>Threads are okay.
+
+00:13:35.120 --> 00:13:38.700
+<v Brian Okken>So anyway, good article, good introduction.
+
+00:13:41.320 --> 00:13:41.680
+<v Michael Kennedy>Yeah, cool.
+
+00:13:41.720 --> 00:13:42.360
+<v Michael Kennedy>And it's very exciting.
+
+00:13:42.360 --> 00:13:43.440
+<v Michael Kennedy>I think it's going to give us a chance
+
+00:13:43.540 --> 00:13:46.240
+<v Michael Kennedy>to talk about all sorts of fun things.
+
+00:13:46.980 --> 00:13:50.160
+<v Michael Kennedy>We in Python land have not obsessed
+
+00:13:50.540 --> 00:13:53.340
+<v Michael Kennedy>about all these design patterns, race conditions,
+
+00:13:54.060 --> 00:13:56.720
+<v Michael Kennedy>making sure you lock all of your activity.
+
+00:13:57.960 --> 00:13:58.180
+<v Brian Okken>Yeah.
+
+00:13:58.740 --> 00:13:59.440
+<v Michael Kennedy>But we're going to have to start.
+
+00:14:00.620 --> 00:14:01.220
+<v Michael Kennedy>We're going to have to start.
+
+00:14:01.280 --> 00:14:03.560
+<v Michael Kennedy>And I'm not sure that we necessarily should not have.
+
+00:14:03.800 --> 00:14:11.040
+<v Michael Kennedy>The guild does not protect you against corrupt multi-step race conditions.
+
+00:14:12.880 --> 00:14:18.800
+<v Brian Okken>Well, we've kind of benefited that threads don't really run at the same time up until now.
+
+00:14:19.320 --> 00:14:20.100
+<v Michael Kennedy>Yeah, yeah, I know.
+
+00:14:20.280 --> 00:14:23.000
+<v Michael Kennedy>But that's totally fine for one operation.
+
+00:14:23.220 --> 00:14:26.880
+<v Michael Kennedy>But let's suppose I like the classic bank example.
+
+00:14:26.920 --> 00:14:28.460
+<v Michael Kennedy>I debit somebody out of this account.
+
+00:14:29.120 --> 00:14:32.520
+<v Michael Kennedy>I do 10 lines of work, and then I credit the other account.
+
+00:14:32.840 --> 00:14:37.060
+<v Michael Kennedy>Nothing says that the GIL will not stop halfway through.
+
+00:14:37.320 --> 00:14:39.480
+<v Michael Kennedy>It's just, it's not very likely.
+
+00:14:39.820 --> 00:14:41.960
+<v Michael Kennedy>So those problems are there in the code,
+
+00:14:42.050 --> 00:14:43.600
+<v Michael Kennedy>which I think is going to be a double whammy.
+
+00:14:44.070 --> 00:14:45.840
+<v Michael Kennedy>But it also lets us start to think about the fun things
+
+00:14:46.000 --> 00:14:49.020
+<v Michael Kennedy>like double-checked locking, which is such a cool idea.
+
+00:14:52.040 --> 00:14:53.480
+<v Michael Kennedy>I think it's going to be really fun.
+
+00:14:53.490 --> 00:14:54.220
+<v Michael Kennedy>I think it's really fun.
+
+00:14:54.500 --> 00:14:55.640
+<v Michael Kennedy>Double-checked locking?
+
+00:14:55.830 --> 00:14:56.620
+<v Michael Kennedy>Yeah, so check this out.
+
+00:14:57.080 --> 00:14:58.440
+<v Michael Kennedy>I'll put this in the show notes.
+
+00:14:59.120 --> 00:15:01.020
+<v Michael Kennedy>It's just off of, or look it up on Wikipedia.
+
+00:15:01.380 --> 00:15:08.220
+<v Michael Kennedy>So what you can do is you can say, if you have a single threaded thing, you can check, like, if this object is null, let's say it's a singleton.
+
+00:15:08.570 --> 00:15:09.960
+<v Michael Kennedy>If this object is null, create a new one.
+
+00:15:10.230 --> 00:15:11.800
+<v Michael Kennedy>So you only create it once and then return it.
+
+00:15:11.800 --> 00:15:12.840
+<v Michael Kennedy>But it's like a lazy create.
+
+00:15:13.600 --> 00:15:22.980
+<v Michael Kennedy>But the default multi-threaded version would be every time you call this function, take a lock, check if it's null, if it is, create it, return it.
+
+00:15:23.880 --> 00:15:28.800
+<v Michael Kennedy>But you can do things like check outside the lock if it's null.
+
+00:15:30.600 --> 00:15:33.320
+<v Michael Kennedy>and then take a lock and then check again if it's null
+
+00:15:33.320 --> 00:15:35.120
+<v Michael Kennedy>because maybe two things hit, one of them locked,
+
+00:15:35.160 --> 00:15:35.900
+<v Michael Kennedy>one of them created it.
+
+00:15:35.900 --> 00:15:36.880
+<v Michael Kennedy>You still want the same one.
+
+00:15:37.420 --> 00:15:41.160
+<v Michael Kennedy>But you can skip the locking ever
+
+00:15:42.140 --> 00:15:44.700
+<v Michael Kennedy>except for during the once, one and only creation.
+
+00:15:45.300 --> 00:15:46.520
+<v Michael Kennedy>There's really fun patterns like that.
+
+00:15:46.540 --> 00:15:48.180
+<v Michael Kennedy>So I'm kind of actually looking forward to it.
+
+00:15:50.760 --> 00:15:52.080
+<v Michael Kennedy>I'm not looking forward to the race conditions.
+
+00:15:55.459 --> 00:15:56.620
+<v Michael Kennedy>Yeah, yeah, yeah, yeah.
+
+00:15:58.160 --> 00:16:01.860
+<v Michael Kennedy>Speaking of locks, let's lock files instead of memory and execution.
+
+00:16:02.820 --> 00:16:06.580
+<v Michael Kennedy>So it turns out that pip 26.1 is out.
+
+00:16:06.760 --> 00:16:10.420
+<v Michael Kennedy>And it comes with features that I've been very excited about.
+
+00:16:12.180 --> 00:16:14.880
+<v Michael Kennedy>Most importantly, dependency cooldowns.
+
+00:16:15.880 --> 00:16:17.880
+<v Michael Kennedy>So remember, I don't remember when I wrote about this.
+
+00:16:17.940 --> 00:16:19.720
+<v Michael Kennedy>It was December last year.
+
+00:16:20.140 --> 00:16:22.540
+<v Michael Kennedy>I wrote about Python supply chains made easy,
+
+00:16:22.660 --> 00:16:25.260
+<v Michael Kennedy>and I wrote a follow-up one for doing that production.
+
+00:16:25.900 --> 00:16:29.520
+<v Michael Kennedy>One of the really most important significant bits of this was,
+
+00:16:30.920 --> 00:16:33.160
+<v Michael Kennedy>you know, instead of you finding out,
+
+00:16:33.320 --> 00:16:35.840
+<v Michael Kennedy>let's let others find out that something's bad.
+
+00:16:36.980 --> 00:16:39.300
+<v Michael Kennedy>And the way you do that is you simply just go over
+
+00:16:39.410 --> 00:16:44.280
+<v Michael Kennedy>and you just say, uv pip, whatever, install, compile, whatever,
+
+00:16:45.020 --> 00:16:46.280
+<v Michael Kennedy>exclude newer one week.
+
+00:16:46.630 --> 00:16:50.500
+<v Michael Kennedy>And this was a thing that uv had that pip did not have, right?
+
+00:16:50.980 --> 00:16:53.200
+<v Michael Kennedy>So chalk one up one more thing for pip.
+
+00:16:54.000 --> 00:16:55.380
+<v Michael Kennedy>Sorry, for uv over pip.
+
+00:16:55.820 --> 00:16:58.720
+<v Michael Kennedy>But now pip itself actually has the same concept.
+
+00:16:59.130 --> 00:17:04.180
+<v Michael Kennedy>They have different CLI flags, which I don't know.
+
+00:17:04.180 --> 00:17:05.819
+<v Michael Kennedy>I feel like they should have just said, well,
+
+00:17:06.060 --> 00:17:06.740
+<v Michael Kennedy>what are people using now?
+
+00:17:06.819 --> 00:17:10.160
+<v Michael Kennedy>Let's use that same CLI flag, but so it is.
+
+00:17:11.820 --> 00:17:15.360
+<v Michael Kennedy>So it has this-- let's go down to the cooldowns.
+
+00:17:15.459 --> 00:17:15.860
+<v Michael Kennedy>Here we go.
+
+00:17:16.120 --> 00:17:21.140
+<v Michael Kennedy>So you can say-- uploaded prior to,
+
+00:17:21.640 --> 00:17:27.500
+<v Michael Kennedy>And you can put some kind of time in there, a duration.
+
+00:17:29.760 --> 00:17:34.300
+<v Michael Kennedy>So PND, where N is the number of days, kind of--
+
+00:17:34.460 --> 00:17:34.580
+<v Michael Kennedy>OK.
+
+00:17:35.080 --> 00:17:39.060
+<v Michael Kennedy>Anyway, so you say P3D is like prior to three days is the value.
+
+00:17:40.560 --> 00:17:41.460
+<v Michael Kennedy>And then you can install something.
+
+00:17:41.560 --> 00:17:43.380
+<v Michael Kennedy>And that says it will only install the older--
+
+00:17:44.880 --> 00:17:45.840
+<v Michael Kennedy>stuff older than three days.
+
+00:17:46.000 --> 00:17:47.900
+<v Michael Kennedy>And this is super valuable.
+
+00:17:47.980 --> 00:17:51.080
+<v Michael Kennedy>It sounds like, oh, Michael, this is like security through obscurity.
+
+00:17:51.280 --> 00:17:54.140
+<v Michael Kennedy>and it's not going to make a difference. Like almost all of these major takeovers
+
+00:17:54.210 --> 00:17:56.960
+<v Michael Kennedy>are like three hours later, it was found five hours later, it was found.
+
+00:17:57.940 --> 00:18:01.720
+<v Michael Kennedy>Yeah, rarely do these things sit around for a week unless they're extremely rare.
+
+00:18:02.280 --> 00:18:07.660
+<v Michael Kennedy>But the major projects take over like the Oh my gosh, I can't remember which
+
+00:18:07.920 --> 00:18:12.880
+<v Michael Kennedy>that LLM library that used for like a facade over all the different LLMs.
+
+00:18:14.300 --> 00:18:17.540
+<v Michael Kennedy>That one was taken down two days, two hours after it was gotten in there.
+
+00:18:17.540 --> 00:18:20.760
+<v Michael Kennedy>You know what I mean? So these, I think these are meaningful differences.
+
+00:18:23.220 --> 00:18:25.920
+<v Michael Kennedy>Why the actual difference in CLI, I don't know.
+
+00:18:26.880 --> 00:18:28.260
+<v Michael Kennedy>Maybe there's a good reason, but I don't know.
+
+00:18:28.540 --> 00:18:30.060
+<v Michael Kennedy>Anyway, I'm really glad to see pip having this.
+
+00:18:31.500 --> 00:18:33.280
+<v Michael Kennedy>Also, Python 3.9 is not supported.
+
+00:18:33.940 --> 00:18:40.040
+<v Michael Kennedy>It's end of life over six, seven months ago.
+
+00:18:40.290 --> 00:18:42.680
+<v Michael Kennedy>So it seems fine that it shouldn't be here anymore.
+
+00:18:43.500 --> 00:18:44.860
+<v Brian Okken>Yeah, I don't even remember 3.9.
+
+00:18:45.260 --> 00:18:47.560
+<v Michael Kennedy>Yeah, I don't know what was 3.9. We don't even know.
+
+00:18:48.120 --> 00:18:55.740
+<v Michael Kennedy>So honestly, I don't know why you would have any support for any older version.
+
+00:18:56.480 --> 00:19:00.300
+<v Michael Kennedy>You might say, well, Michael, somebody might be on Python 3.9 and they got to install stuff.
+
+00:19:00.480 --> 00:19:02.820
+<v Michael Kennedy>Like just pin pip to 25, right?
+
+00:19:02.960 --> 00:19:07.120
+<v Michael Kennedy>Like pip 25 is what they were using when they had Python 3.9 anyway.
+
+00:19:08.460 --> 00:19:10.040
+<v Michael Kennedy>Just install a different version of pip.
+
+00:19:10.140 --> 00:19:13.260
+<v Michael Kennedy>I think that's like a no-brainer and should just be like a default.
+
+00:19:14.140 --> 00:19:14.600
+<v Michael Kennedy>New features.
+
+00:19:14.900 --> 00:19:16.660
+<v Michael Kennedy>This is interesting.
+
+00:19:16.800 --> 00:19:18.500
+<v Michael Kennedy>First of all, I'm very positive about this.
+
+00:19:18.530 --> 00:19:20.740
+<v Michael Kennedy>I think this is a great move, and I'm really happy to see it,
+
+00:19:21.200 --> 00:19:25.700
+<v Michael Kennedy>even if I have some criticisms like PND, which is just weird,
+
+00:19:26.200 --> 00:19:27.580
+<v Michael Kennedy>and there's already existing ones.
+
+00:19:27.720 --> 00:19:28.900
+<v Michael Kennedy>So this is also a little like that.
+
+00:19:30.070 --> 00:19:30.800
+<v Michael Kennedy>So Brett Cannon.
+
+00:19:31.300 --> 00:19:31.440
+<v Michael Kennedy>Go ahead.
+
+00:19:32.240 --> 00:19:34.000
+<v Michael Kennedy>No, what are PND files?
+
+00:19:34.110 --> 00:19:34.440
+<v Michael Kennedy>I don't know.
+
+00:19:34.680 --> 00:19:38.080
+<v Michael Kennedy>No, no, that's how you specify the three days ago.
+
+00:19:38.390 --> 00:19:42.780
+<v Michael Kennedy>You say uploaded prior to equals P3D instead of just three days.
+
+00:19:43.460 --> 00:19:44.360
+<v Brian Okken>Who's going to remember that?
+
+00:19:44.690 --> 00:19:45.480
+<v Brian Okken>Okay, yeah.
+
+00:19:45.700 --> 00:19:48.920
+<v Michael Kennedy>Like the uv one you just put in quotes, one week, seven days.
+
+00:19:49.780 --> 00:19:50.560
+<v Michael Kennedy>Well, I mean, it's easier.
+
+00:19:51.500 --> 00:19:53.080
+<v Michael Kennedy>The parsing is probably easier or something.
+
+00:19:53.200 --> 00:19:53.500
+<v Michael Kennedy>I don't know.
+
+00:19:53.580 --> 00:19:56.720
+<v Michael Kennedy>I know, but it's used by millions of people, written by ones.
+
+00:19:57.080 --> 00:19:58.620
+<v Michael Kennedy>You could ask AI, help me parse this.
+
+00:20:00.020 --> 00:20:00.940
+<v Michael Kennedy>Anyway, yeah, I got it.
+
+00:20:01.760 --> 00:20:06.280
+<v Michael Kennedy>So there's this PEP 751, which was created in 2024,
+
+00:20:06.660 --> 00:20:12.320
+<v Michael Kennedy>and it was, I believe it was accepted 14 months ago.
+
+00:20:12.420 --> 00:20:13.240
+<v Michael Kennedy>I'm not entirely sure.
+
+00:20:13.360 --> 00:20:17.680
+<v Michael Kennedy>It's not super obvious, but the resolution is March 2025.
+
+00:20:17.960 --> 00:20:20.280
+<v Michael Kennedy>So it's been around for a long time, about a year plus.
+
+00:20:20.880 --> 00:20:25.840
+<v Michael Kennedy>And this is the file format to record Python dependencies for installation and reproducibility
+
+00:20:25.920 --> 00:20:26.580
+<v Michael Kennedy>by Brett Cannon.
+
+00:20:26.720 --> 00:20:28.980
+<v Michael Kennedy>He's been working on this forever.
+
+00:20:29.420 --> 00:20:33.220
+<v Michael Kennedy>And the idea is this is basically the pylock.toml.
+
+00:20:33.320 --> 00:20:38.600
+<v Michael Kennedy>And if you go over here, it's actually in the Python packaging user guide on how to do it.
+
+00:20:39.880 --> 00:20:40.460
+<v Michael Kennedy>This is great.
+
+00:20:40.760 --> 00:20:41.880
+<v Michael Kennedy>So why am I talking about this?
+
+00:20:42.020 --> 00:20:48.680
+<v Michael Kennedy>Because the deal is pip now supports installing these somewhat
+
+00:20:49.560 --> 00:20:50.680
+<v Michael Kennedy>as an experimental feature.
+
+00:20:51.500 --> 00:20:54.640
+<v Michael Kennedy>So a year after its acceptance switch standardized pylock.toml,
+
+00:20:55.700 --> 00:20:59.820
+<v Michael Kennedy>PIP 26.1 gains experimental support for such files,
+
+00:20:59.850 --> 00:21:01.440
+<v Michael Kennedy>for reading and installing from them.
+
+00:21:03.120 --> 00:21:03.940
+<v Michael Kennedy>OK, so this is great.
+
+00:21:03.950 --> 00:21:07.340
+<v Michael Kennedy>I think it's just pip is the most common way
+
+00:21:07.580 --> 00:21:09.880
+<v Michael Kennedy>to install stuff in Python still,
+
+00:21:11.660 --> 00:21:15.400
+<v Michael Kennedy>even if it's not the most hyped or most Rust implemented way
+
+00:21:15.560 --> 00:21:17.420
+<v Michael Kennedy>to do it, it's still the most common way.
+
+00:21:18.160 --> 00:21:20.420
+<v Michael Kennedy>And so having to support it is kind of like table stakes.
+
+00:21:21.180 --> 00:21:22.080
+<v Michael Kennedy>So I think this is really cool.
+
+00:21:22.300 --> 00:21:25.140
+<v Michael Kennedy>There's a bunch of caveats and limitations and so on and so on.
+
+00:21:26.600 --> 00:21:30.180
+<v Michael Kennedy>But the criticism is if this is officially accepted
+
+00:21:32.340 --> 00:21:35.820
+<v Michael Kennedy>by the core developers and Python and the steering
+
+00:21:35.980 --> 00:21:38.620
+<v Michael Kennedy>council, why did it take a year for pip to support it?
+
+00:21:39.700 --> 00:21:41.180
+<v Michael Kennedy>That seems pretty out of sync.
+
+00:21:42.540 --> 00:21:44.880
+<v Michael Kennedy>That's a long time from-- yeah, we have this official feature,
+
+00:21:45.080 --> 00:21:47.020
+<v Michael Kennedy>and our official installer can't use it.
+
+00:21:48.240 --> 00:21:48.680
+<v Michael Kennedy>Yeah.
+
+00:21:49.220 --> 00:21:51.000
+<v Michael Kennedy>But I'm glad that it has it, so that's good.
+
+00:21:52.140 --> 00:21:54.200
+<v Michael Kennedy>Maybe there's more to it than I know, again, but who knows.
+
+00:21:55.840 --> 00:21:57.280
+<v Michael Kennedy>Some stuff about the older--
+
+00:21:57.280 --> 00:21:58.900
+<v Michael Kennedy>like newer and older resolvers.
+
+00:21:59.200 --> 00:22:01.480
+<v Michael Kennedy>The new resolver now does many of the things
+
+00:22:01.640 --> 00:22:03.620
+<v Michael Kennedy>that the older resolvers were being kept around for.
+
+00:22:04.480 --> 00:22:09.660
+<v Michael Kennedy>So I believe there's now a plan to remove the older legacy
+
+00:22:10.020 --> 00:22:12.280
+<v Michael Kennedy>like if you've got this version less than or equal to
+
+00:22:12.290 --> 00:22:13.660
+<v Michael Kennedy>and you've got that other version and so on,
+
+00:22:13.670 --> 00:22:14.700
+<v Michael Kennedy>like how do you resolve that, right?
+
+00:22:15.340 --> 00:22:16.380
+<v Michael Kennedy>Then a few security fixes,
+
+00:22:16.900 --> 00:22:19.140
+<v Michael Kennedy>not necessarily going to go into it too much,
+
+00:22:19.210 --> 00:22:20.020
+<v Michael Kennedy>but there you go.
+
+00:22:20.430 --> 00:22:21.980
+<v Michael Kennedy>A brand new pip 26.1.
+
+00:22:22.050 --> 00:22:23.160
+<v Michael Kennedy>I feel like this is a big release,
+
+00:22:23.460 --> 00:22:24.960
+<v Michael Kennedy>which is why I brought it up.
+
+00:22:25.040 --> 00:22:27.860
+<v Michael Kennedy>It's got the dependencies, cooldowns,
+
+00:22:27.960 --> 00:22:29.340
+<v Michael Kennedy>which I think is critical these days.
+
+00:22:30.020 --> 00:22:31.440
+<v Michael Kennedy>And it's got lock file support.
+
+00:22:32.640 --> 00:22:32.760
+<v Brian Okken>Yeah.
+
+00:22:33.560 --> 00:22:34.480
+<v Brian Okken>Yeah, no, it's really cool.
+
+00:22:34.740 --> 00:22:36.480
+<v Brian Okken>And it's definitely moving in the right direction.
+
+00:22:37.040 --> 00:22:37.160
+<v Brian Okken>Yeah.
+
+00:22:38.560 --> 00:22:39.160
+<v Brian Okken>Also, shout out,
+
+00:22:39.300 --> 00:22:40.420
+<v Michael Kennedy>This is--
+
+00:22:40.420 --> 00:22:40.680
+<v Brian Okken>yeah, go ahead.
+
+00:22:41.120 --> 00:22:43.940
+<v Brian Okken>With wacky CLI names, but OK.
+
+00:22:43.940 --> 00:22:44.160
+<v Michael Kennedy>Yeah, yeah.
+
+00:22:45.920 --> 00:22:47.540
+<v Michael Kennedy>Also, just shout out, this is by Richard C.
+
+00:22:47.630 --> 00:22:48.300
+<v Michael Kennedy>So thanks, Richard.
+
+00:22:49.440 --> 00:22:49.740
+<v Brian Okken>Cool.
+
+00:22:50.940 --> 00:22:53.400
+<v Brian Okken>I actually am excited about another PEP as well.
+
+00:22:53.600 --> 00:22:56.380
+<v Brian Okken>So we're going to stick with the PEP thing for a little bit.
+
+00:22:57.580 --> 00:23:01.720
+<v Brian Okken>This time, Sentinel Values and also a blast from the past
+
+00:23:03.100 --> 00:23:03.540
+<v Brian Okken>because--
+
+00:23:04.740 --> 00:23:05.840
+<v Brian Okken>what do I have searched still up?
+
+00:23:06.000 --> 00:23:12.400
+<v Brian Okken>Anyway, this Sentinel values is PEP 661, and it was created in 2021.
+
+00:23:14.300 --> 00:23:17.200
+<v Brian Okken>And it's five years later, so it's taken a while.
+
+00:23:17.760 --> 00:23:24.500
+<v Brian Okken>However, it is resolved and final as of for Python 315.
+
+00:23:24.760 --> 00:23:26.980
+<v Brian Okken>So we'll get Sentinels finally.
+
+00:23:29.300 --> 00:23:39.640
+<v Brian Okken>the the PEP 66 661 has a bunch of information but it's also uh it says important this is a historical
+
+00:23:39.880 --> 00:23:45.060
+<v Brian Okken>document even though it's just finally here but it's been working being worked on for five years
+
+00:23:45.660 --> 00:23:52.680
+<v Brian Okken>the the actual information then is in in uh the sentinel information now in the documentation so
+
+00:23:52.700 --> 00:23:55.500
+<v Brian Okken>we can click over and look at.
+
+00:23:56.060 --> 00:23:56.900
+<v Brian Okken>I already had it up.
+
+00:23:57.280 --> 00:23:58.320
+<v Brian Okken>Look at Sentinel values.
+
+00:23:58.760 --> 00:24:00.120
+<v Brian Okken>And they're kind of neat.
+
+00:24:00.500 --> 00:24:01.940
+<v Brian Okken>So I'm excited about this.
+
+00:24:02.160 --> 00:24:07.100
+<v Brian Okken>I don't quite understand some of the decisions, but that's okay.
+
+00:24:07.720 --> 00:24:15.920
+<v Brian Okken>So we often use like none for Sentinel value or NAN if you're doing like floating point stuff.
+
+00:24:18.980 --> 00:24:23.060
+<v Brian Okken>But Sentinel is a built-in that you don't have to import anything.
+
+00:24:23.180 --> 00:24:26.400
+<v Brian Okken>You just say Sentinel and then give it a name.
+
+00:24:26.740 --> 00:24:29.180
+<v Brian Okken>Like in the example, in the docs, it's missing.
+
+00:24:29.680 --> 00:24:32.420
+<v Brian Okken>So Sentinel parentheses and then the quote missing.
+
+00:24:32.860 --> 00:24:33.600
+<v Brian Okken>You can name it whatever.
+
+00:24:34.460 --> 00:24:37.720
+<v Brian Okken>But the object, one of the interesting things is it acts kind of like none.
+
+00:24:37.800 --> 00:24:43.600
+<v Brian Okken>You use is, like if you want to check a variable or an element,
+
+00:24:43.900 --> 00:24:46.580
+<v Brian Okken>if it is the Sentinel, you can say is missing.
+
+00:24:47.779 --> 00:24:51.940
+<v Brian Okken>and then in the types, the type is handled interestingly.
+
+00:24:52.400 --> 00:24:55.360
+<v Brian Okken>The object is both the value and the type.
+
+00:24:55.390 --> 00:25:02.040
+<v Brian Okken>So you can say like a default, like some variable is of type int
+
+00:25:02.700 --> 00:25:06.380
+<v Brian Okken>or the pipe operator or missing.
+
+00:25:06.550 --> 00:25:08.660
+<v Brian Okken>So you can have that together.
+
+00:25:08.710 --> 00:25:10.160
+<v Brian Okken>And it isn't missing altogether.
+
+00:25:10.520 --> 00:25:13.740
+<v Brian Okken>Missing isn't the magical sentinel value.
+
+00:25:13.990 --> 00:25:16.480
+<v Brian Okken>You can have anything like not available.
+
+00:25:16.680 --> 00:25:18.320
+<v Brian Okken>or whatever you want to call it.
+
+00:25:19.560 --> 00:25:21.560
+<v Brian Okken>So about, I guess, you know,
+
+00:25:22.160 --> 00:25:25.080
+<v Brian Okken>I think that it's very much about time
+
+00:25:25.180 --> 00:25:29.200
+<v Brian Okken>that we have a sentinel value built into the language.
+
+00:25:31.680 --> 00:25:32.020
+<v Brian Okken>Interesting.
+
+00:25:32.600 --> 00:25:35.080
+<v Brian Okken>Okay, so everything so far sounds great.
+
+00:25:35.480 --> 00:25:40.200
+<v Brian Okken>The part that I don't quite get is that it's not truthy,
+
+00:25:40.500 --> 00:25:41.600
+<v Brian Okken>or it is truthy, that's it.
+
+00:25:42.280 --> 00:25:45.500
+<v Brian Okken>So if you're going through a list like an array,
+
+00:25:46.480 --> 00:25:50.120
+<v Brian Okken>and you want to check to see if it's sentinel,
+
+00:25:50.170 --> 00:25:52.520
+<v Brian Okken>you have to say is your sentinel.
+
+00:25:52.610 --> 00:25:55.160
+<v Brian Okken>You know, if you use the is operator to make sure it's there.
+
+00:25:55.530 --> 00:25:58.080
+<v Brian Okken>You can't, like none, you could just say if.
+
+00:25:58.660 --> 00:26:02.600
+<v Brian Okken>Like, you know, if the value, if that's true,
+
+00:26:02.920 --> 00:26:06.960
+<v Brian Okken>that means it's not none because none evaluates to false.
+
+00:26:07.760 --> 00:26:09.740
+<v Brian Okken>All the sentinels evaluate to true.
+
+00:26:11.080 --> 00:26:12.320
+<v Brian Okken>So you have to treat it differently.
+
+00:26:12.600 --> 00:26:12.920
+<v Brian Okken>All right.
+
+00:26:13.320 --> 00:26:15.980
+<v Michael Kennedy>I'm already feeling a PEP to enhance the sentinel coming on.
+
+00:26:16.820 --> 00:26:23.480
+<v Michael Kennedy>to make it to flip the values but what do you mean you know what I love the idea of a sentinel I love
+
+00:26:23.520 --> 00:26:32.640
+<v Michael Kennedy>it because it lets you check you know it's like if you're doing a you know find me the index of
+
+00:26:32.680 --> 00:26:38.160
+<v Michael Kennedy>this thing this item in a string and it's negative one which is also an integer but like that's this
+
+00:26:38.320 --> 00:26:44.220
+<v Michael Kennedy>that's means it's not there right like it's all those kinds of checks are just odd and I love
+
+00:26:44.900 --> 00:26:48.560
+<v Michael Kennedy>having the idea of a sentinel a thing where you say I can check this and it's
+
+00:26:48.560 --> 00:26:52.660
+<v Michael Kennedy>the same type but if it's but if it is this that means actually we weren't able
+
+00:26:52.660 --> 00:26:57.680
+<v Michael Kennedy>to process it right because yeah something weird came back what I mean is
+
+00:26:58.140 --> 00:27:03.860
+<v Michael Kennedy>so the way you create the sentinel value like the it's a singleton or one-off
+
+00:27:04.030 --> 00:27:08.980
+<v Michael Kennedy>type of thing like that's why use is right and so you say sentinel and you
+
+00:27:08.900 --> 00:27:16.480
+<v Michael Kennedy>give it a string, which I guess is what it prints when you try to string or rep the value, right?
+
+00:27:16.960 --> 00:27:17.080
+<v Michael Kennedy>Yeah.
+
+00:27:17.520 --> 00:27:24.680
+<v Michael Kennedy>And that's cool. Why not give it a default, even true, I guess, for compatibility at this point,
+
+00:27:24.680 --> 00:27:28.900
+<v Michael Kennedy>you would have to do, but why not give it a second variable you could pass, like a falsiness,
+
+00:27:29.320 --> 00:27:34.500
+<v Michael Kennedy>like is it true or false, like comma false. And then boom, okay, if this sentinel comes up and I say
+
+00:27:35.500 --> 00:27:37.600
+<v Michael Kennedy>if value, no, this is not a value
+
+00:27:37.620 --> 00:27:39.320
+<v Michael Kennedy>because it indicates the absence of a value.
+
+00:27:39.780 --> 00:27:40.220
+<v Michael Kennedy>You know what I mean?
+
+00:27:40.700 --> 00:27:40.820
+<v Brian Okken>Yeah.
+
+00:27:42.560 --> 00:27:43.500
+<v Michael Kennedy>Can I continue to rant?
+
+00:27:44.799 --> 00:27:45.640
+<v Brian Okken>I like that.
+
+00:27:46.120 --> 00:27:48.600
+<v Brian Okken>It wouldn't break the current implementation,
+
+00:27:49.000 --> 00:27:51.080
+<v Brian Okken>but you could make it more usable, I think.
+
+00:27:51.540 --> 00:27:51.960
+<v Brian Okken>Yeah, exactly.
+
+00:27:52.040 --> 00:27:56.540
+<v Michael Kennedy>Just default the value to true on that second parameter.
+
+00:27:56.980 --> 00:27:58.120
+<v Michael Kennedy>So you don't have to set it.
+
+00:27:58.120 --> 00:27:58.820
+<v Michael Kennedy>It doesn't break anything.
+
+00:27:59.020 --> 00:28:00.480
+<v Michael Kennedy>But allow you to pass false.
+
+00:28:01.200 --> 00:28:06.920
+<v Michael Kennedy>if you if it or anything like where it's truthiness has to be checked,
+
+00:28:07.550 --> 00:28:08.980
+<v Michael Kennedy>then it can be what it says it is.
+
+00:28:09.190 --> 00:28:12.340
+<v Michael Kennedy>Because you might have a sentinel for two different outcomes, right?
+
+00:28:12.500 --> 00:28:15.620
+<v Michael Kennedy>That's plausible, I guess, although it's not usually the way it's used.
+
+00:28:16.880 --> 00:28:22.980
+<v Brian Okken>Yeah, but like a lot of – I mean, for sentinels to mean,
+
+00:28:23.570 --> 00:28:28.760
+<v Brian Okken>like I've got a big vector of stuff, I want to know if it's not filled out.
+
+00:28:29.440 --> 00:28:29.880
+<v Brian Okken>Yeah.
+
+00:28:31.840 --> 00:28:33.020
+<v Michael Kennedy>I think the default should be false
+
+00:28:33.280 --> 00:28:35.380
+<v Michael Kennedy>Primarily sentinels are used in the case
+
+00:28:35.410 --> 00:28:37.380
+<v Michael Kennedy>Where something didn't work out right
+
+00:28:37.540 --> 00:28:38.420
+<v Michael Kennedy>Normally you get a value
+
+00:28:38.490 --> 00:28:40.460
+<v Michael Kennedy>But sometimes you get a special value
+
+00:28:40.470 --> 00:28:41.580
+<v Michael Kennedy>That means you couldn't get a value
+
+00:28:42.180 --> 00:28:43.440
+<v Michael Kennedy>That should be false, I agree
+
+00:28:43.920 --> 00:28:47.160
+<v Brian Okken>Yeah, I guess the one part where I say
+
+00:28:47.560 --> 00:28:48.940
+<v Brian Okken>Maybe it's
+
+00:28:50.260 --> 00:28:51.500
+<v Brian Okken>It's going to be more readable
+
+00:28:51.840 --> 00:28:53.100
+<v Brian Okken>Because it's going to force you to say
+
+00:28:53.300 --> 00:28:53.900
+<v Brian Okken>Is missing
+
+00:28:54.400 --> 00:28:56.100
+<v Brian Okken>Or is not there
+
+00:28:56.340 --> 00:28:58.160
+<v Brian Okken>Or whatever your value is
+
+00:28:59.500 --> 00:28:59.940
+<v Brian Okken>Sure
+
+00:28:59.960 --> 00:29:00.200
+<v Brian Okken>I don't know.
+
+00:29:01.860 --> 00:29:04.280
+<v Brian Okken>I do like that you don't have to do that with none.
+
+00:29:04.380 --> 00:29:06.840
+<v Brian Okken>You can just say that it's just values false.
+
+00:29:07.120 --> 00:29:08.320
+<v Brian Okken>I do like the idea.
+
+00:29:08.400 --> 00:29:10.780
+<v Brian Okken>I think that you should get on that whole PEP thing
+
+00:29:11.340 --> 00:29:12.620
+<v Brian Okken>for extending that, Michael.
+
+00:29:12.820 --> 00:29:14.580
+<v Michael Kennedy>Yeah, before you scroll that screen,
+
+00:29:14.680 --> 00:29:16.460
+<v Michael Kennedy>let me work on my second version of the pep.
+
+00:29:19.120 --> 00:29:22.040
+<v Michael Kennedy>I somewhat dislike the truthiness, although I get it.
+
+00:29:22.120 --> 00:29:25.340
+<v Michael Kennedy>I'll just give a shout-out to Quarky out in the audience.
+
+00:29:25.560 --> 00:29:28.060
+<v Michael Kennedy>I guess even the Sentinel is an object,
+
+00:29:28.920 --> 00:29:33.640
+<v Michael Kennedy>which kind of makes it hard to be false but like you can implement dunderbool right so then you
+
+00:29:33.820 --> 00:29:40.000
+<v Brian Okken>could do it empty strings are objects and they evaluate the false yeah yeah exactly like you can
+
+00:29:40.160 --> 00:29:45.120
+<v Michael Kennedy>there's a magic method to say false they just return the value of the parameter that goes in
+
+00:29:45.120 --> 00:29:51.140
+<v Michael Kennedy>when you created it right i think it's it's like a five minute implementation and 47 hour like
+
+00:29:51.280 --> 00:29:57.300
+<v Michael Kennedy>documentation and negotiation afterwards but here's the other one i think this is more subtle
+
+00:29:57.360 --> 00:30:03.600
+<v Michael Kennedy>There's an example saying like, how do I express in the type system that something might be
+
+00:30:05.210 --> 00:30:08.260
+<v Michael Kennedy>of the value expect or the value that is the sentinel?
+
+00:30:08.590 --> 00:30:11.840
+<v Michael Kennedy>And this was much, I think this is a much more significant,
+
+00:30:13.040 --> 00:30:15.680
+<v Michael Kennedy>probably not going to use this after all, sort of thing in my mind.
+
+00:30:17.240 --> 00:30:18.020
+<v Michael Kennedy>Let me set the stage.
+
+00:30:18.170 --> 00:30:25.080
+<v Michael Kennedy>If I have a function that returns none or integer, and I say x plus y,
+
+00:30:25.500 --> 00:30:28.780
+<v Michael Kennedy>where x came from that function, my type checker will say,
+
+00:30:29.480 --> 00:30:32.580
+<v Michael Kennedy>oh, you cannot plus that with another integer
+
+00:30:33.280 --> 00:30:36.740
+<v Michael Kennedy>because none does not allow addition with integer.
+
+00:30:38.020 --> 00:30:41.940
+<v Michael Kennedy>So you can say, if is not none, x plus y
+
+00:30:42.140 --> 00:30:43.560
+<v Michael Kennedy>will work without the type checker failing.
+
+00:30:43.900 --> 00:30:46.660
+<v Michael Kennedy>But if you just say x plus y, types fall apart.
+
+00:30:47.100 --> 00:30:47.780
+<v Michael Kennedy>It gets all upset.
+
+00:30:49.340 --> 00:30:50.380
+<v Michael Kennedy>I'm pretty sure that's what's going
+
+00:30:50.380 --> 00:30:51.380
+<v Michael Kennedy>to happen here with Sentinels.
+
+00:30:51.720 --> 00:30:55.640
+<v Michael Kennedy>Your type has to be, I return an int or missing,
+
+00:30:56.660 --> 00:30:58.120
+<v Michael Kennedy>or an int or the sentinel.
+
+00:30:59.100 --> 00:31:01.720
+<v Michael Kennedy>The sentinel does not have type information
+
+00:31:02.080 --> 00:31:02.860
+<v Michael Kennedy>based on an integer.
+
+00:31:03.920 --> 00:31:06.480
+<v Michael Kennedy>And so any int operation on it will fail.
+
+00:31:07.160 --> 00:31:08.480
+<v Michael Kennedy>And the type checker is going to warn.
+
+00:31:08.800 --> 00:31:10.540
+<v Michael Kennedy>So you're going to have to add all of these like,
+
+00:31:12.260 --> 00:31:15.200
+<v Michael Kennedy>I know it said it was an int or a sentinel,
+
+00:31:15.360 --> 00:31:16.400
+<v Michael Kennedy>but it's not any longer.
+
+00:31:16.490 --> 00:31:17.340
+<v Michael Kennedy>Now it's just an int.
+
+00:31:17.350 --> 00:31:20.200
+<v Michael Kennedy>And I feel like there's a lot of clumsiness that's
+
+00:31:20.220 --> 00:31:28.700
+<v Michael Kennedy>going to go along with trying to work with things that express themselves as int or sentinel.
+
+00:31:29.510 --> 00:31:33.840
+<v Michael Kennedy>So could we just add another type, another parameter to the creation?
+
+00:31:34.240 --> 00:31:35.780
+<v Michael Kennedy>Like it's a sentinel of int.
+
+00:31:36.740 --> 00:31:37.520
+<v Michael Kennedy>It's a sentinel of.
+
+00:31:37.750 --> 00:31:39.980
+<v Brian Okken>Yeah, but we're not going to get it for 3.15.
+
+00:31:40.200 --> 00:31:41.040
+<v Brian Okken>Maybe we'll get it later.
+
+00:31:41.580 --> 00:31:41.800
+<v Michael Kennedy>No, no.
+
+00:31:41.800 --> 00:31:47.520
+<v Michael Kennedy>I'm just saying, wouldn't it be nice if you could have it also be the type so you don't
+
+00:31:47.540 --> 00:31:55.320
+<v Michael Kennedy>have to express in the type system that it is something else.
+
+00:31:57.680 --> 00:31:58.420
+<v Michael Kennedy>You know, I don't know.
+
+00:31:58.980 --> 00:32:01.340
+<v Michael Kennedy>To me, I think that's going to be, I think it's going to be rugged.
+
+00:32:02.000 --> 00:32:02.820
+<v Michael Kennedy>I think it's going to be rugged.
+
+00:32:03.660 --> 00:32:03.740
+<v Michael Kennedy>So.
+
+00:32:04.560 --> 00:32:04.680
+<v Brian Okken>Yeah.
+
+00:32:05.640 --> 00:32:09.300
+<v Brian Okken>I think we're, I think we're getting into like old man yells at cloud territory.
+
+00:32:09.600 --> 00:32:11.860
+<v Brian Okken>So we may have to move on.
+
+00:32:13.560 --> 00:32:14.240
+<v Brian Okken>Cut me off, Ryan.
+
+00:32:14.320 --> 00:32:14.780
+<v Michael Kennedy>I'm telling you.
+
+00:32:15.020 --> 00:32:16.600
+<v Michael Kennedy>See, I told you I was going to be on like a type.
+
+00:32:19.220 --> 00:32:20.700
+<v Michael Kennedy>type run this time.
+
+00:32:20.860 --> 00:32:23.080
+<v Michael Kennedy>But no, I'm glad you covered it, because this is interesting.
+
+00:32:23.240 --> 00:32:24.420
+<v Michael Kennedy>I love the idea of Sentinels.
+
+00:32:24.520 --> 00:32:26.680
+<v Michael Kennedy>I haven't used them very much in Python,
+
+00:32:26.880 --> 00:32:29.220
+<v Michael Kennedy>but I used them back in my C++ and C# days.
+
+00:32:29.820 --> 00:32:30.460
+<v Michael Kennedy>And I really like them.
+
+00:32:30.520 --> 00:32:34.560
+<v Michael Kennedy>I think they provide a really interesting goal.
+
+00:32:36.440 --> 00:32:36.520
+<v Michael Kennedy>Yeah.
+
+00:32:37.180 --> 00:32:37.320
+<v Michael Kennedy>Yep.
+
+00:32:39.300 --> 00:32:40.700
+<v Michael Kennedy>Do you have any extras for us?
+
+00:32:41.240 --> 00:32:41.800
+<v Michael Kennedy>Yeah, you know what?
+
+00:32:41.880 --> 00:32:43.280
+<v Michael Kennedy>I got some stuff to talk about.
+
+00:32:43.860 --> 00:32:45.120
+<v Michael Kennedy>Let me swap it over.
+
+00:32:48.060 --> 00:32:50.420
+<v Michael Kennedy>I didn't have any extras written down, but then I decided I have extras.
+
+00:32:50.720 --> 00:32:53.460
+<v Michael Kennedy>So I haven't talked about this yet.
+
+00:32:55.500 --> 00:32:59.120
+<v Michael Kennedy>But if I go over at Talk Python Training, I've done some cool stuff.
+
+00:33:00.000 --> 00:33:01.520
+<v Michael Kennedy>So there are so many.
+
+00:33:02.380 --> 00:33:05.440
+<v Michael Kennedy>You warned me of this pop out thing, Brian.
+
+00:33:05.760 --> 00:33:07.100
+<v Michael Kennedy>I'm now starting to feel it.
+
+00:33:07.410 --> 00:33:13.880
+<v Michael Kennedy>So over at Talk Python Training, we now have German subtitles for
+
+00:33:13.900 --> 00:33:16.480
+<v Michael Kennedy>every single course for all 280 hours of courses.
+
+00:33:17.760 --> 00:33:24.560
+<v Michael Kennedy>So I pull up Vincent Wormerdam's LLM building blocks course.
+
+00:33:25.220 --> 00:33:30.220
+<v Michael Kennedy>And now if I click on the CC, I get English, German,
+
+00:33:30.380 --> 00:33:31.580
+<v Michael Kennedy>and this one even has Spanish.
+
+00:33:32.020 --> 00:33:32.460
+<v Michael Kennedy>How about that?
+
+00:33:33.440 --> 00:33:33.840
+<v Michael Kennedy>Nice.
+
+00:33:34.420 --> 00:33:36.860
+<v Michael Kennedy>Yeah, so I could turn on German transcripts.
+
+00:33:37.020 --> 00:33:39.520
+<v Michael Kennedy>And on the screen, maybe those are too big.
+
+00:33:39.660 --> 00:33:42.120
+<v Michael Kennedy>So I could make them a little smaller, put them up at the top
+
+00:33:42.180 --> 00:33:42.900
+<v Michael Kennedy>so they're not in the way.
+
+00:33:43.220 --> 00:33:46.160
+<v Michael Kennedy>I've done a ton of work on the transcripts over here.
+
+00:33:46.190 --> 00:33:46.860
+<v Michael Kennedy>And now guess what?
+
+00:33:47.040 --> 00:33:48.480
+<v Michael Kennedy>Vincent's speaking German now.
+
+00:33:49.400 --> 00:33:52.280
+<v Michael Kennedy>We'll see a little bit of a data bank.
+
+00:33:52.830 --> 00:33:52.960
+<v Michael Kennedy>Right?
+
+00:33:53.220 --> 00:33:53.480
+<v Michael Kennedy>Let's go.
+
+00:33:54.220 --> 00:33:56.360
+<v Michael Kennedy>So anyway, if you were a German speaker,
+
+00:33:57.440 --> 00:34:01.220
+<v Michael Kennedy>check out the courses and turn on the subtitles for German,
+
+00:34:01.270 --> 00:34:01.640
+<v Michael Kennedy>if you like.
+
+00:34:02.120 --> 00:34:04.840
+<v Brian Okken>I'm wondering how, like, when we're
+
+00:34:04.940 --> 00:34:09.740
+<v Brian Okken>going to have AI tools that can not just do different translations
+
+00:34:09.760 --> 00:34:12.980
+<v Brian Okken>for subtitles, but can we get dubbing
+
+00:34:13.190 --> 00:34:15.240
+<v Brian Okken>in the original speaker's voice?
+
+00:34:16.040 --> 00:34:16.520
+<v Brian Okken>That'd be cool.
+
+00:34:16.860 --> 00:34:17.560
+<v Brian Okken>Hold that thought.
+
+00:34:19.760 --> 00:34:20.399
+<v Michael Kennedy>All right, that's my extra.
+
+00:34:20.840 --> 00:34:23.520
+<v Michael Kennedy>We have German subtitles for all the courses
+
+00:34:23.690 --> 00:34:25.240
+<v Michael Kennedy>that talk Python, all 280 hours.
+
+00:34:25.639 --> 00:34:26.780
+<v Michael Kennedy>And I would just like to point out--
+
+00:34:26.780 --> 00:34:30.100
+<v Michael Kennedy>I said this in the blog post, but just
+
+00:34:30.280 --> 00:34:34.320
+<v Michael Kennedy>to listen to 280 hours of audio is seven weeks,
+
+00:34:34.490 --> 00:34:35.860
+<v Michael Kennedy>almost two months of work.
+
+00:34:36.960 --> 00:34:38.520
+<v Michael Kennedy>Not the translating, not the double checking.
+
+00:34:39.260 --> 00:34:46.580
+<v Michael Kennedy>Just to listen is seven weeks worth of work, 40 hours, eight hours a day, five days a week sort of thing.
+
+00:34:47.580 --> 00:34:50.840
+<v Michael Kennedy>So that is a mega, mega project I've been working on.
+
+00:34:51.540 --> 00:34:53.020
+<v Michael Kennedy>You got a lot of courses up.
+
+00:34:53.480 --> 00:34:54.040
+<v Michael Kennedy>I know.
+
+00:34:54.159 --> 00:34:54.540
+<v Michael Kennedy>It's crazy.
+
+00:34:55.220 --> 00:34:56.620
+<v Michael Kennedy>So I'm working through the Spanish ones now.
+
+00:34:56.700 --> 00:35:03.420
+<v Michael Kennedy>I've got maybe four courses converted over Spanish, but Spanish is going to be the next language.
+
+00:35:03.680 --> 00:35:06.600
+<v Michael Kennedy>So don't feel left out, Spanish-speaking folks.
+
+00:35:07.120 --> 00:35:07.780
+<v Michael Kennedy>It's coming.
+
+00:35:08.900 --> 00:35:09.160
+<v Michael Kennedy>Cool.
+
+00:35:09.220 --> 00:35:11.180
+<v Brian Okken>Yeah, that's my extra.
+
+00:35:11.880 --> 00:35:12.360
+<v Brian Okken>All right.
+
+00:35:12.470 --> 00:35:18.480
+<v Brian Okken>Well, I'm going to roll back to, we were talking about, what was it?
+
+00:35:18.620 --> 00:35:23.300
+<v Brian Okken>It's not the place, the non-Github place that we had somebody at.
+
+00:35:24.860 --> 00:35:25.120
+<v Brian Okken>Kudberg.
+
+00:35:25.620 --> 00:35:26.400
+<v Brian Okken>Kudberg, yeah.
+
+00:35:27.110 --> 00:35:33.360
+<v Brian Okken>So on that topic, Armin Roeneker wrote an article about GitHub.
+
+00:35:33.920 --> 00:35:38.620
+<v Brian Okken>So before GitHub, basically it's talking about this.
+
+00:35:38.700 --> 00:35:43.080
+<v Brian Okken>Like we're at an inflection point, not sure where we're going to go forward.
+
+00:35:43.280 --> 00:35:46.240
+<v Brian Okken>But before GitHub, it was a weird place.
+
+00:35:46.300 --> 00:35:51.400
+<v Brian Okken>We had basically source controls, roll your own or do something wacky.
+
+00:35:52.820 --> 00:35:55.500
+<v Brian Okken>It was a very different experience.
+
+00:35:55.840 --> 00:35:58.400
+<v Brian Okken>So I have to agree.
+
+00:35:58.720 --> 00:36:04.100
+<v Brian Okken>I am, even at the state of GitHub right now, I'm still using it a lot and other things.
+
+00:36:04.680 --> 00:36:08.460
+<v Brian Okken>But I also understand some of the gripes people have.
+
+00:36:09.740 --> 00:36:12.240
+<v Brian Okken>There's political stuff with AI and everything.
+
+00:36:12.940 --> 00:36:26.400
+<v Brian Okken>But aside from that, and whether or not they should have been able to just steal everybody's content or intellectual property, because open source does not mean, please just train your AIs on it.
+
+00:36:26.520 --> 00:36:41.840
+<v Brian Okken>But anyway, regardless of that, there's another aspect of it that the GitHub is really built around community building and getting as many collaborators as possible.
+
+00:36:42.720 --> 00:36:44.940
+<v Brian Okken>And it doesn't often work that way.
+
+00:36:44.980 --> 00:36:54.040
+<v Brian Okken>I mean, we often get a lot of people submitting issues and griping about things, but not a lot of people contributing actual good code contributions.
+
+00:36:54.920 --> 00:37:02.720
+<v Brian Okken>And it's even worse now with a lot of people just submitting AI slop as stuff.
+
+00:37:02.740 --> 00:37:06.560
+<v Brian Okken>So I totally get projects moving away.
+
+00:37:06.640 --> 00:37:12.300
+<v Brian Okken>So there's an interesting discussion about GitHub is slowly dying.
+
+00:37:12.960 --> 00:37:14.100
+<v Brian Okken>I don't think it's going to die.
+
+00:37:14.260 --> 00:37:15.880
+<v Brian Okken>I think it'll stick around for a long time.
+
+00:37:15.940 --> 00:37:19.640
+<v Brian Okken>And I think for many years, it'll be still the dominant one.
+
+00:37:19.720 --> 00:37:22.760
+<v Brian Okken>But there is some interesting shifts.
+
+00:37:23.860 --> 00:37:30.200
+<v Brian Okken>At first, there were just a few people moving over, or not a few, a lot of people moving over to Codeberg.
+
+00:37:30.640 --> 00:37:33.260
+<v Brian Okken>But it was smaller projects, but now there's some bigger ones.
+
+00:37:34.340 --> 00:37:37.620
+<v Brian Okken>And one of the things that I'm grateful for is he brought up Tenacity.
+
+00:37:37.700 --> 00:37:39.020
+<v Brian Okken>And I'm like, what's Tenacity?
+
+00:37:39.140 --> 00:37:40.100
+<v Brian Okken>I don't know what that is.
+
+00:37:40.680 --> 00:37:44.200
+<v Brian Okken>and it's a total tangent for the topic,
+
+00:37:44.460 --> 00:37:48.180
+<v Brian Okken>but it's a cross-platform multi-track audio editor
+
+00:37:48.250 --> 00:37:50.300
+<v Brian Okken>and recorder that I'd never heard of,
+
+00:37:50.520 --> 00:37:51.600
+<v Brian Okken>and it looks pretty cool.
+
+00:37:51.940 --> 00:37:53.300
+<v Brian Okken>So I might check that out.
+
+00:37:53.420 --> 00:37:54.140
+<v Brian Okken>It's an open source thing.
+
+00:37:54.500 --> 00:37:54.580
+<v Brian Okken>Anyway.
+
+00:37:55.040 --> 00:37:56.000
+<v Michael Kennedy>Oh, that's very cool.
+
+00:37:56.060 --> 00:37:57.220
+<v Michael Kennedy>I've used Audacity,
+
+00:37:57.330 --> 00:38:00.660
+<v Michael Kennedy>and I bet it is a riff on Audacity, right?
+
+00:38:01.260 --> 00:38:02.180
+<v Michael Kennedy>Possibly, yeah.
+
+00:38:02.640 --> 00:38:03.860
+<v Michael Kennedy>Oh, I'm definitely checking this out.
+
+00:38:03.980 --> 00:38:04.360
+<v Michael Kennedy>This is cool.
+
+00:38:04.840 --> 00:38:06.960
+<v Brian Okken>Yeah, so I definitely want to check that out,
+
+00:38:07.080 --> 00:38:10.700
+<v Brian Okken>even though I'm happy with my audio situation right now.
+
+00:38:11.090 --> 00:38:17.020
+<v Brian Okken>But anyway, the interesting thing around this,
+
+00:38:18.920 --> 00:38:21.880
+<v Brian Okken>it's an interesting topic, and it's not a really long article.
+
+00:38:22.380 --> 00:38:25.640
+<v Brian Okken>One of the things he talks about really is if we go to Codeberg
+
+00:38:25.760 --> 00:38:29.540
+<v Brian Okken>or other roll-your-own stuff and have source code all over the place,
+
+00:38:30.060 --> 00:38:33.300
+<v Brian Okken>we do lose some things because even though you can clone,
+
+00:38:33.370 --> 00:38:35.560
+<v Brian Okken>you can do things, the conversations are less.
+
+00:38:35.980 --> 00:38:41.160
+<v Brian Okken>We have less conversations around issues, around the direction of some projects.
+
+00:38:42.080 --> 00:38:46.120
+<v Brian Okken>And if it goes away, if somebody deletes their repo, we lose all of that.
+
+00:38:46.730 --> 00:38:50.800
+<v Brian Okken>So there's some archive possibly needed, some history that would be helpful.
+
+00:38:52.220 --> 00:38:55.740
+<v Brian Okken>Anyway, interesting discussion around that here.
+
+00:38:56.060 --> 00:38:57.260
+<v Brian Okken>So thanks, Armin.
+
+00:38:57.940 --> 00:38:59.760
+<v Michael Kennedy>Yeah, very nice article, Armin.
+
+00:38:59.870 --> 00:39:04.920
+<v Michael Kennedy>And I've really appreciated his thought pieces and his writing over the last year or two.
+
+00:39:05.300 --> 00:39:05.820
+<v Michael Kennedy>So good job.
+
+00:39:06.500 --> 00:39:06.840
+<v Brian Okken>Yeah.
+
+00:39:07.400 --> 00:39:10.880
+<v Michael Kennedy>Also, Hugo out in the audience said, hey, don't forget,
+
+00:39:11.570 --> 00:39:16.620
+<v Michael Kennedy>Python 3.14.5 is now out with the new, which
+
+00:39:16.700 --> 00:39:21.520
+<v Michael Kennedy>is actually the old GC, and 3.15 beta 1, the feature
+
+00:39:21.700 --> 00:39:22.120
+<v Michael Kennedy>frees this out.
+
+00:39:22.340 --> 00:39:24.160
+<v Michael Kennedy>So yes, thank you so much for that.
+
+00:39:24.400 --> 00:39:26.840
+<v Michael Kennedy>Like most notably, the garbage collector GC
+
+00:39:27.020 --> 00:39:31.600
+<v Michael Kennedy>has changed back to the full pausing one,
+
+00:39:31.740 --> 00:39:32.440
+<v Michael Kennedy>not the incremental one.
+
+00:39:32.940 --> 00:39:34.140
+<v Brian Okken>Everything old is new again.
+
+00:39:34.560 --> 00:39:34.620
+<v Michael Kennedy>Yeah.
+
+00:39:35.020 --> 00:39:36.740
+<v Michael Kennedy>Exactly. Here we go. Back around.
+
+00:39:38.640 --> 00:39:38.920
+<v Michael Kennedy>All right.
+
+00:39:41.240 --> 00:39:41.740
+<v Brian Okken>Tell us a joke.
+
+00:39:42.500 --> 00:39:43.100
+<v Brian Okken>Ready for a joke?
+
+00:39:44.440 --> 00:39:46.940
+<v Brian Okken>So I've been thinking about, like, everybody's saying,
+
+00:39:47.500 --> 00:39:50.700
+<v Brian Okken>oh, now that with AI and everything, I can write my own software.
+
+00:39:50.800 --> 00:39:51.640
+<v Brian Okken>I don't need software engineers.
+
+00:39:52.360 --> 00:39:55.340
+<v Brian Okken>So it reminded me of this XKCD, so I'm bringing this up.
+
+00:39:55.880 --> 00:40:01.260
+<v Brian Okken>So it's a make-it-yourself, make-it-myself XKCD.
+
+00:40:01.620 --> 00:40:04.520
+<v Brian Okken>And there's two people looking at a couple boxes.
+
+00:40:05.280 --> 00:40:06.440
+<v Brian Okken>and I'll just read it out to you.
+
+00:40:06.440 --> 00:40:07.200
+<v Brian Okken>It's mostly text.
+
+00:40:08.260 --> 00:40:09.700
+<v Brian Okken>They want $80 for this?
+
+00:40:10.200 --> 00:40:12.920
+<v Brian Okken>I could make one myself for $10 in parts,
+
+00:40:13.160 --> 00:40:14.020
+<v Brian Okken>an hour of work,
+
+00:40:14.300 --> 00:40:15.420
+<v Brian Okken>a trip to the hardware store,
+
+00:40:15.660 --> 00:40:16.980
+<v Brian Okken>another $30 for parts,
+
+00:40:17.420 --> 00:40:18.580
+<v Brian Okken>another few hours of work,
+
+00:40:18.700 --> 00:40:19.760
+<v Brian Okken>two more trips to the store
+
+00:40:19.980 --> 00:40:21.640
+<v Brian Okken>for $20 more in parts,
+
+00:40:21.960 --> 00:40:24.620
+<v Brian Okken>another hour to redo the first hour of work
+
+00:40:24.900 --> 00:40:25.820
+<v Brian Okken>because I messed it up
+
+00:40:25.980 --> 00:40:27.340
+<v Brian Okken>and $80 to buy this
+
+00:40:27.540 --> 00:40:29.160
+<v Brian Okken>when the one I made breaks.
+
+00:40:30.780 --> 00:40:32.360
+<v Brian Okken>So this is reminding.
+
+00:40:32.440 --> 00:40:33.480
+<v Michael Kennedy>That is so true.
+
+00:40:34.060 --> 00:40:35.520
+<v Michael Kennedy>It is 100% true.
+
+00:40:36.660 --> 00:40:37.060
+<v Michael Kennedy>Yeah.
+
+00:40:38.560 --> 00:40:39.320
+<v Michael Kennedy>Yeah, exactly.
+
+00:40:39.760 --> 00:40:42.300
+<v Michael Kennedy>And that's why I think this whole vibe coding thing,
+
+00:40:42.780 --> 00:40:44.120
+<v Michael Kennedy>there was the SaaS-pocalypse.
+
+00:40:44.420 --> 00:40:46.220
+<v Michael Kennedy>And I think that's going to be a very focused
+
+00:40:46.400 --> 00:40:48.460
+<v Michael Kennedy>and very narrow impact.
+
+00:40:48.720 --> 00:40:50.180
+<v Michael Kennedy>Because it's like, yeah, you can make it.
+
+00:40:50.420 --> 00:40:51.940
+<v Michael Kennedy>And you've got to back it up and maintain it
+
+00:40:52.080 --> 00:40:55.260
+<v Michael Kennedy>and run it operationally and secure it.
+
+00:40:55.400 --> 00:40:56.440
+<v Michael Kennedy>And you know what?
+
+00:40:56.480 --> 00:40:57.620
+<v Michael Kennedy>Let's just let them run it for $10.
+
+00:40:59.840 --> 00:41:01.620
+<v Brian Okken>Yeah, I'm hoping that it will drive.
+
+00:41:01.680 --> 00:41:07.220
+<v Brian Okken>I mean, I think it'll change the dynamics
+
+00:41:07.410 --> 00:41:09.080
+<v Brian Okken>of how people make money about software,
+
+00:41:09.400 --> 00:41:14.680
+<v Brian Okken>but I'm hoping we get more good SaaS out there
+
+00:41:14.940 --> 00:41:19.980
+<v Brian Okken>and some of the, even if it's helped being made by AI,
+
+00:41:20.400 --> 00:41:22.180
+<v Brian Okken>but the good ones will stick around
+
+00:41:22.430 --> 00:41:24.540
+<v Brian Okken>even if they have to get really recoded.
+
+00:41:26.740 --> 00:41:27.780
+<v Brian Okken>Yeah, indeed.
+
+00:41:28.660 --> 00:41:28.900
+<v Brian Okken>All right.
+
+00:41:29.090 --> 00:41:30.500
+<v Brian Okken>Well, thanks a lot for a great episode.
+
+00:41:30.840 --> 00:41:31.880
+<v Brian Okken>Thanks everybody for listening.
+
+00:41:33.220 --> 00:41:33.300
+<v Brian Okken>Yeah.
+
+00:41:33.500 --> 00:41:33.660
+<v Brian Okken>Thanks.
+
+00:41:33.840 --> 00:41:34.000
+<v Brian Okken>Bye.
+
+00:41:34.660 --> 00:41:35.100
+<v Brian Okken>See you later.
+

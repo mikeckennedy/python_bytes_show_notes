@@ -1,0 +1,2011 @@
+WEBVTT
+
+00:00:00.000 --> 00:00:04.580
+Hello and welcome to Python Bytes, where we deliver Python news and headlines directly to earbuds.
+
+00:00:05.020 --> 00:00:09.840
+This is episode 479, recorded May 11th, 2026.
+
+00:00:10.180 --> 00:00:11.020
+And I'm Brian Aachen.
+
+00:00:11.300 --> 00:00:12.060
+And I'm Michael Kennedy.
+
+00:00:12.300 --> 00:00:22.000
+This episode is sponsored by all of our stuff, like the pytest book and pytest courses and Talk Python training and so much else.
+
+00:00:22.100 --> 00:00:23.360
+And also Patreon supporters.
+
+00:00:23.480 --> 00:00:24.420
+Thank you, Patreon supporters.
+
+00:00:24.780 --> 00:00:34.320
+If you'd like to get a topic, if you've got a topic that you think we ought to talk about or just are interested in, don't worry about whether or not we've heard it or not.
+
+00:00:34.420 --> 00:00:35.700
+Just send it on over anyway.
+
+00:00:36.540 --> 00:00:39.460
+You can reach us on Mastodon and Bluesky.
+
+00:00:39.960 --> 00:00:46.980
+And there's a contact form right on the show notes, but right there on pythonbytes.fm as well.
+
+00:00:47.080 --> 00:00:48.100
+So you can check that out.
+
+00:00:48.380 --> 00:00:51.100
+Thanks to everybody that watches us live on YouTube.
+
+00:00:51.100 --> 00:00:59.280
+If you'd like to be a part of the audience and submit comments and stuff, you can head on over to pythonbytes.fm/live and be part of that.
+
+00:00:59.500 --> 00:01:02.920
+And you don't need to take notes because you can just get our newsletter.
+
+00:01:03.200 --> 00:01:09.420
+So go to the pythonbytes.fm also and subscribe to the newsletter and we'll send you.
+
+00:01:09.700 --> 00:01:14.220
+We don't send much other than just the links and all the information.
+
+00:01:14.580 --> 00:01:17.440
+Well, there's a lot of content in the weekly email that we send out.
+
+00:01:17.440 --> 00:01:22.400
+So it's not just the links to everything we talked about, but it's also some background information.
+
+00:01:23.140 --> 00:01:27.420
+And you'll especially want this time because we got some cool stuff.
+
+00:01:27.700 --> 00:01:31.860
+So speaking of cool stuff, Michael, want to kick us off?
+
+00:01:32.200 --> 00:01:33.000
+Yeah, let's kick it.
+
+00:01:33.440 --> 00:01:34.340
+Let's kick it off.
+
+00:01:34.400 --> 00:01:37.380
+Let's talk about HTTPX YZ.
+
+00:01:37.380 --> 00:01:51.980
+So recall, this is Mikhail had created a fork and we covered why I forked HTTPX and it was part of the larger churn around in code, I believe, and so on and all of that.
+
+00:01:52.120 --> 00:01:56.000
+So this is the one month check-in and it's pretty interesting.
+
+00:01:56.140 --> 00:01:59.500
+I think it's got some ideas worth paying attention to here.
+
+00:01:59.560 --> 00:02:05.640
+So basically a couple of things worth talking about is they got the first version out.
+
+00:02:05.640 --> 00:02:11.180
+It contains some fixes to get ZSTD working, get the test running, housekeeping, and so on.
+
+00:02:11.240 --> 00:02:14.860
+But then more importantly, end of March, some fixes came out.
+
+00:02:15.320 --> 00:02:18.060
+Compatibility shim that allows you to use HTTPX.
+
+00:02:18.380 --> 00:02:30.760
+This is, okay, this is the thing that really made me want to cover this because they released a compatibility shim that allows you to use HTTPX YZ even when third-party packages use HTTPX themselves.
+
+00:02:31.160 --> 00:02:32.720
+So this is my dilemma.
+
+00:02:32.720 --> 00:02:38.220
+I look at my project and I see that I'm using HTTPX and I'm like, huh, it'd be really cool to switch to HTTPX YZ.
+
+00:02:38.480 --> 00:02:39.600
+Seems like the right thing to do.
+
+00:02:39.860 --> 00:02:47.280
+And then I go look at my pip compiled output and it says HTTPX because these seven packages are using HTTPX.
+
+00:02:47.360 --> 00:02:49.240
+I'm like, huh, well, that's kind of useless.
+
+00:02:49.400 --> 00:02:55.020
+Like why would I use one when I have to effectively use these others all the time when I interact with those libraries, right?
+
+00:02:55.080 --> 00:02:59.980
+I'm still in the same boat and I don't see a life raft or any way to get out of that boat.
+
+00:02:59.980 --> 00:03:01.040
+But here's that thing.
+
+00:03:01.140 --> 00:03:02.040
+And it's pretty interesting.
+
+00:03:02.520 --> 00:03:13.040
+If all you got to do is if you import at the startup of your app HTTPX YZ, it also tells it the world that it is HTTPX.
+
+00:03:13.400 --> 00:03:13.540
+Okay.
+
+00:03:13.640 --> 00:03:20.060
+So for example, you can assert that HTTPX is in system modules of HTTPX YZ, right?
+
+00:03:20.080 --> 00:03:20.560
+That kind of thing.
+
+00:03:20.560 --> 00:03:32.080
+So if you import HTTPX somewhere along the way, some other app does, other part of your app does, it will still, it'll still return basically a compatible layer, even at a type instance.
+
+00:03:32.200 --> 00:03:40.460
+So if you ask, is this thing that I got from HTTPX YZ.response of some type of, is that actually an HTTPX.response?
+
+00:03:40.740 --> 00:03:41.100
+Yes.
+
+00:03:41.440 --> 00:03:43.060
+So really interesting compatibility.
+
+00:03:43.300 --> 00:03:44.520
+And honestly, I don't know how it does that.
+
+00:03:44.720 --> 00:03:45.560
+That's pretty interesting.
+
+00:03:45.560 --> 00:03:45.960
+Yeah.
+
+00:03:46.640 --> 00:03:53.580
+How do you say you are, I derive from this class in another library without having the other library present?
+
+00:03:53.900 --> 00:03:54.240
+You know what I mean?
+
+00:03:54.420 --> 00:03:58.400
+Well, as long as the endpoints are there, you're going to fulfill it.
+
+00:03:58.620 --> 00:03:59.820
+But it is a...
+
+00:03:59.820 --> 00:04:00.980
+Yeah, but it's not duck typing.
+
+00:04:01.080 --> 00:04:01.840
+This is strong typing.
+
+00:04:01.960 --> 00:04:03.220
+It's asking is instance, right?
+
+00:04:03.300 --> 00:04:04.220
+That's what I think is interesting.
+
+00:04:04.500 --> 00:04:04.720
+Yeah.
+
+00:04:04.920 --> 00:04:05.720
+Well, yeah.
+
+00:04:05.940 --> 00:04:06.120
+Interesting.
+
+00:04:06.260 --> 00:04:06.420
+I don't know.
+
+00:04:06.660 --> 00:04:10.480
+I feel like I'm going to go on a typing rant this episode.
+
+00:04:10.640 --> 00:04:11.800
+So prepare yourself, people.
+
+00:04:12.000 --> 00:04:12.460
+Prepare yourself.
+
+00:04:12.460 --> 00:04:18.640
+So this is not uncommon, like Pillow has done this, OpenCV has done this, YAML, PyYAML have done this, and so on.
+
+00:04:18.640 --> 00:04:25.980
+Well, but done this being, they've got a different name that you use, you import from the library.
+
+00:04:26.280 --> 00:04:32.960
+But the hijacking some other project's name, that's, I don't know what I feel about that.
+
+00:04:33.300 --> 00:04:36.060
+I don't know a way around it other than this.
+
+00:04:36.740 --> 00:04:39.760
+No, in this case, I think it's a good thing.
+
+00:04:39.760 --> 00:04:42.420
+It seems like this could be abused.
+
+00:04:42.780 --> 00:04:42.960
+Yes.
+
+00:04:43.100 --> 00:04:43.500
+Agreed.
+
+00:04:43.700 --> 00:04:44.100
+Agreed.
+
+00:04:44.240 --> 00:04:44.440
+Okay.
+
+00:04:44.680 --> 00:04:46.620
+Well, welcome to Python imports, I guess, huh?
+
+00:04:47.100 --> 00:04:47.540
+Yeah.
+
+00:04:47.980 --> 00:04:49.740
+So I think this is actually pretty interesting.
+
+00:04:50.160 --> 00:04:53.480
+And also, this is kind of the flow of this project.
+
+00:04:53.480 --> 00:04:59.500
+It's like, oh, we noticed that HTTP core is actually the root of many of the problems, which is also a similar project.
+
+00:04:59.560 --> 00:05:05.800
+So we have to create HTTP core XYZ, and fix a whole bunch of issues, some serious, and so on.
+
+00:05:06.100 --> 00:05:07.100
+So there you go.
+
+00:05:07.300 --> 00:05:08.720
+Got some nice quotes here.
+
+00:05:08.720 --> 00:05:14.220
+And then finally, it's on Codeberg, which I think is not the right choice.
+
+00:05:14.400 --> 00:05:20.400
+I understand the desire, but in practice, I don't think it's the right.
+
+00:05:20.560 --> 00:05:23.020
+I think it should be on GitHub, even with all the GitHub issues.
+
+00:05:23.460 --> 00:05:25.820
+Because, you know, you look at it, it's got 39 stars.
+
+00:05:26.180 --> 00:05:29.100
+Like, HTTPX has 15,000.
+
+00:05:29.300 --> 00:05:29.540
+Right.
+
+00:05:29.740 --> 00:05:30.780
+So on GitHub.
+
+00:05:31.260 --> 00:05:31.700
+I don't know.
+
+00:05:31.900 --> 00:05:36.820
+I think that that's, you know, Mikhail says, look, I'd love to make GitHub a little bit less dominant.
+
+00:05:36.820 --> 00:05:37.900
+Yes, I agree.
+
+00:05:38.300 --> 00:05:42.320
+But, you know, I don't necessarily know that I would try to fight two battles in one.
+
+00:05:42.420 --> 00:05:44.440
+You're already trying to make HTTPX not less dominant.
+
+00:05:44.860 --> 00:05:45.500
+I see it.
+
+00:05:45.800 --> 00:05:47.520
+I have sympathy.
+
+00:05:48.380 --> 00:05:52.080
+You can get rid of a lot of junk if you're not on GitHub.
+
+00:05:52.600 --> 00:05:52.880
+Yeah.
+
+00:05:53.200 --> 00:05:53.500
+I know.
+
+00:05:53.700 --> 00:05:55.000
+It's like, what are you optimizing for?
+
+00:05:55.060 --> 00:05:58.000
+Are you optimizing for the developers, the project's benefit?
+
+00:05:58.120 --> 00:05:59.480
+Or are you optimizing for exposure?
+
+00:05:59.480 --> 00:06:00.740
+I don't think so.
+
+00:06:00.840 --> 00:06:02.900
+I think it's whether or not you want contributors.
+
+00:06:03.800 --> 00:06:07.680
+Because the exposure's through, like, PyPI, not really GitHub.
+
+00:06:08.140 --> 00:06:10.540
+And maybe podcasts, people talk about it.
+
+00:06:10.680 --> 00:06:10.960
+Yeah.
+
+00:06:11.060 --> 00:06:12.580
+Anyway, I think it's a cool project.
+
+00:06:12.840 --> 00:06:16.960
+I'm going to look into maybe use it more now that that shim thing exists.
+
+00:06:17.280 --> 00:06:17.480
+Yeah.
+
+00:06:17.640 --> 00:06:17.800
+Cool.
+
+00:06:18.080 --> 00:06:21.480
+And while I'm doing that, Brian, maybe you want to talk to us about concurrency?
+
+00:06:22.340 --> 00:06:23.440
+I'll get back to you on what I've learned.
+
+00:06:23.740 --> 00:06:24.600
+I do.
+
+00:06:25.060 --> 00:06:25.460
+Yeah.
+
+00:06:25.860 --> 00:06:27.340
+While I'm doing that.
+
+00:06:27.340 --> 00:06:27.600
+Yeah.
+
+00:06:28.500 --> 00:06:30.040
+So concurrency.
+
+00:06:30.360 --> 00:06:33.040
+So I ran across this article.
+
+00:06:33.280 --> 00:06:34.120
+It's on GeekUni.
+
+00:06:34.380 --> 00:06:35.600
+I don't know what that is.
+
+00:06:35.700 --> 00:06:39.380
+But it looks like there's some interesting stuff way back to 2013.
+
+00:06:39.840 --> 00:06:44.840
+But anyway, Lean Concurrency, a deep dive into multithreading with Python.
+
+00:06:45.340 --> 00:06:47.820
+And this is the author, Nikos.
+
+00:06:48.480 --> 00:06:51.160
+And I actually really like this article.
+
+00:06:51.160 --> 00:06:53.140
+So I do.
+
+00:06:53.520 --> 00:06:56.760
+I'm familiar with multithreading in multiple languages.
+
+00:06:56.760 --> 00:06:59.120
+And I don't use it a lot in Python.
+
+00:06:59.260 --> 00:07:04.720
+And I do have a lot of projects or at least a couple of projects coming up that I want to use some concurrency.
+
+00:07:05.580 --> 00:07:07.820
+And so a refresher is a good idea.
+
+00:07:08.320 --> 00:07:11.720
+And the world has changed a little bit recently.
+
+00:07:12.720 --> 00:07:18.180
+I mean, the big recently in Python because we've got Gilders Python.
+
+00:07:18.380 --> 00:07:19.260
+We have free-threaded.
+
+00:07:19.260 --> 00:07:21.920
+And it changes the dynamics a little bit.
+
+00:07:22.080 --> 00:07:25.560
+So it's a good time to have a refresher on concurrency with Python.
+
+00:07:25.920 --> 00:07:26.260
+And this is...
+
+00:07:26.800 --> 00:07:30.880
+So we are going to talk about multithreading in this article.
+
+00:07:31.240 --> 00:07:36.160
+But one of the great things that I like about this is it doesn't assume anything.
+
+00:07:36.160 --> 00:07:44.380
+So it's talking about like in data science or cryptography or data processing, some of the places where you might want concurrency.
+
+00:07:44.580 --> 00:07:47.000
+But there is really lots of places where you want it.
+
+00:07:47.320 --> 00:07:53.920
+And then filling in some of the terms that you may not be familiar with, like concurrency versus sequential.
+
+00:07:54.200 --> 00:07:55.300
+We probably should know that.
+
+00:07:55.580 --> 00:07:59.080
+But things like global interpreter lock.
+
+00:07:59.080 --> 00:08:01.980
+And, you know, I guess we already know those things.
+
+00:08:02.380 --> 00:08:03.300
+But there's a...
+
+00:08:03.300 --> 00:08:06.860
+One of the terms is like embarrassingly concurrent.
+
+00:08:07.720 --> 00:08:09.740
+And I kind of forgot what that meant.
+
+00:08:09.920 --> 00:08:11.300
+So it's good there.
+
+00:08:11.460 --> 00:08:12.760
+And that just means...
+
+00:08:12.760 --> 00:08:20.600
+Well, it means that you can separate the work into things that can work without any interactions.
+
+00:08:20.880 --> 00:08:23.180
+Those are embarrassingly concurrent.
+
+00:08:23.400 --> 00:08:23.580
+Anyway.
+
+00:08:23.780 --> 00:08:23.900
+Yeah.
+
+00:08:23.960 --> 00:08:27.840
+One super, super common example of that is like video game graphics.
+
+00:08:27.840 --> 00:08:31.340
+Each pixel is computed independent of each other pixel.
+
+00:08:31.520 --> 00:08:39.060
+So if you've got a million pixels, like as much parallelism as you can just compute each pixel at the same time, they're not going to interfere with each other, right?
+
+00:08:39.300 --> 00:08:39.580
+Yeah.
+
+00:08:39.860 --> 00:08:41.680
+It is funny that it's embarrassingly.
+
+00:08:41.840 --> 00:08:43.140
+It's not really embarrassingly.
+
+00:08:43.140 --> 00:08:44.180
+It's just ideal.
+
+00:08:45.340 --> 00:08:45.860
+Exactly.
+
+00:08:46.060 --> 00:08:48.580
+What a glass half empty perspective that is.
+
+00:08:49.800 --> 00:08:53.320
+So I just encourage people to look through this.
+
+00:08:53.420 --> 00:08:57.040
+There's some great walkthroughs about different things.
+
+00:08:57.040 --> 00:09:02.300
+And also, it talks about free-threaded concurrency as well.
+
+00:09:02.500 --> 00:09:06.740
+If you want to catch up with the GIL and getting rid of the GIL and stuff.
+
+00:09:08.620 --> 00:09:12.660
+And it even talks about how to install the free-threaded Python, which is nice.
+
+00:09:13.080 --> 00:09:15.260
+Which, of course, you're going to just use uv.
+
+00:09:15.720 --> 00:09:19.920
+But even with uv, you have to do the 3.14T.
+
+00:09:20.060 --> 00:09:22.240
+You have to add the T to the end to get it to work.
+
+00:09:22.240 --> 00:09:27.080
+One of the cool things, I think, is that it's not a magic bullet.
+
+00:09:27.200 --> 00:09:32.440
+You can't just use free-threaded Python with threads and have it be magically fast.
+
+00:09:32.860 --> 00:09:34.000
+And that's one of the cool...
+
+00:09:34.000 --> 00:09:37.880
+Like, Fibonacci is a hard one because you're sort of...
+
+00:09:37.880 --> 00:09:41.380
+To really do it faster, you depend on previous ones.
+
+00:09:41.740 --> 00:09:45.320
+So it's slightly interesting with a Fibonacci.
+
+00:09:45.320 --> 00:09:48.220
+But how many times do you really calculate Fibonacci?
+
+00:09:48.420 --> 00:09:51.040
+So the better examples below that.
+
+00:09:51.380 --> 00:09:55.700
+And it's a very simple example of just having a bunch of threads update a counter.
+
+00:09:56.120 --> 00:09:56.320
+But it's...
+
+00:09:57.100 --> 00:09:58.240
+And you won't do this.
+
+00:09:58.360 --> 00:09:59.220
+But it'll be...
+
+00:09:59.220 --> 00:10:03.880
+It's a cool example because it's an obvious one where you've got shared data.
+
+00:10:04.080 --> 00:10:06.920
+There are a bunch of threads all accessing the counter.
+
+00:10:07.180 --> 00:10:08.720
+So it's a very simple toy example.
+
+00:10:09.020 --> 00:10:11.980
+But you could see how that relates to a lot of other work.
+
+00:10:11.980 --> 00:10:13.340
+The cool thing...
+
+00:10:13.340 --> 00:10:23.480
+One of the interesting things about this is it talks about some of the problems with concurrency, how to get around it, problems with concurrency and shared data.
+
+00:10:23.880 --> 00:10:32.100
+And one of the first things I reached for because I came from C and C++ is locks when I want to have shared data.
+
+00:10:32.780 --> 00:10:40.120
+And within this example, locks turns out to be the wrong solution because it actually slows everything down.
+
+00:10:40.120 --> 00:10:43.680
+And I'm familiar with that with other languages as well.
+
+00:10:44.340 --> 00:10:54.180
+But the cool thing that I've never really understood before that I'm grateful for this article to talk about is the thread pool executor.
+
+00:10:54.440 --> 00:10:55.020
+Or executor?
+
+00:10:55.140 --> 00:10:55.500
+Thread pool?
+
+00:10:55.620 --> 00:10:56.000
+I don't know.
+
+00:10:56.160 --> 00:10:57.260
+Thread pool executor.
+
+00:10:57.260 --> 00:11:08.480
+Of how to launch a bunch of threads, have them come up with their own answer without talking to each other at all, no shared data, and then collect the return values.
+
+00:11:08.860 --> 00:11:10.800
+And that's the really good way.
+
+00:11:10.980 --> 00:11:14.200
+So with concurrency, not surprising.
+
+00:11:14.660 --> 00:11:19.640
+Best way to do it is to re-architect your algorithms so that they can take advantage of it.
+
+00:11:19.640 --> 00:11:26.000
+And what I'm excited about is that now we don't have to rely on async.io.
+
+00:11:26.200 --> 00:11:27.020
+You can still.
+
+00:11:27.340 --> 00:11:32.280
+But for a lot of parallel processing, we can just use threads now, finally, in Python.
+
+00:11:32.460 --> 00:11:33.100
+Threads are okay.
+
+00:11:33.540 --> 00:11:35.580
+So anyway, good article.
+
+00:11:35.580 --> 00:11:36.060
+It's very exciting.
+
+00:11:36.120 --> 00:11:36.720
+Good introduction.
+
+00:11:37.280 --> 00:11:37.880
+Yeah, cool.
+
+00:11:37.940 --> 00:11:38.520
+And it's very exciting.
+
+00:11:38.600 --> 00:11:42.220
+I think it's going to give us a chance to talk about all sorts of fun things.
+
+00:11:42.220 --> 00:11:51.400
+You know, we in Python land have not obsessed about all these design patterns, race conditions, making sure you lock all of your activity.
+
+00:11:51.820 --> 00:11:51.940
+Yeah.
+
+00:11:52.140 --> 00:11:52.980
+But we're going to have to start.
+
+00:11:53.300 --> 00:11:53.780
+Have to start.
+
+00:11:53.860 --> 00:11:56.100
+And I'm not sure that we necessarily should not have.
+
+00:11:56.320 --> 00:12:01.320
+The guild does not protect you against corrupt multi-step race conditions.
+
+00:12:01.800 --> 00:12:07.400
+Well, we've, I mean, we've kind of benefited that threads don't really run at the same time up until now.
+
+00:12:07.660 --> 00:12:07.760
+So.
+
+00:12:07.920 --> 00:12:08.700
+Yeah, yeah, I know.
+
+00:12:08.760 --> 00:12:11.340
+But like, that's totally fine for one operation.
+
+00:12:11.340 --> 00:12:14.860
+But let's suppose that I like, you know, the classic bank example.
+
+00:12:15.020 --> 00:12:16.440
+I take, I debit somebody out of this account.
+
+00:12:16.760 --> 00:12:18.220
+I do 10 lines of work.
+
+00:12:18.320 --> 00:12:20.080
+And then I credit the other account.
+
+00:12:20.260 --> 00:12:20.300
+Yeah.
+
+00:12:20.340 --> 00:12:24.520
+Nothing, nothing says that the guild will not stop halfway through.
+
+00:12:24.640 --> 00:12:26.340
+It's just, it's not very likely.
+
+00:12:26.620 --> 00:12:30.460
+So the, you know, those problems are there in the code, which I think is going to be a double whammy.
+
+00:12:30.540 --> 00:12:35.660
+But it also lets us start to think about the fun things like double checked locking, which is such a cool idea.
+
+00:12:35.780 --> 00:12:39.120
+You know, like, there's, there's, I think it's going to be really fun.
+
+00:12:39.180 --> 00:12:39.900
+I think it's going to be fun.
+
+00:12:39.900 --> 00:12:40.520
+So for example.
+
+00:12:40.520 --> 00:12:41.240
+Checked locking.
+
+00:12:41.340 --> 00:12:41.560
+Yeah.
+
+00:12:41.620 --> 00:12:42.280
+So check this out.
+
+00:12:42.360 --> 00:12:44.100
+So I, I'll put this in the show notes.
+
+00:12:44.400 --> 00:12:46.320
+It's just off of, or put it, look it up on Wikipedia.
+
+00:12:46.560 --> 00:12:51.840
+So what you can do is you can say, if you have a single threaded thing, you can check, like, if this, this object is null.
+
+00:12:52.080 --> 00:12:53.080
+Let's say it's a singleton.
+
+00:12:53.380 --> 00:12:54.800
+If this object is null, create a new one.
+
+00:12:54.960 --> 00:12:56.600
+So you only create it once and then return it.
+
+00:12:56.600 --> 00:12:57.740
+But it's like a lazy crate.
+
+00:12:57.740 --> 00:13:05.160
+But if like the default multi-threaded version would be every time you call this function, take a lock, check if it's null.
+
+00:13:05.160 --> 00:13:07.340
+If it is created, return it.
+
+00:13:07.340 --> 00:13:13.700
+But you can do things like check outside the lock if it's null and then take a lock and then check again if it's null.
+
+00:13:13.760 --> 00:13:16.320
+Because maybe two things hit, one of them locked, one of them created it.
+
+00:13:16.320 --> 00:13:17.320
+You still want the same one.
+
+00:13:17.320 --> 00:13:23.880
+But you can like skip the locking ever, except for like during the once, one and only creation.
+
+00:13:24.000 --> 00:13:25.680
+Like there's really fun patterns like that.
+
+00:13:25.720 --> 00:13:27.720
+So I'm kind of actually looking forward to it, you know?
+
+00:13:28.040 --> 00:13:29.760
+I'm not looking forward to the race conditions.
+
+00:13:30.700 --> 00:13:31.640
+Yeah, yeah, yeah, yeah.
+
+00:13:32.840 --> 00:13:36.360
+Speaking of locks, let's lock files instead of memory and execution.
+
+00:13:36.600 --> 00:13:40.480
+So it turns out that pip 26.1 is out.
+
+00:13:40.620 --> 00:13:43.840
+And it comes with features that I've been very excited about.
+
+00:13:43.840 --> 00:13:47.560
+Most importantly, dependency cooldowns.
+
+00:13:47.760 --> 00:13:49.760
+Don't remember, I don't remember when I wrote about this.
+
+00:13:49.880 --> 00:13:51.640
+It was December last year.
+
+00:13:51.800 --> 00:13:54.480
+I wrote about Python supply chains made easy.
+
+00:13:54.580 --> 00:13:56.900
+And I wrote a follow-up one for like doing that production.
+
+00:13:57.100 --> 00:14:05.460
+One of the really most important significant bits of this was, you know, instead of you finding out, let's let others find out that something's bad.
+
+00:14:05.460 --> 00:14:12.340
+And the way you do that is you simply just go over and you just say uv pip, whatever, install, compile, whatever.
+
+00:14:12.340 --> 00:14:14.040
+Or exclude newer one week.
+
+00:14:14.180 --> 00:14:17.720
+And this was a thing that uv had that pip did not have, right?
+
+00:14:18.020 --> 00:14:21.860
+So chalk one more thing for uv over pip.
+
+00:14:22.140 --> 00:14:25.200
+But now pip itself actually has the same concept.
+
+00:14:25.520 --> 00:14:28.740
+They have different CLI flags, which I don't know.
+
+00:14:28.800 --> 00:14:31.320
+I feel like they should have just said, well, what are people using now?
+
+00:14:31.380 --> 00:14:32.600
+Let's use that same CLI flag.
+
+00:14:32.780 --> 00:14:33.460
+But so it is.
+
+00:14:33.460 --> 00:14:35.500
+So it has this.
+
+00:14:35.760 --> 00:14:37.460
+Let's go down to the cooldowns.
+
+00:14:38.100 --> 00:14:38.520
+Here we go.
+
+00:14:38.680 --> 00:14:42.780
+So you can say --uploaded prior to.
+
+00:14:43.100 --> 00:14:47.560
+And you can put some kind of time in there, a duration.
+
+00:14:48.240 --> 00:14:52.600
+So PND, where N is the number of days, kind of.
+
+00:14:53.000 --> 00:14:53.400
+Okay.
+
+00:14:53.680 --> 00:14:57.580
+Anyway, so you say P3D is like prior to three days is the value.
+
+00:14:57.840 --> 00:14:58.720
+And then you can install something.
+
+00:14:58.720 --> 00:15:02.420
+And that says it will only install the older, you know, stuff older than three days.
+
+00:15:02.540 --> 00:15:04.040
+And this is super valuable.
+
+00:15:04.160 --> 00:15:07.280
+It sounds like, oh, Michael, this is like security through obscurity.
+
+00:15:07.280 --> 00:15:08.360
+And it's not going to make a difference.
+
+00:15:08.360 --> 00:15:11.860
+Like almost all of these major takeovers are like three hours later, it was found.
+
+00:15:11.960 --> 00:15:13.160
+Five hours later, it was found.
+
+00:15:13.440 --> 00:15:13.540
+Yeah.
+
+00:15:13.960 --> 00:15:17.240
+Rarely do these things sit around for a week unless they're extremely rare.
+
+00:15:17.240 --> 00:15:20.700
+But the major projects take over like the, oh my gosh.
+
+00:15:21.180 --> 00:15:26.460
+You remember which, that LLM library that you use for like a facade over all the different LLMs.
+
+00:15:26.460 --> 00:15:30.000
+That one was taken down two hours after it was gotten in there.
+
+00:15:30.060 --> 00:15:30.440
+You know what I mean?
+
+00:15:30.800 --> 00:15:33.040
+So these, I think these are meaningful differences.
+
+00:15:33.900 --> 00:15:36.120
+Why the actual difference in CLI?
+
+00:15:36.280 --> 00:15:36.960
+I don't know.
+
+00:15:37.180 --> 00:15:38.700
+Maybe there's a good reason, but I don't know.
+
+00:15:38.840 --> 00:15:40.520
+Anyway, I'm really glad to see pip having this.
+
+00:15:41.200 --> 00:15:43.220
+Also, Python 3.9 is not supported.
+
+00:15:43.720 --> 00:15:48.080
+It's end of life over six, seven months ago.
+
+00:15:48.200 --> 00:15:50.640
+So it seems fine that it shouldn't be here anymore.
+
+00:15:51.000 --> 00:15:52.460
+I mean, I don't even remember 3.9.
+
+00:15:52.680 --> 00:15:53.040
+Yeah, I don't.
+
+00:15:53.180 --> 00:15:54.200
+What was 3.9?
+
+00:15:54.240 --> 00:15:54.680
+We don't even know.
+
+00:15:54.680 --> 00:15:59.860
+So honestly, I don't know why you would have any support for any older version.
+
+00:16:00.160 --> 00:16:03.960
+You might say, well, Michael, somebody might be on Python 3.9 and they got to install stuff.
+
+00:16:04.060 --> 00:16:06.420
+Like just pin pip to 25, right?
+
+00:16:06.520 --> 00:16:10.240
+Like pip 25 is what they were using when they had Python 3.9 anyway.
+
+00:16:10.580 --> 00:16:12.240
+Just install a different version of Pip.
+
+00:16:12.280 --> 00:16:15.540
+I think that's like a no-brainer and should just be like a default.
+
+00:16:15.780 --> 00:16:16.260
+New features.
+
+00:16:16.440 --> 00:16:18.040
+This is interesting.
+
+00:16:18.160 --> 00:16:19.880
+Like, first of all, I am very positive about this.
+
+00:16:19.960 --> 00:16:22.140
+I think this is a great move and I'm really happy to see it.
+
+00:16:22.140 --> 00:16:26.780
+Even if I have some criticisms like PND, which is just weird.
+
+00:16:27.100 --> 00:16:28.560
+And there's already existing ones.
+
+00:16:28.700 --> 00:16:29.900
+So this is also a little like that.
+
+00:16:30.320 --> 00:16:31.000
+So Brett Cannon.
+
+00:16:31.420 --> 00:16:31.580
+Go ahead.
+
+00:16:32.000 --> 00:16:33.880
+No, what are PND files?
+
+00:16:34.040 --> 00:16:34.300
+I don't know.
+
+00:16:34.380 --> 00:16:34.660
+No, no.
+
+00:16:34.700 --> 00:16:37.840
+That's how you specify the three days ago.
+
+00:16:38.060 --> 00:16:42.280
+You say uploaded prior to equals P3D instead of just three days.
+
+00:16:42.580 --> 00:16:43.720
+Who's going to remember that?
+
+00:16:43.960 --> 00:16:44.140
+Okay.
+
+00:16:44.140 --> 00:16:44.500
+Yeah.
+
+00:16:44.780 --> 00:16:47.920
+Like the uv one you just put in quotes, one week, seven days.
+
+00:16:48.320 --> 00:16:49.260
+Well, I mean, it's easier.
+
+00:16:49.260 --> 00:16:49.440
+Yeah, whatever.
+
+00:16:49.740 --> 00:16:51.320
+The parsing is probably easier or something.
+
+00:16:51.520 --> 00:16:51.760
+I don't know.
+
+00:16:51.860 --> 00:16:54.720
+I know, but it's used by millions of people, written by ones.
+
+00:16:54.920 --> 00:16:56.520
+You could ask AI, help me parse this.
+
+00:16:56.780 --> 00:16:57.040
+Anyway.
+
+00:16:57.220 --> 00:16:57.760
+Yeah, I got it.
+
+00:16:58.120 --> 00:17:02.980
+So there's this PEP 751, which was created 2024.
+
+00:17:03.420 --> 00:17:07.840
+And it was, I believe it was accepted 14 months ago.
+
+00:17:07.880 --> 00:17:08.720
+I'm not entirely sure.
+
+00:17:08.720 --> 00:17:12.760
+It's not super obvious, but the resolution is March 2025.
+
+00:17:12.960 --> 00:17:15.120
+So it's been around for a long time, about a year plus.
+
+00:17:15.320 --> 00:17:15.440
+Okay.
+
+00:17:15.820 --> 00:17:20.980
+And this is the file format to record Python dependencies for installation reproducibility by Brett Cannon.
+
+00:17:21.100 --> 00:17:22.800
+He's been working on this forever.
+
+00:17:22.800 --> 00:17:26.840
+And the idea is this is basically the pylock.toml.
+
+00:17:26.960 --> 00:17:31.620
+And that's, if you go over here, it's actually in the Python packaging user guide on how to do it.
+
+00:17:31.820 --> 00:17:32.420
+This is great.
+
+00:17:32.740 --> 00:17:33.860
+So why am I talking about this?
+
+00:17:33.920 --> 00:17:37.460
+Because the deal is pip now supports installing these.
+
+00:17:37.900 --> 00:17:38.340
+Oh.
+
+00:17:38.340 --> 00:17:38.460
+Oh.
+
+00:17:38.740 --> 00:17:40.580
+Somewhat as an experimental feature.
+
+00:17:40.880 --> 00:17:50.120
+So a year after its acceptance, which standardized pylock.toml, pip 26.1 gains experimental support for such files, for reading and installing from them.
+
+00:17:50.300 --> 00:17:50.480
+Okay.
+
+00:17:50.500 --> 00:17:51.200
+So this is great.
+
+00:17:51.200 --> 00:18:01.100
+I think it's just, you know, pip is the most common way to install stuff in Python still, even if it's not the most hyped or most Rust implemented way to do it.
+
+00:18:01.200 --> 00:18:02.640
+It's still the most common way.
+
+00:18:02.720 --> 00:18:02.900
+Right.
+
+00:18:03.020 --> 00:18:05.400
+And so having this support is kind of like table stakes.
+
+00:18:05.560 --> 00:18:05.760
+Right.
+
+00:18:05.960 --> 00:18:06.840
+So I think this is really cool.
+
+00:18:06.840 --> 00:18:09.940
+There's a bunch of caveats and limitations and so on and so on.
+
+00:18:09.940 --> 00:18:20.140
+But the criticism is like, if this is officially accepted by the core developers and Python and the steering council, why did it take a year for pip to support it?
+
+00:18:20.340 --> 00:18:22.120
+You know, that seems pretty out of sync.
+
+00:18:22.320 --> 00:18:26.940
+That's a long time from, yeah, we have this official feature and our official installer can't use it.
+
+00:18:27.040 --> 00:18:27.320
+Yeah.
+
+00:18:27.320 --> 00:18:28.520
+But I'm glad that it has it.
+
+00:18:28.580 --> 00:18:29.140
+So that's good.
+
+00:18:29.320 --> 00:18:31.420
+Maybe there's more to it than I know again, but who knows.
+
+00:18:32.440 --> 00:18:35.480
+Some stuff about the older, like newer and older resolvers.
+
+00:18:35.780 --> 00:18:40.180
+The new resolver now does many of the things that the older resolvers were being kept around for.
+
+00:18:40.520 --> 00:18:45.140
+So I believe there's now a plan to remove the older legacy resolvers.
+
+00:18:45.360 --> 00:18:50.020
+Like if you've got this version less than or equal to, and you've got that other version and so on, like how do you resolve that?
+
+00:18:50.020 --> 00:18:54.920
+Then a few security fixes, not necessarily going to go into it too much, but there you go.
+
+00:18:55.060 --> 00:18:56.860
+A brand new pip 26.1.
+
+00:18:56.940 --> 00:18:59.500
+I feel like this is a big release, which is why I brought it up.
+
+00:18:59.640 --> 00:19:03.220
+It's got the dependencies cooldowns, which I think is critical these days.
+
+00:19:03.560 --> 00:19:05.260
+And it's got lock file support.
+
+00:19:05.540 --> 00:19:05.640
+Yeah.
+
+00:19:05.880 --> 00:19:06.880
+Yeah, no, it's really cool.
+
+00:19:06.980 --> 00:19:08.940
+And it's definitely moving in the right direction.
+
+00:19:09.200 --> 00:19:09.380
+Yeah.
+
+00:19:10.020 --> 00:19:10.820
+Also, shout out.
+
+00:19:10.920 --> 00:19:12.260
+This is, yeah, go ahead.
+
+00:19:12.500 --> 00:19:15.000
+With wacky CLI names, but okay.
+
+00:19:15.020 --> 00:19:15.320
+Yeah, yeah.
+
+00:19:15.900 --> 00:19:16.780
+Also just shout out.
+
+00:19:16.820 --> 00:19:17.740
+This is by Richard C.
+
+00:19:17.840 --> 00:19:18.540
+So thanks, Richard.
+
+00:19:18.860 --> 00:19:19.040
+Cool.
+
+00:19:19.040 --> 00:19:21.880
+I actually am excited about another PEP as well.
+
+00:19:22.000 --> 00:19:25.040
+So, we're going to stick with the PEP thing for a little bit.
+
+00:19:25.100 --> 00:19:32.300
+this time Sentinel Values and also a blast from the past because, my search still up.
+
+00:19:32.420 --> 00:19:41.300
+Anyway, this, Sentinel Values is PEP 661 and it was created in 2021 and it's five years later.
+
+00:19:41.520 --> 00:19:42.900
+so it's taken a while.
+
+00:19:43.020 --> 00:19:49.680
+However, it is, resolved as of, and, and final as of, for, for five, on 315.
+
+00:19:49.680 --> 00:19:52.020
+So we'll get, we'll get Sentinels finally.
+
+00:19:52.020 --> 00:20:01.720
+there's a, there's, the, the, PEP 661 has a bunch of information, but it's also, it says important.
+
+00:20:01.720 --> 00:20:07.780
+This is a historical document, even though it's just finally here, but it's been working, being worked on for five years.
+
+00:20:07.780 --> 00:20:14.260
+The, the actual information then is in, in, the Sentinel information now in the documentation.
+
+00:20:14.260 --> 00:20:21.500
+So we can, we can click over and look at, I already had it up, look at Sentinel Values and they're kind of neat.
+
+00:20:21.500 --> 00:20:23.340
+So I, I'm excited about this.
+
+00:20:23.340 --> 00:20:28.040
+I don't, I don't quite understand some of the information, the decisions, but that's okay.
+
+00:20:28.040 --> 00:20:36.000
+So, we often use like none for Sentinel value or some, or Nan, if you're doing, like floating point stuff.
+
+00:20:36.300 --> 00:20:42.180
+but this, you just, Sentinel is a built-in that you just have to, you don't have to import anything.
+
+00:20:42.180 --> 00:20:48.080
+You just say Sentinel and then give it a quote, a name, like in the example, in the docs, it's missing.
+
+00:20:48.180 --> 00:20:52.480
+So Sentinel parentheses, and then the quote missing, you can name it, whatever.
+
+00:20:52.480 --> 00:21:04.660
+But the object, one of the interesting things is it acts kind of like none you use is like if, if you want to check a variable or, an element, if it is the Sentinel, you can say is, is missing.
+
+00:21:05.060 --> 00:21:09.460
+and, and then in the types, the type is handled interestingly.
+
+00:21:09.460 --> 00:21:12.740
+The, the object is both the value and the type.
+
+00:21:12.740 --> 00:21:22.900
+So you can say like a default, like some variable is, is of a, of type int or the pipe operator or missing.
+
+00:21:22.900 --> 00:21:26.480
+So you can, you can have that together and it isn't missing altogether.
+
+00:21:26.640 --> 00:21:29.940
+Missing isn't the magical, magical Sentinel value.
+
+00:21:30.060 --> 00:21:34.280
+You can have anything like, not available or whatever you want to call it.
+
+00:21:34.280 --> 00:21:43.360
+so about, I guess, you know, I think that it's, very much about time that we have a, Sentinel value built into the language.
+
+00:21:43.700 --> 00:21:45.880
+interesting that the, okay.
+
+00:21:45.880 --> 00:21:48.180
+So everything so far is, sounds great.
+
+00:21:48.180 --> 00:21:53.800
+The part that I don't quite get is the, is that it's, it's not truthy or it is truthy.
+
+00:21:53.860 --> 00:21:54.220
+That's it.
+
+00:21:54.360 --> 00:22:05.320
+so if you're going through a list, like an array, and, and you want to check to see if it's Sentinel, you have to say is your Sentinel, you know, if you use the is operator
+
+00:22:05.320 --> 00:22:16.940
+to make sure it's there, you can't like none, you could just say if like, you know, if the value in, if that's true, that means it's not none because none is evaluates to false.
+
+00:22:16.940 --> 00:22:19.260
+All the Sentinels evaluate to true.
+
+00:22:19.600 --> 00:22:21.580
+so you have to treat it differently.
+
+00:22:21.840 --> 00:22:22.160
+All right.
+
+00:22:22.220 --> 00:22:25.260
+I'm already feeling a PEP to enhance the Sentinel coming on.
+
+00:22:25.480 --> 00:22:27.640
+to, to make it, to flip the values.
+
+00:22:27.640 --> 00:22:29.240
+but what do you mean?
+
+00:22:29.400 --> 00:22:29.660
+You know what?
+
+00:22:29.680 --> 00:22:30.880
+I love the idea of a Sentinel.
+
+00:22:31.040 --> 00:22:44.040
+I love it because it lets you check, you know, it's like if you're doing a, you know, find me the index of this thing, this item in a string and it's negative one, which is also an integer, but like, that's the, that's means it's not there.
+
+00:22:44.040 --> 00:22:44.320
+Right.
+
+00:22:44.360 --> 00:22:47.240
+Like it's all those kinds of checks are just odd.
+
+00:22:47.240 --> 00:22:56.740
+And I love having the idea of a Sentinel, a thing where you say, I can check this and it's the same type, but if it's, but if it is this, that means actually we weren't able to process it.
+
+00:22:56.740 --> 00:22:56.980
+Right.
+
+00:22:56.980 --> 00:22:57.780
+Cause yeah.
+
+00:22:58.000 --> 00:22:58.960
+Something weird came back.
+
+00:22:59.140 --> 00:23:06.040
+What I mean is, so the way you create the Sentinel value, like the, the, it's a singleton or one off type of thing.
+
+00:23:06.040 --> 00:23:07.660
+Like that's why you use is right.
+
+00:23:07.660 --> 00:23:16.880
+And so you say Sentinel and you give it a string, which I guess is the, what it prints when you try to like string or rep the value.
+
+00:23:16.880 --> 00:23:17.140
+Right.
+
+00:23:17.360 --> 00:23:17.540
+Yeah.
+
+00:23:17.740 --> 00:23:18.420
+And that's cool.
+
+00:23:18.600 --> 00:23:20.860
+Why not give it a default?
+
+00:23:21.400 --> 00:23:26.680
+I'm even in true, I guess, for compatibility at this point you would have to do, but why not give it a second variable?
+
+00:23:26.680 --> 00:23:29.660
+You could pass like a falseness, like, is it true or false?
+
+00:23:29.660 --> 00:23:31.000
+Like comma false.
+
+00:23:31.100 --> 00:23:31.600
+And then boom.
+
+00:23:31.600 --> 00:23:31.860
+Okay.
+
+00:23:31.880 --> 00:23:38.020
+If this Sentinel comes up and I say, if value, no, this is not a value because it indicates the absence of a value.
+
+00:23:38.280 --> 00:23:38.700
+You know what I mean?
+
+00:23:38.920 --> 00:23:39.320
+Yeah.
+
+00:23:39.560 --> 00:23:40.540
+Can I continue to rant?
+
+00:23:41.020 --> 00:23:41.200
+Yeah.
+
+00:23:41.320 --> 00:23:42.240
+I like that.
+
+00:23:42.340 --> 00:23:47.100
+It wouldn't break the current, current implementation, but you could make it more usable.
+
+00:23:47.100 --> 00:23:47.800
+I think so.
+
+00:23:48.080 --> 00:23:48.460
+Yeah, exactly.
+
+00:23:48.520 --> 00:23:51.400
+Just default the value to true on that, yeah.
+
+00:23:51.480 --> 00:23:52.360
+Second parameter.
+
+00:23:52.580 --> 00:23:53.960
+So you don't have to set it.
+
+00:23:54.020 --> 00:23:56.420
+It doesn't break anything, but allow you to pass false.
+
+00:23:56.560 --> 00:24:01.400
+So if you, if it or anything like where it's truthness, truthiness has to be checked.
+
+00:24:01.600 --> 00:24:06.620
+Then it can be what it says it is because you might have a Sentinel for two different outcomes, right?
+
+00:24:06.620 --> 00:24:07.900
+That's plausible, I guess.
+
+00:24:07.900 --> 00:24:09.720
+Although it's not usually the way it's used.
+
+00:24:10.060 --> 00:24:10.320
+Yeah.
+
+00:24:10.320 --> 00:24:17.020
+But like a lot of, I mean, for Sentinels for, to mean I've like, I've got a big vector of stuff.
+
+00:24:17.020 --> 00:24:20.260
+I want to know if there's, if it's not filled out.
+
+00:24:20.840 --> 00:24:23.900
+yeah, I think the default should be false.
+
+00:24:24.180 --> 00:24:27.960
+Primarily Sentinels are used in the case where something didn't work out right.
+
+00:24:28.040 --> 00:24:30.980
+Normally you get a value, but sometimes you get a special value.
+
+00:24:30.980 --> 00:24:32.160
+That means you couldn't get a value.
+
+00:24:32.320 --> 00:24:33.240
+That should be false.
+
+00:24:33.320 --> 00:24:33.720
+I agree.
+
+00:24:34.080 --> 00:24:34.260
+Yeah.
+
+00:24:34.340 --> 00:24:46.780
+The, I guess the one part where I say, you know, maybe it's, maybe it's, it's going to be more readable because it's going to force you to say is missing or is, you know, not there or whatever your value is.
+
+00:24:46.780 --> 00:24:48.680
+But, I don't know.
+
+00:24:49.160 --> 00:24:50.320
+I do like that.
+
+00:24:50.380 --> 00:24:51.880
+You don't have to do that with none.
+
+00:24:52.040 --> 00:24:54.480
+You can just say that it's just values false.
+
+00:24:54.480 --> 00:24:56.020
+I do like the, I like the idea.
+
+00:24:56.120 --> 00:25:00.320
+I think that maybe you should get on that whole PEP thing for, for extending that Michael won't you?
+
+00:25:00.540 --> 00:25:00.720
+Yeah.
+
+00:25:00.780 --> 00:25:03.840
+Before you scroll that screen, let me work on my second version of the pep.
+
+00:25:05.100 --> 00:25:08.560
+I, I somewhat dislike the truthiness, although I get it.
+
+00:25:08.580 --> 00:25:18.600
+And like, I'll just give a shout out to, the quirky out in the audience that I guess even the Sentinel is an object, which kind of makes it hard to be false, but like you can implement dunderbool, right?
+
+00:25:18.660 --> 00:25:19.820
+So then you could do it.
+
+00:25:19.820 --> 00:25:23.040
+Empty strings are objects and they evaluate the false.
+
+00:25:23.460 --> 00:25:24.660
+Yeah, yeah, yeah, exactly.
+
+00:25:24.840 --> 00:25:27.420
+Like you can, there's a magic method to say false.
+
+00:25:27.700 --> 00:25:30.800
+They just return the value of the parameter that goes in when you created it, right?
+
+00:25:30.820 --> 00:25:36.780
+I think it's, it's like a five minute implementation and 47 hour, like documentation and negotiation afterwards.
+
+00:25:38.380 --> 00:25:39.480
+But here's the other one.
+
+00:25:39.540 --> 00:25:40.640
+I think this is more subtle.
+
+00:25:40.880 --> 00:25:50.380
+There's an example saying like, how do I express in the type system that something might be of the value expect or the value that is the Sentinel.
+
+00:25:50.760 --> 00:25:57.080
+And this was much, I think this is a much more significant, probably not going to use this after all sort of thing in my mind.
+
+00:25:57.180 --> 00:25:58.180
+Let me set the stage.
+
+00:25:58.240 --> 00:26:12.480
+If I have a function that returns none or integer, and I say X plus Y where X came from that function, my type checker will say, oh, you cannot plus that with another integer because none does
+
+00:26:12.480 --> 00:26:14.640
+not allow addition with integer.
+
+00:26:14.640 --> 00:26:19.820
+So you can say, if is not none, X plus Y will work without the type checker failing.
+
+00:26:19.980 --> 00:26:23.680
+But if you just say X plus Y types fall apart, it gets all upset.
+
+00:26:23.940 --> 00:26:26.060
+I'm pretty sure that's what's going to happen here with Sentinels.
+
+00:26:26.220 --> 00:26:31.760
+Your type has to be, I return an int or missing or an int or the Sentinel.
+
+00:26:32.120 --> 00:26:35.940
+The Sentinel does not have type information based on an integer.
+
+00:26:36.340 --> 00:26:39.020
+And so any int operation on it will fail.
+
+00:26:39.380 --> 00:26:40.720
+And the type checker is going to warn.
+
+00:26:40.720 --> 00:26:47.060
+So you're going to have to add all of these, like, I know it said it was an int or a Sentinel, but it's not any longer.
+
+00:26:47.180 --> 00:26:47.940
+Now it's just an int.
+
+00:26:48.000 --> 00:26:57.280
+And I feel like there's a lot of clumsiness that's going to go, go along with like trying to work with things that express themselves as int or Sentinel.
+
+00:26:57.700 --> 00:27:02.120
+So can we just add another, another type, another parameter to the creation?
+
+00:27:02.120 --> 00:27:04.000
+Like it's a Sentinel of int.
+
+00:27:04.360 --> 00:27:05.300
+It's a Sentinel of...
+
+00:27:05.300 --> 00:27:08.720
+Yeah, but we're not going to get it for 3.15, but maybe we can get it later.
+
+00:27:09.040 --> 00:27:09.360
+No, no.
+
+00:27:09.380 --> 00:27:18.760
+I'm just saying like, wouldn't it be nice if you could have it also be the type so you don't have to express in the type system that it is something else?
+
+00:27:19.040 --> 00:27:19.820
+You know, I don't know.
+
+00:27:20.000 --> 00:27:22.500
+To me, I think that's going to be, I think it's going to be rugged.
+
+00:27:22.780 --> 00:27:23.660
+I think it's going to be rugged.
+
+00:27:24.200 --> 00:27:24.640
+So.
+
+00:27:25.140 --> 00:27:25.540
+Yeah.
+
+00:27:25.920 --> 00:27:29.800
+I think we're, I think we're getting into like old man yells at cloud territory.
+
+00:27:29.800 --> 00:27:31.980
+So, we may have to move on.
+
+00:27:33.120 --> 00:27:34.040
+Cut me off, Ryan.
+
+00:27:34.120 --> 00:27:34.600
+I'm telling you.
+
+00:27:34.760 --> 00:27:34.880
+Yeah.
+
+00:27:34.880 --> 00:27:40.360
+I told you I was going to be on like a type, a type, run this time, but no, I'm glad you covered it.
+
+00:27:40.360 --> 00:27:41.240
+Cause this is interesting.
+
+00:27:41.360 --> 00:27:42.560
+I love the idea of Sentinels.
+
+00:27:42.640 --> 00:27:43.200
+I've used them.
+
+00:27:43.320 --> 00:27:48.380
+I haven't used them very much in Python, but I used them back in my C++ and C# days and I really liked them.
+
+00:27:48.400 --> 00:27:51.500
+I think they provide a really interesting goal.
+
+00:27:51.880 --> 00:27:51.980
+Yeah.
+
+00:27:52.260 --> 00:27:52.440
+Yep.
+
+00:27:52.700 --> 00:27:53.860
+do you have any extras?
+
+00:27:54.240 --> 00:27:54.440
+Of course.
+
+00:27:54.700 --> 00:27:55.000
+Yeah.
+
+00:27:55.000 --> 00:27:55.400
+You know what?
+
+00:27:55.420 --> 00:27:57.020
+I got some stuff to talk about.
+
+00:27:57.400 --> 00:27:58.760
+Let me swap it over.
+
+00:27:58.760 --> 00:28:01.780
+I didn't have any extras written down, but then I decided I have extras.
+
+00:28:02.020 --> 00:28:09.900
+So I haven't talked about this yet, but, if I go over at Talk Python training, I've done some cool stuff.
+
+00:28:09.900 --> 00:28:14.900
+So no, there's so many, you, you warned me of this, pop out thing, Brian.
+
+00:28:15.140 --> 00:28:16.460
+I'm now starting to feel it.
+
+00:28:16.460 --> 00:28:24.760
+So over at, Talk Python training, we now have German subtitles for every single course for all 280 hours of courses.
+
+00:28:24.760 --> 00:28:31.080
+So like I'll, I pull up, Vincent Wormerdam's, LLM building blocks course.
+
+00:28:31.320 --> 00:28:36.660
+And now if I click on the CC, I get English, German, and this one even has Spanish.
+
+00:28:36.800 --> 00:28:37.420
+How about that?
+
+00:28:37.760 --> 00:28:38.080
+Nice.
+
+00:28:38.380 --> 00:28:38.560
+Yeah.
+
+00:28:38.600 --> 00:28:42.260
+So I could turn on like German transcripts and, you know, they're on the screen.
+
+00:28:42.320 --> 00:28:43.280
+Maybe those are too big.
+
+00:28:43.280 --> 00:28:45.780
+So I can make them a little smaller, put them up at the top.
+
+00:28:45.780 --> 00:28:46.580
+So they're not in the way.
+
+00:28:46.640 --> 00:28:49.320
+So I've done a ton of work on the transcripts over here.
+
+00:28:49.320 --> 00:28:55.340
+And now guess what Vincent's speaking German now, right?
+
+00:28:55.420 --> 00:28:55.820
+Let's go.
+
+00:28:56.340 --> 00:29:03.460
+So anyway, if, if you were a German speaker, check out the courses, and turn on the subtitles for German, if you like.
+
+00:29:03.800 --> 00:29:15.900
+I'm wondering how, like when we're going to have AI tools that can not just do different translations for subtitles, but can we get like dubbing in the original speaker's voice?
+
+00:29:16.060 --> 00:29:16.780
+That'd be cool.
+
+00:29:17.040 --> 00:29:17.560
+Hold that thought.
+
+00:29:17.560 --> 00:29:18.800
+All right.
+
+00:29:18.800 --> 00:29:19.320
+That's my extra.
+
+00:29:19.620 --> 00:29:24.220
+We have a German subtitles for all the courses that talk Python, all 280 hours.
+
+00:29:24.220 --> 00:29:34.540
+And I would just like to point, I said this in the blog post, but just to listen to 280 hours of audio is seven weeks, almost two months of work, not the translating, not the double
+
+00:29:34.540 --> 00:29:42.540
+checking just to listen to is seven weeks worth of work, 40 hours, you know, eight hours a day, five days a week sort of thing.
+
+00:29:42.720 --> 00:29:46.340
+so that is a mega, mega project I've been working on.
+
+00:29:46.340 --> 00:29:48.400
+And you got a lot of courses up.
+
+00:29:48.580 --> 00:29:49.580
+I know it's crazy.
+
+00:29:49.720 --> 00:29:51.180
+So I'm working through the Spanish ones.
+
+00:29:51.300 --> 00:29:56.280
+Now I've got maybe four courses converted over Spanish, but Spanish is going to be the next language.
+
+00:29:56.280 --> 00:29:58.980
+So don't feel left out Spanish speaking folks.
+
+00:29:58.980 --> 00:30:00.980
+It's coming soon.
+
+00:30:01.260 --> 00:30:01.360
+Yeah.
+
+00:30:01.620 --> 00:30:02.380
+That's my extra.
+
+00:30:02.700 --> 00:30:02.920
+All right.
+
+00:30:03.060 --> 00:30:08.140
+Well, I'm going to roll back to, we were talking about, what was it?
+
+00:30:08.180 --> 00:30:13.960
+It's not, the place, the non GitHub place that we had somebody at, anyway.
+
+00:30:14.020 --> 00:30:14.320
+Kudberg.
+
+00:30:14.620 --> 00:30:15.040
+Kudberg.
+
+00:30:15.040 --> 00:30:15.360
+Yeah.
+
+00:30:15.840 --> 00:30:21.400
+So, on that topic, Armin Ronecker, wrote an article about GitHub.
+
+00:30:21.600 --> 00:30:30.380
+So before, before GitHub, basically the, like it's talking about this, like we're at, we're at an inflection point, not sure where we're going to go forward.
+
+00:30:30.380 --> 00:30:33.200
+But before GitHub, it was a weird place.
+
+00:30:33.200 --> 00:30:41.800
+We had basically, source controls roll your own or do something wacky or, it was, it was a very different experience.
+
+00:30:41.800 --> 00:30:44.400
+So we're, and I have to agree.
+
+00:30:44.520 --> 00:30:57.240
+I am even at the state of GitHub right now, I'm still using it a lot and other things, but I also understand some of the gripes people have, there's political stuff and with AI and everything.
+
+00:30:57.240 --> 00:31:10.020
+But aside from that and whether or not they should have been able to just steal everybody's content, or intellectual property, because open source does not mean please just, you know, train your AIs on it.
+
+00:31:10.020 --> 00:31:23.680
+But anyway, regardless of that, the, there's a, there's another, there's another aspect of it that the GitHub is really built around community building and collab getting as many collaborators as possible.
+
+00:31:23.680 --> 00:31:26.360
+And it doesn't often work that way.
+
+00:31:26.360 --> 00:31:35.120
+I mean, we often get a lot of people submitting issues and griping about things, but not a lot of people contributing actual good code contribute contributions.
+
+00:31:35.620 --> 00:31:36.700
+And it's even different.
+
+00:31:36.840 --> 00:31:42.540
+It's even worse now with a lot of people just submitting AI slop, as, as stuff.
+
+00:31:42.640 --> 00:31:45.980
+So I totally get projects getting, moving away.
+
+00:31:46.080 --> 00:31:49.940
+So there's a interesting discussion about like, you know, GitHub is slow.
+
+00:31:50.200 --> 00:31:51.640
+GitHub is slowly dying.
+
+00:31:51.640 --> 00:31:53.120
+I don't think it's going to die.
+
+00:31:53.260 --> 00:31:54.900
+I think it'll stick around for a long time.
+
+00:31:54.980 --> 00:32:00.820
+And I think, for many years, it'll be still the dominant one, but there is some interesting shifts.
+
+00:32:00.900 --> 00:32:09.420
+at first there were like just a few people moving over or not a few, a lot of people moving over to Codeberg, but it was a smaller projects.
+
+00:32:09.420 --> 00:32:10.720
+But now there's some bigger ones.
+
+00:32:10.720 --> 00:32:16.200
+And, and one of the things that I'm grateful for is he brought up tenacity and I'm like, what's tenacity?
+
+00:32:16.340 --> 00:32:17.360
+I don't know what that is.
+
+00:32:17.600 --> 00:32:26.880
+And it's a, it's a total tangent for the topic, but it's a, cross platform, multi-track audio editor and recorder that I'd never heard of.
+
+00:32:26.920 --> 00:32:28.200
+And it looks pretty cool.
+
+00:32:28.260 --> 00:32:29.860
+So I might check that out.
+
+00:32:29.900 --> 00:32:30.680
+It's an open source thing.
+
+00:32:30.820 --> 00:32:31.060
+Anyway.
+
+00:32:31.320 --> 00:32:32.140
+Oh, that's very cool.
+
+00:32:32.180 --> 00:32:36.880
+I've used audacity and I bet it is a, a riff on audacity, right?
+
+00:32:37.020 --> 00:32:38.200
+But yeah, yeah, yeah.
+
+00:32:38.540 --> 00:32:39.800
+Now I'm definitely checking this out.
+
+00:32:39.800 --> 00:32:40.300
+This is cool.
+
+00:32:40.600 --> 00:32:40.820
+Yeah.
+
+00:32:40.880 --> 00:32:46.480
+So I definitely want to check that out, even though I, I, I'm happy with my audio situation right now.
+
+00:32:46.480 --> 00:32:55.900
+But anyway, the interesting thing around this that I, I, it's a, it's an interesting topic and it's not a really long article.
+
+00:32:56.060 --> 00:33:09.680
+One of the things he talks about really is when, if we go to Codeberg or other roll your own stuff and have source code, like all over the place, we do lose some things because even, even though you can clone, you can do things that conversations are less, we have less
+
+00:33:09.680 --> 00:33:14.240
+conversations around, around issues around the direction of some projects.
+
+00:33:14.400 --> 00:33:18.760
+And if it goes away, if somebody deletes their repo, we lose all of that.
+
+00:33:18.920 --> 00:33:23.120
+so there's some archive possibly needed some history that would be helpful.
+
+00:33:23.540 --> 00:33:27.380
+anyway, interesting discussion around, around that here.
+
+00:33:27.380 --> 00:33:28.420
+So thanks, Armin.
+
+00:33:28.700 --> 00:33:28.960
+Yeah.
+
+00:33:29.000 --> 00:33:30.220
+Very nice article, Armin.
+
+00:33:30.400 --> 00:33:35.140
+And I've really appreciated his, his thought pieces and his writing over the last year or two.
+
+00:33:35.240 --> 00:33:36.000
+So good job.
+
+00:33:36.200 --> 00:33:36.440
+Yeah.
+
+00:33:36.440 --> 00:33:36.480
+Yeah.
+
+00:33:36.700 --> 00:33:50.240
+Also Hugo out in the audience said, Hey, don't forget Python 314.5 is now out with the new, which is actually the old GC and 315 beta one, the feature freezes out.
+
+00:33:50.440 --> 00:33:51.000
+So yes.
+
+00:33:51.000 --> 00:33:51.880
+Thank you so much for that.
+
+00:33:51.960 --> 00:33:59.320
+Like most notably the garbage collector GC has changed back to the full pausing one, not the incremental one.
+
+00:33:59.520 --> 00:34:00.480
+Everything old is new again.
+
+00:34:00.680 --> 00:34:01.560
+Yeah, exactly.
+
+00:34:01.800 --> 00:34:02.380
+Here we go.
+
+00:34:02.460 --> 00:34:03.180
+Back around.
+
+00:34:03.440 --> 00:34:03.760
+All right.
+
+00:34:04.300 --> 00:34:05.540
+tell us a joke.
+
+00:34:05.540 --> 00:34:06.400
+Ready for a joke.
+
+00:34:06.660 --> 00:34:13.240
+So, I've been thinking about like everybody's saying, Oh, like now that with AI and everything, I can write my own software.
+
+00:34:13.340 --> 00:34:14.340
+I don't need software engineers.
+
+00:34:14.560 --> 00:34:16.820
+So it reminded me of this XKCD.
+
+00:34:17.020 --> 00:34:17.860
+So I'm bringing this up.
+
+00:34:18.080 --> 00:34:23.240
+So it's a make it yourself, make it, make it, make it myself, XKCD.
+
+00:34:23.440 --> 00:34:28.000
+And there's two people looking at a couple boxes and I'll just read it out to you.
+
+00:34:28.040 --> 00:34:28.860
+It's mostly text.
+
+00:34:29.000 --> 00:34:30.640
+They want $80 for this.
+
+00:34:30.760 --> 00:34:45.580
+I could make one myself for $10 in parts, an hour of work, a trip to the hardware store, another $30 for parts, another few hours of work, two more trips to the store for $20 more in parts, another hour to redo the first hour of work because I messed
+
+00:34:45.580 --> 00:34:49.260
+it up and $80 to buy this when the one I made breaks.
+
+00:34:49.940 --> 00:34:52.600
+So that is so true.
+
+00:34:52.820 --> 00:34:54.580
+It's a hundred percent true.
+
+00:34:54.580 --> 00:34:55.060
+Yeah.
+
+00:34:55.060 --> 00:34:56.180
+Yeah, exactly.
+
+00:34:56.440 --> 00:35:00.880
+And I don't, that's why I think this whole vibe coding thing, you know, there was the SaaS apocalypse.
+
+00:35:01.220 --> 00:35:11.380
+And I think that's going to be a very focused and very narrow impact because it's like, yeah, you can make it and you got to back it up and maintain it and run it and operationally and secure it.
+
+00:35:11.500 --> 00:35:12.360
+And you know what?
+
+00:35:12.380 --> 00:35:13.700
+Let's just let them run it for 10 bucks.
+
+00:35:13.700 --> 00:35:14.140
+Yeah.
+
+00:35:14.260 --> 00:35:16.100
+I think I'm, I'm hoping that it will drive.
+
+00:35:16.240 --> 00:35:28.660
+I mean, not the, I think it'll change the dynamics of how people make money about software, but I do think that I'm hoping we get more good SaaS out there and some of
+
+00:35:28.660 --> 00:35:36.800
+the, the, even if it's helped being made by AI, but the good ones will stick around even if they get, have to get really recoded.
+
+00:35:37.180 --> 00:35:38.200
+So yeah, indeed.
+
+00:35:38.440 --> 00:35:38.720
+All right.
+
+00:35:38.900 --> 00:35:40.440
+Well, thanks a lot for a great episode.
+
+00:35:40.560 --> 00:35:41.740
+Thanks everybody for listening.
+
+00:35:42.000 --> 00:35:42.180
+Yeah.
+
+00:35:42.180 --> 00:35:42.580
+Thanks.
+
+00:35:42.720 --> 00:35:42.860
+Bye.
+
+00:35:43.700 --> 00:35:44.700
+Bye.
