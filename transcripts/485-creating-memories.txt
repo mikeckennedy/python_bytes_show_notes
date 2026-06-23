@@ -1,0 +1,1388 @@
+00:00:00 <v Calvin Hendryx-Parker>Hello and welcome to Python Bytes, where we deliver Python news and headlines directly to
+
+00:00:05 <v Calvin Hendryx-Parker>your earbuds. This is episode 485, recorded on Tuesday, June 23rd. I'm Calvin Hendryx-Parker.
+
+00:00:12 <v Calvin Hendryx-Parker>And I'm Michael Kennedy.
+
+00:00:13 <v Calvin Hendryx-Parker>Thanks, Michael, for being here with me today. I'm excited to be your co-host for Python Bytes.
+
+00:00:19 <v Calvin Hendryx-Parker>We've got a lot going on. We're going to dive right in. But first, make sure you go check out
+
+00:00:26 <v Calvin Hendryx-Parker>our sponsors. It is sponsored by us in our work.
+
+00:00:29 <v Calvin Hendryx-Parker>Michael's great work over at the Talk Python courses.
+
+00:00:32 <v Calvin Hendryx-Parker>So check out Talk Python's coursework over there.
+
+00:00:35 <v Calvin Hendryx-Parker>And if you are in the Midwest tomorrow, since this does go live today,
+
+00:00:41 <v Calvin Hendryx-Parker>AWS Community Day Midwest is tomorrow, June 24th in downtown Indianapolis.
+
+00:00:46 <v Calvin Hendryx-Parker>Six Feet Up is sponsoring and there'll be two Sixies presenting.
+
+00:00:49 <v Calvin Hendryx-Parker>So you've got, that's actually what Six Feet Up people refer to themselves as.
+
+00:00:54 <v Calvin Hendryx-Parker>So if you want to come check out two of us presenting at the conference tomorrow, check that out.
+
+00:00:58 <v Calvin Hendryx-Parker>If you want to connect with the hosts, you can find Michael and myself at all the various social spots on Mastodon, Bluesky.
+
+00:01:06 <v Calvin Hendryx-Parker>Do you still use X?
+
+00:01:08 <v Michael Kennedy>I do still use X.
+
+00:01:09 <v Michael Kennedy>And I updated our show notes template so that we have our X links and LinkedIn.
+
+00:01:14 <v Michael Kennedy>Perfect.
+
+00:01:15 <v Calvin Hendryx-Parker>Yeah, because I'm probably a little more active on LinkedIn.
+
+00:01:17 <v Calvin Hendryx-Parker>But maybe this is a nudge or a motivation that I should go be active over on the other platforms too.
+
+00:01:22 <v Calvin Hendryx-Parker>And you can check out the show on Mastodon and Bluesky at those various links.
+
+00:01:26 <v Calvin Hendryx-Parker>And X there as well.
+
+00:01:27 <v Calvin Hendryx-Parker>So join us on YouTube for the live version of the show at pythonbytes.fm/live to be part of the audience.
+
+00:01:35 <v Calvin Hendryx-Parker>Usually we record Tuesday at 7 a.m. Pacific, 10 a.m. Eastern for those of us on the East Coast.
+
+00:01:41 <v Calvin Hendryx-Parker>I guess we cover both the coasts, Michael.
+
+00:01:44 <v Calvin Hendryx-Parker>And then older video versions are available there as well.
+
+00:01:47 <v Calvin Hendryx-Parker>Finally, if you want a bonus digest of every week's show notes from an email form, just add your name
+
+00:01:54 <v Calvin Hendryx-Parker>and email to our friends of the show list. And we'll never share that email address with anyone
+
+00:01:59 <v Calvin Hendryx-Parker>else. You'll just get great sets of links and show notes from the team over here at Python Bytes.
+
+00:02:04 <v Calvin Hendryx-Parker>All right, Michael, let's kick it off. You've got the first topic up here.
+
+00:02:08 <v Michael Kennedy>And let me tell you, I think this one is going to resonate with you.
+
+00:02:12 <v Calvin Hendryx-Parker>Yeah, I already saw why I peeked at some of the headlines. I was like, this is interesting.
+
+00:02:16 <v Michael Kennedy>Backing up Docker volumes.
+
+00:02:18 <v Michael Kennedy>So maybe we should do a quick, what the heck?
+
+00:02:21 <v Michael Kennedy>What are Docker volumes?
+
+00:02:23 <v Michael Kennedy>So if you do Docker a lot, you know exactly what Docker volumes are.
+
+00:02:26 <v Michael Kennedy>But Docker's a little bit one of those things like, oh, it seems so complicated, so weird.
+
+00:02:31 <v Michael Kennedy>And it's just really different than what I'm used to doing.
+
+00:02:33 <v Michael Kennedy>And then you work on the Go.
+
+00:02:34 <v Michael Kennedy>That's kind of like Linux, but just in a file.
+
+00:02:36 <v Michael Kennedy>You know what I mean?
+
+00:02:38 <v Michael Kennedy>But one of the things that is different about Docker is it's very transient.
+
+00:02:42 <v Michael Kennedy>It's not quite Nix, that it can't be changed once it's fired up.
+
+00:02:46 <v Michael Kennedy>but it's generally ephemeral, right?
+
+00:02:50 <v Michael Kennedy>I start up a Docker container, <v Michael Kennedy>my app or whatever app is running there might write to it,
+
+00:02:54 <v Michael Kennedy>but that's right inside the Docker container.
+
+00:02:56 <v Michael Kennedy>And then when it goes away, <v Michael Kennedy>if I restart it, rebuild it, especially,
+
+00:03:01 <v Michael Kennedy>then whatever it wrote is just gone.
+
+00:03:03 <v Michael Kennedy>Sometimes you want that.
+
+00:03:04 <v Michael Kennedy>But say if you want your web server logs to stick around,
+
+00:03:07 <v Michael Kennedy>you don't want it.
+
+00:03:08 <v Michael Kennedy>If you want your database data to stick around, <v Michael Kennedy>you really don't want it.
+
+00:03:11 <v Michael Kennedy>So there's a lot of times that you want a permanent storage,
+
+00:03:16 <v Michael Kennedy>but an ephemeral operated system and code and so on for Docker.
+
+00:03:20 <v Michael Kennedy>So what you can create is a Docker volume, <v Michael Kennedy>which is a managed persistent virtual hard drive type thing
+
+00:03:28 <v Michael Kennedy>associated with that particular Docker container.
+
+00:03:31 <v Michael Kennedy>And you can move around theoretically afterwards, right?
+
+00:03:33 <v Michael Kennedy>But typically you say, okay, my Docker setup, <v Michael Kennedy>this database server gets a volume for its data, something like that.
+
+00:03:39 <v Calvin Hendryx-Parker>Yeah, that's one of my favorite features of Docker
+
+00:03:41 <v Calvin Hendryx-Parker>is the immutability of the containers.
+
+00:03:43 <v Calvin Hendryx-Parker>And if people respect that, things go a lot smoother generally.
+
+00:03:47 <v Michael Kennedy>Yes, exactly.
+
+00:03:47 <v Michael Kennedy>Like, well, what I typically do, Calvin, when my Docker doesn't work, I just log into the container.
+
+00:03:53 <v Michael Kennedy>And then I like get pulled a new version and just like read.
+
+00:03:56 <v Michael Kennedy>No, just kidding.
+
+00:03:57 <v Calvin Hendryx-Parker>This is this is the modern equivalent of change mod 777 across all your files.
+
+00:04:03 <v Calvin Hendryx-Parker>Exactly.
+
+00:04:03 <v Michael Kennedy>It's not working.
+
+00:04:04 <v Michael Kennedy>That always fixes it.
+
+00:04:05 <v Michael Kennedy>Just fix it.
+
+00:04:06 <v Michael Kennedy>I just open all the ports.
+
+00:04:07 <v Michael Kennedy>It says it can't get to it.
+
+00:04:08 <v Michael Kennedy>What's the problem?
+
+00:04:08 <v Michael Kennedy>Passwords.
+
+00:04:09 <v Michael Kennedy>Exactly.
+
+00:04:10 <v Michael Kennedy>So what do you do with those volumes, Michael?
+
+00:04:14 <v Michael Kennedy>So you've got to back that data up.
+
+00:04:16 <v Michael Kennedy>I mean, unless you just don't like yourself.
+
+00:04:18 <v Michael Kennedy>You've got to back up your data because if something goes wrong,
+
+00:04:21 <v Michael Kennedy>from a whole host of reasons, things can go wrong.
+
+00:04:24 <v Michael Kennedy>You need a backup of your data.
+
+00:04:25 <v Michael Kennedy>That's just living in servers, right?
+
+00:04:27 <v Michael Kennedy>Yeah.
+
+00:04:28 <v Michael Kennedy>Or just computers.
+
+00:04:29 <v Michael Kennedy>So a lot of times what you can do is you can run some kind of command,
+
+00:04:33 <v Michael Kennedy>like I use MongoDB.
+
+00:04:34 <v Michael Kennedy>A lot of these people, I also use Postgres.
+
+00:04:36 <v Michael Kennedy>For either of those, there's a command you can run that says backup this
+
+00:04:39 <v Michael Kennedy>and like back it up to the host or somewhere like that and then send it off to a encrypted storage
+
+00:04:45 <v Michael Kennedy>or something. But if it's just the hard drive, the volume that you want to back up specifically,
+
+00:04:52 <v Michael Kennedy>that's way more challenging. So Brian Weber, thanks Brian, sent over this idea called this Rust
+
+00:05:00 <v Michael Kennedy>utility called Docker Volume Backup. And the idea is you can back up Docker volumes to in the,
+
+00:05:07 <v Michael Kennedy>all the ways I can imagine I would possibly want to back them up.
+
+00:05:10 <v Michael Kennedy>So you can back them up locally.
+
+00:05:12 <v Michael Kennedy>You can back them up to an S3 bucket.
+
+00:05:14 <v Michael Kennedy>And when you say S3, that means not just AWS that you can learn about tomorrow,
+
+00:05:19 <v Michael Kennedy>but many of the cloud storage providers have adopted some kind of S3 compatible API.
+
+00:05:25 <v Michael Kennedy>So you could back it up to, I don't know, Digitalization or something if you want as well.
+
+00:05:29 <v Michael Kennedy>WebDev, Azure Blob Storage, which you probably could just treat as S3 directly.
+
+00:05:34 <v Michael Kennedy>Dropbox, Google Drive, some SSH compatible storage, <v Michael Kennedy>I'm guessing SCP or something like that.
+
+00:05:39 <v Michael Kennedy>All those things.
+
+00:05:40 <v Michael Kennedy>And how sweet is that?
+
+00:05:42 <v Michael Kennedy>So the idea is when you've got a Docker Compose type of setup,
+
+00:05:47 <v Michael Kennedy>you can go and add a separate service, right?
+
+00:05:50 <v Michael Kennedy>In your Compose.
+
+00:05:52 <v Michael Kennedy>And it just says the image is this project, <v Michael Kennedy>this Docker volume backup,
+
+00:05:56 <v Michael Kennedy>and you give it environment files <v Michael Kennedy>and then it can just back up.
+
+00:05:59 <v Michael Kennedy>That's really easy.
+
+00:06:01 <v Calvin Hendryx-Parker>Really, if it's easy to do, you will do it.
+
+00:06:03 <v Michael Kennedy>Yes, it's nice, right?
+
+00:06:04 <v Michael Kennedy>So you basically just add it as a separate service.
+
+00:06:08 <v Michael Kennedy>And then in your ENV, you give it a schedule and a destination.
+
+00:06:12 <v Michael Kennedy>And then you're on the ENV settings, right?
+
+00:06:14 <v Michael Kennedy>The backup settings.
+
+00:06:15 <v Michael Kennedy>You just give it those kinds of things.
+
+00:06:16 <v Calvin Hendryx-Parker>And if you've got a home lab and you've got a NAS on there,
+
+00:06:18 <v Calvin Hendryx-Parker>most NASs have S3 compatible storage.
+
+00:06:20 <v Calvin Hendryx-Parker>So you can keep it all, I'm kind of touting the local first operation again,
+
+00:06:25 <v Calvin Hendryx-Parker>keeping all your data, your data.
+
+00:06:27 <v Michael Kennedy>Yeah, absolutely.
+
+00:06:28 <v Michael Kennedy>So this thing is super small, written in Go, 25 megs.
+
+00:06:31 <v Michael Kennedy>So there was also a Docker volume backup Docker shell based image, and this is 1/20th the size.
+
+00:06:38 <v Michael Kennedy>So that's cool.
+
+00:06:39 <v Michael Kennedy>let's see, you can set up a cron job in your composed setup, or you can just CLI run it.
+
+00:06:45 <v Michael Kennedy>It, this is, this is part of the stuff that I thought was really cool.
+
+00:06:47 <v Michael Kennedy>It rotates away your old backups.
+
+00:06:49 <v Michael Kennedy>You don't have to worry about that kind of stuff.
+
+00:06:50 <v Michael Kennedy>You say like, just keep me, give me a backup every day or for a month, you know, or, or
+
+00:06:55 <v Michael Kennedy>something like that.
+
+00:06:55 <v Michael Kennedy>And then you move it on.
+
+00:06:57 <v Michael Kennedy>local GPT encryption, like at rest encryption of your backups, which I think is super important
+
+00:07:03 <v Michael Kennedy>because the last thing you want to do is like, well, I want to make sure I back it up.
+
+00:07:06 <v Michael Kennedy>So it doesn't, if things get hacked, it doesn't go wrong.
+
+00:07:08 <v Michael Kennedy>And then that actually being the thing that gets stole.
+
+00:07:11 <v Michael Kennedy>Get notification on finished infill build, filled runs.
+
+00:07:14 <v Michael Kennedy>you can have it stop the container before it does the snapshot and start it back up.
+
+00:07:20 <v Michael Kennedy>So if you're doing like, I don't know, a SQL light sort of thing as your storage
+
+00:07:25 <v Michael Kennedy>and you don't need that much uptime, <v Michael Kennedy>you want to make sure it's not in some like half-committed journaling state
+
+00:07:30 <v Michael Kennedy>or whatever, you know.
+
+00:07:32 <v Michael Kennedy>You can run custom commands during the backup lifecycle.
+
+00:07:34 <v Calvin Hendryx-Parker>That was my next question.
+
+00:07:35 <v Calvin Hendryx-Parker>Can you run a custom command?
+
+00:07:36 <v Michael Kennedy>And here's the one that maybe go start going down this list.
+
+00:07:40 <v Michael Kennedy>It has Docker Swarm support plus ARM64 and ARMv7, <v Michael Kennedy>which means it runs on Raspberry Pi Home Labs.
+
+00:07:47 <v Calvin Hendryx-Parker>Oh, that's nice.
+
+00:07:49 <v Michael Kennedy>It's hitting all the check marks.
+
+00:07:51 <v Michael Kennedy>Yeah, it's pretty calm, right?
+
+00:07:52 <v Michael Kennedy>It's all right.
+
+00:07:54 <v Michael Kennedy>That's very cool.
+
+00:07:54 <v Michael Kennedy>This also gives me a chance to shout out Idlembyte's search.
+
+00:07:59 <v Michael Kennedy>So people come over and search for like Docker backup.
+
+00:08:02 <v Michael Kennedy>And Brian pointed out like, oh, if you search for volume until today, it came back with no results.
+
+00:08:08 <v Michael Kennedy>And he thought it was broken.
+
+00:08:09 <v Michael Kennedy>But actually, he said, it's so fast, I thought it didn't work.
+
+00:08:12 <v Michael Kennedy>It felt kind of like a rough thing.
+
+00:08:14 <v Michael Kennedy>But I actually put a ton of energy into this custom search engine that I built for this.
+
+00:08:19 <v Michael Kennedy>If you're interested in what we cover some of them, please check out our search engine.
+
+00:08:22 <v Michael Kennedy>And you can even add it.
+
+00:08:24 <v Michael Kennedy>Now, this is like next level right here.
+
+00:08:26 <v Michael Kennedy>You can add it as a custom search engine to your browser.
+
+00:08:28 <v Michael Kennedy>So you just say PB space and search our site.
+
+00:08:31 <v Calvin Hendryx-Parker>So you can have Python bites all the things.
+
+00:08:34 <v Calvin Hendryx-Parker>Actually, I was looking for that this morning.
+
+00:08:35 <v Calvin Hendryx-Parker>Because I was like, did we cover this?
+
+00:08:36 <v Calvin Hendryx-Parker>Have we talked about this in the past?
+
+00:08:38 <v Calvin Hendryx-Parker>So that's super cool.
+
+00:08:40 <v Calvin Hendryx-Parker>Now, that's awesome that they went and looked at your site to see if this thing existed
+
+00:08:45 <v Calvin Hendryx-Parker>and didn't find it and scratched that itch and made that thing happen.
+
+00:08:49 <v Calvin Hendryx-Parker>So very cool.
+
+00:08:50 <v Calvin Hendryx-Parker>Well, speaking of making things happen.
+
+00:08:52 <v Michael Kennedy>Before we move on, I just want to give a shout out to Chris out there.
+
+00:08:56 <v Michael Kennedy>It says, backing up a volume is surprisingly hard when you think about application state,
+
+00:09:01 <v Michael Kennedy>stateful data, restore points.
+
+00:09:03 <v Michael Kennedy>Yes.
+
+00:09:03 <v Michael Kennedy>So absolutely.
+
+00:09:04 <v Michael Kennedy>And this is a really nice option there.
+
+00:09:06 <v Calvin Hendryx-Parker>Yeah, that is very true.
+
+00:09:08 <v Calvin Hendryx-Parker>Like I said, if you make a thing easy to do, it will get done.
+
+00:09:10 <v Calvin Hendryx-Parker>If it is hard to do, it will go into that queue of things still to do.
+
+00:09:16 <v Calvin Hendryx-Parker>All right.
+
+00:09:16 <v Calvin Hendryx-Parker>Well, thanks for that tip on backing up my Docker volumes
+
+00:09:20 <v Calvin Hendryx-Parker>into S3 compatible storage.
+
+00:09:22 <v Calvin Hendryx-Parker>But the next one up here actually is kind of exciting
+
+00:09:25 <v Calvin Hendryx-Parker>because it's not just a release of Pyodide 314,
+
+00:09:29 <v Calvin Hendryx-Parker>which you'll notice a new numbering scheme there going on.
+
+00:09:32 <v Calvin Hendryx-Parker>The real news here is actually the fact that PEP783
+
+00:09:37 <v Calvin Hendryx-Parker>has made this possible.
+
+00:09:39 <v Calvin Hendryx-Parker>The Pyodide maintainers were basically hand building
+
+00:09:43 <v Calvin Hendryx-Parker>300 plus packages for your browser <v Calvin Hendryx-Parker>to use Python in the browser.
+
+00:09:47 <v Calvin Hendryx-Parker>So this is all about using Python in the browser.
+
+00:09:49 <v Calvin Hendryx-Parker>If you've ever thought about why do I have to use JavaScript
+
+00:09:52 <v Calvin Hendryx-Parker>to make fun web apps, you can actually use Python
+
+00:09:55 <v Calvin Hendryx-Parker>to do that with tools like Piodide.
+
+00:09:57 <v Calvin Hendryx-Parker>And now that the 783 has actually been accepted,
+
+00:10:00 <v Calvin Hendryx-Parker>you can use cibuildwheel and put wheels, <v Calvin Hendryx-Parker>like compiled binary packages onto PyPy
+
+00:10:06 <v Calvin Hendryx-Parker>so that if you write an app for the browser, <v Calvin Hendryx-Parker>someone can quickly download and get the latest versions
+
+00:10:11 <v Calvin Hendryx-Parker>of the dependencies you may be including <v Calvin Hendryx-Parker>in that application itself.
+
+00:10:15 <v Calvin Hendryx-Parker>So again, I don't know, they may be seeing hopefully
+
+00:10:18 <v Calvin Hendryx-Parker>a surge of browser-based Pyodide packages <v Calvin Hendryx-Parker>onto PyPI or PyPI coming up here in the future,
+
+00:10:26 <v Calvin Hendryx-Parker>but that's actually really cool to see that ease of use now.
+
+00:10:30 <v Calvin Hendryx-Parker>And so there's a whole tool chain available <v Calvin Hendryx-Parker>to build these packages and make them available.
+
+00:10:34 <v Calvin Hendryx-Parker>A couple other changes that have happened <v Calvin Hendryx-Parker>in this 314 release, you'll notice the numbering change.
+
+00:10:39 <v Calvin Hendryx-Parker>There's a version jump from 0.29 to 314.
+
+00:10:44 <v Calvin Hendryx-Parker>that's intentional. Basically, you're going to have the Pyodide version track the Python version
+
+00:10:49 <v Calvin Hendryx-Parker>that it closely matches with. So if you're looking for the 3.12 version of Pyodide, that's the older
+
+00:10:56 <v Calvin Hendryx-Parker>0.29. But moving forward, you'll quickly spot and know which version of Python you're getting when
+
+00:11:02 <v Calvin Hendryx-Parker>you install and use Pyodide in your projects based on the version number of Pyodide itself. So you'll
+
+00:11:07 <v Calvin Hendryx-Parker>get 314 tracks to 3.14.
+
+00:11:11 <v Calvin Hendryx-Parker>So for binary compatibility, <v Calvin Hendryx-Parker>it's locked within the Python cycle,
+
+00:11:15 <v Calvin Hendryx-Parker>meaning the packages you build today won't break
+
+00:11:17 <v Calvin Hendryx-Parker>with the next Pyodide release.
+
+00:11:18 <v Calvin Hendryx-Parker>So another big benefit to this piece here.
+
+00:11:21 <v Calvin Hendryx-Parker>They've also brought back in some packages <v Calvin Hendryx-Parker>that were taken out of the standard library
+
+00:11:27 <v Calvin Hendryx-Parker>for Pyodide to make the packaging smaller.
+
+00:11:30 <v Calvin Hendryx-Parker>Things like SQLite3, SSL, and LZMA <v Calvin Hendryx-Parker>are back in the default standard library,
+
+00:11:36 <v Calvin Hendryx-Parker>which is nice, so you don't have to basically install
+
+00:11:38 <v Calvin Hendryx-Parker>something like SQLite if you're using that <v Calvin Hendryx-Parker>in your browser-based application.
+
+00:11:43 <v Calvin Hendryx-Parker>There's some bug fixes and other things in there.
+
+00:11:46 <v Calvin Hendryx-Parker>There's also experimental TCP socket support in Node.js,
+
+00:11:50 <v Calvin Hendryx-Parker>and you can now connect Pyodide to a real database.
+
+00:11:54 <v Calvin Hendryx-Parker>So that's kind of a wordy, <v Calvin Hendryx-Parker>if you've got Python running in the browser,
+
+00:11:57 <v Calvin Hendryx-Parker>but you can't connect to a database or to sockets,
+
+00:12:00 <v Calvin Hendryx-Parker>you were kind of limited in what you could do <v Calvin Hendryx-Parker>with local storage, for example,
+
+00:12:03 <v Calvin Hendryx-Parker>but now that opens up a wider spectrum of things you can do.
+
+00:12:07 <v Calvin Hendryx-Parker>It looks like they've tested it on MySQL, Postgres, and Redis
+
+00:12:11 <v Calvin Hendryx-Parker>when running on server side.
+
+00:12:13 <v Calvin Hendryx-Parker>So it definitely blurs the lines between Python in the browser
+
+00:12:16 <v Calvin Hendryx-Parker>and Python runtime anywhere WASM runs, <v Calvin Hendryx-Parker>which I think is, again, super cool.
+
+00:12:21 <v Calvin Hendryx-Parker>So I don't know, what do you think?
+
+00:12:22 <v Calvin Hendryx-Parker>Are you building some web-based Python apps, Michael?
+
+00:12:25 <v Michael Kennedy>I would love a Vue.js-like equivalent <v Michael Kennedy>or something along those lines built on top of PyScript,
+
+00:12:33 <v Michael Kennedy>which can run Pyodide or even MicroPython, <v Michael Kennedy>which I think would be super neat.
+
+00:12:37 <v Michael Kennedy>I built some examples actually when I built a PWA <v Michael Kennedy>based on PyScript when it first came out
+
+00:12:43 <v Michael Kennedy>and that was based on Pyodide.
+
+00:12:45 <v Michael Kennedy>And it worked really, really well, but I have not.
+
+00:12:48 <v Michael Kennedy>I've not been doing it lately.
+
+00:12:49 <v Michael Kennedy>You guys see a lot more variations <v Michael Kennedy>with all your projects that you work on.
+
+00:12:52 <v Michael Kennedy>How about you?
+
+00:12:53 <v Calvin Hendryx-Parker>I mean, we've got some interesting stuff going on
+
+00:12:55 <v Calvin Hendryx-Parker>in the appliance world, <v Calvin Hendryx-Parker>but this might actually open the door to,
+
+00:12:59 <v Calvin Hendryx-Parker>again, more of those at-edge applications <v Calvin Hendryx-Parker>where connectivity may be limited to,
+
+00:13:05 <v Calvin Hendryx-Parker>I just see a lot of special use cases <v Calvin Hendryx-Parker>that open up when you can run Python in the browser.
+
+00:13:09 <v Calvin Hendryx-Parker>I've always wanted Python in the browser.
+
+00:13:11 <v Calvin Hendryx-Parker>And when PyScript came out, what was that back?
+
+00:13:13 <v Calvin Hendryx-Parker>Oh, it's been a few years back now.
+
+00:13:15 <v Calvin Hendryx-Parker>That was exciting and kind of big news, <v Calvin Hendryx-Parker>but obviously it was slow in the early days.
+
+00:13:19 <v Calvin Hendryx-Parker>There was limitations, but this, <v Calvin Hendryx-Parker>I think this is a big move
+
+00:13:23 <v Calvin Hendryx-Parker>that's going to open up a lot of options <v Calvin Hendryx-Parker>for folks to build either embedded applications
+
+00:13:27 <v Calvin Hendryx-Parker>or things that can kind of stand on their own <v Calvin Hendryx-Parker>and run at the edge.
+
+00:13:31 <v Calvin Hendryx-Parker>i'm excited i think it's going to offer a lot of interesting uh moves there yeah uh i'm very
+
+00:13:36 <v Michael Kennedy>excited about um about wasm i think it's going to be i think it's going to be cool i think it's
+
+00:13:40 <v Calvin Hendryx-Parker>going to be super cool uh now let's continue on you've been talking a lot about tools uh lately
+
+00:13:46 <v Calvin Hendryx-Parker>you've got another one here i never stop we don't stop talking about the tools so i won't talk about
+
+00:13:51 <v Michael Kennedy>won't stop exactly i want to talk about the nbcli so this is a command line interface or automation
+
+00:14:00 <v Michael Kennedy>people but the primary reason for bullying is ai agents and notebooks specifically the envy
+
+00:14:05 <v Michael Kennedy>obviously is for notebooks so this is a jupyter ai contrib project and i'm sure you've noticed
+
+00:14:12 <v Michael Kennedy>this calvin but so many projects now have some form of cli as kind of the final integration
+
+00:14:19 <v Calvin Hendryx-Parker>pointer the ultimate integration should be the ultimate integration point yeah i mean the
+
+00:14:24 <v Michael Kennedy>motivation allows like well we our agents can't get to our data and it doesn't know the authenticated
+
+00:14:29 <v Michael Kennedy>API is too complicated. So what can we just do to make it simple? But it opens up so much more,
+
+00:14:34 <v Michael Kennedy>right, to just have a CLI for whatever you're working on. And so, so here's one for Jupyter
+
+00:14:41 <v Michael Kennedy>notebooks. And if you do Marimo, like hang tight, I got something there as well. But the idea here
+
+00:14:46 <v Michael Kennedy>is that instead of having the agents try to parse the IPYNB files, which are just gnarly JSON,
+
+00:14:54 <v Michael Kennedy>especially if like lots of output is in there, you know, it's like there's your actual code and your
+
+00:15:01 <v Michael Kennedy>cell definitions, but then there's maybe 10,000 lines of output to the next cell. That's not a
+
+00:15:06 <v Michael Kennedy>great place for agents to be working. Right. Right. Context windows are a precious space.
+
+00:15:12 <v Michael Kennedy>Exactly. And you're, you're messing with that. And also it's hard for it to actually kind of see
+
+00:15:18 <v Michael Kennedy>the ambient variables and stuff like that that are in the kernel. So the idea here is with this CLI,
+
+00:15:23 <v Michael Kennedy>you get more direct access to those types of things.
+
+00:15:27 <v Michael Kennedy>So let me over here.
+
+00:15:30 <v Michael Kennedy>First of all, experimental.
+
+00:15:31 <v Michael Kennedy>So heads up.
+
+00:15:32 <v Michael Kennedy>It is Rust-based, so it's likely you can see VC funding.
+
+00:15:35 <v Michael Kennedy>That's super good.
+
+00:15:36 <v Michael Kennedy>But the idea is that it can read, write, execute, <v Michael Kennedy>and search Jupyter Notebooks and just skip that whole thing.
+
+00:15:41 <v Michael Kennedy>It doesn't necessarily need to parse the IPYMB files,
+
+00:15:45 <v Michael Kennedy>and it even works without a Jupyter server.
+
+00:15:48 <v Michael Kennedy>So it can just talk directly.
+
+00:15:51 <v Michael Kennedy>So it works with files directly, <v Michael Kennedy>And it talks to the kernels using zero MQ, which is super cool.
+
+00:15:57 <v Michael Kennedy>And instead of using that token heavy JSON or just markdown, it uses at at cell and at
+
+00:16:03 <v Michael Kennedy>at output sentinels with inline metadata.
+
+00:16:06 <v Michael Kennedy>So as I said, less wasted context and you compose these things and it even ships with
+
+00:16:13 <v Michael Kennedy>an agent skill.
+
+00:16:14 <v Michael Kennedy>This is another thing I'm starting to see a lot of and have been working on.
+
+00:16:17 <v Michael Kennedy>I should have prepared an announcement on this that I'm not really talking about, but I got
+
+00:16:20 <v Michael Kennedy>some stuff over.
+
+00:16:21 <v Michael Kennedy>Some skills.
+
+00:16:22 <v Michael Kennedy>I got skills.
+
+00:16:23 <v Michael Kennedy>So if you want to install this, you can just npx skills install jupyter-a-dash-contrib-nb-cli
+
+00:16:32 <v Michael Kennedy>to install it with Claude Code.
+
+00:16:33 <v Calvin Hendryx-Parker>Yeah, I think that's smart because MCP is not the answer to everything.
+
+00:16:38 <v Calvin Hendryx-Parker>I think there's a lot of value in skills and CLI combined together because, again, preserving
+
+00:16:43 <v Calvin Hendryx-Parker>that context window in a tool like this opens up a lot for folks who are doing data science
+
+00:16:48 <v Calvin Hendryx-Parker>and they don't know how to write or want to write an MCP,
+
+00:16:51 <v Calvin Hendryx-Parker>but they're definitely a whole in on AI and agentic and LLMs.
+
+00:16:54 <v Calvin Hendryx-Parker>Yeah.
+
+00:16:55 <v Michael Kennedy>And MCPs basically say, hey, AI, here are some tools you can use,
+
+00:16:59 <v Michael Kennedy>but they don't set the context of, here's why you need to use the tools.
+
+00:17:03 <v Michael Kennedy>Here's the ways in which they work together.
+
+00:17:05 <v Michael Kennedy>You know, like you need an agent or a skill.
+
+00:17:07 <v Michael Kennedy>You need a skill to kind of set the stage, even if it's an MCP,
+
+00:17:10 <v Michael Kennedy>like, hey, you can use all this stuff in the MCP, by the way.
+
+00:17:13 <v Michael Kennedy>Makes me think I should improve my skills.
+
+00:17:15 <v Michael Kennedy>Okay.
+
+00:17:15 <v Michael Kennedy>So I said I got skills, but we'll see.
+
+00:17:18 <v Michael Kennedy>there's an article about it by <v Michael Kennedy>so you check that out
+
+00:17:23 <v Michael Kennedy>and if you're a Marimo person <v Michael Kennedy>I am going to have
+
+00:17:27 <v Michael Kennedy>Trevor on from the Marimo team <v Michael Kennedy>to talk about Marimo pair
+
+00:17:31 <v Michael Kennedy>which is a similar <v Michael Kennedy>not the same idea but a pretty similar idea
+
+00:17:34 <v Michael Kennedy>of basically how you get the agents <v Michael Kennedy>inside the kernel instead
+
+00:17:39 <v Michael Kennedy>of just having them work <v Michael Kennedy>with the files and so on
+
+00:17:42 <v Michael Kennedy>so look forward to that <v Michael Kennedy>over to you
+
+00:17:45 <v Calvin Hendryx-Parker>I like that <v Calvin Hendryx-Parker>I like that. The Marimo pair of aspects. I've become a Marimo, like I mentioned in the last
+
+00:17:50 <v Calvin Hendryx-Parker>episode of Marimo fan. Okay. So pairing well with something like that last tool you just mentioned
+
+00:17:56 <v Calvin Hendryx-Parker>is that a lot of agents and a lot of these agentic workflows are lacking the ability to recall memory
+
+00:18:03 <v Calvin Hendryx-Parker>in an efficient way. So this next piece here is actually a tool you can add into your agentic
+
+00:18:09 <v Calvin Hendryx-Parker>workflow to do AI memory. So, and more than just memory, memory that learns. So thinking about this
+
+00:18:17 <v Calvin Hendryx-Parker>memory problem is actually kind of hard. AIs forget everything between sessions, obviously.
+
+00:18:21 <v Calvin Hendryx-Parker>So you're constantly writing project specs, implementation detail plans. You know, those are
+
+00:18:27 <v Calvin Hendryx-Parker>good practices, but wouldn't it be nice if it could remember like last Tuesday when you use this tool,
+
+00:18:32 <v Calvin Hendryx-Parker>this kind of output happened. And maybe in this context, it's actually better to use this other
+
+00:18:36 <v Calvin Hendryx-Parker>tool, but that kind of, that temporal, like using time and associating facts and details together
+
+00:18:44 <v Calvin Hendryx-Parker>isn't something that just a markdown memory.md file is going to help you out with. So there's
+
+00:18:49 <v Calvin Hendryx-Parker>an open source tool called Hindsight from the folks at Vectorize, and they offer a cloud version
+
+00:18:54 <v Calvin Hendryx-Parker>of this, but you can run it locally. You can install it with Python. It's got, I think,
+
+00:18:58 <v Calvin Hendryx-Parker>adapters for all the major like Python, JavaScript, Node, et cetera. But basically what they're saying
+
+00:19:05 <v Calvin Hendryx-Parker>is simple vector search is not enough.
+
+00:19:07 <v Calvin Hendryx-Parker>Even if you had a ChromaDB locally <v Calvin Hendryx-Parker>with your documents all loaded into it,
+
+00:19:11 <v Calvin Hendryx-Parker>that isn't enough to solve the problem <v Calvin Hendryx-Parker>about what did you do last spring, for example,
+
+00:19:16 <v Calvin Hendryx-Parker>like the example they give here.
+
+00:19:18 <v Calvin Hendryx-Parker>That requires temporal reasoning <v Calvin Hendryx-Parker>and not just semantic similarity.
+
+00:19:21 <v Calvin Hendryx-Parker>So hindsight attempts to add in <v Calvin Hendryx-Parker>this extra layer of temporal retrieval,
+
+00:19:28 <v Calvin Hendryx-Parker>which runs semantic keyword graph <v Calvin Hendryx-Parker>and temporal search in parallel
+
+00:19:33 <v Calvin Hendryx-Parker>to store, retrieve, and reason over those memories.
+
+00:19:36 <v Calvin Hendryx-Parker>So you actually get kind of three main functions.
+
+00:19:39 <v Calvin Hendryx-Parker>There's three, it's a simple API.
+
+00:19:41 <v Calvin Hendryx-Parker>There's just retain, recall, and reflect.
+
+00:19:44 <v Calvin Hendryx-Parker>And then it uses this temper technique <v Calvin Hendryx-Parker>to do the search across all in parallel.
+
+00:19:50 <v Calvin Hendryx-Parker>And then it brings it all together <v Calvin Hendryx-Parker>and it automatically consolidates the related facts
+
+00:19:55 <v Calvin Hendryx-Parker>into durable observations instead of piling up duplicates.
+
+00:19:58 <v Calvin Hendryx-Parker>So again, preserving that context window, <v Calvin Hendryx-Parker>putting in what is most valuable,
+
+00:20:03 <v Calvin Hendryx-Parker>when it means the most to what you're doing, <v Calvin Hendryx-Parker>it's probably the next step in memory.
+
+00:20:08 <v Calvin Hendryx-Parker>I think this is, again, a next front that has to be conquered
+
+00:20:12 <v Calvin Hendryx-Parker>is giving these agents better recall and memory.
+
+00:20:16 <v Calvin Hendryx-Parker>I think a lot of people got a little taste of this
+
+00:20:17 <v Calvin Hendryx-Parker>with OpenClaw, but OpenClaw's default memory, <v Calvin Hendryx-Parker>I don't think gives you this level out of the box,
+
+00:20:22 <v Calvin Hendryx-Parker>but you could integrate this into your existing OpenClaws.
+
+00:20:26 <v Calvin Hendryx-Parker>It is on GitHub, it's open source.
+
+00:20:28 <v Calvin Hendryx-Parker>You can pip install hindsight all, <v Calvin Hendryx-Parker>And that actually brings down and installs the whole server and process includes like a line chain,
+
+00:20:35 <v Calvin Hendryx-Parker>llama index, Pydantic AI and crew AI and more all kind of bundled together into a nice package that
+
+00:20:42 <v Calvin Hendryx-Parker>you can just start using with your Claude Code or cursor or whatever agent you want. You can now give
+
+00:20:48 <v Calvin Hendryx-Parker>it better memory that can actually learn from what you're doing along the way. So I don't know if
+
+00:20:53 <v Calvin Hendryx-Parker>Have you run into memory issues, Michael?
+
+00:20:56 <v Michael Kennedy>Especially as we age.
+
+00:20:57 <v Michael Kennedy>Oh, yes.
+
+00:20:58 <v Michael Kennedy>100%.
+
+00:20:59 <v Michael Kennedy>I have my command book app that I mentioned last week.
+
+00:21:02 <v Michael Kennedy>Oh, yeah.
+
+00:21:03 <v Michael Kennedy>You're all about this.
+
+00:21:04 <v Michael Kennedy>It doesn't work as well as Python in terms of agentic stuff,
+
+00:21:08 <v Michael Kennedy>but obviously you can do stuff like that.
+
+00:21:10 <v Michael Kennedy>But just to give you an example, I had to add a feature to the CLI.
+
+00:21:14 <v Michael Kennedy>I've been doing a lot of search work to the CLI for the command book UI GUI app,
+
+00:21:19 <v Michael Kennedy>which is weird, but will make sense the next time I talk about it.
+
+00:21:22 <v Michael Kennedy>But the way that those things are built is the Xcode project has them linked in the project
+
+00:21:28 <v Michael Kennedy>and you don't have to build them separately.
+
+00:21:30 <v Michael Kennedy>But the agent, even though it's worked on it a ton of times, is like, oh, I got to figure
+
+00:21:35 <v Michael Kennedy>out how to build the CLI.
+
+00:21:37 <v Michael Kennedy>I can't find it.
+
+00:21:37 <v Michael Kennedy>It doesn't seem to be a CLI project.
+
+00:21:39 <v Michael Kennedy>What is going on?
+
+00:21:40 <v Michael Kennedy>And it spent like five minutes on this.
+
+00:21:41 <v Michael Kennedy>And what are you doing?
+
+00:21:42 <v Michael Kennedy>Save a memory that you just build the project this way.
+
+00:21:45 <v Michael Kennedy>And he goes, oh, yes, that would be great for next time.
+
+00:21:48 <v Michael Kennedy>Right?
+
+00:21:48 <v Calvin Hendryx-Parker>Right.
+
+00:21:48 <v Calvin Hendryx-Parker>It's like having a fresh intern.
+
+00:21:50 <v Calvin Hendryx-Parker>Every hour you start a new thing.
+
+00:21:52 <v Michael Kennedy>Every day they show up, they're like, hey, I'm here for my first day of work.
+
+00:21:55 <v Michael Kennedy>Like, no, you're not.
+
+00:21:56 <v Michael Kennedy>What are you doing?
+
+00:21:56 <v Michael Kennedy>You've been here for weeks.
+
+00:21:58 <v Michael Kennedy>And so I think that would be great.
+
+00:21:59 <v Michael Kennedy>One of the things that I think would be cool would be, and I don't know if you could do
+
+00:22:03 <v Michael Kennedy>this, is have it sync across computers because I work on my MacBook and I work on my mini
+
+00:22:09 <v Michael Kennedy>and I'm like, I told it to save on my mini.
+
+00:22:12 <v Michael Kennedy>But, you know, why is that not part of your somehow part of your account rather than part
+
+00:22:17 <v Michael Kennedy>of your, you know, like on my account, it knows that this project is like this, right?
+
+00:22:21 <v Michael Kennedy>so this must have files right maybe you could save them to your dropbox yeah well i was thinking that
+
+00:22:29 <v Calvin Hendryx-Parker>after our tools episode from last week i'm really focusing on building out my framework desktop
+
+00:22:35 <v Calvin Hendryx-Parker>machine to be that central place i go um i mentioned tmux last week is my favorite go-to
+
+00:22:40 <v Calvin Hendryx-Parker>tool for basically using mosh and logging into that machine but i think i'm going to switch over
+
+00:22:44 <v Calvin Hendryx-Parker>to zelige if you've tried z-e-l-l-i-j i don't know how you pronounce it these are zelige or zelige
+
+00:22:50 <v Calvin Hendryx-Parker>but having this mental model, <v Calvin Hendryx-Parker>this hindsight running over there
+
+00:22:55 <v Calvin Hendryx-Parker>where no matter where I'm out and about <v Calvin Hendryx-Parker>or if I'm at my desk or sitting on the couch,
+
+00:22:59 <v Calvin Hendryx-Parker>I'm always actually working off that one machine
+
+00:23:01 <v Calvin Hendryx-Parker>where I've got great local model availability.
+
+00:23:03 <v Calvin Hendryx-Parker>You can talk to it over the network?
+
+00:23:05 <v Calvin Hendryx-Parker>Yeah, talk to it over the network.
+
+00:23:05 <v Calvin Hendryx-Parker>Exactly.
+
+00:23:06 <v Calvin Hendryx-Parker>Well, combining that with the tail scale <v Calvin Hendryx-Parker>or I've got the Ubiquiti,
+
+00:23:12 <v Calvin Hendryx-Parker>what do you call it?
+
+00:23:13 <v Calvin Hendryx-Parker>Teleport here.
+
+00:23:14 <v Calvin Hendryx-Parker>Yeah.
+
+00:23:14 <v Calvin Hendryx-Parker>Okay, this is cool.
+
+00:23:15 <v Calvin Hendryx-Parker>I'm standing up on my mini.
+
+00:23:16 <v Calvin Hendryx-Parker>Yeah.
+
+00:23:17 <v Calvin Hendryx-Parker>Yeah.
+
+00:23:17 <v Calvin Hendryx-Parker>I think you put it on one spot.
+
+00:23:18 <v Calvin Hendryx-Parker>So you can see here, <v Calvin Hendryx-Parker>the memory bank consists of not just like
+
+00:23:21 <v Calvin Hendryx-Parker>a single markdown file of memories, <v Calvin Hendryx-Parker>but it's like middle models, observations,
+
+00:23:24 <v Calvin Hendryx-Parker>memories and entities, chunks and documents, <v Calvin Hendryx-Parker>which is important because whole documents
+
+00:23:29 <v Calvin Hendryx-Parker>won't do it for you.
+
+00:23:30 <v Calvin Hendryx-Parker>Sometimes it needs to be able to do that reasoning
+
+00:23:32 <v Calvin Hendryx-Parker>and reflecting and pull those chunks into specific spots.
+
+00:23:37 <v Calvin Hendryx-Parker>And based on, again, I think the key bit here is time,
+
+00:23:40 <v Calvin Hendryx-Parker>a clever name, hindsight.
+
+00:23:42 <v Calvin Hendryx-Parker>In hindsight, time would matter for memory.
+
+00:23:45 <v Calvin Hendryx-Parker>And so I think they've definitely solved this problem,
+
+00:23:46 <v Calvin Hendryx-Parker>which I think is pretty cool.
+
+00:23:48 <v Calvin Hendryx-Parker>So check it out.
+
+00:23:49 <v Calvin Hendryx-Parker>Yep.
+
+00:23:49 <v Calvin Hendryx-Parker>Check it out.
+
+00:23:50 <v Calvin Hendryx-Parker>I'm going to, I'm going to install it on my framework desktop and start using this for
+
+00:23:53 <v Calvin Hendryx-Parker>memory inside of my projects.
+
+00:23:55 <v Calvin Hendryx-Parker>I think it's going to be pretty cool.
+
+00:23:57 <v Calvin Hendryx-Parker>All right.
+
+00:23:57 <v Calvin Hendryx-Parker>Let's head into, let's go to the extra part of the show.
+
+00:24:02 <v Calvin Hendryx-Parker>And I think both of us have quite a few extras here.
+
+00:24:05 <v Calvin Hendryx-Parker>When you want to kick it off, Michael.
+
+00:24:06 <v Michael Kennedy>You got your screen.
+
+00:24:07 <v Michael Kennedy>Okay.
+
+00:24:07 <v Michael Kennedy>Yeah.
+
+00:24:07 <v Calvin Hendryx-Parker>Okay.
+
+00:24:08 <v Calvin Hendryx-Parker>Okay.
+
+00:24:08 <v Calvin Hendryx-Parker>Okay.
+
+00:24:08 <v Calvin Hendryx-Parker>I can do that.
+
+00:24:09 <v Calvin Hendryx-Parker>Yeah.
+
+00:24:09 <v Calvin Hendryx-Parker>Let me, let's see here.
+
+00:24:10 <v Calvin Hendryx-Parker>The first one I was going to talk about, oh my gosh, I've got too many, I've got too many
+
+00:24:14 <v Calvin Hendryx-Parker>things on my screen now.
+
+00:24:16 <v Michael Kennedy>That's basically what this, I guess it's about.
+
+00:24:18 <v Calvin Hendryx-Parker>How do you refer to your AI agents when you're talking to them?
+
+00:24:22 <v Calvin Hendryx-Parker>Do you have a term of endearment for them, Michael?
+
+00:24:26 <v Michael Kennedy>Not in a personalized way, but I refer to Claude as Claude.
+
+00:24:30 <v Michael Kennedy>And I refer to...
+
+00:24:32 <v Michael Kennedy>With their name, their branding, their branding.
+
+00:24:34 <v Michael Kennedy>Yeah, I refer to ChatGPT as Chat.
+
+00:24:36 <v Michael Kennedy>Like, hey, Chat, let's talk about this.
+
+00:24:37 <v Michael Kennedy>Or like, hey, Claude, good job on that.
+
+00:24:39 <v Calvin Hendryx-Parker>I kind of like Armin's approach of calling it clanker.
+
+00:24:42 <v Calvin Hendryx-Parker>I think it puts it in...
+
+00:24:43 <v Calvin Hendryx-Parker>Clanker.
+
+00:24:44 <v Calvin Hendryx-Parker>Clanker.
+
+00:24:44 <v Calvin Hendryx-Parker>It kind of puts it in the right spot.
+
+00:24:45 <v Calvin Hendryx-Parker>And when I think about it, I think about this.
+
+00:24:48 <v Calvin Hendryx-Parker>I assume this is the Star Wars reference because in Star Wars, they called all the Trade Federation robot bots clankers as a derogatory term in their case.
+
+00:24:57 <v Calvin Hendryx-Parker>But I feel like it doesn't make it as human.
+
+00:24:59 <v Calvin Hendryx-Parker>And you can yell at a clanker a lot easier than you could if you're yelling at Claude.
+
+00:25:03 <v Calvin Hendryx-Parker>People might get upset about you yelling at something named Claude.
+
+00:25:06 <v Calvin Hendryx-Parker>So I thought clanker was kind of interesting.
+
+00:25:08 <v Calvin Hendryx-Parker>Check that out.
+
+00:25:08 <v Calvin Hendryx-Parker>There's a blog post from Armin about it from a couple weeks old, but I think it's still very relevant to check out.
+
+00:25:15 <v Calvin Hendryx-Parker>So that was my first one. And the next one is everyone has one of these in their office.
+
+00:25:20 <v Calvin Hendryx-Parker>Someone decided to make it more official. Do I not have the, let me grab the link for that one.
+
+00:25:26 <v Calvin Hendryx-Parker>There's a project called Ponytail. And now I've got it open over here.
+
+00:25:30 <v Michael Kennedy>I read this article. I know I watched a video evaluating this on YouTube just last night.
+
+00:25:35 <v Calvin Hendryx-Parker>There it is. Yes. So make your AI agent think like the laziest senior dev in the room.
+
+00:25:40 <v Calvin Hendryx-Parker>The best code is the code you never wrote.
+
+00:25:43 <v Calvin Hendryx-Parker>So instead of the, it's kind of the not invented here,
+
+00:25:48 <v Calvin Hendryx-Parker>like our Yagni, like I'm not gonna rewrite <v Calvin Hendryx-Parker>my own requests library.
+
+00:25:53 <v Calvin Hendryx-Parker>Make sure you always use the libraries that are available.
+
+00:25:56 <v Calvin Hendryx-Parker>I kind of like, I haven't tried it, <v Calvin Hendryx-Parker>but I thought it was kind of clever.
+
+00:25:59 <v Calvin Hendryx-Parker>Less code, less tokens, obviously.
+
+00:26:02 <v Calvin Hendryx-Parker>And you basically can just insert into your code,
+
+00:26:05 <v Calvin Hendryx-Parker>hey, ponytail, browser has this, <v Calvin Hendryx-Parker>and put in there like a placeholder of like what you want,
+
+00:26:10 <v Calvin Hendryx-Parker>if you want to date that for example in this case is a date picker so it's like input type date and
+
+00:26:14 <v Calvin Hendryx-Parker>then let your agent figure it out with this uh skill installed to figure out what what um uh what
+
+00:26:21 <v Calvin Hendryx-Parker>dependency it should go install instead of trying to write its own so a lot of times these ai agents
+
+00:26:24 <v Calvin Hendryx-Parker>are going to try and write their own versions of things that probably already exist why would you
+
+00:26:28 <v Michael Kennedy>they're very happy to go oh yeah enterprise on you when it's like i just i don't need this is not in
+
+00:26:34 <v Michael Kennedy>need of that. It is a very simple project. I just need like a dialogue. So maybe you could just use,
+
+00:26:40 <v Michael Kennedy>hey, guess what? HTML is recently has a built-in dialogue thing. You don't need to install React
+
+00:26:45 <v Michael Kennedy>just so I can have a dialogue. You know, that's kind of the vibe. All right. The next one is,
+
+00:26:49 <v Calvin Hendryx-Parker>we've been talking a lot about agents, AI, and giving them control over our computers.
+
+00:26:55 <v Calvin Hendryx-Parker>How can we do that in a safe way? And how can we do it for multi-user? A good friend of mine,
+
+00:26:59 <v Calvin Hendryx-Parker>Chris McDonough from the Zope Python clone communities. He has wrote a agentic wrapper
+
+00:27:07 <v Calvin Hendryx-Parker>around all this. So it kind of does containerized sandbox workspaces where you can actually do it
+
+00:27:11 <v Calvin Hendryx-Parker>multiplayer. So check out Dave. I don't believe he's done much fanfare around this project. It's
+
+00:27:17 <v Calvin Hendryx-Parker>very new. Just started a couple of weeks back, but I think it's already made a ton of progress.
+
+00:27:20 <v Calvin Hendryx-Parker>There's already like well over a thousand commits in there from him and a couple other contributors
+
+00:27:24 <v Calvin Hendryx-Parker>into this, but basically use it with Pi or Claude Code, but intentionally given wide permissions.
+
+00:27:32 <v Calvin Hendryx-Parker>So you want to be able to have them read, write, and execute code, but do it in a safe space,
+
+00:27:37 <v Calvin Hendryx-Parker>in its own safely isolated workspace. And then for Teams, you basically, I believe it incorporates
+
+00:27:44 <v Calvin Hendryx-Parker>Tmux in for allowing kind of the multi-user, multiplayer. If you've ever done Tmux with
+
+00:27:49 <v Calvin Hendryx-Parker>multi-user, it's actually kind of magical. It feels like Google Docs where multiple people can edit.
+
+00:27:54 <v Calvin Hendryx-Parker>simultaneously, well, multiple people can be in the terminal
+
+00:27:58 <v Calvin Hendryx-Parker>simultaneously working together.
+
+00:28:00 <v Calvin Hendryx-Parker>And so when you wanna collaborate <v Calvin Hendryx-Parker>and wanna be using an agent
+
+00:28:03 <v Calvin Hendryx-Parker>and actually collaborate with other humans, <v Calvin Hendryx-Parker>this actually may be a really good option for you.
+
+00:28:06 <v Calvin Hendryx-Parker>It is called Clang, kind of maybe a play <v Calvin Hendryx-Parker>on the word clankers again.
+
+00:28:12 <v Calvin Hendryx-Parker>So Clang with the K at the end, how do you pronounce that?
+
+00:28:15 <v Calvin Hendryx-Parker>These projects need to get better naming.
+
+00:28:17 <v Calvin Hendryx-Parker>Clang <v Calvin Hendryx-Parker>I don't know.
+
+00:28:20 <v Michael Kennedy>Yeah.
+
+00:28:20 <v Michael Kennedy>I honestly think when projects are like this <v Michael Kennedy>and they could be pronounced many ways,
+
+00:28:23 <v Calvin Hendryx-Parker>There should be a little MP3, just like, here's how it sounds.
+
+00:28:26 <v Calvin Hendryx-Parker>How do I pronounce this?
+
+00:28:27 <v Calvin Hendryx-Parker>All right.
+
+00:28:28 <v Calvin Hendryx-Parker>Another one.
+
+00:28:29 <v Calvin Hendryx-Parker>Who's been having struggles with GitHub and their outages recently?
+
+00:28:33 <v Calvin Hendryx-Parker>Well, Cursor has announced Origin.
+
+00:28:36 <v Calvin Hendryx-Parker>It's currently on a public wait list, but it might be something worth watching.
+
+00:28:39 <v Calvin Hendryx-Parker>But it is basically a source control optimized for the agentic world.
+
+00:28:43 <v Calvin Hendryx-Parker>I think they are claiming something like over 22 commits per second support out of the box.
+
+00:28:48 <v Calvin Hendryx-Parker>So if you've got a lot of users going at it with their agents
+
+00:28:52 <v Calvin Hendryx-Parker>and be able to commit at that level of scale, <v Calvin Hendryx-Parker>I think this is the future
+
+00:28:56 <v Calvin Hendryx-Parker>and where GitHub better get their act together <v Calvin Hendryx-Parker>because it sounds like Cursor's coming for their lunch.
+
+00:29:01 <v Calvin Hendryx-Parker>And the last extra I wanted to cover was performative UI.
+
+00:29:06 <v Calvin Hendryx-Parker>Michael, have you ever wanted to launch your own AI startup
+
+00:29:11 <v Calvin Hendryx-Parker>and you needed to have the right AI components <v Calvin Hendryx-Parker>onto the page?
+
+00:29:14 <v Calvin Hendryx-Parker>Oh yeah.
+
+00:29:14 <v Calvin Hendryx-Parker>This is AI native React components <v Calvin Hendryx-Parker>for the next you name it.
+
+00:29:18 <v Calvin Hendryx-Parker>So any fancy sparkles, any fancy pills with, you know, status lights in them.
+
+00:29:25 <v Calvin Hendryx-Parker>You can just npm install performative UI.
+
+00:29:27 <v Michael Kennedy>I just added a pill to my, one of my websites and I didn't even think that I could use the framework for it.
+
+00:29:32 <v Calvin Hendryx-Parker>Oh yeah.
+
+00:29:33 <v Calvin Hendryx-Parker>Well, so there's, for example, golden eye, the golden eye effect.
+
+00:29:36 <v Calvin Hendryx-Parker>If you'd like to have that, you can, you can get that right out of here.
+
+00:29:39 <v Michael Kennedy>I kind of, I kind of don't want to like this, what I do kind of like it.
+
+00:29:41 <v Calvin Hendryx-Parker>I know.
+
+00:29:41 <v Calvin Hendryx-Parker>I was, when I saw it, I was like, oh my gosh, the things, I mean, you, you scroll down through here, they have thought of, well, or
+
+00:29:48 <v Calvin Hendryx-Parker>every possible trope that most of the ai startups are doing uh if you want to have your chat bubbles
+
+00:29:53 <v Calvin Hendryx-Parker>look like they are coming straight out of the existing chat client uh if you want to have an ide
+
+00:29:59 <v Calvin Hendryx-Parker>they've got a mock ide component that you can land in your page to show developers that you're very
+
+00:30:03 <v Calvin Hendryx-Parker>developer friendly so that was a fun one uh that i thought i would share with the group here uh
+
+00:30:09 <v Michael Kennedy>michael what do you got in the way extras all right i got it i got a couple of things um by the way
+
+00:30:13 <v Michael Kennedy>before I jump over there, it's just, you talked about Armin's article on clinker, clinkers in that
+
+00:30:18 <v Michael Kennedy>word. I have gone the opposite direction. And I found it surprisingly makes me feel better working
+
+00:30:24 <v Michael Kennedy>with these things is I've gotten Claude to address me in a way more personal way. Okay. So instead of
+
+00:30:31 <v Michael Kennedy>going, the user has requested or the project, you know, it refers to me as Michael and like uses me.
+
+00:30:38 <v Michael Kennedy>So it'll be like, and Michael already committed this.
+
+00:30:42 <v Michael Kennedy>And so we're going to do this.
+
+00:30:43 <v Michael Kennedy>And it's because it sounds so silly, but here's the thing.
+
+00:30:47 <v Michael Kennedy>I find some, you know, without those kinds of things, like doing a lot of this agentic
+
+00:30:50 <v Michael Kennedy>stuff, it's super sterile.
+
+00:30:51 <v Michael Kennedy>It's still like working with other people.
+
+00:30:53 <v Michael Kennedy>I'm just now working with this thing that like refers to me as user.
+
+00:30:55 <v Michael Kennedy>I'm like, I am not a number.
+
+00:30:58 <v Michael Kennedy>I am a man, you know, like that's what I feel like.
+
+00:31:00 <v Calvin Hendryx-Parker>I'm going to be worried, Michael, when you start referring to yourself in the third person.
+
+00:31:03 <v Michael Kennedy>I know.
+
+00:31:05 <v Michael Kennedy>Well, well, well, Michael wants to cover.
+
+00:31:08 <v Michael Kennedy>No, just kidding.
+
+00:31:09 <v Michael Kennedy>So a really cool Talk Python episode that I released last week, and it will still be the
+
+00:31:15 <v Michael Kennedy>live one for a day or two before I release.
+
+00:31:17 <v Michael Kennedy>The next one is I interviewed Charlie Marsh.
+
+00:31:20 <v Michael Kennedy>Now that Astral has been part of OpenAI for a little while.
+
+00:31:23 <v Michael Kennedy>What a journey.
+
+00:31:24 <v Michael Kennedy>Yeah, basically it talks about the whole journey he's been on.
+
+00:31:27 <v Michael Kennedy>It talks about what does this acquisition by OpenAI mean for the Python community, for
+
+00:31:33 <v Michael Kennedy>uv ty rough all those kinds of things so uh i think people if you care about like what is happening to
+
+00:31:40 <v Michael Kennedy>uv check this out and you mentioned cursor they're gonna have a little extra money to you know build
+
+00:31:46 <v Michael Kennedy>build origin because they just got acquired by spacex or are going to be i mean what do you do
+
+00:31:53 <v Calvin Hendryx-Parker>what do you do with that extra money other than build more stuff exactly you could run a lot of
+
+00:31:59 <v Michael Kennedy>agents for 60 billion dollars because that's what they're apparently getting acquired for 60 billion
+
+00:32:04 <v Michael Kennedy>dollars a vs code clone oh my gosh wow wow wow wow wow um i was a huge lover of of cursor for a long
+
+00:32:13 <v Calvin Hendryx-Parker>time and never been a cursor user it was not my not my normal toolkit not your vibe no it's i'm
+
+00:32:19 <v Calvin Hendryx-Parker>cli's i know i know see this is why it's good you're here we have different perspectives i love
+
+00:32:24 <v Michael Kennedy>of cursor but it's been moving more and more towards just like just fire off a bunch of agents
+
+00:32:28 <v Michael Kennedy>that don't even look at what it does sort of that's been it's what it's embracing and the more it does
+
+00:32:33 <v Michael Kennedy>that the less like i kind of want to still see what's going on a little bit anyway um also astral
+
+00:32:39 <v Michael Kennedy>intersect open ai but this is not the same thing charlie marsh posted i'm proud to announce that
+
+00:32:44 <v Michael Kennedy>we're renewing and expanding our support for maintainers of open source projects used across
+
+00:32:50 <v Michael Kennedy>Astral and Codex tool chains at OpenAI.
+
+00:32:53 <v Michael Kennedy>Today, that starts with committing more than $160,000
+
+00:32:56 <v Michael Kennedy>in direct sponsorship through GitHub sponsors.
+
+00:32:59 <v Calvin Hendryx-Parker>Nice.
+
+00:32:59 <v Michael Kennedy>So there's the Astral open source fund and so on, <v Michael Kennedy>and it shows you how to apply.
+
+00:33:05 <v Michael Kennedy>So if you want to get, <v Michael Kennedy>also the Codex open source, a million dollar fund
+
+00:33:09 <v Michael Kennedy>that includes six months of ChatGP Pro, <v Michael Kennedy>API credits, and so on and so on.
+
+00:33:14 <v Calvin Hendryx-Parker>Which have you noticed in Codex, <v Calvin Hendryx-Parker>if you're using ChatGPT in Codex,
+
+00:33:18 <v Calvin Hendryx-Parker>it now gives you an option to reset your quota twice.
+
+00:33:20 <v Calvin Hendryx-Parker>Like you get two resets of, <v Calvin Hendryx-Parker>oh,
+
+00:33:23 <v Calvin Hendryx-Parker>I messed up and I went over.
+
+00:33:25 <v Michael Kennedy>Okay.
+
+00:33:25 <v Michael Kennedy>Interesting.
+
+00:33:26 <v Calvin Hendryx-Parker>Watch, <v Calvin Hendryx-Parker>keep an eye on tokenomics.
+
+00:33:28 <v Calvin Hendryx-Parker>I think this is going to be the next three months,
+
+00:33:31 <v Calvin Hendryx-Parker>two months are going to be very interesting in the token space.
+
+00:33:34 <v Michael Kennedy>I agree.
+
+00:33:35 <v Michael Kennedy>And things like, <v Michael Kennedy>not necessarily endorsement,
+
+00:33:37 <v Michael Kennedy>but things like ponytail.
+
+00:33:39 <v Michael Kennedy>Yeah.
+
+00:33:39 <v Michael Kennedy>In memories and other stuff that keep it more focused are going to become more and more
+
+00:33:43 <v Michael Kennedy>important.
+
+00:33:43 <v Michael Kennedy>I imagine.
+
+00:33:44 <v Michael Kennedy>All right.
+
+00:33:46 <v Michael Kennedy>What am I?
+
+00:33:47 <v Michael Kennedy>Oh yes.
+
+00:33:47 <v Michael Kennedy>I know what I'm talking about here.
+
+00:33:48 <v Michael Kennedy>If I go to any of these courses on Talk Python, what is really cool is I can now, I guess I had to log in to show you, which I'm not.
+
+00:33:57 <v Michael Kennedy>I won't bother.
+
+00:33:58 <v Michael Kennedy>But now every single course at Talk Python training, all 283.9 hours of them have Spanish subtitles, German subtitles, which they always have been there for a little while.
+
+00:34:14 <v Michael Kennedy>But the announcement is now Portuguese.
+
+00:34:16 <v Michael Kennedy>Every course has full high quality Portuguese transcripts.
+
+00:34:21 <v Michael Kennedy>And boy, boy, was that a lot of words to generate those correctly.
+
+00:34:24 <v Calvin Hendryx-Parker>So who QAs those?
+
+00:34:26 <v Calvin Hendryx-Parker>Do you have some folks in the community who are QAing these translations?
+
+00:34:29 <v Michael Kennedy>No, I have a whole series of AI agents and Python software that like re-evaluates them.
+
+00:34:37 <v Michael Kennedy>And it's just a whole back and forth.
+
+00:34:40 <v Michael Kennedy>I was able to QA them somewhat in German because I can speak some German, but my technical German is not great.
+
+00:34:47 <v Michael Kennedy>So, you know, somewhat.
+
+00:34:48 <v Michael Kennedy>But it worked well for there.
+
+00:34:49 <v Michael Kennedy>So I'm just trying to apply the same process.
+
+00:34:51 <v Michael Kennedy>We'll see.
+
+00:34:51 <v Michael Kennedy>People let me know how they're turning out.
+
+00:34:53 <v Michael Kennedy>But I think they're pretty good.
+
+00:34:54 <v Calvin Hendryx-Parker>Well, I'm glad you're making the effort to make it accessible.
+
+00:34:57 <v Michael Kennedy>Yeah, exactly.
+
+00:34:58 <v Michael Kennedy>I'm thinking, even if they're not perfect, you know what?
+
+00:35:00 <v Michael Kennedy>The English subtitles aren't perfect either.
+
+00:35:02 <v Michael Kennedy>They were done mostly by humans directly, but non-technical humans.
+
+00:35:07 <v Michael Kennedy>So they still need a little bit of fixes here and there.
+
+00:35:09 <v Michael Kennedy>That's the challenge.
+
+00:35:10 <v Michael Kennedy>right like even if you get a human being to do it then you got to find a human being who both is
+
+00:35:15 <v Michael Kennedy>patient diligent and does python which is like really and wants to do transgress this is a very
+
+00:35:21 <v Michael Kennedy>rare person i'll tell you what okay a couple more quick announcements uh this one um we've got the
+
+00:35:27 <v Michael Kennedy>jango developer survey is out but the analysis in the search for a dsf executive director so
+
+00:35:35 <v Michael Kennedy>So boosted by our friend Jeff Triplett out there.
+
+00:35:39 <v Michael Kennedy>So they're looking to hire somebody for this.
+
+00:35:42 <v Michael Kennedy>And I believe you deserve a bit of a shout out here.
+
+00:35:46 <v Michael Kennedy>Hey, look at that.
+
+00:35:47 <v Michael Kennedy>Shout out to Six Feet Up, who is one of the key sponsors making this happen.
+
+00:35:52 <v Michael Kennedy>Do you want to say one quick word about that?
+
+00:35:54 <v Michael Kennedy>You know more than I do.
+
+00:35:55 <v Calvin Hendryx-Parker>Yeah.
+
+00:35:55 <v Calvin Hendryx-Parker>No, I think we're definitely very involved in wanting to be engaged in getting the Django
+
+00:36:01 <v Calvin Hendryx-Parker>Software Foundation and executive director.
+
+00:36:03 <v Calvin Hendryx-Parker>it's gonna be a big move for that group <v Calvin Hendryx-Parker>to have that kind of dedicated leadership.
+
+00:36:07 <v Calvin Hendryx-Parker>Right now it's very all volunteer run.
+
+00:36:09 <v Calvin Hendryx-Parker>So things like the conferences are done <v Calvin Hendryx-Parker>through another volunteer group called Defna
+
+00:36:13 <v Calvin Hendryx-Parker>and the Software Foundation managed some pieces of it.
+
+00:36:15 <v Calvin Hendryx-Parker>There are some paid positions like the fellows <v Calvin Hendryx-Parker>who work on the code,
+
+00:36:19 <v Calvin Hendryx-Parker>but this is working on growing the community.
+
+00:36:22 <v Calvin Hendryx-Parker>And there's a huge tale of people using Django out there
+
+00:36:26 <v Calvin Hendryx-Parker>in the world and they don't know how to give back.
+
+00:36:29 <v Calvin Hendryx-Parker>And I think that's part of this executive director's mission
+
+00:36:32 <v Calvin Hendryx-Parker>is going to be how do they go and find the folks
+
+00:36:36 <v Calvin Hendryx-Parker>who are getting a lot of value out of Django <v Calvin Hendryx-Parker>and making sure that that value kind of gets put back
+
+00:36:41 <v Calvin Hendryx-Parker>into the community in the form of sponsorships <v Calvin Hendryx-Parker>for the software project itself.
+
+00:36:44 <v Calvin Hendryx-Parker>So we can have more fellows, <v Calvin Hendryx-Parker>we can have bigger sponsors at the conferences,
+
+00:36:49 <v Calvin Hendryx-Parker>people can get greater adoption of Django into more places.
+
+00:36:52 <v Calvin Hendryx-Parker>I think there's a lot of behind the firewall usage here
+
+00:36:55 <v Calvin Hendryx-Parker>that this is gonna help bring to light <v Calvin Hendryx-Parker>and get more sponsorships.
+
+00:36:58 <v Calvin Hendryx-Parker>So yeah, 6Whip is super excited to sponsor <v Calvin Hendryx-Parker>and help find the right person.
+
+00:37:02 <v Michael Kennedy>That's awesome, Calvin.
+
+00:37:04 <v Michael Kennedy>One of the, I think, key secret sauces of Django <v Michael Kennedy>is the community.
+
+00:37:08 <v Michael Kennedy>So this is right in that space, yeah.
+
+00:37:09 <v Calvin Hendryx-Parker>Yeah, yeah.
+
+00:37:10 <v Michael Kennedy>Especially now in this agetic world, right?
+
+00:37:13 <v Calvin Hendryx-Parker>Human contact is even more important than ever.
+
+00:37:16 <v Calvin Hendryx-Parker>I agree, 100%.
+
+00:37:18 <v Calvin Hendryx-Parker>All right, I've got a joke.
+
+00:37:19 <v Calvin Hendryx-Parker>So you got a joke for us?
+
+00:37:20 <v Michael Kennedy>You got a joke?
+
+00:37:21 <v Michael Kennedy>It's called, oh, babe.
+
+00:37:22 <v Michael Kennedy>Oh, babe.
+
+00:37:23 <v Michael Kennedy>Oh, this is rough, but it's right on point <v Michael Kennedy>for what we've been talking about, some of the things.
+
+00:37:29 <v Michael Kennedy>All right, hit me with it.
+
+00:37:30 <v Michael Kennedy>You talked about tokenomics.
+
+00:37:33 <v Michael Kennedy>So this is a screenshot of an iMessage.
+
+00:37:37 <v Michael Kennedy>It says, babe, heart, heart.
+
+00:37:38 <v Michael Kennedy>$15,000 out of our ticket to go.
+
+00:37:40 <v Michael Kennedy>Oh, my God.
+
+00:37:41 <v Michael Kennedy>Oh, is this what I think it is?
+
+00:37:43 <v Michael Kennedy>Ring emoji, ring emoji, ring emoji.
+
+00:37:45 <v Michael Kennedy>Hands over.
+
+00:37:46 <v Michael Kennedy>Anthropic PC.
+
+00:37:47 <v Michael Kennedy>Invoice from Anthropic.
+
+00:37:49 <v Michael Kennedy>$15,000.
+
+00:37:51 <v Calvin Hendryx-Parker>Keep an eye on that token bill.
+
+00:37:53 <v Calvin Hendryx-Parker>I don't think it's going to go down.
+
+00:37:55 <v Michael Kennedy>I'm so sorry, but it's not a ring.
+
+00:37:57 <v Michael Kennedy>It's just a monthly Claude bill.
+
+00:37:59 <v Calvin Hendryx-Parker>How rough is that?
+
+00:38:00 <v Calvin Hendryx-Parker>It's very real.
+
+00:38:02 <v Calvin Hendryx-Parker>I feel seen.
+
+00:38:05 <v Calvin Hendryx-Parker>All right, Michael, thank you so much for joining us for another episode of Python Bytes.
+
+00:38:11 <v Calvin Hendryx-Parker>We will be back next week with more Python news and headlines right to your earbuds.
+
+00:38:17 <v Calvin Hendryx-Parker>So we'll see you all later.
+
+00:38:18 <v Calvin Hendryx-Parker>Thanks, everyone.
+
+00:38:19 <v Calvin Hendryx-Parker>Thanks, Calvin.
+
