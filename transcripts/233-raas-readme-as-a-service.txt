@@ -1126,7 +1126,7 @@
 
 00:29:43 And check this out.
 
-00:29:44 It can deliver performance similar to mypyC or Cython.
+00:29:44 It can deliver performance similar to mypyc or Cython.
 
 00:29:48 And this thing will go up to seven times faster than regular Python for the Richards benchmarks.
 
