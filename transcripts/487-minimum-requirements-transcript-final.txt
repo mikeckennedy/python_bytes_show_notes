@@ -1,0 +1,752 @@
+00:00:00 <v Calvin Hendryx-Parker>Hello, and welcome to Python Bytes, where we deliver Python news and headlines directly to your earbuds.
+
+00:00:05 <v Calvin Hendryx-Parker>This is episode 487, recorded Tuesday, July 8th, 2026.
+
+00:00:10 <v Calvin Hendryx-Parker>I'm Calvin Hendryx-Parker.
+
+00:00:12 <v Michael Kennedy>I'm Michael Kennedy.
+
+00:00:13 <v Calvin Hendryx-Parker>Nice to have you, Michael. Thanks for joining me today.
+
+00:00:15 <v Calvin Hendryx-Parker>We are sponsored by us, so check out the Talk Python courses.
+
+00:00:21 <v Calvin Hendryx-Parker>Your co-host, Michael, here put a tremendous amount of effort into making sure every last human being on the planet can learn Python like nobody's business.
+
+00:00:29 <v Calvin Hendryx-Parker>So excited to have that.
+
+00:00:30 <v Calvin Hendryx-Parker>And then check out Six Feet Up.
+
+00:00:32 <v Calvin Hendryx-Parker>I am a co-founder of Six Feet Up.
+
+00:00:35 <v Calvin Hendryx-Parker>We love solving hard problems.
+
+00:00:36 <v Calvin Hendryx-Parker>We're hiring.
+
+00:00:37 <v Calvin Hendryx-Parker>So if you're looking for a position, go check out our careers page.
+
+00:00:40 <v Calvin Hendryx-Parker>Put that little plug in there and make sure you connect with the hosts online.
+
+00:00:43 <v Calvin Hendryx-Parker>We are on all the socials.
+
+00:00:44 <v Calvin Hendryx-Parker>You can find Michael, myself and the show over on Mastodon, Bluesky, X, Den.
+
+00:00:50 <v Calvin Hendryx-Parker>I'm mostly active on LinkedIn.
+
+00:00:52 <v Calvin Hendryx-Parker>Michael, where are you mostly active at?
+
+00:00:53 <v Michael Kennedy>Well, talk to me.
+
+00:00:54 <v Calvin Hendryx-Parker>Otherwise, I'm not that active.
+
+00:00:56 <v Calvin Hendryx-Parker>So we'll go at Michael and tell them something interesting.
+
+00:00:59 <v Calvin Hendryx-Parker>And then Yeah, there you go.
+
+00:01:01 <v Calvin Hendryx-Parker>Send in a show idea.
+
+00:01:02 <v Calvin Hendryx-Parker>Send in a show idea.
+
+00:01:03 <v Calvin Hendryx-Parker>That's a great idea.
+
+00:01:04 <v Calvin Hendryx-Parker>So if you want to join us live on YouTube, we do record this live.
+
+00:01:07 <v Calvin Hendryx-Parker>You can watch it all of its liveness at pythonbytes.fm/live.
+
+00:01:12 <v Calvin Hendryx-Parker>Be part of the audience, usually Tuesday mornings, but today is Tuesday afternoons.
+
+00:01:16 <v Calvin Hendryx-Parker>The older video versions are also available on that YouTube channel too.
+
+00:01:20 <v Calvin Hendryx-Parker>And finally, if you want a handcrafted, artisanal digest of every week's show, and get all the notes, make sure you add your name, and your email to our friends of the show list.
+
+00:01:30 <v Calvin Hendryx-Parker>And we never share those emails, but you will get a great list of links and things to go dive into right into your inbox.
+
+00:01:37 <v Calvin Hendryx-Parker>All right, Michael, let's kick it off.
+
+00:01:39 <v Calvin Hendryx-Parker>I love shell scripts and the little utilities and it seems like you got a good one for us.
+
+00:01:43 <v Michael Kennedy>I know you're a fan of the shell world.
+
+00:01:47 <v Michael Kennedy>And let me introduce this topic by way of a sad face.
+
+00:01:52 <v Michael Kennedy>I use Sentry for all the server stuff and I get a notification from Sentry saying, operational failure for, I don't know, what are the smaller apps that I run, API or something?
+
+00:02:02 <v Michael Kennedy>And it says that slash temp is full and it can't write to it.
+
+00:02:07 <v Michael Kennedy>I'm like, well, that doesn't make any sense because that's just like the Docker image.
+
+00:02:11 <v Michael Kennedy>So it can just write to like this 150 gig hard drive that I have dedicated to just Docker volumes and Docker build data, like image data and stuff.
+
+00:02:19 <v Calvin Hendryx-Parker>But something else has gone awry.
+
+00:02:21 <v Michael Kennedy>Oh, no, no, it was right.
+
+00:02:22 <v Michael Kennedy>So I go in there and I'm like, I pull up BTOP, which I love Btop.
+
+00:02:27 <v Michael Kennedy>And it says, oh my God, it's so good.
+
+00:02:29 <v Michael Kennedy>And it's 100% full, all red, no green.
+
+00:02:32 <v Michael Kennedy>I'm like, oh God, it's right.
+
+00:02:33 <v Michael Kennedy>What is going on here?
+
+00:02:36 <v Michael Kennedy>I've been playing with switching to multi-step, multi-image, multi-stage builds with Docker.
+
+00:02:41 <v Michael Kennedy>And apparently those builds take up a much more image space if you don't clean up the old ones for some reason.
+
+00:02:46 <v Michael Kennedy>I don't know why, I don't really care, but I do care that it was out of space.
+
+00:02:49 <v Michael Kennedy>And I'm like, what is going on?
+
+00:02:50 <v Michael Kennedy>What can I get rid of?
+
+00:02:51 <v Michael Kennedy>So I typically run like a Docker system prune type thing and it's okay.
+
+00:02:55 <v Michael Kennedy>but I'm like, well, let me just give this a look.
+
+00:02:57 <v Michael Kennedy>And if you want to ask for file size on a Linux terminal, it's not the easiest.
+
+00:03:02 <v Michael Kennedy>I mean, you can do it in DU.
+
+00:03:04 <v Michael Kennedy>You can't say DU, but you get it in bytes.
+
+00:03:06 <v Michael Kennedy>And you're like, what are these huge numbers?
+
+00:03:07 <v Michael Kennedy>They're like, they don't make any sense to me.
+
+00:03:09 <v Michael Kennedy>I actually went at recursive for the folders.
+
+00:03:12 <v Michael Kennedy>And wouldn't it be great if it said this GB, and I know there are flags you can pass at DU if you remember the incantation.
+
+00:03:17 <v Michael Kennedy>Wouldn't it be nice if there was a better way?
+
+00:03:19 <v Michael Kennedy>So I want to introduce you to Dust.
+
+00:03:22 <v Michael Kennedy>So it's a more intuitive version of DU.
+
+00:03:25 <v Michael Kennedy>built in Rust. The Rust part doesn't really matter. What does matter is both that it gives you sizes in human terms and it gives you a graph. Graph. That's even better. Yeah. And I like the tree
+
+00:03:38 <v Calvin Hendryx-Parker>structure too, that you get to see that the tree, I use like BR root or B root for seeing like tree
+
+00:03:44 <v Michael Kennedy>structures, but now this may do all of it. Yeah, exactly. So you can ask, it's kind of like tree and it's kind of like du but it gives you the disk size information in the tree view and on the right
+
+00:03:55 <v Michael Kennedy>hand side there's actually a visual graph that like plots them and it sorts it by size so you can see the bigger ones are at the bottom i think you can invert that if i remember that's how i had
+
+00:04:05 <v Michael Kennedy>run it and so you can actually just say show me the big stuff first in a hierarchical way so like what folder is like the word where do i start to make this thing run again and not happen uh not do
+
+00:04:16 <v Michael Kennedy>this again where it runs out of space. So I started playing around with this thing and I thought this is pretty dope, man. I really like it. You can just curl install it, cargo install it, brew install it.
+
+00:04:28 <v Michael Kennedy>If I was doing it on Mac, I would brew install it. But I think I cargo installed it on Linux. I can't really remember. Anyway, it got installed onto Linux somehow. And there it is. So yeah, it's really
+
+00:04:39 <v Michael Kennedy>nice. I think, I mean, not a whole lot more to say. There's tons of options for how you run it.
+
+00:04:44 <v Michael Kennedy>actually lists a whole bunch of alternatives.
+
+00:04:46 <v Michael Kennedy>This is kind of a nice shout out to like, hey, there's like six other tools that do this, but here's why I wrote this still.
+
+00:04:51 <v Michael Kennedy>You know what I mean?
+
+00:04:52 <v Calvin Hendryx-Parker>Yeah.
+
+00:04:52 <v Michael Kennedy>Dust simply does the right thing when it handles lots of small files and directory, keeps the output simple by only showing larger entities and so on and so on.
+
+00:05:01 <v Calvin Hendryx-Parker>Anyway.
+
+00:05:01 <v Calvin Hendryx-Parker>That's cool.
+
+00:05:02 <v Calvin Hendryx-Parker>I think it shows that if there's an itch to scratch someplace, someone's going to scratch it.
+
+00:05:07 <v Calvin Hendryx-Parker>If you've got a better idea for an implementation of a tool, you should go do it.
+
+00:05:10 <v Calvin Hendryx-Parker>Dust one looks really awesome and I'll be installing it momentarily.
+
+00:05:13 <v Calvin Hendryx-Parker>Sweet.
+
+00:05:14 <v Michael Kennedy>Pete. Yeah, I really like it. So I can recommend and it's I mean, I was able to just do like a Docker cleanup real quick and fix stuff. But I still like where is all the space because that's bigger than before. So let me just like I have plans and this has helped me form a plan.
+
+00:05:28 <v Calvin Hendryx-Parker>Nice. I love the plans. Speaking of plans, the next item I'm going to present to you is actually more of a specification and it's a proposal for a specification as opposed to something you can use
+
+00:05:39 <v Calvin Hendryx-Parker>today. But I really want this to exist. So I felt like I needed to highlight the fact that the fine except Astral, once we got absorbed into a nice frontier model company, are still doing interesting work.
+
+00:05:50 <v Calvin Hendryx-Parker>And this one is building a way better archive format for Python packaging called WAR.
+
+00:05:55 <v Calvin Hendryx-Parker>Now, Michael, I know you're going to say, I've heard of the WAR format before.
+
+00:06:00 <v Calvin Hendryx-Parker>And it's true.
+
+00:06:01 <v Calvin Hendryx-Parker>I don't know.
+
+00:06:01 <v Calvin Hendryx-Parker>I've only heard of the RAR format.
+
+00:06:03 <v Calvin Hendryx-Parker>Really?
+
+00:06:04 <v Michael Kennedy>I don't know if I've heard of WAR.
+
+00:06:05 <v Michael Kennedy>I mean, I know what WAR is, but not as a compression format.
+
+00:06:08 <v Calvin Hendryx-Parker>This has nothing to do with the WAR format from the Java world.
+
+00:06:11 <v Calvin Hendryx-Parker>The Java had a web archive that you could basically deploy serverless into like a Tomcat server.
+
+00:06:16 <v Calvin Hendryx-Parker>You throw a war file into a directory and poof, you've duplication.
+
+00:06:20 <v Calvin Hendryx-Parker>This is also packaging for Python applications, but it's going to be optimized.
+
+00:06:25 <v Calvin Hendryx-Parker>And given it's Astral doing the work, they're optimizing around speed.
+
+00:06:29 <v Calvin Hendryx-Parker>Speed, ease of use, reliability, resilience to failure is the goals for this specific format.
+
+00:06:37 <v Calvin Hendryx-Parker>So it's a new archive format.
+
+00:06:39 <v Calvin Hendryx-Parker>basically their goal is to be faster than zip or tar from the standard Python library so that you can actually make speed still be the main feature when deploying software.
+
+00:06:50 <v Calvin Hendryx-Parker>And it has support for three kinds of entities like files, directories, and links, three kinds of compression modes, store, deflate.
+
+00:06:58 <v Calvin Hendryx-Parker>And if you've ever used ZStandard or ZSTD, you know that it can compress tremendously faster and more than standard GZip.
+
+00:07:07 <v Calvin Hendryx-Parker>So it's also atomic, which I think I'm hoping this comes to fruition because how many times have you ever unzipped a file for it to crash halfway through and you're left with a directory full of some of the stuff, not all the stuff.
+
+00:07:19 <v Calvin Hendryx-Parker>You don't know how much of the stuff.
+
+00:07:21 <v Calvin Hendryx-Parker>That's one of their goals is actually to make the unpacking atomic.
+
+00:07:24 <v Calvin Hendryx-Parker>It fails.
+
+00:07:25 <v Calvin Hendryx-Parker>You end up with the directory of nothing.
+
+00:07:26 <v Michael Kennedy>If it works, you get everything.
+
+00:07:28 <v Michael Kennedy>My favorite part of that scenario is if you're placing something when you're unzipping it,
+
+00:07:32 <v Calvin Hendryx-Parker>then it fails.
+
+00:07:33 <v Calvin Hendryx-Parker>You're like, oh, no.
+
+00:07:34 <v Calvin Hendryx-Parker>Right, right, right.
+
+00:07:35 <v Calvin Hendryx-Parker>So yeah, it gets back into the kind of the unambiguity.
+
+00:07:40 <v Calvin Hendryx-Parker>Unlike TAR, there should only be one way to express a given concept in the war.
+
+00:07:43 <v Calvin Hendryx-Parker>Because with TAR files, you can have bzips and gzips and non-compressed.
+
+00:07:49 <v Calvin Hendryx-Parker>So there's really just one extension and one command, and it should be intuitive to use.
+
+00:07:55 <v Calvin Hendryx-Parker>It's not optimized for maximal compression, but for speed and indexability, and then also this like per member compression support. So the idea is you could actually have,
+
+00:08:07 <v Calvin Hendryx-Parker>if this is meant for more streaming operation, so be very compatible with sending out zip distributions or war distributions to say your edge servers. You want that to be fast,
+
+00:08:19 <v Calvin Hendryx-Parker>efficient, only copy the bits it needs so it can understand what parts it has and what parts it doesn't and copy them a lot faster. So I'm excited for this proposal to move forward. There's a link here to the GitHub spec. There's a couple friendly faces who are the current authors of said spec
+
+00:08:35 <v Calvin Hendryx-Parker>over here. So I think that this is very, very promising.
+
+00:08:38 <v Calvin Hendryx-Parker>And like other things from Astral, I anticipate it'll be well executed.
+
+00:08:43 <v Michael Kennedy>Looks very cool. Yeah, I had Charlie March on a few weeks ago to talk about Astral moving into OpenAI and what does it mean for uv and different things. Well, now they're not focusing on pyx. They can focus on this. Exactly.
+
+00:08:54 <v Michael Kennedy>Yeah. So I think it's pretty interesting that lots of new stuff And not just releases, but new initiatives are coming out.
+
+00:09:02 <v Michael Kennedy>That's cool.
+
+00:09:02 <v Calvin Hendryx-Parker>Yeah, no, definitely.
+
+00:09:03 <v Calvin Hendryx-Parker>Yeah, so Short Suite doesn't exist yet, but keep your eye on this space.
+
+00:09:08 <v Calvin Hendryx-Parker>I assume it'll be open source and so people can contribute.
+
+00:09:11 <v Calvin Hendryx-Parker>I would definitely think so.
+
+00:09:12 <v Calvin Hendryx-Parker>Yeah.
+
+00:09:13 <v Michael Kennedy>So let's talk about a fun topic.
+
+00:09:16 <v Calvin Hendryx-Parker>I'm excited about this one.
+
+00:09:17 <v Michael Kennedy>Yes.
+
+00:09:18 <v Michael Kennedy>I don't even know.
+
+00:09:19 <v Michael Kennedy>I don't even have the words to talk about this right because it's so overloaded, this term agent and agentic.
+
+00:09:25 <v Michael Kennedy>So if I'm using co-work, it's agentic.
+
+00:09:28 <v Michael Kennedy>But also if I'm using something that just uses tools and takes multiple steps, it's agentic.
+
+00:09:33 <v Michael Kennedy>If I have like a gas town full of people running around, burning, but my credit's doing weird like stuff.
+
+00:09:38 <v Michael Kennedy>That's like, you know what I mean?
+
+00:09:39 <v Michael Kennedy>Like it's just, there's so much non-clarity.
+
+00:09:43 <v Michael Kennedy>And with that, I introduced to you Hermes agent.
+
+00:09:45 <v Michael Kennedy>Another one.
+
+00:09:47 <v Michael Kennedy>There's another one.
+
+00:09:48 <v Michael Kennedy>And this one follows in the open claw realm, but it's a little bit of a research project.
+
+00:09:53 <v Michael Kennedy>And I think it's interesting.
+
+00:09:54 <v Michael Kennedy>So Hugo Bound Anderson actually introduced me to this, although I mean, it's lots of people know about it.
+
+00:10:00 <v Michael Kennedy>I've talked about it that I've heard more than I kind of think back. Right.
+
+00:10:03 <v Michael Kennedy>So the idea is it's kind of like OpenClaw in that it's something that continuously runs.
+
+00:10:08 <v Michael Kennedy>And it's by NOS Research, Open Source, MIT, et cetera.
+
+00:10:12 <v Michael Kennedy>And it's written in Python, which is very interesting.
+
+00:10:14 <v Michael Kennedy>If I go over here to the GitHub, this thing is madness.
+
+00:10:17 <v Michael Kennedy>I've been I made a fork of it because I had to customize something.
+
+00:10:20 <v Michael Kennedy>And it is like every day or two days, I'll be like, oh, I should sync up the fork because I think it's changing fast.
+
+00:10:26 <v Michael Kennedy>350 commits.
+
+00:10:27 <v Michael Kennedy>I'm like, oh, man, that was like yesterday I synced it.
+
+00:10:31 <v Michael Kennedy>211,000 GitHub starters.
+
+00:10:32 <v Michael Kennedy>People are using this thing, it seems like.
+
+00:10:35 <v Michael Kennedy>So here's the idea.
+
+00:10:35 <v Michael Kennedy>It's like OpenClaw in that, let's say it's not like ChatGPT or even, let's say, Cowork.
+
+00:10:43 <v Michael Kennedy>So Anthropics Cowork is really cool because what you can do is give it tasks.
+
+00:10:47 <v Michael Kennedy>It can use tools like I've taught Claude how to use my Notion.
+
+00:10:51 <v Michael Kennedy>So I can say, hey, Claude, I want you to do this analysis and then save it in this Notion page or something.
+
+00:10:57 <v Michael Kennedy>And it'll just do it, which is cool.
+
+00:10:59 <v Michael Kennedy>But what it doesn't really seem to do is it doesn't cross coordinate and know about the different actions.
+
+00:11:05 <v Michael Kennedy>Like you have a project that it could do one thing, but another project doesn't know about that other project.
+
+00:11:10 <v Michael Kennedy>And so this Hermes thing like learns a ton and it's like self-improving, self-programming.
+
+00:11:16 <v Michael Kennedy>So it keeps a memory of you, which I know other ones do, but you can ask it to, hey, generate some skills for me and just save them and make them available any other time that I might ask about skills.
+
+00:11:26 <v Michael Kennedy>Oh, and could you reprogram yourself a little bit?
+
+00:11:28 <v Michael Kennedy>Cause this isn't working right.
+
+00:11:29 <v Michael Kennedy>Yeah, sure.
+
+00:11:30 <v Michael Kennedy>No problem.
+
+00:11:30 <v Michael Kennedy>I'll change my internals.
+
+00:11:32 <v Michael Kennedy>You just got to restart me real quick if you don't mind, cause I can't do that to myself.
+
+00:11:36 <v Michael Kennedy>So there's, it's just really got a lot of neat connectors and this sort of self-improving thing is super cool.
+
+00:11:43 <v Michael Kennedy>so calvin let me give you an example of just one of the things and i'll give you two examples but
+
+00:11:48 <v Calvin Hendryx-Parker>i will demonstrate one oh live demo nothing like a live demo on a new show so i have my notice my
+
+00:11:54 <v Michael Kennedy>apple watch notice it's the it's just the face it's not and i haven't done anything to it watch this tell hermes what's the text send calvin hendrix parker an email using my talk python
+
+00:12:06 <v Michael Kennedy>account and i want the title to be hello from the live show and the body to be check this out man done there you go so i didn't even touch my watch i just told it to do that and it's using a bunch
+
+00:12:17 <v Michael Kennedy>of different skills to figure out how to send email to like which account should it use it's uh composing the email and it's going to send it to you in a little bit and you could connect all sorts of llm backends like that's right now using chat gpt 55 but you could do local models you could
+
+00:12:31 <v Michael Kennedy>use claude you could do glm whatever whatever you want to connect to it and multiple ones you can switch them around. So that's pretty cool. And while I'm waiting on that, the other thing that I did is like, this will give you a sense of the self-programmability. So I was sitting on the
+
+00:12:45 <v Michael Kennedy>couch and my daughter just got her a little dirt bike thing. And she's like, we somehow ran across this private motocross track that had like a kid, kid track side of it. That was really perfect for
+
+00:12:57 <v Michael Kennedy>like some off-road riding. She's like, can we really go to that? The problem is it only opens twice a month for a few hours, like four hours at a time. And the times vary. And the only way you know is if you go on their Facebook page, and I'm not really on Facebook. I'm like, how am I going
+
+00:13:11 <v Michael Kennedy>to like even keep track of this? So I sat on the couch with my iPad, pasted the URL for the page, and then I just spoke to it. I said, Hey, here's the problem. I'd like you to create a skill so that you can go do this and then create an automated job. And by the time five minutes later,
+
+00:13:24 <v Michael Kennedy>it had built a skill, written some like browser use code and had set up a cron job. So like three days a week it will automatically do that and it'll send me an email if and only if new times appear
+
+00:13:36 <v Michael Kennedy>in facebook just talking to it i didn't touch it i didn't program it it used codex internally to
+
+00:13:41 <v Calvin Hendryx-Parker>write that for itself yeah so on hermes what's their security stance seemed like the open clock
+
+00:13:46 <v Michael Kennedy>crowd was a little yolo uh let's go for it it's a little bit stronger i don't it's still it's still a weird world so the way i do it as i just have it running in docker on my mac mini that's my work
+
+00:13:58 <v Michael Kennedy>Mac mini, but it's just always on as my database server anyway. So it's just running in a Docker container. Yeah. And it uses like, I don't know, 600 megs of RAM, not terribly, terribly much.
+
+00:14:09 <v Calvin Hendryx-Parker>Did you get an email? Let me see my email. Other cool things that it does is it like
+
+00:14:14 <v Michael Kennedy>integrates with discord. So one of the main ways I talk to it is just through discord.
+
+00:14:17 <v Michael Kennedy>And you can have a text conversation. Every new chat session becomes its own thread that then you can carry on. And I taught it how to like, if I tell it to join the voice channel, it'll join the voice channel of discord and it'll just have a conversation like you and I, but it'll keep a
+
+00:14:32 <v Calvin Hendryx-Parker>transcript somewhere else. If I need to go see it. I'm still waiting for the email to work its way through the inner tubes. Oh man. Anyway, I'll give you a real time update later in the show. I'm sure.
+
+00:14:43 <v Calvin Hendryx-Parker>Yeah. Yeah. We'll see. Anyway. So is there also a store, like an open store or marketplace of add-ons or is this you build your own, which I think is probably a better idea for most people.
+
+00:14:52 <v Michael Kennedy>It has add-ons and it has skills, but the main thing that you want to have the add-ons are the connectors. Yeah. Like how does it, so it'll do like daily briefings and save them to Notion in a database and so on. You know what I just checked? The problem is it, it wanted to
+
+00:15:07 <v Michael Kennedy>run some script and ask for, do you want to allow yes or no? I said always, but you know, it's a pretty new setup. So the first time anyway, eventually you'll get an email now, I'm pretty sure, but I think it's cool. I've been playing a lot with it and, yeah,
+
+00:15:20 <v Michael Kennedy>there goes my free time. Why did I play with this? No, it's, it's super fun to dream about what you might do with it. That is super cool. Well, Michael, I have another agent for you that's in
+
+00:15:28 <v Calvin Hendryx-Parker>a very different vein. Like you said, there's all kinds of different agents available out there.
+
+00:15:33 <v Calvin Hendryx-Parker>This one is by our friend Simon Willison. If you know Simon from the Django project and the data set work he's been doing and all the kind of advocacy and work he's been doing around AI and
+
+00:15:43 <v Calvin Hendryx-Parker>LLMs. If you aren't familiar, he wrote a command line utility, again, another great command line utility called LLM. Hard to search for because of the name that he used for it. But if you just search for Simon and LLM, you'll find his normal command line LLM, which lets you just ask an LLM
+
+00:15:58 <v Calvin Hendryx-Parker>a question from the command line, get a response back. He's been growing that with tons of plugins and add-ons. So for example, I've got an LLM add-on called CMD that I use regularly, where you do LLM CMD, and you type like what you want to do. Find me all the Python files that are one level deep in
+
+00:16:13 <v Calvin Hendryx-Parker>my directory. You hit return, and it'll come back to a prompt ready for you to hit return with the command does exactly what you want. So basically, it's kind of a shell extension to autocomplete
+
+00:16:23 <v Calvin Hendryx-Parker>with an LLM hard to remember commands like DU flag options, for example. Well, he's taken this to the next level. He has built a plugin for LLM that is still very alpha. This is very, very early days.
+
+00:16:34 <v Calvin Hendryx-Parker>This only came out a couple days ago called the LLM coding agent. And so now you can install the coding agent and you can do LLM code and you can give it a flag like --YOLO and have it
+
+00:16:45 <v Calvin Hendryx-Parker>build with tools. So he basically, using Fable, he had Fable write this plugin to basically turn LLM into a Claude Code-like experience. And it works with local models. So I installed the LLM
+
+00:16:59 <v Calvin Hendryx-Parker>Ollama plugin, or the Ollama CPP plugin, and I used a QIN 3.5 MLX accelerated model on my MacBook Pro here. And I wrote some CLI calendar tools really quickly with the, just from the
+
+00:17:13 <v Calvin Hendryx-Parker>command line very very lightweight you know very very low barrier to entry it'll be interesting to see where this goes because i like the lightweight nature of the llm tool itself i don't do you use
+
+00:17:22 <v Michael Kennedy>the llm tool at all from simon yeah no i should i i haven't yet though it looks really cool when
+
+00:17:29 <v Calvin Hendryx-Parker>you're just sitting at your terminal and you need a quick answer or something like you can put it on like the gpt you know mini uh or haiku for really quick like quick super quick responses or you can pass it, just keep everything local. Like this fully runs locally on my own machine when I'm
+
+00:17:44 <v Calvin Hendryx-Parker>playing with it. So if you want to play with it, you need to, it's shipped as an alpha currently.
+
+00:17:48 <v Calvin Hendryx-Parker>So you can uvx if you want to test it out with pre-release allow flag and then install it into your LLM and run the code keyword. And it'll just give you a prompt, just like a plot code.
+
+00:17:57 <v Calvin Hendryx-Parker>And now it has access to tools to read, write files, investigate. And so it'll build up a picture of the files that are in that directory and act like a coding agent. Here's a demo where We did it with GPT-55 to build a SwiftUI CLI clock.
+
+00:18:11 <v Calvin Hendryx-Parker>And the demo is at the bottom of that page.
+
+00:18:13 <v Calvin Hendryx-Parker>There's a GitHub repo because it's all open source.
+
+00:18:15 <v Calvin Hendryx-Parker>But you can see here the prompts he used to actually write this plugin.
+
+00:18:19 <v Calvin Hendryx-Parker>Two prompts, write the spec, implement the spec.
+
+00:18:22 <v Calvin Hendryx-Parker>So that's pretty cool.
+
+00:18:23 <v Calvin Hendryx-Parker>I'm excited for more to come.
+
+00:18:25 <v Calvin Hendryx-Parker>I always love Simon's tools.
+
+00:18:26 <v Calvin Hendryx-Parker>If you're not following Simon's blog, you should definitely go out there and follow Simon online.
+
+00:18:30 <v Calvin Hendryx-Parker>So that's what I got.
+
+00:18:30 <v Calvin Hendryx-Parker>I think Simon's doing really good work.
+
+00:18:32 <v Michael Kennedy>He is.
+
+00:18:33 <v Michael Kennedy>I think his writing, he's got a mini thing that's online for, like coding for engineers to code type of stuff. Yeah. And that's really good.
+
+00:18:41 <v Michael Kennedy>A lot of neat stuff. And man, he is just on so many interesting places.
+
+00:18:46 <v Michael Kennedy>He was on Python a while ago to talk about something with Django.
+
+00:18:50 <v Michael Kennedy>Maybe it was his birthday, the birthday, like a big milestone birthday or something like that. I was like, yeah, it was just on CNBC. I got a, sorry, I was late. I'm like, you know what?
+
+00:18:57 <v Michael Kennedy>You're living in a different world than most of the developers.
+
+00:18:59 <v Michael Kennedy>Like congratulations, man.
+
+00:19:00 <v Calvin Hendryx-Parker>Yeah. But I like his pragmatic style.
+
+00:19:02 <v Calvin Hendryx-Parker>He writes about it very realistically about what they're capable of, what they're not capable of.
+
+00:19:06 <v Calvin Hendryx-Parker>And so if it took him this long to get around to writing a plugin for an agent, a coding agent for LLM, it must be about time.
+
+00:19:12 <v Calvin Hendryx-Parker>So I feel like that's the timeline I like to follow.
+
+00:19:15 <v Calvin Hendryx-Parker>All right, Michael, you got an extra for me?
+
+00:19:17 <v Michael Kennedy>I got some extras, but I also have a real-time follow-up real quick here.
+
+00:19:22 <v Calvin Hendryx-Parker>So you mentioned Fable.
+
+00:19:23 <v Michael Kennedy>Fable is open to the public.
+
+00:19:25 <v Michael Kennedy>It was back, but it was back until July 7th, which is today, the time of the recording.
+
+00:19:31 <v Michael Kennedy>And then it was supposed to go into API only.
+
+00:19:33 <v Michael Kennedy>And then I just heard that it's supposed to be back permanently for the max max subscribers.
+
+00:19:39 <v Michael Kennedy>And for everyone, it's now available for one more week.
+
+00:19:43 <v Michael Kennedy>So if you're like, I was going to build something with it, but I didn't get it done.
+
+00:19:48 <v Michael Kennedy>And now it went away.
+
+00:19:49 <v Michael Kennedy>It's back for one more week.
+
+00:19:50 <v Michael Kennedy>So we'll build that thing.
+
+00:19:51 <v Michael Kennedy>All right.
+
+00:19:51 <v Michael Kennedy>So last week I talked about PLS and I wrote a blog post like what the PLS, man, come on.
+
+00:19:58 <v Michael Kennedy>Because I was a little frustrated, not like a super frustrated, just like some people, we'd recommend it.
+
+00:20:02 <v Michael Kennedy>We both, on all of our tools episode, we recommend, we're like, oh, that's so cool.
+
+00:20:06 <v Michael Kennedy>And people are like, yeah, but, what do you mean, but?
+
+00:20:08 <v Michael Kennedy>Like, yeah, but you can't really install the, you follow the instructions and it doesn't quite give it to you, right?
+
+00:20:13 <v Michael Kennedy>There's like a bunch of sus stuff.
+
+00:20:14 <v Michael Kennedy>And so I wrote this blog post called What the PLS, which said like, look, it's not really doing what you want.
+
+00:20:19 <v Michael Kennedy>So please don't, please don't UVPIP install it instead.
+
+00:20:23 <v Michael Kennedy>What you should do is this.
+
+00:20:24 <v Michael Kennedy>Well, well, well.
+
+00:20:26 <v Michael Kennedy>If you look at the top, there's an update from not too long ago.
+
+00:20:29 <v Michael Kennedy>And it says, Dhruv Banushali, saw this post and decided to take, he's the maintainer, decided to take some action so that you can no longer be like freaked out about like what the heck is going on.
+
+00:20:41 <v Michael Kennedy>So now if you go over to the GitHub issue, which notice it is closed,
+
+00:20:45 <v Calvin Hendryx-Parker>and let me hover and get a name, Christian Letterman.
+
+00:20:49 <v Calvin Hendryx-Parker>Yeah, yeah, I know Christian.
+
+00:20:50 <v Michael Kennedy>I do, very cool.
+
+00:20:51 <v Michael Kennedy>And said, hey, posted, hey, by the way, also tag, so actually Drew said also tag in Mike C. Kennedy because he might be interested after seeing it.
+
+00:21:04 <v Michael Kennedy>and said, hey, guys, look, I'm sorry, but now look.
+
+00:21:08 <v Michael Kennedy>You got sub-commented.
+
+00:21:10 <v Michael Kennedy>I did.
+
+00:21:11 <v Michael Kennedy>I did.
+
+00:21:11 <v Michael Kennedy>So if you go over, you know, I said, hey, thanks so much.
+
+00:21:14 <v Michael Kennedy>And actually changed it such that even if you go over here, just the latest release, so UVPIP install PLS, now we'll install this one, which is the Rust version.
+
+00:21:27 <v Michael Kennedy>So you're kind of back to good.
+
+00:21:28 <v Michael Kennedy>There's some other sort of funkiness around this.
+
+00:21:31 <v Michael Kennedy>readme on PyPI, but it says that'll be fixed when 7.0 comes out. And 7.0 is like almost out, but not out.
+
+00:21:37 <v Michael Kennedy>But look at this.
+
+00:21:39 <v Michael Kennedy>I love how developers sweat the small stuff sometimes.
+
+00:21:43 <v Michael Kennedy>There's like layers of sweating the small stuff.
+
+00:21:45 <v Michael Kennedy>And I would like to just point out that Christian did the right thing and posted a thing and said, hey, dear project and maintainer of this project, it's just really kind of janky.
+
+00:21:55 <v Michael Kennedy>Do you think you could maybe fix this?
+
+00:21:57 <v Michael Kennedy>So it's not so confusing?
+
+00:21:59 <v Michael Kennedy>Whereas I just wrote like a, not a hate post, but like a sort of frustrated, like, ah, don't do this.
+
+00:22:04 <v Michael Kennedy>This is kind of not great, but just world.
+
+00:22:06 <v Michael Kennedy>The only reason I did that and didn't create one of these is I was sure that they were just uninterested in fixing this.
+
+00:22:12 <v Michael Kennedy>Because surely it would have been fixed by now if they'd known and wanted to, you know what I mean?
+
+00:22:16 <v Michael Kennedy>But no, I was wrong.
+
+00:22:17 <v Michael Kennedy>So I should have followed Christian's lead and just posted this first.
+
+00:22:21 <v Michael Kennedy>Christian, you're doing the right thing.
+
+00:22:22 <v Calvin Hendryx-Parker>Exactly.
+
+00:22:23 <v Calvin Hendryx-Parker>Well done.
+
+00:22:23 <v Calvin Hendryx-Parker>That's cool.
+
+00:22:24 <v Calvin Hendryx-Parker>Very cool.
+
+00:22:24 <v Calvin Hendryx-Parker>Well, speaking of developers doing the right thing, I've got a couple extras here.
+
+00:22:28 <v Calvin Hendryx-Parker>If you are a developer that gives presentations at conferences, you should check out SlideEv.
+
+00:22:33 <v Calvin Hendryx-Parker>I was at a conference two weeks ago, the AWS Midwest Community Day, and I, for the last six years, have been using Reveal.js via Pandoc and some cookie cutter markdown glue
+
+00:22:47 <v Calvin Hendryx-Parker>that I put together to basically build my presentations with.
+
+00:22:49 <v Calvin Hendryx-Parker>I love Deerly because I handcrafted it, but I wasn't actually that in love with it.
+
+00:22:53 <v Calvin Hendryx-Parker>And I'm going to move to this.
+
+00:22:55 <v Calvin Hendryx-Parker>I found out this via Corey Quinn of the AWS Screaming in the Cloud fame.
+
+00:23:00 <v Calvin Hendryx-Parker>He uses this to give his talks.
+
+00:23:02 <v Calvin Hendryx-Parker>And I saw his talk on stage.
+
+00:23:03 <v Calvin Hendryx-Parker>I was like asking him afterwards what he was using.
+
+00:23:06 <v Calvin Hendryx-Parker>And it's slide dev.
+
+00:23:06 <v Calvin Hendryx-Parker>So it's all Markdown.
+
+00:23:08 <v Calvin Hendryx-Parker>I like the way the Markdown comes out a lot cleaner with slide dev than what I was doing.
+
+00:23:12 <v Calvin Hendryx-Parker>I could do similar things, but it got a little messy and just didn't have the spirit of true Markdown.
+
+00:23:17 <v Calvin Hendryx-Parker>But here you've got the ability to turn Markdown like this into slides like this.
+
+00:23:22 <v Calvin Hendryx-Parker>So I would check it out if you give presentations.
+
+00:23:24 <v Calvin Hendryx-Parker>It's got a ton of features, ton, ton, ton.
+
+00:23:27 <v Calvin Hendryx-Parker>I'll click over on the features page real quick.
+
+00:23:29 <v Calvin Hendryx-Parker>I mean, just remote presentations.
+
+00:23:32 <v Calvin Hendryx-Parker>You can package it up as a PDF immediately.
+
+00:23:35 <v Calvin Hendryx-Parker>You can put it into a CI pipeline and have a rendered version of it.
+
+00:23:38 <v Calvin Hendryx-Parker>It's kind of fully baked.
+
+00:23:39 <v Calvin Hendryx-Parker>You can have fully inline code that run.
+
+00:23:42 <v Calvin Hendryx-Parker>So if you want to give demos during your talk, you can do that inline in your slides without leaving the deck itself.
+
+00:23:48 <v Calvin Hendryx-Parker>Yeah, that's pretty cool.
+
+00:23:49 <v Calvin Hendryx-Parker>And I found out it was using, I believe it's using MDX, which are markdown live components inside of the tool itself.
+
+00:23:58 <v Calvin Hendryx-Parker>So pretty cool.
+
+00:23:59 <v Calvin Hendryx-Parker>I'm going to be checking it out.
+
+00:23:59 <v Calvin Hendryx-Parker>The next time you see me give a talk on the stage, it will most likely be using SlideDiv for it.
+
+00:24:04 <v Calvin Hendryx-Parker>Excellent.
+
+00:24:05 <v Calvin Hendryx-Parker>Yeah.
+
+00:24:05 <v Calvin Hendryx-Parker>I love it.
+
+00:24:06 <v Calvin Hendryx-Parker>The last one here, I got two more.
+
+00:24:08 <v Calvin Hendryx-Parker>This one, I have not tried this yet, but if you want to reduce your token usage on Claude for use with Fable, for example, someone wrote a tool called PXPipe for PixelPipe.
+
+00:24:19 <v Calvin Hendryx-Parker>It takes your text and encodes it into an image because Anthropic treats images differently token-wise than it does the text.
+
+00:24:26 <v Calvin Hendryx-Parker>They claim up to a 70% token reduction because of the handling of images versus the text itself.
+
+00:24:35 <v Calvin Hendryx-Parker>If y'all could see the screen here.
+
+00:24:37 <v Calvin Hendryx-Parker>Yeah, that is.
+
+00:24:38 <v Michael Kennedy>It's not just text.
+
+00:24:39 <v Michael Kennedy>It's really small text.
+
+00:24:40 <v Calvin Hendryx-Parker>It's really black.
+
+00:24:42 <v Calvin Hendryx-Parker>Yeah, yeah.
+
+00:24:42 <v Calvin Hendryx-Parker>It looks like a gray wall, but that's actually like the text of the prompt.
+
+00:24:46 <v Calvin Hendryx-Parker>Now, there are downsides.
+
+00:24:47 <v Calvin Hendryx-Parker>Be careful.
+
+00:24:48 <v Calvin Hendryx-Parker>The honest part.
+
+00:24:49 <v Calvin Hendryx-Parker>It is lossy.
+
+00:24:53 <v Calvin Hendryx-Parker>yeah so it's lossy i wouldn't use it for real work it's workload dependent your mileage may vary uh so just thought it was interesting i'd share it with the crowd because some people might be interested in in just token maxing and on the other direction how many tokens can i save uh which i
+
+00:25:08 <v Michael Kennedy>thought was interesting yeah it's the anti-top i am not a fan of token maxing no i'm not either i want to conserve the tokens not just conserve i think there is an art and a skill to say what is
+
+00:25:19 <v Michael Kennedy>the least this thing needs to know so it can focus the most on it not like what is the maximum i can jam into its memory and still get it to accomplish something you know what i mean so yeah yeah
+
+00:25:30 <v Michael Kennedy>exactly so really quick before we wrap up extras do you have okay oh let me see let me go double
+
+00:25:36 <v Calvin Hendryx-Parker>check do i have an email i don't see an email michael let me let me click refresh you don't see an email no you sure did it send a six feet up i assume it did it says it did maybe it's like Maybe it's like, that's just too body.
+
+00:25:48 <v Calvin Hendryx-Parker>And like you landed in the bot zone.
+
+00:25:50 <v Calvin Hendryx-Parker>I might've gotten boted.
+
+00:25:52 <v Michael Kennedy>Anyway, we'll review that later.
+
+00:25:55 <v Michael Kennedy>Okay.
+
+00:25:56 <v Calvin Hendryx-Parker>Let's go over.
+
+00:25:57 <v Calvin Hendryx-Parker>One last extra before we leave.
+
+00:26:00 <v Calvin Hendryx-Parker>Yeah, yeah.
+
+00:26:01 <v Calvin Hendryx-Parker>You had mentioned PEP772, which is the Python Packaging Council.
+
+00:26:05 <v Calvin Hendryx-Parker>On a previous episode, I wanted to bring it to everyone's attention that the inaugural election dates have been set.
+
+00:26:10 <v Calvin Hendryx-Parker>The nominations are open until July 28th and the voting will happen from September 1st.
+
+00:26:14 <v Calvin Hendryx-Parker>So if you're interested in the packaging council, jump on the boat and go participate.
+
+00:26:19 <v Calvin Hendryx-Parker>Awesome, awesome.
+
+00:26:21 <v Michael Kennedy>All right, how about a joke now?
+
+00:26:22 <v Michael Kennedy>So this one I hand selected for you, Calvin, because I thought you might appreciate this.
+
+00:26:28 <v Michael Kennedy>And I've entitled it Minimum Requirements for Linux.
+
+00:26:31 <v Michael Kennedy>I'm already in, I'm already in.
+
+00:26:33 <v Michael Kennedy>I know, you're in.
+
+00:26:34 <v Michael Kennedy>And this is putting Linux in a good light.
+
+00:26:37 <v Michael Kennedy>So it's mostly a picture, but I'll just describe it to you because it's fun.
+
+00:26:40 <v Michael Kennedy>Like, you know, there's this big brouhaha about windows 11 and tpm chips 2.0 so even if you have a tpm chip you're not enough for windows 11 like so you got to go buy yet another one i think Linux has a different uh deal here so the idea is
+
+00:26:54 <v Michael Kennedy>there's this i can't play it there's this old dirty nasty 486 looking thing that's found in like a ditch in the water probably like a hewlett packard yeah like a hewlett packard i mean it's got dvd drives and stuff on the front.
+
+00:27:09 <v Calvin Hendryx-Parker>Yeah, yeah.
+
+00:27:10 <v Michael Kennedy>Yes, or a compact maybe.
+
+00:27:12 <v Michael Kennedy>Yes.
+
+00:27:13 <v Michael Kennedy>Just in the water and in the mud and they pull it out and go, "Minimum requirements for Linux."
+
+00:27:19 <v Calvin Hendryx-Parker>It will run.
+
+00:27:20 <v Michael Kennedy>It's a video. Sadly, I can't play it because I'm not logged in,
+
+00:27:22 <v Calvin Hendryx-Parker>but apparently, whatever.
+
+00:27:24 <v Calvin Hendryx-Parker>You can play it when you log in.
+
+00:27:25 <v Calvin Hendryx-Parker>I'll go log in and play it, Michael.
+
+00:27:27 <v Calvin Hendryx-Parker>Very good stuff.
+
+00:27:28 <v Calvin Hendryx-Parker>Very good stuff.
+
+00:27:28 <v Calvin Hendryx-Parker>Well, thank you very much, Michael, for this edition of Python Bytes.
+
+00:27:31 <v Calvin Hendryx-Parker>We will see you all next week.
+
+00:27:33 <v Calvin Hendryx-Parker>Thank you very much.
+
+00:27:34 <v Calvin Hendryx-Parker>Yeah, thanks. Bye.
+
